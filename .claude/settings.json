@@ -1,0 +1,13 @@
+{
+  "policies": [
+    { "tool": "Edit", "allow": [
+      "lib/**", "test/**", "pubspec.yaml",
+      "supabase/migrations/**", "supabase/seed/**",
+      "supabase/functions/**", "supabase/tests/**",
+      "docs/**", "context/**", ".github/**"
+    ]},
+    { "tool": "Edit", "deny": ["android/**", "ios/**"] },
+    { "tool": "Bash", "allow": ["flutter analyze*", "flutter test*", "supabase*"] }
+  ],
+  "default_mode": "ask"
+}
