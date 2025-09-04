@@ -121,3 +121,16 @@ app.*.symbols
 .idea/
 *.iml
 
+# env files
+.env*
+!/.env.example
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Supabase temp files
+supabase/.temp/
+supabase/functions/
+supabase/logs/
+
