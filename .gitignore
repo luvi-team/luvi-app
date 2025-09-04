@@ -134,3 +134,10 @@ supabase/.temp/
 supabase/functions/
 supabase/logs/
 
+
+# macOS junk
+.DS_Store
+**/.DS_Store
+
+# Supabase temp
+supabase/.temp/

@@ -6,9 +6,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // In DEV diese Datei laden. Für Releases später .env.production verwenden.
-  await dotenv.load(fileName: ".env.development");
-
-  await SupabaseService.initializeFromEnv();
+  try {
+    await dotenv.load(fileName: ".env.development");
+    await SupabaseService.initializeFromEnv();
+  } catch (e) {
+    // Handle missing .env file in CI/CD or when running without Supabase
+    debugPrint('Warning: Could not load environment or initialize Supabase: $e');
+  }
+  
   runApp(const MyApp());
 }
 

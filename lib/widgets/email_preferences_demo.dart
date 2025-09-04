@@ -65,7 +65,7 @@ class _EmailPreferencesDemoState extends State<EmailPreferencesDemo> {
         _statusMessage = 'Newsletter preference updated successfully!';
       });
 
-      print('Upsert result: $result');
+      debugPrint('Upsert result: $result');
     } catch (e) {
       setState(() {
         _statusMessage = 'Error updating preference: $e';
