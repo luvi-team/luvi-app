@@ -15,3 +15,30 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test --no-pub
+
+  privacy-gate:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed paths
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            migrations:
+              - 'supabase/migrations/**'
+            privacy_docs:
+              - 'docs/privacy/reviews/**'
+
+      - name: Enforce privacy review when migrations changed
+        if: ${{ steps.changes.outputs.migrations == 'true' && steps.changes.outputs.privacy_docs != 'true' }}
+        run: |
+          echo "::error::Supabase-Migrationen geändert – bitte docs/privacy/reviews/<id>.md aktualisieren."
+          exit 1
