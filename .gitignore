@@ -148,3 +148,6 @@ Reiter/
 # local scratch (do not commit)
 /Reiter/
 Reiter/
+
+# local scratch file (ignore both file and folder)
+Reiter
