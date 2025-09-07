@@ -151,3 +151,6 @@ Reiter/
 
 # local scratch file (ignore both file and folder)
 Reiter
+
+debug_auth.sh
+test_rls.sh
