@@ -1,18 +1,6 @@
-create or replace function public.set_user_id_from_auth()
-returns trigger
-language plpgsql
-security definer
-as $$
-begin
-  if new.user_id is null then
-    new.user_id := auth.uid();
-  end if;
-  return new;
-end;
-$$;
-
-drop trigger if exists trg_cycle_owner on public.cycle_data;
-create trigger trg_cycle_owner
-before insert on public.cycle_data
-for each row
-execute function public.set_user_id_from_auth();
+-- Create additional trigger for cycle_data (if not exists)
+DROP TRIGGER IF EXISTS trg_cycle_owner ON public.cycle_data;
+CREATE TRIGGER trg_cycle_owner
+    BEFORE INSERT ON public.cycle_data
+    FOR EACH ROW
+    EXECUTE FUNCTION public.set_user_id_from_auth();
