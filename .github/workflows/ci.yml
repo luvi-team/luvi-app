@@ -52,6 +52,8 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -81,8 +83,6 @@ jobs:
           git diff --numstat "$BASE_SHA" "$HEAD_SHA" > /tmp/numstat.txt || true
 
       - name: Generate PR change report (Markdown)
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           REPORT="context/changes/pr-${PR_NUMBER}.md"
           {
@@ -115,5 +115,5 @@ jobs:
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pr-change-report-${{ github.event.pull_request.number }}
-          path: context/changes/pr-${{ github.event.pull_request.number }}.md
+          name: pr-change-report-${{ env.PR_NUMBER }}
+          path: context/changes/pr-${{ env.PR_NUMBER }}.md
