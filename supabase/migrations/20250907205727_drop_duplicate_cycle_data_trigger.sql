@@ -1,0 +1,1 @@
+DROP TRIGGER IF EXISTS trg_cycle_owner ON public.cycle_data;
