@@ -16,3 +16,37 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 Note: Dieses Projekt verwendet `flutter_dotenv`; lokale Entwicklung nutzt `.env.development` (siehe `.env.example` als Vorlage).
+
+## Database Security (RLS)
+
+### Row Level Security (RLS) Implementation
+
+All tables in this project use Supabase Row Level Security (RLS) with owner-based policies:
+
+#### daily_plan Table
+- **RLS Status**: ✅ Enabled
+- **Policies**: Owner-based (user_id = auth.uid())
+  - SELECT: Users can only view their own daily plans
+  - INSERT: Users can only create their own daily plans  
+  - UPDATE: Users can only update their own daily plans
+  - DELETE: Users can only delete their own daily plans
+- **Auto-Population**: Trigger `set_user_id_from_auth()` automatically sets user_id from auth context
+- **Validation**: Ensures user_id always matches authenticated user
+
+#### Running Migrations
+```bash
+# Apply new migrations
+supabase migration up
+
+# Check migration status
+supabase migration list
+
+# Reset database (development only)
+supabase db reset
+```
+
+#### Testing RLS
+Widget tests verify RLS enforcement:
+```bash
+flutter test test/widgets/daily_plan_rls_test.dart
+```
