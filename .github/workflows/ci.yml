@@ -46,7 +46,7 @@ jobs:
           exit 1
 
   pr-change-report:
-    if: ${{ always() && github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
     needs: [analyze-test]
     runs-on: ubuntu-latest
     permissions:
@@ -114,5 +114,5 @@ jobs:
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pr-change-report-${{ env.PR_NUMBER }}
-          path: context/changes/pr-${{ env.PR_NUMBER }}.md
+          name: pr-change-report-${{ github.event.pull_request.number }}
+          path: context/changes/pr-${{ github.event.pull_request.number }}.md
