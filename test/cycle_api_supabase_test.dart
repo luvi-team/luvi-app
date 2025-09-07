@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/api/cycle_api.dart';
+import 'package:luvi_app/api/cycle_api_supabase.dart';
 
 // Test implementation that records calls without using real Supabase
 class TestableApiSupabase implements CycleApi {
@@ -35,7 +36,7 @@ class TestableApiSupabase implements CycleApi {
     };
     
     if (exceptionToThrow != null) {
-      throw Exception('cycle_data upsert failed: RLS policy violation');
+      throw CycleUpsertException('RLS policy violation');
     }
     
     return responseToReturn ?? {'id': 'test-id'};
@@ -118,10 +119,10 @@ void main() {
           periodLengthDays: 5,
         ),
         throwsA(
-          isA<Exception>().having(
-            (e) => e.toString(),
+          isA<CycleUpsertException>().having(
+            (e) => e.message,
             'message',
-            contains('cycle_data upsert failed'),
+            contains('RLS policy violation'),
           ),
         ),
       );
