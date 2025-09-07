@@ -22,22 +22,21 @@ ALTER TABLE daily_plan ENABLE ROW LEVEL SECURITY;
 
 -- Create function to automatically set user_id from auth context
 CREATE OR REPLACE FUNCTION set_user_id_from_auth()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
 BEGIN
-    -- Only set user_id if not already provided
+    -- Always set user_id from auth context
+    NEW.user_id := auth.uid();
     IF NEW.user_id IS NULL THEN
-        NEW.user_id := auth.uid();
+        RAISE EXCEPTION 'missing auth context (auth.uid() is null)';
     END IF;
-    
-    -- Ensure user can only insert their own records
-    IF NEW.user_id != auth.uid() THEN
-        RAISE EXCEPTION 'user_id must match authenticated user';
-    END IF;
-    
+
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
+$$;
 -- Create trigger to auto-set user_id on insert
 CREATE TRIGGER ensure_user_id_daily_plan
     BEFORE INSERT ON daily_plan
