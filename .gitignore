@@ -141,4 +141,5 @@ supabase/logs/
 
 # Supabase temp
 supabase/.temp/
-Reiter
+# Local-only folder at repo root (if intended)
+/Reiter/
