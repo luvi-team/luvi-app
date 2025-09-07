@@ -14,7 +14,7 @@ jobs:
           channel: stable
       - run: flutter pub get
       - run: flutter analyze
-      - run: dart pub global activate dcm
+      - run: dart pub global activate dcm || true
       - run: dcm analyze || true
       - run: flutter test --no-pub
 
