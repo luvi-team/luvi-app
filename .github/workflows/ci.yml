@@ -12,8 +12,10 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.35.2'
       - run: flutter pub get
       - run: flutter analyze
+      - run: dart run dcm analyze || true
       - run: flutter test --no-pub
 
   privacy-gate:
