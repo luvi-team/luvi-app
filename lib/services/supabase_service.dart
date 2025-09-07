@@ -6,10 +6,11 @@ class SupabaseService {
 
   /// Initialize Supabase from environment variables
   static Future<void> initializeFromEnv() async {
-    final url = dotenv.env['SUPA_URL'] ?? '';
-    final anon = dotenv.env['SUPA_ANON_KEY'] ?? '';
-    if (url.isEmpty || anon.isEmpty) {
-      throw Exception('Missing SUPA_URL or SUPA_ANON_KEY in .env file');
+    // Prefer SUPABASE_*; gracefully fallback to legacy SUPA_*
+    final url = dotenv.env['SUPABASE_URL'] ?? dotenv.env['SUPA_URL'];
+    final anon = dotenv.env['SUPABASE_ANON_KEY'] ?? dotenv.env['SUPA_ANON_KEY'];
+    if ((url == null || url.isEmpty) || (anon == null || anon.isEmpty)) {
+      throw Exception('Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env file');
     }
     await Supabase.initialize(url: url, anonKey: anon);
   }
