@@ -69,7 +69,6 @@ jobs:
 
       - name: Prepare environment
         run: |
-          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           echo "BASE_SHA=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
           echo "HEAD_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "TEST_STATUS=${{ needs.analyze-test.result }}" >> $GITHUB_ENV
@@ -82,6 +81,8 @@ jobs:
           git diff --numstat "$BASE_SHA" "$HEAD_SHA" > /tmp/numstat.txt || true
 
       - name: Generate PR change report (Markdown)
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           REPORT="context/changes/pr-${PR_NUMBER}.md"
           {
