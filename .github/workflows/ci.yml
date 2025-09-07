@@ -14,6 +14,8 @@ jobs:
           channel: stable
       - run: flutter pub get
       - run: flutter analyze
+      - run: dart pub global activate dcm
+      - run: dcm analyze || true
       - run: flutter test --no-pub
 
   privacy-gate:
