@@ -1,6 +1,16 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'cycle_api.dart';
 
+String _formatYmd(DateTime d) =>
+    DateTime(d.year, d.month, d.day).toIso8601String().substring(0, 10);
+
+class CycleUpsertException implements Exception {
+  final String message;
+  CycleUpsertException(this.message);
+  @override
+  String toString() => 'CycleUpsertException: $message';
+}
+
 class CycleApiSupabase implements CycleApi {
   final SupabaseClient _client;
   CycleApiSupabase([SupabaseClient? client])
@@ -14,9 +24,7 @@ class CycleApiSupabase implements CycleApi {
   }) async {
     try {
       // Nur YYYY-MM-DD senden (DATE)
-      final String ymd = DateTime(lmpDate.year, lmpDate.month, lmpDate.day)
-          .toIso8601String()
-          .substring(0, 10);
+      final String ymd = _formatYmd(lmpDate);
 
       final payload = <String, dynamic>{
         'last_period': ymd,
@@ -34,7 +42,7 @@ class CycleApiSupabase implements CycleApi {
 
       return row;
     } on PostgrestException catch (e) {
-      throw Exception('cycle_data upsert failed: ${e.message}');
+      throw CycleUpsertException(e.message);
     }
   }
 }
