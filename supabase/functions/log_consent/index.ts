@@ -1,16 +1,15 @@
-// MIWF: Naked engine first - signature validation only, no actual implementation yet
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
-interface ConsentLogRequest {
-  user_id: string // uuid
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
+
+interface ConsentPayload {
   version: string
-  scopes: string[] | object // json
-  granted: boolean
-  timestamp: string // timestamptz
+  scopes: string[]
 }
 
 serve(async (req) => {
-  // Only accept POST requests
   if (req.method !== 'POST') {
     return new Response(
       JSON.stringify({ error: 'Method not allowed' }),
@@ -22,20 +21,8 @@ serve(async (req) => {
   }
 
   try {
-    // Parse and validate input structure
-    const body: ConsentLogRequest = await req.json()
+    const body: ConsentPayload = await req.json()
     
-    // Basic validation - MIWF: validate structure, not content
-    if (!body.user_id || typeof body.user_id !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'Invalid user_id: must be string' }),
-        { 
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
     if (!body.version || typeof body.version !== 'string') {
       return new Response(
         JSON.stringify({ error: 'Invalid version: must be string' }),
@@ -46,9 +33,9 @@ serve(async (req) => {
       )
     }
 
-    if (!body.scopes || (!Array.isArray(body.scopes) && typeof body.scopes !== 'object')) {
+    if (!body.scopes || !Array.isArray(body.scopes) || body.scopes.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Invalid scopes: must be array or object' }),
+        JSON.stringify({ error: 'Invalid scopes: must be non-empty array' }),
         { 
           status: 400,
           headers: { 'Content-Type': 'application/json' }
@@ -56,47 +43,45 @@ serve(async (req) => {
       )
     }
 
-    if (typeof body.granted !== 'boolean') {
+    const authorization = req.headers.get('Authorization')
+    if (!authorization) {
       return new Response(
-        JSON.stringify({ error: 'Invalid granted: must be boolean' }),
+        JSON.stringify({ error: 'Missing Authorization header' }),
         { 
-          status: 400,
+          status: 401,
           headers: { 'Content-Type': 'application/json' }
         }
       )
     }
 
-    if (!body.timestamp || typeof body.timestamp !== 'string') {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: {
+        headers: {
+          Authorization: authorization
+        }
+      }
+    })
+
+    const { error } = await supabase
+      .from('consents')
+      .insert({
+        version: body.version,
+        scopes: body.scopes
+      })
+
+    if (error) {
+      console.error('Database error:', error)
       return new Response(
-        JSON.stringify({ error: 'Invalid timestamp: must be string' }),
+        JSON.stringify({ error: 'Failed to log consent' }),
         { 
-          status: 400,
+          status: 500,
           headers: { 'Content-Type': 'application/json' }
         }
       )
     }
 
-    // TODO: Validate UUID format for user_id
-    // TODO: Validate timestamp format (ISO 8601 / timestamptz)
-    // TODO: Connect to Supabase client
-    // TODO: Insert consent log into database table
-    // TODO: Handle database errors
-    // TODO: Add rate limiting
-    // TODO: Add authentication/authorization
-    // TODO: Add logging/monitoring
-
-    // MIWF: Return success for now - actual implementation comes after happy path works
     return new Response(
-      JSON.stringify({ 
-        message: 'Consent log recorded',
-        data: {
-          user_id: body.user_id,
-          version: body.version,
-          scopes: body.scopes,
-          granted: body.granted,
-          timestamp: body.timestamp
-        }
-      }),
+      JSON.stringify({ ok: true }),
       { 
         status: 200,
         headers: { 'Content-Type': 'application/json' }
@@ -104,9 +89,8 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    // Handle JSON parsing errors
     return new Response(
-      JSON.stringify({ error: 'Invalid JSON body' }),
+      JSON.stringify({ error: 'Invalid request body' }),
       { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
