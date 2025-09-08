@@ -43,6 +43,9 @@ dependencies:
   
   # State management
   flutter_riverpod: ^2.4.0
+  
+  # Navigation
+  go_router: ^14.0.0
 
 dev_dependencies:
   flutter_test:
@@ -62,8 +65,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  #   - assets/images/
   
   # Note: .env files should NOT be listed as assets for security reasons.
   # flutter_dotenv can load them directly from the project root.
