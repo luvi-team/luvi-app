@@ -5,11 +5,20 @@ class ConsentService {
     required String version,
     required List<String> scopes,
   }) async {
-    final response = await Supabase.instance.client.functions.invoke(
+    final supabase = Supabase.instance.client;
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) {
+      throw Exception('Not authenticated');
+    }
+
+    final response = await supabase.functions.invoke(
       'log_consent',
       body: {
+        'user_id': userId,
         'version': version,
         'scopes': scopes,
+        'granted': true,
+        'timestamp': DateTime.now().toUtc().toIso8601String(),
       },
     );
 
