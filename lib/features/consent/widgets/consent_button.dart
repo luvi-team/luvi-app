@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'consent_service.dart';
+import '../state/consent_service.dart';
 
 class ConsentButton extends StatefulWidget {
   const ConsentButton({super.key});

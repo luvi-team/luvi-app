@@ -12,22 +12,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    await dotenv.load(fileName: ".env.development");
+    await dotenv.load(fileName: ".env.production");
     await SupabaseService.initializeFromEnv();
   } catch (e) {
     debugPrint('Warning: Could not load environment or initialize Supabase: $e');
   }
   
-  runApp(const ProviderScope(child: ConsentDevApp()));
+  runApp(const ProviderScope(child: ConsentProdApp()));
 }
 
-class ConsentDevApp extends StatelessWidget {
-  const ConsentDevApp({super.key});
+class ConsentProdApp extends StatelessWidget {
+  const ConsentProdApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'LUVI Consent Dev',
+      title: 'LUVI',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFD9B18E)),
         useMaterial3: true,
@@ -44,7 +44,7 @@ final _router = GoRouter(
       path: '/',
       builder: (context, state) => Scaffold(
         appBar: AppBar(
-          title: const Text('LUVI Dev Navigation'),
+          title: const Text('LUVI Navigation'),
           backgroundColor: Colors.brown.shade300,
         ),
         body: Center(

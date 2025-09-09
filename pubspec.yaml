@@ -46,6 +46,9 @@ dependencies:
   
   # Navigation
   go_router: ^16.2.1
+  
+  # SVG support
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +67,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/consent/welcome/welcome_hero_1.png
+    - assets/images/consent/welcome/welcome_hero_2.png
+    - assets/images/consent/welcome/welcome_hero_3.png
+    - assets/svg/waves/welcome_01_wave.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
