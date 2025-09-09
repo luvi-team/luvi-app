@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'core/theme/app_theme.dart';
 import 'services/supabase_service.dart';
 import 'features/consent/routes.dart';
 import 'features/consent/screens/welcome_01.dart';
@@ -28,10 +29,7 @@ class ConsentProdApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'LUVI',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFD9B18E)),
-        useMaterial3: true,
-      ),
+      theme: buildAppTheme(brightness: Brightness.light),
       routerConfig: _router,
     );
   }
