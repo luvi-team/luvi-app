@@ -86,39 +86,20 @@ class Welcome02Screen extends StatelessWidget {
                       // CTA
                       SizedBox(
                         width: double.infinity,
-                        height: 50,
                         child: Semantics(
                           button: true,
                           label: 'Weiter zur nächsten Seite',
                           child: ElevatedButton(
                             key: const Key('welcome2_cta'),
                             onPressed: () { /* TODO: navigate to next step */ },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: theme.colorScheme.primary,
-                              foregroundColor: theme.colorScheme.onPrimary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text('Weiter', style: tokens.callout),
+                            child: const Text('Weiter'),
                           ),
                         ),
                       ),
                       tokens.gap24,
                       TextButton(
                         onPressed: () { /* TODO: skip */ },
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size(48, 48),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        ),
-                        child: Text(
-                          'Überspringen',
-                          style: tokens.body?.copyWith(
-                            color: theme.colorScheme.onSurface,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        child: const Text('Überspringen'),
                       ),
                       const SizedBox(height: 34),
                     ],

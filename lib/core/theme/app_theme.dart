@@ -41,5 +41,28 @@ ThemeData buildAppTheme({required Brightness brightness}) {
     ),
   );
   
-  return base.copyWith(textTheme: textTheme);
+  // Configure button themes with Figma specifications
+  final buttonShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
+  final elevated = ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      minimumSize: const Size.fromHeight(56),
+      shape: buttonShape,
+      textStyle: GoogleFonts.figtree(fontSize: 20, fontWeight: FontWeight.w700),
+      backgroundColor: scheme.primary,
+      foregroundColor: scheme.onPrimary,
+    ),
+  );
+  final textBtn = TextButtonThemeData(
+    style: TextButton.styleFrom(
+      textStyle: GoogleFonts.figtree(fontSize: 16, fontWeight: FontWeight.w600),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    ),
+  );
+  
+  return base.copyWith(
+    colorScheme: scheme,
+    textTheme: textTheme,
+    elevatedButtonTheme: elevated,
+    textButtonTheme: textBtn,
+  );
 }

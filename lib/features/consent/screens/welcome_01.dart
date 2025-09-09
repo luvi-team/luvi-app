@@ -1,6 +1,5 @@
 // lib/features/consent/screens/welcome_01.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/tokens.dart';
 import 'package:luvi_app/features/consent/routes.dart';
@@ -34,7 +33,7 @@ class Welcome01Screen extends StatelessWidget {
     final tokens = LuviTokens.of(context);
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final heroHeight = size.height * 0.62; // wie im ursprünglichen Layout
+    final heroHeight = size.height * 0.62;
     final width = size.width;
     
     return Scaffold(
@@ -57,36 +56,31 @@ class Welcome01Screen extends StatelessWidget {
                     errorBuilder: (context, error, stack) => const SizedBox.shrink(),
                   ),
                   
-                  // Wave-Overlay (SVG) – UNBEDINGT UNTEN verankern
+                  // Wave-Overlay mit CustomClipper – UNBEDINGT UNTEN verankern
                   Positioned(
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    child: Builder(
-                      builder: (context) {
-                        // Figma-Baseline: Breite 428 → Wave-Höhe ~160
-                        const baselineWidth = 428.0;
-                        const baselineWaveHeight = 160.0; // optisch aus Figma
-                        final waveHeight = baselineWaveHeight * (width / baselineWidth);
-                        
-                        return SvgPicture.asset(
-                          'assets/svg/waves/welcome_01_wave.svg',
-                          width: width,
-                          height: waveHeight,
-                          fit: BoxFit.fill,
-                          alignment: Alignment.bottomCenter,
-                        );
-                      },
+                    child: SizedBox(
+                      width: width,
+                      height: tokens.welcomeWaveHeightForWidth(width),
+                      child: ClipPath(
+                        clipper: _WelcomeWaveClipper(),
+                        child: Container(color: theme.colorScheme.surface),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+            // Spacing zwischen Wave und Content
+            SizedBox(height: tokens.welcomeTextTopSpacingForWidth(width)),
             // Content beginnt direkt nach dem Hero
             SafeArea(
               top: false,
+              bottom: true,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
+                padding: EdgeInsets.fromLTRB(20, 40, 20, tokens.safeBottomPadding(context)),
                 child: Column(
                   children: [
                     // Titel (mit Primary Akzent)
@@ -134,41 +128,21 @@ class Welcome01Screen extends StatelessWidget {
                     // CTA
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
                       child: Semantics(
                         button: true,
                         label: 'Weiter zur nächsten Seite',
                         child: ElevatedButton(
                           key: const Key('welcome1_cta'),
                           onPressed: () => context.go(ConsentRoutes.welcome02Route),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.colorScheme.primary,
-                            foregroundColor: theme.colorScheme.onPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text('Weiter', style: tokens.callout),
+                          child: const Text('Weiter'),
                         ),
                       ),
                     ),
                     tokens.gap24,
                     TextButton(
                       onPressed: () => context.go(ConsentRoutes.welcome03Route),
-                      style: TextButton.styleFrom(
-                        minimumSize: const Size(48, 48),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      ),
-                      child: Text(
-                        'Überspringen',
-                        style: tokens.body?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      child: const Text('Überspringen'),
                     ),
-                    tokens.gap34,
                   ],
                 ),
               ),
@@ -178,4 +152,38 @@ class Welcome01Screen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _WelcomeWaveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    // Figma Baseline: width=428, topCurveY=40, bottomY=427
+    const baselineW = 428.0;
+    const topY = 40.0;
+    const bottomY = 427.0;
+
+    final w = size.width;
+    final h = size.height;
+
+    // Skaliere Y-Punkte proportional zur Zielhöhe
+    final yTop = (topY / bottomY) * h;
+
+    final p = Path()
+      ..moveTo(0, yTop)
+      ..cubicTo(
+        0, yTop,              // C1
+        (85.5 / baselineW) * w, 0,  // C2
+        (214 / baselineW) * w, 0)   // M
+      ..cubicTo(
+        (342.5 / baselineW) * w, 0, // C1
+        w, yTop,                    // C2
+        w, yTop)                    // End
+      ..lineTo(w, h)
+      ..lineTo(0, h)
+      ..close();
+    return p;
+  }
+  
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
