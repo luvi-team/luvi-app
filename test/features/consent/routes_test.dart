@@ -10,4 +10,8 @@ void main() {
   test('welcome02 route is stable', () {
     expect(ConsentRoutes.welcome02Route, '/consent/welcome-02');
   });
+
+  test('welcome03 route is stable', () {
+    expect(ConsentRoutes.welcome03Route, '/consent/welcome-03');
+  });
 }
