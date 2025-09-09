@@ -1,7 +1,9 @@
 // lib/features/consent/screens/welcome_01.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/tokens.dart';
+import 'package:luvi_app/features/consent/routes.dart';
 
 class Welcome01Screen extends StatelessWidget {
   const Welcome01Screen({super.key});
@@ -126,7 +128,7 @@ class Welcome01Screen extends StatelessWidget {
                         label: 'Weiter zur nächsten Seite',
                         child: ElevatedButton(
                           key: const Key('welcome1_cta'),
-                          onPressed: () { /* TODO: navigate to welcome-02 */ },
+                          onPressed: () => context.go(ConsentRoutes.welcome02Route),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: theme.colorScheme.primary,
                             foregroundColor: theme.colorScheme.onPrimary,
@@ -141,7 +143,7 @@ class Welcome01Screen extends StatelessWidget {
                     ),
                     tokens.gap24,
                     TextButton(
-                      onPressed: () { /* TODO: skip */ },
+                      onPressed: () => context.go(ConsentRoutes.welcome03Route),
                       style: TextButton.styleFrom(
                         minimumSize: const Size(48, 48),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
