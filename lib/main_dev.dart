@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/features/consent/routes.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_screen.dart';
 import 'services/supabase_service.dart';
 
 void main() async {
@@ -36,25 +34,17 @@ class ConsentDevApp extends StatelessWidget {
 }
 
 final _router = GoRouter(
-  initialLocation: ConsentRoutes.consentWelcome,
+  initialLocation: '/',
   routes: [
     GoRoute(
-      path: ConsentRoutes.consentWelcome,
-      builder: (context, state) => const ConsentWelcomeScreen(),
-    ),
-    GoRoute(
       path: '/',
-      builder: (context, state) => Scaffold(
+      builder: (context, state) => const Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Dev Navigation'),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => context.go(ConsentRoutes.consentWelcome),
-                child: const Text('Go to Consent Welcome'),
-              ),
+              Text('Dev Navigation'),
+              SizedBox(height: 20),
             ],
           ),
         ),
