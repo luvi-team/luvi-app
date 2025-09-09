@@ -10,15 +10,22 @@ class Welcome01Screen extends StatelessWidget {
   
   Widget _buildDot(BuildContext context, {required bool isActive}) {
     final theme = Theme.of(context);
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isActive
-            ? theme.colorScheme.primary
-            : theme.colorScheme.outline.withValues(alpha: 0.3),
-      ),
+    final tokens = LuviTokens.of(context);
+    return Stack(
+      children: [
+        // Use spacing token to define size (avoids magic numbers)
+        tokens.gap8,
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isActive
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline.withValues(alpha: 0.3),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -26,45 +33,50 @@ class Welcome01Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = LuviTokens.of(context);
     final theme = Theme.of(context);
-    final w = MediaQuery.of(context).size.width;
-    final heroHeight = w * (427.0 / 428.0); // aus dem SVG
+    final size = MediaQuery.of(context).size;
+    final heroHeight = size.height * 0.62; // wie im ursprünglichen Layout
+    final width = size.width;
     
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Hero mit exakter Höhe und SVG Wave
+            // Hero mit korrekter Höhe und SVG Wave unten verankert
             SizedBox(
-              width: double.infinity,
               height: heroHeight,
+              width: double.infinity,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
+                  // Bild
                   Image.asset(
                     'assets/images/consent/welcome/welcome_hero_1.png',
                     fit: BoxFit.cover,
                     alignment: Alignment.topCenter,
-                    errorBuilder: (context, error, stack) {
-                      debugPrint('ASSET ERROR welcome_hero_1 -> $error');
-                      return Container(
-                        color: Colors.red.withValues(alpha: 0.3),
-                        child: const Center(
-                          child: Text('Asset Load Error',
-                            style: TextStyle(color: Colors.white)),
-                        ),
-                      );
-                    },
+                    errorBuilder: (context, error, stack) => const SizedBox.shrink(),
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SvgPicture.asset(
-                      'assets/svg/waves/welcome_01_wave.svg',
-                      width: w,
-                      colorFilter: ColorFilter.mode(
-                        theme.colorScheme.surface,
-                        BlendMode.srcIn,
-                      ),
+                  
+                  // Wave-Overlay (SVG) – UNBEDINGT UNTEN verankern
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Builder(
+                      builder: (context) {
+                        // Figma-Baseline: Breite 428 → Wave-Höhe ~160
+                        const baselineWidth = 428.0;
+                        const baselineWaveHeight = 160.0; // optisch aus Figma
+                        final waveHeight = baselineWaveHeight * (width / baselineWidth);
+                        
+                        return SvgPicture.asset(
+                          'assets/svg/waves/welcome_01_wave.svg',
+                          width: width,
+                          height: waveHeight,
+                          fit: BoxFit.fill,
+                          alignment: Alignment.bottomCenter,
+                        );
+                      },
                     ),
                   ),
                 ],
