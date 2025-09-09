@@ -16,6 +16,8 @@ class LuviTokens {
   TextStyle? get callout => Theme.of(context).textTheme.titleSmall;
   TextStyle? get caption => Theme.of(context).textTheme.titleMedium;
 
+  SizedBox get gap8 => const SizedBox(height: 8, width: 8);
   SizedBox get gap16 => const SizedBox(height: 16, width: 16);
   SizedBox get gap24 => const SizedBox(height: 24, width: 24);
+  SizedBox get gap34 => const SizedBox(height: 34, width: 34);
 }

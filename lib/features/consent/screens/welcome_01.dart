@@ -5,6 +5,20 @@ import 'package:luvi_app/core/design_tokens/tokens.dart';
 
 class Welcome01Screen extends StatelessWidget {
   const Welcome01Screen({super.key});
+  
+  Widget _buildDot(BuildContext context, {required bool isActive}) {
+    final theme = Theme.of(context);
+    return Container(
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isActive
+            ? theme.colorScheme.primary
+            : theme.colorScheme.outline.withValues(alpha: 0.3),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,13 +96,25 @@ class Welcome01Screen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    tokens.gap8,
                     Text(
                       'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
                       style: tokens.body?.copyWith(
                         color: theme.colorScheme.onSurface,
                       ),
                       textAlign: TextAlign.center,
+                    ),
+                    tokens.gap24,
+                    // Pagination Dots
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildDot(context, isActive: true),
+                        const SizedBox(width: 8),
+                        _buildDot(context, isActive: false),
+                        const SizedBox(width: 8),
+                        _buildDot(context, isActive: false),
+                      ],
                     ),
                     tokens.gap24,
                     // CTA
@@ -113,7 +139,7 @@ class Welcome01Screen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    tokens.gap24,
                     TextButton(
                       onPressed: () { /* TODO: skip */ },
                       style: TextButton.styleFrom(
@@ -128,7 +154,7 @@ class Welcome01Screen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 34),
+                    tokens.gap34,
                   ],
                 ),
               ),
