@@ -112,9 +112,9 @@ class Welcome01Screen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildDot(context, isActive: true),
-                        const SizedBox(width: 8),
+                        tokens.gap8,
                         _buildDot(context, isActive: false),
-                        const SizedBox(width: 8),
+                        tokens.gap8,
                         _buildDot(context, isActive: false),
                       ],
                     ),
