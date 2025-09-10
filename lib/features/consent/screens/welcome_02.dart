@@ -50,6 +50,7 @@ class Welcome02Screen extends StatelessWidget {
               children: [
                 const Spacer(),
                 Padding(
+                  // TODO(welcome-fix): EdgeInsets.symmetric(horizontal: 20) -> tokens.welcomeContentHorizontal
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
@@ -101,6 +102,8 @@ class Welcome02Screen extends StatelessWidget {
                         onPressed: () { /* TODO: skip */ },
                         child: const Text('Überspringen'),
                       ),
+                      // TODO(welcome-fix): SizedBox(height: 34) -> tokens.welcomeDotsToButton
+                      // TODO(welcome-fix): SafeArea/Padding konsolidieren (einheitlich per tokens.welcomeSafeBottomPadding)
                       const SizedBox(height: 34),
                     ],
                   ),

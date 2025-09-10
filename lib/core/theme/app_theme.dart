@@ -21,6 +21,7 @@ ThemeData buildAppTheme({required Brightness brightness}) {
   );
   
   // Configure text theme with Figma-specified fonts
+  // TODO(welcome): H1 Playfair 32/40, Body Figtree 20/24, Skip Inter 17/25 verifizieren
   final textTheme = GoogleFonts.figtreeTextTheme(base.textTheme).copyWith(
     // Headline (Playfair Display 32/40)
     headlineLarge: GoogleFonts.playfairDisplay(
@@ -42,6 +43,7 @@ ThemeData buildAppTheme({required Brightness brightness}) {
   );
   
   // Configure button themes with Figma specifications
+  // TODO(welcome): ElevatedButton global Höhe 50, Radius 12, Fill #D9B18E, Text #FFF verifizieren
   final buttonShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
   final elevated = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(

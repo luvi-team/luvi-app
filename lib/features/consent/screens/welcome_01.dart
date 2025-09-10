@@ -33,6 +33,7 @@ class Welcome01Screen extends StatelessWidget {
     final tokens = LuviTokens.of(context);
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    // TODO(welcome-fix): heroHeight künftig aus tokens.welcomeHeroHeightRatio ableiten
     final heroHeight = size.height * 0.62;
     final width = size.width;
     
@@ -63,6 +64,7 @@ class Welcome01Screen extends StatelessWidget {
                     bottom: 0,
                     child: SizedBox(
                       width: width,
+                      // TODO(welcome-fix): Wave künftig über tokens.welcomeWaveIntrusionForWidth(width) statt legacy height
                       height: tokens.welcomeWaveHeightForWidth(width),
                       child: ClipPath(
                         clipper: _WelcomeWaveClipper(),
@@ -80,6 +82,8 @@ class Welcome01Screen extends StatelessWidget {
               top: false,
               bottom: true,
               child: Padding(
+                // TODO(welcome-fix): SafeArea bottom eindeutig – keine Doppelung mit zusätzlichem Padding
+                // TODO(welcome-fix): Spacing ausschließlich per Tokens (headline/body/dots/button/skip)
                 padding: EdgeInsets.fromLTRB(20, 40, 20, tokens.safeBottomPadding(context)),
                 child: Column(
                   children: [
