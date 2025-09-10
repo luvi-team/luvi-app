@@ -23,6 +23,7 @@ class LuviTokens {
 
   // --- Welcome: Geometry ---
   static const double welcomeHeroHeightRatio = 0.677; // 627/926 (Figma)
+  static const double welcomeHeroAlignY = -0.72; // Feintuning-Knopf für Hero-Bild
   static const double _welcomeWaveIntrusionRatio = 138.0 / 428.0; // Crest-Eindringtiefe relativ zur Breite
   double welcomeWaveIntrusionForWidth(double width) => width * _welcomeWaveIntrusionRatio;
 
@@ -32,6 +33,9 @@ class LuviTokens {
   static const double welcomeBodyToDots = 24;
   static const double welcomeDotsToButton = 34;
   static const double welcomeButtonToSkip = 24;
+  static const double welcomeDotSpacing = 6;
+  static const double _welcomeContentFromWaveRatio = 62.0 / 428.0;
+  double welcomeContentFromWaveForWidth(double width) => width * _welcomeContentFromWaveRatio;
 
   // --- Welcome: Colors (HEX aus Figma) ---
   static const Color welcomeTextPrimary = Color(0xFF030401);
