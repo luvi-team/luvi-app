@@ -14,9 +14,11 @@ void main() async {
     await SupabaseService.initializeFromEnv();
   } catch (e) {
     // Handle missing .env file in CI/CD or when running without Supabase
-    debugPrint('Warning: Could not load environment or initialize Supabase: $e');
+    debugPrint(
+      'Warning: Could not load environment or initialize Supabase: $e',
+    );
   }
-  
+
   runApp(const MyApp());
 }
 
@@ -27,9 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter(
-      routes: [
-        ...consent.consentRoutes,
-      ],
+      routes: [...consent.consentRoutes],
       initialLocation: consent.consentWelcome1Path,
     );
     return MaterialApp.router(

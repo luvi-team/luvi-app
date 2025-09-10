@@ -34,7 +34,7 @@ class _EmailPreferencesDemoState extends State<EmailPreferencesDemo> {
       });
 
       final preferences = await SupabaseService.getEmailPreferences();
-      
+
       setState(() {
         _currentPreferences = preferences;
         _isLoading = false;
@@ -88,18 +88,18 @@ class _EmailPreferencesDemoState extends State<EmailPreferencesDemo> {
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
-            
+
             if (_statusMessage != null)
               Container(
                 padding: const EdgeInsets.all(8.0),
                 margin: const EdgeInsets.only(bottom: 16.0),
                 decoration: BoxDecoration(
-                  color: _statusMessage!.contains('Error') 
+                  color: _statusMessage!.contains('Error')
                       ? Colors.red.withValues(alpha: 0.1)
                       : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
-                    color: _statusMessage!.contains('Error') 
+                    color: _statusMessage!.contains('Error')
                         ? Colors.red
                         : Colors.green,
                   ),
@@ -107,7 +107,7 @@ class _EmailPreferencesDemoState extends State<EmailPreferencesDemo> {
                 child: Text(
                   _statusMessage!,
                   style: TextStyle(
-                    color: _statusMessage!.contains('Error') 
+                    color: _statusMessage!.contains('Error')
                         ? Colors.red[800]
                         : Colors.green[800],
                   ),
@@ -123,7 +123,9 @@ class _EmailPreferencesDemoState extends State<EmailPreferencesDemo> {
                   if (_currentPreferences != null) ...[
                     const Text('Current Preferences:'),
                     Text('User ID: ${_currentPreferences!['user_id']}'),
-                    Text('Newsletter: ${_currentPreferences!['newsletter'] ?? 'Not set'}'),
+                    Text(
+                      'Newsletter: ${_currentPreferences!['newsletter'] ?? 'Not set'}',
+                    ),
                     const SizedBox(height: 16),
                   ],
 
@@ -132,7 +134,9 @@ class _EmailPreferencesDemoState extends State<EmailPreferencesDemo> {
                       const Text('Newsletter Subscription: '),
                       Switch(
                         value: _currentPreferences?['newsletter'] ?? false,
-                        onChanged: _isLoading ? null : _updateNewsletterPreference,
+                        onChanged: _isLoading
+                            ? null
+                            : _updateNewsletterPreference,
                       ),
                       if (_isLoading) ...[
                         const SizedBox(width: 16),

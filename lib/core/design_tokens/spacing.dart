@@ -5,4 +5,3 @@ class Spacing {
   static const double s = 12.0; // small (title -> subtitle)
   static const double xs = 8.0; // extra small (breathing space)
 }
-

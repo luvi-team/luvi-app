@@ -9,11 +9,13 @@ class AppTheme {
   /// Builds the app theme configuration.
   static ThemeData buildAppTheme() {
     // Colors from Figma CSS
-    const primary = Color(0xFFD9B18E);       // Primary color/100 (Button bg)
-    const accentSubtle = Color(0xFFD9B6A3);  // Accent-Subtle (nur "Superkraft.")
-    const onPrimary = Color(0xFFFFFFFF);     // Grayscale/White
-    const onSurface = Color(0xFF030401);     // Grayscale/Black
-    const grayscale400 = Color(0xFFB0B0B0);  // Grayscale/400 (Dots inactive base)
+    const primary = Color(0xFFD9B18E); // Primary color/100 (Button bg)
+    const accentSubtle = Color(0xFFD9B6A3); // Accent-Subtle (nur "Superkraft.")
+    const onPrimary = Color(0xFFFFFFFF); // Grayscale/White
+    const onSurface = Color(0xFF030401); // Grayscale/Black
+    const grayscale400 = Color(
+      0xFFB0B0B0,
+    ); // Grayscale/400 (Dots inactive base)
 
     return ThemeData(
       useMaterial3: true,
@@ -66,9 +68,14 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: onPrimary,
-          minimumSize: const Size(double.infinity, Sizes.buttonHeight),
-          padding: const EdgeInsets.symmetric(horizontal: Spacing.s, vertical: Spacing.s),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Sizes.radiusM)),
+          minimumSize: Size.fromHeight(Sizes.buttonHeight),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.s,
+            vertical: Spacing.s,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Sizes.radiusM),
+          ),
           textStyle: const TextStyle(
             fontFamily: TypeScale.figtree,
             fontWeight: FontWeight.w700,

@@ -22,8 +22,8 @@ class SupabaseService {
   static User? get currentUser => client.auth.currentUser;
 
   /// Upsert email preferences for the current user
-  static Future<Map<String, dynamic>?> upsertEmailPreferences({ 
-    bool? newsletter 
+  static Future<Map<String, dynamic>?> upsertEmailPreferences({
+    bool? newsletter,
   }) async {
     if (!isAuthenticated) throw Exception('User must be authenticated');
     final data = <String, dynamic>{'user_id': currentUser!.id};

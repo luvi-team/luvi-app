@@ -6,14 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   group('Daily Plan RLS Widget Tests', () {
-    testWidgets('Should show only user-owned daily plans', (WidgetTester tester) async {
+    testWidgets('Should show only user-owned daily plans', (
+      WidgetTester tester,
+    ) async {
       // Mock widget that simulates daily plan list with RLS
       await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            home: DailyPlanTestWidget(),
-          ),
-        ),
+        ProviderScope(child: MaterialApp(home: DailyPlanTestWidget())),
       );
 
       // Verify initial state
@@ -24,10 +22,15 @@ void main() {
       await tester.pump();
 
       // Verify RLS message is shown
-      expect(find.text('Only your plans are visible (RLS active)'), findsOneWidget);
+      expect(
+        find.text('Only your plans are visible (RLS active)'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('Should prevent unauthorized data access', (WidgetTester tester) async {
+    testWidgets('Should prevent unauthorized data access', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -64,7 +67,9 @@ void main() {
       expect(find.text('Access denied: RLS policy enforced'), findsOneWidget);
     });
 
-    testWidgets('Should auto-populate user_id from auth', (WidgetTester tester) async {
+    testWidgets('Should auto-populate user_id from auth', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

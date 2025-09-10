@@ -23,13 +23,10 @@ class DotsIndicator extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
           child: Container(
             key: ValueKey('dot_$i'),
-            width: Sizes.dot,
-            height: Sizes.dot,
+            width: Sizes.dot, height: Sizes.dot,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: active
-                  ? c.primary
-                  : c.outlineVariant.withValues(alpha: 0.2),
+              color: active ? c.primary : c.outlineVariant.withOpacity(0.2),
             ),
           ),
         );

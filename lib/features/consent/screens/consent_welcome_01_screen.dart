@@ -6,8 +6,8 @@ class ConsentWelcome01Screen extends StatelessWidget {
   const ConsentWelcome01Screen({super.key});
 
   // Documented constants (formerly magic numbers)
-  static const double _kHeroAspect = 438/619; // Figma aspect ratio
-  static const double _kWaveHeight = 413.0;   // tuned height from visual QA
+  static const double _kHeroAspect = 438 / 619; // Figma aspect ratio
+  static const double _kWaveHeight = 413.0; // tuned height from visual QA
   static const String _kWaveAsset = 'assets/images/consent/welcome_wave.svg';
 
   @override
@@ -34,7 +34,8 @@ class ConsentWelcome01Screen extends StatelessWidget {
           ],
         ),
       ),
-      subtitle: 'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
+      subtitle:
+          'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
       onNext: () {
         // später: context.go('/consent/w2');
       },
