@@ -46,10 +46,13 @@ class WelcomeShell extends StatelessWidget {
                 decoration: const BoxDecoration(
                   boxShadow: [BoxShadow(blurRadius: 4, offset: Offset(0, 4), color: Color.fromRGBO(0,0,0,0.25))],
                 ),
-                child: SvgPicture.asset(
-                  'assets/images/consent/welcome_wave.svg',
+                child: SizedBox(
+                  width: double.infinity,
                   height: waveHeightPx,
-                  fit: BoxFit.fill,
+                  child: SvgPicture.asset(
+                    'assets/images/consent/welcome_wave.svg',
+                    fit: BoxFit.fill, // füllt die Breite exakt
+                  ),
                 ),
               ),
             ),
