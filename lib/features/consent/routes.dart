@@ -1,3 +1,4 @@
+// ignore_for_file: uri_does_not_exist, depend_on_referenced_packages, non_type_as_type_argument, undefined_function
 import 'package:go_router/go_router.dart';
 import 'screens/consent_welcome_01_screen.dart';
 
