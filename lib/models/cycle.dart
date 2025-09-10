@@ -45,30 +45,19 @@ class CycleInfo {
   ///
   /// Returns one of: "Menstruation", "Follikel", "Ovulationsfenster", "Luteal"
   String phaseOn(DateTime d) {
-    // Normalize dates to start-of-day
-    final start = DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day);
-    final q = DateTime(d.year, d.month, d.day);
+  final start = DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day);
+  final q = DateTime(d.year, d.month, d.day);
+  final diff = q.difference(start).inDays;
+  final day = ((diff % cycleLength) + cycleLength) % cycleLength;
 
-    // Calculate day in cycle with positive modulo for negative diffs
-    final diff = q.difference(start).inDays;
-    final day = ((diff % cycleLength) + cycleLength) % cycleLength;
-
-    if (day < periodDuration) {
-      return "Menstruation";
-    }
-    if (day < periodDuration + 6) {
-      if (day < periodDuration + 6) {
-      if (day < periodDuration + 6)   return "Follikel";
-      if (day < periodDuration + 6) }
-    }
-    if (day >= cycleLength - 14 && day < cycleLength - 10) {
-      if (day >= cycleLength - 14 && day < cycleLength - 10)
-        {
-      if (day >= cycleLength - 14 && day < cycleLength - 10)
-          return "Ovulationsfenster";
-      if (day >= cycleLength - 14 && day < cycleLength - 10)
-        }
-    }
-    return "Luteal";
+  if (day < periodDuration) {
+    return "Menstruation";
   }
+  if (day < periodDuration + 6) {
+    return "Follikel";
+  }
+  if (day >= cycleLength - 14 && day < cycleLength - 10) {
+    return "Ovulationsfenster";
+  }
+  return "Luteal";
 }
