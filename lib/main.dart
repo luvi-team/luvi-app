@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
     );
     return MaterialApp.router(
       title: 'LUVI',
+      theme: AppTheme.buildAppTheme(), // <— WICHTIG
       routerConfig: router,
     );
   }

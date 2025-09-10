@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../core/design_tokens/spacing.dart';
+import '../../../core/design_tokens/sizes.dart';
+import 'dots_indicator.dart';
 
 class WelcomeShell extends StatelessWidget {
   const WelcomeShell({
@@ -10,20 +13,24 @@ class WelcomeShell extends StatelessWidget {
     required this.onNext,
     required this.heroAspect,    // z.B. 438/619
     required this.waveHeightPx,  // z.B. 427
+    this.waveAsset = 'assets/images/consent/welcome_wave.svg',
   });
 
   final String heroAsset;
-  final String title;
+  final Widget title;
   final String subtitle;
   final VoidCallback onNext;
   final double heroAspect;
   final double waveHeightPx;
+  final String waveAsset;
 
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context);
     return Scaffold(
       body: SafeArea(
+        top: false, // Hero darf bis ganz oben (Full-bleed hinter StatusBar)
+        bottom: false, // Wave darf full-bleed bis zum unteren Rand
         child: Stack(
           children: [
             // Hero oben, vollständig sichtbar
@@ -41,18 +48,12 @@ class WelcomeShell extends StatelessWidget {
             // Wave exakt unten
             Align(
               alignment: Alignment.bottomCenter,
-              child: Container(
-                // Schatten aus Figma-Filter als BoxShadow nachgebildet
-                decoration: const BoxDecoration(
-                  boxShadow: [BoxShadow(blurRadius: 4, offset: Offset(0, 4), color: Color.fromRGBO(0,0,0,0.25))],
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: waveHeightPx,
-                  child: SvgPicture.asset(
-                    'assets/images/consent/welcome_wave.svg',
-                    fit: BoxFit.fill, // füllt die Breite exakt
-                  ),
+              child: SizedBox(
+                width: double.infinity,
+                height: waveHeightPx,
+                child: SvgPicture.asset(
+                  waveAsset,
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
@@ -60,57 +61,31 @@ class WelcomeShell extends StatelessWidget {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                // spacing/24 etc. – bis Tokens gemappt sind, konstant dokumentiert
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                padding: const EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, Spacing.l),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Semantics(
-                      header: true,
-                      child: Text(title, textAlign: TextAlign.center, style: t.textTheme.headlineMedium),
-                    ),
-                    const SizedBox(height: 12),
+                    Semantics(header: true, child: title),
+                    const SizedBox(height: Spacing.s), // title -> subtitle
                     Text(subtitle, textAlign: TextAlign.center, style: t.textTheme.bodyMedium),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: Spacing.l), // subtitle -> dots
+                    // Dots (über dem Button), now reusable
+                    const DotsIndicator(count: 3, activeIndex: 0),
+                    const SizedBox(height: Spacing.l), // dots -> button
                     ElevatedButton(onPressed: onNext, child: const Text('Weiter')),
-                    const SizedBox(height: 12),
-                    TextButton(onPressed: () {/* später: skip */}, child: const Text('Überspringen')),
-                    const SizedBox(height: 12),
-                    // Simple Dots (statisch für Welcome_01)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _Dot(active: true),
-                        const SizedBox(width: 8),
-                        const _Dot(active: false),
-                        const SizedBox(width: 8),
-                        const _Dot(active: false),
-                      ],
+                    const SizedBox(height: Spacing.m), // button -> skip
+                    TextButton(
+                      onPressed: () {/* später: skip */},
+                      child: const Text('Überspringen'),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Spacing.xs), // breathing space above home indicator
                   ],
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Dot extends StatelessWidget {
-  const _Dot({required this.active});
-  final bool active;
-  @override
-  Widget build(BuildContext context) {
-    final c = Theme.of(context).colorScheme;
-    return Container(
-      width: 8, height: 8,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: active ? c.primary : c.outlineVariant,
       ),
     );
   }
