@@ -54,11 +54,15 @@ class CycleInfo {
     final day = ((diff % cycleLength) + cycleLength) % cycleLength;
 
     if (day < periodDuration) {
-  return "Menstruation";
-}
-    if (day < periodDuration + 6) return "Follikel";
-    if (day >= cycleLength - 14 && day < cycleLength - 10)
-      return "Ovulationsfenster";
+      return "Menstruation";
+    }
+    if (day < periodDuration + 6) {
+      if (day < periodDuration + 6) return "Follikel";
+    }
+    if (day >= cycleLength - 14 && day < cycleLength - 10) {
+      if (day >= cycleLength - 14 && day < cycleLength - 10)
+        return "Ovulationsfenster";
+    }
     return "Luteal";
   }
 }
