@@ -53,7 +53,9 @@ class CycleInfo {
     final diff = q.difference(start).inDays;
     final day = ((diff % cycleLength) + cycleLength) % cycleLength;
 
-    if (day < periodDuration) return "Menstruation";
+    if (day < periodDuration) {
+  return "Menstruation";
+}
     if (day < periodDuration + 6) return "Follikel";
     if (day >= cycleLength - 14 && day < cycleLength - 10)
       return "Ovulationsfenster";
