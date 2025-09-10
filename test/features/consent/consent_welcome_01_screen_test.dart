@@ -10,7 +10,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildAppTheme(),
-        home: const WelcomeShell(
+        home: WelcomeShell(
           heroAsset: 'assets/images/consent/welcome_01.png',
           title: Text.rich(
             TextSpan(
@@ -21,7 +21,7 @@ void main() {
           ),
           subtitle:
               'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
-          onNext: null, // we only check presence, not navigation here
+          onNext: () {}, // we only check presence, not navigation here
           heroAspect: 438 / 619,
           waveHeightPx: 413,
           waveAsset: 'assets/images/consent/welcome_wave.svg',
