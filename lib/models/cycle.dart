@@ -57,11 +57,17 @@ class CycleInfo {
       return "Menstruation";
     }
     if (day < periodDuration + 6) {
-      if (day < periodDuration + 6) return "Follikel";
+      if (day < periodDuration + 6) {
+      if (day < periodDuration + 6)   return "Follikel";
+      if (day < periodDuration + 6) }
     }
     if (day >= cycleLength - 14 && day < cycleLength - 10) {
       if (day >= cycleLength - 14 && day < cycleLength - 10)
-        return "Ovulationsfenster";
+        {
+      if (day >= cycleLength - 14 && day < cycleLength - 10)
+          return "Ovulationsfenster";
+      if (day >= cycleLength - 14 && day < cycleLength - 10)
+        }
     }
     return "Luteal";
   }
