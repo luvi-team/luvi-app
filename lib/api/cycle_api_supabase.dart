@@ -14,7 +14,7 @@ class CycleUpsertException implements Exception {
 class CycleApiSupabase implements CycleApi {
   final SupabaseClient _client;
   CycleApiSupabase([SupabaseClient? client])
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   @override
   Future<Map<String, dynamic>> upsertCycle({

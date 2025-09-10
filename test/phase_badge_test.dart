@@ -6,29 +6,50 @@ import 'package:luvi_app/models/cycle.dart';
 void main() {
   testWidgets('Badge hides without consent & shows with consent', (t) async {
     final info = CycleInfo(
-        lastPeriod: DateTime(2025, 9, 1),
-        cycleLength: 28,
-        periodDuration: 4);
-    await t.pumpWidget(MaterialApp(
+      lastPeriod: DateTime(2025, 9, 1),
+      cycleLength: 28,
+      periodDuration: 4,
+    );
+    await t.pumpWidget(
+      MaterialApp(
         home: PhaseBadge(
-            info: info, date: DateTime(2025, 9, 1), consentGiven: false)));
+          info: info,
+          date: DateTime(2025, 9, 1),
+          consentGiven: false,
+        ),
+      ),
+    );
     expect(find.byKey(const Key('phase-text')), findsNothing);
-    await t.pumpWidget(MaterialApp(
+    await t.pumpWidget(
+      MaterialApp(
         home: PhaseBadge(
-            info: info, date: DateTime(2025, 9, 1), consentGiven: true)));
+          info: info,
+          date: DateTime(2025, 9, 1),
+          consentGiven: true,
+        ),
+      ),
+    );
     expect(find.text('Menstruation'), findsOneWidget);
   });
 
-  testWidgets('Badge remains hidden without consent for non-period date',
-      (t) async {
+  testWidgets('Badge remains hidden without consent for non-period date', (
+    t,
+  ) async {
     final info = CycleInfo(
-        lastPeriod: DateTime(2025, 9, 1),
-        cycleLength: 28,
-        periodDuration: 4);
+      lastPeriod: DateTime(2025, 9, 1),
+      cycleLength: 28,
+      periodDuration: 4,
+    );
     // Test with a date in the follicular phase
-    await t.pumpWidget(MaterialApp(
+    await t.pumpWidget(
+      MaterialApp(
         home: PhaseBadge(
-            info: info, date: DateTime(2025, 9, 7), consentGiven: false)));
+          info: info,
+          date: DateTime(2025, 9, 7),
+          consentGiven: false,
+        ),
+      ),
+    );
     expect(find.byKey(const Key('phase-text')), findsNothing);
   });
 }

@@ -156,3 +156,7 @@ debug_auth.sh
 test_rls.sh
 debug_*.sh
 .env.development
+*.bak
+
+# temp
+*.tmp

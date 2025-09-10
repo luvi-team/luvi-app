@@ -7,10 +7,7 @@ class ConsentService {
   }) async {
     final response = await Supabase.instance.client.functions.invoke(
       'log_consent',
-      body: {
-        'version': version,
-        'scopes': scopes,
-      },
+      body: {'version': version, 'scopes': scopes},
     );
 
     if (response.status != 200) {
