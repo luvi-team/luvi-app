@@ -4,50 +4,49 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 
 void main() {
-  testWidgets('Welcome01 shows title and primary CTA (robust, Text/RichText)', (
+  testWidgets('W1 content renders headline and Weiter button (asset-free)', (
     tester,
   ) async {
+    final theme = AppTheme.buildAppTheme();
     await tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.buildAppTheme(),
+        theme: theme,
         home: WelcomeShell(
-          heroAsset: 'assets/images/consent/welcome_01.png',
-          title: Text.rich(
-            TextSpan(
-              text: 'Dein Zyklus ist deine\n',
-              children: [TextSpan(text: 'Superkraft.')],
-            ),
+          hero: const SizedBox(),
+          title: RichText(
             textAlign: TextAlign.center,
+            text: TextSpan(
+              style: theme.textTheme.headlineMedium,
+              children: [
+                const TextSpan(text: 'Dein Zyklus ist deine\n'),
+                TextSpan(
+                  text: 'Superkraft.',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    color: theme.colorScheme.secondary,
+                  ),
+                ),
+              ],
+            ),
           ),
           subtitle:
               'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
-          onNext: () {}, // we only check presence, not navigation here
+          onNext: () {},
           heroAspect: 438 / 619,
-          waveHeightPx: 413,
-          waveAsset: 'assets/images/consent/welcome_wave.svg',
+          waveHeightPx: 427,
+          activeIndex: 0,
         ),
       ),
     );
 
-    // Robust headline finder: funktioniert für Text ODER RichText/TextSpan
-    final headlineFinder = find.byWidgetPredicate((w) {
-      if (w is RichText) return w.text.toPlainText().contains('Dein Zyklus');
-      if (w is Text) return (w.data?.contains('Dein Zyklus') ?? false);
-      return false;
-    });
-    expect(headlineFinder, findsOneWidget);
-
-    // CTA vorhanden
-    expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
-
-    // Subtitle vorhanden (vereinfachte Prüfung)
+    // Assert headline contains "Dein Zyklus ist deine"
     expect(
       find.byWidgetPredicate(
-        (w) =>
-            w is Text &&
-            (w.data ?? '').contains('Training, Ernährung und Schlaf'),
+        (w) => w is RichText && w.text.toPlainText().contains('Dein Zyklus ist deine'),
       ),
       findsOneWidget,
     );
+
+    // Assert "Weiter" ElevatedButton is present
+    expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
   });
 }

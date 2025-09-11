@@ -39,10 +39,11 @@ class ConsentWelcome01Screen extends StatelessWidget {
       onNext: () {
         // später: context.go('/consent/w2');
       },
-      heroAsset: Assets.consentWelcome01,
+      hero: Image.asset(Assets.consentWelcome01, fit: BoxFit.cover),
       heroAspect: _kHeroAspect,
       waveHeightPx: _kWaveHeight,
       waveAsset: Assets.consentWave,
+      activeIndex: 0,
     );
   }
 }

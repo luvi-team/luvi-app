@@ -11,7 +11,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.buildAppTheme(),
         home: WelcomeShell(
-          heroAsset: 'assets/images/consent/welcome_01.png',
+          hero: const SizedBox(), // asset-free for test stability
           title: const Text('Dein Zyklus ist deine\nSuperkraft.'),
           subtitle:
               'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
@@ -19,6 +19,7 @@ void main() {
           heroAspect: 438 / 619,
           waveHeightPx: 413,
           waveAsset: 'assets/images/consent/welcome_wave.svg',
+          activeIndex: 0,
         ),
       ),
     );

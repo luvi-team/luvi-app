@@ -8,22 +8,24 @@ import 'dots_indicator.dart';
 class WelcomeShell extends StatelessWidget {
   const WelcomeShell({
     super.key,
-    required this.heroAsset,
+    required this.hero,
     required this.title,
     required this.subtitle,
     required this.onNext,
     required this.heroAspect, // z.B. 438/619
     required this.waveHeightPx, // z.B. 427
+    required this.activeIndex,
     this.waveAsset = Assets.consentWave,
   });
 
-  final String heroAsset;
+  final Widget hero;
   final Widget title;
   final String subtitle;
   final VoidCallback onNext;
   final double heroAspect;
   final double waveHeightPx;
   final String waveAsset;
+  final int activeIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +41,7 @@ class WelcomeShell extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: AspectRatio(
                 aspectRatio: heroAspect,
-                child: Image.asset(
-                  heroAsset,
-                  fit: BoxFit.contain,
-                  semanticLabel: 'Welcome Hero',
-                ),
+                child: hero,
               ),
             ),
             // Wave exakt unten
@@ -78,7 +76,7 @@ class WelcomeShell extends StatelessWidget {
                     ),
                     const SizedBox(height: Spacing.l), // subtitle -> dots
                     // Dots (über dem Button), now reusable
-                    const DotsIndicator(count: Sizes.dotsCount, activeIndex: 0),
+                    DotsIndicator(count: Sizes.dotsCount, activeIndex: activeIndex),
                     const SizedBox(height: Spacing.l), // dots -> button
                     ElevatedButton(
                       onPressed: onNext,
