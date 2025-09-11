@@ -1,5 +1,5 @@
-import '../api/cycle_api.dart';
-import '../models/cycle.dart';
+import 'package:luvi_app/features/cycle/data/cycle_api.dart';
+import 'package:luvi_app/features/cycle/domain/cycle.dart';
 
 typedef ConsentCheck = Future<bool> Function();
 

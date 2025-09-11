@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/api/cycle_api.dart';
-import 'package:luvi_app/models/cycle.dart';
-import 'package:luvi_app/repo/cycle_repo.dart';
+import 'package:luvi_app/features/cycle/data/cycle_api.dart';
+import 'package:luvi_app/features/cycle/domain/cycle.dart';
+import 'package:luvi_app/features/cycle/data/cycle_repo.dart';
 
 class FakeCycleApi implements CycleApi {
   int callCount = 0;

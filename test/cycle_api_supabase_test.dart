@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/api/cycle_api.dart';
-import 'package:luvi_app/api/cycle_api_supabase.dart';
+import 'package:luvi_app/features/cycle/data/cycle_api.dart';
+import 'package:luvi_app/features/cycle/data/cycle_api_supabase.dart';
 
 // Test implementation that records calls without using real Supabase
 class TestableApiSupabase implements CycleApi {

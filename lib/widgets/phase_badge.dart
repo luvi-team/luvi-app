@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/cycle.dart';
+import 'package:luvi_app/features/cycle/domain/cycle.dart';
 
 class PhaseBadge extends StatelessWidget {
   final CycleInfo info;
