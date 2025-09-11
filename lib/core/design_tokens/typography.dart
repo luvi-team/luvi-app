@@ -1,6 +1,5 @@
 /// Central typography tokens used by the app theme.
 class TypeScale {
-  TypeScale._();
   // Families (must match pubspec.yaml)
   static const playfair = 'Playfair Display';
   static const figtree = 'Figtree';
@@ -19,4 +18,6 @@ class TypeScale {
   // Small/Skip: 17 / 25 (Inter Medium)
   static const smallSize = 17.0;
   static const smallHeight = 25.0 / 17.0;
+
+  TypeScale._();
 }
