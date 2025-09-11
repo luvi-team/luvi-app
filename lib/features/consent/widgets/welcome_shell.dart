@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/design_tokens/spacing.dart';
+import '../../../core/design_tokens/sizes.dart';
 import 'dots_indicator.dart';
 
 class WelcomeShell extends StatelessWidget {
@@ -76,7 +77,7 @@ class WelcomeShell extends StatelessWidget {
                     ),
                     const SizedBox(height: Spacing.l), // subtitle -> dots
                     // Dots (über dem Button), now reusable
-                    const DotsIndicator(count: 3, activeIndex: 0),
+                    const DotsIndicator(count: Sizes.dotsCount, activeIndex: 0),
                     const SizedBox(height: Spacing.l), // dots -> button
                     ElevatedButton(
                       onPressed: onNext,

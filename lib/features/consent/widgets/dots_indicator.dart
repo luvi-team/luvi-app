@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_tokens/sizes.dart';
 import '../../../core/design_tokens/spacing.dart';
+import '../../../core/design_tokens/opacity.dart';
 
 class DotsIndicator extends StatelessWidget {
   const DotsIndicator({
@@ -29,7 +30,7 @@ class DotsIndicator extends StatelessWidget {
               shape: BoxShape.circle,
               color: active
                   ? c.primary
-                  : c.outlineVariant.withValues(alpha: 0.2),
+                  : c.outlineVariant.withValues(alpha: OpacityTokens.inactive),
             ),
           ),
         );
