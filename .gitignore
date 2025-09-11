@@ -132,5 +132,8 @@ debug_*.sh
 *.bak
 # temp
 *.tmp
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
 report/
 onboarding_reuse_audit.sh
