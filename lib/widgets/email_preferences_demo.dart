@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/supabase_service.dart';
 
@@ -65,7 +66,7 @@ class _EmailPreferencesDemoState extends State<EmailPreferencesDemo> {
         _statusMessage = 'Newsletter preference updated successfully!';
       });
 
-      debugPrint('Upsert result: $result');
+      if (kDebugMode) debugPrint('Upsert result: $result');
     } catch (e) {
       setState(() {
         _statusMessage = 'Error updating preference: $e';
