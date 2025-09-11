@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
@@ -14,9 +15,11 @@ void main() async {
     await SupabaseService.initializeFromEnv();
   } catch (e) {
     // Handle missing .env file in CI/CD or when running without Supabase
-    debugPrint(
-      'Warning: Could not load environment or initialize Supabase: $e',
-    );
+    if (kDebugMode) {
+      debugPrint(
+        'Warning: Could not load environment or initialize Supabase: $e',
+      );
+    }
   }
 
   runApp(const MyApp());
