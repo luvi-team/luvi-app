@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'welcome_metrics.dart';
 import 'package:luvi_app/core/assets.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/welcome_shell.dart';
@@ -28,8 +29,8 @@ class ConsentWelcome02Screen extends StatelessWidget {
       subtitle: 'LUVI übersetzt, was dein Zyklus dir sagen möchte.',
       onNext: () => context.go('/onboarding/w3'),
       hero: Image.asset(Assets.consentWelcome02, fit: BoxFit.cover),
-      heroAspect: 438 / 619,
-      waveHeightPx: 427,
+      heroAspect: kWelcomeHeroAspect,
+      waveHeightPx: kWelcomeWaveHeight,
       activeIndex: 1,
     );
   }

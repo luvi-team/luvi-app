@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'welcome_metrics.dart';
 import 'package:luvi_app/core/assets.dart';
 // no routing target yet for W3 → keep clean TODO
 import '../widgets/welcome_shell.dart';
@@ -31,8 +32,8 @@ class ConsentWelcome03Screen extends StatelessWidget {
         // TODO(next): define target route (e.g., '/consent/1') when available
       },
       hero: Image.asset(Assets.consentWelcome03, fit: BoxFit.cover),
-      heroAspect: 438 / 619,
-      waveHeightPx: 427,
+      heroAspect: kWelcomeHeroAspect,
+      waveHeightPx: kWelcomeWaveHeight,
       activeIndex: 2,
     );
   }

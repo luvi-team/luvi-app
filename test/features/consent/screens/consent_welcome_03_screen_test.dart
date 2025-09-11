@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
 
 void main() {
   testWidgets('W3 content renders headline and Weiter button (asset-free)', (
@@ -31,8 +32,8 @@ void main() {
           ),
           subtitle: 'LUVI zeigt dir deine ganz persönlichen Zusammenhänge.',
           onNext: () {},
-          heroAspect: 438 / 619,
-          waveHeightPx: 427,
+          heroAspect: kWelcomeHeroAspect,
+          waveHeightPx: kWelcomeWaveHeight,
           activeIndex: 2,
         ),
       ),
