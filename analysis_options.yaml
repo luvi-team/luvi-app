@@ -26,3 +26,18 @@ linter:
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+
+# Dart Code Metrics configuration
+dart_code_metrics:
+  metrics:
+    cyclomatic-complexity: 20
+    lines-of-code: 100
+    number-of-parameters: 4
+    source-lines-of-code: 80
+  rules:
+    - prefer-trailing-comma
+    - member-ordering
+    - no-equal-then-else
+    - no-boolean-literal-compare
+    - avoid-unnecessary-type-assertions
+

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:luvi_app/widgets/phase_badge.dart';
-import 'package:luvi_app/models/cycle.dart';
+import 'package:luvi_app/features/cycle/widgets/phase_badge.dart';
+import 'package:luvi_app/features/cycle/domain/cycle.dart';
 
 void main() {
   testWidgets('Badge hides without consent & shows with consent', (t) async {

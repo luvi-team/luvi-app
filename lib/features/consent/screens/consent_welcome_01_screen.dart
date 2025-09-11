@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:luvi_app/core/assets.dart';
 import '../widgets/welcome_shell.dart';
 
 class ConsentWelcome01Screen extends StatelessWidget {
@@ -8,7 +9,6 @@ class ConsentWelcome01Screen extends StatelessWidget {
   // Documented constants (formerly magic numbers)
   static const double _kHeroAspect = 438 / 619; // Figma aspect ratio
   static const double _kWaveHeight = 413.0; // tuned height from visual QA
-  static const String _kWaveAsset = 'assets/images/consent/welcome_wave.svg';
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +39,10 @@ class ConsentWelcome01Screen extends StatelessWidget {
       onNext: () {
         // später: context.go('/consent/w2');
       },
-      heroAsset: 'assets/images/consent/welcome_01.png',
+      heroAsset: Assets.consentWelcome01,
       heroAspect: _kHeroAspect,
       waveHeightPx: _kWaveHeight,
-      waveAsset: _kWaveAsset,
+      waveAsset: Assets.consentWave,
     );
   }
 }

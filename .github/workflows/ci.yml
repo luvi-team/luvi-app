@@ -15,7 +15,7 @@ jobs:
           flutter-version: '3.35.2'
       - run: flutter pub get
       - run: flutter analyze
-      - run: dart run dcm analyze || true
+      - run: flutter pub run dart_code_metrics:metrics analyze lib --disable-sunset-warning || true
       - run: flutter test --no-pub
 
   privacy-gate:

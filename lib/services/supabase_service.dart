@@ -4,6 +4,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class SupabaseService {
   static SupabaseClient get client => Supabase.instance.client;
 
+  /// Check if user is authenticated
+  static bool get isAuthenticated => client.auth.currentUser != null;
+
+  /// Get current user
+  static User? get currentUser => client.auth.currentUser;
+
   /// Initialize Supabase from environment variables
   static Future<void> initializeFromEnv() async {
     // Prefer SUPABASE_*; gracefully fallback to legacy SUPA_*
@@ -14,12 +20,6 @@ class SupabaseService {
     }
     await Supabase.initialize(url: url, anonKey: anon);
   }
-
-  /// Check if user is authenticated
-  static bool get isAuthenticated => client.auth.currentUser != null;
-
-  /// Get current user
-  static User? get currentUser => client.auth.currentUser;
 
   /// Upsert email preferences for the current user
   static Future<Map<String, dynamic>?> upsertEmailPreferences({

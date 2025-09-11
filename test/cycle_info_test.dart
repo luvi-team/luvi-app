@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/models/cycle.dart';
+import 'package:luvi_app/features/cycle/domain/cycle.dart';
 
 void main() {
   test('phase calc basics', () {

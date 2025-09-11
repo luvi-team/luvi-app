@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'cycle_api.dart';
+import 'package:luvi_app/features/cycle/data/cycle_api.dart';
 
 String _formatYmd(DateTime d) =>
     DateTime(d.year, d.month, d.day).toIso8601String().substring(0, 10);
