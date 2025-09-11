@@ -41,7 +41,9 @@ void main() {
     // Assert headline contains "Dein Zyklus ist deine"
     expect(
       find.byWidgetPredicate(
-        (w) => w is RichText && w.text.toPlainText().contains('Dein Zyklus ist deine'),
+        (w) =>
+            w is RichText &&
+            w.text.toPlainText().contains('Dein Zyklus ist deine'),
       ),
       findsOneWidget,
     );

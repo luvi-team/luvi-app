@@ -1,14 +1,22 @@
 import 'package:go_router/go_router.dart';
 import 'screens/consent_welcome_01_screen.dart';
+import 'screens/consent_welcome_02_screen.dart';
+import 'screens/consent_welcome_03_screen.dart';
 
-const consentWelcome1Path = '/consent/w1';
-// Route name constant for clarity and to prevent string drift.
-const String consentWelcome1Name = 'consent_w1';
-
-final List<GoRoute> consentRoutes = [
+final consentRoutes = <GoRoute>[
   GoRoute(
-    name: consentWelcome1Name,
-    path: consentWelcome1Path,
-    builder: (ctx, st) => const ConsentWelcome01Screen(),
+    path: '/onboarding/w1',
+    name: 'welcome1',
+    builder: (context, state) => const ConsentWelcome01Screen(),
+  ),
+  GoRoute(
+    path: '/onboarding/w2',
+    name: 'welcome2',
+    builder: (context, state) => const ConsentWelcome02Screen(),
+  ),
+  GoRoute(
+    path: '/onboarding/w3',
+    name: 'welcome3',
+    builder: (context, state) => const ConsentWelcome03Screen(),
   ),
 ];

@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final router = GoRouter(
       routes: [...consent.consentRoutes],
-      initialLocation: consent.consentWelcome1Path,
+      initialLocation: '/onboarding/w1',
     );
     return MaterialApp.router(
       title: 'LUVI',
