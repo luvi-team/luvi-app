@@ -160,3 +160,6 @@ debug_*.sh
 
 # temp
 *.tmp
+
+report/
+onboarding_reuse_audit.sh
