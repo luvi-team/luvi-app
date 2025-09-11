@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'welcome_metrics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:luvi_app/core/assets.dart';
 import 'package:go_router/go_router.dart';
@@ -8,8 +9,9 @@ class ConsentWelcome01Screen extends StatelessWidget {
   const ConsentWelcome01Screen({super.key});
 
   // Documented constants (formerly magic numbers)
-  static const double _kHeroAspect = 438 / 619; // Figma aspect ratio
-  static const double _kWaveHeight = 413.0; // tuned height from visual QA
+  static const double _kHeroAspect = kWelcomeHeroAspect; // Figma aspect ratio
+  static const double _kWaveHeight =
+      kWelcomeWaveHeight; // tuned height from visual QA
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
+import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
 
 void main() {
   testWidgets('W1 content renders headline and Weiter button (asset-free)', (
@@ -31,8 +32,8 @@ void main() {
           subtitle:
               'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
           onNext: () {},
-          heroAspect: 438 / 619,
-          waveHeightPx: 427,
+          heroAspect: kWelcomeHeroAspect,
+          waveHeightPx: kWelcomeWaveHeight,
           activeIndex: 0,
         ),
       ),
