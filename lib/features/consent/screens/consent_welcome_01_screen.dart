@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:luvi_app/core/assets.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/welcome_shell.dart';
 
 class ConsentWelcome01Screen extends StatelessWidget {
@@ -36,13 +37,12 @@ class ConsentWelcome01Screen extends StatelessWidget {
       ),
       subtitle:
           'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
-      onNext: () {
-        // später: context.go('/consent/w2');
-      },
-      heroAsset: Assets.consentWelcome01,
+      onNext: () => context.go('/onboarding/w2'),
+      hero: Image.asset(Assets.consentWelcome01, fit: BoxFit.cover),
       heroAspect: _kHeroAspect,
       waveHeightPx: _kWaveHeight,
       waveAsset: Assets.consentWave,
+      activeIndex: 0,
     );
   }
 }
