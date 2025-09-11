@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:luvi_app/core/assets.dart';
 import '../../../core/design_tokens/spacing.dart';
 import '../../../core/design_tokens/sizes.dart';
 import 'dots_indicator.dart';
@@ -13,7 +14,7 @@ class WelcomeShell extends StatelessWidget {
     required this.onNext,
     required this.heroAspect, // z.B. 438/619
     required this.waveHeightPx, // z.B. 427
-    this.waveAsset = 'assets/images/consent/welcome_wave.svg',
+    this.waveAsset = Assets.consentWave,
   });
 
   final String heroAsset;
