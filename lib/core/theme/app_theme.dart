@@ -7,11 +7,17 @@ import '../design_tokens/sizes.dart';
 /// This is a placeholder for future design system implementation.
 class AppTheme {
   // Colors from Figma CSS
-  static const Color _primary = Color(0xFFD9B18E); // Primary color/100 (Button bg)
-  static const Color _accentSubtle = Color(0xFFD9B6A3); // Accent-Subtle (nur "Superkraft.")
+  static const Color _primary = Color(
+    0xFFD9B18E,
+  ); // Primary color/100 (Button bg)
+  static const Color _accentSubtle = Color(
+    0xFFD9B6A3,
+  ); // Accent-Subtle (nur "Superkraft.")
   static const Color _onPrimary = Color(0xFFFFFFFF); // Grayscale/White
   static const Color _onSurface = Color(0xFF030401); // Grayscale/Black
-  static const Color _grayscale400 = Color(0xFFB0B0B0); // Grayscale/400 (Dots inactive base)
+  static const Color _grayscale400 = Color(
+    0xFFB0B0B0,
+  ); // Grayscale/400 (Dots inactive base)
 
   static const TextTheme _textThemeConst = TextTheme(
     // H1
@@ -72,7 +78,6 @@ class AppTheme {
       outlineVariant: _grayscale400, // für Dots inactive (mit Opacity)
     );
   }
-
 
   static TextTheme _buildTextTheme() => _textThemeConst;
 
