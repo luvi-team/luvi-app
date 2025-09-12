@@ -18,23 +18,13 @@ class Consent01Screen extends StatelessWidget {
           waveHeightPx: 427,
           activeIndex: 0,
           hero: const _HeroGrid(),
-          title: RichText(
+          title: Text(
+            'Lass uns LUVI\nauf dich abstimmen 💜',
             textAlign: TextAlign.center,
-            text: TextSpan(
-              style: Theme.of(context).textTheme.headlineMedium,
-              children: [
-                const TextSpan(text: 'Entfessle deine '),
-                TextSpan(
-                  text: 'Superkraft.',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ],
-            ),
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-          subtitle: 'Mit LUVI verstehst du deinen Körper wie nie zuvor.',
-          onNext: () => context.go('/consent_02'),
+          subtitle: 'Du entscheidest, was du teilen möchtest. Je mehr wir über dich wissen, desto besser können wir dich unterstützen.',
+          onNext: () => context.go('/consent/02'),
         ),
         const _BackButton(),
       ],
@@ -54,18 +44,27 @@ class _HeroGrid extends StatelessWidget {
         mainAxisSpacing: Spacing.s,
         crossAxisSpacing: Spacing.s,
         physics: const NeverScrollableScrollPhysics(),
-        children: List.generate(
-          4,
-          (index) => Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.grey[300],
-            ),
-            child: const Center(
-              child: Icon(Icons.image, size: 48, color: Colors.grey),
-            ),
-          ),
-        ),
+        children: const [
+          _Tile('assets/images/consent/consent_02_01_hero_01.png'),
+          _Tile('assets/images/consent/consent_02_01_hero_02.png'),
+          _Tile('assets/images/consent/consent_02_01_hero_03.png'),
+          _Tile('assets/images/consent/consent_02_01_hero_04.png'),
+        ],
+      ),
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  final String asset;
+  const _Tile(this.asset);
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Image.asset(asset, fit: BoxFit.cover),
       ),
     );
   }
@@ -83,17 +82,17 @@ class _BackButton extends StatelessWidget {
         button: true,
         label: 'Zurück',
         child: Material(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.primaryContainer, // Primary/100
           borderRadius: BorderRadius.circular(Sizes.radiusM),
           child: InkWell(
-            onTap: () => context.go('/welcome_04'),
+            onTap: () => context.go('/onboarding/w3'),
             borderRadius: BorderRadius.circular(Sizes.radiusM),
             child: const SizedBox(
               width: 40,
               height: 40,
               child: Icon(
                 Icons.arrow_back,
-                color: Colors.white,
+                color: Colors.black,
                 size: 20,
               ),
             ),
