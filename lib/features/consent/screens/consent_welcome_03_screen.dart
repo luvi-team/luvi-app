@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'welcome_metrics.dart';
 import 'package:luvi_app/core/assets.dart';
 // no routing target yet for W3 → keep clean TODO
 import '../widgets/welcome_shell.dart';
-import 'welcome_metrics.dart';
 
 class ConsentWelcome03Screen extends StatelessWidget {
   const ConsentWelcome03Screen({super.key});
