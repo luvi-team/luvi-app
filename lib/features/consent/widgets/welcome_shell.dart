@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/assets.dart';
-import '../../../core/design_tokens/spacing.dart';
 import '../../../core/design_tokens/sizes.dart';
+import '../../../core/design_tokens/spacing.dart';
 import 'dots_indicator.dart';
 
 class WelcomeShell extends StatelessWidget {
@@ -39,10 +39,7 @@ class WelcomeShell extends StatelessWidget {
             // Hero oben, vollständig sichtbar
             Align(
               alignment: Alignment.topCenter,
-              child: AspectRatio(
-                aspectRatio: heroAspect,
-                child: hero,
-              ),
+              child: AspectRatio(aspectRatio: heroAspect, child: hero),
             ),
             // Wave exakt unten
             Align(
@@ -76,7 +73,10 @@ class WelcomeShell extends StatelessWidget {
                     ),
                     const SizedBox(height: Spacing.l), // subtitle -> dots
                     // Dots (über dem Button), now reusable
-                    DotsIndicator(count: Sizes.dotsCount, activeIndex: activeIndex),
+                    DotsIndicator(
+                      count: Sizes.dotsCount,
+                      activeIndex: activeIndex,
+                    ),
                     const SizedBox(height: Spacing.l), // dots -> button
                     ElevatedButton(
                       onPressed: onNext,

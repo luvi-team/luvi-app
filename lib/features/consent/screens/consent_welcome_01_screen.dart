@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'welcome_metrics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:luvi_app/core/assets.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/assets.dart';
 import '../widgets/welcome_shell.dart';
+import 'welcome_metrics.dart';
 
 class ConsentWelcome01Screen extends StatelessWidget {
   const ConsentWelcome01Screen({super.key});
