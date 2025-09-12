@@ -144,7 +144,11 @@ class _BackButton extends StatelessWidget {
                 alignment: Alignment.center,
                 child: SvgPicture.string(
                   _chevronSvg,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  // 'color' is deprecated in flutter_svg ≥2.x. Use colorFilter instead.
+                  colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.onSurface,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
             ),
