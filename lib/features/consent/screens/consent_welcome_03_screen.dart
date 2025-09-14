@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'welcome_metrics.dart';
 import 'package:luvi_app/core/assets.dart';
+import 'package:go_router/go_router.dart';
 // no routing target yet for W3 → keep clean TODO
 import '../widgets/welcome_shell.dart';
 
@@ -28,9 +29,7 @@ class ConsentWelcome03Screen extends StatelessWidget {
         ),
       ),
       subtitle: 'LUVI zeigt dir deine ganz persönlichen Zusammenhänge.',
-      onNext: () {
-        // TODO(next): define target route (e.g., '/consent/1') when available
-      },
+      onNext: () => context.go('/consent/01'),
       hero: Image.asset(Assets.consentWelcome03, fit: BoxFit.cover),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,
