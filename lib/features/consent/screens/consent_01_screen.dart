@@ -65,7 +65,7 @@ class Consent01Screen extends StatelessWidget {
             bottom: 44,
             height: Sizes.buttonHeight,
             child: ElevatedButton(
-              onPressed: () => context.go('/consent/02'),
+              onPressed: () => context.push('/consent/02'),
               child: const Text('Weiter'),
             ),
           ),

@@ -29,7 +29,7 @@ class ConsentWelcome03Screen extends StatelessWidget {
         ),
       ),
       subtitle: 'LUVI zeigt dir deine ganz persönlichen Zusammenhänge.',
-      onNext: () => context.go('/consent/01'),
+      onNext: () => context.push('/consent/01'),
       hero: Image.asset(Assets.consentWelcome03, fit: BoxFit.cover),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,

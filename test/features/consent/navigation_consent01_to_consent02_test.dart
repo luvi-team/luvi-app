@@ -5,7 +5,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
 
 void main() {
-  testWidgets('Consent01 → Consent02', (tester) async {
+  testWidgets('Consent01 → push Consent02 and pop back', (tester) async {
     final router = GoRouter(
       initialLocation: '/consent/01',
       routes: [
@@ -15,7 +15,21 @@ void main() {
         ),
         GoRoute(
           path: '/consent/02',
-          builder: (context, state) => const Scaffold(body: Text('Consent 02')),
+          builder: (context, state) => Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Consent 02'),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text('Zurück'),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -32,6 +46,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Consent 02'), findsOneWidget);
+    // pop back
+    await tester.tap(find.widgetWithText(TextButton, 'Zurück'));
+    await tester.pumpAndSettle();
+    // back on Consent01
+    expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
   });
 }
-

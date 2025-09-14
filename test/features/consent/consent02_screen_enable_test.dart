@@ -16,23 +16,30 @@ void main() {
     expect(weiterFinder, findsOneWidget);
     expect(tester.widget<ElevatedButton>(weiterFinder).onPressed, isNull);
 
-    // Tap required cards by a unique substring in their titles
-    await tester.tap(find.text('Gesundheitsdaten'));
+    // Tap required cards via first two InkWell cards to avoid text ambiguity
+    final listView = find.byType(ListView);
+    final cardInkwells = find.descendant(of: listView, matching: find.byType(InkWell));
+    expect(cardInkwells, findsWidgets);
+    await tester.tap(cardInkwells.at(0));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Datenschutzerklärung & Nutzungsbedingungen'));
+    await tester.tap(cardInkwells.at(1));
     await tester.pumpAndSettle();
 
     // Weiter should now be enabled
     expect(tester.widget<ElevatedButton>(weiterFinder).onPressed, isNotNull);
 
     // Tap "Alle akzeptieren" to select all optional scopes
-    final allAcceptFinder = find.widgetWithText(OutlinedButton, 'Alle akzeptieren');
+    final allAcceptFinder = find.widgetWithText(ElevatedButton, 'Alle akzeptieren');
     expect(allAcceptFinder, findsOneWidget);
-    expect(tester.widget<OutlinedButton>(allAcceptFinder).onPressed, isNotNull);
+    expect(tester.widget<ElevatedButton>(allAcceptFinder).onPressed, isNotNull);
     await tester.tap(allAcceptFinder);
     await tester.pumpAndSettle();
 
     // Button becomes disabled once all optionals are selected
-    expect(tester.widget<OutlinedButton>(allAcceptFinder).onPressed, isNull);
+    expect(tester.widget<ElevatedButton>(allAcceptFinder).onPressed, isNull);
+
+    // Ensure no explicit card titles are present
+    expect(find.text('Gesundheitsdaten'), findsNothing);
+    expect(find.text('Datenschutzerklärung & Nutzungsbedingungen'), findsNothing);
   });
 }
