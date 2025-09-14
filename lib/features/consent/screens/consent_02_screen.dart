@@ -54,12 +54,14 @@ class Consent02Screen extends ConsumerWidget {
       required String body,
       required ConsentScope scope,
       InlineSpan? trailingLinks,
+      Key? cardKey,
     }) {
       final selected = state.choices[scope] == true;
       return Semantics(
         button: true,
         toggled: selected,
         child: InkWell(
+          key: cardKey,
           onTap: () {
             HapticFeedback.selectionClick();
             notifier.toggle(scope);
@@ -213,12 +215,14 @@ class Consent02Screen extends ConsumerWidget {
                   body:
                       'Ich willige in die Verarbeitung meiner personenbezogenen Daten einschließlich meiner Gesundheitsdaten zur Bereitstellung personalisierter LUVI-Services ein.',
                   scope: ConsentScope.health_processing,
+                  cardKey: const Key('consent02_card_required_health'),
                 ),
                 const SizedBox(height: 20),
                 scopeCard(
                   body: 'Ich erkläre mich mit der',
                   scope: ConsentScope.terms,
                   trailingLinks: buildLinks(),
+                  cardKey: const Key('consent02_card_required_terms'),
                 ),
                 const SizedBox(height: 20),
                 scopeCard(
@@ -278,6 +282,7 @@ class Consent02Screen extends ConsumerWidget {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
+                        key: const Key('consent02_btn_next'),
                         onPressed: state.requiredAccepted
                             ? () {
                                 ScaffoldMessenger.of(context).showSnackBar(
