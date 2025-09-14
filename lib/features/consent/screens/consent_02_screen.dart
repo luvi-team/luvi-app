@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/gestures.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../core/design_tokens/sizes.dart';
 
 class Consent02Screen extends ConsumerWidget {
   const Consent02Screen({super.key});
@@ -18,25 +20,32 @@ class Consent02Screen extends ConsumerWidget {
     final notifier = ref.read(consent02NotifierProvider.notifier);
 
     Widget indicator(bool selected) {
-      return Container(
-        width: 24,
-        height: 24,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: c.outline),
-          color: Colors.transparent,
+      return Semantics(
+        label: selected ? 'Ausgewählt' : 'Nicht ausgewählt',
+        selected: selected,
+        child: Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: c.outline,
+              width: 2,
+            ),
+            color: Colors.transparent,
+          ),
+          alignment: Alignment.center,
+          child: selected
+              ? Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: c.primary,
+                  ),
+                )
+              : null,
         ),
-        alignment: Alignment.center,
-        child: selected
-            ? Container(
-                width: 14,
-                height: 14,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: c.primary,
-                ),
-              )
-            : null,
       );
     }
 
@@ -48,71 +57,103 @@ class Consent02Screen extends ConsumerWidget {
       InlineSpan? trailingLinks,
     }) {
       final selected = state.choices[scope] == true;
-      return InkWell(
-        onTap: () {
-          HapticFeedback.selectionClick();
-          notifier.toggle(scope);
-        },
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: c.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(20),
-            border: outlined ? Border.all(color: c.outline) : null,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: t.titleMedium),
-                    const SizedBox(height: 8),
-                    if (trailingLinks == null)
-                      Text(body, style: t.bodyMedium)
-                    else
-                      RichText(
-                        text: TextSpan(
-                          style: t.bodyMedium?.copyWith(color: c.onSurface),
-                          children: [TextSpan(text: body), trailingLinks],
-                        ),
+      return Semantics(
+        label: title,
+        button: true,
+        toggled: selected,
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            notifier.toggle(scope);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 35),
+            decoration: BoxDecoration(
+              color: c.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: outlined
+                  ? Border.all(
+                      color: c.outline,
+                      width: 2,
+                    )
+                  : null,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: t.titleMedium?.copyWith(color: c.onSurface),
                       ),
-                  ],
+                      const SizedBox(height: 8),
+                      if (trailingLinks == null)
+                        Text(
+                          body,
+                          style:
+                              t.bodyMedium?.copyWith(color: c.onSurface),
+                        )
+                      else
+                        RichText(
+                          text: TextSpan(
+                            style: t.bodyMedium?.copyWith(color: c.onSurface),
+                            children: [TextSpan(text: body), trailingLinks],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 20),
-              indicator(selected),
-            ],
+                const SizedBox(width: 20),
+                indicator(selected),
+              ],
+            ),
           ),
         ),
       );
     }
 
     InlineSpan buildLinks() {
+      final privacyUri =
+          Uri.parse('https://example.com/datenschutzerklaerung'); // TODO: replace with real URL
+      final termsUri =
+          Uri.parse('https://example.com/nutzungsbedingungen'); // TODO: replace with real URL
+
+      Future<void> open(Uri uri) async {
+        final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (!ok && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Link konnte nicht geöffnet werden')),
+          );
+        }
+      }
       return TextSpan(children: [
         const TextSpan(text: ' '),
         TextSpan(
           text: 'Datenschutzerklärung',
-          style: t.bodyMedium?.copyWith(color: c.primary),
+          style: t.bodyMedium?.copyWith(
+            color: c.primary,
+            fontWeight: FontWeight.w700,
+            decoration: TextDecoration.none,
+          ),
           recognizer: TapGestureRecognizer()
             ..onTap = () {
-              // TODO: open Datenschutzerklärung
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Datenschutzerklärung (stub)')),
-              );
+              open(privacyUri);
             },
         ),
         const TextSpan(text: ' • '),
         TextSpan(
           text: 'Nutzungsbedingungen',
-          style: t.bodyMedium?.copyWith(color: c.primary),
+          style: t.bodyMedium?.copyWith(
+            color: c.primary,
+            fontWeight: FontWeight.w700,
+            decoration: TextDecoration.none,
+          ),
           recognizer: TapGestureRecognizer()
             ..onTap = () {
-              // TODO: open Nutzungsbedingungen
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Nutzungsbedingungen (stub)')),
-              );
+              open(termsUri);
             },
         ),
       ]);
@@ -133,10 +174,13 @@ class Consent02Screen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 160),
             children: [
               const SizedBox(height: 32),
-              Text(
-                'Deine Einwilligungen',
-                textAlign: TextAlign.center,
-                style: t.headlineMedium,
+              Semantics(
+                header: true,
+                child: Text(
+                  'Deine Einwilligungen',
+                  textAlign: TextAlign.center,
+                  style: t.headlineMedium?.copyWith(color: c.onSurface),
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -201,25 +245,31 @@ class Consent02Screen extends ConsumerWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton(
-                        onPressed: state.allOptionalSelected
-                            ? null
-                            : notifier.selectAllOptional,
-                        child: const Text('Alle akzeptieren'),
+                      child: SizedBox(
+                        height: Sizes.buttonHeight,
+                        child: OutlinedButton(
+                          onPressed: state.allOptionalSelected
+                              ? null
+                              : notifier.selectAllOptional,
+                          child: const Text('Alle akzeptieren'),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: state.requiredAccepted
-                            ? () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Weiter (stub)')),
-                                );
-                              }
-                            : null,
-                        child: const Text('Weiter'),
+                      child: SizedBox(
+                        height: Sizes.buttonHeight,
+                        child: ElevatedButton(
+                          onPressed: state.requiredAccepted
+                              ? () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Weiter (stub)')),
+                                  );
+                                }
+                              : null,
+                          child: const Text('Weiter'),
+                        ),
                       ),
                     ),
                   ],
