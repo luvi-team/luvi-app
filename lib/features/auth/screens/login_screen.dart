@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/features/auth/state/login_state.dart';
 
 /// Minimal LoginScreen aligned with current theme and tokens usage.
 /// Uses Theme.of(context).textTheme for typography, consistent with app_theme.dart.
@@ -23,11 +24,30 @@ class LoginScreen extends ConsumerWidget {
                 semanticsLabel: 'Login Überschrift',
               ),
               const SizedBox(height: 24),
-              // TODO: InputFields + Error/Fill States → nächste Iteration
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Deine E-Mail',
+                ),
+                onChanged: (v) => ref.read(loginProvider.notifier).setEmail(v),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Dein Passwort',
+                  errorText: ref.watch(loginProvider).error,
+                  suffixIcon: const Icon(Icons.visibility_off),
+                ),
+                onChanged: (v) =>
+                    ref.read(loginProvider.notifier).setPassword(v),
+              ),
+              const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
-                  // TODO: Hook up auth next iteration
-                },
+                onPressed: ref.watch(loginProvider).isValid
+                    ? () {
+                        // TODO: Supabase Sign-In
+                      }
+                    : null,
                 child: const Text('Anmelden'),
               ),
             ],

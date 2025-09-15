@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 
 void main() {
@@ -11,5 +11,25 @@ void main() {
 
     expect(find.text('Willkommen zurück 💜'), findsOneWidget);
     expect(find.text('Anmelden'), findsOneWidget);
+  });
+
+  testWidgets('Button enabled only when fields filled', (tester) async {
+    await tester.pumpWidget(const ProviderScope(
+      child: MaterialApp(home: LoginScreen()),
+    ));
+
+    final email = find.byType(TextField).first;
+    final password = find.byType(TextField).last;
+    final button = find.widgetWithText(ElevatedButton, 'Anmelden');
+
+    // Initially disabled
+    expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
+
+    await tester.enterText(email, 'test@luvi.app');
+    await tester.enterText(password, 'secret');
+    await tester.pump();
+
+    // Now enabled
+    expect(tester.widget<ElevatedButton>(button).onPressed, isNotNull);
   });
 }
