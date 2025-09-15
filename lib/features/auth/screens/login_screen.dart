@@ -17,29 +17,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String? _emailError;
-  String? _passwordError;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _validateAndSubmit() {
-    final state = ref.read(loginProvider);
-    setState(() {
-      _emailError = (state.email.isEmpty || !state.email.contains('@'))
-          ? 'Ups, bitte E-Mail überprüfen'
-          : null;
-      _passwordError = (state.password.isEmpty || state.password.length < 6)
-          ? 'Ups, bitte Passwort überprüfen'
-          : null;
-    });
-    if (_emailError == null && _passwordError == null) {
-      // TODO: Supabase Sign-In
-    }
   }
 
   @override
@@ -70,28 +53,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               _InputField(
                 controller: _emailController,
                 hintText: 'Deine E-Mail',
-                errorText: _emailError,
+                errorText: loginState.emailError,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 theme: theme,
                 tokens: tokens,
                 onChanged: (v) {
                   ref.read(loginProvider.notifier).setEmail(v);
-                  if (_emailError != null) setState(() => _emailError = null);
+                  if (loginState.emailError != null) {
+                    ref.read(loginProvider.notifier).clearErrors();
+                  }
                 },
               ),
               const SizedBox(height: Spacing.s + Spacing.xs),
               _InputField(
                 controller: _passwordController,
                 hintText: 'Dein Passwort',
-                errorText: _passwordError,
+                errorText: loginState.passwordError,
                 obscureText: _obscurePassword,
                 textInputAction: TextInputAction.done,
                 theme: theme,
                 tokens: tokens,
                 onChanged: (v) {
                   ref.read(loginProvider.notifier).setPassword(v);
-                  if (_passwordError != null) setState(() => _passwordError = null);
+                  if (loginState.passwordError != null) {
+                    ref.read(loginProvider.notifier).clearErrors();
+                  }
                 },
                 suffixIcon: Semantics(
                   label: _obscurePassword ? 'Passwort anzeigen' : 'Passwort ausblenden',
@@ -135,7 +122,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 width: double.infinity,
                 height: Sizes.buttonHeight,
                 child: ElevatedButton(
-                  onPressed: loginState.isValid ? _validateAndSubmit : null,
+                  onPressed: loginState.isValid 
+                      ? () => ref.read(loginProvider.notifier).validateAndSubmit()
+                      : null,
                   child: const Text('Anmelden'),
                 ),
               ),

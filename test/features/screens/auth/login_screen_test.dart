@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 
 void main() {
   testWidgets('LoginScreen shows headline and button', (tester) async {
-    await tester.pumpWidget(const ProviderScope(
-      child: MaterialApp(home: LoginScreen()),
+    await tester.pumpWidget(ProviderScope(
+      child: MaterialApp(
+        theme: AppTheme.buildAppTheme(),
+        home: const LoginScreen(),
+      ),
     ));
 
     expect(find.text('Willkommen zurück 💜'), findsOneWidget);
@@ -14,8 +18,11 @@ void main() {
   });
 
   testWidgets('Button enabled only when fields filled', (tester) async {
-    await tester.pumpWidget(const ProviderScope(
-      child: MaterialApp(home: LoginScreen()),
+    await tester.pumpWidget(ProviderScope(
+      child: MaterialApp(
+        theme: AppTheme.buildAppTheme(),
+        home: const LoginScreen(),
+      ),
     ));
 
     final email = find.byType(TextField).first;

@@ -3,10 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class LoginState {
   final String email;
   final String password;
-  final String? error;
-  const LoginState({this.email = '', this.password = '', this.error});
+  final String? emailError;
+  final String? passwordError;
+  const LoginState({
+    this.email = '',
+    this.password = '',
+    this.emailError,
+    this.passwordError,
+  });
 
-  bool get isValid => email.isNotEmpty && password.isNotEmpty && error == null;
+  bool get isValid => email.isNotEmpty && password.isNotEmpty && emailError == null && passwordError == null;
 }
 
 class LoginNotifier extends StateNotifier<LoginState> {
@@ -15,20 +21,40 @@ class LoginNotifier extends StateNotifier<LoginState> {
   void setEmail(String v) => state = LoginState(
         email: v,
         password: state.password,
-        error: state.error,
+        emailError: state.emailError,
+        passwordError: state.passwordError,
       );
 
   void setPassword(String v) => state = LoginState(
         email: state.email,
         password: v,
-        error: state.error,
+        emailError: state.emailError,
+        passwordError: state.passwordError,
       );
 
-  void setError(String? e) => state = LoginState(
+  void clearErrors() => state = LoginState(
         email: state.email,
         password: state.password,
-        error: e,
       );
+
+  /// MIWF-Validierung gemäß Figma-Fehlertexten.
+  void validateAndSubmit() {
+    String? eErr;
+    String? pErr;
+    if (!state.email.contains('@')) {
+      eErr = 'Ups, bitte E-Mail überprüfen';
+    }
+    if (state.password.length < 6) {
+      pErr = 'Ups, bitte Passwort überprüfen';
+    }
+    state = LoginState(
+      email: state.email,
+      password: state.password,
+      emailError: eErr,
+      passwordError: pErr,
+    );
+    // Supabase sign-in folgt im nächsten Schritt (MVP).
+  }
 }
 
 final loginProvider =
