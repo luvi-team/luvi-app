@@ -65,9 +65,7 @@ class AppTheme {
       // Button global stylen wie Figma
       elevatedButtonTheme: _buildElevatedButtonTheme(),
       textButtonTheme: _buildTextButtonTheme(),
-      extensions: const <ThemeExtension<dynamic>>[
-        DsTokens.light,
-      ],
+      extensions: const <ThemeExtension<dynamic>>[DsTokens.light],
     );
   }
 
@@ -127,10 +125,7 @@ class AppTheme {
 /// Extendable for dark mode or brand variants without touching widgets.
 @immutable
 class DsTokens extends ThemeExtension<DsTokens> {
-  const DsTokens({
-    required this.cardSurface,
-    required this.cardBorderSelected,
-  });
+  const DsTokens({required this.cardSurface, required this.cardBorderSelected});
 
   final Color cardSurface; // Grayscale/100 (#F7F7F8)
   final Color cardBorderSelected; // Secondary/100 (#1C1411)
@@ -141,7 +136,8 @@ class DsTokens extends ThemeExtension<DsTokens> {
   );
 
   @override
-  DsTokens copyWith({Color? cardSurface, Color? cardBorderSelected}) => DsTokens(
+  DsTokens copyWith({Color? cardSurface, Color? cardBorderSelected}) =>
+      DsTokens(
         cardSurface: cardSurface ?? this.cardSurface,
         cardBorderSelected: cardBorderSelected ?? this.cardBorderSelected,
       );
@@ -152,7 +148,8 @@ class DsTokens extends ThemeExtension<DsTokens> {
     return DsTokens(
       cardSurface: Color.lerp(cardSurface, other.cardSurface, t) ?? cardSurface,
       cardBorderSelected:
-          Color.lerp(cardBorderSelected, other.cardBorderSelected, t) ?? cardBorderSelected,
+          Color.lerp(cardBorderSelected, other.cardBorderSelected, t) ??
+          cardBorderSelected,
     );
   }
 }

@@ -34,10 +34,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp.router(
-        theme: AppTheme.buildAppTheme(),
-        routerConfig: router,
-      ),
+      MaterialApp.router(theme: AppTheme.buildAppTheme(), routerConfig: router),
     );
 
     expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
@@ -47,4 +44,3 @@ void main() {
     expect(find.text('Consent 01'), findsOneWidget);
   });
 }
-

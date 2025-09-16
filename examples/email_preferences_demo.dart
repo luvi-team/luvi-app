@@ -8,9 +8,7 @@ class EmailPreferencesDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Email Preferences Demo')),
-      body: const Center(
-        child: Text('Standalone demo placeholder'),
-      ),
+      body: const Center(child: Text('Standalone demo placeholder')),
     );
   }
 }

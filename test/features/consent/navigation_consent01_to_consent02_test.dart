@@ -35,10 +35,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp.router(
-        theme: AppTheme.buildAppTheme(),
-        routerConfig: router,
-      ),
+      MaterialApp.router(theme: AppTheme.buildAppTheme(), routerConfig: router),
     );
 
     expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
