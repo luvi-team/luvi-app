@@ -34,7 +34,7 @@ class BackButtonCircle extends StatelessWidget {
                 child: SvgPicture.string(
                   _chevronSvg,
                   colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.onSurface,
+                    Theme.of(context).colorScheme.onPrimary,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -46,4 +46,3 @@ class BackButtonCircle extends StatelessWidget {
     );
   }
 }
-

@@ -12,30 +12,32 @@ class LoginState {
     this.passwordError,
   });
 
-  bool get isValid => email.isNotEmpty && password.isNotEmpty && emailError == null && passwordError == null;
+  bool get isValid =>
+      email.isNotEmpty &&
+      password.isNotEmpty &&
+      emailError == null &&
+      passwordError == null;
 }
 
 class LoginNotifier extends StateNotifier<LoginState> {
   LoginNotifier() : super(const LoginState());
 
   void setEmail(String v) => state = LoginState(
-        email: v,
-        password: state.password,
-        emailError: state.emailError,
-        passwordError: state.passwordError,
-      );
+    email: v,
+    password: state.password,
+    emailError: state.emailError,
+    passwordError: state.passwordError,
+  );
 
   void setPassword(String v) => state = LoginState(
-        email: state.email,
-        password: v,
-        emailError: state.emailError,
-        passwordError: state.passwordError,
-      );
+    email: state.email,
+    password: v,
+    emailError: state.emailError,
+    passwordError: state.passwordError,
+  );
 
-  void clearErrors() => state = LoginState(
-        email: state.email,
-        password: state.password,
-      );
+  void clearErrors() =>
+      state = LoginState(email: state.email, password: state.password);
 
   /// MIWF-Validierung gemäß Figma-Fehlertexten.
   void validateAndSubmit() {
@@ -57,5 +59,6 @@ class LoginNotifier extends StateNotifier<LoginState> {
   }
 }
 
-final loginProvider =
-    StateNotifierProvider<LoginNotifier, LoginState>((ref) => LoginNotifier());
+final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>(
+  (ref) => LoginNotifier(),
+);

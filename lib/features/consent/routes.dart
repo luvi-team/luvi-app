@@ -24,7 +24,7 @@ final consentRoutes = <GoRoute>[
     builder: (context, state) => const ConsentWelcome03Screen(),
   ),
   GoRoute(
-    path: '/consent/01',
+    path: Consent01Screen.routeName,
     name: 'consent01',
     builder: (context, state) => const Consent01Screen(),
   ),

@@ -24,22 +24,34 @@ void main() {
       expect(state.choices[ConsentScope.terms], isTrue);
     });
 
-    test('requiredAccepted only true when terms & health_processing are true', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-      final notifier = container.read(consent02NotifierProvider.notifier);
+    test(
+      'requiredAccepted only true when terms & health_processing are true',
+      () {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(consent02NotifierProvider.notifier);
 
-      // Initially false
-      expect(container.read(consent02NotifierProvider).requiredAccepted, isFalse);
+        // Initially false
+        expect(
+          container.read(consent02NotifierProvider).requiredAccepted,
+          isFalse,
+        );
 
-      // Only terms -> still false
-      notifier.toggle(ConsentScope.terms);
-      expect(container.read(consent02NotifierProvider).requiredAccepted, isFalse);
+        // Only terms -> still false
+        notifier.toggle(ConsentScope.terms);
+        expect(
+          container.read(consent02NotifierProvider).requiredAccepted,
+          isFalse,
+        );
 
-      // Both required -> true
-      notifier.toggle(ConsentScope.health_processing);
-      expect(container.read(consent02NotifierProvider).requiredAccepted, isTrue);
-    });
+        // Both required -> true
+        notifier.toggle(ConsentScope.health_processing);
+        expect(
+          container.read(consent02NotifierProvider).requiredAccepted,
+          isTrue,
+        );
+      },
+    );
 
     test('selectAllOptional sets optional true, required unchanged', () {
       final container = ProviderContainer();
@@ -64,4 +76,3 @@ void main() {
     });
   });
 }
-

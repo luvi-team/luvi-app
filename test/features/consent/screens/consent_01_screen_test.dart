@@ -18,11 +18,13 @@ void main() {
           ),
           GoRoute(
             path: '/consent/02',
-            builder: (context, state) => const Scaffold(body: Text('Consent 02')),
+            builder: (context, state) =>
+                const Scaffold(body: Text('Consent 02')),
           ),
           GoRoute(
             path: '/onboarding/w3',
-            builder: (context, state) => const Scaffold(body: Text('Onboarding W3')),
+            builder: (context, state) =>
+                const Scaffold(body: Text('Onboarding W3')),
           ),
         ],
       );
@@ -42,7 +44,10 @@ void main() {
       expect(find.byType(Image), findsNWidgets(4));
 
       expect(find.textContaining('Lass uns LUVI'), findsOneWidget);
-      expect(find.textContaining('Du entscheidest, was du teilen möchtest.'), findsOneWidget);
+      expect(
+        find.textContaining('Du entscheidest, was du teilen möchtest.'),
+        findsOneWidget,
+      );
 
       // Only Weiter button, no Skip
       expect(find.text('Weiter'), findsOneWidget);
@@ -52,17 +57,22 @@ void main() {
       expect(find.bySemanticsLabel('Zurück'), findsOneWidget);
     });
 
-    testWidgets('collage tiles have correct absolute positions and sizes', (tester) async {
+    testWidgets('collage tiles have correct absolute positions and sizes', (
+      tester,
+    ) async {
       await tester.pumpWidget(createTestApp());
 
       // We can't easily query by asset path, so rely on order of Positioned children via hit testing.
       // Instead, check there are exactly 4 ClipRRect tiles sized 153x153.
-final tiles = find.byWidgetPredicate((w) =>
-          w is ClipRRect && w.borderRadius.toString().contains('20.0'));
+      final tiles = find.byWidgetPredicate(
+        (w) => w is ClipRRect && w.borderRadius.toString().contains('20.0'),
+      );
       expect(tiles, findsNWidgets(4));
     });
 
-    testWidgets('back button has correct hitbox and visual size', (tester) async {
+    testWidgets('back button has correct hitbox and visual size', (
+      tester,
+    ) async {
       await tester.pumpWidget(createTestApp());
 
       final backSemantics = find.bySemanticsLabel('Zurück');
@@ -92,11 +102,15 @@ final tiles = find.byWidgetPredicate((w) =>
       expect(find.text('Consent 02'), findsOneWidget);
     });
 
-    testWidgets('typography matches tokens (headline/body line-heights)', (tester) async {
+    testWidgets('typography matches tokens (headline/body line-heights)', (
+      tester,
+    ) async {
       await tester.pumpWidget(createTestApp());
       final titleFinder = find.textContaining('Lass uns LUVI');
       expect(titleFinder, findsOneWidget);
-      final bodyFinder = find.textContaining('Du entscheidest, was du teilen möchtest.');
+      final bodyFinder = find.textContaining(
+        'Du entscheidest, was du teilen möchtest.',
+      );
       expect(bodyFinder, findsOneWidget);
     });
   });
