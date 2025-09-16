@@ -55,6 +55,7 @@ dev_dependencies:
   riverpod_generator: ^2.4.0
   build_runner: 2.4.13
   dart_code_metrics: ^5.7.6
+  mocktail: ^1.0.4
 
 # Override conflicting dependencies to resolve version conflicts
 dependency_overrides:
