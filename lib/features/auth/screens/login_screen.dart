@@ -50,10 +50,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final mediaQuery = MediaQuery.of(context);
     final safeBottom = mediaQuery.padding.bottom;
     final keyboardInset = mediaQuery.viewInsets.bottom;
-    final keyboardOffset = math.max(
-      keyboardInset - safeBottom,
-      0.0,
-    );
+    final keyboardOffset = math.max(keyboardInset - safeBottom, 0.0);
 
     final topSection = _buildTopSection(theme, tokens, loginState);
 
@@ -78,10 +75,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 if (!mounted || topBox == null || ctaBox == null) {
                   return;
                 }
-                final totalHeight =
-                    topBox.size.height + ctaBox.size.height;
-                final needsScroll =
-                    totalHeight > constraints.maxHeight + 0.5;
+                final totalHeight = topBox.size.height + ctaBox.size.height;
+                final needsScroll = totalHeight > constraints.maxHeight + 0.5;
                 if (needsScroll != _shouldScroll) {
                   setState(() => _shouldScroll = needsScroll);
                 }
@@ -121,8 +116,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontSize: 16,
                                   height: 1.5,
-                                  color: theme.colorScheme.onSurface
-                                      .withOpacity(0.84),
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 214,
+                                  ),
                                 ),
                               ),
                               TextSpan(
@@ -228,7 +224,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 _obscurePassword
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
-                color: theme.colorScheme.onSurface.withOpacity(0.41),
+                color: theme.colorScheme.onSurface.withValues(alpha: 105),
                 size: Spacing.l,
               ),
               onPressed: () =>
@@ -251,7 +247,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontSize: 16,
                 height: 1.5,
-                color: theme.colorScheme.onSurface.withOpacity(0.41),
+                color: theme.colorScheme.onSurface.withValues(alpha: 105),
               ),
             ),
           ),
@@ -340,7 +336,7 @@ class _InputField extends StatelessWidget {
             border: Border.all(
               color: errorText != null
                   ? theme.colorScheme.error
-                  : theme.colorScheme.outlineVariant.withOpacity(0.86),
+                  : theme.colorScheme.outlineVariant.withValues(alpha: 219),
               width: 1,
             ),
           ),
@@ -361,7 +357,7 @@ class _InputField extends StatelessWidget {
               hintStyle: theme.textTheme.bodyMedium?.copyWith(
                 fontSize: 16,
                 height: 1.5,
-                color: theme.colorScheme.onSurface.withOpacity(0.41),
+                color: theme.colorScheme.onSurface.withValues(alpha: 105),
               ),
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(
@@ -403,7 +399,7 @@ class _SocialSection extends StatelessWidget {
             Expanded(
               child: Container(
                 height: 1,
-                color: theme.colorScheme.outlineVariant.withOpacity(0.88),
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 224),
               ),
             ),
             Padding(
@@ -413,14 +409,14 @@ class _SocialSection extends StatelessWidget {
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontSize: 20,
                   height: 1.2,
-                  color: theme.colorScheme.onSurface.withOpacity(0.84),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 214),
                 ),
               ),
             ),
             Expanded(
               child: Container(
                 height: 1,
-                color: theme.colorScheme.outlineVariant.withOpacity(0.88),
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 224),
               ),
             ),
           ],
@@ -480,7 +476,7 @@ class _SocialButton extends StatelessWidget {
           backgroundColor: theme.colorScheme.onPrimary,
           foregroundColor: theme.colorScheme.onSurface,
           side: BorderSide(
-            color: theme.colorScheme.outlineVariant.withOpacity(0.96),
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 245),
             width: 1,
           ),
           shape: RoundedRectangleBorder(

@@ -24,7 +24,9 @@ class Consent01Screen extends StatelessWidget {
           Positioned(
             left: 20,
             top: y(59), // 59 from top, equals safeAreaTop(47) + 12
-            child: BackButtonCircle(onPressed: () => context.go('/onboarding/w3')),
+            child: BackButtonCircle(
+              onPressed: () => context.go('/onboarding/w3'),
+            ),
           ),
 
           // Title
@@ -36,8 +38,8 @@ class Consent01Screen extends StatelessWidget {
               'Lass uns LUVI\nauf dich abstimmen',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ),
 
@@ -50,8 +52,8 @@ class Consent01Screen extends StatelessWidget {
               'Du entscheidest, was du teilen möchtest. Je mehr wir über dich wissen, desto besser können wir dich unterstützen.',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ),
 
@@ -81,10 +83,26 @@ class _Collage extends StatelessWidget {
 
   // Figma absolute positions for tiles
   static const _tiles = <({double x, double y, String asset})>[
-    (x: 55.0, y: 341.0, asset: 'assets/images/consent/consent_02_01_hero_01.png'),
-    (x: 220.0, y: 404.0, asset: 'assets/images/consent/consent_02_01_hero_02.png'),
-    (x: 55.0, y: 514.0, asset: 'assets/images/consent/consent_02_01_hero_03.png'),
-    (x: 220.0, y: 577.0, asset: 'assets/images/consent/consent_02_01_hero_04.png'),
+    (
+      x: 55.0,
+      y: 341.0,
+      asset: 'assets/images/consent/consent_02_01_hero_01.png',
+    ),
+    (
+      x: 220.0,
+      y: 404.0,
+      asset: 'assets/images/consent/consent_02_01_hero_02.png',
+    ),
+    (
+      x: 55.0,
+      y: 514.0,
+      asset: 'assets/images/consent/consent_02_01_hero_03.png',
+    ),
+    (
+      x: 220.0,
+      y: 577.0,
+      asset: 'assets/images/consent/consent_02_01_hero_04.png',
+    ),
   ];
 
   double _y(double figmaY) => paddingTop + (figmaY - 47);
@@ -101,11 +119,8 @@ class _Collage extends StatelessWidget {
             height: 153,
             child: ExcludeSemantics(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  t.asset,
-                  fit: BoxFit.cover,
-                ),
+                borderRadius: BorderRadius.circular(Sizes.radiusL),
+                child: Image.asset(t.asset, fit: BoxFit.cover),
               ),
             ),
           ),

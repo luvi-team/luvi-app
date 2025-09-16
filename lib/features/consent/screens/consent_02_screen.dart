@@ -7,6 +7,7 @@ import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 
 class Consent02Screen extends ConsumerWidget {
   const Consent02Screen({super.key});
@@ -29,10 +30,7 @@ class Consent02Screen extends ConsumerWidget {
           height: 24,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(
-              color: c.outline,
-              width: 2,
-            ),
+            border: Border.all(color: c.outline, width: 2),
             color: Colors.transparent,
           ),
           alignment: Alignment.center,
@@ -57,58 +55,72 @@ class Consent02Screen extends ConsumerWidget {
       Key? cardKey,
     }) {
       final selected = state.choices[scope] == true;
+      final borderRadius = BorderRadius.circular(Sizes.radiusL);
       return Semantics(
         button: true,
         toggled: selected,
-        child: InkWell(
-          key: cardKey,
-          onTap: () {
-            HapticFeedback.selectionClick();
-            notifier.toggle(scope);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 35),
-            decoration: BoxDecoration(
-              color: (ds?.cardSurface) ?? c.surfaceContainer,
-              borderRadius: BorderRadius.circular(20),
-              border: selected
-                  ? Border.all(
-                      color: (ds?.cardBorderSelected) ?? c.onSurface,
-                      width: 1,
-                    )
-                  : null,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: trailingLinks == null
-                      ? Text(
-                          body,
-                          style: t.bodyMedium?.copyWith(
-                            color: c.onSurface,
-                            fontSize: 16,
-                            height: 1.5,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Figtree',
-                          ),
-                        )
-                      : RichText(
-                          text: TextSpan(
-                            style: t.bodyMedium?.copyWith(
-                              color: c.onSurface,
-                              fontSize: 16,
-                              height: 1.5,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Figtree',
-                            ),
-                            children: [TextSpan(text: body), trailingLinks],
-                          ),
-                        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: borderRadius,
+          child: InkWell(
+            key: cardKey,
+            borderRadius: borderRadius,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              notifier.toggle(scope);
+            },
+            child: Ink(
+              decoration: BoxDecoration(
+                color: (ds?.cardSurface) ?? c.surfaceContainer,
+                borderRadius: borderRadius,
+                border: selected
+                    ? Border.all(
+                        color: (ds?.cardBorderSelected) ?? c.onSurface,
+                        width: 1,
+                      )
+                    : null,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 35,
                 ),
-                const SizedBox(width: 20),
-                indicator(selected),
-              ],
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: trailingLinks == null
+                          ? Text(
+                              body,
+                              style: t.bodyMedium?.copyWith(
+                                color: c.onSurface,
+                                fontSize: 16,
+                                height: 1.5,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Figtree',
+                              ),
+                            )
+                          : RichText(
+                              text: TextSpan(
+                                style: t.bodyMedium?.copyWith(
+                                  color: c.onSurface,
+                                  fontSize: 16,
+                                  height: 1.5,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Figtree',
+                                ),
+                                children: [
+                                  TextSpan(text: body),
+                                  trailingLinks,
+                                ],
+                              ),
+                            ),
+                    ),
+                    const SizedBox(width: 20),
+                    indicator(selected),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -116,10 +128,12 @@ class Consent02Screen extends ConsumerWidget {
     }
 
     InlineSpan buildLinks() {
-      final privacyUri =
-          Uri.parse('https://DEINE-DOMAIN.tld/datenschutzerklaerung'); // TODO: replace with real URL
-      final termsUri =
-          Uri.parse('https://DEINE-DOMAIN.tld/nutzungsbedingungen'); // TODO: replace with real URL
+      final privacyUri = Uri.parse(
+        'https://DEINE-DOMAIN.tld/datenschutzerklaerung',
+      ); // TODO: replace with real URL
+      final termsUri = Uri.parse(
+        'https://DEINE-DOMAIN.tld/nutzungsbedingungen',
+      ); // TODO: replace with real URL
 
       Future<void> open(Uri uri) async {
         final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -129,35 +143,38 @@ class Consent02Screen extends ConsumerWidget {
           );
         }
       }
-      return TextSpan(children: [
-        const TextSpan(text: ' '),
-        TextSpan(
-          text: 'Datenschutzerklärung',
-          style: t.bodyMedium?.copyWith(
-            color: c.primary,
-            fontWeight: FontWeight.w700,
-            decoration: TextDecoration.none,
+
+      return TextSpan(
+        children: [
+          const TextSpan(text: ' '),
+          TextSpan(
+            text: 'Datenschutzerklärung',
+            style: t.bodyMedium?.copyWith(
+              color: c.primary,
+              fontWeight: FontWeight.w700,
+              decoration: TextDecoration.none,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                open(privacyUri);
+              },
           ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              open(privacyUri);
-            },
-        ),
-        const TextSpan(text: ' sowie den '),
-        TextSpan(
-          text: 'Nutzungsbedingungen',
-          style: t.bodyMedium?.copyWith(
-            color: c.primary,
-            fontWeight: FontWeight.w700,
-            decoration: TextDecoration.none,
+          const TextSpan(text: ' sowie den '),
+          TextSpan(
+            text: 'Nutzungsbedingungen',
+            style: t.bodyMedium?.copyWith(
+              color: c.primary,
+              fontWeight: FontWeight.w700,
+              decoration: TextDecoration.none,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                open(termsUri);
+              },
           ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              open(termsUri);
-            },
-        ),
-        const TextSpan(text: ' einverstanden.'),
-      ]);
+          const TextSpan(text: ' einverstanden.'),
+        ],
+      );
     }
 
     return Scaffold(
@@ -188,7 +205,9 @@ class Consent02Screen extends ConsumerWidget {
                     },
                   ),
                 ),
-                const SizedBox(height: 7), // align gap with Consent01 between back and title
+                const SizedBox(
+                  height: 7,
+                ), // align gap with Consent01 between back and title
                 Semantics(
                   header: true,
                   child: Text(

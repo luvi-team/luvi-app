@@ -4,7 +4,14 @@ import 'package:flutter/foundation.dart';
 
 part 'consent02_state.g.dart';
 
-enum ConsentScope { terms, health_processing, analytics, marketing, model_training }
+enum ConsentScope {
+  terms,
+  health_processing,
+  analytics,
+  marketing,
+  model_training,
+}
+
 const requiredScopes = {ConsentScope.terms, ConsentScope.health_processing};
 
 @immutable
@@ -25,8 +32,9 @@ class Consent02Notifier extends _$Consent02Notifier {
   Consent02State build() =>
       Consent02State({for (final s in ConsentScope.values) s: false});
 
-  void toggle(ConsentScope s) =>
-      state = state.copyWith(choices: {...state.choices, s: !(state.choices[s] ?? false)});
+  void toggle(ConsentScope s) => state = state.copyWith(
+    choices: {...state.choices, s: !(state.choices[s] ?? false)},
+  );
 
   void selectAllOptional() {
     final m = {...state.choices};
