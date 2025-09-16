@@ -39,6 +39,20 @@ class LoginNotifier extends StateNotifier<LoginState> {
   void clearErrors() =>
       state = LoginState(email: state.email, password: state.password);
 
+  void updateState({
+    String? email,
+    String? password,
+    String? emailError,
+    String? passwordError,
+  }) {
+    state = LoginState(
+      email: email ?? state.email,
+      password: password ?? state.password,
+      emailError: emailError ?? state.emailError,
+      passwordError: passwordError ?? state.passwordError,
+    );
+  }
+
   /// MIWF-Validierung gemäß Figma-Fehlertexten.
   void validateAndSubmit() {
     String? eErr;

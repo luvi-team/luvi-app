@@ -100,32 +100,44 @@ child: LoginCtaSection(
                     if (_isLoading) return;
                     setState(() => _isLoading = true);
                     try {
+                      // 1) Validate inputs first and show local validation errors
+                      final notifier = ref.read(loginProvider.notifier);
+                      notifier.validateAndSubmit();
+                      final state = ref.read(loginProvider);
+                      final hasLocalErrors =
+                          state.emailError != null || state.passwordError != null;
+                      if (hasLocalErrors) {
+                        // Skip network call if local validation fails
+                        return;
+                      }
+
+                      // 2) No local errors -> attempt sign-in
                       final repo = ref.read(authRepositoryProvider);
                       await repo.signInWithPassword(
                         email: _emailController.text.trim(),
                         password: _passwordController.text,
                       );
                       // Happy path: Router-Redirect greift automatisch
-                      ref.read(loginProvider.notifier).clearErrors();
+                      notifier.clearErrors();
                     } on AuthException catch (e) {
                       final msg = e.message.toLowerCase();
                       final notifier = ref.read(loginProvider.notifier);
                       if (msg.contains('invalid') || msg.contains('credentials')) {
-                        notifier.state = LoginState(
+                        notifier.updateState(
                           email: _emailController.text.trim(),
                           password: _passwordController.text,
                           emailError: 'E-Mail oder Passwort ist falsch.',
                           passwordError: '',
                         );
                       } else if (msg.contains('confirm')) {
-                        notifier.state = LoginState(
+                        notifier.updateState(
                           email: _emailController.text.trim(),
                           password: _passwordController.text,
                           emailError: 'Bitte E-Mail bestätigen (Link erneut senden?)',
                           passwordError: '',
                         );
                       } else {
-                        notifier.state = LoginState(
+                        notifier.updateState(
                           email: _emailController.text.trim(),
                           password: _passwordController.text,
                           emailError: 'Login derzeit nicht möglich.',
