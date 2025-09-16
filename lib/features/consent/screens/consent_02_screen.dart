@@ -284,12 +284,7 @@ class Consent02Screen extends ConsumerWidget {
                       child: ElevatedButton(
                         key: const Key('consent02_btn_next'),
                         onPressed: state.requiredAccepted
-                            ? () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Weiter (TODO: Zielroute)')),
-                                );
-                              }
+                            ? () => context.go('/auth/login')
                             : null,
                         child: const Text('Weiter'),
                       ),

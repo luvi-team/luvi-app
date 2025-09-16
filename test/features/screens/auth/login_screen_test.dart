@@ -6,37 +6,54 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 
 void main() {
   testWidgets('LoginScreen shows headline and button', (tester) async {
-    await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
-        theme: AppTheme.buildAppTheme(),
-        home: const LoginScreen(),
+    final view = tester.view;
+    view.physicalSize = const Size(1080, 2340);
+    view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      view.resetPhysicalSize();
+      view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const LoginScreen(),
+        ),
       ),
-    ));
+    );
 
     expect(find.text('Willkommen zurück 💜'), findsOneWidget);
     expect(find.text('Anmelden'), findsOneWidget);
   });
 
-  testWidgets('Button enabled only when fields filled', (tester) async {
-    await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
-        theme: AppTheme.buildAppTheme(),
-        home: const LoginScreen(),
-      ),
-    ));
+  testWidgets('CTA is always enabled and validates on press', (tester) async {
+    final view = tester.view;
+    view.physicalSize = const Size(1080, 2340);
+    view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      view.resetPhysicalSize();
+      view.resetDevicePixelRatio();
+    });
 
-    final email = find.byType(TextField).first;
-    final password = find.byType(TextField).last;
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const LoginScreen(),
+        ),
+      ),
+    );
+
     final button = find.widgetWithText(ElevatedButton, 'Anmelden');
 
-    // Initially disabled
-    expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
+    // Always enabled
+    expect(tester.widget<ElevatedButton>(button).onPressed, isNotNull);
 
-    await tester.enterText(email, 'test@luvi.app');
-    await tester.enterText(password, 'secret');
+    await tester.tap(button);
     await tester.pump();
 
-    // Now enabled
-    expect(tester.widget<ElevatedButton>(button).onPressed, isNotNull);
+    expect(find.text('Ups, bitte E-Mail überprüfen'), findsOneWidget);
+    expect(find.text('Ups, bitte Passwort überprüfen'), findsOneWidget);
   });
 }
