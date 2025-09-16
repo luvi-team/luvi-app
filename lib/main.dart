@@ -35,6 +35,13 @@ class MyApp extends StatelessWidget {
     final router = GoRouter(
       routes: [...consent.consentRoutes],
       initialLocation: '/onboarding/w1',
+      redirect: (context, state) {
+        final session = SupabaseService.client.auth.currentSession;
+        final isLoggingIn = state.matchedLocation.startsWith('/login');
+        if (session == null && !isLoggingIn) return '/login';
+        if (session != null && isLoggingIn) return '/home';
+        return null;
+      },
     );
     return MaterialApp.router(
       title: 'LUVI',

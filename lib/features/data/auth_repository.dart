@@ -1,0 +1,17 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class AuthRepository {
+  final SupabaseClient _sb;
+  AuthRepository(this._sb);
+
+  Future<AuthResponse> signInWithPassword({
+    required String email,
+    required String password,
+  }) => _sb.auth.signInWithPassword(email: email, password: password);
+
+  Future<void> signOut() => _sb.auth.signOut();
+
+  Session? get currentSession => _sb.auth.currentSession;
+
+  Stream<AuthState> authStateChanges() => _sb.auth.onAuthStateChange;
+}

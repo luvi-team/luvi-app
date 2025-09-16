@@ -18,7 +18,14 @@ class SupabaseService {
     if ((url == null || url.isEmpty) || (anon == null || anon.isEmpty)) {
       throw Exception('Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env file');
     }
-    await Supabase.initialize(url: url, anonKey: anon);
+    await Supabase.initialize(
+      url: url,
+      anonKey: anon,
+      authOptions: const AuthClientOptions(
+        autoRefreshToken: true,
+        persistSession: true,
+      ),
+    );
   }
 
   /// Upsert email preferences for the current user
