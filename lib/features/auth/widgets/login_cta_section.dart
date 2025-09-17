@@ -32,6 +32,7 @@ class LoginCtaSection extends StatelessWidget {
         SizedBox(height: hasValidationError ? 29.0 : 31.0),
         Center(
           child: TextButton(
+            key: const ValueKey('login_signup_link'),
             onPressed: onSignup,
             style: TextButton.styleFrom(padding: EdgeInsets.zero),
             child: RichText(

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
@@ -120,7 +121,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       notifier.clearErrors();
                     } on AuthException catch (e) {
                       final msg = e.message.toLowerCase();
-                      if (msg.contains('invalid') || msg.contains('credentials')) {
+                      if (msg.contains('invalid') ||
+                          msg.contains('credentials')) {
                         notifier.updateState(
                           email: _emailController.text.trim(),
                           password: _passwordController.text,
@@ -131,7 +133,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         notifier.updateState(
                           email: _emailController.text.trim(),
                           password: _passwordController.text,
-                          emailError: 'Bitte E-Mail bestätigen (Link erneut senden?)',
+                          emailError:
+                              'Bitte E-Mail bestätigen (Link erneut senden?)',
                           passwordError: null,
                         );
                       } else {
@@ -146,7 +149,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       if (mounted) setState(() => _isLoading = false);
                     }
                   },
-                  onSignup: () {}, // TODO: Navigate to sign up
+                  onSignup: () => context.go('/auth/signup'),
                   hasValidationError: hasValidationError,
                 ),
               );

@@ -5,8 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'services/supabase_service.dart';
-import 'features/consent/routes.dart' as consent;
-import 'features/auth/screens/login_screen.dart';
+import 'features/routes.dart' as features;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,13 +33,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter(
-      routes: [
-        ...consent.consentRoutes,
-        GoRoute(
-          path: '/auth/login',
-          builder: (context, state) => const LoginScreen(),
-        ),
-      ],
+      routes: features.featureRoutes,
       initialLocation: '/onboarding/w1',
       redirect: (context, state) {
         final session = SupabaseService.client.auth.currentSession;
