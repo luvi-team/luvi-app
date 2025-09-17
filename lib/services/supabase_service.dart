@@ -18,7 +18,12 @@ class SupabaseService {
     if ((url == null || url.isEmpty) || (anon == null || anon.isEmpty)) {
       throw Exception('Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env file');
     }
-    await Supabase.initialize(url: url, anonKey: anon);
+    // Hinweis: In supabase_flutter ^2.9.x sind Persistenz/Auto-Refresh standardmäßig aktiv.
+    // Keine expliziten authOptions nötig.
+    await Supabase.initialize(
+      url: url,
+      anonKey: anon,
+    );
   }
 
   /// Upsert email preferences for the current user

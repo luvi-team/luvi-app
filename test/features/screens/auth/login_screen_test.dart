@@ -1,10 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/data/auth_repository.dart';
+import 'package:luvi_app/features/state/auth_controller.dart';
+
+class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
+  late _MockAuthRepository mockRepo;
+
+  setUp(() {
+    mockRepo = _MockAuthRepository();
+    // Default behavior: throw invalid credentials to avoid real network
+    when(() => mockRepo.signInWithPassword(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        )).thenThrow(AuthException('invalid credentials'));
+  });
+
   testWidgets('LoginScreen shows headline and button', (tester) async {
     final view = tester.view;
     view.physicalSize = const Size(1080, 2340);
@@ -16,6 +34,9 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(mockRepo),
+        ],
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),
@@ -38,6 +59,9 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(mockRepo),
+        ],
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),

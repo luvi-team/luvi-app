@@ -10,6 +10,8 @@ import 'package:luvi_app/features/auth/widgets/login_forgot_button.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
 import 'package:luvi_app/features/auth/widgets/social_auth_row.dart';
 import 'package:luvi_app/features/widgets/login_header.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:luvi_app/features/state/auth_controller.dart';
 
 /// LoginScreen with pixel-perfect Figma implementation.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -26,6 +28,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _topKey = GlobalKey();
   final _ctaKey = GlobalKey();
   bool _shouldScroll = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -93,8 +96,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   safeBottom,
                 ),
                 child: LoginCtaSection(
-                  onSubmit: () =>
-                      ref.read(loginProvider.notifier).validateAndSubmit(),
+                  onSubmit: () async {
+                    if (_isLoading) return;
+                    // 1) Validate inputs first and show local validation errors
+                    final notifier = ref.read(loginProvider.notifier);
+                    notifier.validateAndSubmit();
+                    final state = ref.read(loginProvider);
+                    final hasLocalErrors =
+                        state.emailError != null || state.passwordError != null;
+                    if (hasLocalErrors) {
+                      return;
+                    }
+
+                    setState(() => _isLoading = true);
+                    try {
+                      // 2) No local errors -> attempt sign-in
+                      final repo = ref.read(authRepositoryProvider);
+                      await repo.signInWithPassword(
+                        email: _emailController.text.trim(),
+                        password: _passwordController.text,
+                      );
+                      // Happy path: Router-Redirect greift automatisch
+                      notifier.clearErrors();
+                    } on AuthException catch (e) {
+                      final msg = e.message.toLowerCase();
+                      if (msg.contains('invalid') || msg.contains('credentials')) {
+                        notifier.updateState(
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text,
+                          emailError: 'E-Mail oder Passwort ist falsch.',
+                          passwordError: null,
+                        );
+                      } else if (msg.contains('confirm')) {
+                        notifier.updateState(
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text,
+                          emailError: 'Bitte E-Mail bestätigen (Link erneut senden?)',
+                          passwordError: null,
+                        );
+                      } else {
+                        notifier.updateState(
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text,
+                          emailError: 'Login derzeit nicht möglich.',
+                          passwordError: null,
+                        );
+                      }
+                    } finally {
+                      if (mounted) setState(() => _isLoading = false);
+                    }
+                  },
                   onSignup: () {}, // TODO: Navigate to sign up
                   hasValidationError: hasValidationError,
                 ),

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'services/supabase_service.dart';
 import 'features/consent/routes.dart' as consent;
+import 'features/auth/screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,8 +34,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter(
-      routes: [...consent.consentRoutes],
+      routes: [
+        ...consent.consentRoutes,
+        GoRoute(
+          path: '/auth/login',
+          builder: (context, state) => const LoginScreen(),
+        ),
+      ],
       initialLocation: '/onboarding/w1',
+      redirect: (context, state) {
+        final session = SupabaseService.client.auth.currentSession;
+        final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
+        if (session == null && !isLoggingIn) return '/auth/login';
+        if (session != null && isLoggingIn) return '/onboarding/w1';
+        return null;
+      },
     );
     return MaterialApp.router(
       title: 'LUVI',
