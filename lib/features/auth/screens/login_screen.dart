@@ -217,9 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
         ),
         const SizedBox(height: Spacing.xs),
-        LoginForgotButton(
-          onPressed: () {},
-        ), // TODO: Navigate to forgot password
+        LoginForgotButton(onPressed: () => context.go('/auth/forgot')),
         const SizedBox(height: Spacing.l + Spacing.xs),
         SocialAuthRow(
           onGoogle: () {}, // TODO: Google sign-in

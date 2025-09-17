@@ -10,17 +10,29 @@ class LoginEmailField extends StatelessWidget {
     required this.errorText,
     required this.onChanged,
     this.autofocus = false,
+    this.onSubmitted,
+    this.scrollPadding = const EdgeInsets.only(bottom: 80),
+    this.textInputAction = TextInputAction.next,
   });
 
   final TextEditingController controller;
   final String? errorText;
   final ValueChanged<String> onChanged;
   final bool autofocus;
+  final ValueChanged<String>? onSubmitted;
+  final EdgeInsets scrollPadding;
+  final TextInputAction textInputAction;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final inputStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontSize: 16,
+      height: 24 / 16,
+      color: theme.colorScheme.onSurface,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -32,28 +44,21 @@ class LoginEmailField extends StatelessWidget {
             border: Border.all(
               color: errorText != null
                   ? theme.colorScheme.error
-                  : theme.colorScheme.outlineVariant.withValues(alpha: 219),
+                  : tokens.inputBorder,
               width: 1,
             ),
           ),
           child: TextField(
             controller: controller,
             keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
+            textInputAction: textInputAction,
             autofillHints: const [AutofillHints.email],
             autofocus: autofocus,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 16,
-              height: 1.5,
-              color: theme.colorScheme.onSurface,
-            ),
+            style: inputStyle,
+            scrollPadding: scrollPadding,
             decoration: InputDecoration(
               hintText: 'Deine E-Mail',
-              hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontSize: 16,
-                height: 1.5,
-                color: theme.colorScheme.onSurface.withValues(alpha: 105),
-              ),
+              hintStyle: inputStyle?.copyWith(color: tokens.grayscale500),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.only(
                 left: Spacing.m,
@@ -63,6 +68,7 @@ class LoginEmailField extends StatelessWidget {
               ),
             ),
             onChanged: onChanged,
+            onSubmitted: onSubmitted,
           ),
         ),
         if (errorText != null) ...[

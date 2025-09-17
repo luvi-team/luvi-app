@@ -125,22 +125,37 @@ class AppTheme {
 /// Extendable for dark mode or brand variants without touching widgets.
 @immutable
 class DsTokens extends ThemeExtension<DsTokens> {
-  const DsTokens({required this.cardSurface, required this.cardBorderSelected});
+  const DsTokens({
+    required this.cardSurface,
+    required this.cardBorderSelected,
+    required this.inputBorder,
+    required this.grayscale500,
+  });
 
   final Color cardSurface; // Grayscale/100 (#F7F7F8)
   final Color cardBorderSelected; // Secondary/100 (#1C1411)
+  final Color inputBorder; // Neutral border for inputs
+  final Color grayscale500; // Placeholder / secondary text
 
   static const DsTokens light = DsTokens(
     cardSurface: Color(0xFFF7F7F8),
     cardBorderSelected: Color(0xFF1C1411),
+    inputBorder: Color(0xFFDCDCDC),
+    grayscale500: Color(0xFF696969),
   );
 
   @override
-  DsTokens copyWith({Color? cardSurface, Color? cardBorderSelected}) =>
-      DsTokens(
-        cardSurface: cardSurface ?? this.cardSurface,
-        cardBorderSelected: cardBorderSelected ?? this.cardBorderSelected,
-      );
+  DsTokens copyWith({
+    Color? cardSurface,
+    Color? cardBorderSelected,
+    Color? inputBorder,
+    Color? grayscale500,
+  }) => DsTokens(
+    cardSurface: cardSurface ?? this.cardSurface,
+    cardBorderSelected: cardBorderSelected ?? this.cardBorderSelected,
+    inputBorder: inputBorder ?? this.inputBorder,
+    grayscale500: grayscale500 ?? this.grayscale500,
+  );
 
   @override
   DsTokens lerp(ThemeExtension<DsTokens>? other, double t) {
@@ -150,6 +165,9 @@ class DsTokens extends ThemeExtension<DsTokens> {
       cardBorderSelected:
           Color.lerp(cardBorderSelected, other.cardBorderSelected, t) ??
           cardBorderSelected,
+      inputBorder: Color.lerp(inputBorder, other.inputBorder, t) ?? inputBorder,
+      grayscale500:
+          Color.lerp(grayscale500, other.grayscale500, t) ?? grayscale500,
     );
   }
 }

@@ -36,10 +36,21 @@ class MyApp extends StatelessWidget {
       routes: features.featureRoutes,
       initialLocation: '/onboarding/w1',
       redirect: (context, state) {
+        // Allow auth routes while Supabase is initializing, and avoid touching
+        // Supabase.instance before initialization completes to prevent asserts.
+        final isAuthOpenRoute =
+            state.matchedLocation.startsWith('/auth/login') ||
+            state.matchedLocation.startsWith('/auth/signup') ||
+            state.matchedLocation.startsWith('/auth/forgot');
+
+        if (!SupabaseService.initialized) {
+          // Until Supabase is initialized, allow only open auth routes.
+          return isAuthOpenRoute ? null : '/auth/login';
+        }
+
         final session = SupabaseService.client.auth.currentSession;
-        final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
-        if (session == null && !isLoggingIn) return '/auth/login';
-        if (session != null && isLoggingIn) return '/onboarding/w1';
+        if (session == null && !isAuthOpenRoute) return '/auth/login';
+        if (session != null && isAuthOpenRoute) return '/onboarding/w1';
         return null;
       },
     );

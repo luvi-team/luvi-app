@@ -1,14 +1,12 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
 
 class AuthSignupScreen extends ConsumerStatefulWidget {
   const AuthSignupScreen({super.key});
@@ -23,11 +21,17 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _topKey = GlobalKey();
-  final _ctaKey = GlobalKey();
 
   bool _obscurePassword = true;
-  bool _shouldScroll = false;
+
+  static const double _horizontalPadding = Spacing.l - Spacing.xs / 2; // 20
+  static const double _inputGap = Spacing.s + Spacing.xs; // 20
+  static const double _headerGap =
+      Spacing.l * 2 + Spacing.s - Spacing.xs / 8; // 59
+  static const double _topSpacer = Spacing.l + Spacing.xs; // breathing space
+  static const EdgeInsets _fieldScrollPadding = EdgeInsets.only(
+    bottom: Sizes.buttonHeight + Spacing.l * 2,
+  );
 
   @override
   void dispose() {
@@ -41,86 +45,33 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mediaQuery = MediaQuery.of(context);
-    final safeBottom = mediaQuery.padding.bottom;
-    final keyboardInset = mediaQuery.viewInsets.bottom;
-    final keyboardOffset = math.max(keyboardInset - safeBottom, 0.0);
-
     final formSection = _buildFormSection(context);
 
     return Scaffold(
       key: const ValueKey('auth_signup_screen'),
-      resizeToAvoidBottomInset: false,
-      backgroundColor: theme.colorScheme.surface,
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.only(bottom: Spacing.s),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            _horizontalPadding,
+            _inputGap,
+            _horizontalPadding,
+            0,
+          ),
+          child: _SignupCtaSection(onLoginPressed: () => context.go('/auth/login')),
+        ),
+      ),
       body: SafeArea(
         bottom: false,
-        child: AnimatedPadding(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          padding: EdgeInsets.only(bottom: keyboardOffset),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isKeyboardVisible = keyboardInset > 0;
-
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                final topBox =
-                    _topKey.currentContext?.findRenderObject() as RenderBox?;
-                final ctaBox =
-                    _ctaKey.currentContext?.findRenderObject() as RenderBox?;
-                if (!mounted || topBox == null || ctaBox == null) {
-                  return;
-                }
-                final totalHeight = topBox.size.height + ctaBox.size.height;
-                final needsScroll = totalHeight > constraints.maxHeight + 0.5;
-                if (needsScroll != _shouldScroll) {
-                  setState(() => _shouldScroll = needsScroll);
-                }
-              });
-
-              final shouldAllowScroll = _shouldScroll || isKeyboardVisible;
-
-              final ctaSection = Padding(
-                key: _ctaKey,
-                padding: EdgeInsets.fromLTRB(
-                  Spacing.l,
-                  Spacing.l,
-                  Spacing.l,
-                  safeBottom + Spacing.s,
-                ),
-                child: SizedBox(
-                  height: Sizes.buttonHeight,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Anmelden'),
-                  ),
-                ),
-              );
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: ListView(
-                      key: _topKey,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.l,
-                      ),
-                      physics: shouldAllowScroll
-                          ? const ClampingScrollPhysics()
-                          : const NeverScrollableScrollPhysics(),
-                      shrinkWrap: !shouldAllowScroll,
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      children: [formSection],
-                    ),
-                  ),
-                  ctaSection,
-                ],
-              );
-            },
+        child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(
+            horizontal: _horizontalPadding,
           ),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: formSection,
         ),
       ),
     );
@@ -129,66 +80,61 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   Widget _buildFormSection(BuildContext context) {
     final theme = Theme.of(context);
     final headlineStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: 32,
-      height: 1.25,
       color: theme.colorScheme.onSurface,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: Spacing.l + Spacing.xs),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: BackButtonCircle(
-            onPressed: () {
-              if (Navigator.of(context).canPop()) {
-                Navigator.of(context).pop();
-              } else {
-                context.go('/auth/login');
-              }
-            },
-          ),
-        ),
+        const SizedBox(height: _topSpacer),
         const SizedBox(height: Spacing.l),
-        Text('Konto erstellen', style: headlineStyle),
-        const SizedBox(height: Spacing.s),
+        Text('Deine Reise beginnt hier 💜', style: headlineStyle),
+        const SizedBox(height: Spacing.xs),
         Text(
-          'Starte jetzt mit deinem persönlichen LUVI Profil.',
+          'Schnell registrieren - dann geht\'s los.',
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontSize: 20,
-            height: 1.2,
-            color: theme.colorScheme.onSurface.withValues(alpha: 214),
+            color: theme.colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: Spacing.l + Spacing.xs),
+        const SizedBox(height: _headerGap),
         _SignupTextField(
           controller: _firstNameController,
-          hintText: 'Vorname',
+          hintText: 'Dein Vorname',
           autofillHints: const [AutofillHints.givenName],
           textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.next,
+          onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+          scrollPadding: _fieldScrollPadding,
         ),
-        const SizedBox(height: Spacing.s + Spacing.xs),
+        const SizedBox(height: _inputGap),
         _SignupTextField(
           controller: _lastNameController,
-          hintText: 'Nachname',
+          hintText: 'Dein Nachname',
           autofillHints: const [AutofillHints.familyName],
           textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.next,
+          onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+          scrollPadding: _fieldScrollPadding,
         ),
-        const SizedBox(height: Spacing.s + Spacing.xs),
+        const SizedBox(height: _inputGap),
         _SignupTextField(
           controller: _phoneController,
-          hintText: 'Telefonnummer',
+          hintText: 'Deine Telefonnummer',
           keyboardType: TextInputType.phone,
           autofillHints: const [AutofillHints.telephoneNumber],
+          textInputAction: TextInputAction.next,
+          onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+          scrollPadding: _fieldScrollPadding,
         ),
-        const SizedBox(height: Spacing.s + Spacing.xs),
+        const SizedBox(height: _inputGap),
         LoginEmailField(
           controller: _emailController,
           errorText: null,
           autofocus: false,
           onChanged: (_) {},
+          onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+          scrollPadding: _fieldScrollPadding,
         ),
-        const SizedBox(height: Spacing.s + Spacing.xs),
+        const SizedBox(height: _inputGap),
         LoginPasswordField(
           controller: _passwordController,
           errorText: null,
@@ -197,8 +143,64 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
             setState(() => _obscurePassword = !_obscurePassword);
           },
           onChanged: (_) {},
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) {
+            // TODO: später CTA triggern.
+          },
+          scrollPadding: _fieldScrollPadding,
         ),
-        const SizedBox(height: Spacing.l + Spacing.xs),
+        const SizedBox(height: _inputGap),
+      ],
+    );
+  }
+}
+
+class _SignupCtaSection extends StatelessWidget {
+  const _SignupCtaSection({required this.onLoginPressed});
+
+  final VoidCallback onLoginPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final linkBaseStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontSize: 16,
+      height: 24 / 16,
+      fontWeight: FontWeight.w400,
+    );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: Sizes.buttonHeight,
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {},
+            child: const Text('Registrieren'),
+          ),
+        ),
+        const SizedBox(height: Spacing.s),
+        TextButton(
+          key: const ValueKey('signup_login_link'),
+          onPressed: onLoginPressed,
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Schon dabei? ',
+                  style: linkBaseStyle,
+                ),
+                TextSpan(
+                  text: 'Anmelden',
+                  style: linkBaseStyle?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -212,6 +214,9 @@ class _SignupTextField extends StatelessWidget {
     this.textInputAction = TextInputAction.next,
     this.autofillHints,
     this.textCapitalization = TextCapitalization.none,
+    this.scrollPadding =
+        const EdgeInsets.only(bottom: Sizes.buttonHeight + Spacing.l * 2),
+    this.onSubmitted,
   });
 
   final TextEditingController controller;
@@ -220,20 +225,24 @@ class _SignupTextField extends StatelessWidget {
   final TextInputAction textInputAction;
   final Iterable<String>? autofillHints;
   final TextCapitalization textCapitalization;
+  final EdgeInsets scrollPadding;
+  final ValueChanged<String>? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final inputStyle = theme.textTheme.bodySmall?.copyWith(
+      fontSize: TypeScale.smallSize,
+      height: TypeScale.smallHeight,
+      color: theme.colorScheme.onSurface,
+    );
     return Container(
       height: Sizes.buttonHeight,
       decoration: BoxDecoration(
         color: tokens.cardSurface,
         borderRadius: BorderRadius.circular(Sizes.radiusM),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 219),
-          width: 1,
-        ),
+        border: Border.all(color: tokens.inputBorder, width: 1),
       ),
       child: TextField(
         controller: controller,
@@ -241,24 +250,17 @@ class _SignupTextField extends StatelessWidget {
         textInputAction: textInputAction,
         autofillHints: autofillHints,
         textCapitalization: textCapitalization,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontSize: 16,
-          height: 1.5,
-          color: theme.colorScheme.onSurface,
-        ),
+        style: inputStyle,
+        scrollPadding: scrollPadding,
+        onSubmitted:
+            onSubmitted ?? (_) => FocusScope.of(context).nextFocus(),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: theme.textTheme.bodyMedium?.copyWith(
-            fontSize: 16,
-            height: 1.5,
-            color: theme.colorScheme.onSurface.withValues(alpha: 105),
-          ),
+          hintStyle: inputStyle?.copyWith(color: tokens.grayscale500),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.only(
-            left: Spacing.m,
-            right: Spacing.m,
-            top: Spacing.s,
-            bottom: Spacing.s,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: Spacing.m,
+            vertical: Spacing.s,
           ),
         ),
       ),

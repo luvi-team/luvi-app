@@ -11,6 +11,9 @@ class LoginPasswordField extends StatelessWidget {
     required this.onChanged,
     required this.obscure,
     required this.onToggleObscure,
+    this.onSubmitted,
+    this.scrollPadding = const EdgeInsets.only(bottom: 80),
+    this.textInputAction = TextInputAction.done,
   });
 
   final TextEditingController controller;
@@ -18,6 +21,9 @@ class LoginPasswordField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final bool obscure;
   final VoidCallback onToggleObscure;
+  final ValueChanged<String>? onSubmitted;
+  final EdgeInsets scrollPadding;
+  final TextInputAction textInputAction;
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +47,14 @@ class LoginPasswordField extends StatelessWidget {
           child: TextField(
             controller: controller,
             obscureText: obscure,
-            textInputAction: TextInputAction.done,
+            textInputAction: textInputAction,
             autofillHints: const [AutofillHints.password],
             style: theme.textTheme.bodyMedium?.copyWith(
               fontSize: 16,
               height: 1.5,
               color: theme.colorScheme.onSurface,
             ),
+            scrollPadding: scrollPadding,
             decoration: InputDecoration(
               hintText: 'Dein Passwort',
               hintStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -78,6 +85,7 @@ class LoginPasswordField extends StatelessWidget {
               ),
             ),
             onChanged: onChanged,
+            onSubmitted: onSubmitted,
           ),
         ),
         if (errorText != null) ...[
