@@ -48,8 +48,9 @@ class LoginNotifier extends StateNotifier<LoginState> {
     state = LoginState(
       email: email ?? state.email,
       password: password ?? state.password,
-      emailError: emailError ?? state.emailError,
-      passwordError: passwordError ?? state.passwordError,
+      // accept provided values directly, even if null (clears old errors)
+      emailError: emailError,
+      passwordError: passwordError,
     );
   }
 
