@@ -10,11 +10,8 @@ import 'package:luvi_app/features/auth/widgets/login_forgot_button.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
 import 'package:luvi_app/features/auth/widgets/social_auth_row.dart';
 import 'package:luvi_app/features/widgets/login_header.dart';
-<<<<<<< HEAD
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:luvi_app/features/state/auth_controller.dart';
-=======
->>>>>>> origin/main
 
 /// LoginScreen with pixel-perfect Figma implementation.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -99,7 +96,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   safeBottom,
                 ),
                 child: LoginCtaSection(
-<<<<<<< HEAD
                   onSubmit: () async {
                     if (_isLoading) return;
                     // 1) Validate inputs first and show local validation errors
@@ -150,10 +146,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       if (mounted) setState(() => _isLoading = false);
                     }
                   },
-=======
-                  onSubmit: () =>
-                      ref.read(loginProvider.notifier).validateAndSubmit(),
->>>>>>> origin/main
                   onSignup: () {}, // TODO: Navigate to sign up
                   hasValidationError: hasValidationError,
                 ),
