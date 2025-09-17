@@ -37,9 +37,9 @@ class MyApp extends StatelessWidget {
       initialLocation: '/onboarding/w1',
       redirect: (context, state) {
         final session = SupabaseService.client.auth.currentSession;
-        final isLoggingIn = state.matchedLocation.startsWith('/login');
-        if (session == null && !isLoggingIn) return '/login';
-        if (session != null && isLoggingIn) return '/home';
+        final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
+        if (session == null && !isLoggingIn) return '/auth/login';
+        if (session != null && isLoggingIn) return '/onboarding/w1';
         return null;
       },
     );
