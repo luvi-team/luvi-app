@@ -17,7 +17,6 @@ class Consent01Screen extends StatelessWidget {
     double y(double figmaY) => paddingTop + (figmaY - 47);
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Stack(
         children: [
           // Back button (44pt hitbox, 40px visual circle)

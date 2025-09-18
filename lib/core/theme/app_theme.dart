@@ -61,6 +61,7 @@ class AppTheme {
       // Keep global default as Playfair to avoid unexpected fallbacks for styles
       fontFamily: TypeScale.playfair,
       colorScheme: _buildColorScheme(),
+      scaffoldBackgroundColor: Colors.white,
       textTheme: _buildTextTheme(),
       // Button global stylen wie Figma
       elevatedButtonTheme: _buildElevatedButtonTheme(),
@@ -74,6 +75,7 @@ class AppTheme {
       seedColor: _primary,
       primary: _primary,
       secondary: _accentSubtle, // für "Superkraft."
+      surface: Colors.white,
       onPrimary: _onPrimary,
       onSurface: _onSurface,
       outlineVariant: _grayscale400, // für Dots inactive (mit Opacity)
@@ -130,18 +132,24 @@ class DsTokens extends ThemeExtension<DsTokens> {
     required this.cardBorderSelected,
     required this.inputBorder,
     required this.grayscale500,
+    required this.successColor,
+    required this.inputBorderLight,
   });
 
   final Color cardSurface; // Grayscale/100 (#F7F7F8)
   final Color cardBorderSelected; // Secondary/100 (#1C1411)
   final Color inputBorder; // Neutral border for inputs
   final Color grayscale500; // Placeholder / secondary text
+  final Color successColor; // Message/Green (#04B155)
+  final Color inputBorderLight; // Subtle borders (#F7F7F8)
 
   static const DsTokens light = DsTokens(
     cardSurface: Color(0xFFF7F7F8),
     cardBorderSelected: Color(0xFF1C1411),
     inputBorder: Color(0xFFDCDCDC),
     grayscale500: Color(0xFF696969),
+    successColor: Color(0xFF04B155),
+    inputBorderLight: Color(0xFFF7F7F8),
   );
 
   @override
@@ -150,11 +158,15 @@ class DsTokens extends ThemeExtension<DsTokens> {
     Color? cardBorderSelected,
     Color? inputBorder,
     Color? grayscale500,
+    Color? successColor,
+    Color? inputBorderLight,
   }) => DsTokens(
     cardSurface: cardSurface ?? this.cardSurface,
     cardBorderSelected: cardBorderSelected ?? this.cardBorderSelected,
     inputBorder: inputBorder ?? this.inputBorder,
     grayscale500: grayscale500 ?? this.grayscale500,
+    successColor: successColor ?? this.successColor,
+    inputBorderLight: inputBorderLight ?? this.inputBorderLight,
   );
 
   @override
@@ -168,6 +180,11 @@ class DsTokens extends ThemeExtension<DsTokens> {
       inputBorder: Color.lerp(inputBorder, other.inputBorder, t) ?? inputBorder,
       grayscale500:
           Color.lerp(grayscale500, other.grayscale500, t) ?? grayscale500,
+      successColor:
+          Color.lerp(successColor, other.successColor, t) ?? successColor,
+      inputBorderLight:
+          Color.lerp(inputBorderLight, other.inputBorderLight, t) ??
+          inputBorderLight,
     );
   }
 }

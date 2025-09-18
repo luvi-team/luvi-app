@@ -11,4 +11,13 @@ class AuthLayout {
   static const double titleToInput = 92;
   static const double inputToCta = 40;
   static const double ctaBottomInset = 92;
+  static const double gapSection = 63; // Verification section grid (Figma)
+  static const double gapTitleToInputs = 74; // CreateNew title -> inputs (Figma)
+  static const double gapInputToCta = inputToCta; // MVP: tighter gap for keyboard
+  static const double ctaTopAfterCopy = 32; // Subtitle -> CTA spacing (Figma)
+  static const double iconTopSuccess = 325; // Success icon top offset (Figma)
+  static const double hPadding40 = 40; // Full-bleed horizontal padding (Figma)
+  static const double figmaHeaderTop = 112; // Verification header top (Figma)
+  static const double ctaLinkGapNormal = 31; // Link gap when no validation error
+  static const double ctaLinkGapError = 29; // Link gap when validation error shown
 }

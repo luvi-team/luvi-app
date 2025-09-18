@@ -14,6 +14,9 @@ class LoginPasswordField extends StatelessWidget {
     this.onSubmitted,
     this.scrollPadding = const EdgeInsets.only(bottom: 80),
     this.textInputAction = TextInputAction.done,
+    this.hintText = 'Dein Passwort',
+    this.textStyle,
+    this.hintStyle,
   });
 
   final TextEditingController controller;
@@ -24,11 +27,24 @@ class LoginPasswordField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final EdgeInsets scrollPadding;
   final TextInputAction textInputAction;
+  final String hintText;
+  final TextStyle? textStyle;
+  final TextStyle? hintStyle;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final resolvedTextStyle = textStyle ??
+        theme.textTheme.bodyMedium?.copyWith(
+          fontSize: 16,
+          height: 1.5,
+          color: theme.colorScheme.onSurface,
+        );
+    final resolvedHintStyle = hintStyle ??
+        resolvedTextStyle?.copyWith(
+          color: tokens.grayscale500,
+        );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -49,19 +65,11 @@ class LoginPasswordField extends StatelessWidget {
             obscureText: obscure,
             textInputAction: textInputAction,
             autofillHints: const [AutofillHints.password],
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 16,
-              height: 1.5,
-              color: theme.colorScheme.onSurface,
-            ),
+            style: resolvedTextStyle,
             scrollPadding: scrollPadding,
             decoration: InputDecoration(
-              hintText: 'Dein Passwort',
-              hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontSize: 16,
-                height: 1.5,
-                color: theme.colorScheme.onSurface.withValues(alpha: 105),
-              ),
+              hintText: hintText,
+              hintStyle: resolvedHintStyle,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.only(
                 left: Spacing.m,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
@@ -27,7 +28,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _topKey = GlobalKey();
-  final _ctaKey = GlobalKey();
   bool _shouldScroll = false;
   bool _isLoading = false;
 
@@ -61,7 +61,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         bottom: false,
         child: AnimatedPadding(
@@ -75,84 +75,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 final topBox =
                     _topKey.currentContext?.findRenderObject() as RenderBox?;
-                final ctaBox =
-                    _ctaKey.currentContext?.findRenderObject() as RenderBox?;
-                if (!mounted || topBox == null || ctaBox == null) {
+                if (!mounted || topBox == null) {
                   return;
                 }
-                final totalHeight = topBox.size.height + ctaBox.size.height;
-                final needsScroll = totalHeight > constraints.maxHeight + 0.5;
+                final needsScroll =
+                    topBox.size.height > constraints.maxHeight + 0.5;
                 if (needsScroll != _shouldScroll) {
                   setState(() => _shouldScroll = needsScroll);
                 }
               });
 
               final shouldAllowScroll = _shouldScroll || isKeyboardVisible;
-              final ctaSection = Padding(
-                key: _ctaKey,
-                padding: EdgeInsets.fromLTRB(
-                  Spacing.l,
-                  32,
-                  Spacing.l,
-                  safeBottom,
-                ),
-                child: LoginCtaSection(
-                  onSubmit: () async {
-                    if (_isLoading) return;
-                    // 1) Validate inputs first and show local validation errors
-                    final notifier = ref.read(loginProvider.notifier);
-                    notifier.validateAndSubmit();
-                    final state = ref.read(loginProvider);
-                    final hasLocalErrors =
-                        state.emailError != null || state.passwordError != null;
-                    if (hasLocalErrors) {
-                      return;
-                    }
-
-                    setState(() => _isLoading = true);
-                    try {
-                      // 2) No local errors -> attempt sign-in
-                      final repo = ref.read(authRepositoryProvider);
-                      await repo.signInWithPassword(
-                        email: _emailController.text.trim(),
-                        password: _passwordController.text,
-                      );
-                      // Happy path: Router-Redirect greift automatisch
-                      notifier.clearErrors();
-                    } on AuthException catch (e) {
-                      final msg = e.message.toLowerCase();
-                      if (msg.contains('invalid') ||
-                          msg.contains('credentials')) {
-                        notifier.updateState(
-                          email: _emailController.text.trim(),
-                          password: _passwordController.text,
-                          emailError: 'E-Mail oder Passwort ist falsch.',
-                          passwordError: null,
-                        );
-                      } else if (msg.contains('confirm')) {
-                        notifier.updateState(
-                          email: _emailController.text.trim(),
-                          password: _passwordController.text,
-                          emailError:
-                              'Bitte E-Mail bestätigen (Link erneut senden?)',
-                          passwordError: null,
-                        );
-                      } else {
-                        notifier.updateState(
-                          email: _emailController.text.trim(),
-                          password: _passwordController.text,
-                          emailError: 'Login derzeit nicht möglich.',
-                          passwordError: null,
-                        );
-                      }
-                    } finally {
-                      if (mounted) setState(() => _isLoading = false);
-                    }
-                  },
-                  onSignup: () => context.go('/auth/signup'),
-                  hasValidationError: hasValidationError,
-                ),
-              );
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,8 +93,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Flexible(
                     fit: FlexFit.loose,
                     child: ListView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.l,
+                      padding: EdgeInsets.fromLTRB(
+                        AuthLayout.horizontalPadding,
+                        0,
+                        AuthLayout.horizontalPadding,
+                        AuthLayout.ctaBottomInset + safeBottom,
                       ),
                       physics: shouldAllowScroll
                           ? const ClampingScrollPhysics()
@@ -173,10 +109,80 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       children: [topSection],
                     ),
                   ),
-                  ctaSection,
                 ],
               );
             },
+          ),
+        ),
+      ),
+      bottomNavigationBar: AnimatedPadding(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(bottom: keyboardInset),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              AuthLayout.horizontalPadding,
+              AuthLayout.ctaTopAfterCopy,
+              AuthLayout.horizontalPadding,
+              Spacing.s,
+            ),
+            child: LoginCtaSection(
+              onSubmit: () async {
+                if (_isLoading) return;
+                // 1) Validate inputs first and show local validation errors
+                final notifier = ref.read(loginProvider.notifier);
+                notifier.validateAndSubmit();
+                final state = ref.read(loginProvider);
+                final hasLocalErrors =
+                    state.emailError != null || state.passwordError != null;
+                if (hasLocalErrors) {
+                  return;
+                }
+
+                setState(() => _isLoading = true);
+                try {
+                  // 2) No local errors -> attempt sign-in
+                  final repo = ref.read(authRepositoryProvider);
+                  await repo.signInWithPassword(
+                    email: _emailController.text.trim(),
+                    password: _passwordController.text,
+                  );
+                  // Happy path: Router-Redirect greift automatisch
+                  notifier.clearErrors();
+                } on AuthException catch (e) {
+                  final msg = e.message.toLowerCase();
+                  if (msg.contains('invalid') || msg.contains('credentials')) {
+                    notifier.updateState(
+                      email: _emailController.text.trim(),
+                      password: _passwordController.text,
+                      emailError: 'E-Mail oder Passwort ist falsch.',
+                      passwordError: null,
+                    );
+                  } else if (msg.contains('confirm')) {
+                    notifier.updateState(
+                      email: _emailController.text.trim(),
+                      password: _passwordController.text,
+                      emailError:
+                          'Bitte E-Mail bestätigen (Link erneut senden?)',
+                      passwordError: null,
+                    );
+                  } else {
+                    notifier.updateState(
+                      email: _emailController.text.trim(),
+                      password: _passwordController.text,
+                      emailError: 'Login derzeit nicht möglich.',
+                      passwordError: null,
+                    );
+                  }
+                } finally {
+                  if (mounted) setState(() => _isLoading = false);
+                }
+              },
+              onSignup: () => context.go('/auth/signup'),
+              hasValidationError: hasValidationError,
+            ),
           ),
         ),
       ),

@@ -25,7 +25,7 @@ class SocialAuthRow extends StatelessWidget {
             Expanded(
               child: Container(
                 height: 1,
-                color: colorScheme.outlineVariant.withValues(alpha: 224),
+                color: colorScheme.outlineVariant,
               ),
             ),
             Padding(
@@ -35,14 +35,14 @@ class SocialAuthRow extends StatelessWidget {
                 style: textTheme.bodyMedium?.copyWith(
                   fontSize: 20,
                   height: 1.2,
-                  color: colorScheme.onSurface.withValues(alpha: 214),
+                  color: colorScheme.onSurface,
                 ),
               ),
             ),
             Expanded(
               child: Container(
                 height: 1,
-                color: colorScheme.outlineVariant.withValues(alpha: 224),
+                color: colorScheme.outlineVariant,
               ),
             ),
           ],
@@ -97,7 +97,7 @@ class _SocialButton extends StatelessWidget {
           backgroundColor: colorScheme.onPrimary,
           foregroundColor: colorScheme.onSurface,
           side: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 245),
+            color: colorScheme.outlineVariant,
             width: 1,
           ),
           shape: RoundedRectangleBorder(

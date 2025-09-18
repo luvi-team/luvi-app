@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 
 class LoginCtaSection extends StatelessWidget {
   const LoginCtaSection({
@@ -29,12 +30,20 @@ class LoginCtaSection extends StatelessWidget {
             child: const Text('Anmelden'),
           ),
         ),
-        SizedBox(height: hasValidationError ? 29.0 : 31.0),
+        SizedBox(
+          height: hasValidationError
+              ? AuthLayout.ctaLinkGapError
+              : AuthLayout.ctaLinkGapNormal,
+        ),
         Center(
           child: TextButton(
             key: const ValueKey('login_signup_link'),
             onPressed: onSignup,
-            style: TextButton.styleFrom(padding: EdgeInsets.zero),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(44, 44),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
             child: RichText(
               text: TextSpan(
                 children: [
@@ -43,7 +52,7 @@ class LoginCtaSection extends StatelessWidget {
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontSize: 16,
                       height: 1.5,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 214),
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   TextSpan(
@@ -52,7 +61,8 @@ class LoginCtaSection extends StatelessWidget {
                       fontSize: 17,
                       height: 1.47,
                       color: tokens.cardBorderSelected,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ],

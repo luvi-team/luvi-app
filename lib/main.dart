@@ -32,16 +32,26 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // Allow overriding the initial route at build time for development/testing.
+    // Usage: flutter run/build --dart-define=INITIAL_ROUTE=/your/path
+    const initialLocation = String.fromEnvironment(
+      'INITIAL_ROUTE',
+      defaultValue: '/onboarding/w1',
+    );
+
     final router = GoRouter(
       routes: features.featureRoutes,
-      initialLocation: '/onboarding/w1',
+      initialLocation: initialLocation,
       redirect: (context, state) {
         // Allow auth routes while Supabase is initializing, and avoid touching
         // Supabase.instance before initialization completes to prevent asserts.
         final isAuthOpenRoute =
             state.matchedLocation.startsWith('/auth/login') ||
             state.matchedLocation.startsWith('/auth/signup') ||
-            state.matchedLocation.startsWith('/auth/forgot');
+            state.matchedLocation.startsWith('/auth/forgot') ||
+            state.matchedLocation.startsWith('/auth/password/new') ||
+            state.matchedLocation.startsWith('/auth/password/success') ||
+            state.matchedLocation.startsWith('/auth/verify');
 
         if (!SupabaseService.initialized) {
           // Until Supabase is initialized, allow only open auth routes.

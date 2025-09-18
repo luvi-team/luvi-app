@@ -50,7 +50,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     return Scaffold(
       key: const ValueKey('auth_signup_screen'),
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.only(bottom: Spacing.s),
         child: Padding(
