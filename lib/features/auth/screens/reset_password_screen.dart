@@ -6,7 +6,6 @@ import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
-import 'package:luvi_app/features/auth/utils/layout_utils.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -19,7 +18,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _emailController = TextEditingController();
 
   static const EdgeInsets _fieldScrollPadding = EdgeInsets.only(
-    bottom: Sizes.buttonHeight + AuthLayout.inputToCta,
+    bottom: Spacing.l,
   );
 
   @override
@@ -31,11 +30,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final backButtonTopSpacing = topOffsetFromSafeArea(
-      context,
-      AuthLayout.backButtonTop,
-      figmaSafeTop: AuthLayout.figmaSafeTop,
-    );
+    final safeTop = MediaQuery.of(context).padding.top;
+    const double backButtonSize = 40.0;
+    final backButtonTop = safeTop + AuthLayout.backButtonTopInset;
 
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
       fontSize: 24,
@@ -49,8 +46,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       color: theme.colorScheme.onSurface,
     );
 
-    const double backButtonSize = 40;
-
     return Scaffold(
       key: const ValueKey('auth_forgot_screen'),
       resizeToAvoidBottomInset: true,
@@ -58,9 +53,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       body: Stack(
         children: [
           AuthScreenShell(
+            includeBottomReserve: false,
             children: [
-              SizedBox(height: backButtonTopSpacing + backButtonSize),
-              const SizedBox(height: AuthLayout.backButtonToTitle),
+              SizedBox(height: backButtonSize + AuthLayout.backButtonToTitle),
               Text('Passwort vergessen? 💜', style: titleStyle),
               const SizedBox(height: Spacing.xs),
               Text('E-Mail eingeben für Link.', style: subtitleStyle),
@@ -78,7 +73,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           ),
           Positioned(
             left: AuthLayout.horizontalPadding,
-            top: backButtonTopSpacing,
+            top: backButtonTop,
             child: BackButtonCircle(
               onPressed: () {
                 if (Navigator.of(context).canPop()) {

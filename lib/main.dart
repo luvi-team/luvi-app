@@ -36,7 +36,8 @@ class MyApp extends StatelessWidget {
     // Usage: flutter run/build --dart-define=INITIAL_ROUTE=/your/path
     const initialLocation = String.fromEnvironment(
       'INITIAL_ROUTE',
-      defaultValue: '/onboarding/w1',
+      // Default to the Login screen in development unless explicitly overridden.
+      defaultValue: '/auth/login',
     );
 
     final router = GoRouter(
