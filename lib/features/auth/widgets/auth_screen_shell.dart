@@ -7,35 +7,37 @@ class AuthScreenShell extends StatelessWidget {
   const AuthScreenShell({
     super.key,
     required this.children,
+    this.scrollKey,
     this.includeBottomReserve = true,
+    this.controller,
   });
 
   final List<Widget> children;
+  final Key? scrollKey;
   final bool includeBottomReserve;
+  final ScrollController? controller;
 
   @override
   Widget build(BuildContext context) {
     final safeBottom = MediaQuery.of(context).padding.bottom;
     final bottomPad = includeBottomReserve
         ? AuthLayout.ctaBottomInset + safeBottom
-        : safeBottom;
-    final padding = EdgeInsets.fromLTRB(
-      AuthLayout.horizontalPadding,
-      0,
-      AuthLayout.horizontalPadding,
-      bottomPad,
-    );
+        : 0.0;
 
-    return SafeArea(
-      bottom: false,
-      child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        padding: padding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: children,
-        ),
+    return SingleChildScrollView(
+      key: scrollKey,
+      controller: controller,
+      physics: const ClampingScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: EdgeInsets.fromLTRB(
+        AuthLayout.horizontalPadding,
+        0,
+        AuthLayout.horizontalPadding,
+        bottomPad,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
       ),
     );
   }
