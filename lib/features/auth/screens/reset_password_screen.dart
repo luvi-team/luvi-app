@@ -6,6 +6,7 @@ import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/core/utils/layout_utils.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -18,7 +19,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _emailController = TextEditingController();
 
   static const EdgeInsets _fieldScrollPadding = EdgeInsets.only(
-    bottom: Spacing.l,
+    bottom: Sizes.buttonHeight + Spacing.l * 2,
   );
 
   @override
@@ -30,9 +31,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final safeTop = MediaQuery.of(context).padding.top;
-    const double backButtonSize = 40.0;
-    final backButtonTop = safeTop + AuthLayout.backButtonTopInset;
+    final backButtonTopSpacing = topOffsetFromSafeArea(
+      context,
+      AuthLayout.backButtonTop,
+      figmaSafeTop: AuthLayout.figmaSafeTop,
+    );
 
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
       fontSize: 24,
@@ -49,72 +52,47 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return Scaffold(
       key: const ValueKey('auth_forgot_screen'),
       resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Stack(
+      backgroundColor: Colors.white,
+      body: AuthScreenShell(
         children: [
-          AuthScreenShell(
-            includeBottomReserve: false,
-            children: [
-              SizedBox(height: backButtonSize + AuthLayout.backButtonToTitle),
-              Text('Passwort vergessen? 💜', style: titleStyle),
-              const SizedBox(height: Spacing.xs),
-              Text('E-Mail eingeben für Link.', style: subtitleStyle),
-              const SizedBox(height: AuthLayout.titleToInput),
-              LoginEmailField(
-                controller: _emailController,
-                errorText: null,
-                autofocus: false,
-                onChanged: (_) {},
-                onSubmitted: (_) => FocusScope.of(context).unfocus(),
-                textInputAction: TextInputAction.done,
-                scrollPadding: _fieldScrollPadding,
-              ),
-            ],
+          SizedBox(height: backButtonTopSpacing),
+          BackButtonCircle(
+            onPressed: () {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                context.go('/auth/login');
+              }
+            },
+            size: 40,
+            innerSize: 40,
+            backgroundColor: theme.colorScheme.primary,
+            iconColor: theme.colorScheme.onSurface,
           ),
-          Positioned(
-            left: AuthLayout.horizontalPadding,
-            top: backButtonTop,
-            child: BackButtonCircle(
-              onPressed: () {
-                if (Navigator.of(context).canPop()) {
-                  Navigator.of(context).pop();
-                } else {
-                  context.go('/auth/login');
-                }
-              },
-              size: backButtonSize,
-              innerSize: backButtonSize,
-              backgroundColor: theme.colorScheme.primary,
-              iconColor: theme.colorScheme.onSurface,
+          const SizedBox(height: AuthLayout.backButtonToTitle),
+          Text('Passwort vergessen? 💜', style: titleStyle),
+          const SizedBox(height: Spacing.xs),
+          Text('E-Mail eingeben für Link.', style: subtitleStyle),
+          const SizedBox(height: AuthLayout.titleToInput),
+          LoginEmailField(
+            controller: _emailController,
+            errorText: null,
+            autofocus: false,
+            onChanged: (_) {},
+            onSubmitted: (_) => FocusScope.of(context).unfocus(),
+            textInputAction: TextInputAction.done,
+            scrollPadding: _fieldScrollPadding,
+          ),
+          const SizedBox(height: AuthLayout.inputToCta),
+          SizedBox(
+            height: Sizes.buttonHeight,
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {},
+              child: const Text('Weiter'),
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: AnimatedPadding(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              AuthLayout.horizontalPadding,
-              AuthLayout.inputToCta,
-              AuthLayout.horizontalPadding,
-              Spacing.s,
-            ),
-            child: SizedBox(
-              height: Sizes.buttonHeight,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                child: const Text('Weiter'),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

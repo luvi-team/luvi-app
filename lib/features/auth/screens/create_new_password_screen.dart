@@ -20,34 +20,73 @@ class CreateNewPasswordScreen extends StatefulWidget {
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _scrollController = ScrollController();
+  final _headerKey = GlobalKey();
+  final _ctaKey = GlobalKey();
+  final _passwordFieldKey = GlobalKey();
+  final _confirmFieldKey = GlobalKey();
 
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
-  int? _activeFieldIndex;
 
-  static const EdgeInsets _newPasswordScrollPadding = EdgeInsets.only(
-    bottom: Sizes.buttonHeight + Spacing.l * 2,
+  static const EdgeInsets _fieldScrollPadding = EdgeInsets.only(
+    bottom: Spacing.l,
+    top: Spacing.m,
   );
 
-  static const EdgeInsets _confirmPasswordScrollPadding = EdgeInsets.only(
-    bottom: Sizes.buttonHeight + Spacing.l,
-  );
+  static const double _keyboardGap = Spacing.m;
+  static const double _ctaStackHeight = Sizes.buttonHeight + Spacing.m;
 
   @override
   void dispose() {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _handleFocusChange(bool hasFocus, int index) {
-    if (hasFocus) {
-      if (_activeFieldIndex != index) {
-        setState(() => _activeFieldIndex = index);
-      }
-    } else if (_activeFieldIndex == index) {
-      setState(() => _activeFieldIndex = null);
-    }
+  Future<void> _snapIntoViewWindow(GlobalKey fieldKey) async {
+    final ctx = fieldKey.currentContext;
+    final headerCtx = _headerKey.currentContext;
+    final ctaCtx = _ctaKey.currentContext;
+    if (ctx == null || headerCtx == null || ctaCtx == null) return;
+
+    await Future<void>.microtask(() {});
+    if (!mounted || !ctx.mounted || !_scrollController.hasClients) return;
+
+    final fieldBox = ctx.findRenderObject() as RenderBox?;
+    final headerBox = headerCtx.findRenderObject() as RenderBox?;
+    final ctaBox = ctaCtx.findRenderObject() as RenderBox?;
+    if (fieldBox == null || headerBox == null || ctaBox == null) return;
+
+    final fieldRect = fieldBox.localToGlobal(Offset.zero) & fieldBox.size;
+    final headerBottomY = headerBox.localToGlobal(Offset.zero).dy + headerBox.size.height;
+    final ctaTopY = ctaBox.localToGlobal(Offset.zero).dy;
+
+    final windowTop = headerBottomY + Spacing.m;
+    final windowBottom = ctaTopY - _keyboardGap;
+    if (windowBottom <= windowTop) return;
+
+    final desiredTop = fieldRect.top < windowTop
+        ? windowTop
+        : (fieldRect.bottom > windowBottom
+            ? windowBottom - fieldRect.height
+            : fieldRect.top);
+
+    final delta = desiredTop - fieldRect.top;
+    if (delta.abs() < 0.5) return;
+
+    final position = _scrollController.position;
+    final targetOffset = (_scrollController.offset + delta)
+        .clamp(position.minScrollExtent, position.maxScrollExtent);
+
+    if ((targetOffset - _scrollController.offset).abs() < 0.5) return;
+
+    await _scrollController.animateTo(
+      targetOffset,
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -84,87 +123,95 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     );
 
     final mediaQuery = MediaQuery.of(context);
-    final safeBottomInset = mediaQuery.padding.bottom;
     final keyboardInset = mediaQuery.viewInsets.bottom;
-    final keyboardOverlap = keyboardInset > safeBottomInset
-        ? keyboardInset - safeBottomInset
-        : 0.0;
-    final isKeyboardVisible = keyboardOverlap > 0;
-    const double ctaTopGapCollapsed = Spacing.s;
-    const double ctaTopGapExpanded = AuthLayout.gapTitleToInputs;
-    const double ctaTopGapConfirmField = AuthLayout.gapInputToCta;
-    final double ctaTopPadding;
-    if (!isKeyboardVisible) {
-      ctaTopPadding = ctaTopGapExpanded;
-    } else if (_activeFieldIndex == 0) {
-      ctaTopPadding = ctaTopGapExpanded;
-    } else if (_activeFieldIndex == 1) {
-      ctaTopPadding = ctaTopGapConfirmField;
-    } else {
-      ctaTopPadding = ctaTopGapCollapsed;
-    }
+    final hasKeyboard = keyboardInset > 0;
+    final safeTop = mediaQuery.padding.top;
 
     return Scaffold(
       key: const ValueKey('auth_create_new_screen'),
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: theme.colorScheme.surface,
-      body: AuthScreenShell(
+      body: Stack(
         children: [
-          SizedBox(height: backButtonTopSpacing),
-          BackButtonCircle(
-            onPressed: () {
-              if (Navigator.of(context).canPop()) {
-                Navigator.of(context).pop();
-              } else {
-                context.go('/auth/login');
-              }
-            },
-            size: 40,
-            innerSize: 40,
-            backgroundColor: theme.colorScheme.primary,
-            iconColor: theme.colorScheme.onSurface,
-            iconSize: 20,
+          AuthScreenShell(
+            includeBottomReserve: false,
+            controller: _scrollController,
+            children: [
+              Column(
+                key: _headerKey,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: backButtonTopSpacing + 40 + AuthLayout.gapTitleToInputs / 2,
+                  ),
+                  Text('Neues Passwort erstellen 💜', style: titleStyle),
+                  const SizedBox(height: Spacing.xs),
+                  Text('Mach es stark.', style: subtitleStyle),
+                ],
+              ),
+              const SizedBox(height: AuthLayout.gapTitleToInputs),
+              Focus(
+                onFocusChange: (hasFocus) {
+                  if (hasFocus) _snapIntoViewWindow(_passwordFieldKey);
+                },
+                child: LoginPasswordField(
+                  key: _passwordFieldKey,
+                  controller: _newPasswordController,
+                  errorText: null,
+                  onChanged: (_) {},
+                  obscure: _obscureNewPassword,
+                  onToggleObscure: () {
+                    setState(() => _obscureNewPassword = !_obscureNewPassword);
+                  },
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                  scrollPadding: _fieldScrollPadding,
+                  hintText: 'Neues Passwort',
+                ),
+              ),
+              const SizedBox(height: AuthLayout.gapInputToCta),
+              Focus(
+                onFocusChange: (hasFocus) {
+                  if (hasFocus) _snapIntoViewWindow(_confirmFieldKey);
+                },
+                child: LoginPasswordField(
+                  key: _confirmFieldKey,
+                  controller: _confirmPasswordController,
+                  errorText: null,
+                  onChanged: (_) {},
+                  obscure: _obscureConfirmPassword,
+                  onToggleObscure: () {
+                    setState(
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword,
+                    );
+                  },
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                  scrollPadding: _fieldScrollPadding,
+                  hintText: 'Neues Passwort bestätigen',
+                  textStyle: confirmTextStyle,
+                  hintStyle: confirmHintStyle,
+                ),
+              ),
+              SizedBox(height: hasKeyboard ? _ctaStackHeight + _keyboardGap : 0),
+            ],
           ),
-          const SizedBox(height: AuthLayout.gapTitleToInputs),
-          Text('Neues Passwort erstellen 💜', style: titleStyle),
-          const SizedBox(height: Spacing.xs),
-          Text('Mach es stark.', style: subtitleStyle),
-          const SizedBox(height: AuthLayout.gapTitleToInputs),
-          Focus(
-            onFocusChange: (hasFocus) => _handleFocusChange(hasFocus, 0),
-            child: LoginPasswordField(
-              controller: _newPasswordController,
-              errorText: null,
-              onChanged: (_) {},
-              obscure: _obscureNewPassword,
-              onToggleObscure: () {
-                setState(() => _obscureNewPassword = !_obscureNewPassword);
+          Positioned(
+            top: safeTop + AuthLayout.backButtonTopInset,
+            left: AuthLayout.horizontalPadding,
+            child: BackButtonCircle(
+              onPressed: () {
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                } else {
+                  context.go('/auth/login');
+                }
               },
-              textInputAction: TextInputAction.next,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-              scrollPadding: _newPasswordScrollPadding,
-              hintText: 'Neues Passwort',
-            ),
-          ),
-          const SizedBox(height: AuthLayout.gapInputToCta),
-          Focus(
-            onFocusChange: (hasFocus) => _handleFocusChange(hasFocus, 1),
-            child: LoginPasswordField(
-              controller: _confirmPasswordController,
-              errorText: null,
-              onChanged: (_) {},
-              obscure: _obscureConfirmPassword,
-              onToggleObscure: () {
-                setState(
-                  () => _obscureConfirmPassword = !_obscureConfirmPassword,
-                );
-              },
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => FocusScope.of(context).unfocus(),
-              scrollPadding: _confirmPasswordScrollPadding,
-              hintText: 'Neues Passwort bestätigen',
-              textStyle: confirmTextStyle,
-              hintStyle: confirmHintStyle,
+              size: 40,
+              innerSize: 40,
+              backgroundColor: theme.colorScheme.primary,
+              iconColor: theme.colorScheme.onSurface,
+              iconSize: 20,
             ),
           ),
         ],
@@ -172,17 +219,19 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       bottomNavigationBar: AnimatedPadding(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
-        padding: EdgeInsets.only(bottom: keyboardOverlap),
+        padding: EdgeInsets.only(bottom: keyboardInset),
         child: SafeArea(
           top: false,
+          bottom: !hasKeyboard,
           child: Padding(
             padding: EdgeInsets.fromLTRB(
               AuthLayout.horizontalPadding,
-              ctaTopPadding,
+              Spacing.m,
               AuthLayout.horizontalPadding,
-              Spacing.s,
+              hasKeyboard ? _keyboardGap : Spacing.s,
             ),
             child: SizedBox(
+              key: _ctaKey,
               height: Sizes.buttonHeight,
               width: double.infinity,
               child: ElevatedButton(
