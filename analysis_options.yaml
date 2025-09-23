@@ -28,6 +28,7 @@ linter:
 # https://dart.dev/guides/language/analysis-options
 
 
+# Exclude dev/audit probe tests from analyzer noise; keep them for manual layout diagnostics.
 analyzer:
   exclude:
     - test/dev/**
