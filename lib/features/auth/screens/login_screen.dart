@@ -36,14 +36,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO(ui): Move controller sync into _syncControllersFromState() to avoid per-build mutations.
     final loginState = ref.watch(loginProvider);
-
-    if (_emailController.text != loginState.email) {
-      _emailController.text = loginState.email;
-    }
-    if (_passwordController.text != loginState.password) {
-      _passwordController.text = loginState.password;
-    }
+    _syncControllersFromState(loginState);
 
     final hasValidationError =
         loginState.emailError != null || loginState.passwordError != null;
@@ -77,104 +72,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: Spacing.l + Spacing.xs),
-                    const LoginHeader(),
-                    const SizedBox(height: Spacing.l + Spacing.xs),
-                    LoginEmailField(
-                      controller: _emailController,
-                      errorText: loginState.emailError,
-                      autofocus: true,
-                      scrollPadding: fieldScrollPadding,
-                      onChanged: (v) {
-                        ref.read(loginProvider.notifier).setEmail(v);
-                        if (loginState.emailError != null) {
-                          ref.read(loginProvider.notifier).clearErrors();
-                        }
-                      },
+                    _LoginHeaderSection(
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      emailError: loginState.emailError,
+                      passwordError: loginState.passwordError,
+                      obscurePassword: _obscurePassword,
+                      fieldScrollPadding: fieldScrollPadding,
+                      onEmailChanged: _onEmailChanged,
+                      onPasswordChanged: _onPasswordChanged,
+                      onToggleObscure: _toggleObscurePassword,
+                      onForgotPassword: () => context.go('/auth/forgot'),
                     ),
-                    const SizedBox(height: Spacing.s + Spacing.xs),
-                    LoginPasswordField(
-                      controller: _passwordController,
-                      errorText: loginState.passwordError,
-                      obscure: _obscurePassword,
-                      scrollPadding: fieldScrollPadding,
-                      onToggleObscure: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                      onChanged: (v) {
-                        ref.read(loginProvider.notifier).setPassword(v);
-                        if (loginState.passwordError != null) {
-                          ref.read(loginProvider.notifier).clearErrors();
-                        }
-                      },
+                    _LoginFormSection(
+                      gapBelowForgot: gapBelowForgot,
+                      socialGap: socialGap,
+                      onGoogle: () {},
+                      onApple: () {},
                     ),
-                    const SizedBox(height: Spacing.xs),
-                    LoginForgotButton(
-                      onPressed: () => context.go('/auth/forgot'),
-                    ),
-                    SizedBox(height: gapBelowForgot),
-                    SocialAuthRow(
-                      onGoogle: () {}, // TODO: Google sign-in
-                      onApple: () {}, // TODO: Apple sign-in
-                      dividerToButtonsGap: socialGap,
-                    ),
-                    const SizedBox(height: AuthLayout.ctaTopAfterCopy),
-                    LoginCtaSection(
-                      onSubmit: () async {
-                        if (_isLoading) return;
-                        // 1) Validate inputs first and show local validation errors
-                        final notifier = ref.read(loginProvider.notifier);
-                        notifier.validateAndSubmit();
-                        final state = ref.read(loginProvider);
-                        final hasLocalErrors =
-                            state.emailError != null ||
-                            state.passwordError != null;
-                        if (hasLocalErrors) {
-                          return;
-                        }
-
-                        setState(() => _isLoading = true);
-                        try {
-                          // 2) No local errors -> attempt sign-in
-                          final repo = ref.read(authRepositoryProvider);
-                          await repo.signInWithPassword(
-                            email: _emailController.text.trim(),
-                            password: _passwordController.text,
-                          );
-                          // Happy path: Router-Redirect greift automatisch
-                          notifier.clearErrors();
-                        } on AuthException catch (e) {
-                          final msg = e.message.toLowerCase();
-                          if (msg.contains('invalid') ||
-                              msg.contains('credentials')) {
-                            notifier.updateState(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text,
-                              emailError: 'E-Mail oder Passwort ist falsch.',
-                              passwordError: null,
-                            );
-                          } else if (msg.contains('confirm')) {
-                            notifier.updateState(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text,
-                              emailError:
-                                  'Bitte E-Mail bestätigen (Link erneut senden?)',
-                              passwordError: null,
-                            );
-                          } else {
-                            notifier.updateState(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text,
-                              emailError: 'Login derzeit nicht möglich.',
-                              passwordError: null,
-                            );
-                          }
-                        } finally {
-                          if (mounted) setState(() => _isLoading = false);
-                        }
-                      },
-                      onSignup: () => context.go('/auth/signup'),
-                      hasValidationError: hasValidationError,
+                    // TODO(ui): Extract _handleSubmit() to reduce nesting; identical validation/network flow.
+                    _LoginCtaSection(
                       isLoading: _isLoading,
+                      hasValidationError: hasValidationError,
+                      onSubmit: () => _handleSubmit(),
+                      onSignup: () => context.go('/auth/signup'),
                     ),
                   ],
                 ),
@@ -183,6 +104,200 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
         ),
       ),
+    );
+  }
+
+  void _syncControllersFromState(LoginState state) {
+    if (_emailController.text != state.email) {
+      _emailController.text = state.email;
+      // TODO(ui): replace with TextEditingValue to preserve cursor when syncing.
+    }
+    if (_passwordController.text != state.password) {
+      _passwordController.text = state.password;
+      // TODO(ui): replace with TextEditingValue to preserve cursor when syncing.
+    }
+  }
+
+  void _onEmailChanged(String value) {
+    final notifier = ref.read(loginProvider.notifier);
+    notifier.setEmail(value);
+    if (ref.read(loginProvider).emailError != null) {
+      notifier.clearErrors();
+    }
+  }
+
+  void _onPasswordChanged(String value) {
+    final notifier = ref.read(loginProvider.notifier);
+    notifier.setPassword(value);
+    if (ref.read(loginProvider).passwordError != null) {
+      notifier.clearErrors();
+    }
+  }
+
+  void _toggleObscurePassword() {
+    setState(() => _obscurePassword = !_obscurePassword);
+  }
+
+  Future<void> _handleSubmit() async {
+    if (_isLoading) return;
+    final notifier = ref.read(loginProvider.notifier);
+    notifier.validateAndSubmit();
+    final state = ref.read(loginProvider);
+    final hasLocalErrors =
+        state.emailError != null || state.passwordError != null;
+    if (hasLocalErrors) {
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final repo = ref.read(authRepositoryProvider);
+      await repo.signInWithPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      notifier.clearErrors();
+    } on AuthException catch (e) {
+      final msg = e.message.toLowerCase();
+      if (msg.contains('invalid') || msg.contains('credentials')) {
+        notifier.updateState(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          emailError: 'E-Mail oder Passwort ist falsch.',
+          passwordError: null,
+        );
+      } else if (msg.contains('confirm')) {
+        notifier.updateState(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          emailError: 'Bitte E-Mail bestätigen (Link erneut senden?)',
+          passwordError: null,
+        );
+      } else {
+        notifier.updateState(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          emailError: 'Login derzeit nicht möglich.',
+          passwordError: null,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+}
+
+class _LoginHeaderSection extends StatelessWidget {
+  const _LoginHeaderSection({
+    required this.emailController,
+    required this.passwordController,
+    required this.emailError,
+    required this.passwordError,
+    required this.obscurePassword,
+    required this.fieldScrollPadding,
+    required this.onEmailChanged,
+    required this.onPasswordChanged,
+    required this.onToggleObscure,
+    required this.onForgotPassword,
+  });
+
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final String? emailError;
+  final String? passwordError;
+  final bool obscurePassword;
+  final EdgeInsets fieldScrollPadding;
+  final ValueChanged<String> onEmailChanged;
+  final ValueChanged<String> onPasswordChanged;
+  final VoidCallback onToggleObscure;
+  final VoidCallback onForgotPassword;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: Spacing.l + Spacing.xs),
+        const LoginHeader(),
+        const SizedBox(height: Spacing.l + Spacing.xs),
+        LoginEmailField(
+          controller: emailController,
+          errorText: emailError,
+          autofocus: true,
+          scrollPadding: fieldScrollPadding,
+          onChanged: onEmailChanged,
+        ),
+        const SizedBox(height: Spacing.s + Spacing.xs),
+        LoginPasswordField(
+          controller: passwordController,
+          errorText: passwordError,
+          obscure: obscurePassword,
+          scrollPadding: fieldScrollPadding,
+          onToggleObscure: onToggleObscure,
+          onChanged: onPasswordChanged,
+        ),
+        const SizedBox(height: Spacing.xs),
+        LoginForgotButton(onPressed: onForgotPassword),
+      ],
+    );
+  }
+}
+
+class _LoginFormSection extends StatelessWidget {
+  const _LoginFormSection({
+    required this.gapBelowForgot,
+    required this.socialGap,
+    required this.onGoogle,
+    required this.onApple,
+  });
+
+  final double gapBelowForgot;
+  final double socialGap;
+  final VoidCallback onGoogle;
+  final VoidCallback onApple;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: gapBelowForgot),
+        SocialAuthRow(
+          onGoogle: onGoogle,
+          onApple: onApple,
+          dividerToButtonsGap: socialGap,
+        ),
+      ],
+    );
+  }
+}
+
+class _LoginCtaSection extends StatelessWidget {
+  const _LoginCtaSection({
+    required this.isLoading,
+    required this.hasValidationError,
+    required this.onSubmit,
+    required this.onSignup,
+  });
+
+  final bool isLoading;
+  final bool hasValidationError;
+  final VoidCallback onSubmit;
+  final VoidCallback onSignup;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: AuthLayout.ctaTopAfterCopy),
+        LoginCtaSection(
+          onSubmit: onSubmit,
+          onSignup: onSignup,
+          hasValidationError: hasValidationError,
+          isLoading: isLoading,
+        ),
+      ],
     );
   }
 }
