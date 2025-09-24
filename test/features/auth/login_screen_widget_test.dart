@@ -121,4 +121,55 @@ void main() {
     final enabledBtn = tester.widget<ElevatedButton>(loginButton);
     expect(enabledBtn.onPressed, isNotNull);
   });
+
+  testWidgets('Global error banner clears on new input while field errors stay', (
+    tester,
+  ) async {
+    final view = tester.view;
+    view.physicalSize = const Size(1080, 2340);
+    view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      view.resetPhysicalSize();
+      view.resetDevicePixelRatio();
+    });
+
+    final mockRepo = _MockAuthRepository();
+    when(
+      () => mockRepo.signInWithPassword(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenThrow(AuthException('Please confirm your email.'));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
+        child: MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const LoginScreen(),
+        ),
+      ),
+    );
+
+    final emailField = find.byType(TextField).at(0);
+    final passwordField = find.byType(TextField).at(1);
+    await tester.enterText(emailField, 'user@example.com');
+    await tester.enterText(passwordField, 'correctpw');
+
+    final loginButton = find.widgetWithText(ElevatedButton, 'Anmelden');
+    await tester.tap(loginButton);
+    await tester.pumpAndSettle();
+
+    final confirmBanner =
+        find.text('Bitte E-Mail bestätigen (Link erneut senden?)');
+    expect(confirmBanner, findsOneWidget);
+
+    await tester.enterText(emailField, 'user@example.com1');
+    await tester.pump();
+
+    expect(confirmBanner, findsNothing);
+    // Field errors remain untouched (stay null)
+    expect(find.text('Ups, bitte E-Mail überprüfen'), findsNothing);
+    expect(find.text('Ups, bitte Passwort überprüfen'), findsNothing);
+  });
 }

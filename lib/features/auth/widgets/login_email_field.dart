@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
 
 class LoginEmailField extends StatelessWidget {
   const LoginEmailField({
@@ -71,16 +72,7 @@ class LoginEmailField extends StatelessWidget {
             onSubmitted: onSubmitted,
           ),
         ),
-        if (errorText != null) ...[
-          const SizedBox(height: Spacing.s - Spacing.xs),
-          Text(
-            errorText!,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 14,
-              color: theme.colorScheme.error,
-            ),
-          ),
-        ],
+        if (errorText != null) FieldErrorText(errorText!),
       ],
     );
   }

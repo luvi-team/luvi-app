@@ -31,24 +31,7 @@ class LoginCtaSection extends StatelessWidget {
             onPressed: (isLoading || hasValidationError) ? null : onSubmit,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 150),
-              child: isLoading
-                  ? Semantics(
-                      key: const ValueKey('login_cta_loading_semantics'),
-                      label: 'Anmeldung läuft',
-                      liveRegion: true,
-                      child: SizedBox(
-                        key: const ValueKey('login_cta_loading'),
-                        height: Sizes.buttonHeight / 2,
-                        width: Sizes.buttonHeight / 2,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(
-                            theme.colorScheme.onPrimary,
-                          ),
-                        ),
-                      ),
-                    )
-                  : const Text('Anmelden', key: ValueKey('login_cta_label')),
+              child: _LoginButtonChild(isLoading: isLoading),
             ),
           ),
         ),
@@ -94,6 +77,35 @@ class LoginCtaSection extends StatelessWidget {
         ),
         const SizedBox(height: Spacing.s + Spacing.xs),
       ],
+    );
+  }
+}
+
+class _LoginButtonChild extends StatelessWidget {
+  const _LoginButtonChild({required this.isLoading});
+
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isLoading) {
+      return const Text('Anmelden', key: ValueKey('login_cta_label'));
+    }
+
+    final theme = Theme.of(context);
+    return Semantics(
+      key: const ValueKey('login_cta_loading_semantics'),
+      label: 'Anmeldung läuft',
+      liveRegion: true,
+      child: SizedBox(
+        key: const ValueKey('login_cta_loading'),
+        height: Sizes.buttonHeight / 2,
+        width: Sizes.buttonHeight / 2,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation(theme.colorScheme.onPrimary),
+        ),
+      ),
     );
   }
 }

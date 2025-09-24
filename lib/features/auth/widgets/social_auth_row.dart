@@ -22,26 +22,14 @@ class SocialAuthRow extends StatelessWidget {
     final textTheme = theme.textTheme;
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Container(height: 1, color: colorScheme.outlineVariant),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.s),
-              child: Text(
-                'Oder melde dich an mit',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontSize: 20,
-                  height: 1.2,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(height: 1, color: colorScheme.outlineVariant),
-            ),
-          ],
+        _SocialDivider(
+          label: 'Oder melde dich an mit',
+          lineColor: colorScheme.outlineVariant,
+          textStyle: textTheme.bodyMedium?.copyWith(
+            fontSize: 20,
+            height: 1.2,
+            color: colorScheme.onSurface,
+          ),
         ),
         SizedBox(height: dividerToButtonsGap),
         Row(
@@ -126,6 +114,32 @@ class _SocialButton extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SocialDivider extends StatelessWidget {
+  const _SocialDivider({
+    required this.label,
+    required this.lineColor,
+    required this.textStyle,
+  });
+
+  final String label;
+  final Color lineColor;
+  final TextStyle? textStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: Container(height: 1, color: lineColor)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.s),
+          child: Text(label, style: textStyle),
+        ),
+        Expanded(child: Container(height: 1, color: lineColor)),
+      ],
     );
   }
 }

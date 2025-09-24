@@ -40,9 +40,11 @@ class LoginNotifier extends StateNotifier<LoginState> {
         globalError: state.globalError,
       );
 
-  void clearErrors() => state = LoginState(
+  void clearGlobalError() => state = LoginState(
         email: state.email,
         password: state.password,
+        emailError: state.emailError,
+        passwordError: state.passwordError,
         globalError: null,
       );
 

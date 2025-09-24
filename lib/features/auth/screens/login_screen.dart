@@ -4,14 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
+import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_forgot_button.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
 import 'package:luvi_app/features/auth/widgets/social_auth_row.dart';
 import 'package:luvi_app/features/auth/widgets/login_header.dart';
+import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:luvi_app/features/state/auth_controller.dart';
 
 /// LoginScreen with pixel-perfect Figma implementation.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -25,7 +26,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -62,6 +62,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final emailError = errors.$1;
     final passwordError = errors.$2;
     final globalError = errors.$3;
+    final submitState = ref.watch(loginSubmitProvider);
+    final isLoading = submitState.isLoading;
 
     final hasValidationError = emailError != null || passwordError != null;
 
@@ -115,11 +117,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     if (globalError != null) ...[
                       const SizedBox(height: Spacing.m),
-                      _GlobalErrorBanner(message: globalError),
+                      GlobalErrorBanner(message: globalError),
                     ],
                     // TODO(ui): Extract _handleSubmit() to reduce nesting; identical validation/network flow.
                     _LoginCtaSection(
-                      isLoading: _isLoading,
+                      isLoading: isLoading,
                       hasValidationError: hasValidationError,
                       onSubmit: () => _handleSubmit(),
                       onSignup: () => context.go('/auth/signup'),
@@ -138,8 +140,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final notifier = ref.read(loginProvider.notifier);
     notifier.setEmail(value);
     final state = ref.read(loginProvider);
-    if (state.emailError != null || state.globalError != null) {
-      notifier.clearErrors();
+    if (state.globalError != null) {
+      notifier.clearGlobalError();
     }
   }
 
@@ -147,8 +149,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final notifier = ref.read(loginProvider.notifier);
     notifier.setPassword(value);
     final state = ref.read(loginProvider);
-    if (state.passwordError != null || state.globalError != null) {
-      notifier.clearErrors();
+    if (state.globalError != null) {
+      notifier.clearGlobalError();
     }
   }
 
@@ -157,7 +159,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleSubmit() async {
-    if (_isLoading) return;
     final notifier = ref.read(loginProvider.notifier);
     notifier.validateAndSubmit();
     final state = ref.read(loginProvider);
@@ -167,14 +168,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    final submitNotifier = ref.read(loginSubmitProvider.notifier);
     try {
-      final repo = ref.read(authRepositoryProvider);
-      await repo.signInWithPassword(
+      await submitNotifier.signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      notifier.clearErrors();
+      notifier.clearGlobalError();
     } on AuthException catch (e) {
       final msg = e.message.toLowerCase();
       if (msg.contains('invalid') || msg.contains('credentials')) {
@@ -202,8 +202,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           globalError: 'Login derzeit nicht möglich.',
         );
       }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 }
@@ -322,38 +320,6 @@ class _LoginCtaSection extends StatelessWidget {
           isLoading: isLoading,
         ),
       ],
-    );
-  }
-}
-
-class _GlobalErrorBanner extends StatelessWidget {
-  const _GlobalErrorBanner({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Semantics(
-      container: true,
-      liveRegion: true,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(Spacing.s),
-        decoration: BoxDecoration(
-          color: colorScheme.error.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(Spacing.s),
-        ),
-        child: Text(
-          message,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontSize: 15,
-            height: 1.4,
-            color: colorScheme.error,
-          ),
-        ),
-      ),
     );
   }
 }
