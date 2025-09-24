@@ -11,6 +11,10 @@ class LoginSubmitNotifier extends StateNotifier<AsyncValue<void>> {
     required String email,
     required String password,
   }) async {
+    if (state.isLoading) {
+      return Future.value(AuthResponse(session: null, user: null));
+    }
+
     state = const AsyncLoading();
     try {
       final repo = _ref.read(authRepositoryProvider);
