@@ -6,8 +6,10 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
-import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart';
+import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
+import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
+import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {
   const CreateNewPasswordScreen({super.key});
@@ -21,21 +23,23 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _scrollController = ScrollController();
+
   final _headerKey = GlobalKey();
-  final _ctaKey = GlobalKey();
   final _passwordFieldKey = GlobalKey();
   final _confirmFieldKey = GlobalKey();
+
+  late final FieldAutoScroller _autoScroller =
+      FieldAutoScroller(_scrollController);
 
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
 
   static const EdgeInsets _fieldScrollPadding = EdgeInsets.only(
-    bottom: Spacing.l,
-    top: Spacing.m,
+    bottom: Sizes.buttonHeight + Spacing.l * 2,
   );
 
-  static const double _keyboardGap = Spacing.m;
-  static const double _ctaStackHeight = Sizes.buttonHeight + Spacing.m;
+  static const double _backButtonSize = 40;
+  static const double _backIconSize = 20;
 
   @override
   void dispose() {
@@ -45,203 +49,143 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _snapIntoViewWindow(GlobalKey fieldKey) async {
-    final ctx = fieldKey.currentContext;
-    final headerCtx = _headerKey.currentContext;
-    final ctaCtx = _ctaKey.currentContext;
-    if (ctx == null || headerCtx == null || ctaCtx == null) return;
-
-    await Future<void>.microtask(() {});
-    if (!mounted || !ctx.mounted || !_scrollController.hasClients) return;
-
-    final fieldBox = ctx.findRenderObject() as RenderBox?;
-    final headerBox = headerCtx.findRenderObject() as RenderBox?;
-    final ctaBox = ctaCtx.findRenderObject() as RenderBox?;
-    if (fieldBox == null || headerBox == null || ctaBox == null) return;
-
-    final fieldRect = fieldBox.localToGlobal(Offset.zero) & fieldBox.size;
-    final headerBottomY = headerBox.localToGlobal(Offset.zero).dy + headerBox.size.height;
-    final ctaTopY = ctaBox.localToGlobal(Offset.zero).dy;
-
-    final windowTop = headerBottomY + Spacing.m;
-    final windowBottom = ctaTopY - _keyboardGap;
-    if (windowBottom <= windowTop) return;
-
-    final desiredTop = fieldRect.top < windowTop
-        ? windowTop
-        : (fieldRect.bottom > windowBottom
-            ? windowBottom - fieldRect.height
-            : fieldRect.top);
-
-    final delta = desiredTop - fieldRect.top;
-    if (delta.abs() < 0.5) return;
-
-    final position = _scrollController.position;
-    final targetOffset = (_scrollController.offset + delta)
-        .clamp(position.minScrollExtent, position.maxScrollExtent);
-
-    if ((targetOffset - _scrollController.offset).abs() < 0.5) return;
-
-    await _scrollController.animateTo(
-      targetOffset,
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final mediaQuery = MediaQuery.of(context);
 
     final backButtonTopSpacing = topOffsetFromSafeArea(
       context,
       AuthLayout.backButtonTop,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
-
-    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: 24,
-      height: 32 / 24,
-      fontWeight: FontWeight.w400,
-      color: theme.colorScheme.onSurface,
-    );
-
-    final subtitleStyle = theme.textTheme.bodySmall?.copyWith(
-      fontSize: 17,
-      height: 25 / 17,
-      fontWeight: FontWeight.w500,
-      color: theme.colorScheme.onSurface,
-    );
-
+    final headerTopGap =
+        backButtonTopSpacing + _backButtonSize + AuthLayout.gapTitleToInputs / 2;
     final confirmTextStyle = theme.textTheme.bodySmall?.copyWith(
       color: theme.colorScheme.onSurface,
     );
-
     final confirmHintStyle = theme.textTheme.bodySmall?.copyWith(
       color: tokens.grayscale500,
     );
 
-    final mediaQuery = MediaQuery.of(context);
-    final keyboardInset = mediaQuery.viewInsets.bottom;
-    final hasKeyboard = keyboardInset > 0;
-    final safeTop = mediaQuery.padding.top;
-
     return Scaffold(
       key: const ValueKey('auth_create_new_screen'),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: theme.colorScheme.surface,
-      body: Stack(
-        children: [
-          AuthScreenShell(
-            includeBottomReserve: false,
-            controller: _scrollController,
-            children: [
-              Column(
-                key: _headerKey,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: backButtonTopSpacing + 40 + AuthLayout.gapTitleToInputs / 2,
-                  ),
-                  Text('Neues Passwort erstellen 💜', style: titleStyle),
-                  const SizedBox(height: Spacing.xs),
-                  Text('Mach es stark.', style: subtitleStyle),
-                ],
-              ),
-              const SizedBox(height: AuthLayout.gapTitleToInputs),
-              Focus(
-                onFocusChange: (hasFocus) {
-                  if (hasFocus) _snapIntoViewWindow(_passwordFieldKey);
-                },
-                child: LoginPasswordField(
-                  key: _passwordFieldKey,
-                  controller: _newPasswordController,
-                  errorText: null,
-                  onChanged: (_) {},
-                  obscure: _obscureNewPassword,
-                  onToggleObscure: () {
-                    setState(() => _obscureNewPassword = !_obscureNewPassword);
-                  },
-                  textInputAction: TextInputAction.next,
-                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                  scrollPadding: _fieldScrollPadding,
-                  hintText: 'Neues Passwort',
-                ),
-              ),
-              const SizedBox(height: AuthLayout.gapInputToCta),
-              Focus(
-                onFocusChange: (hasFocus) {
-                  if (hasFocus) _snapIntoViewWindow(_confirmFieldKey);
-                },
-                child: LoginPasswordField(
-                  key: _confirmFieldKey,
-                  controller: _confirmPasswordController,
-                  errorText: null,
-                  onChanged: (_) {},
-                  obscure: _obscureConfirmPassword,
-                  onToggleObscure: () {
-                    setState(
-                      () => _obscureConfirmPassword = !_obscureConfirmPassword,
-                    );
-                  },
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => FocusScope.of(context).unfocus(),
-                  scrollPadding: _fieldScrollPadding,
-                  hintText: 'Neues Passwort bestätigen',
-                  textStyle: confirmTextStyle,
-                  hintStyle: confirmHintStyle,
-                ),
-              ),
-              SizedBox(height: hasKeyboard ? _ctaStackHeight + _keyboardGap : 0),
-            ],
-          ),
-          Positioned(
-            top: safeTop + AuthLayout.backButtonTopInset,
-            left: AuthLayout.horizontalPadding,
-            child: BackButtonCircle(
-              onPressed: () {
-                if (Navigator.of(context).canPop()) {
-                  Navigator.of(context).pop();
-                } else {
-                  context.go('/auth/login');
-                }
-              },
-              size: 40,
-              innerSize: 40,
-              backgroundColor: theme.colorScheme.primary,
-              iconColor: theme.colorScheme.onSurface,
-              iconSize: 20,
-            ),
-          ),
-        ],
+      body: _CreateNewBody(
+        scrollController: _scrollController,
+        headerKey: _headerKey,
+        headerTopGap: headerTopGap,
+        autoScroller: _autoScroller,
+        newPasswordController: _newPasswordController,
+        confirmPasswordController: _confirmPasswordController,
+        passwordFieldKey: _passwordFieldKey,
+        confirmFieldKey: _confirmFieldKey,
+        isNewPasswordObscured: _obscureNewPassword,
+        isConfirmPasswordObscured: _obscureConfirmPassword,
+        onToggleNewPassword: () {
+          setState(() => _obscureNewPassword = !_obscureNewPassword);
+        },
+        onToggleConfirmPassword: () {
+          setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+        },
+        fieldScrollPadding: _fieldScrollPadding,
+        confirmTextStyle: confirmTextStyle,
+        confirmHintStyle: confirmHintStyle,
+        safeTop: mediaQuery.padding.top,
+        backgroundColor: theme.colorScheme.primary,
+        iconColor: theme.colorScheme.onSurface,
       ),
-      bottomNavigationBar: AnimatedPadding(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.only(bottom: keyboardInset),
-        child: SafeArea(
-          top: false,
-          bottom: !hasKeyboard,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              AuthLayout.horizontalPadding,
-              Spacing.m,
-              AuthLayout.horizontalPadding,
-              hasKeyboard ? _keyboardGap : Spacing.s,
+    );
+  }
+}
+
+class _CreateNewBody extends StatelessWidget {
+  const _CreateNewBody({
+    required this.scrollController,
+    required this.headerKey,
+    required this.headerTopGap,
+    required this.autoScroller,
+    required this.newPasswordController,
+    required this.confirmPasswordController,
+    required this.passwordFieldKey,
+    required this.confirmFieldKey,
+    required this.isNewPasswordObscured,
+    required this.isConfirmPasswordObscured,
+    required this.onToggleNewPassword,
+    required this.onToggleConfirmPassword,
+    required this.fieldScrollPadding,
+    required this.confirmTextStyle,
+    required this.confirmHintStyle,
+    required this.safeTop,
+    required this.backgroundColor,
+    required this.iconColor,
+  });
+
+  final ScrollController scrollController;
+  final GlobalKey headerKey;
+  final double headerTopGap;
+  final FieldAutoScroller autoScroller;
+  final TextEditingController newPasswordController;
+  final TextEditingController confirmPasswordController;
+  final GlobalKey passwordFieldKey;
+  final GlobalKey confirmFieldKey;
+  final bool isNewPasswordObscured;
+  final bool isConfirmPasswordObscured;
+  final VoidCallback onToggleNewPassword;
+  final VoidCallback onToggleConfirmPassword;
+  final EdgeInsets fieldScrollPadding;
+  final TextStyle? confirmTextStyle;
+  final TextStyle? confirmHintStyle;
+  final double safeTop;
+  final Color backgroundColor;
+  final Color iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        AuthScreenShell(
+          includeBottomReserve: false,
+          controller: scrollController,
+          children: [
+            CreateNewHeader(
+              headerKey: headerKey,
+              topGap: headerTopGap,
             ),
-            child: SizedBox(
-              key: _ctaKey,
-              height: Sizes.buttonHeight,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                child: const Text('Speichern'),
-              ),
+            const SizedBox(height: AuthLayout.gapTitleToInputs),
+            CreateNewForm(
+              autoScroller: autoScroller,
+              newPasswordController: newPasswordController,
+              confirmPasswordController: confirmPasswordController,
+              passwordFieldKey: passwordFieldKey,
+              confirmFieldKey: confirmFieldKey,
+              isNewPasswordObscured: isNewPasswordObscured,
+              isConfirmPasswordObscured: isConfirmPasswordObscured,
+              onToggleNewPassword: onToggleNewPassword,
+              onToggleConfirmPassword: onToggleConfirmPassword,
+              fieldScrollPadding: fieldScrollPadding,
+              confirmTextStyle: confirmTextStyle,
+              confirmHintStyle: confirmHintStyle,
             ),
-          ),
+          ],
         ),
-      ),
+        CreateNewBackButtonOverlay(
+          safeTop: safeTop,
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/auth/login');
+            }
+          },
+          backgroundColor: backgroundColor,
+          iconColor: iconColor,
+          size: _CreateNewPasswordScreenState._backButtonSize,
+          iconSize: _CreateNewPasswordScreenState._backIconSize,
+        ),
+      ],
     );
   }
 }

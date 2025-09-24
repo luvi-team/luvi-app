@@ -10,11 +10,13 @@ class LoginCtaSection extends StatelessWidget {
     required this.onSubmit,
     required this.onSignup,
     required this.hasValidationError,
+    this.isLoading = false,
   });
 
   final VoidCallback onSubmit;
   final VoidCallback onSignup;
   final bool hasValidationError;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +28,28 @@ class LoginCtaSection extends StatelessWidget {
         SizedBox(
           height: Sizes.buttonHeight,
           child: ElevatedButton(
-            onPressed: onSubmit,
-            child: const Text('Anmelden'),
+            onPressed: (isLoading || hasValidationError) ? null : onSubmit,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              child: isLoading
+                  ? Semantics(
+                      key: const ValueKey('login_cta_loading_semantics'),
+                      label: 'Anmeldung läuft',
+                      liveRegion: true,
+                      child: SizedBox(
+                        key: const ValueKey('login_cta_loading'),
+                        height: Sizes.buttonHeight / 2,
+                        width: Sizes.buttonHeight / 2,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation(
+                            theme.colorScheme.onPrimary,
+                          ),
+                        ),
+                      ),
+                    )
+                  : const Text('Anmelden', key: ValueKey('login_cta_label')),
+            ),
           ),
         ),
         SizedBox(

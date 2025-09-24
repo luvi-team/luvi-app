@@ -8,10 +8,12 @@ class SocialAuthRow extends StatelessWidget {
     super.key,
     required this.onGoogle,
     required this.onApple,
+    this.dividerToButtonsGap = Spacing.l + Spacing.xs,
   });
 
   final VoidCallback onGoogle;
   final VoidCallback onApple;
+  final double dividerToButtonsGap;
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +25,7 @@ class SocialAuthRow extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Container(
-                height: 1,
-                color: colorScheme.outlineVariant,
-              ),
+              child: Container(height: 1, color: colorScheme.outlineVariant),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Spacing.s),
@@ -40,14 +39,11 @@ class SocialAuthRow extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Container(
-                height: 1,
-                color: colorScheme.outlineVariant,
-              ),
+              child: Container(height: 1, color: colorScheme.outlineVariant),
             ),
           ],
         ),
-        const SizedBox(height: Spacing.l + Spacing.xs),
+        SizedBox(height: dividerToButtonsGap),
         Row(
           children: [
             Expanded(
@@ -96,10 +92,7 @@ class _SocialButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           backgroundColor: colorScheme.onPrimary,
           foregroundColor: colorScheme.onSurface,
-          side: BorderSide(
-            color: colorScheme.outlineVariant,
-            width: 1,
-          ),
+          side: BorderSide(color: colorScheme.outlineVariant, width: 1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Sizes.radiusXL),
           ),
