@@ -11,7 +11,7 @@ class LoginEmailField extends StatelessWidget {
     required this.onChanged,
     this.autofocus = false,
     this.onSubmitted,
-    this.scrollPadding = const EdgeInsets.only(bottom: 80),
+    this.scrollPadding = EdgeInsets.zero,
     this.textInputAction = TextInputAction.next,
   });
 

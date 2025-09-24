@@ -5,11 +5,13 @@ class LoginState {
   final String password;
   final String? emailError;
   final String? passwordError;
+  final String? globalError;
   const LoginState({
     this.email = '',
     this.password = '',
     this.emailError,
     this.passwordError,
+    this.globalError,
   });
 
   bool get isValid =>
@@ -23,27 +25,33 @@ class LoginNotifier extends StateNotifier<LoginState> {
   LoginNotifier() : super(const LoginState());
 
   void setEmail(String v) => state = LoginState(
-    email: v,
-    password: state.password,
-    emailError: state.emailError,
-    passwordError: state.passwordError,
-  );
+        email: v,
+        password: state.password,
+        emailError: state.emailError,
+        passwordError: state.passwordError,
+        globalError: state.globalError,
+      );
 
   void setPassword(String v) => state = LoginState(
-    email: state.email,
-    password: v,
-    emailError: state.emailError,
-    passwordError: state.passwordError,
-  );
+        email: state.email,
+        password: v,
+        emailError: state.emailError,
+        passwordError: state.passwordError,
+        globalError: state.globalError,
+      );
 
-  void clearErrors() =>
-      state = LoginState(email: state.email, password: state.password);
+  void clearErrors() => state = LoginState(
+        email: state.email,
+        password: state.password,
+        globalError: null,
+      );
 
   void updateState({
     String? email,
     String? password,
     String? emailError,
     String? passwordError,
+    String? globalError,
   }) {
     state = LoginState(
       email: email ?? state.email,
@@ -51,6 +59,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
       // accept provided values directly, even if null (clears old errors)
       emailError: emailError,
       passwordError: passwordError,
+      globalError: globalError,
     );
   }
 
@@ -69,6 +78,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
       password: state.password,
       emailError: eErr,
       passwordError: pErr,
+      globalError: null,
     );
     // Supabase sign-in folgt im nächsten Schritt (MVP).
   }

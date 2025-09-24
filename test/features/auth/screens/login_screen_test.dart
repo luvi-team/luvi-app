@@ -48,7 +48,7 @@ void main() {
     expect(find.text('Anmelden'), findsOneWidget);
   });
 
-  testWidgets('CTA is always enabled and validates on press', (tester) async {
+  testWidgets('CTA enabled before submit; disables on field errors', (tester) async {
     final view = tester.view;
     view.physicalSize = const Size(1080, 2340);
     view.devicePixelRatio = 1.0;
@@ -79,5 +79,6 @@ void main() {
 
     expect(find.text('Ups, bitte E-Mail überprüfen'), findsOneWidget);
     expect(find.text('Ups, bitte Passwort überprüfen'), findsOneWidget);
+    expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
   });
 }

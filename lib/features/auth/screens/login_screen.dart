@@ -28,6 +28,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    final s = ref.read(loginProvider);
+    if (_emailController.text != s.email) {
+      _emailController.value = _emailController.value.copyWith(
+        text: s.email,
+        selection: TextSelection.collapsed(offset: s.email.length),
+      );
+    }
+    if (_passwordController.text != s.password) {
+      _passwordController.value = _passwordController.value.copyWith(
+        text: s.password,
+        selection: TextSelection.collapsed(offset: s.password.length),
+      );
+    }
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -36,12 +54,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(ui): Move controller sync into _syncControllersFromState() to avoid per-build mutations.
-    final loginState = ref.watch(loginProvider);
-    _syncControllersFromState(loginState);
+    final errors = ref.watch(
+      loginProvider.select(
+        (state) => (state.emailError, state.passwordError, state.globalError),
+      ),
+    );
+    final emailError = errors.$1;
+    final passwordError = errors.$2;
+    final globalError = errors.$3;
 
-    final hasValidationError =
-        loginState.emailError != null || loginState.passwordError != null;
+    final hasValidationError = emailError != null || passwordError != null;
 
     final mediaQuery = MediaQuery.of(context);
     final safeBottom = mediaQuery.padding.bottom;
@@ -50,7 +72,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final fieldScrollPadding = EdgeInsets.only(
       // Reserve unterhalb der Felder: CTA + Social-Block + Footer + safeBottom
-      bottom: AuthLayout.inlineCtaReserveLogin + safeBottom,
+      bottom: AuthLayout.inlineCtaReserveLoginApprox + safeBottom,
     );
     final gapBelowForgot = isKeyboardVisible
         ? Spacing.m
@@ -75,14 +97,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     _LoginHeaderSection(
                       emailController: _emailController,
                       passwordController: _passwordController,
-                      emailError: loginState.emailError,
-                      passwordError: loginState.passwordError,
+                      emailError: emailError,
+                      passwordError: passwordError,
                       obscurePassword: _obscurePassword,
                       fieldScrollPadding: fieldScrollPadding,
                       onEmailChanged: _onEmailChanged,
                       onPasswordChanged: _onPasswordChanged,
                       onToggleObscure: _toggleObscurePassword,
                       onForgotPassword: () => context.go('/auth/forgot'),
+                      onSubmit: _handleSubmit,
                     ),
                     _LoginFormSection(
                       gapBelowForgot: gapBelowForgot,
@@ -90,6 +113,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onGoogle: () {},
                       onApple: () {},
                     ),
+                    if (globalError != null) ...[
+                      const SizedBox(height: Spacing.m),
+                      _GlobalErrorBanner(message: globalError),
+                    ],
                     // TODO(ui): Extract _handleSubmit() to reduce nesting; identical validation/network flow.
                     _LoginCtaSection(
                       isLoading: _isLoading,
@@ -107,21 +134,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  void _syncControllersFromState(LoginState state) {
-    if (_emailController.text != state.email) {
-      _emailController.text = state.email;
-      // TODO(ui): replace with TextEditingValue to preserve cursor when syncing.
-    }
-    if (_passwordController.text != state.password) {
-      _passwordController.text = state.password;
-      // TODO(ui): replace with TextEditingValue to preserve cursor when syncing.
-    }
-  }
-
   void _onEmailChanged(String value) {
     final notifier = ref.read(loginProvider.notifier);
     notifier.setEmail(value);
-    if (ref.read(loginProvider).emailError != null) {
+    final state = ref.read(loginProvider);
+    if (state.emailError != null || state.globalError != null) {
       notifier.clearErrors();
     }
   }
@@ -129,7 +146,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _onPasswordChanged(String value) {
     final notifier = ref.read(loginProvider.notifier);
     notifier.setPassword(value);
-    if (ref.read(loginProvider).passwordError != null) {
+    final state = ref.read(loginProvider);
+    if (state.passwordError != null || state.globalError != null) {
       notifier.clearErrors();
     }
   }
@@ -165,20 +183,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           password: _passwordController.text,
           emailError: 'E-Mail oder Passwort ist falsch.',
           passwordError: null,
+          globalError: null,
         );
       } else if (msg.contains('confirm')) {
         notifier.updateState(
           email: _emailController.text.trim(),
           password: _passwordController.text,
-          emailError: 'Bitte E-Mail bestätigen (Link erneut senden?)',
+          emailError: null,
           passwordError: null,
+          globalError: 'Bitte E-Mail bestätigen (Link erneut senden?)',
         );
       } else {
         notifier.updateState(
           email: _emailController.text.trim(),
           password: _passwordController.text,
-          emailError: 'Login derzeit nicht möglich.',
+          emailError: null,
           passwordError: null,
+          globalError: 'Login derzeit nicht möglich.',
         );
       }
     } finally {
@@ -199,6 +220,7 @@ class _LoginHeaderSection extends StatelessWidget {
     required this.onPasswordChanged,
     required this.onToggleObscure,
     required this.onForgotPassword,
+    required this.onSubmit,
   });
 
   final TextEditingController emailController;
@@ -211,6 +233,7 @@ class _LoginHeaderSection extends StatelessWidget {
   final ValueChanged<String> onPasswordChanged;
   final VoidCallback onToggleObscure;
   final VoidCallback onForgotPassword;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -235,6 +258,7 @@ class _LoginHeaderSection extends StatelessWidget {
           scrollPadding: fieldScrollPadding,
           onToggleObscure: onToggleObscure,
           onChanged: onPasswordChanged,
+          onSubmitted: (_) => onSubmit(),
         ),
         const SizedBox(height: Spacing.xs),
         LoginForgotButton(onPressed: onForgotPassword),
@@ -298,6 +322,38 @@ class _LoginCtaSection extends StatelessWidget {
           isLoading: isLoading,
         ),
       ],
+    );
+  }
+}
+
+class _GlobalErrorBanner extends StatelessWidget {
+  const _GlobalErrorBanner({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(Spacing.s),
+        decoration: BoxDecoration(
+          color: colorScheme.error.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(Spacing.s),
+        ),
+        child: Text(
+          message,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontSize: 15,
+            height: 1.4,
+            color: colorScheme.error,
+          ),
+        ),
+      ),
     );
   }
 }

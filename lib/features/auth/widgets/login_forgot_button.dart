@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 
 class LoginForgotButton extends StatelessWidget {
   const LoginForgotButton({super.key, required this.onPressed});
@@ -9,6 +10,7 @@ class LoginForgotButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tokens = theme.extension<DsTokens>()!;
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
@@ -24,7 +26,7 @@ class LoginForgotButton extends StatelessWidget {
           style: theme.textTheme.bodyMedium?.copyWith(
             fontSize: 16,
             height: 1.5,
-            color: theme.colorScheme.onSurface.withValues(alpha: 105),
+            color: tokens.grayscale500,
           ),
         ),
       ),

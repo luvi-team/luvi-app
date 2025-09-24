@@ -12,7 +12,7 @@ class LoginPasswordField extends StatelessWidget {
     required this.obscure,
     required this.onToggleObscure,
     this.onSubmitted,
-    this.scrollPadding = const EdgeInsets.only(bottom: 80),
+    this.scrollPadding = EdgeInsets.zero,
     this.textInputAction = TextInputAction.done,
     this.hintText = 'Dein Passwort',
     this.textStyle,
@@ -56,7 +56,7 @@ class LoginPasswordField extends StatelessWidget {
             border: Border.all(
               color: errorText != null
                   ? theme.colorScheme.error
-                  : theme.colorScheme.outlineVariant.withValues(alpha: 219),
+                  : tokens.inputBorder,
               width: 1,
             ),
           ),

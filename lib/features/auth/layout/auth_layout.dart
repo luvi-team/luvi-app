@@ -29,6 +29,8 @@ class AuthLayout {
   /// Reserve below form when keyboard shows:
   /// button (50) + double vertical spacing (2×24) + social block (~160) +
   /// signup link gap (≈31). safeBottom gets added at the call site.
-  static const double inlineCtaReserveLogin =
-      Sizes.buttonHeight + Spacing.l * 2 + 160 + Spacing.m;
+  static const double socialBlockReserveApprox = 160;
+  // TODO(ui): Measure actual social block height and replace approximation.
+  static const double inlineCtaReserveLoginApprox =
+      Sizes.buttonHeight + Spacing.l * 2 + socialBlockReserveApprox + Spacing.m;
 }
