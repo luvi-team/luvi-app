@@ -1,26 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/core/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/features/auth/state/reset_password_state.dart';
+import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
+class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _emailController = TextEditingController();
 
   static const EdgeInsets _fieldScrollPadding = EdgeInsets.only(
     bottom: Sizes.buttonHeight + Spacing.l * 2,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    final state = ref.read(resetPasswordProvider);
+    if (state.email.isNotEmpty) {
+      _emailController.value = _emailController.value.copyWith(
+        text: state.email,
+        selection: TextSelection.collapsed(offset: state.email.length),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -31,6 +47,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final state = ref.watch(resetPasswordProvider);
+    final submitState = ref.watch(resetSubmitProvider);
+    if (_emailController.text != state.email) {
+      _emailController.value = _emailController.value.copyWith(
+        text: state.email,
+        selection: TextSelection.collapsed(offset: state.email.length),
+      );
+    }
     final backButtonTopSpacing = topOffsetFromSafeArea(
       context,
       AuthLayout.backButtonTop,
@@ -52,7 +76,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return Scaffold(
       key: const ValueKey('auth_forgot_screen'),
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surface,
       body: AuthScreenShell(
         children: [
           SizedBox(height: backButtonTopSpacing),
@@ -70,15 +94,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             iconColor: theme.colorScheme.onSurface,
           ),
           const SizedBox(height: AuthLayout.backButtonToTitle),
-          Text('Passwort vergessen? 💜', style: titleStyle),
+          Text(
+            AuthStrings.forgotTitle,
+            key: const ValueKey('reset_title'),
+            style: titleStyle,
+          ),
           const SizedBox(height: Spacing.xs),
-          Text('E-Mail eingeben für Link.', style: subtitleStyle),
+          Text(AuthStrings.forgotSubtitle, style: subtitleStyle),
           const SizedBox(height: AuthLayout.titleToInput),
           LoginEmailField(
+            key: const ValueKey('reset_email_field'),
             controller: _emailController,
-            errorText: null,
+            errorText: state.errorText,
             autofocus: false,
-            onChanged: (_) {},
+            onChanged: (value) =>
+                ref.read(resetPasswordProvider.notifier).setEmail(value),
             onSubmitted: (_) => FocusScope.of(context).unfocus(),
             textInputAction: TextInputAction.done,
             scrollPadding: _fieldScrollPadding,
@@ -88,8 +118,28 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             height: Sizes.buttonHeight,
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
-              child: const Text('Weiter'),
+              key: const ValueKey('reset_cta'),
+              onPressed: state.isValid && !submitState.isLoading
+                  ? () async {
+                      await ref
+                          .read(resetSubmitProvider.notifier)
+                          .submit(state.email, onSuccess: () async {
+                        if (!mounted) {
+                          return;
+                        }
+                        if (!context.mounted) {
+                          return;
+                        }
+                        context.go('/auth/forgot/sent');
+                      });
+                    }
+                  : null,
+              child: submitState.isLoading
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text(AuthStrings.forgotCta),
             ),
           ),
         ],

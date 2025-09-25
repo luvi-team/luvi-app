@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
 
 class LoginEmailField extends StatelessWidget {
@@ -58,7 +59,7 @@ class LoginEmailField extends StatelessWidget {
             style: inputStyle,
             scrollPadding: scrollPadding,
             decoration: InputDecoration(
-              hintText: 'Deine E-Mail',
+              hintText: AuthStrings.emailHint,
               hintStyle: inputStyle?.copyWith(color: tokens.grayscale500),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.only(

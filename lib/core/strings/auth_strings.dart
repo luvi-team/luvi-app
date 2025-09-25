@@ -9,4 +9,14 @@ class AuthStrings {
   static const errConfirmEmail =
       'Bitte E-Mail bestätigen (Link erneut senden?)';
   static const errLoginUnavailable = 'Login derzeit nicht möglich.';
+  static const emailHint = 'Deine E-Mail';
+  static const forgotTitle = 'Passwort vergessen? 💜';
+  static const forgotSubtitle = 'E-Mail eingeben für Link.';
+  static const forgotCta = 'Weiter';
+  static const backSemantic = 'Zurück';
+  static const successPwdTitle = 'Geschafft!';
+  static const successPwdSubtitle = 'Neues Passwort gespeichert.';
+  static const successForgotTitle = 'E-Mail gesendet!';
+  static const successForgotSubtitle = 'Bitte Postfach prüfen.';
+  static const successCta = 'Fertig';
 }

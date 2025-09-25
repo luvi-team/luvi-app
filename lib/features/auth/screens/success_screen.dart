@@ -3,15 +3,25 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 
+enum SuccessVariant {
+  passwordSaved,
+  forgotEmailSent,
+}
+
 class SuccessScreen extends StatelessWidget {
-  const SuccessScreen({super.key});
+  const SuccessScreen({
+    super.key,
+    this.variant = SuccessVariant.passwordSaved,
+  });
 
   static const double _iconContainerSize = 104;
   static const double _iconSize = 48;
+  final SuccessVariant variant;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +53,19 @@ class SuccessScreen extends StatelessWidget {
     final resolvedHorizontalPadding =
         horizontalPadding > 0 ? horizontalPadding : 0.0;
 
+    late final String titleText;
+    late final String subtitleText;
+    switch (variant) {
+      case SuccessVariant.passwordSaved:
+        titleText = AuthStrings.successPwdTitle;
+        subtitleText = AuthStrings.successPwdSubtitle;
+        break;
+      case SuccessVariant.forgotEmailSent:
+        titleText = AuthStrings.successForgotTitle;
+        subtitleText = AuthStrings.successForgotSubtitle;
+        break;
+    }
+
     return Scaffold(
       key: const ValueKey('auth_success_screen'),
       resizeToAvoidBottomInset: true,
@@ -66,13 +89,16 @@ class SuccessScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: Spacing.l),
                   Text(
-                    'Geschafft!',
+                    titleText,
+                    key: variant == SuccessVariant.forgotEmailSent
+                        ? const ValueKey('success_title_forgot')
+                        : null,
                     style: titleStyle,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: Spacing.xs),
                   Text(
-                    'Neues Passwort gespeichert.',
+                    subtitleText,
                     style: subtitleStyle,
                     textAlign: TextAlign.center,
                   ),
@@ -103,7 +129,7 @@ class SuccessScreen extends StatelessWidget {
               height: Sizes.buttonHeight,
               child: ElevatedButton(
                 onPressed: () => context.go('/auth/login'),
-                child: const Text('Fertig'),
+                child: const Text(AuthStrings.successCta),
               ),
             ),
           ),

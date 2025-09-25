@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 
 class BackButtonCircle extends StatelessWidget {
   const BackButtonCircle({
@@ -35,7 +36,7 @@ class BackButtonCircle extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: 'Zurück',
+      label: AuthStrings.backSemantic,
       child: SizedBox(
         width: size,
         height: size,

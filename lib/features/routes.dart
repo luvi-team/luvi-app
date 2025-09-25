@@ -20,6 +20,12 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const ResetPasswordScreen(),
   ),
   GoRoute(
+    path: '/auth/forgot/sent',
+    name: 'forgot_sent',
+    builder: (context, state) =>
+        const SuccessScreen(variant: SuccessVariant.forgotEmailSent),
+  ),
+  GoRoute(
     path: '/auth/password/new',
     name: 'password_new',
     builder: (context, state) => const CreateNewPasswordScreen(),
