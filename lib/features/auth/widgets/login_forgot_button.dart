@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 
 class LoginForgotButton extends StatelessWidget {
@@ -22,7 +23,7 @@ class LoginForgotButton extends StatelessWidget {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         child: Text(
-          'Passwort vergessen?',
+          AuthStrings.loginForgot,
           style: theme.textTheme.bodyMedium?.copyWith(
             fontSize: 16,
             height: 1.5,

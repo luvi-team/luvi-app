@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 
 class LoginState {
   final String email;
@@ -70,10 +71,10 @@ class LoginNotifier extends StateNotifier<LoginState> {
     String? eErr;
     String? pErr;
     if (!state.email.contains('@')) {
-      eErr = 'Ups, bitte E-Mail überprüfen';
+      eErr = AuthStrings.errEmailInvalid;
     }
     if (state.password.length < 6) {
-      pErr = 'Ups, bitte Passwort überprüfen';
+      pErr = AuthStrings.errPasswordInvalid;
     }
     state = LoginState(
       email: state.email,

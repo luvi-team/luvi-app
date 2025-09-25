@@ -87,7 +87,7 @@ class LoginPasswordField extends StatelessWidget {
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
                     size: Spacing.l,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 105),
+                    color: tokens.grayscale500,
                   ),
                   onPressed: onToggleObscure,
                 ),
