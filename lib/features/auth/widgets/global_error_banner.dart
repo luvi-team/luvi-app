@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 
 class GlobalErrorBanner extends StatelessWidget {
-  const GlobalErrorBanner({super.key, required this.message});
+  const GlobalErrorBanner({
+    super.key,
+    required this.message,
+    this.onTap,
+  });
 
   final String message;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    return Semantics(
+    final banner = Semantics(
       container: true,
       liveRegion: true,
       child: Container(
@@ -29,6 +34,16 @@ class GlobalErrorBanner extends StatelessWidget {
           ),
         ),
       ),
+    );
+
+    if (onTap == null) {
+      return banner;
+    }
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: banner,
     );
   }
 }

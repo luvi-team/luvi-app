@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 
 class LoginHeader extends StatelessWidget {
   const LoginHeader({super.key});
@@ -14,7 +15,7 @@ class LoginHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Willkommen zurück 💜',
+            AuthStrings.loginHeadline,
             style: theme.textTheme.headlineMedium?.copyWith(
               fontSize: 32,
               height: 1.25,
@@ -23,7 +24,7 @@ class LoginHeader extends StatelessWidget {
           ),
           const SizedBox(height: Spacing.xs),
           Text(
-            'Schön, dass du da bist.',
+            AuthStrings.loginSubhead,
             style: theme.textTheme.headlineMedium?.copyWith(
               fontSize: 24,
               height: 1.33,

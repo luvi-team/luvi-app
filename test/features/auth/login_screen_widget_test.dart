@@ -10,6 +10,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/data/auth_repository.dart';
 import 'package:luvi_app/features/state/auth_controller.dart';
+import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -169,6 +170,54 @@ void main() {
 
     expect(confirmBanner, findsNothing);
     // Field errors remain untouched (stay null)
+    expect(find.text('Ups, bitte E-Mail überprüfen'), findsNothing);
+    expect(find.text('Ups, bitte Passwort überprüfen'), findsNothing);
+  });
+
+  testWidgets('Global error banner clears when tapped', (tester) async {
+    final view = tester.view;
+    view.physicalSize = const Size(1080, 2340);
+    view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      view.resetPhysicalSize();
+      view.resetDevicePixelRatio();
+    });
+
+    final mockRepo = _MockAuthRepository();
+    when(
+      () => mockRepo.signInWithPassword(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenThrow(AuthException('Please confirm your email.'));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
+        child: MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const LoginScreen(),
+        ),
+      ),
+    );
+
+    final emailField = find.byType(TextField).at(0);
+    final passwordField = find.byType(TextField).at(1);
+    await tester.enterText(emailField, 'user@example.com');
+    await tester.enterText(passwordField, 'correctpw');
+
+    final loginButton = find.widgetWithText(ElevatedButton, 'Anmelden');
+    await tester.tap(loginButton);
+    await tester.pumpAndSettle();
+
+    final confirmBanner =
+        find.text('Bitte E-Mail bestätigen (Link erneut senden?)');
+    expect(confirmBanner, findsOneWidget);
+
+    await tester.tap(find.byType(GlobalErrorBanner));
+    await tester.pump();
+
+    expect(confirmBanner, findsNothing);
     expect(find.text('Ups, bitte E-Mail überprüfen'), findsNothing);
     expect(find.text('Ups, bitte Passwort überprüfen'), findsNothing);
   });

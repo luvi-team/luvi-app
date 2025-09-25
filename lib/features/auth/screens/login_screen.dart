@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
-import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
-import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
-import 'package:luvi_app/features/auth/widgets/login_forgot_button.dart';
-import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/features/auth/widgets/social_auth_row.dart';
-import 'package:luvi_app/features/auth/widgets/login_header.dart';
 import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
+import 'package:luvi_app/features/auth/widgets/login_cta_section_wrapper.dart';
+import 'package:luvi_app/features/auth/widgets/login_form_section.dart';
+import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// LoginScreen with pixel-perfect Figma implementation.
@@ -64,7 +62,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final globalError = errors.$3;
     final submitState = ref.watch(loginSubmitProvider);
     final isLoading = submitState.isLoading;
-
     final hasValidationError = emailError != null || passwordError != null;
 
     final mediaQuery = MediaQuery.of(context);
@@ -76,9 +73,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // Reserve unterhalb der Felder: CTA + Social-Block + Footer + safeBottom
       bottom: AuthLayout.inlineCtaReserveLoginApprox + safeBottom,
     );
-    final gapBelowForgot = isKeyboardVisible
-        ? Spacing.m
-        : Spacing.l + Spacing.xs;
+    final gapBelowForgot =
+        isKeyboardVisible ? Spacing.m : Spacing.l + Spacing.xs;
     final socialGap = isKeyboardVisible ? Spacing.m : Spacing.l + Spacing.xs;
 
     return Scaffold(
@@ -87,50 +83,80 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         bottom: false,
         child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              padding: EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, safeBottom),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _LoginHeaderSection(
-                      emailController: _emailController,
-                      passwordController: _passwordController,
-                      emailError: emailError,
-                      passwordError: passwordError,
-                      obscurePassword: _obscurePassword,
-                      fieldScrollPadding: fieldScrollPadding,
-                      onEmailChanged: _onEmailChanged,
-                      onPasswordChanged: _onPasswordChanged,
-                      onToggleObscure: _toggleObscurePassword,
-                      onForgotPassword: () => context.go('/auth/forgot'),
-                      onSubmit: _handleSubmit,
-                    ),
-                    _LoginFormSection(
-                      gapBelowForgot: gapBelowForgot,
-                      socialGap: socialGap,
-                      onGoogle: () {},
-                      onApple: () {},
-                    ),
-                    if (globalError != null) ...[
-                      const SizedBox(height: Spacing.m),
-                      GlobalErrorBanner(message: globalError),
-                    ],
-                    // TODO(ui): Extract _handleSubmit() to reduce nesting; identical validation/network flow.
-                    _LoginCtaSection(
-                      isLoading: isLoading,
-                      hasValidationError: hasValidationError,
-                      onSubmit: () => _handleSubmit(),
-                      onSignup: () => context.go('/auth/signup'),
-                    ),
-                  ],
-                ),
+          builder: (context, constraints) => _buildScrollableBody(
+            context: context,
+            constraints: constraints,
+            fieldScrollPadding: fieldScrollPadding,
+            safeBottom: safeBottom,
+            gapBelowForgot: gapBelowForgot,
+            socialGap: socialGap,
+            globalError: globalError,
+            isLoading: isLoading,
+            hasValidationError: hasValidationError,
+            emailError: emailError,
+            passwordError: passwordError,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScrollableBody({
+    required BuildContext context,
+    required BoxConstraints constraints,
+    required EdgeInsets fieldScrollPadding,
+    required double safeBottom,
+    required double gapBelowForgot,
+    required double socialGap,
+    required String? globalError,
+    required bool isLoading,
+    required bool hasValidationError,
+    required String? emailError,
+    required String? passwordError,
+  }) {
+    return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, safeBottom),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            LoginHeaderSection(
+              emailController: _emailController,
+              passwordController: _passwordController,
+              emailError: emailError,
+              passwordError: passwordError,
+              obscurePassword: _obscurePassword,
+              fieldScrollPadding: fieldScrollPadding,
+              onEmailChanged: _onEmailChanged,
+              onPasswordChanged: _onPasswordChanged,
+              onToggleObscure: _toggleObscurePassword,
+              onForgotPassword: () => context.go('/auth/forgot'),
+              onSubmit: _handleSubmit,
+            ),
+            LoginFormSection(
+              gapBelowForgot: gapBelowForgot,
+              socialGap: socialGap,
+              onGoogle: () {},
+              onApple: () {},
+            ),
+            if (globalError != null) ...[
+              const SizedBox(height: Spacing.m),
+              GlobalErrorBanner(
+                message: globalError,
+                onTap: () =>
+                    ref.read(loginProvider.notifier).clearGlobalError(),
               ),
-            );
-          },
+            ],
+            // TODO(ui): Extract _handleSubmit() to reduce nesting; identical validation/network flow.
+            LoginCtaSectionWrapper(
+              isLoading: isLoading,
+              hasValidationError: hasValidationError,
+              onSubmit: _handleSubmit,
+              onSignup: () => context.go('/auth/signup'),
+            ),
+          ],
         ),
       ),
     );
@@ -191,7 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           password: _passwordController.text,
           emailError: null,
           passwordError: null,
-          globalError: 'Bitte E-Mail bestätigen (Link erneut senden?)',
+          globalError: AuthStrings.errConfirmEmail,
         );
       } else {
         notifier.updateState(
@@ -199,127 +225,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           password: _passwordController.text,
           emailError: null,
           passwordError: null,
-          globalError: 'Login derzeit nicht möglich.',
+          globalError: AuthStrings.errLoginUnavailable,
         );
       }
     }
-  }
-}
-
-class _LoginHeaderSection extends StatelessWidget {
-  const _LoginHeaderSection({
-    required this.emailController,
-    required this.passwordController,
-    required this.emailError,
-    required this.passwordError,
-    required this.obscurePassword,
-    required this.fieldScrollPadding,
-    required this.onEmailChanged,
-    required this.onPasswordChanged,
-    required this.onToggleObscure,
-    required this.onForgotPassword,
-    required this.onSubmit,
-  });
-
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final String? emailError;
-  final String? passwordError;
-  final bool obscurePassword;
-  final EdgeInsets fieldScrollPadding;
-  final ValueChanged<String> onEmailChanged;
-  final ValueChanged<String> onPasswordChanged;
-  final VoidCallback onToggleObscure;
-  final VoidCallback onForgotPassword;
-  final VoidCallback onSubmit;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: Spacing.l + Spacing.xs),
-        const LoginHeader(),
-        const SizedBox(height: Spacing.l + Spacing.xs),
-        LoginEmailField(
-          controller: emailController,
-          errorText: emailError,
-          autofocus: true,
-          scrollPadding: fieldScrollPadding,
-          onChanged: onEmailChanged,
-        ),
-        const SizedBox(height: Spacing.s + Spacing.xs),
-        LoginPasswordField(
-          controller: passwordController,
-          errorText: passwordError,
-          obscure: obscurePassword,
-          scrollPadding: fieldScrollPadding,
-          onToggleObscure: onToggleObscure,
-          onChanged: onPasswordChanged,
-          onSubmitted: (_) => onSubmit(),
-        ),
-        const SizedBox(height: Spacing.xs),
-        LoginForgotButton(onPressed: onForgotPassword),
-      ],
-    );
-  }
-}
-
-class _LoginFormSection extends StatelessWidget {
-  const _LoginFormSection({
-    required this.gapBelowForgot,
-    required this.socialGap,
-    required this.onGoogle,
-    required this.onApple,
-  });
-
-  final double gapBelowForgot;
-  final double socialGap;
-  final VoidCallback onGoogle;
-  final VoidCallback onApple;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: gapBelowForgot),
-        SocialAuthRow(
-          onGoogle: onGoogle,
-          onApple: onApple,
-          dividerToButtonsGap: socialGap,
-        ),
-      ],
-    );
-  }
-}
-
-class _LoginCtaSection extends StatelessWidget {
-  const _LoginCtaSection({
-    required this.isLoading,
-    required this.hasValidationError,
-    required this.onSubmit,
-    required this.onSignup,
-  });
-
-  final bool isLoading;
-  final bool hasValidationError;
-  final VoidCallback onSubmit;
-  final VoidCallback onSignup;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: AuthLayout.ctaTopAfterCopy),
-        LoginCtaSection(
-          onSubmit: onSubmit,
-          onSignup: onSignup,
-          hasValidationError: hasValidationError,
-          isLoading: isLoading,
-        ),
-      ],
-    );
   }
 }

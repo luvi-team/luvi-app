@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 
 class SocialAuthRow extends StatelessWidget {
   const SocialAuthRow({
@@ -23,7 +24,7 @@ class SocialAuthRow extends StatelessWidget {
     return Column(
       children: [
         _SocialDivider(
-          label: 'Oder melde dich an mit',
+          label: AuthStrings.loginSocialDivider,
           lineColor: colorScheme.outlineVariant,
           textStyle: textTheme.bodyMedium?.copyWith(
             fontSize: 20,
