@@ -7,7 +7,7 @@ import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
-import 'package:luvi_app/features/auth/widgets/login_cta_section_wrapper.dart';
+import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_form_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -66,36 +66,50 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final mediaQuery = MediaQuery.of(context);
     final safeBottom = mediaQuery.padding.bottom;
-    final keyboardInset = mediaQuery.viewInsets.bottom;
-    final isKeyboardVisible = keyboardInset > 0;
-
     final fieldScrollPadding = EdgeInsets.only(
       // Reserve unterhalb der Felder: CTA + Social-Block + Footer + safeBottom
       bottom: AuthLayout.inlineCtaReserveLoginApprox + safeBottom,
     );
-    final gapBelowForgot =
-        isKeyboardVisible ? Spacing.m : Spacing.l + Spacing.xs;
-    final socialGap = isKeyboardVisible ? Spacing.m : Spacing.l + Spacing.xs;
+    const gapBelowForgot = Spacing.m;
+    const socialGap = Spacing.m;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: SafeArea(
         bottom: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) => _buildScrollableBody(
-            context: context,
-            constraints: constraints,
-            fieldScrollPadding: fieldScrollPadding,
-            safeBottom: safeBottom,
-            gapBelowForgot: gapBelowForgot,
-            socialGap: socialGap,
-            globalError: globalError,
-            isLoading: isLoading,
-            hasValidationError: hasValidationError,
-            emailError: emailError,
-            passwordError: passwordError,
-          ),
+        child: Column(
+          children: [
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) => _buildScrollableBody(
+                  context: context,
+                  constraints: constraints,
+                  fieldScrollPadding: fieldScrollPadding,
+                  safeBottom: safeBottom,
+                  gapBelowForgot: gapBelowForgot,
+                  socialGap: socialGap,
+                  globalError: globalError,
+                  emailError: emailError,
+                  passwordError: passwordError,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                Spacing.l,
+                0,
+                Spacing.l,
+                safeBottom,
+              ),
+              child: LoginCtaSection(
+                onSubmit: _handleSubmit,
+                onSignup: () => context.go('/auth/signup'),
+                hasValidationError: hasValidationError,
+                isLoading: isLoading,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -109,8 +123,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required double gapBelowForgot,
     required double socialGap,
     required String? globalError,
-    required bool isLoading,
-    required bool hasValidationError,
     required String? emailError,
     required String? passwordError,
   }) {
@@ -149,13 +161,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ref.read(loginProvider.notifier).clearGlobalError(),
               ),
             ],
-            // TODO(ui): Extract _handleSubmit() to reduce nesting; identical validation/network flow.
-            LoginCtaSectionWrapper(
-              isLoading: isLoading,
-              hasValidationError: hasValidationError,
-              onSubmit: _handleSubmit,
-              onSignup: () => context.go('/auth/signup'),
-            ),
+            const SizedBox(height: AuthLayout.ctaTopAfterCopy),
           ],
         ),
       ),
