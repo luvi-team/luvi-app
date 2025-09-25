@@ -71,6 +71,7 @@ class SuccessScreen extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       backgroundColor: theme.colorScheme.surface,
       body: AuthScreenShell(
+        includeBottomReserve: false,
         children: [
           SizedBox(height: topSpacing),
           Center(
