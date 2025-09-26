@@ -33,4 +33,8 @@ class AuthLayout {
   // TODO(ui): Measure actual social block height and replace approximation.
   static const double inlineCtaReserveLoginApprox =
       Sizes.buttonHeight + Spacing.l * 2 + socialBlockReserveApprox + Spacing.m;
+  static const double backButtonSize = 40;
+  static const double otpFieldSize = 51;
+  static const double otpGap = 16;
+  static const double otpBorderRadius = 8;
 }

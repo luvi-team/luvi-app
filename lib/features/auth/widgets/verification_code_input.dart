@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 
 /// 6-digit verification input with auto-advance and themed borders.
 class VerificationCodeInput extends StatefulWidget {
@@ -12,8 +13,8 @@ class VerificationCodeInput extends StatefulWidget {
     required this.onChanged,
     this.onCompleted,
     this.controllers,
-    this.fieldSize = 51,
-    this.gap = 16,
+    this.fieldSize = AuthLayout.otpFieldSize,
+    this.gap = AuthLayout.otpGap,
     this.autofocus = false,
     this.error = false,
     this.inactiveBorderColor,
@@ -86,15 +87,15 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
     final activeBorderColor = widget.focusedBorderColor ?? theme.colorScheme.primary;
     final fillColor = widget.fillColor ?? tokens.cardSurface;
     final baseBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AuthLayout.otpBorderRadius),
       borderSide: BorderSide(color: inactiveBorderColor, width: 1),
     );
     final focusedBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AuthLayout.otpBorderRadius),
       borderSide: BorderSide(color: activeBorderColor, width: 1.5),
     );
     final errorBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AuthLayout.otpBorderRadius),
       borderSide: BorderSide(color: theme.colorScheme.error, width: 1.5),
     );
 
