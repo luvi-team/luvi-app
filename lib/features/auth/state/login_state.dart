@@ -7,6 +7,7 @@ class LoginState {
   final String? emailError;
   final String? passwordError;
   final String? globalError;
+
   const LoginState({
     this.email = '',
     this.password = '',
@@ -20,63 +21,86 @@ class LoginState {
       password.isNotEmpty &&
       emailError == null &&
       passwordError == null;
+
+  LoginState copyWith({
+    String? email,
+    String? password,
+    String? emailError,
+    String? passwordError,
+    String? globalError,
+  }) {
+    return LoginState(
+      email: email ?? this.email,
+      password: password ?? this.password,
+      // Fehlerfelder bewusst direkt übernehmen (auch null zum Leeren)
+      emailError: emailError,
+      passwordError: passwordError,
+      globalError: globalError,
+    );
+  }
 }
 
 class LoginNotifier extends StateNotifier<LoginState> {
   LoginNotifier() : super(const LoginState());
 
-  void setEmail(String v) => state = LoginState(
-        email: v,
-        password: state.password,
-        emailError: state.emailError,
-        passwordError: state.passwordError,
-        globalError: state.globalError,
-      );
-
-  void setPassword(String v) => state = LoginState(
-        email: state.email,
-        password: v,
-        emailError: state.emailError,
-        passwordError: state.passwordError,
-        globalError: state.globalError,
-      );
-
-  void clearGlobalError() => state = LoginState(
-        email: state.email,
-        password: state.password,
-        emailError: state.emailError,
-        passwordError: state.passwordError,
-        globalError: null,
-      );
-
-  }) {
-    state = LoginState(
-      email: email ?? state.email,
-      password: password ?? state.password,
-      // accept provided values directly, even if null (clears old errors)
-      emailError: emailError,
-      passwordError: passwordError,
+  void setEmail(String value) {
+    state = state.copyWith(
+      email: value,
+      emailError: state.emailError,
+      passwordError: state.passwordError,
+      globalError: state.globalError,
     );
   }
 
-  /// MIWF-Validierung gemäß Figma-Fehlertexten.
+  void setPassword(String value) {
+    state = state.copyWith(
+      password: value,
+      emailError: state.emailError,
+      passwordError: state.passwordError,
+      globalError: state.globalError,
+    );
+  }
+
+  void clearGlobalError() {
+    state = state.copyWith(
+      globalError: null,
+    );
+  }
+
+  /// Eine (1) kanonische Variante inkl. globalError – kompatibel zu Provider/Tests.
+  void updateState({
+    String? email,
+    String? password,
+    String? emailError,
+    String? passwordError,
+    String? globalError,
+  }) {
+    state = state.copyWith(
+      email: email ?? state.email,
+      password: password ?? state.password,
+      emailError: emailError,
+      passwordError: passwordError,
+      globalError: globalError,
+    );
+  }
+
+  /// MIWF: einfache Client-Validierung; Server-Submit passiert im Submit-Provider.
   void validateAndSubmit() {
     String? eErr;
     String? pErr;
+
     if (!state.email.contains('@')) {
       eErr = AuthStrings.errEmailInvalid;
     }
     if (state.password.length < 6) {
       pErr = AuthStrings.errPasswordInvalid;
     }
-    state = LoginState(
-      email: state.email,
-      password: state.password,
+
+    state = state.copyWith(
       emailError: eErr,
       passwordError: pErr,
       globalError: null,
     );
-    // Supabase sign-in folgt im nächsten Schritt (MVP).
   }
 }
 
