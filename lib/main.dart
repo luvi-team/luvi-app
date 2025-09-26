@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'services/supabase_service.dart';
-import 'features/routes.dart' as features;
+import 'features/consent/routes.dart' as consent;
+import 'features/auth/screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,36 +33,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // Allow overriding the initial route at build time for development/testing.
-    // Usage: flutter run/build --dart-define=INITIAL_ROUTE=/your/path
-    const initialLocation = String.fromEnvironment(
-      'INITIAL_ROUTE',
-      // Default to the Login screen in development unless explicitly overridden.
-      defaultValue: '/auth/login',
-    );
-
     final router = GoRouter(
-      routes: features.featureRoutes,
-      initialLocation: initialLocation,
+      routes: [
+        ...consent.consentRoutes,
+        GoRoute(
+          path: '/auth/login',
+          builder: (context, state) => const LoginScreen(),
+        ),
+      ],
+      initialLocation: '/onboarding/w1',
       redirect: (context, state) {
-        // Allow auth routes while Supabase is initializing, and avoid touching
-        // Supabase.instance before initialization completes to prevent asserts.
-        final isAuthOpenRoute =
-            state.matchedLocation.startsWith('/auth/login') ||
-            state.matchedLocation.startsWith('/auth/signup') ||
-            state.matchedLocation.startsWith('/auth/forgot') ||
-            state.matchedLocation.startsWith('/auth/password/new') ||
-            state.matchedLocation.startsWith('/auth/password/success') ||
-            state.matchedLocation.startsWith('/auth/verify');
-
-        if (!SupabaseService.initialized) {
-          // Until Supabase is initialized, allow only open auth routes.
-          return isAuthOpenRoute ? null : '/auth/login';
-        }
-
         final session = SupabaseService.client.auth.currentSession;
-        if (session == null && !isAuthOpenRoute) return '/auth/login';
-        if (session != null && isAuthOpenRoute) return '/onboarding/w1';
+        final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
+        if (session == null && !isLoggingIn) return '/auth/login';
+        if (session != null && isLoggingIn) return '/onboarding/w1';
         return null;
       },
     );

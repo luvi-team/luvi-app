@@ -2,9 +2,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SupabaseService {
-  // Tracks whether Supabase.initialize has completed successfully.
-  static bool initialized = false;
-
   static SupabaseClient get client => Supabase.instance.client;
 
   /// Check if user is authenticated
@@ -27,7 +24,6 @@ class SupabaseService {
       url: url,
       anonKey: anon,
     );
-    initialized = true;
   }
 
   /// Upsert email preferences for the current user
