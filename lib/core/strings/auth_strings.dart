@@ -19,4 +19,11 @@ class AuthStrings {
   static const successForgotTitle = 'E-Mail gesendet!';
   static const successForgotSubtitle = 'Bitte Postfach prüfen.';
   static const successCta = 'Fertig';
+  static const verifyResetTitle = 'Code eingeben 💜';
+  static const verifyResetSubtitle = 'Gerade an deine E-Mail gesendet.';
+  static const verifyEmailTitle = 'E-Mail bestätigen 💜';
+  static const verifyEmailSubtitle = 'Code eingeben';
+  static const verifyCta = 'Bestätigen';
+  static const verifyHelper = 'Nichts angekommen?';
+  static const verifyResend = 'Erneut senden';
 }
