@@ -54,7 +54,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
     final isCodeComplete = _code.length == _codeLength;
     final otpScrollPad = EdgeInsets.only(
-      bottom: Sizes.buttonHeight + AuthLayout.gapSection + safeBottom,
+      bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
     );
     final inactiveBorderColor = colorScheme.primary.withValues(alpha: 0.75);
     final primaryColor = colorScheme.primary;

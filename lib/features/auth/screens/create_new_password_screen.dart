@@ -36,8 +36,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   bool _obscureConfirmPassword = true;
 
   static const double _backButtonSize = AuthLayout.backButtonSize;
-  static const double _backIconSize = 20;
-
   @override
   void dispose() {
     _newPasswordController.dispose();
@@ -81,6 +79,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           height: Sizes.buttonHeight,
           width: double.infinity,
           child: ElevatedButton(
+            key: const ValueKey('create_new_cta_button'),
             onPressed: () {},
             child: const Text(AuthStrings.createNewCta),
           ),
@@ -196,7 +195,7 @@ class _CreateNewBody extends StatelessWidget {
           backgroundColor: backgroundColor,
           iconColor: iconColor,
           size: _CreateNewPasswordScreenState._backButtonSize,
-          iconSize: _CreateNewPasswordScreenState._backIconSize,
+          iconSize: AuthLayout.backIconSize,
         ),
       ],
     );

@@ -12,6 +12,7 @@ class AuthStrings {
   static const errPasswordInvalid = 'Ups, bitte Passwort überprüfen';
   static const errConfirmEmail =
       'Bitte E-Mail bestätigen (Link erneut senden?)';
+  static const invalidCredentials = 'E-Mail oder Passwort ist falsch.';
   static const errLoginUnavailable = 'Login derzeit nicht möglich.';
   static const emailHint = 'Deine E-Mail';
   static const passwordHint = 'Dein Passwort';

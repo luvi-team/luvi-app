@@ -9,9 +9,6 @@ import 'package:luvi_app/features/auth/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 
-const kIconCircle = 104.0;
-const kIconSize = 48.0;
-
 enum SuccessVariant {
   passwordSaved,
   forgotEmailSent,
@@ -87,8 +84,8 @@ class SuccessScreen extends StatelessWidget {
                 subtitleText: subtitleText,
                 titleStyle: titleStyle,
                 subtitleStyle: subtitleStyle,
-                iconContainerSize: kIconCircle,
-                iconSize: kIconSize,
+                iconContainerSize: AuthLayout.successIconCircle,
+                iconSize: AuthLayout.successIconInner,
                 iconBackgroundColor: tokens.successColor,
                 iconColor: theme.colorScheme.onPrimary,
               ),
@@ -171,11 +168,11 @@ class _BottomCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    isLoading;
     return SizedBox(
       width: double.infinity,
       height: Sizes.buttonHeight,
       child: ElevatedButton(
+        key: const ValueKey('success_cta_button'),
         onPressed: onPressed,
         child: const Text(AuthStrings.successCta),
       ),

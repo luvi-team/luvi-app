@@ -29,6 +29,7 @@ class LoginCtaSection extends StatelessWidget {
         SizedBox(
           height: Sizes.buttonHeight,
           child: ElevatedButton(
+            key: const ValueKey('login_cta_button'),
             onPressed: (isLoading || hasValidationError) ? null : onSubmit,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 150),

@@ -20,6 +20,8 @@ class AuthLayout {
       inputToCta; // MVP: tighter gap for keyboard
   static const double ctaTopAfterCopy = 32; // Subtitle -> CTA spacing (Figma)
   static const double iconTopSuccess = 325; // Success icon top offset (Figma)
+  static const double successIconCircle = 104.0;
+  static const double successIconInner = 48.0;
   static const double hPadding40 = 40; // Full-bleed horizontal padding (Figma)
   static const double figmaHeaderTop = 112; // Verification header top (Figma)
   static const double ctaLinkGapNormal =
@@ -34,6 +36,7 @@ class AuthLayout {
   static const double inlineCtaReserveLoginApprox =
       Sizes.buttonHeight + Spacing.l * 2 + socialBlockReserveApprox + Spacing.m;
   static const double backButtonSize = 40;
+  static const double backIconSize = 20.0;
   static const double otpFieldSize = 51;
   static const double otpGap = 16;
   static const double otpBorderRadius = 8;

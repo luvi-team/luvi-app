@@ -10,7 +10,6 @@ import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
 import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_form_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// LoginScreen with pixel-perfect Figma implementation.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -64,6 +63,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = submitState.isLoading;
     final hasValidationError = emailError != null || passwordError != null;
 
+    final submit = () => ref.read(loginSubmitProvider.notifier).submit(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+
     final mediaQuery = MediaQuery.of(context);
     final safeBottom = mediaQuery.padding.bottom;
     final fieldScrollPadding = EdgeInsets.only(
@@ -93,6 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   globalError: globalError,
                   emailError: emailError,
                   passwordError: passwordError,
+                  onSubmit: submit,
                 ),
               ),
             ),
@@ -104,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 safeBottom,
               ),
               child: LoginCtaSection(
-                onSubmit: _handleSubmit,
+                onSubmit: submit,
                 onSignup: () => context.goNamed('signup'),
                 hasValidationError: hasValidationError,
                 isLoading: isLoading,
@@ -126,6 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required String? globalError,
     required String? emailError,
     required String? passwordError,
+    required VoidCallback onSubmit,
   }) {
     return SingleChildScrollView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -146,7 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onPasswordChanged: _onPasswordChanged,
               onToggleObscure: _toggleObscurePassword,
               onForgotPassword: () => context.goNamed('forgot'),
-              onSubmit: _handleSubmit,
+              onSubmit: onSubmit,
             ),
             LoginFormSection(
               gapBelowForgot: gapBelowForgot,
@@ -191,50 +197,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _obscurePassword = !_obscurePassword);
   }
 
-  Future<void> _handleSubmit() async {
-    final notifier = ref.read(loginProvider.notifier);
-    notifier.validateAndSubmit();
-    final state = ref.read(loginProvider);
-    final hasLocalErrors =
-        state.emailError != null || state.passwordError != null;
-    if (hasLocalErrors) {
-      return;
-    }
-
-    final submitNotifier = ref.read(loginSubmitProvider.notifier);
-    try {
-      await submitNotifier.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-      notifier.clearGlobalError();
-    } on AuthException catch (e) {
-      final msg = e.message.toLowerCase();
-      if (msg.contains('invalid') || msg.contains('credentials')) {
-        notifier.updateState(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          emailError: 'E-Mail oder Passwort ist falsch.',
-          passwordError: null,
-          globalError: null,
-        );
-      } else if (msg.contains('confirm')) {
-        notifier.updateState(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          emailError: null,
-          passwordError: null,
-          globalError: AuthStrings.errConfirmEmail,
-        );
-      } else {
-        notifier.updateState(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          emailError: null,
-          passwordError: null,
-          globalError: AuthStrings.errLoginUnavailable,
-        );
-      }
-    }
-  }
 }
