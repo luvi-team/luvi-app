@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/utils/layout_utils.dart';
+import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/verification_code_input.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
@@ -35,6 +36,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final safeBottom = MediaQuery.of(context).viewPadding.bottom;
 
     final copy = _VariantCopy.fromVariant(widget.variant);
     final topSpacing = topOffsetFromSafeArea(
@@ -71,12 +73,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
     );
 
     final isCodeComplete = _code.length == _codeLength;
+    final otpScrollPad = EdgeInsets.only(
+      bottom: Sizes.buttonHeight + AuthLayout.gapSection + safeBottom,
+    );
 
     return Scaffold(
       key: const ValueKey('auth_verify_screen'),
       backgroundColor: theme.colorScheme.surface,
       resizeToAvoidBottomInset: true,
       body: AuthScreenShell(
+        includeBottomReserve: false,
         children: [
           SizedBox(height: topSpacing),
           BackButtonCircle(
@@ -106,57 +112,42 @@ class _VerificationScreenState extends State<VerificationScreen> {
               inactiveBorderColor:
                   theme.colorScheme.primary.withValues(alpha: 0.75),
               focusedBorderColor: theme.colorScheme.primary,
+              scrollPadding: otpScrollPad,
               onChanged: (value) => setState(() => _code = value),
             ),
           ),
-          const SizedBox(height: AuthLayout.gapSection),
         ],
       ),
-      bottomNavigationBar: AnimatedPadding(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AuthLayout.horizontalPadding,
-              AuthLayout.gapSection,
-              AuthLayout.horizontalPadding,
-              Spacing.s,
+      bottomNavigationBar: AuthBottomCta(
+        topPadding: AuthLayout.inputToCta,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: Sizes.buttonHeight,
+              child: ElevatedButton(
+                onPressed: isCodeComplete ? () {} : null,
+                child: const Text('Bestätigen'),
+              ),
             ),
-            child: Column(
+            const SizedBox(height: AuthLayout.gapSection),
+            Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                  height: Sizes.buttonHeight,
-                  child: ElevatedButton(
-                    onPressed: isCodeComplete ? () {} : null,
-                    child: const Text('Bestätigen'),
+                Text(copy.helper, style: helperStyle),
+                TextButton(
+                  onPressed: () {},
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                ),
-                const SizedBox(height: AuthLayout.gapSection),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(copy.helper, style: helperStyle),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(copy.resend, style: resendStyle),
-                    ),
-                  ],
+                  child: Text(copy.resend, style: resendStyle),
                 ),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );

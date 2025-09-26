@@ -20,6 +20,7 @@ class VerificationCodeInput extends StatefulWidget {
     this.focusedBorderColor,
     this.filled = true,
     this.fillColor,
+    this.scrollPadding = EdgeInsets.zero,
   })  : assert(length > 0, 'length must be positive.'),
         assert(controllers == null || controllers.length == length,
             'controllers length must match the configured length.');
@@ -36,6 +37,7 @@ class VerificationCodeInput extends StatefulWidget {
   final Color? focusedBorderColor;
   final bool filled;
   final Color? fillColor;
+  final EdgeInsets scrollPadding;
 
   @override
   State<VerificationCodeInput> createState() => _VerificationCodeInputState();
@@ -127,6 +129,7 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
                       controller: _controllers[i],
                       autofocus: widget.autofocus && i == 0,
                       textAlign: TextAlign.center,
+                      scrollPadding: widget.scrollPadding,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontSize: 24,
                         height: 32 / 24,

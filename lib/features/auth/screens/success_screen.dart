@@ -6,7 +6,11 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/utils/layout_utils.dart';
+import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
+
+const kIconCircle = 104.0;
+const kIconSize = 48.0;
 
 enum SuccessVariant {
   passwordSaved,
@@ -19,8 +23,6 @@ class SuccessScreen extends StatelessWidget {
     this.variant = SuccessVariant.passwordSaved,
   });
 
-  static const double _iconContainerSize = 104;
-  static const double _iconSize = 48;
   final SuccessVariant variant;
 
   @override
@@ -79,62 +81,103 @@ class SuccessScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(
                 horizontal: resolvedHorizontalPadding,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _SuccessIcon(
-                    size: _iconContainerSize,
-                    iconSize: _iconSize,
-                    backgroundColor: tokens.successColor,
-                    iconColor: theme.colorScheme.onPrimary,
-                  ),
-                  const SizedBox(height: Spacing.l),
-                  Text(
-                    titleText,
-                    key: variant == SuccessVariant.forgotEmailSent
-                        ? const ValueKey('success_title_forgot')
-                        : null,
-                    style: titleStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: Spacing.xs),
-                  Text(
-                    subtitleText,
-                    style: subtitleStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+              child: _SuccessCopy(
+                variant: variant,
+                titleText: titleText,
+                subtitleText: subtitleText,
+                titleStyle: titleStyle,
+                subtitleStyle: subtitleStyle,
+                iconContainerSize: kIconCircle,
+                iconSize: kIconSize,
+                iconBackgroundColor: tokens.successColor,
+                iconColor: theme.colorScheme.onPrimary,
               ),
             ),
           ),
-          const SizedBox(height: AuthLayout.ctaTopAfterCopy),
         ],
       ),
-      bottomNavigationBar: AnimatedPadding(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+      bottomNavigationBar: AuthBottomCta(
+        child: _BottomCta(
+          onPressed: () => context.go('/auth/login'),
+          isLoading: false,
         ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              AuthLayout.horizontalPadding,
-              AuthLayout.ctaTopAfterCopy,
-              AuthLayout.horizontalPadding,
-              Spacing.s,
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: Sizes.buttonHeight,
-              child: ElevatedButton(
-                onPressed: () => context.go('/auth/login'),
-                child: const Text(AuthStrings.successCta),
-              ),
-            ),
-          ),
+      ),
+    );
+  }
+}
+
+class _SuccessCopy extends StatelessWidget {
+  const _SuccessCopy({
+    required this.variant,
+    required this.titleText,
+    required this.subtitleText,
+    required this.titleStyle,
+    required this.subtitleStyle,
+    required this.iconContainerSize,
+    required this.iconSize,
+    required this.iconBackgroundColor,
+    required this.iconColor,
+  });
+
+  final SuccessVariant variant;
+  final String titleText;
+  final String subtitleText;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+  final double iconContainerSize;
+  final double iconSize;
+  final Color iconBackgroundColor;
+  final Color iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _SuccessIcon(
+          size: iconContainerSize,
+          iconSize: iconSize,
+          backgroundColor: iconBackgroundColor,
+          iconColor: iconColor,
         ),
+        const SizedBox(height: Spacing.l),
+        Text(
+          titleText,
+          key: variant == SuccessVariant.forgotEmailSent
+              ? const ValueKey('success_title_forgot')
+              : null,
+          style: titleStyle,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: Spacing.xs),
+        Text(
+          subtitleText,
+          style: subtitleStyle,
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+class _BottomCta extends StatelessWidget {
+  const _BottomCta({
+    required this.onPressed,
+    required this.isLoading,
+  });
+
+  final VoidCallback onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    isLoading;
+    return SizedBox(
+      width: double.infinity,
+      height: Sizes.buttonHeight,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: const Text(AuthStrings.successCta),
       ),
     );
   }
