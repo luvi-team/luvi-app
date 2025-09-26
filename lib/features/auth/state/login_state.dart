@@ -63,15 +63,11 @@ class LoginNotifier extends StateNotifier<LoginState> {
 
   void clearGlobalError() {
     state = state.copyWith(
-      email: state.email,
-      password: state.password,
-      emailError: state.emailError,
-      passwordError: state.passwordError,
       globalError: null,
     );
   }
 
-  /// Eine (1) kanonische updateState-Variante inkl. globalError, kompatibel zu Call-Sites.
+  /// Eine (1) kanonische Variante inkl. globalError – kompatibel zu Provider/Tests.
   void updateState({
     String? email,
     String? password,
@@ -101,8 +97,6 @@ class LoginNotifier extends StateNotifier<LoginState> {
     }
 
     state = state.copyWith(
-      email: state.email,
-      password: state.password,
       emailError: eErr,
       passwordError: pErr,
       globalError: null,
@@ -113,4 +107,3 @@ class LoginNotifier extends StateNotifier<LoginState> {
 final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>(
   (ref) => LoginNotifier(),
 );
-
