@@ -10,6 +10,15 @@ class AuthStrings {
       'Bitte E-Mail bestätigen (Link erneut senden?)';
   static const errLoginUnavailable = 'Login derzeit nicht möglich.';
   static const emailHint = 'Deine E-Mail';
+  static const passwordHint = 'Dein Passwort';
+  static const signupTitle = 'Deine Reise beginnt hier 💜';
+  static const signupSubtitle = 'Schnell registrieren - dann geht\'s los.';
+  static const signupCta = 'Registrieren';
+  static const signupLinkPrefix = 'Schon dabei? ';
+  static const signupLinkAction = 'Anmelden';
+  static const signupHintFirstName = 'Dein Vorname';
+  static const signupHintLastName = 'Dein Nachname';
+  static const signupHintPhone = 'Deine Telefonnummer';
   static const forgotTitle = 'Passwort vergessen? 💜';
   static const forgotSubtitle = 'E-Mail eingeben für Link.';
   static const forgotCta = 'Weiter';

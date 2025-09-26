@@ -4,7 +4,7 @@ import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/screens/verification_screen.dart';
-import 'package:luvi_app/features/screens/auth_signup_screen.dart';
+import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 
 final List<GoRoute> featureRoutes = [
