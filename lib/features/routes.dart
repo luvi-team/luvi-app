@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/features/consent/routes.dart' as consent;
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
@@ -6,6 +7,7 @@ import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/screens/verification_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
+import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
   ...consent.consentRoutes.where((route) => route.name != 'login'),
@@ -52,3 +54,19 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const AuthSignupScreen(),
   ),
 ];
+
+String? supabaseRedirect(BuildContext context, GoRouterState state) {
+  final isInitialized = SupabaseService.isInitialized;
+  final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
+  final session = isInitialized
+      ? SupabaseService.client.auth.currentSession
+      : null;
+
+  if (session == null) {
+    return isLoggingIn ? null : '/auth/login';
+  }
+  if (isLoggingIn) {
+    return '/onboarding/w1';
+  }
+  return null;
+}
