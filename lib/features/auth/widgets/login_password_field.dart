@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
 
 class LoginPasswordField extends StatelessWidget {
   const LoginPasswordField({
@@ -11,6 +12,12 @@ class LoginPasswordField extends StatelessWidget {
     required this.onChanged,
     required this.obscure,
     required this.onToggleObscure,
+    this.onSubmitted,
+    this.scrollPadding = EdgeInsets.zero,
+    this.textInputAction = TextInputAction.done,
+    this.hintText = 'Dein Passwort',
+    this.textStyle,
+    this.hintStyle,
   });
 
   final TextEditingController controller;
@@ -18,11 +25,27 @@ class LoginPasswordField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final bool obscure;
   final VoidCallback onToggleObscure;
+  final ValueChanged<String>? onSubmitted;
+  final EdgeInsets scrollPadding;
+  final TextInputAction textInputAction;
+  final String hintText;
+  final TextStyle? textStyle;
+  final TextStyle? hintStyle;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final resolvedTextStyle = textStyle ??
+        theme.textTheme.bodyMedium?.copyWith(
+          fontSize: 16,
+          height: 1.5,
+          color: theme.colorScheme.onSurface,
+        );
+    final resolvedHintStyle = hintStyle ??
+        resolvedTextStyle?.copyWith(
+          color: tokens.grayscale500,
+        );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -34,27 +57,20 @@ class LoginPasswordField extends StatelessWidget {
             border: Border.all(
               color: errorText != null
                   ? theme.colorScheme.error
-                  : theme.colorScheme.outlineVariant.withValues(alpha: 219),
+                  : tokens.inputBorder,
               width: 1,
             ),
           ),
           child: TextField(
             controller: controller,
             obscureText: obscure,
-            textInputAction: TextInputAction.done,
+            textInputAction: textInputAction,
             autofillHints: const [AutofillHints.password],
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 16,
-              height: 1.5,
-              color: theme.colorScheme.onSurface,
-            ),
+            style: resolvedTextStyle,
+            scrollPadding: scrollPadding,
             decoration: InputDecoration(
-              hintText: 'Dein Passwort',
-              hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontSize: 16,
-                height: 1.5,
-                color: theme.colorScheme.onSurface.withValues(alpha: 105),
-              ),
+              hintText: hintText,
+              hintStyle: resolvedHintStyle,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.only(
                 left: Spacing.m,
@@ -71,25 +87,17 @@ class LoginPasswordField extends StatelessWidget {
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
                     size: Spacing.l,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 105),
+                    color: tokens.grayscale500,
                   ),
                   onPressed: onToggleObscure,
                 ),
               ),
             ),
             onChanged: onChanged,
+            onSubmitted: onSubmitted,
           ),
         ),
-        if (errorText != null) ...[
-          const SizedBox(height: Spacing.s - Spacing.xs),
-          Text(
-            errorText!,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 14,
-              color: theme.colorScheme.error,
-            ),
-          ),
-        ],
+        if (errorText != null) FieldErrorText(errorText!),
       ],
     );
   }

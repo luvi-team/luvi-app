@@ -178,7 +178,6 @@ class Consent02Screen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Column(
         children: [
           // TOP zone: Back + H1

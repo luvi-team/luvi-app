@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 
 class SocialAuthRow extends StatelessWidget {
   const SocialAuthRow({
     super.key,
     required this.onGoogle,
     required this.onApple,
+    this.dividerToButtonsGap = Spacing.l + Spacing.xs,
   });
 
   final VoidCallback onGoogle;
   final VoidCallback onApple;
+  final double dividerToButtonsGap;
 
   @override
   Widget build(BuildContext context) {
@@ -20,34 +23,16 @@ class SocialAuthRow extends StatelessWidget {
     final textTheme = theme.textTheme;
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                height: 1,
-                color: colorScheme.outlineVariant.withValues(alpha: 224),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.s),
-              child: Text(
-                'Oder melde dich an mit',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontSize: 20,
-                  height: 1.2,
-                  color: colorScheme.onSurface.withValues(alpha: 214),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 1,
-                color: colorScheme.outlineVariant.withValues(alpha: 224),
-              ),
-            ),
-          ],
+        _SocialDivider(
+          label: AuthStrings.loginSocialDivider,
+          lineColor: colorScheme.outlineVariant,
+          textStyle: textTheme.bodyMedium?.copyWith(
+            fontSize: 20,
+            height: 1.2,
+            color: colorScheme.onSurface,
+          ),
         ),
-        const SizedBox(height: Spacing.l + Spacing.xs),
+        SizedBox(height: dividerToButtonsGap),
         Row(
           children: [
             Expanded(
@@ -96,10 +81,7 @@ class _SocialButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           backgroundColor: colorScheme.onPrimary,
           foregroundColor: colorScheme.onSurface,
-          side: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 245),
-            width: 1,
-          ),
+          side: BorderSide(color: colorScheme.outlineVariant, width: 1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Sizes.radiusXL),
           ),
@@ -133,6 +115,32 @@ class _SocialButton extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SocialDivider extends StatelessWidget {
+  const _SocialDivider({
+    required this.label,
+    required this.lineColor,
+    required this.textStyle,
+  });
+
+  final String label;
+  final Color lineColor;
+  final TextStyle? textStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: Container(height: 1, color: lineColor)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.s),
+          child: Text(label, style: textStyle),
+        ),
+        Expanded(child: Container(height: 1, color: lineColor)),
+      ],
     );
   }
 }

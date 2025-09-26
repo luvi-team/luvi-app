@@ -1,39 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
 
-class LoginEmailField extends StatelessWidget {
-  const LoginEmailField({
+/// Reusable auth text field with shared styling for signup/login flows.
+class AuthTextField extends StatelessWidget {
+  const AuthTextField({
     super.key,
     required this.controller,
-    required this.errorText,
-    required this.onChanged,
+    required this.hintText,
+    this.keyboardType = TextInputType.text,
+    this.textCapitalization = TextCapitalization.none,
+    this.textInputAction = TextInputAction.next,
+    this.autofillHints,
+    this.errorText,
+    this.obscureText = false,
     this.autofocus = false,
+    this.onChanged,
     this.onSubmitted,
     this.scrollPadding = EdgeInsets.zero,
-    this.textInputAction = TextInputAction.next,
   });
 
   final TextEditingController controller;
+  final String hintText;
+  final TextInputType keyboardType;
+  final TextCapitalization textCapitalization;
+  final TextInputAction textInputAction;
+  final Iterable<String>? autofillHints;
   final String? errorText;
-  final ValueChanged<String> onChanged;
+  final bool obscureText;
   final bool autofocus;
+  final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final EdgeInsets scrollPadding;
-  final TextInputAction textInputAction;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
-    final inputStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: 16,
-      height: 24 / 16,
+    final inputStyle = theme.textTheme.bodySmall?.copyWith(
+      fontSize: TypeScale.smallSize,
+      height: TypeScale.smallHeight,
       color: theme.colorScheme.onSurface,
     );
+    final resolvedHintStyle = inputStyle?.copyWith(color: tokens.grayscale500);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,33 +56,33 @@ class LoginEmailField extends StatelessWidget {
             color: tokens.cardSurface,
             borderRadius: BorderRadius.circular(Sizes.radiusM),
             border: Border.all(
-              color: errorText != null
-                  ? theme.colorScheme.error
-                  : tokens.inputBorder,
+              color:
+                  errorText != null ? theme.colorScheme.error : tokens.inputBorder,
               width: 1,
             ),
           ),
           child: TextField(
             controller: controller,
-            keyboardType: TextInputType.emailAddress,
+            keyboardType: keyboardType,
             textInputAction: textInputAction,
-            autofillHints: const [AutofillHints.email],
+            autofillHints: autofillHints,
+            textCapitalization: textCapitalization,
+            obscureText: obscureText,
             autofocus: autofocus,
             style: inputStyle,
             scrollPadding: scrollPadding,
             decoration: InputDecoration(
-              hintText: AuthStrings.emailHint,
-              hintStyle: inputStyle?.copyWith(color: tokens.grayscale500),
+              hintText: hintText,
+              hintStyle: resolvedHintStyle,
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.only(
-                left: Spacing.m,
-                right: Spacing.m,
-                top: Spacing.s,
-                bottom: Spacing.s,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: Spacing.m,
+                vertical: Spacing.s,
               ),
             ),
             onChanged: onChanged,
-            onSubmitted: onSubmitted,
+            onSubmitted:
+                onSubmitted ?? (_) => FocusScope.of(context).nextFocus(),
           ),
         ),
         if (errorText != null) FieldErrorText(errorText!),
