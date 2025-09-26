@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/utils/layout_utils.dart';
+import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
@@ -34,11 +35,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
 
-  static const EdgeInsets _fieldScrollPadding = EdgeInsets.only(
-    bottom: Sizes.buttonHeight + Spacing.l * 2,
-  );
-
-  static const double _backButtonSize = 40;
+  static const double _backButtonSize = AuthLayout.backButtonSize;
   static const double _backIconSize = 20;
 
   @override
@@ -69,10 +66,26 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       color: tokens.grayscale500,
     );
 
+    final safeBottom = mediaQuery.padding.bottom;
+    final fieldScrollPadding = EdgeInsets.only(
+      bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
+    );
+
     return Scaffold(
       key: const ValueKey('auth_create_new_screen'),
       resizeToAvoidBottomInset: true,
       backgroundColor: theme.colorScheme.surface,
+      bottomNavigationBar: AuthBottomCta(
+        topPadding: AuthLayout.inputToCta,
+        child: SizedBox(
+          height: Sizes.buttonHeight,
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {},
+            child: const Text(AuthStrings.createNewCta),
+          ),
+        ),
+      ),
       body: _CreateNewBody(
         scrollController: _scrollController,
         headerKey: _headerKey,
@@ -90,7 +103,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         onToggleConfirmPassword: () {
           setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
         },
-        fieldScrollPadding: _fieldScrollPadding,
+        fieldScrollPadding: fieldScrollPadding,
         confirmTextStyle: confirmTextStyle,
         confirmHintStyle: confirmHintStyle,
         safeTop: mediaQuery.padding.top,
@@ -177,7 +190,7 @@ class _CreateNewBody extends StatelessWidget {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
             } else {
-              context.go('/auth/login');
+              context.goNamed('login');
             }
           },
           backgroundColor: backgroundColor,

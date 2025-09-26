@@ -74,8 +74,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     const socialGap = Spacing.m;
 
     return Scaffold(
+      key: const ValueKey('auth_login_screen'),
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -104,7 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               child: LoginCtaSection(
                 onSubmit: _handleSubmit,
-                onSignup: () => context.go('/auth/signup'),
+                onSignup: () => context.goNamed('signup'),
                 hasValidationError: hasValidationError,
                 isLoading: isLoading,
               ),
@@ -144,7 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onEmailChanged: _onEmailChanged,
               onPasswordChanged: _onPasswordChanged,
               onToggleObscure: _toggleObscurePassword,
-              onForgotPassword: () => context.go('/auth/forgot'),
+              onForgotPassword: () => context.goNamed('forgot'),
               onSubmit: _handleSubmit,
             ),
             LoginFormSection(

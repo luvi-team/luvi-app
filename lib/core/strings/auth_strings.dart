@@ -2,6 +2,10 @@ class AuthStrings {
   static const loginHeadline = 'Willkommen zurück 💜';
   static const loginSubhead = 'Schön, dass du da bist.';
   static const loginCta = 'Anmelden';
+  static const loginCtaButton = loginCta;
+  static const loginCtaLinkPrefix = 'Neu bei LUVI? ';
+  static const loginCtaLinkAction = 'Starte hier';
+  static const loginCtaLoadingSemantic = 'Anmeldung läuft';
   static const loginForgot = 'Passwort vergessen?';
   static const loginSocialDivider = 'Oder melde dich an mit';
   static const errEmailInvalid = 'Ups, bitte E-Mail überprüfen';
@@ -28,6 +32,9 @@ class AuthStrings {
   static const successForgotTitle = 'E-Mail gesendet!';
   static const successForgotSubtitle = 'Bitte Postfach prüfen.';
   static const successCta = 'Fertig';
+  static const createNewHint1 = 'Neues Passwort';
+  static const createNewHint2 = 'Neues Passwort bestätigen';
+  static const createNewCta = 'Speichern';
   static const verifyResetTitle = 'Code eingeben 💜';
   static const verifyResetSubtitle = 'Gerade an deine E-Mail gesendet.';
   static const verifyEmailTitle = 'E-Mail bestätigen 💜';

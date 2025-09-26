@@ -4,6 +4,8 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
+import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
@@ -48,47 +50,29 @@ class _AuthSignupScreenState extends State<AuthSignupScreen> {
       key: const ValueKey('auth_signup_screen'),
       resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.only(bottom: Spacing.s),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AuthLayout.horizontalPadding,
-            AuthLayout.inputToCta,
-            AuthLayout.horizontalPadding,
-            0,
-          ),
-          child: _SignupCtaSection(
-            onLoginPressed: () => context.goNamed('login'),
-          ),
+      bottomNavigationBar: AuthBottomCta(
+        topPadding: AuthLayout.inputToCta,
+        child: _SignupCtaSection(
+          onLoginPressed: () => context.goNamed('login'),
         ),
       ),
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AuthLayout.horizontalPadding,
+      body: AuthScreenShell(
+        includeBottomReserve: false,
+        children: [
+          const _SignupHeader(),
+          _SignupFields(
+            firstNameController: _firstNameController,
+            lastNameController: _lastNameController,
+            phoneController: _phoneController,
+            emailController: _emailController,
+            passwordController: _passwordController,
+            obscurePassword: _obscurePassword,
+            scrollPadding: fieldScrollPadding,
+            onToggleObscure: () {
+              setState(() => _obscurePassword = !_obscurePassword);
+            },
           ),
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const _SignupHeader(),
-              _SignupFields(
-                firstNameController: _firstNameController,
-                lastNameController: _lastNameController,
-                phoneController: _phoneController,
-                emailController: _emailController,
-                passwordController: _passwordController,
-                obscurePassword: _obscurePassword,
-                scrollPadding: fieldScrollPadding,
-                onToggleObscure: () {
-                  setState(() => _obscurePassword = !_obscurePassword);
-                },
-              ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }

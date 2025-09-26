@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
@@ -54,7 +53,7 @@ class CreateNewForm extends StatelessWidget {
             textInputAction: TextInputAction.next,
             onSubmitted: (_) => FocusScope.of(context).nextFocus(),
             scrollPadding: fieldScrollPadding,
-            hintText: 'Neues Passwort',
+            hintText: AuthStrings.createNewHint1,
           ),
         ),
         const SizedBox(height: AuthLayout.gapInputToCta),
@@ -72,23 +71,12 @@ class CreateNewForm extends StatelessWidget {
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => FocusScope.of(context).unfocus(),
             scrollPadding: fieldScrollPadding,
-            hintText: 'Neues Passwort bestätigen',
+            hintText: AuthStrings.createNewHint2,
             textStyle: confirmTextStyle,
             hintStyle: confirmHintStyle,
           ),
         ),
-        const SizedBox(height: AuthLayout.inputToCta),
-        SizedBox(
-          height: Sizes.buttonHeight,
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {},
-            child: const Text('Speichern'),
-          ),
-        ),
-        const SizedBox(height: Spacing.l),
       ],
     );
   }
 }
-

@@ -22,10 +22,6 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _emailController = TextEditingController();
 
-  static const EdgeInsets _fieldScrollPadding = EdgeInsets.only(
-    bottom: Sizes.buttonHeight + Spacing.l * 2,
-  );
-
   @override
   void initState() {
     super.initState();
@@ -61,6 +57,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
 
+    final safeBottom = MediaQuery.of(context).padding.bottom;
+    final fieldScrollPadding = EdgeInsets.only(
+      bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
+    );
+
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
       fontSize: 24,
       height: 32 / 24,
@@ -85,11 +86,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               if (Navigator.of(context).canPop()) {
                 Navigator.of(context).pop();
               } else {
-                context.go('/auth/login');
+                context.goNamed('login');
               }
             },
-            size: 40,
-            innerSize: 40,
+            size: AuthLayout.backButtonSize,
+            innerSize: AuthLayout.backButtonSize,
             backgroundColor: theme.colorScheme.primary,
             iconColor: theme.colorScheme.onSurface,
           ),
@@ -111,7 +112,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 ref.read(resetPasswordProvider.notifier).setEmail(value),
             onSubmitted: (_) => FocusScope.of(context).unfocus(),
             textInputAction: TextInputAction.done,
-            scrollPadding: _fieldScrollPadding,
+            scrollPadding: fieldScrollPadding,
           ),
           const SizedBox(height: AuthLayout.inputToCta),
           SizedBox(
@@ -130,7 +131,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         if (!context.mounted) {
                           return;
                         }
-                        context.go('/auth/forgot/sent');
+                        context.goNamed('forgot_sent');
                       });
                     }
                   : null,
