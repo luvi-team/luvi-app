@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
@@ -63,7 +62,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = submitState.isLoading;
     final hasValidationError = emailError != null || passwordError != null;
 
-    final submit = () => ref.read(loginSubmitProvider.notifier).submit(
+    void submit() => ref.read(loginSubmitProvider.notifier).submit(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );

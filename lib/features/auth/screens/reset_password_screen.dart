@@ -79,6 +79,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       resizeToAvoidBottomInset: true,
       backgroundColor: theme.colorScheme.surface,
       body: AuthScreenShell(
+        includeBottomReserve: false,
         children: [
           SizedBox(height: backButtonTopSpacing),
           BackButtonCircle(
