@@ -5,7 +5,7 @@ Steuerung: Auto-Role (Default) oder explicit role: … bei Misch-Tasks.
 Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit.
 SSOT Acceptance: context/agents/_acceptance_v1.md (non-blocking Drift-Check via acceptance_version).
 
-| Rolle | Dossier | Operativer Prompt | Haupt-Hand-off |
+| Rolle | Dossier | Interop-Prompt (Legacy) | Haupt-Hand-off |
 |---|---|---|---|
 | ui-frontend | context/agents/01-ui-frontend.md | .claude/agents/ui-frontend.md | an api-backend (PR + tests/docs) |
 | qa-dsgvo | context/agents/05-qa-dsgvo.md | .claude/agents/qa-dsgvo.md | an db-admin/ui-frontend (docs/privacy/reviews) |

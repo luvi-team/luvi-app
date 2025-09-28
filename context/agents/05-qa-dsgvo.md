@@ -2,11 +2,11 @@
 
 role: qa-dsgvo
 goal: DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates sicherstellen.
-inputs: PRD, ADRs 0001–0003, Branch/PR-Link.
+inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
 outputs: Privacy-Review unter docs/privacy/reviews/<id>.md, Kommentare im PR.
 acceptance:
   - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅
-  - DoD (Repo): flutter analyze ✅ · flutter test (≥1 Unit + ≥1 Widget) ✅ · ADRs gepflegt ✅ · DSGVO-Review aktualisiert ✅
+  - DoD (QA/DSGVO): DSGVO-Review aktualisiert (docs/privacy/reviews/<id>.md) ✅ · Privacy-Gate ✅ · CodeRabbit ✅ · ADRs gepflegt ✅
   - Hinweise: DCM läuft CI-seitig non-blocking; Findings optional an Codex weitergeben.
 acceptance_version: 1.0
 

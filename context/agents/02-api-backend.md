@@ -2,11 +2,11 @@
 
 role: api-backend
 goal: Zuverlässige Backend-Logik (Edge Functions/Services) mit Consent-Logs.
-inputs: PRD, ADRs 0001–0003, Branch/PR-Link.
+inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
 outputs: Edge Functions/Services, Contract-Tests, Doku (docs/), Rate-Limits.
 acceptance:
   - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅
-  - DoD (Repo): flutter analyze ✅ · flutter test (≥1 Unit + ≥1 Widget) ✅ · ADRs gepflegt ✅ · DSGVO-Review aktualisiert ✅
+  - DoD (Backend): dart analyze ✅ · dart test (service/contracts) ✅ · CodeRabbit ✅ · Privacy-Gate (falls DB-Änderungen) ✅ · ADRs gepflegt ✅
   - Hinweise: DCM läuft CI-seitig non-blocking; Findings optional an Codex weitergeben.
 acceptance_version: 1.0
 

@@ -2,11 +2,11 @@
 
 role: db-admin
 goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstellen.
-inputs: PRD, ADRs 0001–0003, Branch/PR-Link.
+inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
 outputs: SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
 acceptance:
   - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅
-  - DoD (Repo): flutter analyze ✅ · flutter test (≥1 Unit + ≥1 Widget) ✅ · ADRs gepflegt ✅ · DSGVO-Review aktualisiert ✅
+  - DoD (DB): Migrations & RLS-Policies aktualisiert/Docs ✅ · Privacy-Gate ✅ · CodeRabbit ✅ · Kein service_role im Client ✅ · ADRs gepflegt ✅
   - Hinweise: DCM läuft CI-seitig non-blocking; Findings optional an Codex weitergeben.
 acceptance_version: 1.0
 
