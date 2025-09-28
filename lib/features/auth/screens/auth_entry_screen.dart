@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 
@@ -33,6 +32,9 @@ class AuthEntryScreen extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Wave -> Title: Text weiter weg von der Wave, Buttons bleiben fix.
+          // Erhöhe Top-Padding um Δ=8 (116→124) für korrekte Baseline.
+          const SizedBox(height: 124),
           Semantics(
             header: true,
             child: Text(
@@ -43,25 +45,49 @@ class AuthEntryScreen extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: Spacing.s), // title -> subtitle
+          // title -> subhead (Figma/MCP): 37 px
+          const SizedBox(height: 37),
           Text(
             _subheadText,
             textAlign: TextAlign.center,
-            style: textTheme.bodyMedium,
+            // Figma: #6B7280 → ColorScheme.onSurfaceVariant
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
-          const SizedBox(height: Spacing.l), // subtitle -> buttons
+          // ... kompensiere unten um Δ=8 (67→59), damit Buttons nicht mitwandern.
+          const SizedBox(height: 59),
           ElevatedButton(
             key: const ValueKey('auth_entry_register_cta'),
             onPressed: () => context.push('/auth/signup'),
+            // Primary-Höhe exakt 50 px
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size.fromHeight(50),
+            ),
             child: const Text('Registrieren'),
           ),
-          const SizedBox(height: Spacing.s), // primary -> secondary
+          // primary -> secondary (Figma/MCP): 24 px (ohne zusätzliches TextButton-Padding!)
+          const SizedBox(height: 24),
           TextButton(
             key: const ValueKey('auth_entry_login_cta'),
             onPressed: () => context.push('/auth/login'),
+            // Figma: text-only 24 px Labelhöhe → Padding entfernen, Höhe nicht künstlich vergrößern
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size.fromHeight(24),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
             child: const Text('Einloggen'),
           ),
-          const SizedBox(height: Spacing.xs), // breathing space
+          // Figma-Bottom-Spacing: ~59 px bis zum Frame-Bottom.
+          // SafeArea fügt 'safeBottom' hinzu; wir ergänzen die Differenz.
+          Builder(
+            builder: (context) {
+              final safeBottom = MediaQuery.of(context).padding.bottom;
+              final diff = (59 - safeBottom).clamp(0.0, 59.0);
+              return SizedBox(height: diff);
+            },
+          ),
         ],
       ),
     );
