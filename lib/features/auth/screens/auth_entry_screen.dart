@@ -1,82 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
+import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 
 /// Entry screen shown after consent flow but before sign up/login.
 class AuthEntryScreen extends ConsumerWidget {
   const AuthEntryScreen({super.key});
 
   static const routeName = '/auth/entry';
+
+  static const _titleText = 'Training, Ernährung und Regeneration';
+  static const _subheadText = 'Bereits über 5.000+ Frauen nutzen LUVI täglich.';
   static const _heroAssetPath = 'assets/images/auth/hero_login_default_00.png';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
+    return WelcomeShell(
       key: const ValueKey('auth_entry_screen'),
-      backgroundColor: colorScheme.surface,
-      body: Stack(
-        fit: StackFit.expand,
+      hero: Image.asset(
+        _heroAssetPath,
+        fit: BoxFit.cover,
+        alignment: const Alignment(0, -0.8),
+      ),
+      heroAspect: kWelcomeHeroAspect,
+      waveHeightPx: kWelcomeWaveHeight,
+      bottomContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Image.asset(_heroAssetPath, fit: BoxFit.cover),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  colorScheme.surface.withValues(alpha: 0),
-                  colorScheme.surface,
-                ],
-                stops: const [0.55, 0.95],
+          Semantics(
+            header: true,
+            child: Text(
+              _titleText,
+              style: textTheme.headlineMedium?.copyWith(
+                color: colorScheme.onSurface,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Spacer(),
-                  Text(
-                    'Training, Ernährung und Regeneration',
-                    style: textTheme.headlineMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Bereits über 5.000 + Frauen nutzen ihre LUVI täglich.',
-                    style: textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      key: const ValueKey('auth_entry_register_cta'),
-                      onPressed: () => context.pushNamed('signup'),
-                      child: const Text('Registrieren'),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton(
-                      key: const ValueKey('auth_entry_login_cta'),
-                      onPressed: () => context.pushNamed('login'),
-                      child: const Text('Einloggen'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          const SizedBox(height: Spacing.s), // title -> subtitle
+          Text(
+            _subheadText,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyMedium,
           ),
+          const SizedBox(height: Spacing.l), // subtitle -> buttons
+          ElevatedButton(
+            key: const ValueKey('auth_entry_register_cta'),
+            onPressed: () => context.push('/auth/signup'),
+            child: const Text('Registrieren'),
+          ),
+          const SizedBox(height: Spacing.s), // primary -> secondary
+          TextButton(
+            key: const ValueKey('auth_entry_login_cta'),
+            onPressed: () => context.push('/auth/login'),
+            child: const Text('Einloggen'),
+          ),
+          const SizedBox(height: Spacing.xs), // breathing space
         ],
       ),
     );
