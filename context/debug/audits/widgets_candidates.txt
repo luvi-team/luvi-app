@@ -1,0 +1,184 @@
+lib/core/theme/app_theme.dart:12:); // Primary color/100 (Button bg)
+lib/core/theme/app_theme.dart:39:// Button Label (bold)
+lib/core/theme/app_theme.dart:66:// Button global stylen wie Figma
+lib/core/theme/app_theme.dart:67:elevatedButtonTheme: _buildElevatedButtonTheme(),
+lib/core/theme/app_theme.dart:68:textButtonTheme: _buildTextButtonTheme(),
+lib/core/theme/app_theme.dart:87:static ElevatedButtonThemeData _buildElevatedButtonTheme() {
+lib/core/theme/app_theme.dart:88:return ElevatedButtonThemeData(
+lib/core/theme/app_theme.dart:89:style: ElevatedButton.styleFrom(
+lib/core/theme/app_theme.dart:111:static TextButtonThemeData _buildTextButtonTheme() {
+lib/core/theme/app_theme.dart:112:return TextButtonThemeData(
+lib/core/theme/app_theme.dart:113:style: TextButton.styleFrom(
+lib/core/strings/auth_strings.dart:5:static const loginCtaButton = loginCta;
+lib/core/strings/auth_strings.dart:20:static const signupSubtitle = 'Schnell registrieren - dann geht\'s los.';
+lib/core/strings/auth_strings.dart:28:static const forgotSubtitle = 'E-Mail eingeben für Link.';
+lib/core/strings/auth_strings.dart:32:static const successPwdSubtitle = 'Neues Passwort gespeichert.';
+lib/core/strings/auth_strings.dart:34:static const successForgotSubtitle = 'Bitte Postfach prüfen.';
+lib/core/strings/auth_strings.dart:40:static const verifyResetSubtitle = 'Gerade an deine E-Mail gesendet.';
+lib/core/strings/auth_strings.dart:42:static const verifyEmailSubtitle = 'Code eingeben';
+lib/features/widgets/README.md:1:BackButtonCircle uses AuthStrings.backSemantic for semantics. Consumers must import AuthStrings.
+lib/features/widgets/back_button.dart:5:class BackButtonCircle extends StatelessWidget {
+lib/features/widgets/back_button.dart:6:const BackButtonCircle({
+lib/core/design_tokens/typography.dart:15:// Button label: 20 / 24 (bold weight)
+lib/core/design_tokens/sizes.dart:5:static const double buttonHeight = 50.0; // Figma: Button H=50
+lib/core/design_tokens/sizes.dart:7:/// Figma: 40 px Kreisradius (z. B. Social-Button)
+lib/features/consent/widgets/welcome_shell.dart:53:// Text + CTAs auf der Wave
+lib/features/consent/widgets/welcome_shell.dart:75:// Dots (über dem Button), now reusable
+lib/features/consent/widgets/welcome_shell.dart:81:ElevatedButton(
+lib/features/consent/widgets/welcome_shell.dart:86:TextButton(
+lib/core/design_tokens/spacing.dart:3:static const double m = 16.0; // medium (e.g., between CTAs)
+lib/features/consent/widgets/consent_button.dart:4:class ConsentButton extends StatefulWidget {
+lib/features/consent/widgets/consent_button.dart:5:const ConsentButton({super.key});
+lib/features/consent/widgets/consent_button.dart:8:State<ConsentButton> createState() => _ConsentButtonState();
+lib/features/consent/widgets/consent_button.dart:11:class _ConsentButtonState extends State<ConsentButton> {
+lib/features/consent/widgets/consent_button.dart:48:return ElevatedButton(
+lib/features/consent/screens/consent_02_screen.dart:196:child: BackButtonCircle(
+lib/features/consent/screens/consent_02_screen.dart:267:// BOTTOM zone: sticky CTA
+lib/features/consent/screens/consent_02_screen.dart:291:child: ElevatedButton(
+lib/features/consent/screens/consent_02_screen.dart:302:child: ElevatedButton(
+lib/features/auth/widgets/social_auth_row.dart:12:this.dividerToButtonsGap = Spacing.l + Spacing.xs,
+lib/features/auth/widgets/social_auth_row.dart:17:final double dividerToButtonsGap;
+lib/features/auth/widgets/social_auth_row.dart:35:SizedBox(height: dividerToButtonsGap),
+lib/features/auth/widgets/social_auth_row.dart:39:child: _SocialButton(
+lib/features/auth/widgets/social_auth_row.dart:47:child: _SocialButton(
+lib/features/auth/widgets/social_auth_row.dart:60:class _SocialButton extends StatelessWidget {
+lib/features/auth/widgets/social_auth_row.dart:61:const _SocialButton({
+lib/features/auth/widgets/social_auth_row.dart:79:child: OutlinedButton(
+lib/features/auth/widgets/social_auth_row.dart:81:style: OutlinedButton.styleFrom(
+lib/features/auth/widgets/verify_text_styles.dart:15:TextStyle? verifySubtitleStyle(BuildContext context) {
+lib/features/auth/widgets/verify_header.dart:6:class VerifyHeader extends StatelessWidget {
+lib/features/auth/widgets/verify_header.dart:7:const VerifyHeader({
+lib/features/auth/widgets/verify_header.dart:15:required this.backButtonSize,
+lib/features/auth/widgets/verify_header.dart:16:required this.backButtonInnerSize,
+lib/features/auth/widgets/verify_header.dart:17:required this.backButtonBackgroundColor,
+lib/features/auth/widgets/verify_header.dart:18:required this.backButtonIconColor,
+lib/features/auth/widgets/verify_header.dart:27:final double backButtonSize;
+lib/features/auth/widgets/verify_header.dart:28:final double backButtonInnerSize;
+lib/features/auth/widgets/verify_header.dart:29:final Color backButtonBackgroundColor;
+lib/features/auth/widgets/verify_header.dart:30:final Color backButtonIconColor;
+lib/features/auth/widgets/verify_header.dart:39:BackButtonCircle(
+lib/features/auth/widgets/verify_header.dart:41:size: backButtonSize,
+lib/features/auth/widgets/verify_header.dart:42:innerSize: backButtonInnerSize,
+lib/features/auth/widgets/verify_header.dart:43:backgroundColor: backButtonBackgroundColor,
+lib/features/auth/widgets/verify_header.dart:44:iconColor: backButtonIconColor,
+lib/features/auth/widgets/verify_header.dart:46:const SizedBox(height: AuthLayout.gapSection),
+lib/features/auth/widgets/verify_header.dart:50:const SizedBox(height: AuthLayout.gapSection),
+lib/features/consent/screens/consent_01_screen.dart:26:child: BackButtonCircle(
+lib/features/consent/screens/consent_01_screen.dart:62:// CTA button (height 50, bottom 44, horizontal 20)
+lib/features/consent/screens/consent_01_screen.dart:68:child: ElevatedButton(
+lib/features/consent/screens/consent_01_screen.dart:131:// BackButtonCircle moved to lib/features/widgets/back_button.dart
+lib/features/cycle/widgets/phase_badge.dart:4:class PhaseBadge extends StatelessWidget {
+lib/features/cycle/widgets/phase_badge.dart:9:const PhaseBadge({
+lib/features/auth/widgets/login_cta_section.dart:31:child: ElevatedButton(
+lib/features/auth/widgets/login_cta_section.dart:36:child: _LoginButtonChild(isLoading: isLoading),
+lib/features/auth/widgets/login_cta_section.dart:42:? AuthLayout.ctaLinkGapError
+lib/features/auth/widgets/login_cta_section.dart:43:: AuthLayout.ctaLinkGapNormal,
+lib/features/auth/widgets/login_cta_section.dart:46:child: TextButton(
+lib/features/auth/widgets/login_cta_section.dart:49:style: TextButton.styleFrom(
+lib/features/auth/widgets/login_cta_section.dart:86:class _LoginButtonChild extends StatelessWidget {
+lib/features/auth/widgets/login_cta_section.dart:87:const _LoginButtonChild({required this.isLoading});
+lib/features/auth/widgets/login_cta_section.dart:94:return const Text(AuthStrings.loginCtaButton,
+lib/features/auth/widgets/login_header.dart:5:class LoginHeader extends StatelessWidget {
+lib/features/auth/widgets/login_header.dart:6:const LoginHeader({super.key});
+lib/features/auth/layout/auth_layout.dart:5:class AuthLayout {
+lib/features/auth/layout/auth_layout.dart:6:AuthLayout._();
+lib/features/auth/layout/auth_layout.dart:10:static const double backButtonTop = 59;
+lib/features/auth/layout/auth_layout.dart:11:static const double backButtonTopInset = backButtonTop - figmaSafeTop;
+lib/features/auth/layout/auth_layout.dart:12:static const double backButtonToTitle = 105;
+lib/features/auth/layout/auth_layout.dart:21:static const double ctaTopAfterCopy = 32; // Subtitle -> CTA spacing (Figma)
+lib/features/auth/layout/auth_layout.dart:26:static const double figmaHeaderTop = 112; // Verification header top (Figma)
+lib/features/auth/layout/auth_layout.dart:38:static const double backButtonSize = 40;
+lib/features/auth/widgets/auth_screen_shell.dart:22:? AuthLayout.ctaBottomInset + safeBottom
+lib/features/auth/widgets/auth_screen_shell.dart:25:AuthLayout.horizontalPadding,
+lib/features/auth/widgets/auth_screen_shell.dart:27:AuthLayout.horizontalPadding,
+lib/features/auth/widgets/verify_footer.dart:34:child: ElevatedButton(
+lib/features/auth/widgets/verify_footer.dart:40:const SizedBox(height: AuthLayout.gapSection),
+lib/features/auth/widgets/verify_footer.dart:45:TextButton(
+lib/features/auth/widgets/verify_footer.dart:47:style: TextButton.styleFrom(
+lib/features/auth/widgets/login_header_section.dart:8:class LoginHeaderSection extends StatelessWidget {
+lib/features/auth/widgets/login_header_section.dart:9:const LoginHeaderSection({
+lib/features/auth/widgets/login_header_section.dart:42:const LoginHeader(),
+lib/features/auth/widgets/login_header_section.dart:62:LoginForgotButton(onPressed: onForgotPassword),
+lib/features/auth/widgets/login_forgot_button.dart:6:class LoginForgotButton extends StatelessWidget {
+lib/features/auth/widgets/login_forgot_button.dart:7:const LoginForgotButton({super.key, required this.onPressed});
+lib/features/auth/widgets/login_forgot_button.dart:17:child: TextButton(
+lib/features/auth/widgets/login_forgot_button.dart:20:style: TextButton.styleFrom(
+lib/features/auth/widgets/login_password_field.dart:84:child: IconButton(
+lib/features/auth/widgets/auth_bottom_cta.dart:5:/// Shared bottom CTA wrapper that handles keyboard insets, SafeArea, and
+lib/features/auth/widgets/auth_bottom_cta.dart:11:this.topPadding = AuthLayout.ctaTopAfterCopy,
+lib/features/auth/widgets/auth_bottom_cta.dart:12:this.horizontalPadding = AuthLayout.horizontalPadding,
+lib/features/auth/widgets/verification_code_input.dart:16:this.fieldSize = AuthLayout.otpFieldSize,
+lib/features/auth/widgets/verification_code_input.dart:17:this.gap = AuthLayout.otpGap,
+lib/features/auth/widgets/verification_code_input.dart:90:borderRadius: BorderRadius.circular(AuthLayout.otpBorderRadius),
+lib/features/auth/widgets/verification_code_input.dart:94:borderRadius: BorderRadius.circular(AuthLayout.otpBorderRadius),
+lib/features/auth/widgets/verification_code_input.dart:98:borderRadius: BorderRadius.circular(AuthLayout.otpBorderRadius),
+lib/features/auth/widgets/login_form_section.dart:27:dividerToButtonsGap: socialGap,
+lib/features/auth/widgets/create_new/create_new_form.dart:59:const SizedBox(height: AuthLayout.gapInputToCta),
+lib/features/auth/widgets/create_new/create_new_header.dart:4:class CreateNewHeader extends StatelessWidget {
+lib/features/auth/widgets/create_new/create_new_header.dart:5:const CreateNewHeader({
+lib/features/auth/widgets/create_new/back_button_overlay.dart:5:class CreateNewBackButtonOverlay extends StatelessWidget {
+lib/features/auth/widgets/create_new/back_button_overlay.dart:6:const CreateNewBackButtonOverlay({
+lib/features/auth/widgets/create_new/back_button_overlay.dart:26:top: safeTop + AuthLayout.backButtonTopInset,
+lib/features/auth/widgets/create_new/back_button_overlay.dart:27:left: AuthLayout.horizontalPadding,
+lib/features/auth/widgets/create_new/back_button_overlay.dart:28:child: BackButtonCircle(
+lib/features/auth/screens/verification_screen.dart:46:AuthLayout.figmaHeaderTop,
+lib/features/auth/screens/verification_screen.dart:47:figmaSafeTop: AuthLayout.figmaSafeTop,
+lib/features/auth/screens/verification_screen.dart:51:final subtitleStyle = verifySubtitleStyle(context);
+lib/features/auth/screens/verification_screen.dart:57:bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
+lib/features/auth/screens/verification_screen.dart:70:VerifyHeader(
+lib/features/auth/screens/verification_screen.dart:77:backButtonSize: AuthLayout.backButtonSize,
+lib/features/auth/screens/verification_screen.dart:78:backButtonInnerSize: AuthLayout.backButtonSize,
+lib/features/auth/screens/verification_screen.dart:79:backButtonBackgroundColor: primaryColor,
+lib/features/auth/screens/verification_screen.dart:80:backButtonIconColor: onSurfaceColor,
+lib/features/auth/screens/verification_screen.dart:92:topPadding: AuthLayout.inputToCta,
+lib/features/auth/screens/verification_screen.dart:132:subtitle: AuthStrings.verifyEmailSubtitle,
+lib/features/auth/screens/verification_screen.dart:137:subtitle: AuthStrings.verifyResetSubtitle,
+lib/features/auth/screens/login_screen.dart:73:// Reserve unterhalb der Felder: CTA + Social-Block + Footer + safeBottom
+lib/features/auth/screens/login_screen.dart:74:bottom: AuthLayout.inlineCtaReserveLoginApprox + safeBottom,
+lib/features/auth/screens/login_screen.dart:143:LoginHeaderSection(
+lib/features/auth/screens/login_screen.dart:170:const SizedBox(height: AuthLayout.ctaTopAfterCopy),
+lib/features/auth/screens/create_new_password_screen.dart:38:static const double _backButtonSize = AuthLayout.backButtonSize;
+lib/features/auth/screens/create_new_password_screen.dart:53:final backButtonTopSpacing = topOffsetFromSafeArea(
+lib/features/auth/screens/create_new_password_screen.dart:55:AuthLayout.backButtonTop,
+lib/features/auth/screens/create_new_password_screen.dart:56:figmaSafeTop: AuthLayout.figmaSafeTop,
+lib/features/auth/screens/create_new_password_screen.dart:59:backButtonTopSpacing + _backButtonSize + AuthLayout.gapTitleToInputs / 2;
+lib/features/auth/screens/create_new_password_screen.dart:69:bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
+lib/features/auth/screens/create_new_password_screen.dart:77:topPadding: AuthLayout.inputToCta,
+lib/features/auth/screens/create_new_password_screen.dart:81:child: ElevatedButton(
+lib/features/auth/screens/create_new_password_screen.dart:165:CreateNewHeader(
+lib/features/auth/screens/create_new_password_screen.dart:169:const SizedBox(height: AuthLayout.gapTitleToInputs),
+lib/features/auth/screens/create_new_password_screen.dart:186:CreateNewBackButtonOverlay(
+lib/features/auth/screens/create_new_password_screen.dart:197:size: _CreateNewPasswordScreenState._backButtonSize,
+lib/features/auth/screens/create_new_password_screen.dart:198:iconSize: AuthLayout.backIconSize,
+lib/features/auth/screens/reset_password_screen.dart:54:final backButtonTopSpacing = topOffsetFromSafeArea(
+lib/features/auth/screens/reset_password_screen.dart:56:AuthLayout.backButtonTop,
+lib/features/auth/screens/reset_password_screen.dart:57:figmaSafeTop: AuthLayout.figmaSafeTop,
+lib/features/auth/screens/reset_password_screen.dart:62:bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
+lib/features/auth/screens/reset_password_screen.dart:84:SizedBox(height: backButtonTopSpacing),
+lib/features/auth/screens/reset_password_screen.dart:85:BackButtonCircle(
+lib/features/auth/screens/reset_password_screen.dart:93:size: AuthLayout.backButtonSize,
+lib/features/auth/screens/reset_password_screen.dart:94:innerSize: AuthLayout.backButtonSize,
+lib/features/auth/screens/reset_password_screen.dart:98:const SizedBox(height: AuthLayout.backButtonToTitle),
+lib/features/auth/screens/reset_password_screen.dart:105:Text(AuthStrings.forgotSubtitle, style: subtitleStyle),
+lib/features/auth/screens/reset_password_screen.dart:106:const SizedBox(height: AuthLayout.titleToInput),
+lib/features/auth/screens/reset_password_screen.dart:118:const SizedBox(height: AuthLayout.inputToCta),
+lib/features/auth/screens/reset_password_screen.dart:122:child: ElevatedButton(
+lib/features/auth/screens/auth_signup_screen.dart:46:bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
+lib/features/auth/screens/auth_signup_screen.dart:54:topPadding: AuthLayout.inputToCta,
+lib/features/auth/screens/auth_signup_screen.dart:62:const _SignupHeader(),
+lib/features/auth/screens/auth_signup_screen.dart:81:class _SignupHeader extends StatelessWidget {
+lib/features/auth/screens/auth_signup_screen.dart:82:const _SignupHeader();
+lib/features/auth/screens/auth_signup_screen.dart:98:AuthStrings.signupSubtitle,
+lib/features/auth/screens/auth_signup_screen.dart:103:const SizedBox(height: AuthLayout.gapTitleToInputs),
+lib/features/auth/screens/auth_signup_screen.dart:153:const SizedBox(height: AuthLayout.inputToCta),
+lib/features/auth/screens/auth_signup_screen.dart:178:child: ElevatedButton(
+lib/features/auth/screens/auth_signup_screen.dart:185:TextButton(
+lib/features/auth/screens/auth_signup_screen.dart:305:// TODO: später CTA triggern.
+lib/features/auth/screens/success_screen.dart:30:AuthLayout.hPadding40 - AuthLayout.horizontalPadding;
+lib/features/auth/screens/success_screen.dart:34:AuthLayout.iconTopSuccess,
+lib/features/auth/screens/success_screen.dart:35:figmaSafeTop: AuthLayout.figmaSafeTop,
+lib/features/auth/screens/success_screen.dart:60:subtitleText = AuthStrings.successPwdSubtitle;
+lib/features/auth/screens/success_screen.dart:64:subtitleText = AuthStrings.successForgotSubtitle;
+lib/features/auth/screens/success_screen.dart:87:iconContainerSize: AuthLayout.successIconCircle,
+lib/features/auth/screens/success_screen.dart:88:iconSize: AuthLayout.successIconInner,
+lib/features/auth/screens/success_screen.dart:174:child: ElevatedButton(

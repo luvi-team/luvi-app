@@ -1,0 +1,118 @@
+{
+  "frameInfo": {
+    "name": "03_Login Default_00",
+    "nodeId": "68379:7704",
+    "dimensions": "428x926px"
+  },
+  "mcpLimitation": "binary export not available via MCP",
+  "imageAssets": [
+    {
+      "layerName": "karsten-winegeart-CnEEF5eJemQ-unsplash 1",
+      "nodeId": "I68379:7705;1396:32670",
+      "purpose": "Hero background image",
+      "originalSource": "karsten-winegeart-CnEEF5eJemQ-unsplash",
+      "currentUrl": "http://localhost:3845/assets/ac7084d17260dcbe03d6373087d114f4ae0b9c39.png",
+      "suggestedExport": [
+        {
+          "format": "webp",
+          "scale": 2,
+          "quality": 80,
+          "purpose": "Main mobile display"
+        },
+        {
+          "format": "jpg",
+          "quality": 90,
+          "scale": 1,
+          "purpose": "Fallback/older devices"
+        }
+      ],
+      "recommendedFilenames": [
+        "hero_login_default_00.webp",
+        "hero_login_default_00.jpg"
+      ],
+      "recommendedPath": "assets/images/auth/hero_login_default_00.webp",
+      "dimensions": "428x926px",
+      "notes": "Background image with gradient overlay, shows women exercising"
+    },
+    {
+      "layerName": "Right Side (Status Icons)",
+      "nodeId": "I68379:7716;876:1088",
+      "purpose": "Status bar icons (battery, signal, etc.)",
+      "currentUrl": "http://localhost:3845/assets/4993b28ab284cb22b3d522e62683eb2048d0c8cc.svg",
+      "suggestedExport": [
+        {
+          "format": "svg",
+          "scale": 1,
+          "purpose": "Vector icons for status bar"
+        }
+      ],
+      "recommendedFilenames": [
+        "status_icons_right.svg"
+      ],
+      "recommendedPath": "assets/icons/system/status_icons_right.svg",
+      "notes": "System UI elements - may not be needed in Flutter app"
+    },
+    {
+      "layerName": "Time",
+      "nodeId": "I68379:7716;876:1105",
+      "purpose": "Time display in status bar",
+      "currentUrl": "http://localhost:3845/assets/0fb70006cc8c758ab0305fe55ac4504d49c586e2.svg",
+      "suggestedExport": [
+        {
+          "format": "svg",
+          "scale": 1,
+          "purpose": "Time display vector"
+        }
+      ],
+      "recommendedFilenames": [
+        "status_time.svg"
+      ],
+      "recommendedPath": "assets/icons/system/status_time.svg",
+      "notes": "System UI element - typically handled by device OS"
+    },
+    {
+      "layerName": "Mask/Overlay Shape",
+      "nodeId": "I68379:7705;1396:32671",
+      "purpose": "Gradient overlay mask",
+      "currentUrl": "http://localhost:3845/assets/38569a78f41f90b116a4f17601a7cf21c3afabc9.svg",
+      "suggestedExport": [
+        {
+          "format": "svg",
+          "scale": 1,
+          "purpose": "Gradient mask shape"
+        }
+      ],
+      "recommendedFilenames": [
+        "gradient_mask_shape.svg"
+      ],
+      "recommendedPath": "assets/shapes/gradient_mask_shape.svg",
+      "notes": "Used for masking background image gradient overlay"
+    }
+  ],
+  "exportRecommendations": {
+    "priority": [
+      {
+        "asset": "hero_login_default_00.webp",
+        "reason": "Primary visual element, high impact",
+        "path": "assets/images/auth/"
+      }
+    ],
+    "optional": [
+      {
+        "assets": ["status_icons_right.svg", "status_time.svg"],
+        "reason": "System UI - Flutter handles natively",
+        "recommendation": "Skip export, use Flutter SystemChrome"
+      },
+      {
+        "asset": "gradient_mask_shape.svg",
+        "reason": "Can be recreated with Flutter gradient",
+        "recommendation": "Implement as LinearGradient in code"
+      }
+    ]
+  },
+  "flutterImplementationNotes": {
+    "backgroundImage": "Use DecorationImage with ColorFilter for gradient overlay",
+    "statusBar": "Use SystemChrome.setSystemUIOverlayStyle()",
+    "gradientOverlay": "Container with LinearGradient decoration"
+  }
+}

@@ -9,27 +9,37 @@ class WelcomeShell extends StatelessWidget {
   const WelcomeShell({
     super.key,
     required this.hero,
-    required this.title,
-    required this.subtitle,
-    required this.onNext,
     required this.heroAspect, // z.B. 438/619
     required this.waveHeightPx, // z.B. 427
-    required this.activeIndex,
+    this.title,
+    this.subtitle,
+    this.onNext,
+    this.activeIndex,
     this.waveAsset = Assets.consentWave,
-  });
+    this.bottomContent,
+  }) : assert(
+         bottomContent != null ||
+             (title != null &&
+                 subtitle != null &&
+                 onNext != null &&
+                 activeIndex != null),
+         'Provide either bottomContent or the default welcome parameters.',
+       );
 
   final Widget hero;
-  final Widget title;
-  final String subtitle;
-  final VoidCallback onNext;
   final double heroAspect;
   final double waveHeightPx;
+  final Widget? title;
+  final String? subtitle;
+  final VoidCallback? onNext;
+  final int? activeIndex;
   final String waveAsset;
-  final int activeIndex;
+  final Widget? bottomContent;
 
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context);
+    // Inner Scaffold deliberately does not reuse the widget key to avoid GlobalKey clashes.
     return Scaffold(
       body: SafeArea(
         top: false, // Hero darf bis ganz oben (Full-bleed hinter StatusBar)
@@ -60,45 +70,68 @@ class WelcomeShell extends StatelessWidget {
                   Spacing.l,
                   Spacing.l,
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Semantics(header: true, child: title),
-                    const SizedBox(height: Spacing.s), // title -> subtitle
-                    Text(
-                      subtitle,
-                      textAlign: TextAlign.center,
-                      style: t.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: Spacing.l), // subtitle -> dots
-                    // Dots (über dem Button), now reusable
-                    DotsIndicator(
-                      count: Sizes.dotsCount,
-                      activeIndex: activeIndex,
-                    ),
-                    const SizedBox(height: Spacing.l), // dots -> button
-                    ElevatedButton(
-                      onPressed: onNext,
-                      child: const Text('Weiter'),
-                    ),
-                    const SizedBox(height: Spacing.m), // button -> skip
-                    TextButton(
-                      onPressed: () {
-                        /* später: skip */
-                      },
-                      child: const Text('Überspringen'),
-                    ),
-                    const SizedBox(
-                      height: Spacing.xs,
-                    ), // breathing space above home indicator
-                  ],
-                ),
+                child: bottomContent ?? _buildDefaultContent(t),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDefaultContent(ThemeData theme) {
+    final children = <Widget>[];
+
+    if (title != null) {
+      children.add(Semantics(header: true, child: title!));
+    }
+    if (title != null && subtitle != null) {
+      children.add(const SizedBox(height: Spacing.s));
+    }
+    if (subtitle != null) {
+      children.add(
+        Text(
+          subtitle!,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium,
+        ),
+      );
+    }
+    if (subtitle != null && activeIndex != null) {
+      children.add(const SizedBox(height: Spacing.l));
+    }
+    if (activeIndex != null) {
+      children.add(
+        DotsIndicator(count: Sizes.dotsCount, activeIndex: activeIndex!),
+      );
+    }
+    if (activeIndex != null && onNext != null) {
+      children.add(const SizedBox(height: Spacing.l));
+    }
+    if (onNext != null) {
+      children.add(
+        ElevatedButton(onPressed: onNext!, child: const Text('Weiter')),
+      );
+      children.add(const SizedBox(height: Spacing.m));
+    }
+
+    children.add(
+      TextButton(
+        onPressed: () {
+          /* später: skip */
+        },
+        child: const Text('Überspringen'),
+      ),
+    );
+
+    if (children.isNotEmpty) {
+      children.add(const SizedBox(height: Spacing.xs));
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
     );
   }
 }

@@ -1,0 +1,119 @@
+[
+  {
+    "name": "01_Welcome_01",
+    "nodeId": "67091:12470",
+    "width": 428,
+    "height": 926,
+    "primaryButton": {
+      "fill": "#D9B18E",
+      "textColor": "#FFFFFF",
+      "radius": "12px",
+      "padding": "12px",
+      "component": "button/ Buttons large",
+      "text": "Weiter",
+      "height": "50px"
+    },
+    "heading": {
+      "font": "Playfair Display",
+      "size": "32px",
+      "lineHeight": "40px",
+      "text": "Dein Zyklus ist deine Superkraft.",
+      "highlightColor": "#d9b6a3"
+    },
+    "subhead": {
+      "font": "Figtree",
+      "size": "20px",
+      "lineHeight": "24px",
+      "text": "Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt."
+    },
+    "colors": {
+      "background": "#FFFFFF",
+      "primaryText": "#030401",
+      "primaryButton": "#D9B18E",
+      "accent": "#d9b6a3"
+    },
+    "spacing": {
+      "containerPadding": "20px",
+      "textGap": "8px",
+      "buttonTop": "769px"
+    }
+  },
+  {
+    "name": "01_Welcome_02",
+    "nodeId": "67091:12444",
+    "width": 428,
+    "height": 926,
+    "primaryButton": {
+      "fill": "#D9B18E",
+      "textColor": "#FFFFFF",
+      "radius": "12px",
+      "padding": "12px",
+      "component": "button/ Buttons large",
+      "text": "Weiter",
+      "height": "50px"
+    },
+    "heading": {
+      "font": "Playfair Display",
+      "size": "32px",
+      "lineHeight": "40px",
+      "text": "Dein Körper spricht zu dir – lerne seine Sprache.",
+      "highlightColor": "#D9B18E"
+    },
+    "subhead": {
+      "font": "Figtree",
+      "size": "20px",
+      "lineHeight": "24px",
+      "text": "LUVI übersetzt, was dein Zyklus dir sagen möchte."
+    },
+    "colors": {
+      "background": "#FFFFFF",
+      "primaryText": "#030401",
+      "primaryButton": "#D9B18E",
+      "accent": "#D9B18E"
+    },
+    "spacing": {
+      "containerPadding": "20px",
+      "textGap": "8px",
+      "buttonTop": "769px"
+    }
+  },
+  {
+    "name": "01_Welcome_03",
+    "nodeId": "68134:6244",
+    "width": 428,
+    "height": 926,
+    "primaryButton": {
+      "fill": "#D9B18E",
+      "textColor": "#FFFFFF",
+      "radius": "12px",
+      "padding": "12px",
+      "component": "button/ Buttons large",
+      "text": "Weiter",
+      "height": "50px"
+    },
+    "heading": {
+      "font": "Playfair Display",
+      "size": "32px",
+      "lineHeight": "40px",
+      "text": "Endlich verstehen, was dein Körper dir sagt.",
+      "highlightColor": "#D9B18E"
+    },
+    "subhead": {
+      "font": "Figtree",
+      "size": "20px",
+      "lineHeight": "24px",
+      "text": "LUVI zeigt dir deine ganz persönlichen Zusammenhänge."
+    },
+    "colors": {
+      "background": "#FFFFFF",
+      "primaryText": "#030401",
+      "primaryButton": "#D9B18E",
+      "accent": "#D9B18E"
+    },
+    "spacing": {
+      "containerPadding": "20px",
+      "textGap": "8px",
+      "buttonTop": "769px"
+    }
+  }
+]
