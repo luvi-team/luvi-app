@@ -1,4 +1,12 @@
 # Agent: dataviz
+role: dataviz
+goal: Performante, verständliche Visualisierungen mit klaren Erklärtexten.
+inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
+outputs: Chart-Widgets, Tests, Doku (docs/), klare Achsen/Legenden.
+acceptance:
+  - Core: siehe context/agents/_acceptance_v1.1.md#core
+  - Role extension (ui-frontend/dataviz): context/agents/_acceptance_v1.1.md#role-extensions
+acceptance_version: 1.1
 
 role: dataviz
 goal: Performante, verständliche Visualisierungen mit klaren Erklärtexten.

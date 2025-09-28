@@ -1,4 +1,12 @@
 # Agent: db-admin
+role: db-admin
+goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstellen.
+inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
+outputs: SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
+acceptance:
+  - Core: siehe context/agents/_acceptance_v1.1.md#core
+  - Role extension (db-admin): context/agents/_acceptance_v1.1.md#role-extensions
+acceptance_version: 1.1
 
 role: db-admin
 goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstellen.

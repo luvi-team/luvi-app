@@ -1,4 +1,12 @@
 # Agent: qa-dsgvo
+role: qa-dsgvo
+goal: DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates sicherstellen.
+inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
+outputs: Privacy-Review unter docs/privacy/reviews/<id>.md, Kommentare im PR.
+acceptance:
+  - Core: siehe context/agents/_acceptance_v1.1.md#core
+  - Role extension (qa-dsgvo): context/agents/_acceptance_v1.1.md#role-extensions
+acceptance_version: 1.1
 
 role: qa-dsgvo
 goal: DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates sicherstellen.
