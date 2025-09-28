@@ -6,7 +6,7 @@ import 'package:luvi_app/main.dart';
 void main() {
   testWidgets('smoke test: LUVI app builds without crashing', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: MyApp()));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
   });
