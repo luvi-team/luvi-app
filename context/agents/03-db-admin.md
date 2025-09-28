@@ -1,5 +1,4 @@
 # Agent: db-admin
-
 role: db-admin
 goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstellen.
 inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.

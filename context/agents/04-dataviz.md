@@ -1,5 +1,4 @@
 # Agent: dataviz
-
 role: dataviz
 goal: Performante, verständliche Visualisierungen mit klaren Erklärtexten.
 inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.

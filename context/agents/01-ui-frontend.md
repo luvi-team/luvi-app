@@ -1,5 +1,4 @@
 # Agent: ui-frontend
-
 role: ui-frontend
 goal: UX-Konsistenz sichern; token-aware Widgets/Screens mit Tests.
 inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.

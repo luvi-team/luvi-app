@@ -1,5 +1,4 @@
 # Agent: qa-dsgvo
-
 role: qa-dsgvo
 goal: DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates sicherstellen.
 inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.

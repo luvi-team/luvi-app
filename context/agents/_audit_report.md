@@ -37,6 +37,9 @@
 - CLAUDE.md: Optional Hinweis ergänzen, dass Links veraltet sein können (Legacy-Block ist vorhanden – keine Pflicht).
 - reqing-ball.md / ui-polisher.md: Optional Operativer Modus (Codex CLI-first) als 1‑Zeiler ergänzen.
 
+## Quick-Win Patch-Snippets
+(entfernt; Governance ist auf SSOT v1.1 ausgerichtet. Verifikation siehe Abschnitt "Checks – Read-Only")
+
 ## Verifikation (Checks – Read-Only)
 - Rollenfelder: rg -n ^role:\s*(ui-frontend|api-backend|db-admin|qa-dsgvo|dataviz) context/agents
 - Acceptance-Version: rg -n ^acceptance_version:\s*1\.1 context/agents

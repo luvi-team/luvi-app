@@ -1,5 +1,4 @@
 # Agent: api-backend
-
 role: api-backend
 goal: Zuverlässige Backend-Logik (Edge Functions/Services) mit Consent-Logs.
 inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
