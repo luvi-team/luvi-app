@@ -8,6 +8,16 @@ acceptance:
   - Role extension (ui-frontend/dataviz): context/agents/_acceptance_v1.1.md#role-extensions
 acceptance_version: 1.1
 
+role: dataviz
+goal: Performante, verständliche Visualisierungen mit klaren Erklärtexten.
+inputs: PRD, ADRs 0001–0003, Branch/PR-Link.
+outputs: Chart-Widgets, Tests, Doku (docs/), klare Achsen/Legenden.
+acceptance:
+  - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅
+  - DoD (Repo): flutter analyze ✅ · flutter test (≥1 Unit + ≥1 Widget) ✅ · ADRs gepflegt ✅ · DSGVO-Review aktualisiert ✅
+  - Hinweise: DCM läuft CI-seitig non-blocking; Findings optional an Codex weitergeben.
+acceptance_version: 1.0
+
 ## Ziel
 Sichert performante, verständliche Visualisierungen und aussagekräftige Erklärtexte.
 
