@@ -302,7 +302,7 @@ class Consent02Screen extends ConsumerWidget {
                       child: ElevatedButton(
                         key: const Key('consent02_btn_next'),
                         onPressed: state.requiredAccepted
-                            ? () => context.go('/auth/login')
+                            ? () => context.go('/auth/entry')
                             : null,
                         child: const Text('Weiter'),
                       ),

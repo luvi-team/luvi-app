@@ -1,0 +1,89 @@
+{
+  "frameInfo": {
+    "name": "03_Login Default_00",
+    "nodeId": "68379:7704",
+    "dimensions": "428x926px"
+  },
+  "colors": {
+    "background": "#FFFFFF",
+    "primaryButton": "#D9B18E",
+    "secondaryButton": "#FFFFFF",
+    "primaryText": "#111827",
+    "secondaryText": "#6B7280",
+    "statusBar": "#374151"
+  },
+  "typography": {
+    "heading": {
+      "font": "Playfair Display",
+      "weight": "Regular (400)",
+      "size": "32px",
+      "lineHeight": "40px",
+      "color": "#111827",
+      "text": "Training, Ernährung und Regeneration"
+    },
+    "subheadline": {
+      "font": "Inter",
+      "weight": "Medium (500)",
+      "size": "15px",
+      "lineHeight": "22px",
+      "color": "#6B7280",
+      "text": "Bereits über 5.000 + Frauen nutzen ihre LUVI täglich."
+    },
+    "button": {
+      "font": "Figtree",
+      "weight": "Bold (700)",
+      "size": "20px",
+      "lineHeight": "24px"
+    }
+  },
+  "spacing": {
+    "containerPadding": "20px",
+    "buttonGap": "24px",
+    "buttonHeight": "56px",
+    "buttonPadding": "16px",
+    "textMargin": "20px"
+  },
+  "borderRadius": {
+    "buttons": "12px",
+    "statusIndicator": "100px"
+  },
+  "buttons": {
+    "primary": {
+      "name": "Registrieren",
+      "background": "#D9B18E",
+      "textColor": "#FFFFFF",
+      "height": "56px",
+      "borderRadius": "12px",
+      "padding": "12px",
+      "componentName": "button/ Buttons large"
+    },
+    "secondary": {
+      "name": "Einloggen",
+      "background": "#FFFFFF",
+      "textColor": "#111827",
+      "height": "50px",
+      "borderRadius": "12px",
+      "padding": "16px"
+    }
+  },
+  "layout": {
+    "backgroundImage": {
+      "src": "karsten-winegeart-CnEEF5eJemQ-unsplash",
+      "overlay": "gradient from transparent to white",
+      "maskPosition": "249px 17px",
+      "maskSize": "375x812px"
+    },
+    "contentPosition": {
+      "heading": "57.143% from top + 10.857px",
+      "buttons": "71.429% from top + 75.571px"
+    }
+  },
+  "tokenMapping": {
+    "Primary color/100": "#D9B18E",
+    "Greyscale / Grey 900": "#111827",
+    "Greyscale / Grey 500": "#6B7280",
+    "Greyscale / Grey 700": "#374151",
+    "Grayscale/White": "#FFFFFF",
+    "Grayscale/Black": "#030401"
+  }
+}

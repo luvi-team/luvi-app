@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/features/consent/routes.dart' as consent;
+import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
@@ -11,6 +12,11 @@ import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
   ...consent.consentRoutes.where((route) => route.name != 'login'),
+  GoRoute(
+    path: AuthEntryScreen.routeName,
+    name: 'auth_entry',
+    builder: (context, state) => const AuthEntryScreen(),
+  ),
   GoRoute(
     path: '/auth/login',
     name: 'login',
