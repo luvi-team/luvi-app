@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/semantics.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 
@@ -37,16 +36,14 @@ void main() {
 
       final titleFinder = find.text('Training, Ernährung und Regeneration');
       expect(titleFinder, findsOneWidget);
-      // Ensure the title is wrapped in a Semantics widget and marked as header
-      final semanticsTester = SemanticsTester(tester);
-      addTearDown(semanticsTester.dispose);
-      expect(
-        semanticsTester,
-        includesNodeWith(
-          label: 'Training, Ernährung und Regeneration',
-          flags: <SemanticsFlag>[SemanticsFlag.isHeader],
-        ),
-      );
+      // Öffentliche Semantics-API: Semantik aktivieren und Header-Flag prüfen
+      final handle = tester.ensureSemantics();
+      try {
+        final node = tester.getSemantics(titleFinder);
+        expect(node.flagsCollection.isHeader, isTrue);
+      } finally {
+        handle.dispose();
+      }
     },
   );
 }
