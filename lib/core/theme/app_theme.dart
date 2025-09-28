@@ -134,6 +134,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     required this.grayscale500,
     required this.successColor,
     required this.inputBorderLight,
+    required this.authEntrySubhead,
   });
 
   final Color cardSurface; // Grayscale/100 (#F7F7F8)
@@ -142,6 +143,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
   final Color grayscale500; // Placeholder / secondary text
   final Color successColor; // Message/Green (#04B155)
   final Color inputBorderLight; // Subtle borders (#F7F7F8)
+  final TextStyle authEntrySubhead; // Auth Entry subhead typography (shape-only)
 
   static const DsTokens light = DsTokens(
     cardSurface: Color(0xFFF7F7F8),
@@ -150,6 +152,13 @@ class DsTokens extends ThemeExtension<DsTokens> {
     grayscale500: Color(0xFF696969),
     successColor: Color(0xFF04B155),
     inputBorderLight: Color(0xFFF7F7F8),
+    authEntrySubhead: TextStyle(
+      fontFamily: TypeScale.figtree,
+      fontWeight: FontWeight.w500,
+      fontSize: 14,
+      height: 20 / 14,
+      letterSpacing: 0,
+    ),
   );
 
   @override
@@ -160,6 +169,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     Color? grayscale500,
     Color? successColor,
     Color? inputBorderLight,
+    TextStyle? authEntrySubhead,
   }) => DsTokens(
     cardSurface: cardSurface ?? this.cardSurface,
     cardBorderSelected: cardBorderSelected ?? this.cardBorderSelected,
@@ -167,6 +177,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     grayscale500: grayscale500 ?? this.grayscale500,
     successColor: successColor ?? this.successColor,
     inputBorderLight: inputBorderLight ?? this.inputBorderLight,
+    authEntrySubhead: authEntrySubhead ?? this.authEntrySubhead,
   );
 
   @override
@@ -185,6 +196,9 @@ class DsTokens extends ThemeExtension<DsTokens> {
       inputBorderLight:
           Color.lerp(inputBorderLight, other.inputBorderLight, t) ??
           inputBorderLight,
+      authEntrySubhead:
+          TextStyle.lerp(authEntrySubhead, other.authEntrySubhead, t) ??
+          authEntrySubhead,
     );
   }
 }

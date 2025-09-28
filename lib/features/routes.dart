@@ -64,12 +64,18 @@ final List<GoRoute> featureRoutes = [
 String? supabaseRedirect(BuildContext context, GoRouterState state) {
   final isInitialized = SupabaseService.isInitialized;
   final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
+  final isAuthEntry = state.matchedLocation.startsWith(
+    AuthEntryScreen.routeName,
+  );
   final session = isInitialized
       ? SupabaseService.client.auth.currentSession
       : null;
 
   if (session == null) {
-    return isLoggingIn ? null : '/auth/login';
+    if (isLoggingIn || isAuthEntry) {
+      return null;
+    }
+    return AuthEntryScreen.routeName;
   }
   if (isLoggingIn) {
     return '/onboarding/w1';
