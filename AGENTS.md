@@ -2,6 +2,8 @@
 
 Dies ist der Index für Codex (/status) und das Onboarding.
 
+Scope & Nutzung: Gilt ab Repo-Root rekursiv; Default Auto-Role; Misch-Tasks via `role: …`; SSOT Acceptance v1.1.
+
 Governance
 - Dossiers (01–05): context/agents/README.md
 - SSOT Acceptance v1.1 (Core + Role extensions): context/agents/_acceptance_v1.1.md

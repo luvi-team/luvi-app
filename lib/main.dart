@@ -18,9 +18,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // Allow overriding the initial route in development via --dart-define
+    // Example: flutter run --dart-define=INITIAL_LOCATION=/onboarding/01
+    const initialLocation = String.fromEnvironment(
+      'INITIAL_LOCATION',
+      defaultValue: '/onboarding/w1',
+    );
+
     final router = GoRouter(
       routes: routes.featureRoutes,
-      initialLocation: '/onboarding/w1',
+      initialLocation: initialLocation,
       redirect: routes.supabaseRedirect,
     );
     return MaterialApp.router(

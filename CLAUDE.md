@@ -2,6 +2,7 @@
 
 > Legacy (vor Codex). Siehe context/agents/README.md für aktuelle Rollen/Governance.
 > Interop: Inhalte hier nur als Referenz verwenden; operative Ausführung erfolgt Codex CLI-first (BMAD → PRP, DoD/Gates, CodeRabbit, DCM non-blocking).
+> Hinweis: Links/Pfade können veraltet sein; maßgeblich ist AGENTS.md + context/agents/*.
 
 ## Leitplanken (immer laden)
 @docs/engineering/field-guides/make-it-work-first.md

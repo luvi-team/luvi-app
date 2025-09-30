@@ -1,0 +1,31 @@
+name: Agents Drift Check (non-blocking)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ripgrep
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+
+      - name: Generate drift report
+        run: |
+          sh context/agents/_drift_check.sh || true
+          echo "\n---\nReport preview:\n" && (cat context/agents/_drift_report.md || true)
+
+      - name: Upload drift report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agents-drift-report
+          path: context/agents/_drift_report.md
+          if-no-files-found: warn
+
