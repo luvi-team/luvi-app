@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'services/supabase_service.dart';
 import 'features/routes.dart' as routes;
+import 'features/auth/screens/auth_entry_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
     // Example: flutter run --dart-define=INITIAL_LOCATION=/onboarding/01
     const initialLocation = String.fromEnvironment(
       'INITIAL_LOCATION',
-      defaultValue: '/onboarding/w1',
+      defaultValue: AuthEntryScreen.routeName,
     );
 
     final router = GoRouter(
