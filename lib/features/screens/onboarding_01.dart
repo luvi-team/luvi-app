@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
+import 'package:luvi_app/features/screens/onboarding_spacing.dart';
 
 /// First onboarding screen: name input.
 /// Displays title, step counter, instruction, text input, and CTA.
@@ -34,13 +35,14 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final spacing = OnboardingSpacing.of(context);
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+          padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -49,7 +51,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
               const SizedBox(height: Spacing.l * 3.5), // ~84 px
               _buildInstruction(textTheme, colorScheme),
               const SizedBox(height: Spacing.l * 3.5), // ~84 px
-              _buildNameInput(textTheme, colorScheme),
+              _buildNameInput(textTheme, colorScheme, spacing),
               const SizedBox(height: Spacing.l * 3.5), // ~84 px
               _buildCta(textTheme, colorScheme),
               const SizedBox(height: Spacing.l),
@@ -103,7 +105,11 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     );
   }
 
-  Widget _buildNameInput(TextTheme textTheme, ColorScheme colorScheme) {
+  Widget _buildNameInput(
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+    OnboardingSpacing spacing,
+  ) {
     return Column(
       children: [
         Semantics(
@@ -122,10 +128,17 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
           ),
         ),
         const SizedBox(height: Spacing.l),
-        Divider(
-          height: 0,
-          thickness: 1,
-          color: colorScheme.onSurface.withValues(alpha: OpacityTokens.inactive),
+        Align(
+          alignment: Alignment.center,
+          child: SizedBox(
+            width: spacing.underlineWidth,
+            child: Divider(
+              height: 0,
+              thickness: 1,
+              color:
+                  colorScheme.onSurface.withValues(alpha: OpacityTokens.inactive),
+            ),
+          ),
         ),
       ],
     );

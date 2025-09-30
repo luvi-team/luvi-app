@@ -1,0 +1,56 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/screens/onboarding_01.dart';
+import 'package:luvi_app/features/screens/onboarding_02.dart';
+import 'package:luvi_app/features/screens/onboarding_03.dart';
+import 'package:luvi_app/features/widgets/back_button.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('renders title and navigates on CTA', (tester) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: Onboarding01Screen.routeName,
+          builder: (context, state) =>
+              const Scaffold(body: Text('Onboarding 01')),
+        ),
+        GoRoute(
+          path: Onboarding02Screen.routeName,
+          builder: (context, state) => const Onboarding02Screen(),
+        ),
+        GoRoute(
+          path: Onboarding03Screen.routeName,
+          builder: (context, state) => const Onboarding03Screen(),
+        ),
+      ],
+      initialLocation: Onboarding02Screen.routeName,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp.router(
+        theme: AppTheme.buildAppTheme(),
+        routerConfig: router,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Erzähl mir von dir'), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
+
+    await tester.tap(find.byType(BackButtonCircle));
+    await tester.pumpAndSettle();
+    expect(find.text('Onboarding 01'), findsOneWidget);
+
+    router.go(Onboarding02Screen.routeName);
+    await tester.pumpAndSettle();
+
+    final ctaFinder = find.widgetWithText(ElevatedButton, 'Weiter');
+    await tester.ensureVisible(ctaFinder);
+    await tester.tap(ctaFinder);
+    await tester.pumpAndSettle();
+    expect(find.text('Onboarding 03 (Stub)'), findsOneWidget);
+  });
+}
