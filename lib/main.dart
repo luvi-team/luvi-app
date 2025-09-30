@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,10 +22,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Allow overriding the initial route in development via --dart-define
     // Example: flutter run --dart-define=INITIAL_LOCATION=/onboarding/01
-    const initialLocation = String.fromEnvironment(
-      'INITIAL_LOCATION',
-      defaultValue: AuthEntryScreen.routeName,
-    );
+    final initialLocation = kReleaseMode
+        ? AuthEntryScreen.routeName
+        : const String.fromEnvironment(
+            'INITIAL_LOCATION',
+            defaultValue: AuthEntryScreen.routeName,
+          );
 
     final router = GoRouter(
       routes: routes.featureRoutes,
