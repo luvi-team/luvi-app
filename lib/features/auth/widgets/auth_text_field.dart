@@ -21,6 +21,8 @@ class AuthTextField extends StatelessWidget {
     this.onChanged,
     this.onSubmitted,
     this.scrollPadding = EdgeInsets.zero,
+    this.textAlign = TextAlign.start,
+    this.frameless = false,
   });
 
   final TextEditingController controller;
@@ -35,6 +37,8 @@ class AuthTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final EdgeInsets scrollPadding;
+  final TextAlign textAlign;
+  final bool frameless;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +50,31 @@ class AuthTextField extends StatelessWidget {
       color: theme.colorScheme.onSurface,
     );
     final resolvedHintStyle = inputStyle?.copyWith(color: tokens.grayscale500);
+
+    // Frameless variant: no box, just the inner TextField.
+    if (frameless) {
+      return TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        textInputAction: textInputAction,
+        autofillHints: autofillHints,
+        textCapitalization: textCapitalization,
+        obscureText: obscureText,
+        autofocus: autofocus,
+        style: inputStyle,
+        scrollPadding: scrollPadding,
+        textAlign: textAlign,
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          isCollapsed: true,
+        ).copyWith(
+          hintText: hintText.isEmpty ? null : hintText,
+          hintStyle: resolvedHintStyle,
+        ),
+        onChanged: onChanged,
+        onSubmitted: onSubmitted ?? (_) => FocusScope.of(context).nextFocus(),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,6 +100,7 @@ class AuthTextField extends StatelessWidget {
             autofocus: autofocus,
             style: inputStyle,
             scrollPadding: scrollPadding,
+            textAlign: textAlign,
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: resolvedHintStyle,

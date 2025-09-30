@@ -8,10 +8,15 @@ import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/screens/verification_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
+import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
   ...consent.consentRoutes.where((route) => route.name != 'login'),
+  GoRoute(
+    path: Onboarding01Screen.routeName,
+    builder: (ctx, st) => const Onboarding01Screen(),
+  ),
   GoRoute(
     path: AuthEntryScreen.routeName,
     name: 'auth_entry',
@@ -62,14 +67,25 @@ final List<GoRoute> featureRoutes = [
 ];
 
 String? supabaseRedirect(BuildContext context, GoRouterState state) {
+  // Dev-only bypass to allow opening onboarding without auth during development
+  const allowOnboardingDev = bool.fromEnvironment(
+    'ALLOW_ONBOARDING_DEV',
+    defaultValue: false,
+  );
+
   final isInitialized = SupabaseService.isInitialized;
   final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
   final isAuthEntry = state.matchedLocation.startsWith(
     AuthEntryScreen.routeName,
   );
+  final isOnboarding = state.matchedLocation.startsWith('/onboarding/');
   final session = isInitialized
       ? SupabaseService.client.auth.currentSession
       : null;
+
+  if (allowOnboardingDev && isOnboarding) {
+    return null; // allow onboarding routes in dev without auth
+  }
 
   if (session == null) {
     if (isLoggingIn || isAuthEntry) {
