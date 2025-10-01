@@ -69,6 +69,6 @@ void main() {
     await tester.ensureVisible(cta);
     await tester.tap(cta);
     await tester.pumpAndSettle();
-    expect(find.text('Was sind deine Ziele?'), findsOneWidget);
+    expect(find.text('Onboarding 03'), findsOneWidget);
   });
 }
