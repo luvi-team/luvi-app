@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
-import 'package:luvi_app/features/screens/onboarding_spacing.dart';
+import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 
 /// First onboarding screen: name input.
 /// Displays title, step counter, instruction, text input, and CTA.

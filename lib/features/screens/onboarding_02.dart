@@ -7,9 +7,9 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/utils/date_formatters.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
-import 'package:luvi_app/features/screens/onboarding_constants.dart';
+import 'package:luvi_app/core/constants/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
-import 'package:luvi_app/features/screens/onboarding_spacing.dart';
+import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 
 /// Onboarding02: Birthday input screen
 /// Figma: 02_Onboarding (Geburtstag)

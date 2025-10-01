@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
-import 'package:luvi_app/features/screens/onboarding_spacing.dart';
+import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 
