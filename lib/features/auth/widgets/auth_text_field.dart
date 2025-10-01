@@ -53,26 +53,32 @@ class AuthTextField extends StatelessWidget {
 
     // Frameless variant: no box, just the inner TextField.
     if (frameless) {
-      return TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        textInputAction: textInputAction,
-        autofillHints: autofillHints,
-        textCapitalization: textCapitalization,
-        obscureText: obscureText,
-        autofocus: autofocus,
-        style: inputStyle,
-        scrollPadding: scrollPadding,
-        textAlign: textAlign,
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          isCollapsed: true,
-        ).copyWith(
-          hintText: hintText.isEmpty ? null : hintText,
-          hintStyle: resolvedHintStyle,
-        ),
-        onChanged: onChanged,
-        onSubmitted: onSubmitted ?? (_) => FocusScope.of(context).nextFocus(),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            autofillHints: autofillHints,
+            textCapitalization: textCapitalization,
+            obscureText: obscureText,
+            autofocus: autofocus,
+            style: inputStyle,
+            scrollPadding: scrollPadding,
+            textAlign: textAlign,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isCollapsed: true,
+            ).copyWith(
+              hintText: hintText.isEmpty ? null : hintText,
+              hintStyle: resolvedHintStyle,
+            ),
+            onChanged: onChanged,
+            onSubmitted: onSubmitted ?? (_) => FocusScope.of(context).nextFocus(),
+          ),
+          if (errorText != null) FieldErrorText(errorText!),
+        ],
       );
     }
 

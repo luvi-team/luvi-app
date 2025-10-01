@@ -5,8 +5,6 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   testWidgets('option tap enables CTA and navigates to done', (tester) async {
     final router = GoRouter(
       routes: [

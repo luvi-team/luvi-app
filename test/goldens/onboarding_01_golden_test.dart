@@ -9,6 +9,7 @@ void main() {
       theme: AppTheme.buildAppTheme(),
       home: const Onboarding01Screen(),
     ));
+    await tester.pumpAndSettle();
     await expectLater(
       find.byType(Onboarding01Screen),
       matchesGoldenFile('onboarding_01.png'),

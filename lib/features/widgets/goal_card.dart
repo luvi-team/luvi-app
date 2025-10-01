@@ -44,7 +44,7 @@ class GoalCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: Spacing.m,
-              vertical: Spacing.l - 4, // 20 px
+              vertical: Spacing.goalCardVertical,
             ),
             decoration: BoxDecoration(
               color: dsTokens.cardSurface, // #F7F7F8
@@ -64,7 +64,7 @@ class GoalCard extends StatelessWidget {
                   height: 24,
                   child: icon,
                 ),
-                const SizedBox(width: Spacing.l - 4), // 20 px
+                const SizedBox(width: Spacing.goalCardIconGap),
                 // Text
                 Expanded(
                   child: Text(

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
+import 'package:luvi_app/features/screens/onboarding_04.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +16,7 @@ void main() {
           builder: (context, state) => const Onboarding03Screen(),
         ),
         GoRoute(
-          path: '/onboarding/04',
+          path: Onboarding04Screen.routeName,
           builder: (context, state) => const Scaffold(
             body: Text('Onboarding 04 (Stub)'),
           ),

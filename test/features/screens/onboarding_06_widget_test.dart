@@ -3,15 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
+import 'package:luvi_app/features/screens/onboarding_07.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   testWidgets('option tap enables CTA and navigates', (tester) async {
     final router = GoRouter(
       routes: [
         GoRoute(path: Onboarding06Screen.routeName, builder: (context, state) => const Onboarding06Screen()),
-        GoRoute(path: '/onboarding/07', builder: (context, state) => const Scaffold(body: Text('Onboarding 07 (Stub)'))),
+        GoRoute(
+          path: Onboarding07Screen.routeName,
+          builder: (context, state) => const Scaffold(body: Text('Onboarding 07 (Stub)')),
+        ),
       ],
       initialLocation: Onboarding06Screen.routeName,
     );
@@ -22,7 +24,7 @@ void main() {
     // CTA initially disabled
     final cta = find.byKey(const Key('onb_cta'));
     expect(cta, findsOneWidget);
-    expect(tester.widget<ElevatedButton>(cta).onPressed, isNull);
+    expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNull);
 
     // Tap first option (text aus Figma – ggf. anpassen)
     final firstOption = find.byKey(const Key('onb_option_0'));
@@ -31,7 +33,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // CTA enabled & navigates
-    expect(tester.widget<ElevatedButton>(cta).onPressed, isNotNull);
+    expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNotNull);
     await tester.ensureVisible(cta);
     await tester.tap(cta);
     await tester.pumpAndSettle();

@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-
-bool nonEmptyNameValidator(String? value) =>
-    value != null && value.trim().isNotEmpty;
+import 'package:luvi_app/core/validators/name_validator.dart';
 
 void main() {
   test('nonEmptyNameValidator returns false for empty input', () {

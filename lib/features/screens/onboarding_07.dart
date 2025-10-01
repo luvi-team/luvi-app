@@ -176,7 +176,6 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   Widget _buildCta() {
-    final theme = Theme.of(context);
     final isEnabled = _selected != null;
 
     return Semantics(
@@ -185,14 +184,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
       child: ElevatedButton(
         key: const Key('onb_cta'),
         onPressed: isEnabled ? _handleContinue : null,
-        child: Text(
-          'Weiter',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontSize: TypographyTokens.size20,
-            fontWeight: FontWeight.w700,
-            height: TypographyTokens.lineHeightRatio24on20,
-          ),
-        ),
+        child: const Text('Weiter'),
       ),
     );
   }

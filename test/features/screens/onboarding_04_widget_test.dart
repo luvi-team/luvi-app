@@ -46,6 +46,11 @@ void main() {
     await tester.drag(picker, const Offset(0, -50));
     await tester.pumpAndSettle();
 
+    expect(
+      tester.widget<ElevatedButton>(cta).onPressed,
+      isNotNull,
+    );
+
     await tester.ensureVisible(cta);
     await tester.tap(cta);
     await tester.pumpAndSettle();

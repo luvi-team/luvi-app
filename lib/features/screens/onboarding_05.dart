@@ -29,7 +29,6 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   void _handleContinue() {
-    // TODO: Replace with actual next route when available
     context.push(Onboarding06Screen.routeName);
   }
 

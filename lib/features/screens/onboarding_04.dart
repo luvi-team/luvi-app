@@ -115,8 +115,8 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                           _formattedDate,
                           style: textTheme.headlineMedium?.copyWith(
                             color: colorScheme.onSurface,
-                            fontSize: 32,
-                            height: 40 / 32,
+                            fontSize: TypographyTokens.size32,
+                            height: TypographyTokens.lineHeightRatio40on32,
                           ),
                           textAlign: TextAlign.center,
                         ),
