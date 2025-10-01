@@ -11,7 +11,7 @@ void main() {
     ));
     await expectLater(
       find.byType(Onboarding01Screen),
-      matchesGoldenFile('goldens/onboarding_01.png'),
+      matchesGoldenFile('onboarding_01.png'),
     );
   });
 }
