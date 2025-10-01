@@ -4,6 +4,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/features/screens/onboarding_02.dart';
 
 /// First onboarding screen: name input.
 /// Displays title, step counter, instruction, text input, and CTA.
@@ -42,7 +43,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
 
   void _handleContinue() {
     // Happy Path: no validation, navigate directly to step 2
-    context.push('/onboarding/02');
+    context.push(Onboarding02Screen.routeName);
   }
 
   @override
@@ -139,7 +140,11 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
             textInputAction: TextInputAction.done,
             autofocus: true,
             hintText: '',
-            onSubmitted: (_) => _handleContinue(),
+           onSubmitted: (_) {
+             if (_hasText) {
+               _handleContinue();
+             }
+           },
           ),
         ),
         const SizedBox(height: Spacing.l),

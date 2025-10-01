@@ -5,7 +5,7 @@
 - Daten/DSGVO: RLS owner-based, kein service_role im Client, Consent-Log (ts, version, scopes), Audit-Trail via Edge Function.
 - DoD (immer): Feature nutzbar, Tests grün, Logs sichtbar, ADR/Docs aktualisiert.
 - Code-Qualität: flutter_lints aktiv; DCM non-blocking; CodeRabbit-Reviews bei PRs.
-- CI/CD: Flutter-Version im Workflow gepinnt auf 3.35.2 (Dart 3.9.0).
+- CI/CD: Flutter-Version im Workflow gepinnt auf 3.35.4 (Dart 3.9.0).
 
 ## Meilensteine (Kurz)
 - M0 Fundament: Repo/CI, iOS-Sim, Supabase init, Privacy-Ordner. ✅
@@ -25,4 +25,3 @@
 
 ## Sprints (2-Wochen)
 S0 Fundament • S1 Multi-Agent • S2 Modellierung • S3 Auth/Consent • S4 Core MVP • S5 AI • S6 Paywall • S7 Nutrition • S8 Mind • S9 Beta/Analytics • S10 Calendar • S11 Statistics • S12 Newsletter • S13+ Community/Wearables
-

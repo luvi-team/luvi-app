@@ -81,53 +81,7 @@ Access token not provided. Supply an access token by running supabase login or s
 - `flutter test --reporter=expanded` → 90 tests executed; all passed.
 
 ## Quick Wins
+
+> **Note:** The following suggestions are minimal implementations to establish backend connectivity. Production code should include comprehensive error handling, loading states, input validation, and proper user feedback mechanisms.
+
 1. **lib/features/auth/screens/auth_signup_screen.dart:178** — Replace the empty signup handler with a Supabase sign-up call so the CTA actually registers users.
-   ```diff
--            onPressed: () {},
-+            onPressed: () async {
-+              await SupabaseService.client.auth.signUp(
-+                email: _emailController.text.trim(),
-+                password: _passwordController.text,
-+              );
-+            },
-   ```
-   (add `import 'package:luvi_app/services/supabase_service.dart';` at top)
-2. **lib/features/auth/state/reset_submit_provider.dart:17** — Swap the artificial delay for `supabase.auth.resetPasswordForEmail` to wire the reset flow to backend.
-   ```diff
--      await Future<void>.delayed(const Duration(milliseconds: 500));
-+      await SupabaseService.client.auth.resetPasswordForEmail(email);
-   ```
-   (inject `SupabaseService` and surface errors to UI)
-3. **lib/features/auth/screens/create_new_password_screen.dart:83** — Hook the CTA to `supabase.auth.updateUser` so password reset completion actually updates Supabase.
-   ```diff
--            onPressed: () {},
-+            onPressed: () async {
-+              await SupabaseService.client.auth.updateUser(
-+                UserAttributes(password: _newPasswordController.text),
-+              );
-+              if (context.mounted) context.goNamed('password_success');
-+            },
-   ```
-   (import `supabase_flutter` types and `SupabaseService`)
-4. **lib/features/consent/state/consent_service.dart:8** — Guard the edge function call with an auth/session check to avoid unauthenticated `401` failures and surface detailed errors.
-   ```diff
--    final response = await Supabase.instance.client.functions.invoke(
-+    final client = SupabaseService.client;
-+    if (client.auth.currentSession == null) {
-+      throw StateError('Cannot log consent without an active session');
-+    }
-+    final response = await client.functions.invoke(
-   ```
-   (add `SupabaseService` import and include `response.data` in the thrown message)
-5. **lib/features/consent/widgets/consent_button.dart:34** — Surface backend errors consistently by catching `Exception` types and routing them through `ScaffoldMessenger` with more context (status/body) from `ConsentService.accept`.
-   ```diff
--    } catch (e) {
-+    } on ConsentLogException catch (e) {
-+      if (mounted) {
-+        ScaffoldMessenger.of(context).showSnackBar(
-+          SnackBar(content: Text('Consent failed: ${e.message}')),
-+        );
-+      }
-+    } catch (e) {
-   ```
-   (introduce a typed exception in `ConsentService` so UI can distinguish failure modes)

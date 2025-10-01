@@ -222,12 +222,12 @@
     "grayscaleWhite": {
       "variable": "Grayscale/White",
       "hex": "#FFFFFF",
-      "usage": ["screen background", "button text"]
+      "usage": ["screen background"]
     },
     "grayscaleBlack": {
       "variable": "Grayscale/Black",
       "hex": "#030401",
-      "usage": ["primary text", "home indicator", "year selected"]
+      "usage": ["primary text", "CTA button text", "home indicator", "year selected"]
     },
     "grayscale200": {
       "variable": "Grayscale/200",

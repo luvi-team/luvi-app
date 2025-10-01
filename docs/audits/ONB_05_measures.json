@@ -39,7 +39,7 @@
     "header_to_question": 42,
     "question_to_first_option": 42,
     "option_gap": 24,
-    "last_option_to_callout": 106,
+    "last_option_to_callout": 66,
     "callout_to_cta": 42,
     "cta_to_home": 42
   },
@@ -91,19 +91,19 @@
       {
         "index": 2,
         "text": "Zwischen 3 und 5 Tage",
-        "y_range": [331, 395],
+        "y_range": [307, 371],
         "height": 64
       },
       {
         "index": 3,
         "text": "Zwischen 5 und 7 Tage",
-        "y_range": [419, 482],
+        "y_range": [395, 458],
         "height": 63
       },
       {
         "index": 4,
         "text": "Mehr als 7 Tage",
-        "y_range": [506, 570],
+        "y_range": [482, 546],
         "height": 64
       }
     ]
@@ -132,7 +132,7 @@
     "corner_radius": 12,
     "background": "#D9B18E",
     "background_token": "Primary color/100",
-    "font": "Figtree Bold 20/24 white",
+    "font": "Figtree Bold 20/24 Grayscale/Black (#030401)",
     "font_token": "Button",
     "disabled_state": "not specified in Figma"
   },

@@ -137,12 +137,12 @@
 - **Size:** 20 px
 - **Weight:** 700
 - **Line height:** 24 px
-- **Color:** Grayscale/White (#FFFFFF)
+- **Color:** Grayscale/Black (#030401)
 - **Text alignment:** Center
 
 ### Colors
 - **Background:** Primary color/100 (#D9B18E)
-- **Text:** Grayscale/White (#FFFFFF)
+- **Text:** Grayscale/Black (#030401)
 
 ### Interactive States (Inferred)
 - **Default:** Background #D9B18E
@@ -158,8 +158,8 @@
 #### Colors
 | Variable Name | Hex Value | Usage |
 |---------------|-----------|-------|
-| **Grayscale/White** | #FFFFFF | Screen background, button text, status bar background |
-| **Grayscale/Black** | #030401 | Primary text, selected card border, home indicator, radio button (selected) |
+| **Grayscale/White** | #FFFFFF | Screen background, status bar background |
+| **Grayscale/Black** | #030401 | Primary text, button text, selected card border, home indicator, radio button (selected) |
 | **Grayscale/100** | #F7F7F8 | Card background (default & selected) |
 | **Primary color/100** | #D9B18E | CTA button background, radio button inner fill (selected) |
 
@@ -270,7 +270,7 @@ Semantics(
 3. **Multi-selection announcement:** "2 von 5 Zielen ausgewählt" (dynamic hint)
 4. **Color contrast:**
    - Text on card background (#030401 on #F7F7F8): **17.9:1** ✅ WCAG AAA
-   - Button text (#FFFFFF on #D9B18E): **4.8:1** ✅ WCAG AA (Large Text)
+  - Button text (#030401 on #D9B18E): **≈10.4:1** ✅ WCAG AAA (Stark Figma Plugin)
 5. **Dynamic type support:** Consider scaling fonts for accessibility settings (not specified in Figma)
 
 ---

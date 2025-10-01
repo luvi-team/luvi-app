@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/constants/onboarding_constants.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
@@ -26,7 +27,8 @@ void main() {
         ),
         GoRoute(
           path: Onboarding03Screen.routeName,
-          builder: (context, state) => const Onboarding03Screen(),
+          builder: (context, state) =>
+              const Scaffold(body: Text('Onboarding 03')),
         ),
       ],
       initialLocation: Onboarding02Screen.routeName,
@@ -55,6 +57,9 @@ void main() {
     // Interact with date picker to enable CTA
     final picker = find.byType(CupertinoDatePicker);
     expect(picker, findsOneWidget);
+    final pickerWidget = tester.widget<CupertinoDatePicker>(picker);
+    expect(pickerWidget.minimumYear, kOnboardingMinBirthYear);
+    expect(pickerWidget.maximumYear, kOnboardingMaxBirthYear);
 
     // Simulate picker interaction by dragging
     await tester.drag(picker, const Offset(0, -50));

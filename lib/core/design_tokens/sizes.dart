@@ -4,6 +4,9 @@ class Sizes {
   static const double radiusL = 20.0; // cards / collage tiles
   static const double buttonHeight = 50.0; // Figma: Button H=50
 
+  /// Icon size 24 px (Figma: Goal card icon)
+  static const double iconM = 24.0;
+
   /// Figma: 40 px Kreisradius (z. B. Social-Button)
   static const double radiusXL = 40.0;
 

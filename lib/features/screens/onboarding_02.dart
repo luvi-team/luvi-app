@@ -6,10 +6,11 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/utils/date_formatters.dart';
-import 'package:luvi_app/features/screens/onboarding_01.dart';
-import 'package:luvi_app/core/constants/onboarding_constants.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/core/constants/onboarding_constants.dart';
+import 'package:luvi_app/features/screens/onboarding_01.dart';
+import 'package:luvi_app/features/screens/onboarding_03.dart';
+import 'package:luvi_app/features/widgets/back_button.dart';
 
 /// Onboarding02: Birthday input screen
 /// Figma: 02_Onboarding (Geburtstag)
@@ -24,10 +25,25 @@ class Onboarding02Screen extends StatefulWidget {
 }
 
 class _Onboarding02ScreenState extends State<Onboarding02Screen> {
-  DateTime _date = DateTime(2002, 5, 5);
+  late DateTime _date;
   bool _hasInteracted = false;
 
   String get _formattedDate => DateFormatters.germanDayMonthYear(_date);
+
+  @override
+  void initState() {
+    super.initState();
+    _date = _computeInitialBirthDate();
+  }
+
+  DateTime _computeInitialBirthDate() {
+    final now = DateTime.now();
+    final targetYear = now.year - 25;
+    final month = now.month;
+    final daysInMonth = DateTime(targetYear, month + 1, 0).day;
+    final clampedDay = now.day > daysInMonth ? daysInMonth : now.day;
+    return DateTime(targetYear, month, clampedDay);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +194,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                           key: const Key('onb_cta'),
                           onPressed: _hasInteracted
                               ? () {
-                                  context.push('/onboarding/03');
+                                  context.push(Onboarding03Screen.routeName);
                                 }
                               : null,
                           child: const Text('Weiter'),
@@ -194,15 +210,18 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                   bottom: safeBottom + Spacing.l,
                   child: SizedBox(
                     height: kOnboardingPickerHeight,
-                    child: CupertinoDatePicker(
-                      mode: CupertinoDatePickerMode.date,
-                      initialDateTime: _date,
-                      minimumYear: 1900,
-                      maximumYear: DateTime.now().year,
-                      onDateTimeChanged: (d) => setState(() {
-                        _date = d;
-                        _hasInteracted = true;
-                      }),
+                    child: Semantics(
+                      label: 'Geburtsdatum auswählen',
+                      child: CupertinoDatePicker(
+                        mode: CupertinoDatePickerMode.date,
+                        initialDateTime: _date,
+                        minimumYear: kOnboardingMinBirthYear,
+                        maximumYear: kOnboardingMaxBirthYear,
+                        onDateTimeChanged: (d) => setState(() {
+                          _date = d;
+                          _hasInteracted = true;
+                        }),
+                      ),
                     ),
                   ),
                 ),

@@ -115,7 +115,7 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 
 ### Colors
 - **Background:** `Primary color/100` (#D9B18E, tan/beige)
-- **Text:** `Grayscale/White` (#FFFFFF)
+- **Text:** `Grayscale/Black` (#030401)
 
 ### Typography
 - **Font:** `Button` token → Figtree Bold 20px / line-height 24px
@@ -133,7 +133,7 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 ### A11y
 - **Tap Target:** 388×50px ≈ 50×63pt → ✅ **Meets 44pt minimum**
 - **Semantic Label:** "Weiter" (inherent from text)
-- **Contrast:** White on #D9B18E → **Needs verification** (tan background may have lower contrast; test against WCAG AA 4.5:1 for 20px text)
+- **Contrast:** #030401 auf #D9B18E → **≈10.4:1, WCAG AAA** (verifiziert mit Stark Figma Plugin)
 
 ---
 
@@ -197,8 +197,8 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 ### Colors
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `Grayscale/White` | #FFFFFF | Backgrounds, CTA text |
-| `Grayscale/Black` | #030401 | Primary text, picker selected year |
+| `Grayscale/White` | #FFFFFF | Backgrounds |
+| `Grayscale/Black` | #030401 | Copy, CTA text, primary text, picker selected year |
 | `Grayscale/200` | #F1F1F1 | Callout background, picker selected row |
 | `Grayscale/400` | #A2A0A2 | Picker unselected text |
 | `Grayscale/500` | #696969 | Picker selected day/month |
@@ -267,7 +267,7 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 | Question | #030401 | #FFFFFF | 20px | ✅ High contrast |
 | Date Display | #030401 | #FFFFFF | 32px (large) | ✅ High contrast |
 | Callout Text | #030401 | #F1F1F1 | 16px | ⚠️ **Needs verification** |
-| CTA Button | #FFFFFF | #D9B18E | 20px | ⚠️ **Needs verification** (tan background) |
+| CTA Button | #030401 | #D9B18E | 20px | ✅ 10.4:1 (Stark Plugin) |
 | Picker Selected | #696969 / #030401 | #F1F1F1 | 18px | ⚠️ **Needs verification** |
 | Picker Unselected | #A2A0A2 | white gradient | 17px | ⚠️ **Needs verification** |
 
@@ -318,7 +318,7 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 - [ ] Date picker displays German month names ("Mai" not "May")
 - [ ] Picker selected row background: 388×36px, rounded-12px, #F1F1F1
 - [ ] Picker column widths and x-positions match spec (70px, 214px, 344.5px)
-- [ ] CTA button: 388×50px, rounded-12px, #D9B18E background, white text
+- [ ] CTA button: 388×50px, rounded-12px, #D9B18E background, Grayscale/Black text
 - [ ] Callout: 356×124px, rounded-20px, #BF58F7 border, #F1F1F1 background, 16px padding
 - [ ] All design tokens used (no hardcoded hex values in UI code)
 - [ ] Semantic labels for screen readers implemented

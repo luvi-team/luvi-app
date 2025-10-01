@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/constants/onboarding_constants.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
 
@@ -41,6 +42,9 @@ void main() {
 
     final picker = find.byType(CupertinoDatePicker);
     expect(picker, findsOneWidget);
+    final pickerWidget = tester.widget<CupertinoDatePicker>(picker);
+    expect(pickerWidget.minimumYear, kOnboardingMinBirthYear);
+    expect(pickerWidget.maximumYear, kOnboardingMaxBirthYear);
 
     // interact to enable
     await tester.drag(picker, const Offset(0, -50));

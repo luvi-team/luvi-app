@@ -156,7 +156,8 @@
 
 | Variable Name | Hex Value | Usage |
 |---------------|-----------|-------|
-| **Grayscale/White** | #FFFFFF | Screen background, button text |
+| **Grayscale/White** | #FFFFFF | Screen background |
+| **Grayscale/Black** | #030401 | Button text, copy |
 | **Grayscale/Black** | #030401 | Primary text, home indicator, year (selected) |
 | **Grayscale/200** | #F1F1F1 | Callout background, picker selected zone background |
 | **Grayscale/400** | #A2A0A2 | Picker unselected text (month) |
@@ -284,7 +285,9 @@ Semantics(
 1. **Single-line header confirmation:** ✓ Back icon, title, and step counter all positioned at y=79 px
 2. **Picker complexity:** Uses absolute positioning for individual items; consider `CupertinoPicker` or custom scroll view
 3. **Localization:** Month names must support German (primary) with English fallback
-4. **Date validation:** Figma shows "5 Mai 2002" as example; ensure valid date range (e.g., 1900–current year)
+4. **Date validation:** Figma zeigt "5 Mai 2002" als Beispiel; implementiert mit
+   `kOnboardingMinBirthYear` (=1900) und `kOnboardingMaxBirthYear` (=aktuelles Jahr) aus
+   `lib/core/constants/onboarding_constants.dart`, damit Tests und UI denselben Bereich nutzen
 5. **Purple border on callout:** Only visible when active/focused (border: 1 px #bf58f7)
 6. **Gradient fade:** Critical for visual polish at bottom of picker zone
 7. **Font licensing:** Verify Playfair Display, Figtree, Inter availability in Flutter/Google Fonts

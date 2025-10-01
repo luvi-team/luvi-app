@@ -25,15 +25,15 @@
 | Header-Bottom (y=112) | Frage-Top (y=154) | **42** |
 | Frage-Bottom (y=202) | 1. Option-Top (y=244) | **42** |
 | **Option-Gap** (zwischen Karten) | — | **24** |
-| Letzte Option-Bottom (y=506) | Callout-Top (y=612) | **106** |
+| Letzte Option-Bottom (y=546) | Callout-Top (y=612) | **66** |
 | Callout-Bottom (y=758) | CTA-Top (y=800) | **42** |
 | CTA-Bottom (y=850) | Home-Top (y=892) | **42** |
 
 **Option-Details:**
 - Option 1: y=244–307 (h=63)
 - Option 2: y=307–371 (h=64) → Gap 24px vor y=307
-- Option 3: y=351–414 (h=63) → Gap 24px vor y=351
-- Option 4: y=438–502 (h=64) → Gap 24px vor y=438
+- Option 3: y=395–458 (h=63) → Gap 24px vor y=395
+- Option 4: y=482–546 (h=64) → Gap 24px vor y=482
 
 ---
 
@@ -81,7 +81,7 @@
 | **Maße** | 388×50 | — | |
 | **Corner Radius** | 12 | — | |
 | **Label** | "Weiter" | — | |
-| **Typografie** | Figtree Bold 20/24, white | `Button` | |
+| **Typografie** | Figtree Bold 20/24, Grayscale/Black (#030401) | `Button` | |
 | **Background** | #D9B18E | `Primary color/100` | |
 | **Disabled-State** | ⚠️ **nicht spezifiziert** | — | In Figma nicht vorhanden |
 
@@ -107,7 +107,7 @@
 | Token Name | Value | Type | Usage |
 |------------|-------|------|-------|
 | `Grayscale/White` | #FFFFFF | Color | Background |
-| `Grayscale/Black` | #030401 | Color | Text, Selected Border |
+| `Grayscale/Black` | #030401 | Color | Text, CTA Label, Selected Border |
 | `Grayscale/100` | #F7F7F8 | Color | Option Card BG |
 | `Primary color/100` | #D9B18E | Color | CTA BG, Selected Radio |
 | `Body/Regular` | Figtree 20/24 | Typography | Frage |

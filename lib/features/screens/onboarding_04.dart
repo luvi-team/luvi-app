@@ -227,8 +227,8 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                     child: CupertinoDatePicker(
                       mode: CupertinoDatePickerMode.date,
                       initialDateTime: _date,
-                      minimumYear: 1900,
-                      maximumYear: DateTime.now().year,
+                      minimumYear: kOnboardingMinBirthYear,
+                      maximumYear: kOnboardingMaxBirthYear,
                       onDateTimeChanged: (d) => setState(() {
                         _date = d;
                         _hasInteracted = true;

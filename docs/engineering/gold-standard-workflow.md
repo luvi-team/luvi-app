@@ -55,19 +55,6 @@ CodeRabbit Lite (line-by-line)
 - SSOT Acceptance: context/agents/_acceptance_v1.1.md
 - Interop/Legacy: .claude/*, CLAUDE.md nur Referenz; operativ Codex CLI-first.
 
-## Tooling & Konventionen
-IDE: Cursor • Terminal: Warp
-
-AI-Coding: Codex CLI (Fixes/CI/Refactor/Checklists) · Claude Code (Multi-File/Migrationen/RLS/Tests)
-
-Code-Qualität: flutter_lints · DCM non-blocking · CodeRabbit Lite (Required)
-
 ## GitHub / Branch-Protection
-Required Checks: „Flutter CI / analyze-test (pull_request)“, „Flutter CI / privacy-gate (pull_request)“, „CodeRabbit“
-
-## RAG-First Umsetzung
-Refs/ADRs in /context/refs, /context/ADR pflegen; interne Quellen zuerst.
-
-## Operative Routinen
-Project-Memory: context/debug/memory.md · Self-Documenting PRs · Branch-Hygiene · Privacy-Reviews.
+Required Checks: Siehe „Required-Checks (GitHub, exakt)" oben (Zeile 26-29).
 

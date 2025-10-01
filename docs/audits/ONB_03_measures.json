@@ -110,16 +110,20 @@
       "color": "#030401",
       "width": 268
     },
-    "radioButton": {
-      "outer": {
+    "checkbox": {
+      "box": {
         "size": 24,
         "strokeWidth": 2,
+        "cornerRadius": 6,
+        "fillColorUnselected": "#FFFFFF",
+        "fillColorSelected": "#D9B18E",
         "strokeColorUnselected": "#E0E0E0",
         "strokeColorSelected": "#1C1411"
       },
-      "inner": {
-        "size": 14,
-        "fillColor": "#D9B18E",
+      "checkmark": {
+        "size": 12,
+        "strokeWidth": 2,
+        "strokeColor": "#FFFFFF",
         "visibleWhen": "selected"
       }
     },
@@ -191,7 +195,7 @@
     },
     "colors": {
       "background": "#D9B18E",
-      "text": "#FFFFFF"
+      "text": "#030401"
     }
   },
   "homeIndicator": {
@@ -256,8 +260,7 @@
     "borderRadii": {
       "goalCard": 20,
       "ctaButton": 12,
-      "radioButtonOuter": 24,
-      "radioButtonInner": 14,
+      "checkboxBox": 6,
       "homeIndicator": 100
     }
   },
@@ -292,10 +295,10 @@
         "wcagLevel": "AAA"
       },
       "buttonText": {
-        "foreground": "#FFFFFF",
+        "foreground": "#030401",
         "background": "#D9B18E",
-        "ratio": 4.8,
-        "wcagLevel": "AA-Large"
+        "ratio": 10.4,
+        "wcagLevel": "AAA"
       }
     }
   },

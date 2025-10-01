@@ -60,8 +60,8 @@ class GoalCard extends StatelessWidget {
               children: [
                 // Icon
                 SizedBox(
-                  width: 24,
-                  height: 24,
+                  width: Sizes.iconM,
+                  height: Sizes.iconM,
                   child: icon,
                 ),
                 const SizedBox(width: Spacing.goalCardIconGap),

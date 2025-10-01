@@ -8,12 +8,12 @@
       "Grayscale/White": {
         "value": "#FFFFFF",
         "type": "color",
-        "usage": ["screen background", "button key backgrounds", "button text"]
+        "usage": ["screen background", "button key backgrounds"]
       },
       "Grayscale/Black": {
         "value": "#030401",
         "type": "color",
-        "usage": ["primary text", "instruction text", "input text", "keyboard labels", "home indicator"]
+        "usage": ["primary text", "instruction text", "input text", "keyboard labels", "CTA button text", "home indicator"]
       },
       "Primary color/100": {
         "value": "#D9B18E",
