@@ -14,3 +14,12 @@ class TypographyTokens {
   static const double lineHeightRatio32on24 = 32 / 24;
   static const double lineHeightRatio40on32 = 40 / 32;
 }
+
+/// Shared font family identifiers to centralize typography references.
+class FontFamilies {
+  const FontFamilies._();
+
+  static const String figtree = 'Figtree';
+  static const String inter = 'Inter';
+  static const String playfairDisplay = 'Playfair Display';
+}

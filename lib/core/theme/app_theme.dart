@@ -22,7 +22,7 @@ class AppTheme {
   static const TextTheme _textThemeConst = TextTheme(
     // H1
     headlineMedium: TextStyle(
-      fontFamily: 'Playfair Display',
+      fontFamily: FontFamilies.playfairDisplay,
       fontWeight: FontWeight.w400,
       fontSize: TypographyTokens.size32,
       height: TypographyTokens.lineHeightRatio40on32,
@@ -30,7 +30,7 @@ class AppTheme {
     ),
     // Body Regular
     bodyMedium: TextStyle(
-      fontFamily: 'Figtree',
+      fontFamily: FontFamilies.figtree,
       fontWeight: FontWeight.w400,
       fontSize: TypographyTokens.size20,
       height: TypographyTokens.lineHeightRatio24on20,
@@ -38,7 +38,7 @@ class AppTheme {
     ),
     // Button Label (bold)
     labelLarge: TextStyle(
-      fontFamily: 'Figtree',
+      fontFamily: FontFamilies.figtree,
       fontWeight: FontWeight.w700,
       fontSize: TypographyTokens.size20,
       height: TypographyTokens.lineHeightRatio24on20,
@@ -46,7 +46,7 @@ class AppTheme {
     ),
     // Skip / small
     bodySmall: TextStyle(
-      fontFamily: 'Inter',
+      fontFamily: FontFamilies.inter,
       fontWeight: FontWeight.w500,
       fontSize: TypographyTokens.size14,
       height: TypographyTokens.lineHeightRatio24on14,
@@ -59,7 +59,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       // Keep global default as Playfair to avoid unexpected fallbacks for styles
-      fontFamily: 'Playfair Display',
+      fontFamily: FontFamilies.playfairDisplay,
       colorScheme: _buildColorScheme(),
       scaffoldBackgroundColor: Colors.white,
       textTheme: _buildTextTheme(),
@@ -98,7 +98,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(Sizes.radiusM),
         ),
         textStyle: const TextStyle(
-          fontFamily: 'Figtree',
+          fontFamily: FontFamilies.figtree,
           fontWeight: FontWeight.w700,
           fontSize: TypographyTokens.size20,
           height: TypographyTokens.lineHeightRatio24on20,
@@ -113,7 +113,7 @@ class AppTheme {
       style: TextButton.styleFrom(
         foregroundColor: _onSurface,
         textStyle: const TextStyle(
-          fontFamily: 'Inter',
+          fontFamily: FontFamilies.inter,
           fontWeight: FontWeight.w500,
           fontSize: TypographyTokens.size14,
           height: TypographyTokens.lineHeightRatio24on14,
@@ -153,7 +153,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     successColor: Color(0xFF04B155),
     inputBorderLight: Color(0xFFF7F7F8),
     authEntrySubhead: TextStyle(
-      fontFamily: 'Figtree',
+      fontFamily: FontFamilies.figtree,
       fontWeight: FontWeight.w500,
       fontSize: 14,
       height: 20 / 14,

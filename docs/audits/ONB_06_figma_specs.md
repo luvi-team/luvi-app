@@ -84,7 +84,7 @@
 ## 4) Callout/Footnote
 
 - **Text:** "Jeder Zyklus ist einzigartig - wie du auch!"
-- **Style:** Regular klein kursic (Figtree Italic 16/24), color=#000000
+- **Style:** Regular klein kursiv (Figtree Italic 16/24), color=#000000
 - **Box:** None (no background, no border)
 - **Dimensions:** x=62, y=718, w=304, h=30
 - **Spacing:** 48px below option list, 48px above CTA
@@ -120,7 +120,7 @@
 | Button               | Figtree Bold 20/24                  |
 | Body/Regular         | Figtree Regular 20/24               |
 | Regular klein        | Figtree Regular 16/24               |
-| Regular klein kursic | Figtree Italic 16/24                |
+| Regular klein kursiv | Figtree Italic 16/24                |
 | Callout              | Inter Medium 16/24                  |
 
 ### Radii

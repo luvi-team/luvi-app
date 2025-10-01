@@ -18,7 +18,7 @@ Required Checks (exakt):
 Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit
 
 ## 2) Frontend (Flutter)
-Flutter 3.35.2 (Dart 3.9.0, in CI gepinnt)
+Flutter 3.35.4 (Dart 3.9.0, in CI gepinnt)
 State: Riverpod 3 · Nav: GoRouter
 UI: Figma NovaHealth → Dualite (Figma→Flutter)
 Health: Flutter Health Package (Apple Health/Google Fit/Wearables)
@@ -56,4 +56,3 @@ Mehrkosten AI/DSGVO: ~€0,49 / Premium-User / Monat
 
 ## 9) Branch-Protection (Empfehlung)
 Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit
-

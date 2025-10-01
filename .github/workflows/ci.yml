@@ -12,7 +12,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.35.2'
+          flutter-version: '3.35.4'
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter pub run dart_code_metrics:metrics analyze lib --disable-sunset-warning || true

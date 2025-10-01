@@ -177,7 +177,7 @@
         "text": "Keine Ahnung",
         "value": "unknown",
         "icon": "help",
-        "icon_node_id": "67067:7059",
+        "icon_node_id": "67067:7060",
         "selected": false,
         "position": {
           "y": 491,
@@ -207,7 +207,7 @@
     }
   },
   "footnote": {
-    "text": "Ob Uhrwerk oder Chaos - ich verstehen beides!",
+    "text": "Ob Uhrwerk oder Chaos - ich verstehe beides!",
     "font_family": "Figtree",
     "font_style": "Italic",
     "font_size": 16,
@@ -276,7 +276,7 @@
         "weight": 400,
         "line_height": 24
       },
-      "Regular klein kursic": {
+      "Regular klein kursiv": {
         "family": "Figtree",
         "style": "Italic",
         "size": 16,

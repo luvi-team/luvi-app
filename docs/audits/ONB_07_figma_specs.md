@@ -84,7 +84,7 @@
 - **Radio:** 24×24 px (unselected)
 
 ### Karte 3: „Keine Ahnung"
-- **Icon:** Help (24×24 px, node `67067:7059`)
+- **Icon:** Help (24×24 px, node `67067:7060`)
 - **Text:** Figtree / Regular / 16 px / lh 24 px
   - Zeilenumbruch: nein, aber Figma-Data zeigt whitespace padding (nicht relevant für echten Text)
 - **Radio:** 24×24 px (unselected)
@@ -93,9 +93,9 @@
 
 ## 4. Footnote/Callout
 
-**Text:** „Ob Uhrwerk oder Chaos - ich verstehen beides!"
+**Text:** „Ob Uhrwerk oder Chaos - ich verstehe beides!"
 - **Typo:** Figtree / Italic / 16 px / lh 24 px
-  - **Token:** `Regular klein kursic` (Custom-Name)
+  - **Token:** `Regular klein kursiv` (Custom-Name)
 - **Color:** `#000000` (black, abweichend von Grayscale/Black #030401 – likely Figma-Default)
 - **Width:** 363 px
 - **Height:** 19 px (single-line)
@@ -138,7 +138,7 @@
 | `Playfair Display`    | Playfair Display | Regular | 24   | 400    | 32          |
 | `Body/Regular`        | Figtree      | Regular | 20   | 400    | 24          |
 | `Regular klein`       | Figtree      | Regular | 16   | 400    | 24          |
-| `Regular klein kursic`| Figtree      | Italic  | 16   | 400    | 24          |
+| `Regular klein kursiv`| Figtree      | Italic  | 16   | 400    | 24          |
 | `Button`              | Figtree      | Bold    | 20   | 700    | 24          |
 | `Callout` (Step)      | Inter        | Medium  | 16   | 500    | 24          |
 

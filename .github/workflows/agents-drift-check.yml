@@ -11,15 +11,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install ripgrep
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ripgrep
+      - name: Setup ripgrep
+        uses: atusy/setup-ripgrep@v1
 
       - name: Generate drift report
         run: |
           sh context/agents/_drift_check.sh || true
-          echo "\n---\nReport preview:\n" && (cat context/agents/_drift_report.md || true)
+          printf '\n---\nReport preview:\n' && (cat context/agents/_drift_report.md || true)
 
       - name: Upload drift report
         if: always()
@@ -28,4 +26,3 @@ jobs:
           name: agents-drift-report
           path: context/agents/_drift_report.md
           if-no-files-found: warn
-
