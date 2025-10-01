@@ -154,10 +154,12 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: colorScheme.onSurface,
-                                size: 24,
+                              ExcludeSemantics(
+                                child: Icon(
+                                  Icons.info_outline,
+                                  color: colorScheme.onSurface,
+                                  size: 24,
+                                ),
                               ),
                               const SizedBox(width: Spacing.s),
                               Expanded(

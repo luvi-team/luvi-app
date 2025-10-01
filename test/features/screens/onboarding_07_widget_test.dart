@@ -22,7 +22,7 @@ void main() {
     final cta = find.byKey(const Key('onb_cta'));
     expect(cta, findsOneWidget);
     // initially disabled
-    expect(tester.widget<FilledButton>(cta).onPressed, isNull);
+    expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNull);
 
     // tap first option (Text an Figma anpassen, z.B. 'Ziemlich regelmäßig')
     final firstOption = find.byKey(const Key('onb_option_0'));
@@ -31,7 +31,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // enabled & navigates
-    expect(tester.widget<FilledButton>(cta).onPressed, isNotNull);
+    expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNotNull);
     await tester.ensureVisible(cta);
     await tester.tap(cta);
     await tester.pumpAndSettle();

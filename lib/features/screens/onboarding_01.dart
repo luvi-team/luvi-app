@@ -63,11 +63,11 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
             children: [
               const SizedBox(height: Spacing.m),
               _buildHeader(textTheme, colorScheme),
-              const SizedBox(height: Spacing.l * 3.5), // ~84 px
+              SizedBox(height: spacing.headerToInstruction01),
               _buildInstruction(textTheme, colorScheme),
-              const SizedBox(height: Spacing.l * 3.5), // ~84 px
+              SizedBox(height: spacing.instructionToInput01),
               _buildNameInput(textTheme, colorScheme, spacing),
-              const SizedBox(height: Spacing.l * 3.5), // ~84 px
+              SizedBox(height: spacing.inputToCta01),
               _buildCta(textTheme, colorScheme),
               const SizedBox(height: Spacing.l),
             ],
@@ -160,10 +160,14 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   Widget _buildCta(TextTheme textTheme, ColorScheme colorScheme) {
-    return ElevatedButton(
-      key: const Key('onb_cta'),
-      onPressed: _hasText ? _handleContinue : null,
-      child: const Text('Weiter'),
+    return Semantics(
+      label: 'Weiter',
+      button: true,
+      child: ElevatedButton(
+        key: const Key('onb_cta'),
+        onPressed: _hasText ? _handleContinue : null,
+        child: const Text('Weiter'),
+      ),
     );
   }
 }

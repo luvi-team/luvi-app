@@ -131,23 +131,33 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
 
     final goals = [
       _GoalItem(
-        icon: Icon(Icons.favorite_border, color: iconColor, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.favorite_border, color: iconColor, size: 24),
+        ),
         title: 'Meinen Zyklus & Körper besser verstehen',
       ),
       _GoalItem(
-        icon: Icon(Icons.fitness_center, color: iconColor, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.fitness_center, color: iconColor, size: 24),
+        ),
         title: 'Training an meinen Zyklus anpassen',
       ),
       _GoalItem(
-        icon: Icon(Icons.restaurant, color: iconColor, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.restaurant, color: iconColor, size: 24),
+        ),
         title: 'Ernährung optimieren & neue Rezepte entdecken',
       ),
       _GoalItem(
-        icon: Icon(Icons.monitor_weight, color: iconColor, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.monitor_weight, color: iconColor, size: 24),
+        ),
         title: 'Gewicht managen (Abnehmen/Halten)',
       ),
       _GoalItem(
-        icon: Icon(Icons.self_improvement, color: iconColor, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.self_improvement, color: iconColor, size: 24),
+        ),
         title: 'Stress reduzieren & Achtsamkeit stärken',
       ),
     ];
@@ -172,10 +182,14 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
   }
 
   Widget _buildCta() {
-    return ElevatedButton(
-      key: const Key('onb_cta'),
-      onPressed: _selectedGoals.isNotEmpty ? _handleContinue : null,
-      child: const Text('Weiter'),
+    return Semantics(
+      label: 'Weiter',
+      button: true,
+      child: ElevatedButton(
+        key: const Key('onb_cta'),
+        onPressed: _selectedGoals.isNotEmpty ? _handleContinue : null,
+        child: const Text('Weiter'),
+      ),
     );
   }
 }

@@ -12,6 +12,9 @@ class OnboardingSpacing {
     required this.calloutToCta,
     required this.ctaToPicker,
     required this.underlineWidth,
+    required this.headerToInstruction01,
+    required this.instructionToInput01,
+    required this.inputToCta01,
     required this.headerToQuestion,
     required this.questionToFirstCard,
     required this.cardGap,
@@ -49,6 +52,10 @@ class OnboardingSpacing {
   final double calloutToCta;
   final double ctaToPicker;
   final double underlineWidth;
+  // ONB_01 specific spacing
+  final double headerToInstruction01;
+  final double instructionToInput01;
+  final double inputToCta01;
 
   // ONB_03 specific spacing
   final double headerToQuestion;
@@ -107,6 +114,9 @@ class OnboardingSpacing {
       calloutToCta: _calloutToCta * effectiveHeightScale,
       ctaToPicker: _ctaToPicker * effectiveHeightScale,
       underlineWidth: 197.0,
+      headerToInstruction01: _headerToInstruction01,
+      instructionToInput01: _instructionToInput01,
+      inputToCta01: _inputToCta01,
       // ONB_03 specific spacing
       headerToQuestion: _headerToQuestion * effectiveHeightScale,
       questionToFirstCard: _questionToFirstCard * effectiveHeightScale,
@@ -171,6 +181,10 @@ class OnboardingSpacing {
   static const double _underlineToCallout = 54.0;
   static const double _calloutToCta = 60.0;
   static const double _ctaToPicker = 54.0;
+
+  static const double _headerToInstruction01 = 84.0;
+  static const double _instructionToInput01 = 84.0;
+  static const double _inputToCta01 = 84.0;
 
   // ONB_03 specific spacing (from Figma audit)
   static const double _headerToQuestion = 80.0;

@@ -144,10 +144,12 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             ),
             child: GoalCard(
               key: Key('onb_option_$index'),
-              icon: Icon(
-                options[index].icon,
-                size: 24,
-                color: iconColor,
+              icon: ExcludeSemantics(
+                child: Icon(
+                  options[index].icon,
+                  size: 24,
+                  color: iconColor,
+                ),
               ),
               title: options[index].label,
               selected: _selected == index,
@@ -175,28 +177,21 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
 
   Widget _buildCta() {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final isEnabled = _selected != null;
 
-    return FilledButton(
-      key: const Key('onb_cta'),
-      onPressed: isEnabled ? _handleContinue : null,
-      style: FilledButton.styleFrom(
-        minimumSize: const Size(388, 50),
-        backgroundColor: colorScheme.primary,
-        disabledBackgroundColor: const Color(0xFFF7F7F8), // Grayscale/100
-        foregroundColor: Colors.white,
-        disabledForegroundColor: const Color(0xFF999999),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      child: const Text(
-        'Weiter',
-        style: TextStyle(
-          fontSize: TypographyTokens.size20,
-          fontWeight: FontWeight.w700,
-          height: TypographyTokens.lineHeightRatio24on20,
+    return Semantics(
+      label: 'Weiter',
+      button: true,
+      child: ElevatedButton(
+        key: const Key('onb_cta'),
+        onPressed: isEnabled ? _handleContinue : null,
+        child: Text(
+          'Weiter',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontSize: TypographyTokens.size20,
+            fontWeight: FontWeight.w700,
+            height: TypographyTokens.lineHeightRatio24on20,
+          ),
         ),
       ),
     );

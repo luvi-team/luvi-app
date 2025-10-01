@@ -169,10 +169,14 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
   }
 
   Widget _buildCta() {
-    return ElevatedButton(
-      key: const Key('onb_cta'),
-      onPressed: _selected != null ? _handleContinue : null,
-      child: const Text('Weiter'),
+    return Semantics(
+      label: 'Weiter',
+      button: true,
+      child: ElevatedButton(
+        key: const Key('onb_cta'),
+        onPressed: _selected != null ? _handleContinue : null,
+        child: const Text('Weiter'),
+      ),
     );
   }
 }

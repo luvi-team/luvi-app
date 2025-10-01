@@ -146,10 +146,12 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: colorScheme.onSurface,
-                                size: 20,
+                              ExcludeSemantics(
+                                child: Icon(
+                                  Icons.info_outline,
+                                  color: colorScheme.onSurface,
+                                  size: 20,
+                                ),
                               ),
                               const SizedBox(width: Spacing.s),
                               Expanded(
@@ -169,14 +171,18 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                       ),
                       SizedBox(height: spacing.calloutToCta),
                       // CTA Button
-                      ElevatedButton(
-                        key: const Key('onb_cta'),
-                        onPressed: _hasInteracted
-                            ? () {
-                                context.push('/onboarding/03');
-                              }
-                            : null,
-                        child: const Text('Weiter'),
+                      Semantics(
+                        label: 'Weiter',
+                        button: true,
+                        child: ElevatedButton(
+                          key: const Key('onb_cta'),
+                          onPressed: _hasInteracted
+                              ? () {
+                                  context.push('/onboarding/03');
+                                }
+                              : null,
+                          child: const Text('Weiter'),
+                        ),
                       ),
                       SizedBox(height: spacing.ctaToPicker),
                     ],
