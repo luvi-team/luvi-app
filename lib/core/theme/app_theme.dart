@@ -40,8 +40,8 @@ class AppTheme {
     labelLarge: TextStyle(
       fontFamily: 'Figtree',
       fontWeight: FontWeight.w700,
-      fontSize: TypographyTokens.size16,
-      height: TypographyTokens.lineHeightRatio24on16,
+      fontSize: TypographyTokens.size20,
+      height: TypographyTokens.lineHeightRatio24on20,
       letterSpacing: 0,
     ),
     // Skip / small
@@ -100,8 +100,8 @@ class AppTheme {
         textStyle: const TextStyle(
           fontFamily: 'Figtree',
           fontWeight: FontWeight.w700,
-          fontSize: TypographyTokens.size16,
-          height: TypographyTokens.lineHeightRatio24on16,
+          fontSize: TypographyTokens.size20,
+          height: TypographyTokens.lineHeightRatio24on20,
         ),
         elevation: 0,
       ),
