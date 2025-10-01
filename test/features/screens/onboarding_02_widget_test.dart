@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -47,10 +48,18 @@ void main() {
     router.go(Onboarding02Screen.routeName);
     await tester.pumpAndSettle();
 
+    // Interact with date picker to enable CTA
+    final picker = find.byType(CupertinoDatePicker);
+    expect(picker, findsOneWidget);
+
+    // Simulate picker interaction by dragging
+    await tester.drag(picker, const Offset(0, -50));
+    await tester.pumpAndSettle();
+
     final ctaFinder = find.widgetWithText(ElevatedButton, 'Weiter');
     await tester.ensureVisible(ctaFinder);
     await tester.tap(ctaFinder);
     await tester.pumpAndSettle();
-    expect(find.text('Onboarding 03 (Stub)'), findsOneWidget);
+    expect(find.text('Was sind deine Ziele?'), findsOneWidget);
   });
 }

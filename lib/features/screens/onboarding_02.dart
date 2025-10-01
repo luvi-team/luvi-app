@@ -40,6 +40,7 @@ class Onboarding02Screen extends StatefulWidget {
 
 class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   DateTime _date = DateTime(2002, 5, 5);
+  bool _hasInteracted = false;
 
   String get _formattedDate => _formatDateGerman(_date);
 
@@ -176,9 +177,11 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                       SizedBox(height: spacing.calloutToCta),
                       // CTA Button
                       ElevatedButton(
-                        onPressed: () {
-                          context.push('/onboarding/03');
-                        },
+                        onPressed: _hasInteracted
+                            ? () {
+                                context.push('/onboarding/03');
+                              }
+                            : null,
                         child: const Text('Weiter'),
                       ),
                       SizedBox(height: spacing.ctaToPicker),
@@ -196,7 +199,10 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                       initialDateTime: _date,
                       minimumYear: 1900,
                       maximumYear: DateTime.now().year,
-                      onDateTimeChanged: (d) => setState(() => _date = d),
+                      onDateTimeChanged: (d) => setState(() {
+                        _date = d;
+                        _hasInteracted = true;
+                      }),
                     ),
                   ),
                 ),

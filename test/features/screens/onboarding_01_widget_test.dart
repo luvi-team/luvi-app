@@ -44,7 +44,9 @@ void main() {
       final nameField = find.byType(TextField);
       expect(nameField, findsOneWidget);
 
+      // Enter text and wait for state update
       await tester.enterText(nameField, 'Claire');
+      await tester.pumpAndSettle();
 
       final continueButton = find.widgetWithText(ElevatedButton, 'Weiter');
       expect(continueButton, findsOneWidget);

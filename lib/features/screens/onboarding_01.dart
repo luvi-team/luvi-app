@@ -18,11 +18,26 @@ class Onboarding01Screen extends StatefulWidget {
 
 class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   final _nameController = TextEditingController();
+  bool _hasText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_onTextChanged);
+  }
 
   @override
   void dispose() {
+    _nameController.removeListener(_onTextChanged);
     _nameController.dispose();
     super.dispose();
+  }
+
+  void _onTextChanged() {
+    final hasText = _nameController.text.trim().isNotEmpty;
+    if (_hasText != hasText) {
+      setState(() => _hasText = hasText);
+    }
   }
 
   void _handleContinue() {
@@ -146,7 +161,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
 
   Widget _buildCta(TextTheme textTheme, ColorScheme colorScheme) {
     return ElevatedButton(
-      onPressed: _handleContinue,
+      onPressed: _hasText ? _handleContinue : null,
       child: const Text('Weiter'),
     );
   }

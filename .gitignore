@@ -140,3 +140,4 @@ onboarding_reuse_audit.sh
 lib/dev_main_*.dart
 # local audits (do not commit)
 context/debug/audits/
+test/goldens/failures/
