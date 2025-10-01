@@ -62,12 +62,16 @@
 
 ---
 
-## Legacy-Hinweis (historisch, für Kontext)
+## Versions-Historie (historisch, nicht mehr gültig)
 
-> Legacy (vor Codex). Siehe context/agents/README.md für aktuelle Rollen/Governance.
-> Interop: Inhalte hier nur als Referenz verwenden; operative Ausführung erfolgt Codex CLI-first (BMAD → PRP, DoD/Gates, CodeRabbit, DCM non-blocking).
-> Hinweis: Links/Pfade können veraltet sein; maßgeblich ist AGENTS.md + context/agents/*.
-> **Aktuell (Dual-Primary):** AGENTS.md für Codex, CLAUDE.md für Claude Code. Beide nutzen gleiche Dossiers/DoD/ADRs.
+> **Historisch (vor Dual-Primary, nicht mehr gültig):**
+> - Ursprünglich war CLAUDE.md "nur Referenz", operativ galt nur Codex.
+> - Inhalte waren passive @-Referenzen zu Leitplanken (ADRs, DoD, MIWF).
+>
+> **Aktuell (ab Commit ba5b7d8):**
+> - Dual-Primary Modus: AGENTS.md für Codex, CLAUDE.md für Claude Code.
+> - Beide Tools nutzen gleiche Governance (Dossiers, DoD, ADRs, SSOT v1.1).
+> - CLAUDE.md enthält jetzt operative Anweisungen (Auto-Role, BMAD → PRP, Compliance-Checks).
 
 ## Leitplanken (immer laden)
 @docs/engineering/field-guides/make-it-work-first.md

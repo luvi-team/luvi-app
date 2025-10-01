@@ -16,5 +16,11 @@ Arbeitsweise
 Rollenwahl
 - Default: Auto-Role (ankündigen). Misch-Tasks: `role: …` (Primärrolle zuerst).
 
-Interop/Legacy
-- .claude/agents/* & CLAUDE.md = Legacy (nur Referenz), operativ gilt Codex.
+Dual-Primary (Codex + Claude Code)
+- **Codex CLI:** Nutzt AGENTS.md (diese Datei). Auto-Role via `/status`.
+- **Claude Code:** Nutzt CLAUDE.md. Auto-Role via Keyword-Mapping (siehe CLAUDE.md L18-23).
+- **Shared Governance:** Beide nutzen context/agents/* (Dossiers, DoD, ADRs, SSOT v1.1).
+- **Workflow:** Beide befolgen BMAD → PRP (Plan → Run → Prove).
+
+Legacy (nur historisch)
+- .claude/agents/* = Vor Codex-Umstellung, nicht mehr operativ.
