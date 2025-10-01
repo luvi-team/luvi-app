@@ -34,8 +34,13 @@ Jede Antwort MUSS enthalten:
    - **qa-dsgvo:** Privacy, DSGVO, Review, Compliance, PII, Consent, GDPR, Data-Protection, Audit
    - **Anwendung:**
      - Match Keywords → Rolle wählen
-     - Mehrere Matches → Primär = erste Match, sekundär erwähnen
+     - Mehrere Matches → Primär = höchste Priorität (siehe unten), sekundär erwähnen
      - Kein Match → User fragen
+   - **Priorität bei Multi-Match:**
+     - P1 (höchste): db-admin (Security/RLS), qa-dsgvo (DSGVO/Privacy)
+     - P2 (mittel): api-backend (Backend-Logik)
+     - P3 (niedrig): ui-frontend, dataviz (UI/Visualization)
+     - Bei gleicher Priorität: Stärkstes Keyword-Match (explizit > implizit)
    - **Ankündigen:** "Arbeite als [rolle] (erkannt: [keywords])"
    - **Checkpoint 1 (Pflicht):** Erste Zeile jeder Antwort:
      ```
@@ -80,16 +85,36 @@ Jede Antwort MUSS enthalten:
      ✅ Prove abgeschlossen
      - flutter analyze: ✅ [oder ❌ mit Fehler]
      - flutter test: ✅ [X Unit + Y Widget]
-     - RLS-Check: ✅ [policies exist, RLS ON] (bei DB-Ops)
+     - RLS-Check (bei DB-Ops):
+       1. RLS ON für Tabelle: `SELECT relrowsecurity FROM pg_class WHERE relname='<table>';`
+       2. Policies existieren: `SELECT * FROM pg_policies WHERE tablename='<table>';`
+       3. Test als anon-user: `psql -U anon -> SELECT * FROM <table>; → denied`
      - DSGVO-Note: ✅ [Low/Medium/High] (bei PII-Ops)
      ```
    - **Output:** PR + Tests + Docs (gemäß Rolle-spezifischem DoD)
 
-7. **Soft-Gates (bei PR)**
-   - Req'ing Ball: max. 5 Gaps (Was/Warum/Wie, File:Line)
+7. **Soft-Gates (VOR PR-Erstellung, als finales Selbst-Review)**
+   - Req'ing Ball: max. 5 Gaps (priorisiert nach Severity: Critical > High > Medium > Low; Was/Warum/Wie, File:Line)
    - UI-Polisher: 5 Verbesserungen (Kontrast/Spacing/Typo/Tokens/States)
    - QA-DSGVO: Privacy-Impact (Low/Medium/High)
    - CodeRabbit: "0 blocking issues" vor Merge
+
+---
+
+## Konflikt-Regeln (bei Unklarheiten)
+
+**User vs DoD:**
+- DoD hat Priorität. Bei Widerspruch: User informieren, DoD-Anforderung erklären, Kompromiss anbieten.
+
+**Prove-Fehler:**
+- Stop sofort. Task als "blocked" markieren. User informieren + konkrete Fehler zeigen. Fix anbieten oder User um Entscheidung bitten.
+
+**Unklare Task:**
+- Nicht raten. User fragen: "Für Klarheit benötige ich: [Context/PRD/ERD/etc.]"
+
+**Fehlende Inputs:**
+- PRD/ERD fehlt? → User fragen.
+- Optional: Mock-Daten anbieten ("Soll ich mit Placeholder arbeiten?").
 
 ---
 
