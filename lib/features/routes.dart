@@ -11,6 +11,7 @@ import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
+import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
@@ -26,6 +27,16 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: Onboarding03Screen.routeName,
     builder: (ctx, st) => const Onboarding03Screen(),
+  ),
+  GoRoute(
+    path: Onboarding04Screen.routeName,
+    builder: (ctx, st) => const Onboarding04Screen(),
+  ),
+  GoRoute(
+    path: '/onboarding/05',
+    builder: (ctx, st) => const Center(
+      child: Text('Onboarding 05 (Stub)'),
+    ),
   ),
   GoRoute(
     path: AuthEntryScreen.routeName,

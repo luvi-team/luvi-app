@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
@@ -73,7 +74,14 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
     return Row(
       children: [
         BackButtonCircle(
-          onPressed: () => context.pop(),
+          onPressed: () {
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              context.pop();
+            } else {
+              context.go(Onboarding02Screen.routeName);
+            }
+          },
           iconColor: colorScheme.onSurface,
         ),
         Expanded(

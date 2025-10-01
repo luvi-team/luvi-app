@@ -16,6 +16,10 @@ class OnboardingSpacing {
     required this.questionToFirstCard,
     required this.cardGap,
     required this.lastCardToCta,
+    required this.rhythm04,
+    required this.dateToUnderline04,
+    required this.calloutToCta04,
+    required this.ctaToPicker04,
   });
 
   final double horizontalPadding;
@@ -33,6 +37,12 @@ class OnboardingSpacing {
   final double questionToFirstCard;
   final double cardGap;
   final double lastCardToCta;
+
+  // ONB_04 vertical rhythm (base: 59px, selectively tuned for visual balance)
+  final double rhythm04;
+  final double dateToUnderline04;
+  final double calloutToCta04;
+  final double ctaToPicker04;
 
   static const double _designHeight = 926.0;
   static OnboardingSpacing of(BuildContext context) {
@@ -60,6 +70,11 @@ class OnboardingSpacing {
       questionToFirstCard: _questionToFirstCard * effectiveHeightScale,
       cardGap: _cardGap,
       lastCardToCta: _lastCardToCta * effectiveHeightScale,
+      // ONB_04 vertical rhythm
+      rhythm04: _rhythm04 * effectiveHeightScale,
+      dateToUnderline04: _dateToUnderline04 * effectiveHeightScale,
+      calloutToCta04: _calloutToCta04 * effectiveHeightScale,
+      ctaToPicker04: _ctaToPicker04 * effectiveHeightScale,
     );
   }
 
@@ -99,4 +114,10 @@ class OnboardingSpacing {
   static const double _questionToFirstCard = 23.0;
   static const double _cardGap = 24.0;
   static const double _lastCardToCta = 47.0;
+
+  // ONB_04 vertical rhythm (tuned for visual balance with longer content)
+  static const double _rhythm04 = 59.0; // header→question, question→date
+  static const double _dateToUnderline04 = 45.0; // reduced for tighter spacing
+  static const double _calloutToCta04 = 48.0; // balanced spacing before CTA
+  static const double _ctaToPicker04 = 84.0; // 59 base + 25 saved = more space
 }
