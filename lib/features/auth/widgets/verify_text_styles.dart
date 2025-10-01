@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 
 TextStyle? verifyTitleStyle(BuildContext context) {
@@ -28,7 +27,7 @@ TextStyle? verifyHelperStyle(BuildContext context, DsTokens tokens) {
     fontSize: 15,
     height: 22 / 15,
     fontWeight: FontWeight.w400,
-    fontFamily: TypeScale.inter,
+    fontFamily: 'Inter',
     color: tokens.grayscale500,
   );
 }

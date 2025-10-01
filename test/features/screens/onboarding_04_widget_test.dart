@@ -32,7 +32,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // CTA initially disabled
-    final cta = find.widgetWithText(ElevatedButton, 'Weiter');
+    final cta = find.byKey(const Key('onb_cta'));
     expect(cta, findsOneWidget);
     expect(
       tester.widget<ElevatedButton>(cta).onPressed,

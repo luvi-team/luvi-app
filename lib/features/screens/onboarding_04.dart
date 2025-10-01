@@ -4,27 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/utils/date_formatters.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
+import 'package:luvi_app/features/screens/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/screens/onboarding_spacing.dart';
-
-String _formatDateGerman(DateTime d) {
-  const months = [
-    'Januar',
-    'Februar',
-    'März',
-    'April',
-    'Mai',
-    'Juni',
-    'Juli',
-    'August',
-    'September',
-    'Oktober',
-    'November',
-    'Dezember',
-  ];
-  return '${d.day} ${months[d.month - 1]} ${d.year}';
-}
 
 /// Onboarding04: Last period start date input screen
 /// Figma: 04_Onboarding (Wann hat deine letzte Periode angefangen?)
@@ -39,10 +24,10 @@ class Onboarding04Screen extends StatefulWidget {
 }
 
 class _Onboarding04ScreenState extends State<Onboarding04Screen> {
-  DateTime _date = DateTime(2002, 5, 5);
+  DateTime _date = DateTime.now().subtract(const Duration(days: 14));
   bool _hasInteracted = false;
 
-  String get _formattedDate => _formatDateGerman(_date);
+  String get _formattedDate => DateFormatters.germanDayMonthYear(_date);
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +50,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                     spacing.horizontalPadding,
                     spacing.topPadding,
                     spacing.horizontalPadding,
-                    safeBottom + 198 + spacing.ctaToPicker04,
+                    safeBottom + kOnboardingPickerHeight + spacing.ctaToPicker04,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -92,8 +77,9 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                                 textAlign: TextAlign.center,
                                 style: textTheme.headlineMedium?.copyWith(
                                   color: colorScheme.onSurface,
-                                  fontSize: 24,
-                                  height: 32 / 24,
+                                  fontSize: TypographyTokens.size24,
+                                  height:
+                                      TypographyTokens.lineHeightRatio32on24,
                                 ),
                               ),
                             ),
@@ -179,8 +165,9 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                                   text: TextSpan(
                                     style: textTheme.bodyMedium?.copyWith(
                                       color: colorScheme.onSurface,
-                                      fontSize: 16,
-                                      height: 24 / 16,
+                                      fontSize: TypographyTokens.size16,
+                                      height:
+                                          TypographyTokens.lineHeightRatio24on16,
                                     ),
                                     children: [
                                       const TextSpan(
@@ -191,8 +178,9 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                                         text: 'exakten Tag nicht mehr weißt',
                                         style: textTheme.bodyMedium?.copyWith(
                                           color: colorScheme.onSurface,
-                                          fontSize: 16,
-                                          height: 24 / 16,
+                                          fontSize: TypographyTokens.size16,
+                                          height: TypographyTokens
+                                              .lineHeightRatio24on16,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -214,6 +202,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                         label: 'Weiter',
                         button: true,
                         child: ElevatedButton(
+                          key: const Key('onb_cta'),
                           onPressed: _hasInteracted
                               ? () {
                                   // Temporary stub navigation until ONB_05 is implemented
@@ -230,9 +219,9 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                 Positioned(
                   left: 0,
                   right: 0,
-                  bottom: safeBottom + 32,
+                  bottom: safeBottom + Spacing.l,
                   child: SizedBox(
-                    height: 198,
+                    height: kOnboardingPickerHeight,
                     child: CupertinoDatePicker(
                       mode: CupertinoDatePickerMode.date,
                       initialDateTime: _date,

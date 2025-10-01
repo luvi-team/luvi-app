@@ -19,13 +19,13 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: AppTheme.buildAppTheme(), routerConfig: router));
     await tester.pumpAndSettle();
 
-    final cta = find.widgetWithText(FilledButton, 'Weiter');
+    final cta = find.byKey(const Key('onb_cta'));
     expect(cta, findsOneWidget);
     // initially disabled
     expect(tester.widget<FilledButton>(cta).onPressed, isNull);
 
     // tap first option (Text an Figma anpassen, z.B. 'Ziemlich regelmäßig')
-    final firstOption = find.textContaining('Ziemlich regelmäßig');
+    final firstOption = find.byKey(const Key('onb_option_0'));
     expect(firstOption, findsOneWidget);
     await tester.tap(firstOption);
     await tester.pumpAndSettle();

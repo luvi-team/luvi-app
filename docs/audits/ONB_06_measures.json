@@ -72,7 +72,7 @@
     },
     "radio": {
       "size": 24,
-      "unselected_color": "gray",
+      "unselected_color": "#808080",
       "selected_color": "#D9B18E"
     },
     "items": [
@@ -92,7 +92,7 @@
     "font": "Figtree Italic",
     "size": 16,
     "line_height": 24,
-    "color": "#000000",
+    "color": "#030401",
     "box": false
   },
   "cta": {
@@ -125,7 +125,7 @@
       "button": "Figtree Bold 20/24",
       "body_regular": "Figtree Regular 20/24",
       "regular_klein": "Figtree Regular 16/24",
-      "regular_klein_kursic": "Figtree Italic 16/24",
+      "regular_klein_kursiv": "Figtree Italic 16/24",
       "callout": "Inter Medium 16/24"
     },
     "radii": {

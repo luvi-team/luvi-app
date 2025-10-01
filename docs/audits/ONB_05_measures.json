@@ -91,19 +91,19 @@
       {
         "index": 2,
         "text": "Zwischen 3 und 5 Tage",
-        "y_range": [307, 371],
+        "y_range": [331, 395],
         "height": 64
       },
       {
         "index": 3,
         "text": "Zwischen 5 und 7 Tage",
-        "y_range": [351, 414],
+        "y_range": [419, 482],
         "height": 63
       },
       {
         "index": 4,
         "text": "Mehr als 7 Tage",
-        "y_range": [438, 502],
+        "y_range": [506, 570],
         "height": 64
       }
     ]

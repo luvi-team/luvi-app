@@ -32,19 +32,20 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final cta = find.byKey(const Key('onb_cta'));
+    expect(cta, findsOneWidget);
+    expect(tester.widget<ElevatedButton>(cta).onPressed, isNull);
+
     // tippe erstes Item
-    await tester.tap(find.textContaining('Zyklus & Körper').first);
+    final firstOption = find.byKey(const Key('onb_option_0'));
+    expect(firstOption, findsOneWidget);
+    await tester.tap(firstOption);
     await tester.pumpAndSettle();
 
-    // CTA aktiv?
-    final button = tester.widget<ElevatedButton>(
-      find.byType(ElevatedButton),
-    );
-    expect(button.onPressed, isNotNull);
+    expect(tester.widget<ElevatedButton>(cta).onPressed, isNotNull);
 
-    final continueButton = find.widgetWithText(ElevatedButton, 'Weiter');
-    await tester.ensureVisible(continueButton);
-    await tester.tap(continueButton);
+    await tester.ensureVisible(cta);
+    await tester.tap(cta);
     await tester.pumpAndSettle();
 
     expect(find.text('Onboarding 04 (Stub)'), findsOneWidget);

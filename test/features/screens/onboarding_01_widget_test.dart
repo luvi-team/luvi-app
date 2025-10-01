@@ -44,14 +44,23 @@ void main() {
       final nameField = find.byType(TextField);
       expect(nameField, findsOneWidget);
 
+      final cta = find.byKey(const Key('onb_cta'));
+      expect(cta, findsOneWidget);
+      expect(
+        tester.widget<ElevatedButton>(cta).onPressed,
+        isNull,
+      );
+
       // Enter text and wait for state update
       await tester.enterText(nameField, 'Claire');
       await tester.pumpAndSettle();
 
-      final continueButton = find.widgetWithText(ElevatedButton, 'Weiter');
-      expect(continueButton, findsOneWidget);
+      expect(
+        tester.widget<ElevatedButton>(cta).onPressed,
+        isNotNull,
+      );
 
-      await tester.tap(continueButton);
+      await tester.tap(cta);
       await tester.pumpAndSettle();
 
       expect(find.text('Onboarding 02'), findsOneWidget);

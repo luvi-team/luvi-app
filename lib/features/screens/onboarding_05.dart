@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
+import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
@@ -28,7 +30,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
 
   void _handleContinue() {
     // TODO: Replace with actual next route when available
-    context.push('/onboarding/06');
+    context.push(Onboarding06Screen.routeName);
   }
 
   @override
@@ -89,8 +91,8 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
               textAlign: TextAlign.center,
               style: textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
-                fontSize: 24,
-                height: 32 / 24,
+                fontSize: TypographyTokens.size24,
+                height: TypographyTokens.lineHeightRatio32on24,
               ),
             ),
           ),
@@ -139,6 +141,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
               bottom: index < options.length - 1 ? spacing.optionGap05 : 0,
             ),
             child: GoalCard(
+              key: Key('onb_option_$index'),
               icon: const SizedBox.shrink(), // No icon for radio options
               title: options[index],
               selected: _selected == index,
@@ -161,8 +164,8 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
         'an, sobald du deine nächste Periode einträgst.',
         style: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface,
-          fontSize: 14,
-          height: 24 / 14,
+          fontSize: TypographyTokens.size14,
+          height: TypographyTokens.lineHeightRatio24on14,
         ),
         textAlign: TextAlign.center,
       ),
@@ -171,6 +174,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
 
   Widget _buildCta() {
     return ElevatedButton(
+      key: const Key('onb_cta'),
       onPressed: _selected != null ? _handleContinue : null,
       child: const Text('Weiter'),
     );

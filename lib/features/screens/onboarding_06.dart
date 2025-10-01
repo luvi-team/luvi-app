@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/features/screens/onboarding_05.dart';
+import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
@@ -27,7 +30,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
 
   void _handleContinue() {
     // TODO: Replace with actual next route when available
-    context.push('/onboarding/07');
+    context.push(Onboarding07Screen.routeName);
   }
 
   @override
@@ -74,7 +77,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
             if (router.canPop()) {
               context.pop();
             } else {
-              context.go('/onboarding/05');
+              context.go(Onboarding05Screen.routeName);
             }
           },
           iconColor: colorScheme.onSurface,
@@ -88,8 +91,8 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
               textAlign: TextAlign.center,
               style: textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
-                fontSize: 24,
-                height: 32 / 24,
+                fontSize: TypographyTokens.size24,
+                height: TypographyTokens.lineHeightRatio32on24,
               ),
             ),
           ),
@@ -139,6 +142,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
               bottom: index < options.length - 1 ? spacing.optionGap06 : 0,
             ),
             child: GoalCard(
+              key: Key('onb_option_$index'),
               icon: const SizedBox.shrink(), // No icon for radio options
               title: options[index],
               selected: _selected == index,
@@ -156,8 +160,8 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
         'Jeder Zyklus ist einzigartig - wie du auch!',
         style: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface,
-          fontSize: 16,
-          height: 24 / 16,
+          fontSize: TypographyTokens.size16,
+          height: TypographyTokens.lineHeightRatio24on16,
         ),
         textAlign: TextAlign.center,
       ),
@@ -166,6 +170,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
 
   Widget _buildCta() {
     return ElevatedButton(
+      key: const Key('onb_cta'),
       onPressed: _selected != null ? _handleContinue : null,
       child: const Text('Weiter'),
     );

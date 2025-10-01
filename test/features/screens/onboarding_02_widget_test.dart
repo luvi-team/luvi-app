@@ -39,7 +39,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Erzähl mir von dir'), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
+    final cta = find.byKey(const Key('onb_cta'));
+    expect(cta, findsOneWidget);
+    expect(tester.widget<ElevatedButton>(cta).onPressed, isNull);
 
     await tester.tap(find.byType(BackButtonCircle));
     await tester.pumpAndSettle();
@@ -56,9 +58,9 @@ void main() {
     await tester.drag(picker, const Offset(0, -50));
     await tester.pumpAndSettle();
 
-    final ctaFinder = find.widgetWithText(ElevatedButton, 'Weiter');
-    await tester.ensureVisible(ctaFinder);
-    await tester.tap(ctaFinder);
+    expect(tester.widget<ElevatedButton>(cta).onPressed, isNotNull);
+    await tester.ensureVisible(cta);
+    await tester.tap(cta);
     await tester.pumpAndSettle();
     expect(find.text('Was sind deine Ziele?'), findsOneWidget);
   });

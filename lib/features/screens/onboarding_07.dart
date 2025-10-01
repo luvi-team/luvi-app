@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
@@ -75,7 +77,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             if (router.canPop()) {
               context.pop();
             } else {
-              context.go('/onboarding/06');
+              context.go(Onboarding06Screen.routeName);
             }
           },
           iconColor: colorScheme.onSurface,
@@ -84,16 +86,16 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
           child: Semantics(
             header: true,
             label: 'Erzähl mir von dir, Schritt 7 von 7',
-            child: Text(
-              'Erzähl mir von dir 💜',
-              textAlign: TextAlign.center,
-              style: textTheme.headlineMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: 24,
-                height: 32 / 24,
-              ),
+          child: Text(
+            'Erzähl mir von dir 💜',
+            textAlign: TextAlign.center,
+            style: textTheme.headlineMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontSize: TypographyTokens.size24,
+              height: TypographyTokens.lineHeightRatio32on24,
             ),
           ),
+        ),
         ),
         Semantics(
           label: 'Schritt 7 von 7',
@@ -124,6 +126,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   Widget _buildOptionList(OnboardingSpacing spacing) {
     // Icons: clock (⏰), energy/lightning (⚡), help (❓)
     // Using Material Icons.access_time, Icons.flash_on, Icons.help_outline as fallback
+    final iconColor = Theme.of(context).colorScheme.onSurface;
     final options = [
       (icon: Icons.access_time, label: 'Ziemlich regelmäßig'),
       (icon: Icons.flash_on, label: 'Eher unberechenbar'),
@@ -132,27 +135,23 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
 
     return Semantics(
       label: 'Zyklusregelmäßigkeit auswählen',
-      child: Center(
-        child: Column(
-          children: List.generate(
-            options.length,
-            (index) => Padding(
-              padding: EdgeInsets.only(
-                bottom: index < options.length - 1 ? spacing.optionGap07 : 0,
+      child: Column(
+        children: List.generate(
+          options.length,
+          (index) => Padding(
+            padding: EdgeInsets.only(
+              bottom: index < options.length - 1 ? spacing.optionGap07 : 0,
+            ),
+            child: GoalCard(
+              key: Key('onb_option_$index'),
+              icon: Icon(
+                options[index].icon,
+                size: 24,
+                color: iconColor,
               ),
-              child: SizedBox(
-                width: 261, // Fixed width from Figma specs (ONB_07_measures.json)
-                child: GoalCard(
-                  icon: Icon(
-                    options[index].icon,
-                    size: 24,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  title: options[index].label,
-                  selected: _selected == index,
-                  onTap: () => _selectOption(index),
-                ),
-              ),
+              title: options[index].label,
+              selected: _selected == index,
+              onTap: () => _selectOption(index),
             ),
           ),
         ),
@@ -163,10 +162,10 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   Widget _buildFootnote(TextTheme textTheme, ColorScheme colorScheme) {
     return ExcludeSemantics(
       child: Text(
-        'Ob Uhrwerk oder Chaos - ich verstehen beides!',
+        'Ob Uhrwerk oder Chaos - ich verstehe beides!',
         style: textTheme.bodyMedium?.copyWith(
-          fontSize: 16,
-          height: 24 / 16,
+          fontSize: TypographyTokens.size16,
+          height: TypographyTokens.lineHeightRatio24on16,
           color: colorScheme.onSurface,
         ),
         textAlign: TextAlign.center,
@@ -180,6 +179,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
     final isEnabled = _selected != null;
 
     return FilledButton(
+      key: const Key('onb_cta'),
       onPressed: isEnabled ? _handleContinue : null,
       style: FilledButton.styleFrom(
         minimumSize: const Size(388, 50),
@@ -194,9 +194,9 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
       child: const Text(
         'Weiter',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: TypographyTokens.size20,
           fontWeight: FontWeight.w700,
-          height: 24 / 20,
+          height: TypographyTokens.lineHeightRatio24on20,
         ),
       ),
     );

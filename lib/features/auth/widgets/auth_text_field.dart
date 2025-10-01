@@ -45,8 +45,8 @@ class AuthTextField extends StatelessWidget {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
     final inputStyle = theme.textTheme.bodySmall?.copyWith(
-      fontSize: TypeScale.smallSize,
-      height: TypeScale.smallHeight,
+      fontSize: TypographyTokens.size14,
+      height: TypographyTokens.lineHeightRatio24on14,
       color: theme.colorScheme.onSurface,
     );
     final resolvedHintStyle = inputStyle?.copyWith(color: tokens.grayscale500);

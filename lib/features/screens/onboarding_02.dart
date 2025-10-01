@@ -4,27 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/utils/date_formatters.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
+import 'package:luvi_app/features/screens/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/screens/onboarding_spacing.dart';
-
-String _formatDateGerman(DateTime d) {
-  const months = [
-    'Januar',
-    'Februar',
-    'März',
-    'April',
-    'Mai',
-    'Juni',
-    'Juli',
-    'August',
-    'September',
-    'Oktober',
-    'November',
-    'Dezember',
-  ];
-  return '${d.day} ${months[d.month - 1]} ${d.year}';
-}
 
 /// Onboarding02: Birthday input screen
 /// Figma: 02_Onboarding (Geburtstag)
@@ -42,7 +27,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   DateTime _date = DateTime(2002, 5, 5);
   bool _hasInteracted = false;
 
-  String get _formattedDate => _formatDateGerman(_date);
+  String get _formattedDate => DateFormatters.germanDayMonthYear(_date);
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +50,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                     spacing.horizontalPadding,
                     spacing.topPadding,
                     spacing.horizontalPadding,
-                    safeBottom + 198 + spacing.ctaToPicker,
+                    safeBottom + kOnboardingPickerHeight + spacing.ctaToPicker,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -91,8 +76,8 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                                 textAlign: TextAlign.center,
                                 style: textTheme.headlineMedium?.copyWith(
                                   color: colorScheme.onSurface,
-                                  fontSize: 24,
-                                  height: 32 / 24,
+                                  fontSize: TypographyTokens.size24,
+                                  height: TypographyTokens.lineHeightRatio32on24,
                                 ),
                               ),
                             ),
@@ -173,7 +158,8 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                                   'einzuschätzen.',
                                   style: textTheme.bodyMedium?.copyWith(
                                     color: colorScheme.onSurface,
-                                    fontSize: 14,
+                                    fontSize: TypographyTokens.size14,
+                                    height: TypographyTokens.lineHeightRatio24on14,
                                   ),
                                 ),
                               ),
@@ -184,6 +170,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                       SizedBox(height: spacing.calloutToCta),
                       // CTA Button
                       ElevatedButton(
+                        key: const Key('onb_cta'),
                         onPressed: _hasInteracted
                             ? () {
                                 context.push('/onboarding/03');
@@ -200,7 +187,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                   right: 0,
                   bottom: safeBottom + Spacing.l,
                   child: SizedBox(
-                    height: 198,
+                    height: kOnboardingPickerHeight,
                     child: CupertinoDatePicker(
                       mode: CupertinoDatePickerMode.date,
                       initialDateTime: _date,

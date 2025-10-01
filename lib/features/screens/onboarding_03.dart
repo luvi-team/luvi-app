@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
+import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/features/screens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
@@ -32,9 +34,7 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
   }
 
   void _handleContinue() {
-    // Happy Path: navigate to next step
-    // TODO: Replace with actual next route when available
-    context.push('/onboarding/04');
+    context.push(Onboarding04Screen.routeName);
   }
 
   @override
@@ -93,8 +93,8 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
               textAlign: TextAlign.center,
               style: textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
-                fontSize: 24,
-                height: 32 / 24,
+                fontSize: TypographyTokens.size24,
+                height: TypographyTokens.lineHeightRatio32on24,
               ),
             ),
           ),
@@ -160,6 +160,7 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
             bottom: index < goals.length - 1 ? spacing.cardGap : 0,
           ),
           child: GoalCard(
+            key: Key('onb_option_$index'),
             icon: goals[index].icon,
             title: goals[index].title,
             selected: _selectedGoals.contains(index),
@@ -172,6 +173,7 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
 
   Widget _buildCta() {
     return ElevatedButton(
+      key: const Key('onb_cta'),
       onPressed: _selectedGoals.isNotEmpty ? _handleContinue : null,
       child: const Text('Weiter'),
     );

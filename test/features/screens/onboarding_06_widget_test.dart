@@ -20,12 +20,12 @@ void main() {
     await tester.pumpAndSettle();
 
     // CTA initially disabled
-    final cta = find.widgetWithText(ElevatedButton, 'Weiter');
+    final cta = find.byKey(const Key('onb_cta'));
     expect(cta, findsOneWidget);
     expect(tester.widget<ElevatedButton>(cta).onPressed, isNull);
 
     // Tap first option (text aus Figma – ggf. anpassen)
-    final firstOption = find.textContaining('Kurz'); // z.B. 'Kurz (alle 21-23 Tage)'
+    final firstOption = find.byKey(const Key('onb_option_0'));
     expect(firstOption, findsOneWidget);
     await tester.tap(firstOption);
     await tester.pumpAndSettle();

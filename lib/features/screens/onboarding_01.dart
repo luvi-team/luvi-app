@@ -161,6 +161,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
 
   Widget _buildCta(TextTheme textTheme, ColorScheme colorScheme) {
     return ElevatedButton(
+      key: const Key('onb_cta'),
       onPressed: _hasText ? _handleContinue : null,
       child: const Text('Weiter'),
     );
