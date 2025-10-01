@@ -11,8 +11,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup ripgrep
-        uses: atusy/setup-ripgrep@v1
+      - name: Install ripgrep
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
 
       - name: Generate drift report
         run: |
