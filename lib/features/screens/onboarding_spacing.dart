@@ -26,6 +26,12 @@ class OnboardingSpacing {
     required this.lastOptionToCallout05,
     required this.calloutToCta05,
     required this.ctaToHome05,
+    required this.headerToQuestion06,
+    required this.questionToFirstOption06,
+    required this.optionGap06,
+    required this.lastOptionToCallout06,
+    required this.calloutToCta06,
+    required this.ctaToHome06,
   });
 
   final double horizontalPadding;
@@ -57,6 +63,14 @@ class OnboardingSpacing {
   final double lastOptionToCallout05;
   final double calloutToCta05;
   final double ctaToHome05;
+
+  // ONB_06 specific spacing (from Figma audit ONB_06_measures.json)
+  final double headerToQuestion06;
+  final double questionToFirstOption06;
+  final double optionGap06;
+  final double lastOptionToCallout06;
+  final double calloutToCta06;
+  final double ctaToHome06;
 
   static const double _designHeight = 926.0;
   static OnboardingSpacing of(BuildContext context) {
@@ -96,6 +110,13 @@ class OnboardingSpacing {
       lastOptionToCallout05: _lastOptionToCallout05 * effectiveHeightScale,
       calloutToCta05: _calloutToCta05 * effectiveHeightScale,
       ctaToHome05: _ctaToHome05 * effectiveHeightScale,
+      // ONB_06 specific spacing
+      headerToQuestion06: _headerToQuestion06 * effectiveHeightScale,
+      questionToFirstOption06: _questionToFirstOption06 * effectiveHeightScale,
+      optionGap06: _optionGap06,
+      lastOptionToCallout06: _lastOptionToCallout06 * effectiveHeightScale,
+      calloutToCta06: _calloutToCta06 * effectiveHeightScale,
+      ctaToHome06: _ctaToHome06 * effectiveHeightScale,
     );
   }
 
@@ -149,4 +170,12 @@ class OnboardingSpacing {
   static const double _lastOptionToCallout05 = 106.0;
   static const double _calloutToCta05 = 42.0;
   static const double _ctaToHome05 = 42.0;
+
+  // ONB_06 specific spacing (from Figma audit ONB_06_measures.json)
+  static const double _headerToQuestion06 = 48.0;
+  static const double _questionToFirstOption06 = 48.0;
+  static const double _optionGap06 = 24.0;
+  static const double _lastOptionToCallout06 = 48.0;
+  static const double _calloutToCta06 = 48.0;
+  static const double _ctaToHome06 = 48.0;
 }

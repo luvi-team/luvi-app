@@ -1,0 +1,162 @@
+{
+  "screen": "06_Onboarding",
+  "figma_node": "68256:6510",
+  "date": "2025-10-01",
+  "header": {
+    "back_button": {
+      "x": 20,
+      "y": 59,
+      "visual_width": 40,
+      "visual_height": 40,
+      "required_hit_area": 44
+    },
+    "title": {
+      "text": "Erzähl mir von dir 💜",
+      "y_baseline": 79,
+      "font": "Playfair Display Regular",
+      "size": 24,
+      "line_height": 32,
+      "color": "#030401",
+      "alignment": "center"
+    },
+    "step_indicator": {
+      "text": "6/7",
+      "y_baseline": 79,
+      "font": "Inter Medium",
+      "size": 16,
+      "line_height": 24,
+      "color": "#030401",
+      "alignment": "right",
+      "offset_from_center": 194
+    }
+  },
+  "vertical_spacing": {
+    "header_to_question": 48,
+    "question_to_options": 48,
+    "option_gap": 24,
+    "options_to_callout": 48,
+    "callout_to_cta": 48,
+    "cta_to_home_indicator": 48
+  },
+  "question": {
+    "text": "Wie lange dauert dein Zyklus normalerweise?",
+    "x": 85,
+    "y": 160,
+    "width": 258,
+    "height": 48,
+    "font": "Figtree Regular",
+    "size": 20,
+    "line_height": 24,
+    "color": "#030401"
+  },
+  "options": {
+    "count": 5,
+    "width": 340,
+    "height_range": [63, 64],
+    "corner_radius": 20,
+    "padding_horizontal": 16,
+    "padding_vertical": 20,
+    "default_state": {
+      "background": "#F7F7F8",
+      "border": "none"
+    },
+    "selected_state": {
+      "background": "#F7F7F8",
+      "border": "1px solid #1C1411"
+    },
+    "text": {
+      "font": "Figtree Regular",
+      "size": 16,
+      "line_height": 24,
+      "color": "#030401"
+    },
+    "radio": {
+      "size": 24,
+      "unselected_color": "gray",
+      "selected_color": "#D9B18E"
+    },
+    "items": [
+      "Kurz (alle 21-23 Tage)",
+      "Etwas kürzer (alle 24-26 Tage)",
+      "Standard (alle 27-30 Tage)",
+      "Länger (alle 31-35 Tage)",
+      "Sehr lang (36+ Tage)"
+    ]
+  },
+  "callout": {
+    "text": "Jeder Zyklus ist einzigartig - wie du auch!",
+    "x": 62,
+    "y": 718,
+    "width": 304,
+    "height": 30,
+    "font": "Figtree Italic",
+    "size": 16,
+    "line_height": 24,
+    "color": "#000000",
+    "box": false
+  },
+  "cta": {
+    "label": "Weiter",
+    "x": 20,
+    "y": 796,
+    "width": 388,
+    "height": 50,
+    "corner_radius": 12,
+    "font": "Figtree Bold",
+    "size": 20,
+    "line_height": 24,
+    "text_color": "#FFFFFF",
+    "background": "#D9B18E",
+    "disabled_state": "not_specified"
+  },
+  "home_indicator": {
+    "y": 894,
+    "width": 428,
+    "height": 34
+  },
+  "tokens": {
+    "colors": {
+      "grayscale_white": "#FFFFFF",
+      "grayscale_black": "#030401",
+      "grayscale_100": "#F7F7F8",
+      "primary_color_100": "#D9B18E"
+    },
+    "typography": {
+      "button": "Figtree Bold 20/24",
+      "body_regular": "Figtree Regular 20/24",
+      "regular_klein": "Figtree Regular 16/24",
+      "regular_klein_kursic": "Figtree Italic 16/24",
+      "callout": "Inter Medium 16/24"
+    },
+    "radii": {
+      "option_cards": 20,
+      "cta_button": 12
+    }
+  },
+  "a11y": {
+    "tap_targets": {
+      "back_button": {
+        "visual_size": 40,
+        "required_size": 44,
+        "status": "warning"
+      },
+      "option_cards": {
+        "size": 63,
+        "status": "ok"
+      },
+      "cta_button": {
+        "size": 50,
+        "status": "ok"
+      }
+    },
+    "semantics": {
+      "header_back": "IconButton with 'Navigate back' hint",
+      "header_title": "Text with 'Tell me about yourself' label",
+      "header_step": "Text with 'Step 6 of 7' label",
+      "question": "Heading with 'How long does your cycle normally last?' label",
+      "radio_group": "Single-select group with 5 options",
+      "callout": "ExcludeSemantics or decorative Text",
+      "cta": "ElevatedButton with 'Next' label"
+    }
+  }
+}
