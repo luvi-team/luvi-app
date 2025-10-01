@@ -1,0 +1,215 @@
+{
+  "screen": "ONB_05_Onboarding",
+  "figma_node_id": "68214:6243",
+  "file_key": "iQthMdxpCbl6afzXxvzqlt",
+  "audit_date": "2025-10-01",
+
+  "header": {
+    "y_range": [0, 112],
+    "back_button": {
+      "x": 20,
+      "y": 59,
+      "width": 40,
+      "height": 40,
+      "required_hit_area": "44x44",
+      "warning": "Visuals 40x40, Hit-Area MUST be 44x44 (WCAG 2.1 AA)"
+    },
+    "title": {
+      "text": "Erzähl mir von dir 💜",
+      "x": "center",
+      "y": 79,
+      "width": 388,
+      "height": 32,
+      "font": "Playfair Display Regular 24/32",
+      "token": null,
+      "note": "Custom font, not in token system"
+    },
+    "step_indicator": {
+      "text": "5/7",
+      "x": "right-aligned (center+194)",
+      "y": 79,
+      "height": 24,
+      "font": "Inter Medium 16/24",
+      "token": "Callout"
+    },
+    "common_baseline_y": 79
+  },
+
+  "vertical_spacing": {
+    "header_to_question": 42,
+    "question_to_first_option": 42,
+    "option_gap": 24,
+    "last_option_to_callout": 106,
+    "callout_to_cta": 42,
+    "cta_to_home": 42
+  },
+
+  "question": {
+    "text": "Wie lange dauert deine Periode\nnormalerweise?",
+    "x": 72,
+    "y": 154,
+    "width": 284,
+    "height": 48,
+    "font": "Figtree Regular 20/24",
+    "token": "Body/Regular",
+    "alignment": "center",
+    "lines": 2
+  },
+
+  "options": {
+    "count": 4,
+    "width": 346,
+    "height_variants": [63, 64],
+    "corner_radius": 20,
+    "padding_horizontal": 16,
+    "padding_vertical": 20,
+    "font": "Figtree Regular 16/24",
+    "token": "Regular klein",
+    "max_lines": 1,
+    "single_select": true,
+
+    "states": {
+      "default": {
+        "background": "#F7F7F8",
+        "border": "none",
+        "radio_visual": "Gray circle outline (no fill)"
+      },
+      "selected": {
+        "background": "#F7F7F8",
+        "border": "1px solid #1C1411",
+        "radio_visual": "Gold circle #D9B18E (no extra border)"
+      }
+    },
+
+    "items": [
+      {
+        "index": 1,
+        "text": "Weniger als 3 Tage",
+        "y_range": [244, 307],
+        "height": 63
+      },
+      {
+        "index": 2,
+        "text": "Zwischen 3 und 5 Tage",
+        "y_range": [307, 371],
+        "height": 64
+      },
+      {
+        "index": 3,
+        "text": "Zwischen 5 und 7 Tage",
+        "y_range": [351, 414],
+        "height": 63
+      },
+      {
+        "index": 4,
+        "text": "Mehr als 7 Tage",
+        "y_range": [438, 502],
+        "height": 64
+      }
+    ]
+  },
+
+  "callout": {
+    "text": "Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passt die Prognosen automatisch an, sobald du deine nächste Periode einträgst.",
+    "x": 58,
+    "y": 612,
+    "width": 312,
+    "height": 146,
+    "font": "Figtree Regular 14/24",
+    "token": "Regular klein 14",
+    "corner_radius": null,
+    "border": "none (not visible in screenshot)",
+    "bold_span": false,
+    "note": "No explicit box container, text is plain paragraph"
+  },
+
+  "cta_button": {
+    "label": "Weiter",
+    "x": 20,
+    "y": 800,
+    "width": 388,
+    "height": 50,
+    "corner_radius": 12,
+    "background": "#D9B18E",
+    "background_token": "Primary color/100",
+    "font": "Figtree Bold 20/24 white",
+    "font_token": "Button",
+    "disabled_state": "not specified in Figma"
+  },
+
+  "tokens": {
+    "colors": {
+      "Grayscale/White": "#FFFFFF",
+      "Grayscale/Black": "#030401",
+      "Grayscale/100": "#F7F7F8",
+      "Primary color/100": "#D9B18E"
+    },
+    "typography": {
+      "Body/Regular": "Figtree Regular 20/24",
+      "Regular klein": "Figtree Regular 16/24",
+      "Regular klein 14": "Figtree Regular 14/24",
+      "Button": "Figtree Bold 20/24",
+      "Callout": "Inter Medium 16/24"
+    }
+  },
+
+  "a11y": {
+    "back_button": {
+      "label": "Zurück",
+      "tap_target": "40x40 → MUST expand to 44x44",
+      "wcag_aa_compliant": false
+    },
+    "title": {
+      "label": "Schritt 5 von 7: Erzähl mir von dir",
+      "role": "header"
+    },
+    "question": {
+      "label": "Wie lange dauert deine Periode normalerweise?",
+      "role": "heading"
+    },
+    "option_list": {
+      "label": "Periodendauer auswählen",
+      "role": "RadioGroup (single-select)"
+    },
+    "options": [
+      {
+        "label": "Weniger als 3 Tage",
+        "tap_target": "346x63",
+        "wcag_aa_compliant": true
+      },
+      {
+        "label": "Zwischen 3 und 5 Tage",
+        "tap_target": "346x64",
+        "wcag_aa_compliant": true
+      },
+      {
+        "label": "Zwischen 5 und 7 Tage",
+        "tap_target": "346x63",
+        "wcag_aa_compliant": true
+      },
+      {
+        "label": "Mehr als 7 Tage",
+        "tap_target": "346x64",
+        "wcag_aa_compliant": true
+      }
+    ],
+    "callout": {
+      "label": "Hinweis: [full text]",
+      "role": "Announcement (informational)"
+    },
+    "cta": {
+      "label": "Weiter",
+      "tap_target": "388x50",
+      "wcag_aa_compliant": true
+    }
+  },
+
+  "implementation_notes": [
+    "Back Button: Visuals 40x40, semantic tap-area MUST be 44x44 (MaterialButton inkTapTargetSize: padded)",
+    "Radio Visual: No black ring around gold circle in selected state (only gold fill)",
+    "Callout: No explicit border in design; text is plain (no bold-span)",
+    "Disabled-State (CTA): Not specified in Figma → implement per LUVI theme (e.g. opacity 0.5, gray bg)",
+    "Option-Gap: Consistent 24px between all cards",
+    "Title-Font: Playfair 24/32 (not in token system) → requires custom font declaration"
+  ]
+}

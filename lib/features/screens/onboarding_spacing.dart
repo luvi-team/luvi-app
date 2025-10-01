@@ -20,6 +20,12 @@ class OnboardingSpacing {
     required this.dateToUnderline04,
     required this.calloutToCta04,
     required this.ctaToPicker04,
+    required this.headerToQuestion05,
+    required this.questionToFirstOption05,
+    required this.optionGap05,
+    required this.lastOptionToCallout05,
+    required this.calloutToCta05,
+    required this.ctaToHome05,
   });
 
   final double horizontalPadding;
@@ -43,6 +49,14 @@ class OnboardingSpacing {
   final double dateToUnderline04;
   final double calloutToCta04;
   final double ctaToPicker04;
+
+  // ONB_05 specific spacing (from Figma audit ONB_05_measures.json)
+  final double headerToQuestion05;
+  final double questionToFirstOption05;
+  final double optionGap05;
+  final double lastOptionToCallout05;
+  final double calloutToCta05;
+  final double ctaToHome05;
 
   static const double _designHeight = 926.0;
   static OnboardingSpacing of(BuildContext context) {
@@ -75,6 +89,13 @@ class OnboardingSpacing {
       dateToUnderline04: _dateToUnderline04 * effectiveHeightScale,
       calloutToCta04: _calloutToCta04 * effectiveHeightScale,
       ctaToPicker04: _ctaToPicker04 * effectiveHeightScale,
+      // ONB_05 specific spacing
+      headerToQuestion05: _headerToQuestion05 * effectiveHeightScale,
+      questionToFirstOption05: _questionToFirstOption05 * effectiveHeightScale,
+      optionGap05: _optionGap05,
+      lastOptionToCallout05: _lastOptionToCallout05 * effectiveHeightScale,
+      calloutToCta05: _calloutToCta05 * effectiveHeightScale,
+      ctaToHome05: _ctaToHome05 * effectiveHeightScale,
     );
   }
 
@@ -120,4 +141,12 @@ class OnboardingSpacing {
   static const double _dateToUnderline04 = 45.0; // reduced for tighter spacing
   static const double _calloutToCta04 = 48.0; // balanced spacing before CTA
   static const double _ctaToPicker04 = 84.0; // 59 base + 25 saved = more space
+
+  // ONB_05 specific spacing (from Figma audit ONB_05_measures.json)
+  static const double _headerToQuestion05 = 42.0;
+  static const double _questionToFirstOption05 = 42.0;
+  static const double _optionGap05 = 24.0;
+  static const double _lastOptionToCallout05 = 106.0;
+  static const double _calloutToCta05 = 42.0;
+  static const double _ctaToHome05 = 42.0;
 }
