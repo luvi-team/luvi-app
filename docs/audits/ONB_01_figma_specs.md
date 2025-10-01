@@ -235,7 +235,7 @@
 
 ### Text Contrast
 - **Grayscale/Black on White:** WCAG AAA (21:1 ratio, excellent contrast)
-- **White on Primary color/100 (#D9B18E):** ~3.8:1 ratio (WCAG AA Large Text, acceptable for button ≥18 pt bold)
+- **White on Primary color/100 (#D9B18E):** ≈1.97:1 ratio (fails WCAG AA for both normal and large text; mark as non-konform und verwende entweder einen dunkleren Primärton oder eine andere Vordergrundfarbe, um die Barrierefreiheitsanforderungen zu erfüllen)
 
 ### a11y Hints (Inferred)
 - **Instruction Text:** Should be linked to input field via `accessibilityLabel` or `labelledBy`

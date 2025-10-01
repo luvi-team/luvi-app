@@ -286,7 +286,7 @@
       "backButton": {
         "width": 40,
         "height": 40,
-        "meetsMinimum": true,
+        "meetsMinimum": false,
         "note": "44×44 pt minimum"
       },
       "ctaButton": {
