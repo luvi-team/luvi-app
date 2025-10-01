@@ -20,6 +20,14 @@ class Onboarding06Screen extends StatefulWidget {
 }
 
 class _Onboarding06ScreenState extends State<Onboarding06Screen> {
+  static const List<String> _cycleLengthOptions = [
+    'Kurz (alle 21-23 Tage)',
+    'Etwas länger (alle 24-26 Tage)',
+    'Standard (alle 27-30 Tage)',
+    'Länger (alle 31-35 Tage)',
+    'Sehr lang (36+ Tage)',
+  ];
+
   int? _selected;
 
   void _selectOption(int index) {
@@ -123,27 +131,21 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
   }
 
   Widget _buildOptionList(OnboardingSpacing spacing) {
-    final options = [
-      'Kurz (alle 21-23 Tage)',
-      'Etwas länger (alle 24-26 Tage)',
-      'Standard (alle 27-30 Tage)',
-      'Länger (alle 31-35 Tage)',
-      'Sehr lang (36+ Tage)',
-    ];
-
     return Semantics(
       label: 'Zykluslänge auswählen',
       child: Column(
         children: List.generate(
-          options.length,
+          _cycleLengthOptions.length,
           (index) => Padding(
             padding: EdgeInsets.only(
-              bottom: index < options.length - 1 ? spacing.optionGap06 : 0,
+              bottom: index < _cycleLengthOptions.length - 1
+                  ? spacing.optionGap06
+                  : 0,
             ),
             child: GoalCard(
               key: Key('onb_option_$index'),
               icon: const SizedBox.shrink(), // No icon for radio options
-              title: options[index],
+              title: _cycleLengthOptions[index],
               selected: _selected == index,
               onTap: () => _selectOption(index),
             ),

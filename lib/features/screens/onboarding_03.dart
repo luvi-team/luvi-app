@@ -126,37 +126,34 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
   }
 
   Widget _buildGoalList(OnboardingSpacing spacing) {
-    final theme = Theme.of(context);
-    final iconColor = theme.colorScheme.onSurface;
-
-    final goals = [
+    const goals = [
       _GoalItem(
         icon: ExcludeSemantics(
-          child: Icon(Icons.favorite_border, color: iconColor, size: 24),
+          child: Icon(Icons.favorite_border, size: 24),
         ),
         title: 'Meinen Zyklus & Körper besser verstehen',
       ),
       _GoalItem(
         icon: ExcludeSemantics(
-          child: Icon(Icons.fitness_center, color: iconColor, size: 24),
+          child: Icon(Icons.fitness_center, size: 24),
         ),
         title: 'Training an meinen Zyklus anpassen',
       ),
       _GoalItem(
         icon: ExcludeSemantics(
-          child: Icon(Icons.restaurant, color: iconColor, size: 24),
+          child: Icon(Icons.restaurant, size: 24),
         ),
         title: 'Ernährung optimieren & neue Rezepte entdecken',
       ),
       _GoalItem(
         icon: ExcludeSemantics(
-          child: Icon(Icons.monitor_weight, color: iconColor, size: 24),
+          child: Icon(Icons.monitor_weight, size: 24),
         ),
         title: 'Gewicht managen (Abnehmen/Halten)',
       ),
       _GoalItem(
         icon: ExcludeSemantics(
-          child: Icon(Icons.self_improvement, color: iconColor, size: 24),
+          child: Icon(Icons.self_improvement, size: 24),
         ),
         title: 'Stress reduzieren & Achtsamkeit stärken',
       ),
@@ -198,5 +195,5 @@ class _GoalItem {
   final Widget icon;
   final String title;
 
-  _GoalItem({required this.icon, required this.title});
+  const _GoalItem({required this.icon, required this.title});
 }

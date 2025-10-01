@@ -35,7 +35,6 @@ class GoalCard extends StatelessWidget {
     return Semantics(
       label: title,
       checked: selected,
-      onTap: onTap,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -62,7 +61,10 @@ class GoalCard extends StatelessWidget {
                 SizedBox(
                   width: Sizes.iconM,
                   height: Sizes.iconM,
-                  child: icon,
+                  child: IconTheme(
+                    data: IconThemeData(color: theme.colorScheme.onSurface),
+                    child: icon,
+                  ),
                 ),
                 const SizedBox(width: Spacing.goalCardIconGap),
                 // Text

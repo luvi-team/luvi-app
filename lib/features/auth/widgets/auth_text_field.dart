@@ -108,7 +108,7 @@ class AuthTextField extends StatelessWidget {
             scrollPadding: scrollPadding,
             textAlign: textAlign,
             decoration: InputDecoration(
-              hintText: hintText,
+              hintText: hintText.isEmpty ? null : hintText,
               hintStyle: resolvedHintStyle,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(

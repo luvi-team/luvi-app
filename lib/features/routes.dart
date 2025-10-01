@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/features/consent/routes.dart' as consent;
@@ -117,7 +118,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
       ? SupabaseService.client.auth.currentSession
       : null;
 
-  if (allowOnboardingDev && isOnboarding) {
+  if (allowOnboardingDev && !kReleaseMode && isOnboarding) {
     return null; // allow onboarding routes in dev without auth
   }
 
