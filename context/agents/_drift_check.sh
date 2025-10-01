@@ -8,7 +8,7 @@ pass() { printf -- "- [OK] %s\n" "$1" >>"$REPORT"; }
 fail() { printf -- "- [DRIFT] %s\n" "$1" >>"$REPORT"; EXIT=1; }
 
 EXIT=0
-printf "# Agents Drift Report\n\nGenerated: %s\n\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$REPORT"
+printf "# Agents Drift Report\n\nGenerated: %s\n\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >"$REPORT"
 
 # 1) Dossiers 01–05: acceptance_version 1.1 present, and no 1.0 remnants
 DOSSIERS="01-ui-frontend.md 02-api-backend.md 03-db-admin.md 04-dataviz.md 05-qa-dsgvo.md"

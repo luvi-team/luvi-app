@@ -14,7 +14,7 @@ outputs:
   - Edge Functions/Services
   - Contract-Tests
   - Doku (docs/)
-  - Rate-Limits
+  - Rate-Limits (falls Endpunkt extern erreichbar, z. B. App-Client oder öffentlich)
 acceptance_refs:
   - context/agents/_acceptance_v1.1.md#core
   - context/agents/_acceptance_v1.1.md#role-extensions
@@ -30,7 +30,7 @@ Sichert zuverlässige Backend-Logik (Edge Functions, Services) mit Consent-Logs.
 PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
 
 ## Outputs
-Edge Functions/Services, Contract-Tests, Doku (docs/), Rate-Limits.
+Edge Functions/Services, Contract-Tests, Doku (docs/), Rate-Limits (nur bei extern erreichbaren Endpunkten).
 
 ## Handoffs
 An ui-frontend/db-admin; Format: PR-Beschreibung + docs/ + supabase/functions/.

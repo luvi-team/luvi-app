@@ -12,6 +12,7 @@ Arbeitsweise
 - Codex CLI-first; BMAD → PRP (Plan → Run → Prove).
 - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit.
 - Acceptance pro Rolle: „Core + Role extension“ gemäß SSOT v1.1.
+- Antwortformat: verbindlich gemäß `docs/engineering/assistant-answer-format.md`.
 
 Rollenwahl
 - Default: Auto-Role (ankündigen). Misch-Tasks: `role: …` (Primärrolle zuerst).
