@@ -9,6 +9,17 @@
 
 ## Claude Code Arbeitsablauf (immer befolgen bei Claude Code Sessions)
 
+**KRITISCHE REGEL: Checkpoints sind PFLICHT, nicht optional.**
+
+Jede Antwort MUSS enthalten:
+1. **Checkpoint 1** (erste Zeile): 🔵 Role + Keywords
+2. **Checkpoint 2** (nach Plan): 🟢 BMAD fertig [Details]
+3. **Checkpoint 3** (nach Prove): ✅ Prove abgeschlossen [Results]
+
+**Fehlt ein Checkpoint → Task ist nicht vollständig.**
+
+---
+
 **Vor JEDER Task:**
 
 1. **Task-Analyse**
@@ -26,6 +37,10 @@
      - Mehrere Matches → Primär = erste Match, sekundär erwähnen
      - Kein Match → User fragen
    - **Ankündigen:** "Arbeite als [rolle] (erkannt: [keywords])"
+   - **Checkpoint 1 (Pflicht):** Erste Zeile jeder Antwort:
+     ```
+     🔵 Role: [rolle] | Keywords: [keyword1, keyword2, ...]
+     ```
 
 3. **Dossier laden**
    - `context/agents/XX-[rolle].md` lesen (siehe @-Referenzen unten)
@@ -48,10 +63,26 @@
      - Modellierung: Flows/ERD/Datentypen
      - Architektur: Schnittstellen/Trigger/Upsert
      - DoD: Teststrategie (≥1 Unit + ≥1 Widget bei UI/DataViz)
+   - **Checkpoint 2 (Pflicht):** Nach BMAD explizit ankündigen:
+     ```
+     🟢 BMAD fertig
+     Business: [1 Satz Ziel + DSGVO-Impact]
+     Modellierung: [Datentypen/Flows]
+     Architektur: [Schnittstellen]
+     DoD: [Teststrategie]
+     ```
    - **PRP (Run → Prove):**
      - Plan: Mini-Plan (Why/What/How)
      - Run: Kleinste Schritte (erst erklären, dann Code)
      - Prove: `flutter analyze`, `flutter test`, RLS-Check, DSGVO-Note
+   - **Checkpoint 3 (Pflicht):** Nach Prove explizit bestätigen:
+     ```
+     ✅ Prove abgeschlossen
+     - flutter analyze: ✅ [oder ❌ mit Fehler]
+     - flutter test: ✅ [X Unit + Y Widget]
+     - RLS-Check: ✅ [policies exist, RLS ON] (bei DB-Ops)
+     - DSGVO-Note: ✅ [Low/Medium/High] (bei PII-Ops)
+     ```
    - **Output:** PR + Tests + Docs (gemäß Rolle-spezifischem DoD)
 
 7. **Soft-Gates (bei PR)**
