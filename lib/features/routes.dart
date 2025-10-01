@@ -14,6 +14,7 @@ import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
+import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
@@ -42,12 +43,13 @@ final List<GoRoute> featureRoutes = [
     path: Onboarding06Screen.routeName,
     builder: (ctx, st) => const Onboarding06Screen(),
   ),
-  // TODO: Replace with actual Onboarding07Screen when implemented
   GoRoute(
-    path: '/onboarding/07',
-    builder: (ctx, st) => const Scaffold(
-      body: Center(child: Text('Onboarding 07 (Coming soon)')),
-    ),
+    path: Onboarding07Screen.routeName,
+    builder: (ctx, st) => const Onboarding07Screen(),
+  ),
+  GoRoute(
+    path: '/onboarding/done',
+    builder: (ctx, st) => const Center(child: Text('Onboarding abgeschlossen')),
   ),
   GoRoute(
     path: AuthEntryScreen.routeName,

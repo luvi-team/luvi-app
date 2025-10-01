@@ -32,6 +32,12 @@ class OnboardingSpacing {
     required this.lastOptionToCallout06,
     required this.calloutToCta06,
     required this.ctaToHome06,
+    required this.headerToQuestion07,
+    required this.questionToFirstOption07,
+    required this.optionGap07,
+    required this.lastOptionToFootnote07,
+    required this.footnoteToCta07,
+    required this.ctaToHome07,
   });
 
   final double horizontalPadding;
@@ -71,6 +77,14 @@ class OnboardingSpacing {
   final double lastOptionToCallout06;
   final double calloutToCta06;
   final double ctaToHome06;
+
+  // ONB_07 specific spacing (from Figma audit ONB_07_measures.json)
+  final double headerToQuestion07;
+  final double questionToFirstOption07;
+  final double optionGap07;
+  final double lastOptionToFootnote07;
+  final double footnoteToCta07;
+  final double ctaToHome07;
 
   static const double _designHeight = 926.0;
   static OnboardingSpacing of(BuildContext context) {
@@ -117,6 +131,13 @@ class OnboardingSpacing {
       lastOptionToCallout06: _lastOptionToCallout06 * effectiveHeightScale,
       calloutToCta06: _calloutToCta06 * effectiveHeightScale,
       ctaToHome06: _ctaToHome06 * effectiveHeightScale,
+      // ONB_07 specific spacing
+      headerToQuestion07: _headerToQuestion07 * effectiveHeightScale,
+      questionToFirstOption07: _questionToFirstOption07 * effectiveHeightScale,
+      optionGap07: _optionGap07,
+      lastOptionToFootnote07: _lastOptionToFootnote07 * effectiveHeightScale,
+      footnoteToCta07: _footnoteToCta07 * effectiveHeightScale,
+      ctaToHome07: _ctaToHome07 * effectiveHeightScale,
     );
   }
 
@@ -178,4 +199,18 @@ class OnboardingSpacing {
   static const double _lastOptionToCallout06 = 48.0;
   static const double _calloutToCta06 = 48.0;
   static const double _ctaToHome06 = 48.0;
+
+  // ONB_07 specific spacing (from Figma audit ONB_07_measures.json)
+  // Header baseline (79) → Question (202) = 90 px (header-to-question rhythm)
+  // Question → First Option (316 - 202 - 24) = 90 px
+  // Option gap = 24 px (consistent)
+  // Last Option (491 + 63 = 554) → Footnote (645) = 91 px ≈ 90
+  // Footnote (645 + 19 = 664) → CTA (754) = 90 px
+  // CTA (754 + 50 = 804) → Home (894) = 90 px
+  static const double _headerToQuestion07 = 90.0;
+  static const double _questionToFirstOption07 = 90.0;
+  static const double _optionGap07 = 24.0;
+  static const double _lastOptionToFootnote07 = 90.0;
+  static const double _footnoteToCta07 = 90.0;
+  static const double _ctaToHome07 = 90.0;
 }
