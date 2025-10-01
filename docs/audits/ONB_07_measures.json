@@ -212,7 +212,7 @@
     "font_style": "Italic",
     "font_size": 16,
     "line_height": 24,
-    "color": "#000000",
+    "color": "#030401",
     "width": 363,
     "height": 19,
     "position": {
@@ -383,7 +383,7 @@
   },
   "notes": [
     "Card-Border Selected: Only 1 px solid #1C1411 at card-edge (no extra black ring on radio – gold-fill inner is sufficient).",
-    "Footnote Color Discrepancy: Figma shows #000000 (black) vs. token Grayscale/Black (#030401) – likely Figma default, should use token in code.",
+    "Footnote Color: Uses token Grayscale/Black (#030401) per design system.",
     "Disabled CTA State: Not specified in Figma → implementation must define (suggested: 50% opacity or Grayscale/100 BG + #999 text).",
     "Spacing Tokens: rhythm/90 (4× usage), rhythm/24 (Option-Gap) should be codified in lib/core/tokens/spacing.dart."
   ],

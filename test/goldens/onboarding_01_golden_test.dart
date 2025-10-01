@@ -13,6 +13,9 @@ void main() {
       theme: AppTheme.buildAppTheme(),
       home: const Onboarding01Screen(),
     ));
+    // Lock environment for reproducible rendering
+    tester.binding.platformDispatcher.localeTestValue = const Locale('de');
+    tester.binding.platformDispatcher.textScaleFactorTestValue = 1.0;
     await tester.pumpAndSettle();
     await expectLater(
       find.byType(Onboarding01Screen),
