@@ -6,6 +6,9 @@ on:
 
 jobs:
   drift:
+    concurrency:
+      group: drift-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

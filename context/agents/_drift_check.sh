@@ -48,7 +48,7 @@ fi
 
 # 4) Soft-Gates: Operativer Modus vorhanden
 for s in reqing-ball.md ui-polisher.md; do
-  if rg -n "^## Operativer Modus" "$DIR/$s" >/dev/null 2>&1; then
+  if rg -n "^#+\\s*Operativer Modus" "$DIR/$s" >/dev/null 2>&1; then
     pass "$s: Operativer Modus vorhanden"
   else
     fail "$s: Operativer Modus fehlt"
