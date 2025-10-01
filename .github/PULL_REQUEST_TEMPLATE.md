@@ -1,6 +1,17 @@
 ## Summary
 <Kurzbeschreibung der Änderung>
 
+## Assistenten-Antwort (CLI – verbindlich)
+Siehe `docs/engineering/assistant-answer-format.md`.
+
+- Mini‑Kontext‑Check:
+- Warum:
+- Schritte:
+- Erfolgskriterien:
+- Undo/Backout: (nur als Code‑Block)
+- Nächster minimaler Schritt:
+- Stop‑Kriterien:
+
 ## Babysitting-Level
 - [ ] Low
 - [ ] Medium
@@ -28,4 +39,8 @@
 - [ ] kein service_role im Client
 - [ ] keine PII-Logs
 
+## Checkliste
+- [ ] Antwortformat (CLI) eingehalten: Mini‑Kontext, Warum, Schritte, Erfolgskriterien, Undo/Backout (Code‑Block), Nächster Schritt, Stop‑Kriterien
+- [ ] CI/DoD geprüft (flutter analyze/test; Privacy‑Gate falls DB)
+- [ ] CodeRabbit „green“ oder Findings adressiert
 
