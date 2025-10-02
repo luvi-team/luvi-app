@@ -178,6 +178,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How long does your cycle normally last?'**
   String get onboarding06Question;
+
+  /// Supporting callout text shown below the cycle length options on step 6.
+  ///
+  /// In en, this message translates to:
+  /// **'Every cycle is unique - just like you!'**
+  String get onboarding06Callout;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

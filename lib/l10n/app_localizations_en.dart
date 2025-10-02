@@ -51,4 +51,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding06Question => 'How long does your cycle normally last?';
+
+  @override
+  String get onboarding06Callout => 'Every cycle is unique - just like you!';
 }

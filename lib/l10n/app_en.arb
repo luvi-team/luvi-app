@@ -57,5 +57,9 @@
   "onboarding06Question": "How long does your cycle normally last?",
   "@onboarding06Question": {
     "description": "Question text for onboarding step 6 (cycle length)."
+  },
+  "onboarding06Callout": "Every cycle is unique - just like you!",
+  "@onboarding06Callout": {
+    "description": "Supporting callout text shown below the cycle length options on step 6."
   }
 }

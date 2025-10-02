@@ -57,5 +57,9 @@
   "onboarding06Question": "Wie lange dauert dein Zyklus normalerweise?",
   "@onboarding06Question": {
     "description": "Question text for onboarding step 6 (cycle length)."
+  },
+  "onboarding06Callout": "Jeder Zyklus ist einzigartig - wie du auch!",
+  "@onboarding06Callout": {
+    "description": "Supporting callout text shown below the cycle length options on step 6."
   }
 }

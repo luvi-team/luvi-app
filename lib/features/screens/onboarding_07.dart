@@ -70,11 +70,11 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
     return Row(
       children: [
         BackButtonCircle(
-          onPressed: () {
-            final router = GoRouter.of(context);
-            if (router.canPop()) {
-              context.pop();
-            } else {
+          onPressed: () async {
+            final navigator = Navigator.of(context);
+            final didPop = await navigator.maybePop();
+            if (!mounted) return;
+            if (!didPop) {
               context.go(Onboarding06Screen.routeName);
             }
           },

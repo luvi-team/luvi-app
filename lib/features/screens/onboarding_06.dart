@@ -84,11 +84,11 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     return Row(
       children: [
         BackButtonCircle(
-          onPressed: () {
-            final router = GoRouter.of(context);
-            if (router.canPop()) {
-              context.pop();
-            } else {
+          onPressed: () async {
+            final navigator = Navigator.of(context);
+            final didPop = await navigator.maybePop();
+            if (!mounted) return;
+            if (!didPop) {
               context.go(Onboarding05Screen.routeName);
             }
           },
@@ -166,27 +166,28 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
   }
 
   Widget _buildCallout(TextTheme textTheme, ColorScheme colorScheme) {
-    return ExcludeSemantics(
-      child: Text(
-        'Jeder Zyklus ist einzigartig - wie du auch!',
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface,
-          fontSize: TypographyTokens.size16,
-          height: TypographyTokens.lineHeightRatio24on16,
-        ),
-        textAlign: TextAlign.center,
+    final l10n = AppLocalizations.of(context);
+    return Text(
+      l10n?.onboarding06Callout ?? 'Jeder Zyklus ist einzigartig - wie du auch!',
+      style: textTheme.bodyMedium?.copyWith(
+        color: colorScheme.onSurface,
+        fontSize: TypographyTokens.size16,
+        height: TypographyTokens.lineHeightRatio24on16,
       ),
+      textAlign: TextAlign.center,
     );
   }
 
   Widget _buildCta() {
+    final l10n = AppLocalizations.of(context);
+    final ctaLabel = l10n?.commonContinue ?? 'Weiter';
     return Semantics(
-      label: 'Weiter',
+      label: ctaLabel,
       button: true,
       child: ElevatedButton(
         key: const Key('onb_cta'),
         onPressed: _selected != null ? _handleContinue : null,
-        child: const Text('Weiter'),
+        child: Text(ctaLabel),
       ),
     );
   }

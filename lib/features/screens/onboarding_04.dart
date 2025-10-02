@@ -249,6 +249,8 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
   }
 
   Widget _buildDatePicker(double safeBottom) {
+    final maxDate = onboardingPeriodStartMaxDate();
+    final minDate = onboardingPeriodStartMinDate(maxDate);
     return Positioned(
       left: 0,
       right: 0,
@@ -258,8 +260,8 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
         child: CupertinoDatePicker(
           mode: CupertinoDatePickerMode.date,
           initialDateTime: _date,
-          minimumYear: kOnboardingMinBirthYear,
-          maximumYear: kOnboardingMaxBirthYear,
+          minimumDate: minDate,
+          maximumDate: maxDate,
           onDateTimeChanged: (d) => setState(() {
             _date = d;
             _hasInteracted = true;

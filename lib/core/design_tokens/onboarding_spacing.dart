@@ -112,13 +112,13 @@ class OnboardingSpacing {
   static OnboardingSpacing of(BuildContext context) {
     final media = MediaQuery.of(context);
     final heightRatio = media.size.height / _designHeight;
-    final textScaleFactor = MediaQuery.textScalerOf(context)
-        .clamp(minScaleFactor: 1.0, maxScaleFactor: 2.0)
-        .scale(1.0);
+    final textScaler = MediaQuery.textScalerOf(context)
+        .clamp(minScaleFactor: 1.0, maxScaleFactor: 2.0);
+    final textScaleFactor = textScaler.scale(1.0);
 
     final heightScale = _interpolateHeight(heightRatio);
     final effectiveHeightScale = textScaleFactor > 1.0
-        ? heightScale * textScaleFactor.clamp(1.0, 2.0)
+        ? heightScale * textScaleFactor
         : heightScale;
 
     return OnboardingSpacing._(

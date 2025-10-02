@@ -51,4 +51,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboarding06Question => 'Wie lange dauert dein Zyklus normalerweise?';
+
+  @override
+  String get onboarding06Callout => 'Jeder Zyklus ist einzigartig - wie du auch!';
 }
