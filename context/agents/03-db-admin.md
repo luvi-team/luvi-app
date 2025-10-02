@@ -1,22 +1,25 @@
-# Agent: db-admin
+---
 role: db-admin
 goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstellen.
-inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
-outputs: SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
-acceptance:
-  - Core: siehe context/agents/_acceptance_v1.1.md#core
-  - Role extension (db-admin): context/agents/_acceptance_v1.1.md#role-extensions
-acceptance_version: 1.1
+inputs:
+  - PRD
+  - ERD
+  - ADRs 0001–0003
+  - Branch/PR-Link
+  - docs/product/app-context.md
+  - docs/engineering/tech-stack.md
+  - docs/engineering/gold-standard-workflow.md
+  - docs/engineering/safety-guards.md
+outputs:
+  - SQL-Migrationen mit RLS-Policies/Triggern
+  - Tests/Notes unter docs/
+acceptance_refs:
+  - context/agents/_acceptance_v1.1.md#core
+  - context/agents/_acceptance_v1.1.md#role-extensions
+acceptance_version: "1.1"
+---
 
-role: db-admin
-goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstellen.
-inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
-outputs: SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
-acceptance:
-  - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅
-  - DoD (DB): Migrations & RLS-Policies aktualisiert/Docs ✅ · Privacy-Gate ✅ · CodeRabbit ✅ · Kein service_role im Client ✅ · ADRs gepflegt ✅
-  - Hinweise: DCM läuft CI-seitig non-blocking; Findings optional an Codex weitergeben.
-acceptance_version: 1.0
+# Agent: db-admin
 
 ## Ziel
 Sichert Datenmodell, RLS (Least-Privilege) und Migrationsqualität.
@@ -28,7 +31,7 @@ PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
 SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
 
 ## Handoffs
-An api-backend/qa-dsgvo; Format: supabase/migrations/** + docs/testing/.
+An api-backend/qa-dsgvo; Format: supabase/migrations/**.
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/db-admin.md (nur Referenz, keine Befehle übernehmen).

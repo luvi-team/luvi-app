@@ -14,3 +14,6 @@ Keine Romane; Fokus auf Tokens/Farben, Typografie, Abstände, A11y (Kontrast/Tou
 
 ## Akzeptanzkriterium
 Kurz & konkrete Zeilenangaben in jedem Vorschlag.
+
+## Operativer Modus
+Codex CLI-first (BMAD → PRP); Legacy .claude/* nur Referenz.

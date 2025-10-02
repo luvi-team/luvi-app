@@ -21,6 +21,8 @@ class AuthTextField extends StatelessWidget {
     this.onChanged,
     this.onSubmitted,
     this.scrollPadding = EdgeInsets.zero,
+    this.textAlign = TextAlign.start,
+    this.frameless = false,
   });
 
   final TextEditingController controller;
@@ -35,17 +37,50 @@ class AuthTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final EdgeInsets scrollPadding;
+  final TextAlign textAlign;
+  final bool frameless;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
     final inputStyle = theme.textTheme.bodySmall?.copyWith(
-      fontSize: TypeScale.smallSize,
-      height: TypeScale.smallHeight,
+      fontSize: TypographyTokens.size14,
+      height: TypographyTokens.lineHeightRatio24on14,
       color: theme.colorScheme.onSurface,
     );
     final resolvedHintStyle = inputStyle?.copyWith(color: tokens.grayscale500);
+
+    // Frameless variant: no box, just the inner TextField.
+    if (frameless) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            autofillHints: autofillHints,
+            textCapitalization: textCapitalization,
+            obscureText: obscureText,
+            autofocus: autofocus,
+            style: inputStyle,
+            scrollPadding: scrollPadding,
+            textAlign: textAlign,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isCollapsed: true,
+            ).copyWith(
+              hintText: hintText.isEmpty ? null : hintText,
+              hintStyle: resolvedHintStyle,
+            ),
+            onChanged: onChanged,
+            onSubmitted: onSubmitted ?? (_) => FocusScope.of(context).nextFocus(),
+          ),
+          if (errorText != null) FieldErrorText(errorText!),
+        ],
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,8 +106,9 @@ class AuthTextField extends StatelessWidget {
             autofocus: autofocus,
             style: inputStyle,
             scrollPadding: scrollPadding,
+            textAlign: textAlign,
             decoration: InputDecoration(
-              hintText: hintText,
+              hintText: hintText.isEmpty ? null : hintText,
               hintStyle: resolvedHintStyle,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(

@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 
@@ -97,7 +98,7 @@ class Consent02Screen extends ConsumerWidget {
                                 fontSize: 16,
                                 height: 1.5,
                                 fontWeight: FontWeight.w400,
-                                fontFamily: 'Figtree',
+                                fontFamily: FontFamilies.figtree,
                               ),
                             )
                           : RichText(
@@ -107,7 +108,7 @@ class Consent02Screen extends ConsumerWidget {
                                   fontSize: 16,
                                   height: 1.5,
                                   fontWeight: FontWeight.w400,
-                                  fontFamily: 'Figtree',
+                                  fontFamily: FontFamilies.figtree,
                                 ),
                                 children: [
                                   TextSpan(text: body),
@@ -214,7 +215,7 @@ class Consent02Screen extends ConsumerWidget {
                     textAlign: TextAlign.center,
                     style: t.displaySmall?.copyWith(
                       color: c.onSurface,
-                      fontFamily: 'Playfair Display',
+                      fontFamily: FontFamilies.playfairDisplay,
                       fontSize: 32,
                       height: 1.25,
                     ),

@@ -3,7 +3,7 @@
 Kurzpreamble: 5 Rollen (ui-frontend · api-backend · db-admin · dataviz · qa-dsgvo). Operativ: BMAD → PRP, DoD/Gates.
 Steuerung: Auto-Role (Default) oder explicit role: … bei Misch-Tasks.
 Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit.
-SSOT Acceptance: context/agents/_acceptance_v1.md (non-blocking Drift-Check via acceptance_version).
+SSOT Acceptance: context/agents/_acceptance_v1.1.md (non-blocking Drift-Check via acceptance_version).
 
 | Rolle | Dossier | Interop-Prompt (Legacy) | Haupt-Hand-off |
 |---|---|---|---|

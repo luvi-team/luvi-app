@@ -1,0 +1,35 @@
+name: Agents Drift Check (non-blocking)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  drift:
+    concurrency:
+      group: drift-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Install ripgrep
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+
+      - name: Generate drift report
+        run: |
+          EXIT_CODE=0
+          sh context/agents/_drift_check.sh || EXIT_CODE=$?
+          echo "Drift check exit code: ${EXIT_CODE}"
+          printf '\n---\nReport preview:\n' && (cat context/agents/_drift_report.md || true)
+
+      - name: Upload drift report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agents-drift-report
+          path: context/agents/_drift_report.md
+          if-no-files-found: warn

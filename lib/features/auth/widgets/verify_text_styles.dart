@@ -28,7 +28,7 @@ TextStyle? verifyHelperStyle(BuildContext context, DsTokens tokens) {
     fontSize: 15,
     height: 22 / 15,
     fontWeight: FontWeight.w400,
-    fontFamily: TypeScale.inter,
+    fontFamily: FontFamilies.inter,
     color: tokens.grayscale500,
   );
 }

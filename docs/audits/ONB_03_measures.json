@@ -1,0 +1,316 @@
+{
+  "screen": {
+    "nodeId": "68186:7924",
+    "name": "03_Onboarding",
+    "dimensions": {
+      "width": 428,
+      "height": 926
+    }
+  },
+  "header": {
+    "container": {
+      "height": 112,
+      "baseline": 79
+    },
+    "backButton": {
+      "nodeId": "I68186:7927;45:9593",
+      "diameter": 40,
+      "marginLeft": 20,
+      "marginTop": 59
+    },
+    "title": {
+      "nodeId": "I68186:7927;45:9592",
+      "text": "Erzähl mir von dir 💜",
+      "font": {
+        "family": "Playfair Display",
+        "style": "Regular",
+        "size": 24,
+        "weight": 400,
+        "lineHeight": 32
+      },
+      "color": "#030401",
+      "width": 388,
+      "top": 79,
+      "horizontalAlignment": "center"
+    },
+    "stepCounter": {
+      "nodeId": "I68186:7927;58876:7743",
+      "text": "3/7",
+      "font": {
+        "family": "Inter",
+        "style": "Medium",
+        "size": 16,
+        "weight": 500,
+        "lineHeight": 24
+      },
+      "color": "#030401",
+      "top": 79,
+      "marginRight": 20
+    }
+  },
+  "verticalSpacing": {
+    "headerToQuestion": 80,
+    "questionToFirstCard": 23,
+    "cardGap": 24,
+    "lastCardToCTA": 47,
+    "ctaToHomeIndicator": 47,
+    "rootFlexGap": 47
+  },
+  "questionText": {
+    "nodeId": "68186:7928",
+    "text": "Was sind deine Ziele?",
+    "font": {
+      "family": "Figtree",
+      "style": "Regular",
+      "size": 20,
+      "weight": 400,
+      "lineHeight": 24
+    },
+    "color": "#030401",
+    "estimatedTop": 159,
+    "estimatedBottom": 183
+  },
+  "goalCards": {
+    "container": {
+      "nodeId": "68186:7929",
+      "name": "Goal List",
+      "flexGap": 24,
+      "flexDirection": "column"
+    },
+    "dimensions": {
+      "width": 388,
+      "heightSingleLine": 66,
+      "heightTwoLine": 89,
+      "borderRadius": 20,
+      "paddingVertical": 20,
+      "paddingHorizontal": 16
+    },
+    "states": {
+      "default": {
+        "backgroundColor": "#F7F7F8",
+        "border": "none"
+      },
+      "selected": {
+        "backgroundColor": "#F7F7F8",
+        "border": "1px solid #1C1411"
+      }
+    },
+    "icon": {
+      "size": 24,
+      "gapToText": 20
+    },
+    "text": {
+      "font": {
+        "family": "Figtree",
+        "style": "Regular",
+        "size": 16,
+        "weight": 400,
+        "lineHeight": 24
+      },
+      "color": "#030401",
+      "width": 268
+    },
+    "checkbox": {
+      "box": {
+        "size": 24,
+        "strokeWidth": 2,
+        "cornerRadius": 6,
+        "fillColorUnselected": "#FFFFFF",
+        "fillColorSelected": "#D9B18E",
+        "strokeColorUnselected": "#E0E0E0",
+        "strokeColorSelected": "#1C1411"
+      },
+      "checkmark": {
+        "size": 12,
+        "strokeWidth": 2,
+        "strokeColor": "#FFFFFF",
+        "visibleWhen": "selected"
+      }
+    },
+    "items": [
+      {
+        "nodeId": "68186:7930",
+        "text": "Meinen Zyklus & Körper besser verstehen",
+        "iconNodeId": "67067:6761",
+        "iconName": "ic / explore",
+        "selected": true,
+        "height": 89,
+        "lines": 2
+      },
+      {
+        "nodeId": "68186:7931",
+        "text": "Training an meinen Zyklus anpassen",
+        "iconNodeId": "67067:6984",
+        "iconName": "ic / Weight",
+        "selected": false,
+        "height": 66,
+        "lines": 1
+      },
+      {
+        "nodeId": "68186:7932",
+        "text": "Ernährung optimieren & neue Rezepte entdecken",
+        "iconNodeId": "58894:2928",
+        "iconName": "ic / dish",
+        "selected": false,
+        "height": 89,
+        "lines": 2
+      },
+      {
+        "nodeId": "68219:6423",
+        "text": "Gewicht managen (Abnehmen/Halten)",
+        "iconNodeId": "68219:6426",
+        "iconName": "ic / Weight loss",
+        "selected": false,
+        "height": 66,
+        "lines": 1
+      },
+      {
+        "nodeId": "68219:6435",
+        "text": "Stress reduzieren & Achtsamkeit stärken",
+        "iconNodeId": "68219:6438",
+        "iconName": "ic / emoji",
+        "selected": true,
+        "height": 89,
+        "lines": 2
+      }
+    ]
+  },
+  "ctaButton": {
+    "nodeId": "68186:7926",
+    "text": "Weiter",
+    "dimensions": {
+      "width": 388,
+      "height": 50,
+      "borderRadius": 12,
+      "paddingTop": 12,
+      "paddingBottom": 11,
+      "paddingHorizontal": 12
+    },
+    "font": {
+      "family": "Figtree",
+      "style": "Bold",
+      "size": 20,
+      "weight": 700,
+      "lineHeight": 24
+    },
+    "colors": {
+      "background": "#D9B18E",
+      "text": "#030401"
+    }
+  },
+  "homeIndicator": {
+    "nodeId": "68186:7925",
+    "dimensions": {
+      "width": 134,
+      "height": 5,
+      "borderRadius": 100,
+      "containerHeight": 34
+    },
+    "color": "#030401",
+    "property": "dark"
+  },
+  "designTokens": {
+    "colors": {
+      "grayscale": {
+        "white": "#FFFFFF",
+        "black": "#030401",
+        "100": "#F7F7F8"
+      },
+      "primary": {
+        "100": "#D9B18E"
+      }
+    },
+    "typography": {
+      "headingH1": {
+        "family": "Playfair Display",
+        "style": "Regular",
+        "size": 32,
+        "weight": 400,
+        "lineHeight": 40
+      },
+      "bodyRegular": {
+        "family": "Figtree",
+        "style": "Regular",
+        "size": 20,
+        "weight": 400,
+        "lineHeight": 24
+      },
+      "regularKlein": {
+        "family": "Figtree",
+        "style": "Regular",
+        "size": 16,
+        "weight": 400,
+        "lineHeight": 24
+      },
+      "button": {
+        "family": "Figtree",
+        "style": "Bold",
+        "size": 20,
+        "weight": 700,
+        "lineHeight": 24
+      },
+      "callout": {
+        "family": "Inter",
+        "style": "Medium",
+        "size": 16,
+        "weight": 500,
+        "lineHeight": 24
+      }
+    },
+    "borderRadii": {
+      "goalCard": 20,
+      "ctaButton": 12,
+      "checkboxBox": 6,
+      "homeIndicator": 100
+    }
+  },
+  "accessibility": {
+    "multiSelect": true,
+    "minimumTapTargets": {
+      "backButton": {
+        "current": 40,
+        "recommended": 44,
+        "status": "below-minimum"
+      },
+      "goalCard": {
+        "current": {
+          "width": 388,
+          "heightMin": 66
+        },
+        "status": "meets-minimum"
+      },
+      "ctaButton": {
+        "current": {
+          "width": 388,
+          "height": 50
+        },
+        "status": "meets-minimum"
+      }
+    },
+    "colorContrast": {
+      "cardText": {
+        "foreground": "#030401",
+        "background": "#F7F7F8",
+        "ratio": 17.9,
+        "wcagLevel": "AAA"
+      },
+      "buttonText": {
+        "foreground": "#030401",
+        "background": "#D9B18E",
+        "ratio": 10.4,
+        "wcagLevel": "AAA"
+      }
+    }
+  },
+  "metadata": {
+    "extractedDate": "2025-10-01",
+    "figmaFileKey": "iQthMdxpCbl6afzXxvzqlt",
+    "figmaNodeId": "68186-7924",
+    "platform": "iOS",
+    "deviceModel": "iPhone 14 Pro",
+    "statusBarHeight": 47,
+    "homeIndicatorHeight": 34,
+    "safeAreaTop": 47,
+    "safeAreaBottom": 34
+  }
+}

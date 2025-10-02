@@ -1,0 +1,84 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get onboarding01Title => 'Tell me about yourself 💜';
+
+  @override
+  String get onboarding02Title => 'When is your\nbirthday?';
+
+  @override
+  String get onboarding04Title => 'When did your last period start?';
+
+  @override
+  String selectedDateLabel(String date) {
+    return 'Selected date: $date';
+  }
+
+  @override
+  String get onboarding04CalloutSemantics => 'Note: Don\'t worry if you don\'t remember the exact day. A rough estimate is enough to get started.';
+
+  @override
+  String get onboarding04CalloutPrefix => 'Don\'t worry if you don\'t remember the ';
+
+  @override
+  String get onboarding04CalloutHighlight => 'exact day';
+
+  @override
+  String get onboarding04CalloutSuffix => '. A rough estimate is enough to get started.';
+
+  @override
+  String get commonContinue => 'Continue';
+
+  @override
+  String get cycleLengthShort => 'Short (every 21-23 days)';
+
+  @override
+  String get cycleLengthLonger => 'A bit shorter (every 24-26 days)';
+
+  @override
+  String get cycleLengthStandard => 'Standard (every 27-30 days)';
+
+  @override
+  String get cycleLengthLong => 'Longer (every 31-35 days)';
+
+  @override
+  String get cycleLengthVeryLong => 'Very long (36+ days)';
+
+  @override
+  String get onboarding06Title => 'Tell me about yourself 💜';
+
+  @override
+  String get onboarding06Question => 'How long does your cycle normally last?';
+
+  @override
+  String get onboarding06Callout => 'Every cycle is unique - just like you!';
+
+  @override
+  String get onboarding05Title => 'How long does your\nperiod usually last?';
+
+  @override
+  String get onboarding05Callout => 'We need this starting point to calculate your current cycle phase. I learn with you and automatically adjust the predictions as soon as you log your next period.';
+
+  @override
+  String get onboarding07Title => 'What is your cycle like?';
+
+  @override
+  String get onboarding07OptRegular => 'Pretty regular';
+
+  @override
+  String get onboarding07OptUnpredictable => 'Mostly unpredictable';
+
+  @override
+  String get onboarding07OptUnknown => 'Not sure';
+
+  @override
+  String get onboardingComplete => 'Onboarding complete';
+}

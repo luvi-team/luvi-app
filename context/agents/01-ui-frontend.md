@@ -1,22 +1,26 @@
-# Agent: ui-frontend
+---
 role: ui-frontend
 goal: UX-Konsistenz sichern; token-aware Widgets/Screens mit Tests.
-inputs: PRD, ERD, ADRs 0001–0003, Branch/PR-Link.
-outputs: PR-Checks grün, Widget-Tests, UI-Doku unter docs/.
-acceptance:
-  - Core: siehe context/agents/_acceptance_v1.1.md#core
-  - Role extension (ui-frontend/dataviz): context/agents/_acceptance_v1.1.md#role-extensions
-acceptance_version: 1.1
+inputs:
+  - PRD
+  - ERD
+  - ADRs 0001–0003
+  - Branch/PR-Link
+  - docs/product/app-context.md
+  - docs/engineering/tech-stack.md
+  - docs/product/use-cases.md
+  - docs/engineering/assistant-answer-format.md
+outputs:
+  - PR-Checks grün
+  - Widget-Tests
+  - UI-Doku unter docs/
+acceptance_refs:
+  - context/agents/_acceptance_v1.1.md#core
+  - context/agents/_acceptance_v1.1.md#role-extensions
+acceptance_version: "1.1"
+---
 
-role: ui-frontend
-goal: UX-Konsistenz sichern; token-aware Widgets/Screens mit Tests.
-inputs: PRD, ADRs 0001–0003, Branch/PR-Link.
-outputs: PR-Checks grün, Widget-Tests, UI-Doku unter docs/.
-acceptance:
-  - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅
-  - DoD (Repo): flutter analyze ✅ · flutter test (≥1 Unit + ≥1 Widget) ✅ · ADRs gepflegt ✅ · DSGVO-Review aktualisiert ✅
-  - Hinweise: DCM läuft CI-seitig non-blocking; Findings optional an Codex weitergeben.
-acceptance_version: 1.0
+# Agent: ui-frontend
 
 ## Ziel
 Sichert UX-Konsistenz und Testabdeckung im Flutter-Frontend (Happy Path zuerst).

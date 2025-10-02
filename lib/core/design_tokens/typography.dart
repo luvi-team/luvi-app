@@ -1,23 +1,25 @@
-/// Central typography tokens used by the app theme.
-class TypeScale {
-  // Families (must match pubspec.yaml)
-  static const playfair = 'Playfair Display';
-  static const figtree = 'Figtree';
-  static const inter = 'Inter';
+/// Typography tokens used across onboarding.
+class TypographyTokens {
+  const TypographyTokens._();
 
-  // Sizes & line-heights (from current design)
-  // H1: 32 / 40
-  static const h1Size = 32.0;
-  static const h1Height = 40.0 / 32.0;
-  // Body: 20 / 24
-  static const bodySize = 20.0;
-  static const bodyHeight = 24.0 / 20.0;
-  // Button label: 20 / 24 (bold weight)
-  static const labelSize = 20.0;
-  static const labelHeight = 24.0 / 20.0;
-  // Small/Skip: 17 / 25 (Inter Medium)
-  static const smallSize = 17.0;
-  static const smallHeight = 25.0 / 17.0;
+  static const double size14 = 14.0;
+  static const double size16 = 16.0;
+  static const double size20 = 20.0;
+  static const double size24 = 24.0;
+  static const double size32 = 32.0;
 
-  TypeScale._();
+  static const double lineHeightRatio24on14 = 24 / 14;
+  static const double lineHeightRatio24on16 = 24 / 16;
+  static const double lineHeightRatio24on20 = 24 / 20;
+  static const double lineHeightRatio32on24 = 32 / 24;
+  static const double lineHeightRatio40on32 = 40 / 32;
+}
+
+/// Shared font family identifiers to centralize typography references.
+class FontFamilies {
+  const FontFamilies._();
+
+  static const String figtree = 'Figtree';
+  static const String inter = 'Inter';
+  static const String playfairDisplay = 'Playfair Display';
 }

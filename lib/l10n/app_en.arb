@@ -1,0 +1,101 @@
+{
+  "@@locale": "en",
+  "onboarding01Title": "Tell me about yourself 💜",
+  "@onboarding01Title": {
+    "description": "Header title for onboarding step 1."
+  },
+  "onboarding02Title": "When is your\nbirthday?",
+  "@onboarding02Title": {
+    "description": "Header title for onboarding step 2 (birthday)."
+  },
+  "onboarding04Title": "When did your last period start?",
+  "selectedDateLabel": "Selected date: {date}",
+  "@selectedDateLabel": {
+    "description": "Semantics label announcing the currently selected date on onboarding step 4.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "onboarding04CalloutSemantics": "Note: Don't worry if you don't remember the exact day. A rough estimate is enough to get started.",
+  "@onboarding04CalloutSemantics": {
+    "description": "Accessibility announcement for the onboarding 04 callout info box."
+  },
+  "onboarding04CalloutPrefix": "Don't worry if you don't remember the ",
+  "@onboarding04CalloutPrefix": {
+    "description": "Prefix text displayed before the emphasized part of the onboarding 04 callout."
+  },
+  "onboarding04CalloutHighlight": "exact day",
+  "@onboarding04CalloutHighlight": {
+    "description": "Emphasized substring within the onboarding 04 callout text."
+  },
+  "onboarding04CalloutSuffix": ". A rough estimate is enough to get started.",
+  "@onboarding04CalloutSuffix": {
+    "description": "Suffix text displayed after the emphasized part of the onboarding 04 callout."
+  },
+  "commonContinue": "Continue",
+  "@commonContinue": {
+    "description": "Label for primary continue CTA buttons."
+  },
+  "cycleLengthShort": "Short (every 21-23 days)",
+  "cycleLengthLonger": "A bit shorter (every 24-26 days)",
+  "cycleLengthStandard": "Standard (every 27-30 days)",
+  "cycleLengthLong": "Longer (every 31-35 days)",
+  "cycleLengthVeryLong": "Very long (36+ days)",
+  "@cycleLengthShort": {
+    "description": "Cycle length option describing short cycles."
+  },
+  "@cycleLengthLonger": {
+    "description": "Cycle length option describing slightly shorter cycles."
+  },
+  "@cycleLengthStandard": {
+    "description": "Cycle length option describing standard cycles."
+  },
+  "@cycleLengthLong": {
+    "description": "Cycle length option describing longer cycles."
+  },
+  "@cycleLengthVeryLong": {
+    "description": "Cycle length option describing very long cycles."
+  },
+  "onboarding06Title": "Tell me about yourself 💜",
+  "@onboarding06Title": {
+    "description": "Header title for onboarding step 6."
+  },
+  "onboarding06Question": "How long does your cycle normally last?",
+  "@onboarding06Question": {
+    "description": "Question text for onboarding step 6 (cycle length)."
+  },
+  "onboarding06Callout": "Every cycle is unique - just like you!",
+  "@onboarding06Callout": {
+    "description": "Supporting callout text shown below the cycle length options on step 6."
+  },
+  "onboarding05Title": "How long does your\nperiod usually last?",
+  "@onboarding05Title": {
+    "description": "Header title for onboarding step 5 (period duration)."
+  },
+  "onboarding05Callout": "We need this starting point to calculate your current cycle phase. I learn with you and automatically adjust the predictions as soon as you log your next period.",
+  "@onboarding05Callout": {
+    "description": "Callout copy explaining why period duration is needed on step 5."
+  },
+  "onboarding07Title": "What is your cycle like?",
+  "@onboarding07Title": {
+    "description": "Header title for onboarding step 7 (cycle regularity)."
+  },
+  "onboarding07OptRegular": "Pretty regular",
+  "@onboarding07OptRegular": {
+    "description": "Option label for regular cycles on step 7."
+  },
+  "onboarding07OptUnpredictable": "Mostly unpredictable",
+  "@onboarding07OptUnpredictable": {
+    "description": "Option label for unpredictable cycles on step 7."
+  },
+  "onboarding07OptUnknown": "Not sure",
+  "@onboarding07OptUnknown": {
+    "description": "Option label when the user is unsure about their cycle regularity on step 7."
+  },
+  "onboardingComplete": "Onboarding complete",
+  "@onboardingComplete": {
+    "description": "Completion message shown on the onboarding done route."
+  }
+}

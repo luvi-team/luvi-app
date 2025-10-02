@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../services/supabase_service.dart';
-import '../data/auth_repository.dart';
+import 'package:luvi_app/services/supabase_service.dart';
+import 'package:luvi_app/features/auth/data/auth_repository.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(SupabaseService.client);

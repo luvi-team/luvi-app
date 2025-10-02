@@ -19,7 +19,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.0
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.35.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -29,6 +30,8 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   # The following adds the Cupertino Icons font to your application.
@@ -54,17 +57,14 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   riverpod_generator: ^2.4.0
   build_runner: 2.4.13
-  dart_code_metrics: ^5.7.6
   mocktail: ^1.0.4
 
-# Override conflicting dependencies to resolve version conflicts
-dependency_overrides:
-  http: ^1.0.0  # Force flutter_svg's preferred version
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -72,10 +72,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/auth/hero_login_default_00.png
-    - assets/images/consent/consent_02_01_hero_01.png
-    - assets/images/consent/consent_02_01_hero_02.png
-    - assets/images/consent/consent_02_01_hero_03.png
-    - assets/images/consent/consent_02_01_hero_04.png
     - assets/images/consent/
     - assets/icons/
       # requires: assets/icons/google_g.svg (official multicolor Google 'G')

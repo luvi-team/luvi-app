@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:luvi_app/features/data/auth_repository.dart';
+import 'package:luvi_app/features/auth/data/auth_repository.dart';
 
 class _MockGoTrueClient extends Mock implements GoTrueClient {}
 class _MockSupabaseClient extends Mock implements SupabaseClient {}
