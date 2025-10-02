@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/utils/date_formatters.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
+import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/core/constants/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
@@ -31,204 +32,235 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final spacing = OnboardingSpacing.of(context);
+    final safeBottom = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, _) {
-            final spacing = OnboardingSpacing.of(context);
-            final safeBottom = MediaQuery.of(context).padding.bottom;
+            // Stack: Scroll + Picker (keeps CTA visible above picker); padding = picker height (216px) + safeBottom
             return Stack(
               fit: StackFit.expand,
               children: [
-                SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(
-                    spacing.horizontalPadding,
-                    spacing.topPadding,
-                    spacing.horizontalPadding,
-                    safeBottom + kOnboardingPickerHeight + spacing.ctaToPicker04,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          BackButtonCircle(
-                            onPressed: () {
-                              final router = GoRouter.of(context);
-                              if (router.canPop()) {
-                                context.pop();
-                              } else {
-                                context.go(Onboarding03Screen.routeName);
-                              }
-                            },
-                            iconColor: colorScheme.onSurface,
-                          ),
-                          Expanded(
-                            child: Semantics(
-                              header: true,
-                              child: Text(
-                                'Wann hat deine letzte\nPeriode begonnen?',
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.headlineMedium?.copyWith(
-                                  color: colorScheme.onSurface,
-                                  fontSize: TypographyTokens.size24,
-                                  height:
-                                      TypographyTokens.lineHeightRatio32on24,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Semantics(
-                            label: 'Schritt 4 von 7',
-                            child: Text(
-                              '4/7',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurface,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: spacing.headerToDate04),
-                      // Date display
-                      Semantics(
-                        label: 'Ausgewähltes Datum: $_formattedDate',
-                        child: Text(
-                          _formattedDate,
-                          style: textTheme.headlineMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontSize: TypographyTokens.size32,
-                            height: TypographyTokens.lineHeightRatio40on32,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      SizedBox(height: spacing.dateToUnderline04),
-                      // Underline divider
-                      Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: spacing.underlineWidth,
-                          child: Divider(
-                            thickness: 1,
-                            color: colorScheme.onSurface.withValues(
-                              alpha: OpacityTokens.inactive,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing.rhythm04),
-                      // Info callout box
-                      Semantics(
-                        label:
-                            'Hinweis: Mach dir keine Sorgen, wenn du den exakten Tag nicht mehr weißt. '
-                            'Eine ungefähre Schätzung reicht für den Start völlig aus.',
-                        child: Container(
-                          padding: const EdgeInsets.all(Spacing.m),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            borderRadius: BorderRadius.circular(Sizes.radiusL),
-                            border: Border.all(
-                              color: colorScheme.primary,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ExcludeSemantics(
-                                child: Icon(
-                                  Icons.info_outline,
-                                  color: colorScheme.onSurface,
-                                  size: 24,
-                                ),
-                              ),
-                              const SizedBox(width: Spacing.s),
-                              Expanded(
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: textTheme.bodyMedium?.copyWith(
-                                      color: colorScheme.onSurface,
-                                      fontSize: TypographyTokens.size16,
-                                      height:
-                                          TypographyTokens.lineHeightRatio24on16,
-                                    ),
-                                    children: [
-                                      const TextSpan(
-                                        text:
-                                            'Mach dir keine Sorgen, wenn du den ',
-                                      ),
-                                      TextSpan(
-                                        text: 'exakten Tag nicht mehr weißt',
-                                        style: textTheme.bodyMedium?.copyWith(
-                                          color: colorScheme.onSurface,
-                                          fontSize: TypographyTokens.size16,
-                                          height: TypographyTokens
-                                              .lineHeightRatio24on16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const TextSpan(
-                                        text:
-                                            '. Eine ungefähre Schätzung reicht für den Start völlig aus.',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing.calloutToCta04),
-                      // CTA Button
-                      Semantics(
-                        label: 'Weiter',
-                        button: true,
-                        child: ElevatedButton(
-                          key: const Key('onb_cta'),
-                          onPressed: _hasInteracted
-                              ? () {
-                                  // Temporary stub navigation until ONB_05 is implemented
-                                  context.push('/onboarding/05');
-                                }
-                              : null,
-                          child: const Text('Weiter'),
-                        ),
-                      ),
-                      SizedBox(height: spacing.ctaToPicker04),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: safeBottom + Spacing.l,
-                  child: SizedBox(
-                    height: kOnboardingPickerHeight,
-                    child: CupertinoDatePicker(
-                      mode: CupertinoDatePickerMode.date,
-                      initialDateTime: _date,
-                      minimumYear: kOnboardingMinBirthYear,
-                      maximumYear: kOnboardingMaxBirthYear,
-                      onDateTimeChanged: (d) => setState(() {
-                        _date = d;
-                        _hasInteracted = true;
-                      }),
-                    ),
-                  ),
-                ),
+                _buildScrollableContent(spacing, safeBottom),
+                _buildDatePicker(safeBottom),
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScrollableContent(OnboardingSpacing spacing, double safeBottom) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(
+        spacing.horizontalPadding,
+        spacing.topPadding,
+        spacing.horizontalPadding,
+        safeBottom + kOnboardingPickerHeight + spacing.ctaToPicker04,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildHeader(),
+          SizedBox(height: spacing.headerToDate04),
+          _buildDateDisplay(),
+          SizedBox(height: spacing.dateToUnderline04),
+          _buildUnderline(spacing),
+          SizedBox(height: spacing.rhythm04),
+          _buildCallout(),
+          SizedBox(height: spacing.calloutToCta04),
+          _buildCta(),
+          SizedBox(height: spacing.ctaToPicker04),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return Row(
+      children: [
+        BackButtonCircle(
+          onPressed: () {
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              context.pop();
+            } else {
+              context.go(Onboarding03Screen.routeName);
+            }
+          },
+          iconColor: colorScheme.onSurface,
+        ),
+        Expanded(
+          child: Semantics(
+            header: true,
+            child: Text(
+              'Wann hat deine letzte\nPeriode begonnen?',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.headlineMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontSize: TypographyTokens.size24,
+                height: TypographyTokens.lineHeightRatio32on24,
+              ),
+            ),
+          ),
+        ),
+        Semantics(
+          label: 'Schritt 4 von 7',
+          child: Text(
+            '4/7',
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateDisplay() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return Semantics(
+      label: 'Ausgewähltes Datum: $_formattedDate',
+      child: Text(
+        _formattedDate,
+        style: textTheme.headlineMedium?.copyWith(
+          color: colorScheme.onSurface,
+          fontSize: TypographyTokens.size32,
+          height: TypographyTokens.lineHeightRatio40on32,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildUnderline(OnboardingSpacing spacing) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Align(
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: spacing.underlineWidth,
+        child: Divider(
+          thickness: 1,
+          color: colorScheme.onSurface.withValues(
+            alpha: OpacityTokens.inactive,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCallout() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return Semantics(
+      label:
+          'Hinweis: Mach dir keine Sorgen, wenn du den exakten Tag nicht mehr weißt. '
+          'Eine ungefähre Schätzung reicht für den Start völlig aus.',
+      child: Container(
+        padding: const EdgeInsets.all(Spacing.m),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(Sizes.radiusL),
+          border: Border.all(
+            color: colorScheme.primary,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.info_outline,
+                color: colorScheme.onSurface,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: Spacing.s),
+            Expanded(
+              child: RichText(
+                text: TextSpan(
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontSize: TypographyTokens.size16,
+                    height: TypographyTokens.lineHeightRatio24on16,
+                  ),
+                  children: [
+                    const TextSpan(
+                      text: 'Mach dir keine Sorgen, wenn du den ',
+                    ),
+                    TextSpan(
+                      text: 'exakten Tag nicht mehr weißt',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontSize: TypographyTokens.size16,
+                        height: TypographyTokens.lineHeightRatio24on16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const TextSpan(
+                      text:
+                          '. Eine ungefähre Schätzung reicht für den Start völlig aus.',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCta() {
+    return Semantics(
+      label: 'Weiter',
+      button: true,
+      child: ElevatedButton(
+        key: const Key('onb_cta'),
+        onPressed: _hasInteracted
+            ? () {
+                context.push(Onboarding05Screen.routeName);
+              }
+            : null,
+        child: const Text('Weiter'),
+      ),
+    );
+  }
+
+  Widget _buildDatePicker(double safeBottom) {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: safeBottom + Spacing.l,
+      child: SizedBox(
+        height: kOnboardingPickerHeight,
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.date,
+          initialDateTime: _date,
+          minimumYear: kOnboardingMinBirthYear,
+          maximumYear: kOnboardingMaxBirthYear,
+          onDateTimeChanged: (d) => setState(() {
+            _date = d;
+            _hasInteracted = true;
+          }),
         ),
       ),
     );

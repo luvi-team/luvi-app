@@ -47,181 +47,217 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final spacing = OnboardingSpacing.of(context);
+    final safeBottom = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, _) {
-            final spacing = OnboardingSpacing.of(context);
-            final safeBottom = MediaQuery.of(context).padding.bottom;
+            // Stack: Scroll + Picker (keeps CTA visible above picker); padding = picker height (216px) + safeBottom
             return Stack(
               fit: StackFit.expand,
               children: [
-                SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(
-                    spacing.horizontalPadding,
-                    spacing.topPadding,
-                    spacing.horizontalPadding,
-                    safeBottom + kOnboardingPickerHeight + spacing.ctaToPicker,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          BackButtonCircle(
-                            onPressed: () {
-                              final router = GoRouter.of(context);
-                              if (router.canPop()) {
-                                context.pop();
-                              } else {
-                                context.go(Onboarding01Screen.routeName);
-                              }
-                            },
-                            iconColor: Theme.of(context).colorScheme.onSurface,
-                          ),
-                          Expanded(
-                            child: Semantics(
-                              header: true,
-                              child: Text(
-                                'Wann hast du\nGeburtstag?',
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.headlineMedium?.copyWith(
-                                  color: colorScheme.onSurface,
-                                  fontSize: TypographyTokens.size24,
-                                  height: TypographyTokens.lineHeightRatio32on24,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Semantics(
-                            label: 'Schritt 2 von 7',
-                            child: Text(
-                              '2/7',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurface,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: spacing.headerToDate),
-                      // Date display
-                      Semantics(
-                        label: 'Ausgewähltes Datum',
-                        child: Text(
-                          _formattedDate,
-                          style: textTheme.headlineMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      SizedBox(height: spacing.dateToUnderline),
-                      // Underline divider
-                      Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: spacing.underlineWidth,
-                          child: Divider(
-                            thickness: 1,
-                            color: colorScheme.onSurface.withValues(
-                              alpha: OpacityTokens.inactive,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing.underlineToCallout),
-                      // Info callout box
-                      Semantics(
-                        label:
-                            'Hinweis: Dein Alter hilft uns, deine hormonelle Phase '
-                            'besser einzuschätzen.',
-                        child: Container(
-                          padding: const EdgeInsets.all(Spacing.m),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            borderRadius: BorderRadius.circular(Sizes.radiusM),
-                            border: Border.all(
-                              color: colorScheme.primary,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              ExcludeSemantics(
-                                child: Icon(
-                                  Icons.info_outline,
-                                  color: colorScheme.onSurface,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: Spacing.s),
-                              Expanded(
-                                child: Text(
-                                  'Dein Alter hilft uns, deine hormonelle Phase besser '
-                                  'einzuschätzen.',
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontSize: TypographyTokens.size14,
-                                    height: TypographyTokens.lineHeightRatio24on14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing.calloutToCta),
-                      // CTA Button
-                      Semantics(
-                        label: 'Weiter',
-                        button: true,
-                        child: ElevatedButton(
-                          key: const Key('onb_cta'),
-                          onPressed: _hasInteracted
-                              ? () {
-                                  context.push(Onboarding03Screen.routeName);
-                                }
-                              : null,
-                          child: const Text('Weiter'),
-                        ),
-                      ),
-                      SizedBox(height: spacing.ctaToPicker),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: safeBottom + Spacing.l,
-                  child: SizedBox(
-                    height: kOnboardingPickerHeight,
-                    child: Semantics(
-                      label: 'Geburtsdatum auswählen',
-                      child: CupertinoDatePicker(
-                        mode: CupertinoDatePickerMode.date,
-                        initialDateTime: _date,
-                        minimumYear: kOnboardingMinBirthYear,
-                        maximumYear: kOnboardingMaxBirthYear,
-                        onDateTimeChanged: (d) => setState(() {
-                          _date = d;
-                          _hasInteracted = true;
-                        }),
-                      ),
-                    ),
-                  ),
-                ),
+                _buildScrollableContent(spacing, safeBottom),
+                _buildDatePicker(safeBottom),
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScrollableContent(OnboardingSpacing spacing, double safeBottom) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(
+        spacing.horizontalPadding,
+        spacing.topPadding,
+        spacing.horizontalPadding,
+        safeBottom + kOnboardingPickerHeight + spacing.ctaToPicker,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildHeader(),
+          SizedBox(height: spacing.headerToDate),
+          _buildDateDisplay(),
+          SizedBox(height: spacing.dateToUnderline),
+          _buildUnderline(spacing),
+          SizedBox(height: spacing.underlineToCallout),
+          _buildCallout(),
+          SizedBox(height: spacing.calloutToCta),
+          _buildCta(),
+          SizedBox(height: spacing.ctaToPicker),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return Row(
+      children: [
+        BackButtonCircle(
+          onPressed: () {
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              context.pop();
+            } else {
+              context.go(Onboarding01Screen.routeName);
+            }
+          },
+          iconColor: colorScheme.onSurface,
+        ),
+        Expanded(
+          child: Semantics(
+            header: true,
+            child: Text(
+              'Wann hast du\nGeburtstag?',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.headlineMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontSize: TypographyTokens.size24,
+                height: TypographyTokens.lineHeightRatio32on24,
+              ),
+            ),
+          ),
+        ),
+        Semantics(
+          label: 'Schritt 2 von 7',
+          child: Text(
+            '2/7',
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateDisplay() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return Semantics(
+      label: 'Ausgewähltes Datum',
+      child: Text(
+        _formattedDate,
+        style: textTheme.headlineMedium?.copyWith(
+          color: colorScheme.onSurface,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildUnderline(OnboardingSpacing spacing) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Align(
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: spacing.underlineWidth,
+        child: Divider(
+          thickness: 1,
+          color: colorScheme.onSurface.withValues(
+            alpha: OpacityTokens.inactive,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCallout() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return Semantics(
+      label:
+          'Hinweis: Dein Alter hilft uns, deine hormonelle Phase '
+          'besser einzuschätzen.',
+      child: Container(
+        padding: const EdgeInsets.all(Spacing.m),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(Sizes.radiusM),
+          border: Border.all(
+            color: colorScheme.primary,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.info_outline,
+                color: colorScheme.onSurface,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: Spacing.s),
+            Expanded(
+              child: Text(
+                'Dein Alter hilft uns, deine hormonelle Phase besser '
+                'einzuschätzen.',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: TypographyTokens.size14,
+                  height: TypographyTokens.lineHeightRatio24on14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCta() {
+    return Semantics(
+      label: 'Weiter',
+      button: true,
+      child: ElevatedButton(
+        key: const Key('onb_cta'),
+        onPressed: _hasInteracted
+            ? () {
+                context.push(Onboarding03Screen.routeName);
+              }
+            : null,
+        child: const Text('Weiter'),
+      ),
+    );
+  }
+
+  Widget _buildDatePicker(double safeBottom) {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: safeBottom + Spacing.l,
+      child: SizedBox(
+        height: kOnboardingPickerHeight,
+        child: Semantics(
+          label: 'Geburtsdatum auswählen',
+          child: CupertinoDatePicker(
+            mode: CupertinoDatePickerMode.date,
+            initialDateTime: _date,
+            minimumYear: kOnboardingMinBirthYear,
+            maximumYear: kOnboardingMaxBirthYear,
+            onDateTimeChanged: (d) => setState(() {
+              _date = d;
+              _hasInteracted = true;
+            }),
+          ),
         ),
       ),
     );

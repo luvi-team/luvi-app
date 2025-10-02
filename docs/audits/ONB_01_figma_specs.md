@@ -119,7 +119,7 @@
 
 ### Text Colors
 - **Primary Text (all copy):** Grayscale/Black (#030401)
-- **Button Text:** Grayscale/White (#FFFFFF) _(brand-driven contrast exception; re-verify against #D9B18E)_
+- **Button Text:** Grayscale/White (#FFFFFF) _(Brand-Exception; unter AA, später Darker Primary oder Black Label prüfen)_
 
 ### Line/Separator
 - **Underline (Line 23):** Grayscale/Black (#030401) or similar (appears as thin gray line)
@@ -235,7 +235,7 @@
 
 ### Text Contrast
 - **Grayscale/Black on White:** WCAG AAA (21:1 ratio, excellent contrast)
-- **CTA Button Text (#030401 on #D9B18E):** ≈10.4:1 ratio ✅ WCAG AAA (gemessen mit Stark Figma Plugin, geprüft am aktuellen Stand)
+- **CTA Button Text (#FFFFFF auf #D9B18E):** ≈1.98:1 ratio ⚠️ unter WCAG AA (Brand-Exception; später Darker Primary oder Black Label prüfen)
 
 ### a11y Hints (Inferred)
 - **Instruction Text:** Should be linked to input field via `accessibilityLabel` or `labelledBy`
@@ -256,7 +256,7 @@
 - `Grayscale/White` → `DsColors.white` or `DsColors.background`
 - `Grayscale/Black` → `DsColors.black` or `DsColors.textPrimary`
 - `Primary color/100` → `DsColors.primary100` or `DsColors.ctaPrimary`
-- **CTA Button Text** → `DsColors.textPrimary` (Grayscale/Black #030401)
+- **CTA Button Text** → `DsColors.white` (Grayscale/White #FFFFFF) _(Brand-Exception; unter AA, später Darker Primary oder Black Label prüfen)_
 
 ### Typography
 - `Heading/H1` (32 px) → `DsTextStyles.headingH1` (Playfair Display)

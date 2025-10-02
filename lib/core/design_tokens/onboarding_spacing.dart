@@ -217,10 +217,11 @@ class OnboardingSpacing {
   static const double _lastCardToCta = 47.0;
 
   // ONB_04 vertical rhythm (tuned for visual balance with longer content)
-  static const double _rhythm04 = 59.0; // header→question, question→date
-  static const double _dateToUnderline04 = 45.0; // reduced for tighter spacing
-  static const double _calloutToCta04 = 48.0; // balanced spacing before CTA
-  static const double _ctaToPicker04 = 84.0; // 59 base + 25 saved = more space
+  // Base rhythm: 59px; other values are intentional deviations for optical balance per Figma
+  static const double _rhythm04 = 59.0; // header→date, underline→callout baseline
+  static const double _dateToUnderline04 = 45.0; // tighter (-14px from rhythm) for date emphasis
+  static const double _calloutToCta04 = 48.0; // balanced (-11px from rhythm) before action
+  static const double _ctaToPicker04 = 84.0; // spacious (+25px from rhythm) for picker clearance
 
   // ONB_05 specific spacing (from Figma audit ONB_05_measures.json)
   static const double _headerToQuestion05 = 42.0;
