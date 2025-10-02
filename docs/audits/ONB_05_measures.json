@@ -132,7 +132,7 @@
     "corner_radius": 12,
     "background": "#D9B18E",
     "background_token": "Primary color/100",
-    "font": "Figtree Bold 20/24 Grayscale/Black (#030401)",
+    "font": "Figtree Bold 20/24 Grayscale/White (#FFFFFF)",
     "font_token": "Button",
     "disabled_state": "not specified in Figma"
   },
@@ -200,7 +200,8 @@
     "cta": {
       "label": "Weiter",
       "tap_target": "388x50",
-      "wcag_aa_compliant": true
+      "wcag_aa_compliant": false,
+      "note": "#FFFFFF auf #D9B18E ≈1.98:1 (brand-driven exception; verify manually)"
     }
   },
 

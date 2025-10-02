@@ -115,7 +115,7 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 
 ### Colors
 - **Background:** `Primary color/100` (#D9B18E, tan/beige)
-- **Text:** `Grayscale/Black` (#030401)
+- **Text:** `Grayscale/White` (#FFFFFF) _(brand-driven contrast exception; verify vs #D9B18E)_
 
 ### Typography
 - **Font:** `Button` token → Figtree Bold 20px / line-height 24px
@@ -133,7 +133,7 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 ### A11y
 - **Tap Target:** 388×50px ≈ 50×63pt → ✅ **Meets 44pt minimum**
 - **Semantic Label:** "Weiter" (inherent from text)
-- **Contrast:** #030401 auf #D9B18E → **≈10.4:1, WCAG AAA** (verifiziert mit Stark Figma Plugin)
+- **Contrast:** #FFFFFF auf #D9B18E → **≈1.98:1** ⚠️ Below WCAG AA; treat as brand-driven exception and re-check with Stark
 
 ---
 
@@ -197,8 +197,8 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 ### Colors
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `Grayscale/White` | #FFFFFF | Backgrounds |
-| `Grayscale/Black` | #030401 | Copy, CTA text, primary text, picker selected year |
+| `Grayscale/White` | #FFFFFF | Backgrounds, CTA label (brand-driven exception; verify contrast) |
+| `Grayscale/Black` | #030401 | Copy (excludes CTA label), primary text, picker selected year |
 | `Grayscale/200` | #F1F1F1 | Callout background, picker selected row |
 | `Grayscale/400` | #A2A0A2 | Picker unselected text |
 | `Grayscale/500` | #696969 | Picker selected day/month |

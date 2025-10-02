@@ -81,7 +81,7 @@
 | **Maße** | 388×50 | — | |
 | **Corner Radius** | 12 | — | |
 | **Label** | "Weiter" | — | |
-| **Typografie** | Figtree Bold 20/24, Grayscale/Black (#030401) | `Button` | |
+| **Typografie** | Figtree Bold 20/24, Grayscale/White (#FFFFFF) | `Button` | brand-driven contrast exception; re-validate vs #D9B18E |
 | **Background** | #D9B18E | `Primary color/100` | |
 | **Disabled-State** | ⚠️ **nicht spezifiziert** | — | In Figma nicht vorhanden |
 
@@ -106,14 +106,14 @@
 
 | Token Name | Value | Type | Usage |
 |------------|-------|------|-------|
-| `Grayscale/White` | #FFFFFF | Color | Background |
-| `Grayscale/Black` | #030401 | Color | Text, CTA Label, Selected Border |
+| `Grayscale/White` | #FFFFFF | Color | Background, CTA label (brand-driven exception; verify contrast) |
+| `Grayscale/Black` | #030401 | Color | Text (excludes CTA label), Selected Border |
 | `Grayscale/100` | #F7F7F8 | Color | Option Card BG |
 | `Primary color/100` | #D9B18E | Color | CTA BG, Selected Radio |
 | `Body/Regular` | Figtree 20/24 | Typography | Frage |
 | `Regular klein` | Figtree 16/24 | Typography | Option Labels |
 | `Regular klein 14` | Figtree 14/24 | Typography | Callout |
-| `Button` | Figtree Bold 20/24 | Typography | CTA Label |
+| `Button` | Figtree Bold 20/24 | Typography | CTA label |
 | `Callout` | Inter Medium 16/24 | Typography | Step Indicator (5/7) |
 
 ⚠️ **Titel-Typo (Playfair 24/32) nicht als Token vorhanden** → custom font (außerhalb Design-System).

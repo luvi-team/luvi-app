@@ -156,8 +156,8 @@
 
 | Variable Name | Hex Value | Usage |
 |---------------|-----------|-------|
-| **Grayscale/White** | #FFFFFF | Screen background |
-| **Grayscale/Black** | #030401 | Button text, copy |
+| **Grayscale/White** | #FFFFFF | Screen background, CTA button label (brand-driven exception; verify contrast) |
+| **Grayscale/Black** | #030401 | General copy (excludes CTA label) |
 | **Grayscale/Black** | #030401 | Primary text, home indicator, year (selected) |
 | **Grayscale/200** | #F1F1F1 | Callout background, picker selected zone background |
 | **Grayscale/400** | #A2A0A2 | Picker unselected text (month) |

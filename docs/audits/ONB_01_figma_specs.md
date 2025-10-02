@@ -119,7 +119,7 @@
 
 ### Text Colors
 - **Primary Text (all copy):** Grayscale/Black (#030401)
-- **Button Text:** Grayscale/Black (#030401)
+- **Button Text:** Grayscale/White (#FFFFFF) _(brand-driven contrast exception; re-verify against #D9B18E)_
 
 ### Line/Separator
 - **Underline (Line 23):** Grayscale/Black (#030401) or similar (appears as thin gray line)
