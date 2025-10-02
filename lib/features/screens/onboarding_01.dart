@@ -5,6 +5,7 @@ import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// First onboarding screen: name input.
 /// Displays title, step counter, instruction, text input, and CTA.
@@ -79,6 +80,9 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context);
+    final headerTitle = l10n?.onboarding01Title ?? 'Erzähl mir von dir 💜';
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,9 +90,9 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
         Expanded(
           child: Semantics(
             header: true,
-            label: 'Erzähl mir von dir',
+            label: headerTitle,
             child: Text(
-              'Erzähl mir von dir 💜',
+              headerTitle,
               style: textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
@@ -99,9 +103,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
           label: 'Schritt 1 von 7',
           child: Text(
             '1/7',
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -113,9 +115,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
       label: 'Wie soll ich dich nennen?',
       child: Text(
         'Wie soll ich dich nennen?',
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface,
-        ),
+        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
         textAlign: TextAlign.center,
       ),
     );
@@ -155,8 +155,9 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
             child: Divider(
               height: 0,
               thickness: 1,
-              color:
-                  colorScheme.onSurface.withValues(alpha: OpacityTokens.inactive),
+              color: colorScheme.onSurface.withValues(
+                alpha: OpacityTokens.inactive,
+              ),
             ),
           ),
         ),

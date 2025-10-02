@@ -1,5 +1,13 @@
 {
   "@@locale": "de",
+  "onboarding01Title": "Erzähl mir von dir 💜",
+  "@onboarding01Title": {
+    "description": "Header title for onboarding step 1."
+  },
+  "onboarding02Title": "Wann hast du\nGeburtstag?",
+  "@onboarding02Title": {
+    "description": "Header title for onboarding step 2 (birthday)."
+  },
   "onboarding04Title": "Wann hat deine letzte Periode angefangen?",
   "selectedDateLabel": "Ausgewähltes Datum: {date}",
   "@selectedDateLabel": {
@@ -61,5 +69,33 @@
   "onboarding06Callout": "Jeder Zyklus ist einzigartig - wie du auch!",
   "@onboarding06Callout": {
     "description": "Supporting callout text shown below the cycle length options on step 6."
+  },
+  "onboarding05Title": "Wie lange dauert deine\nPeriode normalerweise?",
+  "@onboarding05Title": {
+    "description": "Header title for onboarding step 5 (period duration)."
+  },
+  "onboarding05Callout": "Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.",
+  "@onboarding05Callout": {
+    "description": "Callout copy explaining why period duration is needed on step 5."
+  },
+  "onboarding07Title": "Wie ist dein Zyklus so?",
+  "@onboarding07Title": {
+    "description": "Header title for onboarding step 7 (cycle regularity)."
+  },
+  "onboarding07OptRegular": "Ziemlich regelmäßig",
+  "@onboarding07OptRegular": {
+    "description": "Option label for regular cycles on step 7."
+  },
+  "onboarding07OptUnpredictable": "Eher unberechenbar",
+  "@onboarding07OptUnpredictable": {
+    "description": "Option label for unpredictable cycles on step 7."
+  },
+  "onboarding07OptUnknown": "Keine Ahnung",
+  "@onboarding07OptUnknown": {
+    "description": "Option label when the user is unsure about their cycle regularity on step 7."
+  },
+  "onboardingComplete": "Onboarding abgeschlossen",
+  "@onboardingComplete": {
+    "description": "Completion message shown on the onboarding done route."
   }
 }

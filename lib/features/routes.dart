@@ -16,6 +16,7 @@ import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
@@ -58,7 +59,8 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: '/onboarding/done',
     name: 'onboarding_done',
-    builder: (ctx, st) => const Center(child: Text('Onboarding abgeschlossen')),
+    builder: (ctx, st) =>
+        Center(child: Text(AppLocalizations.of(ctx)!.onboardingComplete)),
   ),
   GoRoute(
     path: AuthEntryScreen.routeName,

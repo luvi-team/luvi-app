@@ -10,10 +10,15 @@ final int kOnboardingMaxBirthYear = DateTime.now().year;
 /// Maximum number of years back a period start can be selected.
 const int kOnboardingPeriodStartMaxYearsBack = 2;
 
+int _daysInMonth(int year, int month) => DateTime(year, month + 1, 0).day;
+
 /// Computes the earliest selectable period start date relative to [reference].
 DateTime onboardingPeriodStartMinDate([DateTime? reference]) {
   final now = reference ?? DateTime.now();
-  return DateTime(now.year - kOnboardingPeriodStartMaxYearsBack, now.month, now.day);
+  final targetYear = now.year - kOnboardingPeriodStartMaxYearsBack;
+  final dim = _daysInMonth(targetYear, now.month);
+  final safeDay = now.day.clamp(1, dim);
+  return DateTime(targetYear, now.month, safeDay);
 }
 
 /// Computes the latest selectable period start date relative to [reference].

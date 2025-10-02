@@ -9,6 +9,12 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get onboarding01Title => 'Erzähl mir von dir 💜';
+
+  @override
+  String get onboarding02Title => 'Wann hast du\nGeburtstag?';
+
+  @override
   String get onboarding04Title => 'Wann hat deine letzte Periode angefangen?';
 
   @override
@@ -54,4 +60,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboarding06Callout => 'Jeder Zyklus ist einzigartig - wie du auch!';
+
+  @override
+  String get onboarding05Title => 'Wie lange dauert deine\nPeriode normalerweise?';
+
+  @override
+  String get onboarding05Callout => 'Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.';
+
+  @override
+  String get onboarding07Title => 'Wie ist dein Zyklus so?';
+
+  @override
+  String get onboarding07OptRegular => 'Ziemlich regelmäßig';
+
+  @override
+  String get onboarding07OptUnpredictable => 'Eher unberechenbar';
+
+  @override
+  String get onboarding07OptUnknown => 'Keine Ahnung';
+
+  @override
+  String get onboardingComplete => 'Onboarding abgeschlossen';
 }

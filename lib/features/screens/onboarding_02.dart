@@ -11,6 +11,7 @@ import 'package:luvi_app/core/constants/onboarding_constants.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding02: Birthday input screen
 /// Figma: 02_Onboarding (Geburtstag)
@@ -99,6 +100,8 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final title = l10n?.onboarding02Title ?? 'Wann hast du\nGeburtstag?';
 
     return Row(
       children: [
@@ -117,7 +120,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
           child: Semantics(
             header: true,
             child: Text(
-              'Wann hast du\nGeburtstag?',
+              title,
               textAlign: TextAlign.center,
               maxLines: 2,
               softWrap: true,
@@ -134,9 +137,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
           label: 'Schritt 2 von 7',
           child: Text(
             '2/7',
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -152,9 +153,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
       label: 'Ausgewähltes Datum',
       child: Text(
         _formattedDate,
-        style: textTheme.headlineMedium?.copyWith(
-          color: colorScheme.onSurface,
-        ),
+        style: textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface),
         textAlign: TextAlign.center,
       ),
     );
@@ -191,10 +190,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
         decoration: BoxDecoration(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(Sizes.radiusM),
-          border: Border.all(
-            color: colorScheme.primary,
-            width: 1,
-          ),
+          border: Border.all(color: colorScheme.primary, width: 1),
         ),
         child: Row(
           children: [

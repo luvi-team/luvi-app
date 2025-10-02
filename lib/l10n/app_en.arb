@@ -1,5 +1,13 @@
 {
   "@@locale": "en",
+  "onboarding01Title": "Tell me about yourself 💜",
+  "@onboarding01Title": {
+    "description": "Header title for onboarding step 1."
+  },
+  "onboarding02Title": "When is your\nbirthday?",
+  "@onboarding02Title": {
+    "description": "Header title for onboarding step 2 (birthday)."
+  },
   "onboarding04Title": "When did your last period start?",
   "selectedDateLabel": "Selected date: {date}",
   "@selectedDateLabel": {
@@ -61,5 +69,33 @@
   "onboarding06Callout": "Every cycle is unique - just like you!",
   "@onboarding06Callout": {
     "description": "Supporting callout text shown below the cycle length options on step 6."
+  },
+  "onboarding05Title": "How long does your\nperiod usually last?",
+  "@onboarding05Title": {
+    "description": "Header title for onboarding step 5 (period duration)."
+  },
+  "onboarding05Callout": "We need this starting point to calculate your current cycle phase. I learn with you and automatically adjust the predictions as soon as you log your next period.",
+  "@onboarding05Callout": {
+    "description": "Callout copy explaining why period duration is needed on step 5."
+  },
+  "onboarding07Title": "What is your cycle like?",
+  "@onboarding07Title": {
+    "description": "Header title for onboarding step 7 (cycle regularity)."
+  },
+  "onboarding07OptRegular": "Pretty regular",
+  "@onboarding07OptRegular": {
+    "description": "Option label for regular cycles on step 7."
+  },
+  "onboarding07OptUnpredictable": "Mostly unpredictable",
+  "@onboarding07OptUnpredictable": {
+    "description": "Option label for unpredictable cycles on step 7."
+  },
+  "onboarding07OptUnknown": "Not sure",
+  "@onboarding07OptUnknown": {
+    "description": "Option label when the user is unsure about their cycle regularity on step 7."
+  },
+  "onboardingComplete": "Onboarding complete",
+  "@onboardingComplete": {
+    "description": "Completion message shown on the onboarding done route."
   }
 }

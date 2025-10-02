@@ -95,6 +95,18 @@ abstract class AppLocalizations {
     Locale('en')
   ];
 
+  /// Header title for onboarding step 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell me about yourself 💜'**
+  String get onboarding01Title;
+
+  /// Header title for onboarding step 2 (birthday).
+  ///
+  /// In en, this message translates to:
+  /// **'When is your\nbirthday?'**
+  String get onboarding02Title;
+
   /// No description provided for @onboarding04Title.
   ///
   /// In en, this message translates to:
@@ -184,6 +196,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every cycle is unique - just like you!'**
   String get onboarding06Callout;
+
+  /// Header title for onboarding step 5 (period duration).
+  ///
+  /// In en, this message translates to:
+  /// **'How long does your\nperiod usually last?'**
+  String get onboarding05Title;
+
+  /// Callout copy explaining why period duration is needed on step 5.
+  ///
+  /// In en, this message translates to:
+  /// **'We need this starting point to calculate your current cycle phase. I learn with you and automatically adjust the predictions as soon as you log your next period.'**
+  String get onboarding05Callout;
+
+  /// Header title for onboarding step 7 (cycle regularity).
+  ///
+  /// In en, this message translates to:
+  /// **'What is your cycle like?'**
+  String get onboarding07Title;
+
+  /// Option label for regular cycles on step 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Pretty regular'**
+  String get onboarding07OptRegular;
+
+  /// Option label for unpredictable cycles on step 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly unpredictable'**
+  String get onboarding07OptUnpredictable;
+
+  /// Option label when the user is unsure about their cycle regularity on step 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure'**
+  String get onboarding07OptUnknown;
+
+  /// Completion message shown on the onboarding done route.
+  ///
+  /// In en, this message translates to:
+  /// **'Onboarding complete'**
+  String get onboardingComplete;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

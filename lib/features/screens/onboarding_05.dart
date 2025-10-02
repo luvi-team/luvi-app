@@ -44,9 +44,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: spacing.horizontalPadding,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -67,6 +65,11 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context);
+    final title =
+        l10n?.onboarding05Title ??
+        'Wie lange dauert deine\nPeriode normalerweise?';
+
     return Row(
       children: [
         BackButtonCircle(
@@ -84,7 +87,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
           child: Semantics(
             header: true,
             child: Text(
-              'Wie lange dauert deine\nPeriode normalerweise?',
+              title,
               textAlign: TextAlign.center,
               maxLines: 2,
               softWrap: true,
@@ -101,9 +104,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
           label: 'Schritt 5 von 7',
           child: Text(
             '5/7',
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -141,14 +142,17 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   Widget _buildCallout(TextTheme textTheme, ColorScheme colorScheme) {
-    return Semantics(
-      label: 'Hinweis: Wir brauchen diesen Ausgangspunkt, um deine aktuelle '
-          'Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die '
-          'Prognosen automatisch an, sobald du deine nächste Periode einträgst.',
-      child: Text(
+    final l10n = AppLocalizations.of(context);
+    final callout =
+        l10n?.onboarding05Callout ??
         'Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu '
-        'berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch '
-        'an, sobald du deine nächste Periode einträgst.',
+            'berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch '
+            'an, sobald du deine nächste Periode einträgst.';
+
+    return Semantics(
+      label: callout,
+      child: Text(
+        callout,
         style: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface,
           fontSize: TypographyTokens.size14,

@@ -5,6 +5,7 @@ import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding07: Cycle regularity single-select screen
 /// Figma: 07_Onboarding (Zyklusregelmäßigkeit)
@@ -44,9 +45,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: spacing.horizontalPadding,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -67,6 +66,9 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context);
+    final title = l10n?.onboarding07Title ?? 'Wie ist dein Zyklus so?';
+
     return Row(
       children: [
         BackButtonCircle(
@@ -84,7 +86,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
           child: Semantics(
             header: true,
             child: Text(
-              'Wie ist dein Zyklus so?',
+              title,
               textAlign: TextAlign.center,
               style: textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
@@ -98,9 +100,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
           label: 'Schritt 7 von 7',
           child: Text(
             '7/7',
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -111,10 +111,20 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
     // Icons: clock (⏰), energy/lightning (⚡), help (❓)
     // Using Material Icons.access_time, Icons.flash_on, Icons.help_outline as fallback
     final iconColor = Theme.of(context).colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context);
     final options = [
-      (icon: Icons.access_time, label: 'Ziemlich regelmäßig'),
-      (icon: Icons.flash_on, label: 'Eher unberechenbar'),
-      (icon: Icons.help_outline, label: 'Keine Ahnung'),
+      (
+        icon: Icons.access_time,
+        label: l10n?.onboarding07OptRegular ?? 'Ziemlich regelmäßig',
+      ),
+      (
+        icon: Icons.flash_on,
+        label: l10n?.onboarding07OptUnpredictable ?? 'Eher unberechenbar',
+      ),
+      (
+        icon: Icons.help_outline,
+        label: l10n?.onboarding07OptUnknown ?? 'Keine Ahnung',
+      ),
     ];
 
     return Semantics(
@@ -129,11 +139,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             child: GoalCard(
               key: Key('onb_option_$index'),
               icon: ExcludeSemantics(
-                child: Icon(
-                  options[index].icon,
-                  size: 24,
-                  color: iconColor,
-                ),
+                child: Icon(options[index].icon, size: 24, color: iconColor),
               ),
               title: options[index].label,
               selected: _selected == index,
