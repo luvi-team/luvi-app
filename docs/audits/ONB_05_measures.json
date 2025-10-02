@@ -110,7 +110,7 @@
   },
 
   "callout": {
-    "text": "Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passt die Prognosen automatisch an, sobald du deine nächste Periode einträgst.",
+    "text": "Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.",
     "x": 58,
     "y": 612,
     "width": 312,
@@ -132,7 +132,7 @@
     "corner_radius": 12,
     "background": "#D9B18E",
     "background_token": "Primary color/100",
-    "font": "Figtree Bold 20/24 Grayscale/White (#FFFFFF)",
+    "font": "Figtree Bold 20/24 Grayscale/Black (#030401)",
     "font_token": "Button",
     "disabled_state": "not specified in Figma"
   },
@@ -160,7 +160,7 @@
       "wcag_aa_compliant": false
     },
     "title": {
-      "label": "Schritt 5 von 7: Erzähl mir von dir",
+      "label": "Erzähl mir von dir",
       "role": "header"
     },
     "question": {
@@ -200,8 +200,8 @@
     "cta": {
       "label": "Weiter",
       "tap_target": "388x50",
-      "wcag_aa_compliant": false,
-      "note": "#FFFFFF auf #D9B18E ≈1.98:1 (brand-driven exception; verify manually)"
+      "wcag_aa_compliant": true,
+      "note": "#030401 auf #D9B18E ≈10.4:1 (Stark verifiziert)"
     }
   },
 

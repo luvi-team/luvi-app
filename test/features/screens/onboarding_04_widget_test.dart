@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/constants/onboarding_constants.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
+import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
@@ -17,7 +18,7 @@ void main() {
           builder: (context, state) => const Onboarding04Screen(),
         ),
         GoRoute(
-          path: '/onboarding/05',
+          path: Onboarding05Screen.routeName,
           builder: (context, state) =>
               const Scaffold(body: Text('Onboarding 05 (Stub)')),
         ),
@@ -47,8 +48,12 @@ void main() {
     final picker = find.byType(CupertinoDatePicker);
     expect(picker, findsOneWidget);
     final pickerWidget = tester.widget<CupertinoDatePicker>(picker);
-    expect(pickerWidget.minimumYear, kOnboardingMinBirthYear);
-    expect(pickerWidget.maximumYear, kOnboardingMaxBirthYear);
+    expect(pickerWidget.minimumDate, isNotNull);
+    expect(pickerWidget.maximumDate, isNotNull);
+    final currentYear = DateTime.now().year;
+    expect(pickerWidget.minimumDate!.year,
+        currentYear - kOnboardingPeriodStartMaxYearsBack);
+    expect(pickerWidget.maximumDate!.year, currentYear);
 
     // interact to enable
     await tester.drag(picker, const Offset(0, -50));

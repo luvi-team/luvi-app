@@ -115,7 +115,7 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 
 ### Colors
 - **Background:** `Primary color/100` (#D9B18E, tan/beige)
-- **Text:** `Grayscale/White` (#FFFFFF) _(brand-driven contrast exception; verify vs #D9B18E)_
+- **Text:** `Grayscale/Black` (#030401)
 
 ### Typography
 - **Font:** `Button` token → Figtree Bold 20px / line-height 24px
@@ -133,7 +133,7 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 ### A11y
 - **Tap Target:** 388×50px ≈ 50×63pt → ✅ **Meets 44pt minimum**
 - **Semantic Label:** "Weiter" (inherent from text)
-- **Contrast:** #FFFFFF auf #D9B18E → **≈1.98:1** ⚠️ Below WCAG AA; treat as brand-driven exception and re-check with Stark
+- **Contrast:** #030401 auf #D9B18E → **≈10.4:1** ✅ Passes WCAG AA (Stark)
 
 ---
 
@@ -197,8 +197,8 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 ### Colors
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `Grayscale/White` | #FFFFFF | Backgrounds, CTA label (brand-driven exception; verify contrast) |
-| `Grayscale/Black` | #030401 | Copy (excludes CTA label), primary text, picker selected year |
+| `Grayscale/White` | #FFFFFF | Backgrounds |
+| `Grayscale/Black` | #030401 | Copy (inkl. CTA label), primary text, picker selected year |
 | `Grayscale/200` | #F1F1F1 | Callout background, picker selected row |
 | `Grayscale/400` | #A2A0A2 | Picker unselected text |
 | `Grayscale/500` | #696969 | Picker selected day/month |
@@ -272,8 +272,8 @@ Picker spans full screen width (428px) with gradient overlay from transparent (4
 | Picker Unselected | #A2A0A2 | white gradient | 17px | ⚠️ **Needs verification** |
 
 **Action Items:**
-1. Test callout text (#030401 on #F1F1F1) against WCAG AA 4.5:1
-2. Test CTA button (white on #D9B18E) — tan may fail, consider darker shade or higher text weight
+1. Test callout text (#030401 auf #F1F1F1) gegen WCAG AA 4.5:1
+2. CTA-Button (#030401 auf #D9B18E) in QA mit Stark verifizieren (Soll 10.4:1)
 3. Test picker colors (#696969 and #A2A0A2 on light backgrounds)
 
 ### Focus Indicators

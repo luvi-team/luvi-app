@@ -147,7 +147,7 @@
   - Each option: RadioListTile (label + radio state)
 
 - **Callout:**
-  - ExcludeSemantics or decorative Text (non-interactive)
+  - Text (non-interactive, announced to screen readers)
 
 - **CTA:**
   - ElevatedButton (Semantics label: "Next", enabled state)
@@ -169,7 +169,7 @@
 2. **Radio states:** Implement custom radio indicator with gold fill for selected state (no default Material radio style).
 3. **Disabled CTA:** Define disabled state in code (e.g., 50% opacity or gray background).
 4. **Single-select logic:** Use `RadioListTile` or custom `GestureDetector` with state management.
-5. **Callout:** Use `Text` with `ExcludeSemantics(excluding: true)` to hide from screen readers.
+5. **Callout:** Plain `Text` element must stay announced (no `ExcludeSemantics`).
 
 ---
 

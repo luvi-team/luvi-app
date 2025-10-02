@@ -10,7 +10,6 @@ import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
   testWidgets(
       'renders title, handles back/re-navigation, and enables CTA after date picker interaction',
       (tester) async {

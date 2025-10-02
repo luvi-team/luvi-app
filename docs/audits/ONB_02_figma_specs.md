@@ -2,7 +2,11 @@
 
 **File:** `iQthMdxpCbl6afzXxvzqlt`
 **Node:** `68219-6350` (02_Onboarding)
+**Link:** https://www.figma.com/file/iQthMdxpCbl6afzXxvzqlt?node-id=68219-6350
 **Extracted:** 2025-09-30
+**Created:** 2025-09-30T00:00:00Z
+**Updated:** 2025-09-30T00:00:00Z
+**Commit SHA:** 64c9694eacca2e20566cfba29bc70686dd9786d9
 **Screen Dimensions:** 428×926 px
 
 ---

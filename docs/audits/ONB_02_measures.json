@@ -112,12 +112,12 @@
         "fontSize": 18,
         "fontWeight": 600,
         "lineHeight": 27,
-        "colorSelected": "#696969",
+        "colorSelected": "#030401",
         "colorUnselected": "#696969"
       },
       "month": {
         "type": "text",
-        "language": "german",
+        "language": "de",
         "xPosition": 214,
         "horizontalAlign": "center",
         "font": "Inter",
@@ -138,7 +138,7 @@
         "fontWeight": 600,
         "lineHeight": 27,
         "colorSelected": "#030401",
-        "colorUnselected": "#030401"
+        "colorUnselected": "#A2A0A2"
       }
     },
     "itemSpacing": {
@@ -150,7 +150,7 @@
       "primaryLanguage": "de",
       "monthNamesGerman": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
       "fallbackLanguage": "en",
-      "noteEnglishDetected": "May appears at y=879.5"
+      "noteEnglishDetected": "May appears at y=878.5"
     }
   },
   "typography": {
@@ -284,10 +284,10 @@
     },
     "touchTargets": {
       "backButton": {
-        "width": 40,
-        "height": 40,
-        "meetsMinimum": false,
-        "note": "44×44 pt minimum"
+        "width": 44,
+        "height": 44,
+        "meetsMinimum": true,
+        "note": "Tap-area expanded via padding to meet 44×44 pt minimum"
       },
       "ctaButton": {
         "width": 388,

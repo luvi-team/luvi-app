@@ -376,8 +376,8 @@
         "wcag_level": "AAA"
       },
       "cta_text": {
-        "ratio": "~3.5:1",
-        "wcag_level": "AA Large"
+        "ratio": "~10.4:1",
+        "wcag_level": "AA"
       }
     }
   },
