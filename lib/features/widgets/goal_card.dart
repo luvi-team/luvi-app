@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/custom_radio_check.dart';
 
@@ -72,8 +73,8 @@ class GoalCard extends StatelessWidget {
                   child: Text(
                     title,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: 16,
-                      height: 24 / 16,
+                      fontSize: TypographyTokens.size16,
+                      height: TypographyTokens.lineHeightRatio24on16,
                       color: theme.colorScheme.onSurface,
                     ),
                   ),

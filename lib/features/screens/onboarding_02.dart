@@ -88,8 +88,11 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                             child: Semantics(
                               header: true,
                               child: Text(
-                                'Erzähl mir von dir 💜',
+                                'Wann hast du\nGeburtstag?',
                                 textAlign: TextAlign.center,
+                                maxLines: 2,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
                                 style: textTheme.headlineMedium?.copyWith(
                                   color: colorScheme.onSurface,
                                   fontSize: TypographyTokens.size24,
@@ -109,16 +112,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: spacing.headerToInstruction),
-                      // Instruction text
-                      Text(
-                        'Wann hast du Geburtstag',
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: spacing.instructionToDate),
+                      SizedBox(height: spacing.headerToDate),
                       // Date display
                       Semantics(
                         label: 'Ausgewähltes Datum',

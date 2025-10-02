@@ -51,9 +51,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
             children: [
               SizedBox(height: spacing.topPadding),
               _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToQuestion05),
-              _buildQuestion(textTheme, colorScheme),
-              SizedBox(height: spacing.questionToFirstOption05),
+              SizedBox(height: spacing.headerToFirstOption05),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToCallout05),
               _buildCallout(textTheme, colorScheme),
@@ -84,10 +82,12 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
         Expanded(
           child: Semantics(
             header: true,
-            label: 'Erzähl mir von dir, Schritt 5 von 7',
             child: Text(
-              'Erzähl mir von dir 💜',
+              'Wie lange dauert deine\nPeriode normalerweise?',
               textAlign: TextAlign.center,
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
               style: textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
                 fontSize: TypographyTokens.size24,
@@ -106,19 +106,6 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildQuestion(TextTheme textTheme, ColorScheme colorScheme) {
-    return Semantics(
-      label: 'Wie lange dauert deine Periode normalerweise?',
-      child: Text(
-        'Wie lange dauert deine Periode\nnormalerweise?',
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface,
-        ),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 

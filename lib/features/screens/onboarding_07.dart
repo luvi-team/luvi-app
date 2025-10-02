@@ -52,9 +52,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             children: [
               SizedBox(height: spacing.topPadding),
               _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToQuestion07),
-              _buildQuestion(textTheme, colorScheme),
-              SizedBox(height: spacing.questionToFirstOption07),
+              SizedBox(height: spacing.headerToFirstOption07),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToFootnote07),
               _buildFootnote(textTheme, colorScheme),
@@ -85,17 +83,16 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
         Expanded(
           child: Semantics(
             header: true,
-            label: 'Erzähl mir von dir, Schritt 7 von 7',
-          child: Text(
-            'Erzähl mir von dir 💜',
-            textAlign: TextAlign.center,
-            style: textTheme.headlineMedium?.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: TypographyTokens.size24,
-              height: TypographyTokens.lineHeightRatio32on24,
+            child: Text(
+              'Wie ist dein Zyklus so?',
+              textAlign: TextAlign.center,
+              style: textTheme.headlineMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontSize: TypographyTokens.size24,
+                height: TypographyTokens.lineHeightRatio32on24,
+              ),
             ),
           ),
-        ),
         ),
         Semantics(
           label: 'Schritt 7 von 7',
@@ -107,19 +104,6 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildQuestion(TextTheme textTheme, ColorScheme colorScheme) {
-    return Semantics(
-      label: 'Wie ist dein Zyklus so?',
-      child: Text(
-        'Wie ist dein Zyklus so?',
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface,
-        ),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 

@@ -71,10 +71,12 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                           Expanded(
                             child: Semantics(
                               header: true,
-                              label: 'Erzähl mir von dir, Schritt 4 von 7',
                               child: Text(
-                                'Erzähl mir von dir 💜',
+                                'Wann hat deine letzte\nPeriode begonnen?',
                                 textAlign: TextAlign.center,
+                                maxLines: 2,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
                                 style: textTheme.headlineMedium?.copyWith(
                                   color: colorScheme.onSurface,
                                   fontSize: TypographyTokens.size24,
@@ -95,19 +97,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: spacing.rhythm04),
-                      // Question text
-                      Semantics(
-                        label: 'Wann hat deine letzte Periode angefangen?',
-                        child: Text(
-                          'Wann hat deine letzte Periode\nangefangen?',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      SizedBox(height: spacing.rhythm04),
+                      SizedBox(height: spacing.headerToDate04),
                       // Date display
                       Semantics(
                         label: 'Ausgewähltes Datum: $_formattedDate',

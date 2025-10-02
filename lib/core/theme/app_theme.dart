@@ -14,7 +14,6 @@ class AppTheme {
     0xFFD9B6A3,
   ); // Accent-Subtle (nur "Superkraft.")
   static const Color _onPrimary = Color(0xFFFFFFFF); // Grayscale/White
-  static const Color _ctaLabel = Color(0xFF030401); // Grayscale/Black for CTA text
   static const Color _onSurface = Color(0xFF030401); // Grayscale/Black
   static const Color _grayscale400 = Color(
     0xFFB0B0B0,
@@ -89,7 +88,7 @@ class AppTheme {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: _primary,
-        foregroundColor: _ctaLabel,
+        foregroundColor: const Color(0xFFFFFFFF),
         minimumSize: Size.fromHeight(Sizes.buttonHeight),
         padding: const EdgeInsets.symmetric(
           horizontal: Spacing.s,

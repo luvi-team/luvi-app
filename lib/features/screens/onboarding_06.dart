@@ -59,9 +59,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
             children: [
               SizedBox(height: spacing.topPadding),
               _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToQuestion06),
-              _buildQuestion(textTheme, colorScheme),
-              SizedBox(height: spacing.questionToFirstOption06),
+              SizedBox(height: spacing.headerToFirstOption06),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToCallout06),
               _buildCallout(textTheme, colorScheme),
@@ -92,10 +90,12 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
         Expanded(
           child: Semantics(
             header: true,
-            label: 'Erzähl mir von dir, Schritt 6 von 7',
             child: Text(
-              'Erzähl mir von dir 💜',
+              'Wie lange dauert dein\nZyklus normalerweise?',
               textAlign: TextAlign.center,
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
               style: textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
                 fontSize: TypographyTokens.size24,
@@ -114,19 +114,6 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildQuestion(TextTheme textTheme, ColorScheme colorScheme) {
-    return Semantics(
-      label: 'Wie lange dauert dein Zyklus normalerweise?',
-      child: Text(
-        'Wie lange dauert dein Zyklus\nnormalerweise?',
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface,
-        ),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 

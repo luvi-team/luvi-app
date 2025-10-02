@@ -34,37 +34,45 @@ class BackButtonCircle extends StatelessWidget {
         ? const CircleBorder()
         : const RoundedRectangleBorder(borderRadius: BorderRadius.zero);
 
+    final double hitSize = size < 44 ? 44 : size;
+    final double visualCandidate =
+        innerSize ?? (isCircular ? size - 4 : size);
+    final double visualSize = visualCandidate < 0 ? 0 : visualCandidate;
+    final double renderedSize = visualSize > hitSize ? hitSize : visualSize;
+
     return Semantics(
       button: true,
       label: AuthStrings.backSemantic,
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onPressed,
-            customBorder: shape,
-            child: Center(
-              // Visible component equals [innerSize]; keeps legacy 40px circle
-              // while allowing square 40px variant for forgot password.
-              child: Container(
-                width: innerSize ?? (isCircular ? size - 4 : size),
-                height: innerSize ?? (isCircular ? size - 4 : size),
-                decoration: BoxDecoration(
-                  color: resolvedBackground,
-                  shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-                  borderRadius: isCircular ? null : BorderRadius.zero,
-                ),
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: SvgPicture.string(
-                    _chevronSvg,
-                    colorFilter: ColorFilter.mode(
-                      resolvedIconColor,
-                      BlendMode.srcIn,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+        child: SizedBox(
+          width: hitSize,
+          height: hitSize,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onPressed,
+              customBorder: shape,
+              child: Center(
+                // Visible component equals [renderedSize]; tap target stays >= 44px.
+                child: Container(
+                  width: renderedSize,
+                  height: renderedSize,
+                  decoration: BoxDecoration(
+                    color: resolvedBackground,
+                    shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
+                    borderRadius: isCircular ? null : BorderRadius.zero,
+                  ),
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: iconSize,
+                    height: iconSize,
+                    child: SvgPicture.string(
+                      _chevronSvg,
+                      colorFilter: ColorFilter.mode(
+                        resolvedIconColor,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ),

@@ -41,6 +41,13 @@ class OnboardingSpacing {
     required this.lastOptionToFootnote07,
     required this.footnoteToCta07,
     required this.ctaToHome07,
+    // New tokens for header migration (question becomes header)
+    required this.headerToDate,
+    required this.headerToFirstCard,
+    required this.headerToDate04,
+    required this.headerToFirstOption05,
+    required this.headerToFirstOption06,
+    required this.headerToFirstOption07,
   });
 
   final double horizontalPadding;
@@ -93,15 +100,25 @@ class OnboardingSpacing {
   final double footnoteToCta07;
   final double ctaToHome07;
 
+  // New tokens for header migration (question becomes header)
+  final double headerToDate;
+  final double headerToFirstCard;
+  final double headerToDate04;
+  final double headerToFirstOption05;
+  final double headerToFirstOption06;
+  final double headerToFirstOption07;
+
   static const double _designHeight = 926.0;
   static OnboardingSpacing of(BuildContext context) {
     final media = MediaQuery.of(context);
     final heightRatio = media.size.height / _designHeight;
-    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
+    final textScaleFactor = MediaQuery.textScalerOf(context)
+        .clamp(minScaleFactor: 1.0, maxScaleFactor: 2.0)
+        .scale(1.0);
 
     final heightScale = _interpolateHeight(heightRatio);
     final effectiveHeightScale = textScaleFactor > 1.0
-        ? heightScale * textScaleFactor.clamp(1.0, 1.2)
+        ? heightScale * textScaleFactor.clamp(1.0, 2.0)
         : heightScale;
 
     return OnboardingSpacing._(
@@ -148,6 +165,13 @@ class OnboardingSpacing {
       lastOptionToFootnote07: _lastOptionToFootnote07 * effectiveHeightScale,
       footnoteToCta07: _footnoteToCta07 * effectiveHeightScale,
       ctaToHome07: _ctaToHome07 * effectiveHeightScale,
+      // New tokens for header migration
+      headerToDate: _headerToDate * effectiveHeightScale,
+      headerToFirstCard: _headerToFirstCard * effectiveHeightScale,
+      headerToDate04: _headerToDate04 * effectiveHeightScale,
+      headerToFirstOption05: _headerToFirstOption05 * effectiveHeightScale,
+      headerToFirstOption06: _headerToFirstOption06 * effectiveHeightScale,
+      headerToFirstOption07: _headerToFirstOption07 * effectiveHeightScale,
     );
   }
 
@@ -172,7 +196,7 @@ class OnboardingSpacing {
         return scaleStart + (scaleEnd - scaleStart) * t;
       }
     }
-    return 1.0;
+    throw StateError('Interpolation logic error: ratio $ratio should have been handled');
   }
 
   static const double _headerToInstruction = 75.0;
@@ -227,4 +251,13 @@ class OnboardingSpacing {
   static const double _lastOptionToFootnote07 = 90.0;
   static const double _footnoteToCta07 = 90.0;
   static const double _ctaToHome07 = 90.0;
+
+  // New tokens for header migration (question becomes header)
+  // Conservative 60% of sum (headerToInstruction + instructionToDate/Content)
+  static const double _headerToDate = 76.0; // ONB_02: (75+52)*0.6
+  static const double _headerToFirstCard = 62.0; // ONB_03: (80+23)*0.6
+  static const double _headerToDate04 = 71.0; // ONB_04: (59+59)*0.6
+  static const double _headerToFirstOption05 = 50.0; // ONB_05: (42+42)*0.6
+  static const double _headerToFirstOption06 = 58.0; // ONB_06: (48+48)*0.6
+  static const double _headerToFirstOption07 = 108.0; // ONB_07: (90+90)*0.6
 }

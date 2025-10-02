@@ -56,9 +56,7 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
             children: [
               SizedBox(height: spacing.topPadding),
               _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToQuestion),
-              _buildQuestion(textTheme, colorScheme),
-              SizedBox(height: spacing.questionToFirstCard),
+              SizedBox(height: spacing.headerToFirstCard),
               _buildGoalList(spacing),
               SizedBox(height: spacing.lastCardToCta),
               _buildCta(),
@@ -87,9 +85,8 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
         Expanded(
           child: Semantics(
             header: true,
-            label: 'Erzähl mir von dir, Schritt 3 von 7',
             child: Text(
-              'Erzähl mir von dir 💜',
+              'Was sind deine Ziele?',
               textAlign: TextAlign.center,
               style: textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
@@ -109,19 +106,6 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildQuestion(TextTheme textTheme, ColorScheme colorScheme) {
-    return Semantics(
-      label: 'Was sind deine Ziele?',
-      child: Text(
-        'Was sind deine Ziele?',
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface,
-        ),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 

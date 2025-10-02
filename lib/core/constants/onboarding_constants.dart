@@ -5,4 +5,4 @@ const double kOnboardingPickerHeight = 198.0;
 const int kOnboardingMinBirthYear = 1900;
 
 /// Latest supported birth year for onboarding date pickers.
-int get kOnboardingMaxBirthYear => DateTime.now().year;
+final int kOnboardingMaxBirthYear = DateTime.now().year;

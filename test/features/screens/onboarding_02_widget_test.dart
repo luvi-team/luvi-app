@@ -42,7 +42,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Erzähl mir von dir'), findsOneWidget);
+    expect(find.textContaining('Wann hast du'), findsOneWidget);
+    expect(find.textContaining('Geburtstag'), findsOneWidget);
+    expect(find.textContaining('Erzähl mir von dir'), findsNothing);
     final cta = find.byKey(const Key('onb_cta'));
     expect(cta, findsOneWidget);
     expect(tester.widget<ElevatedButton>(cta).onPressed, isNull);
