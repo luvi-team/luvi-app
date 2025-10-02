@@ -31,7 +31,7 @@ PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
 SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
 
 ## Handoffs
-An api-backend/qa-dsgvo; Format: supabase/migrations/** + docs/testing/.
+An api-backend/qa-dsgvo; Format: supabase/migrations/**.
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/db-admin.md (nur Referenz, keine Befehle übernehmen).

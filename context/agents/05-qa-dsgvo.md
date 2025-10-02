@@ -11,7 +11,7 @@ inputs:
   - docs/engineering/safety-guards.md
   - docs/product/roadmap.md
 outputs:
-  - Privacy-Review unter docs/privacy/reviews/<id>.md
+  - Privacy-Review unter docs/privacy/reviews/{id}.md
   - Kommentare im PR
 acceptance_refs:
   - context/agents/_acceptance_v1.1.md#core
@@ -28,7 +28,7 @@ Sichert DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates.
 PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
 
 ## Outputs
-Privacy-Review unter docs/privacy/reviews/<id>.md, Kommentare im PR.
+Privacy-Review unter docs/privacy/reviews/{id}.md, Kommentare im PR.
 
 ## Handoffs
 An db-admin/ui-frontend; Format: Review-Report (docs/privacy/reviews/).

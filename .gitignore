@@ -132,12 +132,11 @@ debug_*.sh
 *.bak
 # temp
 *.tmp
-<<<<<<< HEAD
-=======
->>>>>>> origin/main
 report/
 onboarding_reuse_audit.sh
 lib/dev_main_*.dart
 # local audits (do not commit)
 context/debug/audits/
+context/agents/_drift_report.md
+docs/audits/*.txt
 test/goldens/failures/

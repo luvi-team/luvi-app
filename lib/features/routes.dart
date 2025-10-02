@@ -137,7 +137,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     return AuthEntryScreen.routeName;
   }
   if (isLoggingIn) {
-    return '/onboarding/w1';
+    return Onboarding01Screen.routeName;
   }
   return null;
 }

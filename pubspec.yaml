@@ -20,7 +20,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
-  flutter: ">=3.35.4"
+  flutter: ">=3.35.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -60,9 +60,6 @@ dev_dependencies:
   dart_code_metrics: ^5.7.6
   mocktail: ^1.0.4
 
-# Override conflicting dependencies to resolve version conflicts
-dependency_overrides:
-  http: ^1.0.0  # Force flutter_svg's preferred version
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -76,10 +73,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/auth/hero_login_default_00.png
-    - assets/images/consent/consent_02_01_hero_01.png
-    - assets/images/consent/consent_02_01_hero_02.png
-    - assets/images/consent/consent_02_01_hero_03.png
-    - assets/images/consent/consent_02_01_hero_04.png
     - assets/images/consent/
     - assets/icons/
       # requires: assets/icons/google_g.svg (official multicolor Google 'G')
