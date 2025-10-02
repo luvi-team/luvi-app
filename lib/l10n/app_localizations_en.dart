@@ -48,4 +48,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding06Title => 'Tell me about yourself 💜';
+
+  @override
+  String get onboarding06Question => 'How long does your cycle normally last?';
 }

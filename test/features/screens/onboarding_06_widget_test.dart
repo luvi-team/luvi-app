@@ -6,6 +6,7 @@ import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,13 @@ void main() {
         initialLocation: Onboarding06Screen.routeName,
       );
 
-      await tester.pumpWidget(MaterialApp.router(theme: AppTheme.buildAppTheme(), routerConfig: router));
+      await tester.pumpWidget(MaterialApp.router(
+        theme: AppTheme.buildAppTheme(),
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('de'),
+      ));
       await tester.pumpAndSettle();
 
       // CTA initially disabled
@@ -64,6 +71,9 @@ void main() {
         MaterialApp.router(
           theme: AppTheme.buildAppTheme(),
           routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('de'),
         ),
       );
       await tester.pumpAndSettle();

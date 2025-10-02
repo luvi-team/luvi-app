@@ -172,6 +172,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tell me about yourself 💜'**
   String get onboarding06Title;
+
+  /// Question text for onboarding step 6 (cycle length).
+  ///
+  /// In en, this message translates to:
+  /// **'How long does your cycle normally last?'**
+  String get onboarding06Question;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

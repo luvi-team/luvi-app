@@ -53,5 +53,9 @@
   "onboarding06Title": "Erzähl mir von dir 💜",
   "@onboarding06Title": {
     "description": "Header title for onboarding step 6."
+  },
+  "onboarding06Question": "Wie lange dauert dein Zyklus normalerweise?",
+  "@onboarding06Question": {
+    "description": "Question text for onboarding step 6 (cycle length)."
   }
 }

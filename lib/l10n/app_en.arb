@@ -53,5 +53,9 @@
   "onboarding06Title": "Tell me about yourself 💜",
   "@onboarding06Title": {
     "description": "Header title for onboarding step 6."
+  },
+  "onboarding06Question": "How long does your cycle normally last?",
+  "@onboarding06Question": {
+    "description": "Question text for onboarding step 6 (cycle length)."
   }
 }

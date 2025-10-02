@@ -48,4 +48,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboarding06Title => 'Erzähl mir von dir 💜';
+
+  @override
+  String get onboarding06Question => 'Wie lange dauert dein Zyklus normalerweise?';
 }

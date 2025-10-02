@@ -21,13 +21,16 @@ class Onboarding06Screen extends StatefulWidget {
 }
 
 class _Onboarding06ScreenState extends State<Onboarding06Screen> {
-  static List<String> _cycleLengthOptions(BuildContext context) => [
-    AppLocalizations.of(context)!.cycleLengthShort,
-    AppLocalizations.of(context)!.cycleLengthLonger,
-    AppLocalizations.of(context)!.cycleLengthStandard,
-    AppLocalizations.of(context)!.cycleLengthLong,
-    AppLocalizations.of(context)!.cycleLengthVeryLong,
-  ];
+  static List<String> _cycleLengthOptions(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      l10n?.cycleLengthShort ?? 'Kurz (alle 21-23 Tage)',
+      l10n?.cycleLengthLonger ?? 'Etwas kürzer (alle 24-26 Tage)',
+      l10n?.cycleLengthStandard ?? 'Standard (alle 27-30 Tage)',
+      l10n?.cycleLengthLong ?? 'Länger (alle 31-35 Tage)',
+      l10n?.cycleLengthVeryLong ?? 'Sehr lang (36+ Tage)',
+    ];
+  }
 
   int? _selected;
 
@@ -60,7 +63,9 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
             children: [
               SizedBox(height: spacing.topPadding),
               _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToFirstOption06),
+              SizedBox(height: spacing.headerToQuestion06),
+              _buildQuestion(textTheme, colorScheme),
+              SizedBox(height: spacing.questionToFirstOption06),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToCallout06),
               _buildCallout(textTheme, colorScheme),
@@ -75,6 +80,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
   }
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         BackButtonCircle(
@@ -92,7 +98,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           child: Semantics(
             header: true,
             child: Text(
-              AppLocalizations.of(context)!.onboarding06Title,
+              l10n?.onboarding06Title ?? 'Erzähl mir von dir 💜',
               textAlign: TextAlign.center,
               maxLines: 2,
               softWrap: true,
@@ -115,6 +121,22 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildQuestion(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context);
+    return Text(
+      l10n?.onboarding06Question ?? 'Wie lange dauert dein Zyklus normalerweise?',
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      softWrap: true,
+      overflow: TextOverflow.ellipsis,
+      style: textTheme.bodyMedium?.copyWith(
+        color: colorScheme.onSurface,
+        fontSize: TypographyTokens.size20,
+        height: TypographyTokens.lineHeightRatio24on20,
+      ),
     );
   }
 
