@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -102,7 +103,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
           child: Semantics(
             header: true,
             child: Text(
-              'Wann hat deine letzte\nPeriode begonnen?',
+              AppLocalizations.of(context)!.onboarding04Title,
               textAlign: TextAlign.center,
               maxLines: 2,
               softWrap: true,
@@ -134,7 +135,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     final textTheme = theme.textTheme;
 
     return Semantics(
-      label: 'Ausgewähltes Datum: $_formattedDate',
+      label: AppLocalizations.of(context)!.selectedDateLabel(_formattedDate),
       child: Text(
         _formattedDate,
         style: textTheme.headlineMedium?.copyWith(
@@ -168,11 +169,10 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final localizations = AppLocalizations.of(context)!;
 
     return Semantics(
-      label:
-          'Hinweis: Mach dir keine Sorgen, wenn du den exakten Tag nicht mehr weißt. '
-          'Eine ungefähre Schätzung reicht für den Start völlig aus.',
+      label: localizations.onboarding04CalloutSemantics,
       child: Container(
         padding: const EdgeInsets.all(Spacing.m),
         decoration: BoxDecoration(
@@ -203,11 +203,11 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                     height: TypographyTokens.lineHeightRatio24on16,
                   ),
                   children: [
-                    const TextSpan(
-                      text: 'Mach dir keine Sorgen, wenn du den ',
+                    TextSpan(
+                      text: localizations.onboarding04CalloutPrefix,
                     ),
                     TextSpan(
-                      text: 'exakten Tag nicht mehr weißt',
+                      text: localizations.onboarding04CalloutHighlight,
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurface,
                         fontSize: TypographyTokens.size16,
@@ -215,9 +215,8 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const TextSpan(
-                      text:
-                          '. Eine ungefähre Schätzung reicht für den Start völlig aus.',
+                    TextSpan(
+                      text: localizations.onboarding04CalloutSuffix,
                     ),
                   ],
                 ),
@@ -230,8 +229,10 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
   }
 
   Widget _buildCta() {
+    final localizations = AppLocalizations.of(context)!;
+
     return Semantics(
-      label: 'Weiter',
+      label: localizations.commonContinue,
       button: true,
       child: ElevatedButton(
         key: const Key('onb_cta'),
@@ -240,7 +241,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                 context.push(Onboarding05Screen.routeName);
               }
             : null,
-        child: const Text('Weiter'),
+        child: Text(localizations.commonContinue),
       ),
     );
   }

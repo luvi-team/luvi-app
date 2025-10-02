@@ -43,7 +43,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
 
   void _handleContinue() {
     // Happy Path: no validation, navigate directly to step 2
-    context.push(Onboarding02Screen.routeName);
+    context.go(Onboarding02Screen.routeName);
   }
 
   @override
@@ -140,11 +140,11 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
             textInputAction: TextInputAction.done,
             autofocus: true,
             hintText: '',
-           onSubmitted: (_) {
-             if (_hasText) {
-               _handleContinue();
-             }
-           },
+            onSubmitted: (_) {
+              if (_hasText) {
+                _handleContinue();
+              }
+            },
           ),
         ),
         const SizedBox(height: Spacing.l),

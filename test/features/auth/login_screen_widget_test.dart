@@ -8,8 +8,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
-import 'package:luvi_app/features/data/auth_repository.dart';
-import 'package:luvi_app/features/state/auth_controller.dart';
+import 'package:luvi_app/features/auth/data/auth_repository.dart';
+import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}

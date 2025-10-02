@@ -107,7 +107,7 @@
     "line_height": 24,
     "text_color": "#FFFFFF",
     "background": "#D9B18E",
-    "disabled_state": "not_specified"
+    "disabled_state": "not specified in Figma"
   },
   "home_indicator": {
     "y": 894,

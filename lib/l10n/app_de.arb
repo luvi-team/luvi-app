@@ -1,0 +1,57 @@
+{
+  "@@locale": "de",
+  "onboarding04Title": "Wann hat deine letzte Periode angefangen?",
+  "selectedDateLabel": "Ausgewähltes Datum: {date}",
+  "@selectedDateLabel": {
+    "description": "Semantics label announcing the currently selected date on onboarding step 4.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "onboarding04CalloutSemantics": "Hinweis: Mach dir keine Sorgen, wenn du den exakten Tag nicht mehr weißt. Eine ungefähre Schätzung reicht für den Start völlig aus.",
+  "@onboarding04CalloutSemantics": {
+    "description": "Accessibility announcement for the onboarding 04 callout info box."
+  },
+  "onboarding04CalloutPrefix": "Mach dir keine Sorgen, wenn du den ",
+  "@onboarding04CalloutPrefix": {
+    "description": "Prefix text displayed before the emphasized part of the onboarding 04 callout."
+  },
+  "onboarding04CalloutHighlight": "exakten Tag nicht mehr weißt",
+  "@onboarding04CalloutHighlight": {
+    "description": "Emphasized substring within the onboarding 04 callout text."
+  },
+  "onboarding04CalloutSuffix": ". Eine ungefähre Schätzung reicht für den Start völlig aus.",
+  "@onboarding04CalloutSuffix": {
+    "description": "Suffix text displayed after the emphasized part of the onboarding 04 callout."
+  },
+  "commonContinue": "Weiter",
+  "@commonContinue": {
+    "description": "Label for primary continue CTA buttons."
+  },
+  "cycleLengthShort": "Kurz (alle 21-23 Tage)",
+  "cycleLengthLonger": "Etwas kürzer (alle 24-26 Tage)",
+  "cycleLengthStandard": "Standard (alle 27-30 Tage)",
+  "cycleLengthLong": "Länger (alle 31-35 Tage)",
+  "cycleLengthVeryLong": "Sehr lang (36+ Tage)",
+  "@cycleLengthShort": {
+    "description": "Cycle length option describing short cycles."
+  },
+  "@cycleLengthLonger": {
+    "description": "Cycle length option describing slightly shorter cycles."
+  },
+  "@cycleLengthStandard": {
+    "description": "Cycle length option describing standard cycles."
+  },
+  "@cycleLengthLong": {
+    "description": "Cycle length option describing longer cycles."
+  },
+  "@cycleLengthVeryLong": {
+    "description": "Cycle length option describing very long cycles."
+  },
+  "onboarding06Title": "Erzähl mir von dir 💜",
+  "@onboarding06Title": {
+    "description": "Header title for onboarding step 6."
+  }
+}

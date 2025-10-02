@@ -21,7 +21,9 @@ jobs:
 
       - name: Generate drift report
         run: |
-          sh context/agents/_drift_check.sh || true
+          EXIT_CODE=0
+          sh context/agents/_drift_check.sh || EXIT_CODE=$?
+          echo "Drift check exit code: ${EXIT_CODE}"
           printf '\n---\nReport preview:\n' && (cat context/agents/_drift_report.md || true)
 
       - name: Upload drift report

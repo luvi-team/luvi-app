@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
@@ -20,12 +21,12 @@ class Onboarding06Screen extends StatefulWidget {
 }
 
 class _Onboarding06ScreenState extends State<Onboarding06Screen> {
-  static const List<String> _cycleLengthOptions = [
-    'Kurz (alle 21-23 Tage)',
-    'Etwas länger (alle 24-26 Tage)',
-    'Standard (alle 27-30 Tage)',
-    'Länger (alle 31-35 Tage)',
-    'Sehr lang (36+ Tage)',
+  static List<String> _cycleLengthOptions(BuildContext context) => [
+    AppLocalizations.of(context)!.cycleLengthShort,
+    AppLocalizations.of(context)!.cycleLengthLonger,
+    AppLocalizations.of(context)!.cycleLengthStandard,
+    AppLocalizations.of(context)!.cycleLengthLong,
+    AppLocalizations.of(context)!.cycleLengthVeryLong,
   ];
 
   int? _selected;
@@ -91,7 +92,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           child: Semantics(
             header: true,
             child: Text(
-              'Wie lange dauert dein\nZyklus normalerweise?',
+              AppLocalizations.of(context)!.onboarding06Title,
               textAlign: TextAlign.center,
               maxLines: 2,
               softWrap: true,
@@ -122,17 +123,17 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
       label: 'Zykluslänge auswählen',
       child: Column(
         children: List.generate(
-          _cycleLengthOptions.length,
+          _cycleLengthOptions(context).length,
           (index) => Padding(
             padding: EdgeInsets.only(
-              bottom: index < _cycleLengthOptions.length - 1
+              bottom: index < _cycleLengthOptions(context).length - 1
                   ? spacing.optionGap06
                   : 0,
             ),
             child: GoalCard(
               key: Key('onb_option_$index'),
               icon: const SizedBox.shrink(), // No icon for radio options
-              title: _cycleLengthOptions[index],
+              title: _cycleLengthOptions(context)[index],
               selected: _selected == index,
               onTap: () => _selectOption(index),
             ),

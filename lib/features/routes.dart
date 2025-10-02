@@ -22,34 +22,42 @@ final List<GoRoute> featureRoutes = [
   ...consent.consentRoutes.where((route) => route.name != 'login'),
   GoRoute(
     path: Onboarding01Screen.routeName,
+    name: 'onboarding_01',
     builder: (ctx, st) => const Onboarding01Screen(),
   ),
   GoRoute(
     path: Onboarding02Screen.routeName,
+    name: 'onboarding_02',
     builder: (ctx, st) => const Onboarding02Screen(),
   ),
   GoRoute(
     path: Onboarding03Screen.routeName,
+    name: 'onboarding_03',
     builder: (ctx, st) => const Onboarding03Screen(),
   ),
   GoRoute(
     path: Onboarding04Screen.routeName,
+    name: 'onboarding_04',
     builder: (ctx, st) => const Onboarding04Screen(),
   ),
   GoRoute(
     path: Onboarding05Screen.routeName,
+    name: 'onboarding_05',
     builder: (ctx, st) => const Onboarding05Screen(),
   ),
   GoRoute(
     path: Onboarding06Screen.routeName,
+    name: 'onboarding_06',
     builder: (ctx, st) => const Onboarding06Screen(),
   ),
   GoRoute(
     path: Onboarding07Screen.routeName,
+    name: 'onboarding_07',
     builder: (ctx, st) => const Onboarding07Screen(),
   ),
   GoRoute(
     path: '/onboarding/done',
+    name: 'onboarding_done',
     builder: (ctx, st) => const Center(child: Text('Onboarding abgeschlossen')),
   ),
   GoRoute(

@@ -88,7 +88,7 @@ class AppTheme {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: _primary,
-        foregroundColor: const Color(0xFFFFFFFF),
+        foregroundColor: _onPrimary,
         minimumSize: Size.fromHeight(Sizes.buttonHeight),
         padding: const EdgeInsets.symmetric(
           horizontal: Spacing.s,
