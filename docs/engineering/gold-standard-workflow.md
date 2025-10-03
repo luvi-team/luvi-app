@@ -23,10 +23,8 @@ ADR-0003 MIWF: Happy Path zuerst; Guards nur nach Evidenz (Sentry/PostHog).
 - PR-Template Pflichtfelder inkl. Babysitting-Level, AI pre/post Commit, RLS-Check
 - CodeRabbit (Lite) Status grün (Branch-Protection Required)
 
-## Required-Checks (GitHub, exakt)
-- Flutter CI / analyze-test (pull_request) ✅
-- Flutter CI / privacy-gate (pull_request) ✅
-- CodeRabbit ✅
+## Required-Checks (GitHub)
+Siehe `context/agents/_acceptance_v1.1.md#core`
 
 ## Rollen-spezifische DoD-Checks
 - UI/Frontend & DataViz: flutter analyze ✅ · flutter test (≥ 1 Unit + ≥ 1 Widget) ✅ · CodeRabbit ✅ · ADRs/DSGVO-Note ✅
@@ -56,5 +54,5 @@ CodeRabbit Lite (line-by-line)
 - Interop/Legacy: .claude/*, CLAUDE.md nur Referenz; operativ Codex CLI-first.
 
 ## GitHub / Branch-Protection
-Required Checks: Siehe „Required-Checks (GitHub, exakt)" oben (Zeile 26-29).
+Required Checks: Siehe `context/agents/_acceptance_v1.1.md#core`
 

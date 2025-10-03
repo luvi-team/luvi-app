@@ -12,7 +12,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboarding01Title => 'Tell me about yourself 💜';
 
   @override
+  String onboardingStepSemantic(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get onboarding01Instruction => 'What should I call you?';
+
+  @override
+  String get onboarding01NameInputSemantic => 'Enter your name';
+
+  @override
   String get onboarding02Title => 'When is your\nbirthday?';
+
+  @override
+  String get onboarding02CalloutSemantic => 'Note: Your age helps us better understand your hormonal phase.';
+
+  @override
+  String get onboarding02CalloutBody => 'Your age helps us better understand your hormonal phase.';
+
+  @override
+  String get onboarding02PickerSemantic => 'Select birth date';
 
   @override
   String get onboarding04Title => 'When did your last period start?';
@@ -65,10 +85,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboarding05Title => 'How long does your\nperiod usually last?';
 
   @override
+  String get onboarding05OptionsSemantic => 'Select period duration';
+
+  @override
+  String get onboarding05OptUnder3 => 'Less than 3 days';
+
+  @override
+  String get onboarding05Opt3to5 => 'Between 3 and 5 days';
+
+  @override
+  String get onboarding05Opt5to7 => 'Between 5 and 7 days';
+
+  @override
+  String get onboarding05OptOver7 => 'More than 7 days';
+
+  @override
   String get onboarding05Callout => 'We need this starting point to calculate your current cycle phase. I learn with you and automatically adjust the predictions as soon as you log your next period.';
 
   @override
   String get onboarding07Title => 'What is your cycle like?';
+
+  @override
+  String get onboarding07OptionsSemantic => 'Select cycle regularity';
 
   @override
   String get onboarding07OptRegular => 'Pretty regular';
@@ -78,6 +116,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding07OptUnknown => 'Not sure';
+
+  @override
+  String get onboarding07Footnote => 'Clockwork or chaos - I get both!';
 
   @override
   String get onboardingComplete => 'Onboarding complete';

@@ -101,11 +101,47 @@ abstract class AppLocalizations {
   /// **'Tell me about yourself 💜'**
   String get onboarding01Title;
 
+  /// Spoken step indicator for onboarding progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String onboardingStepSemantic(int current, int total);
+
+  /// Instruction copy asking the user for their preferred name on step 1.
+  ///
+  /// In en, this message translates to:
+  /// **'What should I call you?'**
+  String get onboarding01Instruction;
+
+  /// Semantics label for the name input field on step 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get onboarding01NameInputSemantic;
+
   /// Header title for onboarding step 2 (birthday).
   ///
   /// In en, this message translates to:
   /// **'When is your\nbirthday?'**
   String get onboarding02Title;
+
+  /// Accessibility announcement for the onboarding 02 callout info box.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: Your age helps us better understand your hormonal phase.'**
+  String get onboarding02CalloutSemantic;
+
+  /// Body text displayed inside the onboarding 02 callout card.
+  ///
+  /// In en, this message translates to:
+  /// **'Your age helps us better understand your hormonal phase.'**
+  String get onboarding02CalloutBody;
+
+  /// Semantics label for the birth date picker on onboarding step 2.
+  ///
+  /// In en, this message translates to:
+  /// **'Select birth date'**
+  String get onboarding02PickerSemantic;
 
   /// No description provided for @onboarding04Title.
   ///
@@ -203,6 +239,36 @@ abstract class AppLocalizations {
   /// **'How long does your\nperiod usually last?'**
   String get onboarding05Title;
 
+  /// Semantics label announcing the period duration options list on step 5.
+  ///
+  /// In en, this message translates to:
+  /// **'Select period duration'**
+  String get onboarding05OptionsSemantic;
+
+  /// Option label for periods shorter than three days.
+  ///
+  /// In en, this message translates to:
+  /// **'Less than 3 days'**
+  String get onboarding05OptUnder3;
+
+  /// Option label for periods lasting three to five days.
+  ///
+  /// In en, this message translates to:
+  /// **'Between 3 and 5 days'**
+  String get onboarding05Opt3to5;
+
+  /// Option label for periods lasting five to seven days.
+  ///
+  /// In en, this message translates to:
+  /// **'Between 5 and 7 days'**
+  String get onboarding05Opt5to7;
+
+  /// Option label for periods longer than seven days.
+  ///
+  /// In en, this message translates to:
+  /// **'More than 7 days'**
+  String get onboarding05OptOver7;
+
   /// Callout copy explaining why period duration is needed on step 5.
   ///
   /// In en, this message translates to:
@@ -214,6 +280,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What is your cycle like?'**
   String get onboarding07Title;
+
+  /// Semantics label announcing the cycle regularity options list on step 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Select cycle regularity'**
+  String get onboarding07OptionsSemantic;
 
   /// Option label for regular cycles on step 7.
   ///
@@ -232,6 +304,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not sure'**
   String get onboarding07OptUnknown;
+
+  /// Footnote reassuring the user regardless of cycle regularity on step 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Clockwork or chaos - I get both!'**
+  String get onboarding07Footnote;
 
   /// Completion message shown on the onboarding done route.
   ///

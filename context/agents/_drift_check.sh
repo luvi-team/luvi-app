@@ -46,6 +46,20 @@ else
   fail "AGENTS.md: v1.1-Hinweis/Pfad fehlt"
 fi
 
+# 3b) AGENTS.md referenziert das verbindliche Antwortformat
+if rg -n "docs/engineering/assistant-answer-format\.md" "$ROOT/AGENTS.md" >/dev/null 2>&1; then
+  pass "AGENTS.md: Antwortformat-Verweis vorhanden"
+else
+  fail "AGENTS.md: Antwortformat-Verweis fehlt"
+fi
+
+# 3c) AGENTS.md verlinkt die Auto-Role Map (SSOT)
+if rg -n "context/agents/_auto_role_map\.md" "$ROOT/AGENTS.md" >/dev/null 2>&1; then
+  pass "AGENTS.md: Auto-Role Map verlinkt"
+else
+  fail "AGENTS.md: Auto-Role Map-Verweis fehlt"
+fi
+
 # 4) Soft-Gates: Operativer Modus vorhanden
 for s in reqing-ball.md ui-polisher.md; do
   if rg -n "^#+\\s*Operativer Modus" "$DIR/$s" >/dev/null 2>&1; then

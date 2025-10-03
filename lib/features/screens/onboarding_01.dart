@@ -80,8 +80,8 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context);
-    final headerTitle = l10n?.onboarding01Title ?? 'Erzähl mir von dir 💜';
+    final l10n = AppLocalizations.of(context)!;
+    final headerTitle = l10n.onboarding01Title;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -100,7 +100,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
         ),
         const SizedBox(width: Spacing.s),
         Semantics(
-          label: 'Schritt 1 von 7',
+          label: l10n.onboardingStepSemantic(1, 7),
           child: Text(
             '1/7',
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
@@ -111,10 +111,12 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   Widget _buildInstruction(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
+    final instruction = l10n.onboarding01Instruction;
     return Semantics(
-      label: 'Wie soll ich dich nennen?',
+      label: instruction,
       child: Text(
-        'Wie soll ich dich nennen?',
+        instruction,
         style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
         textAlign: TextAlign.center,
       ),
@@ -126,11 +128,12 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     ColorScheme colorScheme,
     OnboardingSpacing spacing,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Semantics(
           textField: true,
-          label: 'Name eingeben',
+          label: l10n.onboarding01NameInputSemantic,
           child: AuthTextField(
             controller: _nameController,
             frameless: true,
@@ -166,13 +169,15 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   Widget _buildCta(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
+    final ctaLabel = l10n.commonContinue;
     return Semantics(
-      label: 'Weiter',
+      label: ctaLabel,
       button: true,
       child: ElevatedButton(
         key: const Key('onb_cta'),
         onPressed: _hasText ? _handleContinue : null,
-        child: const Text('Weiter'),
+        child: Text(ctaLabel),
       ),
     );
   }

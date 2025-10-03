@@ -4,9 +4,41 @@
   "@onboarding01Title": {
     "description": "Header title for onboarding step 1."
   },
+  "onboardingStepSemantic": "Step {current} of {total}",
+  "@onboardingStepSemantic": {
+    "description": "Spoken step indicator for onboarding progress.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onboarding01Instruction": "What should I call you?",
+  "@onboarding01Instruction": {
+    "description": "Instruction copy asking the user for their preferred name on step 1."
+  },
+  "onboarding01NameInputSemantic": "Enter your name",
+  "@onboarding01NameInputSemantic": {
+    "description": "Semantics label for the name input field on step 1."
+  },
   "onboarding02Title": "When is your\nbirthday?",
   "@onboarding02Title": {
     "description": "Header title for onboarding step 2 (birthday)."
+  },
+  "onboarding02CalloutSemantic": "Note: Your age helps us better understand your hormonal phase.",
+  "@onboarding02CalloutSemantic": {
+    "description": "Accessibility announcement for the onboarding 02 callout info box."
+  },
+  "onboarding02CalloutBody": "Your age helps us better understand your hormonal phase.",
+  "@onboarding02CalloutBody": {
+    "description": "Body text displayed inside the onboarding 02 callout card."
+  },
+  "onboarding02PickerSemantic": "Select birth date",
+  "@onboarding02PickerSemantic": {
+    "description": "Semantics label for the birth date picker on onboarding step 2."
   },
   "onboarding04Title": "When did your last period start?",
   "selectedDateLabel": "Selected date: {date}",
@@ -74,6 +106,26 @@
   "@onboarding05Title": {
     "description": "Header title for onboarding step 5 (period duration)."
   },
+  "onboarding05OptionsSemantic": "Select period duration",
+  "@onboarding05OptionsSemantic": {
+    "description": "Semantics label announcing the period duration options list on step 5."
+  },
+  "onboarding05OptUnder3": "Less than 3 days",
+  "@onboarding05OptUnder3": {
+    "description": "Option label for periods shorter than three days."
+  },
+  "onboarding05Opt3to5": "Between 3 and 5 days",
+  "@onboarding05Opt3to5": {
+    "description": "Option label for periods lasting three to five days."
+  },
+  "onboarding05Opt5to7": "Between 5 and 7 days",
+  "@onboarding05Opt5to7": {
+    "description": "Option label for periods lasting five to seven days."
+  },
+  "onboarding05OptOver7": "More than 7 days",
+  "@onboarding05OptOver7": {
+    "description": "Option label for periods longer than seven days."
+  },
   "onboarding05Callout": "We need this starting point to calculate your current cycle phase. I learn with you and automatically adjust the predictions as soon as you log your next period.",
   "@onboarding05Callout": {
     "description": "Callout copy explaining why period duration is needed on step 5."
@@ -81,6 +133,10 @@
   "onboarding07Title": "What is your cycle like?",
   "@onboarding07Title": {
     "description": "Header title for onboarding step 7 (cycle regularity)."
+  },
+  "onboarding07OptionsSemantic": "Select cycle regularity",
+  "@onboarding07OptionsSemantic": {
+    "description": "Semantics label announcing the cycle regularity options list on step 7."
   },
   "onboarding07OptRegular": "Pretty regular",
   "@onboarding07OptRegular": {
@@ -93,6 +149,10 @@
   "onboarding07OptUnknown": "Not sure",
   "@onboarding07OptUnknown": {
     "description": "Option label when the user is unsure about their cycle regularity on step 7."
+  },
+  "onboarding07Footnote": "Clockwork or chaos - I get both!",
+  "@onboarding07Footnote": {
+    "description": "Footnote reassuring the user regardless of cycle regularity on step 7."
   },
   "onboardingComplete": "Onboarding complete",
   "@onboardingComplete": {

@@ -7,6 +7,54 @@
 
 ---
 
+## Hinweise (Legacy & Format-Gleichheit)
+
+- Legacy-Links: Einige @-Referenzen/Links können historisch (Legacy) sein. Maßgeblich sind die Dossiers unter `context/agents/*` und die SSOT Acceptance v1.1 (`context/agents/_acceptance_v1.1.md`).
+- Format-Gleichheit: Die Claude-Checkpoints (Role/BMAD/Prove) verlangen inhaltlich dasselbe wie die Codex-CLI Erfolgskriterien im `docs/engineering/assistant-answer-format.md` — beide basieren auf SSOT v1.1.
+
+---
+
+## Auto-Sizing & Compact Mode
+
+**Ziel:** Weniger Reibung bei Kleinst-Tasks, ohne Governance (SSOT v1.1) zu verwässern.
+
+**Automatische Erkennung (Heuristik):**
+- Klein/Low-Impact (Compact Mode geeignet), wenn typisch:
+  - Keywords: UI/Widget/Theme/Layout/Copy/Navigation/Test-Kleinigkeit
+  - Diff-Scope: nur `lib/` (UI), `docs/` (ohne Privacy), keine `supabase/`, keine Migrations/Edge Functions
+  - Kein PII/RLS-Marker: kein `CREATE TABLE`, `CREATE POLICY`, `ALTER TABLE ... ENABLE ROW LEVEL SECURITY`, kein `auth.uid()`, kein `service_role`
+  - Umfang: ≤ 2–3 Dateien, ≲ 50 geänderte Zeilen
+  - DSGVO-Impact: Low
+- Groß/Medium/High-Impact (Vollmodus), wenn u. a.:
+  - DB-Migrationen, RLS-Policies/Trigger, neue Tabellen/Spalten, Consent-Scopes
+  - Edge Functions/Services, externe Datenübermittlung, neue PII/Health-Daten
+  - DSGVO-Impact: Medium/High
+
+**Overrides (du kannst steuern):**
+- Im Prompt angeben (optional): `role: <rolle>`, `impact: low|medium|high`, `size: small|large`, `compact: on|off`
+- Deine Angaben haben Vorrang vor der Auto-Heuristik.
+
+**Verhalten im Compact Mode** (nur wenn `size: small` UND `impact: low`):
+- Checkpoint 1: Role-Line inkl. „Compact Mode“
+- Checkpoint 2 (BMAD): ultrakurz (1–3 Zeilen), Impact explizit „Low“
+- Checkpoint 3 (Prove): `flutter analyze` + relevante Tests; kein RLS-/Consent-Evidence
+- Keine Runbooks/Reviews nötig; weiterhin SSOT-konform
+
+**Verhalten im Vollmodus** (Standard bei `impact: medium|high` oder Unklarheit):
+- Vollständiges BMAD (Business/Modellierung/Architektur/DoD)
+- Prove mit Evidenz: `flutter analyze`, `flutter test`, RLS-Check (4 Schritte), DSGVO-Note
+- Bei Unklarheit stellt Claude 2–3 kurze Klärungsfragen (z. B. DB-Write? neue Policies? Consent?)
+
+**Sicherheitsgeländer (niemals Compact Mode):**
+- Verdacht auf PII/Health-Daten, DB-Schreibvorgänge, neue/änderte RLS/Consent, externe Übermittlung
+- `impact: high` → immer Vollmodus
+
+**Beispiele:**
+- Klein: „UI-Text auf Home-Screen ändern“ → `ui-frontend`, Impact=Low → Compact Mode
+- Groß: „Spalte `notes` zu `cycle_logs` hinzufügen“ → `db-admin`, Impact=High → Vollmodus (RLS/Consent/Review)
+
+---
+
 ## Claude Code Arbeitsablauf (immer befolgen bei Claude Code Sessions)
 
 **KRITISCHE REGEL: Checkpoints sind PFLICHT, nicht optional.**
@@ -27,6 +75,7 @@ Jede Antwort MUSS enthalten:
    - User-Intent verstehen: Feature? Fix? Refactor? Test?
 
 2. **Auto-Role (Keyword-Mapping)**
+   - SSOT: context/agents/_auto_role_map.md (Änderungen bitte dort pflegen)
    - **ui-frontend:** Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter
    - **api-backend:** Edge Function, Service, API, Backend, Consent-Log, Webhook, Rate-Limit, Gateway
    - **db-admin:** RLS, Migration, SQL, Supabase, Policy, Trigger, Database, Schema, Postgres
@@ -101,6 +150,49 @@ Jede Antwort MUSS enthalten:
 
 ---
 
+## Auto-Checks (vor PR-Merge)
+
+**Zweck:** Vibe-Coder Safety-Rails — verhindert vergessene kritische Schritte.
+
+**Checkliste (VOR `git push` / PR-Merge):**
+
+- [ ] **BMAD fertig?** (Business/Modellierung/Architektur/DoD vollständig)
+  - Template: `context/templates/bmad-template.md`
+  - ⚠️ STOP wenn leer → Template ausfüllen
+
+- [ ] **DSGVO-Impact korrekt?** (Low/Medium/High gem. Definition)
+  - Referenz: `docs/privacy/dsgvo-impact-levels.md`
+  - ⚠️ STOP wenn Impact = High, aber keine Privacy-Review → erstelle `docs/privacy/reviews/<branch>.md`
+
+- [ ] **RLS-Check grün?** (bei Impact = High/Medium)
+  - Runbook: `docs/runbooks/debug-rls-policy.md`
+  - 4 Schritte: RLS ON → Policies 4× → Trigger → anon-test denied
+  - ⚠️ STOP wenn RLS-Check fails → Fix vor Merge
+
+- [ ] **Tests grün?** (≥1 Unit + ≥1 Widget bei UI/DataViz)
+  - `flutter analyze` → 0 errors
+  - `flutter test` → all tests passed
+  - ⚠️ STOP wenn Tests rot → Fix vor Merge
+
+- [ ] **Runbook befolgt?** (bei Troubleshooting)
+  - RLS-Debug: `docs/runbooks/debug-rls-policy.md`
+  - Edge Function: `docs/runbooks/test-edge-function-locally.md`
+  - Consent: `docs/runbooks/verify-consent-flow.md`
+
+- [ ] **Required Checks grün?** (GitHub Branch-Protection)
+  - Siehe: `context/agents/_acceptance_v1.1.md#core`
+  - Flutter CI / analyze-test ✅
+  - Flutter CI / privacy-gate ✅
+  - CodeRabbit ✅
+
+- [ ] **Kein service_role im Client?** (ADR-0002 Least-Privilege)
+  - Check: `grep -r "service_role" lib/` → keine Treffer
+  - ⚠️ STOP wenn gefunden → service_role nur in Edge Functions
+
+**Wenn ALLE Checkboxen ✅ → Merge erlaubt.**
+
+---
+
 ## Konflikt-Regeln (bei Unklarheiten)
 
 **User vs DoD:**
@@ -148,6 +240,22 @@ Jede Antwort MUSS enthalten:
 - RAG-First Wissenshierarchie
 - Struktur vor Improvisation (BMAD/PRP)
 - Kuratierter Minimalismus & Pragmatismus
+
+## Templates & Runbooks (bei Bedarf laden)
+
+**Templates (Dokumentation/Planning):**
+- BMAD: `context/templates/bmad-template.md` (Business → Modellierung → Architektur → DoD)
+- DSGVO-Review: `context/templates/dsgvo-review-template.md` (Privacy-Review für High-Impact Features)
+- DSGVO-Impact-Levels: `docs/privacy/dsgvo-impact-levels.md` (Low/Medium/High Definition)
+
+**Runbooks (Troubleshooting/Testing):**
+- RLS-Debug: `docs/runbooks/debug-rls-policy.md` (6 Steps: RLS ON → Policies → Trigger → Tests)
+- Edge Function Test: `docs/runbooks/test-edge-function-locally.md` (Supabase lokal testen)
+- Consent-Flow Verify: `docs/runbooks/verify-consent-flow.md` (Consent End-to-End testen)
+
+**Wann nutzen:**
+- Templates: Bei BMAD-Planung (M4+), Privacy-Review (High-Impact)
+- Runbooks: Bei RLS-Fehlern, Edge-Function-Deploy, Consent-Bugs
 
 ## MIWF Merksatz
 Engine darf nackt laufen — Daten nie (Consent/RLS/Secrets sind Pflicht).

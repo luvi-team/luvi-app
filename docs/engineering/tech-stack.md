@@ -14,8 +14,7 @@ Code-Qualität:
 - Dart Code Metrics (DCM): lokal nutzbar; in CI informativ (non-blocking)
 - CodeRabbit (Lite): GitHub-App + IDE/CLI, line-by-line PR-Reviews; Required Check
 
-Required Checks (exakt):
-Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit
+Required Checks: Siehe `context/agents/_acceptance_v1.1.md#core`
 
 ## 2) Frontend (Flutter)
 Flutter 3.35.4 (Dart 3.9.0, in CI gepinnt)
@@ -55,4 +54,4 @@ Mehrkosten AI/DSGVO: ~€0,49 / Premium-User / Monat
 - Interop/Legacy: .claude/*, CLAUDE.md nur Referenz
 
 ## 9) Branch-Protection (Empfehlung)
-Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit
+Required Checks: Siehe `context/agents/_acceptance_v1.1.md#core`

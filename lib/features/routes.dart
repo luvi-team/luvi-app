@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/features/consent/routes.dart' as consent;
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
@@ -9,6 +8,11 @@ import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/screens/verification_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_02_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_03_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
@@ -20,7 +24,31 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
-  ...consent.consentRoutes.where((route) => route.name != 'login'),
+  GoRoute(
+    path: '/onboarding/w1',
+    name: 'welcome1',
+    builder: (context, state) => const ConsentWelcome01Screen(),
+  ),
+  GoRoute(
+    path: '/onboarding/w2',
+    name: 'welcome2',
+    builder: (context, state) => const ConsentWelcome02Screen(),
+  ),
+  GoRoute(
+    path: '/onboarding/w3',
+    name: 'welcome3',
+    builder: (context, state) => const ConsentWelcome03Screen(),
+  ),
+  GoRoute(
+    path: Consent01Screen.routeName,
+    name: 'consent01',
+    builder: (context, state) => const Consent01Screen(),
+  ),
+  GoRoute(
+    path: '/consent/02',
+    name: 'consent02',
+    builder: (context, state) => const Consent02Screen(),
+  ),
   GoRoute(
     path: Onboarding01Screen.routeName,
     name: 'onboarding_01',

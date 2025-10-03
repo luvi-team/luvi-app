@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,9 @@ void main() {
       return MaterialApp.router(
         routerConfig: router,
         theme: AppTheme.buildAppTheme(),
+        locale: const Locale('de'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
       );
     }
 
@@ -46,19 +50,13 @@ void main() {
 
       final cta = find.byKey(const Key('onb_cta'));
       expect(cta, findsOneWidget);
-      expect(
-        tester.widget<ElevatedButton>(cta).onPressed,
-        isNull,
-      );
+      expect(tester.widget<ElevatedButton>(cta).onPressed, isNull);
 
       // Enter text and wait for state update
       await tester.enterText(nameField, 'Claire');
       await tester.pumpAndSettle();
 
-      expect(
-        tester.widget<ElevatedButton>(cta).onPressed,
-        isNotNull,
-      );
+      expect(tester.widget<ElevatedButton>(cta).onPressed, isNotNull);
 
       await tester.tap(cta);
       await tester.pumpAndSettle();
