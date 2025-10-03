@@ -91,7 +91,12 @@ jobs:
           echo "BASE_SHA=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
           echo "HEAD_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "TEST_STATUS=${{ needs.analyze-test.result }}" >> $GITHUB_ENV
-          echo "ADR_IDS=$(echo "${{ github.event.pull_request.body }}" | grep -Eo '\\b(0001|0002|0003)\\b' | sort -u | paste -sd, -)" >> $GITHUB_ENV
+          read -r -d '' BODY <<'EOF' || true
+          ${{ github.event.pull_request.body }}
+          EOF
+
+          ADR_IDS=$(printf '%s' "$BODY" | grep -Eo '\\b(0001|0002|0003)\\b' | sort -u | paste -sd, -)
+          echo "ADR_IDS=$ADR_IDS" >> "$GITHUB_ENV"
 
       - name: Compute changes (paths and numstat)
         run: |
