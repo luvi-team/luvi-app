@@ -140,3 +140,6 @@ context/debug/audits/
 context/agents/_drift_report.md
 docs/audits/*.txt
 test/goldens/failures/
+
+# test artifacts (not versioned)
+test/_artifacts/

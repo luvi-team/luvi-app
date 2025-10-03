@@ -101,11 +101,89 @@ abstract class AppLocalizations {
   /// **'Tell me about yourself 💜'**
   String get onboarding01Title;
 
-  /// Header title for onboarding step 2 (birthday).
+  /// Spoken step indicator for onboarding progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String onboardingStepSemantic(int current, int total);
+
+  /// Instruction copy asking the user for their preferred name on step 1.
+  ///
+  /// In en, this message translates to:
+  /// **'What should I call you?'**
+  String get onboarding01Instruction;
+
+  /// Semantics label for the name input field on step 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get onboarding01NameInputSemantic;
+
+  /// Header title for onboarding step 2 (birthday). Includes a forced line break to match the Figma layout; keep the newline when translating.
   ///
   /// In en, this message translates to:
   /// **'When is your\nbirthday?'**
   String get onboarding02Title;
+
+  /// Accessibility announcement for the onboarding 02 callout info box.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: Your age helps us better understand your hormonal phase.'**
+  String get onboarding02CalloutSemantic;
+
+  /// Body text displayed inside the onboarding 02 callout card.
+  ///
+  /// In en, this message translates to:
+  /// **'Your age helps us better understand your hormonal phase.'**
+  String get onboarding02CalloutBody;
+
+  /// Semantics label for the birth date picker on onboarding step 2.
+  ///
+  /// In en, this message translates to:
+  /// **'Select birth date'**
+  String get onboarding02PickerSemantic;
+
+  /// Header title for onboarding step 3 (goals multi-select).
+  ///
+  /// In en, this message translates to:
+  /// **'What are your goals?'**
+  String get onboarding03Title;
+
+  /// Short progress indicator displaying the current and total onboarding steps.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}/{total}'**
+  String onboardingStepFraction(int current, int total);
+
+  /// Goal option: understand the user's cycle and body better on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Understand my cycle & body better'**
+  String get onboarding03GoalCycleUnderstanding;
+
+  /// Goal option: align training with the user's cycle on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Align training with my cycle'**
+  String get onboarding03GoalTrainingAlignment;
+
+  /// Goal option: optimize nutrition and find new recipes on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimize nutrition & discover new recipes'**
+  String get onboarding03GoalNutrition;
+
+  /// Goal option: manage weight on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage my weight (lose/maintain)'**
+  String get onboarding03GoalWeightManagement;
+
+  /// Goal option: reduce stress and strengthen mindfulness on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce stress & boost mindfulness'**
+  String get onboarding03GoalMindfulness;
 
   /// No description provided for @onboarding04Title.
   ///
@@ -155,10 +233,10 @@ abstract class AppLocalizations {
   /// **'Short (every 21-23 days)'**
   String get cycleLengthShort;
 
-  /// Cycle length option describing slightly shorter cycles.
+  /// Cycle length option describing slightly longer cycles.
   ///
   /// In en, this message translates to:
-  /// **'A bit shorter (every 24-26 days)'**
+  /// **'A bit longer (every 24-26 days)'**
   String get cycleLengthLonger;
 
   /// Cycle length option describing standard cycles.
@@ -191,6 +269,12 @@ abstract class AppLocalizations {
   /// **'How long does your cycle normally last?'**
   String get onboarding06Question;
 
+  /// Semantics label announcing the cycle length options list on step 6.
+  ///
+  /// In en, this message translates to:
+  /// **'Select cycle length'**
+  String get onboarding06OptionsSemantic;
+
   /// Supporting callout text shown below the cycle length options on step 6.
   ///
   /// In en, this message translates to:
@@ -203,6 +287,36 @@ abstract class AppLocalizations {
   /// **'How long does your\nperiod usually last?'**
   String get onboarding05Title;
 
+  /// Semantics label announcing the period duration options list on step 5.
+  ///
+  /// In en, this message translates to:
+  /// **'Select period duration'**
+  String get onboarding05OptionsSemantic;
+
+  /// Option label for periods shorter than three days.
+  ///
+  /// In en, this message translates to:
+  /// **'Less than 3 days'**
+  String get onboarding05OptUnder3;
+
+  /// Option label for periods lasting three to five days.
+  ///
+  /// In en, this message translates to:
+  /// **'Between 3 and 5 days'**
+  String get onboarding05Opt3to5;
+
+  /// Option label for periods lasting five to seven days.
+  ///
+  /// In en, this message translates to:
+  /// **'Between 5 and 7 days'**
+  String get onboarding05Opt5to7;
+
+  /// Option label for periods longer than seven days.
+  ///
+  /// In en, this message translates to:
+  /// **'More than 7 days'**
+  String get onboarding05OptOver7;
+
   /// Callout copy explaining why period duration is needed on step 5.
   ///
   /// In en, this message translates to:
@@ -214,6 +328,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What is your cycle like?'**
   String get onboarding07Title;
+
+  /// Semantics label announcing the cycle regularity options list on step 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Select cycle regularity'**
+  String get onboarding07OptionsSemantic;
 
   /// Option label for regular cycles on step 7.
   ///
@@ -232,6 +352,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not sure'**
   String get onboarding07OptUnknown;
+
+  /// Footnote reassuring the user regardless of cycle regularity on step 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Clockwork or chaos - I get both!'**
+  String get onboarding07Footnote;
 
   /// Completion message shown on the onboarding done route.
   ///

@@ -65,10 +65,8 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context);
-    final title =
-        l10n?.onboarding05Title ??
-        'Wie lange dauert deine\nPeriode normalerweise?';
+    final l10n = AppLocalizations.of(context)!;
+    final title = l10n.onboarding05Title;
 
     return Row(
       children: [
@@ -101,7 +99,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
           ),
         ),
         Semantics(
-          label: 'Schritt 5 von 7',
+          label: l10n.onboardingStepSemantic(5, 7),
           child: Text(
             '5/7',
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
@@ -112,15 +110,16 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   Widget _buildOptionList(OnboardingSpacing spacing) {
+    final l10n = AppLocalizations.of(context)!;
     final options = [
-      'Weniger als 3 Tage',
-      'Zwischen 3 und 5 Tage',
-      'Zwischen 5 und 7 Tage',
-      'Mehr als 7 Tage',
+      l10n.onboarding05OptUnder3,
+      l10n.onboarding05Opt3to5,
+      l10n.onboarding05Opt5to7,
+      l10n.onboarding05OptOver7,
     ];
 
     return Semantics(
-      label: 'Periodendauer auswählen',
+      label: l10n.onboarding05OptionsSemantic,
       child: Column(
         children: List.generate(
           options.length,
@@ -130,7 +129,6 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
             ),
             child: GoalCard(
               key: Key('onb_option_$index'),
-              icon: const SizedBox.shrink(), // No icon for radio options
               title: options[index],
               selected: _selected == index,
               onTap: () => _selectOption(index),
@@ -142,12 +140,8 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   Widget _buildCallout(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context);
-    final callout =
-        l10n?.onboarding05Callout ??
-        'Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu '
-            'berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch '
-            'an, sobald du deine nächste Periode einträgst.';
+    final l10n = AppLocalizations.of(context)!;
+    final callout = l10n.onboarding05Callout;
 
     return Semantics(
       label: callout,
@@ -164,8 +158,8 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   Widget _buildCta() {
-    final l10n = AppLocalizations.of(context);
-    final ctaLabel = l10n?.commonContinue ?? 'Weiter';
+    final l10n = AppLocalizations.of(context)!;
+    final ctaLabel = l10n.commonContinue;
     return Semantics(
       label: ctaLabel,
       button: true,

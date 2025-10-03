@@ -9,6 +9,16 @@ class AuthRepository {
     required String password,
   }) => _sb.auth.signInWithPassword(email: email, password: password);
 
+  Future<AuthResponse> signUp({
+    required String email,
+    required String password,
+    Map<String, dynamic>? data,
+  }) => _sb.auth.signUp(
+        email: email,
+        password: password,
+        data: data,
+      );
+
   Future<void> signOut() => _sb.auth.signOut();
 
   Session? get currentSession => _sb.auth.currentSession;

@@ -6,6 +6,9 @@ on:
 
 jobs:
   drift:
+    permissions:
+      contents: read
+      pull-requests: write
     concurrency:
       group: drift-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -20,16 +23,56 @@ jobs:
           sudo apt-get install -y ripgrep
 
       - name: Generate drift report
+        id: drift
         run: |
           EXIT_CODE=0
-          sh context/agents/_drift_check.sh || EXIT_CODE=$?
+          rg --version || true
+          bash context/agents/_drift_check.sh || EXIT_CODE=$?
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
           echo "Drift check exit code: ${EXIT_CODE}"
           printf '\n---\nReport preview:\n' && (cat context/agents/_drift_report.md || true)
+
+      - name: Collect drift metrics
+        id: metrics
+        run: |
+          COUNT=$(grep -c '^- \[DRIFT\]' context/agents/_drift_report.md || true)
+          echo "drift_count=${COUNT:-0}" >> "$GITHUB_OUTPUT"
+
+      - name: Write summary
+        if: always()
+        run: |
+          echo "## Agents Drift Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "Generated on: $(date -u)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Drift findings: ${{ steps.metrics.outputs.drift_count || '0' }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          sed -n '1,100p' context/agents/_drift_report.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Comment drift report
+        if: ${{ github.event_name == 'pull_request' && steps.drift.outputs.exit_code != '0' }}
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'context/agents/_drift_report.md';
+            let body;
+            try { body = fs.readFileSync(path, 'utf8'); }
+            catch (e) { body = '# Agents Drift Report\n\nReport-Datei nicht gefunden.'; }
+            const header = '# Agents Drift Report';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.issue.number;
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 100 });
+            const existing = comments.find(c => c.user?.login === 'github-actions[bot]' && c.body && c.body.startsWith(header));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
 
       - name: Upload drift report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: agents-drift-report
+          name: agents-drift-report-${{ github.run_id }}
           path: context/agents/_drift_report.md
           if-no-files-found: warn

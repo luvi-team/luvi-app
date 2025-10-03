@@ -14,12 +14,10 @@
 - **Indicators:** Right-aligned (signal, WiFi, battery) at x=340px
 
 ### Back Button
-- **Container Size:** 40×40px (node: 68186:8205;45:9594)
-- **Visual Icon:** 20×20px (centered, arrow-left)
+- **Visual Icon Container:** 40×40px (node: 68186:8205;45:9594), arrow-left centered at 20×20px
+- **Interactive Hit Area:** ≥ 44×44pt via additional padding or transparent border while keeping the visual footprint at 40×40px
 - **Position:** absolute, left=20px, top=59px
-- **⚠️ A11y Issue:** Current 40×40px < 44pt minimum hit area
-- **Recommendation:** Increase hit area to 44×44px via padding/transparent border
-- **Semantic Label:** "Zurück" or "Zurück zur vorherigen Seite"
+- **Semantic Label:** "Zurück" or "Zurück zur vorherigen Seite" (apply to the interactive control)
 
 ### Title
 - **Text:** "Erzähl mir von dir 💜"

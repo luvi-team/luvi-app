@@ -3,9 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
-import 'package:luvi_app/features/consent/routes.dart' as consent;
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
+import 'package:luvi_app/features/routes.dart';
 
 class _PreselectedConsent02Notifier extends Consent02Notifier {
   @override
@@ -30,14 +29,7 @@ void main() {
     });
 
     final router = GoRouter(
-      routes: [
-        ...consent.consentRoutes,
-        GoRoute(
-          path: AuthEntryScreen.routeName,
-          name: 'auth_entry',
-          builder: (context, state) => const AuthEntryScreen(),
-        ),
-      ],
+      routes: featureRoutes,
       initialLocation: '/consent/02',
     );
 

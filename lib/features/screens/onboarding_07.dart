@@ -66,8 +66,8 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context);
-    final title = l10n?.onboarding07Title ?? 'Wie ist dein Zyklus so?';
+    final l10n = AppLocalizations.of(context)!;
+    final title = l10n.onboarding07Title;
 
     return Row(
       children: [
@@ -97,7 +97,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
           ),
         ),
         Semantics(
-          label: 'Schritt 7 von 7',
+          label: l10n.onboardingStepSemantic(7, 7),
           child: Text(
             '7/7',
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
@@ -111,24 +111,15 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
     // Icons: clock (⏰), energy/lightning (⚡), help (❓)
     // Using Material Icons.access_time, Icons.flash_on, Icons.help_outline as fallback
     final iconColor = Theme.of(context).colorScheme.onSurface;
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final options = [
-      (
-        icon: Icons.access_time,
-        label: l10n?.onboarding07OptRegular ?? 'Ziemlich regelmäßig',
-      ),
-      (
-        icon: Icons.flash_on,
-        label: l10n?.onboarding07OptUnpredictable ?? 'Eher unberechenbar',
-      ),
-      (
-        icon: Icons.help_outline,
-        label: l10n?.onboarding07OptUnknown ?? 'Keine Ahnung',
-      ),
+      (icon: Icons.access_time, label: l10n.onboarding07OptRegular),
+      (icon: Icons.flash_on, label: l10n.onboarding07OptUnpredictable),
+      (icon: Icons.help_outline, label: l10n.onboarding07OptUnknown),
     ];
 
     return Semantics(
-      label: 'Zyklusregelmäßigkeit auswählen',
+      label: l10n.onboarding07OptionsSemantic,
       child: Column(
         children: List.generate(
           options.length,
@@ -152,9 +143,10 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   Widget _buildFootnote(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return ExcludeSemantics(
       child: Text(
-        'Ob Uhrwerk oder Chaos - ich verstehe beides!',
+        l10n.onboarding07Footnote,
         style: textTheme.bodyMedium?.copyWith(
           fontSize: TypographyTokens.size16,
           height: TypographyTokens.lineHeightRatio24on16,
@@ -167,14 +159,15 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
 
   Widget _buildCta() {
     final isEnabled = _selected != null;
+    final l10n = AppLocalizations.of(context)!;
 
     return Semantics(
-      label: 'Weiter',
+      label: l10n.commonContinue,
       button: true,
       child: ElevatedButton(
         key: const Key('onb_cta'),
         onPressed: isEnabled ? _handleContinue : null,
-        child: const Text('Weiter'),
+        child: Text(l10n.commonContinue),
       ),
     );
   }

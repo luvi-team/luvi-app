@@ -1,5 +1,7 @@
 # Agenten-Audit – LUVI (Codex-Governance)
 
+> Hinweis: Dieses Dokument ist ein Inventar-Snapshot für Governance-Audits. Einträge können historische/Legacy-Pfade enthalten (z. B. `.claude/agents/*`). Maßgeblich für die aktuelle Arbeitsweise sind die Dossiers unter `context/agents/*` und die SSOT Acceptance v1.1 (`context/agents/_acceptance_v1.1.md`).
+
 ## Bestand (Inventar)
 | file | title (H1) | role/agent | purpose | last_updated |
 |---|---|---|---|---|

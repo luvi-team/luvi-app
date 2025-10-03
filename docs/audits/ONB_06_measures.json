@@ -8,7 +8,13 @@
       "y": 59,
       "visual_width": 40,
       "visual_height": 40,
-      "required_hit_area": 44
+      "interactive_width": 44,
+      "interactive_height": 44,
+      "hit_padding": {
+        "horizontal": 2,
+        "vertical": 2
+      },
+      "implementation_note": "Expand tappable area with transparent padding or hitSlop while keeping visual icon at 40px."
     },
     "title": {
       "text": "Erzähl mir von dir 💜",
@@ -77,7 +83,7 @@
     },
     "items": [
       "Kurz (alle 21-23 Tage)",
-      "Etwas kürzer (alle 24-26 Tage)",
+      "Etwas länger (alle 24-26 Tage)",
       "Standard (alle 27-30 Tage)",
       "Länger (alle 31-35 Tage)",
       "Sehr lang (36+ Tage)"
@@ -138,7 +144,8 @@
       "back_button": {
         "visual_size": 40,
         "required_size": 44,
-        "status": "warning"
+        "status": "ok",
+        "note": "Add 2px padding on each side to reach 44×44pt interactive hit area."
       },
       "option_cards": {
         "size": 63,

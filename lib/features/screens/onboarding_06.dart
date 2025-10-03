@@ -25,7 +25,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     final l10n = AppLocalizations.of(context);
     return [
       l10n?.cycleLengthShort ?? 'Kurz (alle 21-23 Tage)',
-      l10n?.cycleLengthLonger ?? 'Etwas kürzer (alle 24-26 Tage)',
+      l10n?.cycleLengthLonger ?? 'Etwas länger (alle 24-26 Tage)',
       l10n?.cycleLengthStandard ?? 'Standard (alle 27-30 Tage)',
       l10n?.cycleLengthLong ?? 'Länger (alle 31-35 Tage)',
       l10n?.cycleLengthVeryLong ?? 'Sehr lang (36+ Tage)',
@@ -63,9 +63,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
             children: [
               SizedBox(height: spacing.topPadding),
               _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToQuestion06),
-              _buildQuestion(textTheme, colorScheme),
-              SizedBox(height: spacing.questionToFirstOption06),
+              SizedBox(height: spacing.headerToFirstOption06),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToCallout06),
               _buildCallout(textTheme, colorScheme),
@@ -81,6 +79,9 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context);
+    final stepSemantic =
+        l10n?.onboardingStepSemantic(6, 7) ?? 'Schritt 6 von 7';
+    final stepFraction = l10n?.onboardingStepFraction(6, 7) ?? '6/7';
     return Row(
       children: [
         BackButtonCircle(
@@ -98,7 +99,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           child: Semantics(
             header: true,
             child: Text(
-              l10n?.onboarding06Title ?? 'Erzähl mir von dir 💜',
+              l10n?.onboarding06Question ?? 'Wie lange dauert dein Zyklus normalerweise?',
               textAlign: TextAlign.center,
               maxLines: 2,
               softWrap: true,
@@ -112,9 +113,9 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           ),
         ),
         Semantics(
-          label: 'Schritt 6 von 7',
+          label: stepSemantic,
           child: Text(
-            '6/7',
+            stepFraction,
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -124,38 +125,21 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     );
   }
 
-  Widget _buildQuestion(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context);
-    return Text(
-      l10n?.onboarding06Question ?? 'Wie lange dauert dein Zyklus normalerweise?',
-      textAlign: TextAlign.center,
-      maxLines: 2,
-      softWrap: true,
-      overflow: TextOverflow.ellipsis,
-      style: textTheme.bodyMedium?.copyWith(
-        color: colorScheme.onSurface,
-        fontSize: TypographyTokens.size20,
-        height: TypographyTokens.lineHeightRatio24on20,
-      ),
-    );
-  }
-
   Widget _buildOptionList(OnboardingSpacing spacing) {
+    final options = _cycleLengthOptions(context);
+    final l10n = AppLocalizations.of(context);
     return Semantics(
-      label: 'Zykluslänge auswählen',
+      label: l10n?.onboarding06OptionsSemantic ?? 'Zykluslänge auswählen',
       child: Column(
         children: List.generate(
-          _cycleLengthOptions(context).length,
+          options.length,
           (index) => Padding(
             padding: EdgeInsets.only(
-              bottom: index < _cycleLengthOptions(context).length - 1
-                  ? spacing.optionGap06
-                  : 0,
+              bottom: index < options.length - 1 ? spacing.optionGap06 : 0,
             ),
             child: GoalCard(
               key: Key('onb_option_$index'),
-              icon: const SizedBox.shrink(), // No icon for radio options
-              title: _cycleLengthOptions(context)[index],
+              title: options[index],
               selected: _selected == index,
               onTap: () => _selectOption(index),
             ),

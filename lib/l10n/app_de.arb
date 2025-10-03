@@ -4,9 +4,77 @@
   "@onboarding01Title": {
     "description": "Header title for onboarding step 1."
   },
+  "onboardingStepSemantic": "Schritt {current} von {total}",
+  "@onboardingStepSemantic": {
+    "description": "Spoken step indicator for onboarding progress.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onboarding01Instruction": "Wie soll ich dich nennen?",
+  "@onboarding01Instruction": {
+    "description": "Instruction copy asking the user for their preferred name on step 1."
+  },
+  "onboarding01NameInputSemantic": "Name eingeben",
+  "@onboarding01NameInputSemantic": {
+    "description": "Semantics label for the name input field on step 1."
+  },
   "onboarding02Title": "Wann hast du\nGeburtstag?",
   "@onboarding02Title": {
-    "description": "Header title for onboarding step 2 (birthday)."
+    "description": "Header title for onboarding step 2 (birthday). Enthält einen erzwungenen Zeilenumbruch wie im Figma-Layout – bitte das '\\n' in allen Übersetzungen beibehalten."
+  },
+  "onboarding02CalloutSemantic": "Hinweis: Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.",
+  "@onboarding02CalloutSemantic": {
+    "description": "Accessibility announcement for the onboarding 02 callout info box."
+  },
+  "onboarding02CalloutBody": "Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.",
+  "@onboarding02CalloutBody": {
+    "description": "Body text displayed inside the onboarding 02 callout card."
+  },
+  "onboarding02PickerSemantic": "Geburtsdatum auswählen",
+  "@onboarding02PickerSemantic": {
+    "description": "Semantics label for the birth date picker on onboarding step 2."
+  },
+  "onboarding03Title": "Was sind deine Ziele?",
+  "@onboarding03Title": {
+    "description": "Header title for onboarding step 3 (goals multi-select)."
+  },
+  "onboardingStepFraction": "{current}/{total}",
+  "@onboardingStepFraction": {
+    "description": "Short progress indicator displaying the current and total onboarding steps.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onboarding03GoalCycleUnderstanding": "Meinen Zyklus & Körper besser verstehen",
+  "@onboarding03GoalCycleUnderstanding": {
+    "description": "Goal option: understand the user's cycle and body better on onboarding step 3."
+  },
+  "onboarding03GoalTrainingAlignment": "Training an meinen Zyklus anpassen",
+  "@onboarding03GoalTrainingAlignment": {
+    "description": "Goal option: align training with the user's cycle on onboarding step 3."
+  },
+  "onboarding03GoalNutrition": "Ernährung optimieren & neue Rezepte entdecken",
+  "@onboarding03GoalNutrition": {
+    "description": "Goal option: optimize nutrition and find new recipes on onboarding step 3."
+  },
+  "onboarding03GoalWeightManagement": "Gewicht managen (Abnehmen/Halten)",
+  "@onboarding03GoalWeightManagement": {
+    "description": "Goal option: manage weight on onboarding step 3."
+  },
+  "onboarding03GoalMindfulness": "Stress reduzieren & Achtsamkeit stärken",
+  "@onboarding03GoalMindfulness": {
+    "description": "Goal option: reduce stress and strengthen mindfulness on onboarding step 3."
   },
   "onboarding04Title": "Wann hat deine letzte Periode angefangen?",
   "selectedDateLabel": "Ausgewähltes Datum: {date}",
@@ -39,7 +107,7 @@
     "description": "Label for primary continue CTA buttons."
   },
   "cycleLengthShort": "Kurz (alle 21-23 Tage)",
-  "cycleLengthLonger": "Etwas kürzer (alle 24-26 Tage)",
+  "cycleLengthLonger": "Etwas länger (alle 24-26 Tage)",
   "cycleLengthStandard": "Standard (alle 27-30 Tage)",
   "cycleLengthLong": "Länger (alle 31-35 Tage)",
   "cycleLengthVeryLong": "Sehr lang (36+ Tage)",
@@ -47,7 +115,7 @@
     "description": "Cycle length option describing short cycles."
   },
   "@cycleLengthLonger": {
-    "description": "Cycle length option describing slightly shorter cycles."
+    "description": "Cycle length option describing slightly longer cycles."
   },
   "@cycleLengthStandard": {
     "description": "Cycle length option describing standard cycles."
@@ -66,6 +134,10 @@
   "@onboarding06Question": {
     "description": "Question text for onboarding step 6 (cycle length)."
   },
+  "onboarding06OptionsSemantic": "Zykluslänge auswählen",
+  "@onboarding06OptionsSemantic": {
+    "description": "Semantics label announcing the cycle length options list on step 6."
+  },
   "onboarding06Callout": "Jeder Zyklus ist einzigartig - wie du auch!",
   "@onboarding06Callout": {
     "description": "Supporting callout text shown below the cycle length options on step 6."
@@ -74,6 +146,26 @@
   "@onboarding05Title": {
     "description": "Header title for onboarding step 5 (period duration)."
   },
+  "onboarding05OptionsSemantic": "Periodendauer auswählen",
+  "@onboarding05OptionsSemantic": {
+    "description": "Semantics label announcing the period duration options list on step 5."
+  },
+  "onboarding05OptUnder3": "Weniger als 3 Tage",
+  "@onboarding05OptUnder3": {
+    "description": "Option label for periods shorter than three days."
+  },
+  "onboarding05Opt3to5": "Zwischen 3 und 5 Tagen",
+  "@onboarding05Opt3to5": {
+    "description": "Option label for periods lasting three to five days."
+  },
+  "onboarding05Opt5to7": "Zwischen 5 und 7 Tage",
+  "@onboarding05Opt5to7": {
+    "description": "Option label for periods lasting five to seven days."
+  },
+  "onboarding05OptOver7": "Mehr als 7 Tage",
+  "@onboarding05OptOver7": {
+    "description": "Option label for periods longer than seven days."
+  },
   "onboarding05Callout": "Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.",
   "@onboarding05Callout": {
     "description": "Callout copy explaining why period duration is needed on step 5."
@@ -81,6 +173,10 @@
   "onboarding07Title": "Wie ist dein Zyklus so?",
   "@onboarding07Title": {
     "description": "Header title for onboarding step 7 (cycle regularity)."
+  },
+  "onboarding07OptionsSemantic": "Zyklusregelmäßigkeit auswählen",
+  "@onboarding07OptionsSemantic": {
+    "description": "Semantics label announcing the cycle regularity options list on step 7."
   },
   "onboarding07OptRegular": "Ziemlich regelmäßig",
   "@onboarding07OptRegular": {
@@ -93,6 +189,10 @@
   "onboarding07OptUnknown": "Keine Ahnung",
   "@onboarding07OptUnknown": {
     "description": "Option label when the user is unsure about their cycle regularity on step 7."
+  },
+  "onboarding07Footnote": "Ob Uhrwerk oder Chaos - ich verstehe beides!",
+  "@onboarding07Footnote": {
+    "description": "Footnote reassuring the user regardless of cycle regularity on step 7."
   },
   "onboardingComplete": "Onboarding abgeschlossen",
   "@onboardingComplete": {

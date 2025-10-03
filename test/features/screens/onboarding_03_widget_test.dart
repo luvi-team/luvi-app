@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,9 @@ void main() {
       MaterialApp.router(
         theme: AppTheme.buildAppTheme(),
         routerConfig: router,
+        locale: const Locale('de'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
       ),
     );
     await tester.pumpAndSettle();

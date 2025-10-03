@@ -4,12 +4,15 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * *'
 jobs:
   analyze-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2
         with:
           channel: stable
           flutter-version: '3.35.4'
@@ -26,24 +29,35 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
         with:
           fetch-depth: 0
 
       - name: Detect changed paths
         id: changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
         with:
           filters: |
             migrations:
               - 'supabase/migrations/**'
             privacy_docs:
               - 'docs/privacy/reviews/**'
+            ai_layer:
+              - 'lib/**/ai/**'
+              - 'lib/services/ai_gateway/**'
+              - 'services/ai_gateway/**'
+              - 'features/**/ai/**'
 
       - name: Enforce privacy review when migrations changed
         if: ${{ steps.changes.outputs.migrations == 'true' && steps.changes.outputs.privacy_docs != 'true' }}
         run: |
           echo "::error::Supabase-Migrationen geändert – bitte docs/privacy/reviews/<id>.md aktualisieren."
+          exit 1
+
+      - name: Enforce privacy review when AI layer changed
+        if: ${{ steps.changes.outputs.ai_layer == 'true' && steps.changes.outputs.privacy_docs != 'true' }}
+        run: |
+          echo "::error::AI-Layer geändert – bitte docs/privacy/reviews/<id>.md aktualisieren (Opt-in/Datennutzung/Logging prüfen)."
           exit 1
 
   pr-change-report:
@@ -56,26 +70,33 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
         with:
           fetch-depth: 0
 
       - name: Detect changed paths
         id: changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
         with:
           filters: |
             migrations:
               - 'supabase/migrations/**'
             privacy_docs:
               - 'docs/privacy/reviews/**'
+            memory_file:
+              - 'context/debug/memory.md'
 
       - name: Prepare environment
         run: |
           echo "BASE_SHA=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
           echo "HEAD_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "TEST_STATUS=${{ needs.analyze-test.result }}" >> $GITHUB_ENV
-          echo "ADR_IDS=$(echo "${{ github.event.pull_request.body }}" | grep -Eo '\\b(0001|0002|0003)\\b' | sort -u | paste -sd, -)" >> $GITHUB_ENV
+          read -r -d '' BODY <<'EOF' || true
+          ${{ github.event.pull_request.body }}
+          EOF
+
+          ADR_IDS=$(printf '%s' "$BODY" | grep -Eo '\\b(0001|0002|0003)\\b' | sort -u | paste -sd, -)
+          echo "ADR_IDS=$ADR_IDS" >> "$GITHUB_ENV"
 
       - name: Compute changes (paths and numstat)
         run: |
@@ -93,6 +114,7 @@ jobs:
             echo "- Teststatus (analyze/test): ${TEST_STATUS}"
             echo "- Supabase-Migrationen geändert: ${{ steps.changes.outputs.migrations }}"
             echo "- Privacy-Docs im PR: ${{ steps.changes.outputs.privacy_docs }}"
+            echo "- Project-Memory aktualisiert (context/debug/memory.md): ${{ steps.changes.outputs.memory_file }}"
             echo "- ADR-IDs aus PR-Body: ${ADR_IDS:-keine}"
             echo ""
             echo "## Geänderte Pfade"
@@ -113,8 +135,35 @@ jobs:
           } > "$REPORT"
           echo "Erstellt: $REPORT"
 
+      - name: Add PR notice for missing memory update (non-blocking)
+        if: ${{ steps.changes.outputs.memory_file != 'true' }}
+        run: |
+          echo "::notice::Kein Update von context/debug/memory.md im PR gefunden – bitte 1–3 Zeilen (Fokus/Fix/Checkpoint) ergänzen."
+
       - name: Upload report artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: pr-change-report-${{ env.PR_NUMBER }}
           path: context/changes/pr-${{ env.PR_NUMBER }}.md
+
+  agents-drift:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - name: Install dependencies (ripgrep)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+      - name: Run agents drift check
+        run: |
+          sh context/agents/_drift_check.sh || true
+          echo "## Agents Drift Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "Generated on: $(date -u)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          sed -n '1,200p' context/agents/_drift_report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Upload drift report artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agents-drift-report-${{ github.run_id }}
+          path: context/agents/_drift_report.md

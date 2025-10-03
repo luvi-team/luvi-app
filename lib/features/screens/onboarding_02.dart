@@ -7,7 +7,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/utils/date_formatters.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/core/constants/onboarding_constants.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
@@ -100,8 +100,8 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final title = l10n?.onboarding02Title ?? 'Wann hast du\nGeburtstag?';
+    final l10n = AppLocalizations.of(context)!;
+    final title = l10n.onboarding02Title;
 
     return Row(
       children: [
@@ -134,7 +134,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
           ),
         ),
         Semantics(
-          label: 'Schritt 2 von 7',
+          label: l10n.onboardingStepSemantic(2, 7),
           child: Text(
             '2/7',
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
@@ -149,8 +149,9 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
-      label: 'Ausgewähltes Datum',
+      label: l10n.selectedDateLabel(_formattedDate),
       child: Text(
         _formattedDate,
         style: textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface),
@@ -160,14 +161,16 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   }
 
   Widget _buildUnderline(OnboardingSpacing spacing) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final dividerThickness = theme.dividerTheme.thickness ?? 1;
 
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
         width: spacing.underlineWidth,
         child: Divider(
-          thickness: 1,
+          thickness: dividerThickness,
           color: colorScheme.onSurface.withValues(
             alpha: OpacityTokens.inactive,
           ),
@@ -180,17 +183,25 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final dividerThickness = theme.dividerTheme.thickness ?? 1;
+    final iconSize = theme.iconTheme.size ?? TypographyTokens.size20;
+
+    final l10n = AppLocalizations.of(context)!;
+    final baseTextStyle = textTheme.bodySmall?.copyWith(
+      color: colorScheme.onSurface,
+    );
 
     return Semantics(
-      label:
-          'Hinweis: Dein Alter hilft uns, deine hormonelle Phase '
-          'besser einzuschätzen.',
+      label: l10n.onboarding02CalloutSemantic,
       child: Container(
         padding: const EdgeInsets.all(Spacing.m),
         decoration: BoxDecoration(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(Sizes.radiusM),
-          border: Border.all(color: colorScheme.primary, width: 1),
+          border: Border.all(
+            color: colorScheme.primary,
+            width: dividerThickness,
+          ),
         ),
         child: Row(
           children: [
@@ -198,19 +209,14 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
               child: Icon(
                 Icons.info_outline,
                 color: colorScheme.onSurface,
-                size: 20,
+                size: iconSize,
               ),
             ),
             const SizedBox(width: Spacing.s),
             Expanded(
               child: Text(
-                'Dein Alter hilft uns, deine hormonelle Phase besser '
-                'einzuschätzen.',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontSize: TypographyTokens.size14,
-                  height: TypographyTokens.lineHeightRatio24on14,
-                ),
+                l10n.onboarding02CalloutBody,
+                style: baseTextStyle,
               ),
             ),
           ],
@@ -220,8 +226,9 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   }
 
   Widget _buildCta() {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
-      label: 'Weiter',
+      label: l10n.commonContinue,
       button: true,
       child: ElevatedButton(
         key: const Key('onb_cta'),
@@ -230,12 +237,13 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
                 context.push(Onboarding03Screen.routeName);
               }
             : null,
-        child: const Text('Weiter'),
+        child: Text(l10n.commonContinue),
       ),
     );
   }
 
   Widget _buildDatePicker(double safeBottom) {
+    final l10n = AppLocalizations.of(context)!;
     return Positioned(
       left: 0,
       right: 0,
@@ -243,7 +251,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
       child: SizedBox(
         height: kOnboardingPickerHeight,
         child: Semantics(
-          label: 'Geburtsdatum auswählen',
+          label: l10n.onboarding02PickerSemantic,
           child: CupertinoDatePicker(
             mode: CupertinoDatePickerMode.date,
             initialDateTime: _date,

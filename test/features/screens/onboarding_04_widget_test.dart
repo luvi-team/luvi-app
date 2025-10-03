@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/constants/onboarding_constants.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';

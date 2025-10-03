@@ -12,7 +12,50 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding01Title => 'Erzähl mir von dir 💜';
 
   @override
+  String onboardingStepSemantic(int current, int total) {
+    return 'Schritt $current von $total';
+  }
+
+  @override
+  String get onboarding01Instruction => 'Wie soll ich dich nennen?';
+
+  @override
+  String get onboarding01NameInputSemantic => 'Name eingeben';
+
+  @override
   String get onboarding02Title => 'Wann hast du\nGeburtstag?';
+
+  @override
+  String get onboarding02CalloutSemantic => 'Hinweis: Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.';
+
+  @override
+  String get onboarding02CalloutBody => 'Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.';
+
+  @override
+  String get onboarding02PickerSemantic => 'Geburtsdatum auswählen';
+
+  @override
+  String get onboarding03Title => 'Was sind deine Ziele?';
+
+  @override
+  String onboardingStepFraction(int current, int total) {
+    return '$current/$total';
+  }
+
+  @override
+  String get onboarding03GoalCycleUnderstanding => 'Meinen Zyklus & Körper besser verstehen';
+
+  @override
+  String get onboarding03GoalTrainingAlignment => 'Training an meinen Zyklus anpassen';
+
+  @override
+  String get onboarding03GoalNutrition => 'Ernährung optimieren & neue Rezepte entdecken';
+
+  @override
+  String get onboarding03GoalWeightManagement => 'Gewicht managen (Abnehmen/Halten)';
+
+  @override
+  String get onboarding03GoalMindfulness => 'Stress reduzieren & Achtsamkeit stärken';
 
   @override
   String get onboarding04Title => 'Wann hat deine letzte Periode angefangen?';
@@ -41,7 +84,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cycleLengthShort => 'Kurz (alle 21-23 Tage)';
 
   @override
-  String get cycleLengthLonger => 'Etwas kürzer (alle 24-26 Tage)';
+  String get cycleLengthLonger => 'Etwas länger (alle 24-26 Tage)';
 
   @override
   String get cycleLengthStandard => 'Standard (alle 27-30 Tage)';
@@ -59,16 +102,37 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding06Question => 'Wie lange dauert dein Zyklus normalerweise?';
 
   @override
+  String get onboarding06OptionsSemantic => 'Zykluslänge auswählen';
+
+  @override
   String get onboarding06Callout => 'Jeder Zyklus ist einzigartig - wie du auch!';
 
   @override
   String get onboarding05Title => 'Wie lange dauert deine\nPeriode normalerweise?';
 
   @override
+  String get onboarding05OptionsSemantic => 'Periodendauer auswählen';
+
+  @override
+  String get onboarding05OptUnder3 => 'Weniger als 3 Tage';
+
+  @override
+  String get onboarding05Opt3to5 => 'Zwischen 3 und 5 Tagen';
+
+  @override
+  String get onboarding05Opt5to7 => 'Zwischen 5 und 7 Tagen';
+
+  @override
+  String get onboarding05OptOver7 => 'Mehr als 7 Tage';
+
+  @override
   String get onboarding05Callout => 'Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.';
 
   @override
   String get onboarding07Title => 'Wie ist dein Zyklus so?';
+
+  @override
+  String get onboarding07OptionsSemantic => 'Zyklusregelmäßigkeit auswählen';
 
   @override
   String get onboarding07OptRegular => 'Ziemlich regelmäßig';
@@ -78,6 +142,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboarding07OptUnknown => 'Keine Ahnung';
+
+  @override
+  String get onboarding07Footnote => 'Ob Uhrwerk oder Chaos - ich verstehe beides!';
 
   @override
   String get onboardingComplete => 'Onboarding abgeschlossen';
