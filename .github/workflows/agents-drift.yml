@@ -2,6 +2,11 @@ name: Agents Drift Report
 
 on:
   workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: 'Pull request number to comment on (optional)'
+        required: false
+        default: ''
 
 jobs:
   agents-drift:
@@ -23,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          sh context/agents/_drift_check.sh
+          bash context/agents/_drift_check.sh
           status=$?
           echo "drift_status=$status" >> "$GITHUB_OUTPUT"
           # Always succeed to keep job non-blocking
@@ -37,18 +42,27 @@ jobs:
           if-no-files-found: warn
 
       - name: Comment drift report
-        if: ${{ github.event_name == 'pull_request' && steps.drift_check.outputs.drift_status != '0' }}
+        if: ${{ steps.drift_check.outputs.drift_status != '0' && (github.event_name == 'pull_request' || inputs.pull_request_number != '') }}
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          PULL_REQUEST_NUMBER: ${{ inputs.pull_request_number }}
         with:
           script: |
             const fs = require('fs');
+            const core = require('@actions/core');
             const path = 'context/agents/_drift_report.md';
             let body;
             try { body = fs.readFileSync(path, 'utf8'); }
             catch (e) { body = '# Agents Drift Report\n\nReport-Datei nicht gefunden.'; }
+            const inputNumber = (process.env.PULL_REQUEST_NUMBER || '').trim();
+            const issueNumber = context.payload.pull_request?.number ?? (inputNumber ? Number(inputNumber) : undefined);
+            if (!issueNumber || Number.isNaN(issueNumber)) {
+              core.info('No pull request number available; skipping comment.');
+              return;
+            }
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: issueNumber,
               body
             });
