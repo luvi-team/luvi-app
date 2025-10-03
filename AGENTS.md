@@ -13,6 +13,7 @@ Arbeitsweise
 - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit.
 - Acceptance pro Rolle: „Core + Role extension“ gemäß SSOT v1.1.
 - Antwortformat: verbindlich gemäß `docs/engineering/assistant-answer-format.md`.
+- CI-Pflegezyklus: Actions-Pinning (checkout/upload-artifact/github-script) quartalsweise prüfen/aktualisieren; siehe `context/agents/_actions_todo.md`.
 
 Rollenwahl
 - Default: Auto-Role (ankündigen). Misch-Tasks: `role: …` (Primärrolle zuerst).

@@ -32,7 +32,7 @@ jobs:
       - name: Upload report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: agents-drift-report
+          name: agents-drift-report-${{ github.run_id }}
           path: context/agents/_drift_report.md
           if-no-files-found: warn
 
