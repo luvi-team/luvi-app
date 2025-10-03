@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -78,9 +77,10 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     } on AuthException catch (error, stackTrace) {
       debugPrint('Signup failed (auth): ${error.message}\n$stackTrace');
       if (!mounted) return;
+      final message = error.message;
       setState(() {
-        _errorMessage = error.message?.isNotEmpty == true
-            ? error.message!
+        _errorMessage = message.isNotEmpty
+            ? message
             : AuthStrings.signupGenericError;
       });
     } catch (error, stackTrace) {
@@ -90,10 +90,11 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         _errorMessage = AuthStrings.signupGenericError;
       });
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isSubmitting = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 

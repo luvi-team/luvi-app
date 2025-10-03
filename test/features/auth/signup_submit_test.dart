@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
-import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/routes.dart' as features;
 import 'package:mocktail/mocktail.dart';
@@ -20,7 +19,7 @@ void main() {
     registerFallbackValue(<String, dynamic>{});
   });
 
-  Future<void> _pumpSignupScreen(
+  Future<void> pumpSignupScreen(
     WidgetTester tester,
     AuthRepository repository,
     GoRouter router,
@@ -37,7 +36,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Finder _textFieldByHint(String hint) => find.byWidgetPredicate(
+  Finder textFieldByHint(String hint) => find.byWidgetPredicate(
         (widget) =>
             widget is TextField && widget.decoration?.hintText == hint,
       );
@@ -68,14 +67,14 @@ void main() {
         (_) async => AuthResponse(session: null, user: null),
       );
 
-      await _pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo, router);
 
       await tester.enterText(
-        _textFieldByHint(AuthStrings.emailHint),
+        textFieldByHint(AuthStrings.emailHint),
         'user@example.com',
       );
       await tester.enterText(
-        _textFieldByHint(AuthStrings.passwordHint),
+        textFieldByHint(AuthStrings.passwordHint),
         'strongpass',
       );
 
@@ -105,14 +104,14 @@ void main() {
         ),
       ).thenThrow(AuthException('Email already registered'));
 
-      await _pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo, router);
 
       await tester.enterText(
-        _textFieldByHint(AuthStrings.emailHint),
+        textFieldByHint(AuthStrings.emailHint),
         'user@example.com',
       );
       await tester.enterText(
-        _textFieldByHint(AuthStrings.passwordHint),
+        textFieldByHint(AuthStrings.passwordHint),
         'strongpass',
       );
 
@@ -137,14 +136,14 @@ void main() {
         ),
       ).thenAnswer((_) => completer.future);
 
-      await _pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo, router);
 
       await tester.enterText(
-        _textFieldByHint(AuthStrings.emailHint),
+        textFieldByHint(AuthStrings.emailHint),
         'user@example.com',
       );
       await tester.enterText(
-        _textFieldByHint(AuthStrings.passwordHint),
+        textFieldByHint(AuthStrings.passwordHint),
         'strongpass',
       );
 

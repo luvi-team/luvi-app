@@ -154,7 +154,7 @@
   "@onboarding05OptUnder3": {
     "description": "Option label for periods shorter than three days."
   },
-  "onboarding05Opt3to5": "Zwischen 3 und 5 Tage",
+  "onboarding05Opt3to5": "Zwischen 3 und 5 Tagen",
   "@onboarding05Opt3to5": {
     "description": "Option label for periods lasting three to five days."
   },
