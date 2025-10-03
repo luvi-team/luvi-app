@@ -25,17 +25,17 @@ import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
   GoRoute(
-    path: '/onboarding/w1',
+    path: ConsentWelcome01Screen.routeName,
     name: 'welcome1',
     builder: (context, state) => const ConsentWelcome01Screen(),
   ),
   GoRoute(
-    path: '/onboarding/w2',
+    path: ConsentWelcome02Screen.routeName,
     name: 'welcome2',
     builder: (context, state) => const ConsentWelcome02Screen(),
   ),
   GoRoute(
-    path: '/onboarding/w3',
+    path: ConsentWelcome03Screen.routeName,
     name: 'welcome3',
     builder: (context, state) => const ConsentWelcome03Screen(),
   ),

@@ -6,6 +6,9 @@ on:
 
 jobs:
   drift:
+    permissions:
+      contents: read
+      pull-requests: write
     concurrency:
       group: drift-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -20,11 +23,30 @@ jobs:
           sudo apt-get install -y ripgrep
 
       - name: Generate drift report
+        id: drift
         run: |
           EXIT_CODE=0
           sh context/agents/_drift_check.sh || EXIT_CODE=$?
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
           echo "Drift check exit code: ${EXIT_CODE}"
           printf '\n---\nReport preview:\n' && (cat context/agents/_drift_report.md || true)
+
+      - name: Comment drift report
+        if: ${{ github.event_name == 'pull_request' && steps.drift.outputs.exit_code != '0' }}
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'context/agents/_drift_report.md';
+            let body;
+            try { body = fs.readFileSync(path, 'utf8'); }
+            catch (e) { body = '# Agents Drift Report\n\nReport-Datei nicht gefunden.'; }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
 
       - name: Upload drift report
         if: always()

@@ -12,18 +12,18 @@ import 'package:luvi_app/features/widgets/custom_radio_check.dart';
 /// - Height: Auto (66 px single-line, 89 px two-line)
 /// - Border radius: 20 px
 /// - Padding: 20 px (vertical) × 16 px (horizontal)
-/// - Icon: 24×24 px, 20 px gap to text
+/// - Icon: 24×24 px, 20 px gap to text (when provided)
 /// - Selected state: 1 px border (#1C1411)
 class GoalCard extends StatelessWidget {
   const GoalCard({
     super.key,
-    required this.icon,
+    this.icon,
     required this.title,
     required this.selected,
     required this.onTap,
   });
 
-  final Widget icon;
+  final Widget? icon;
   final String title;
   final bool selected;
   final VoidCallback onTap;
@@ -58,17 +58,17 @@ class GoalCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Icon
-                SizedBox(
-                  width: Sizes.iconM,
-                  height: Sizes.iconM,
-                  child: IconTheme(
-                    data: IconThemeData(color: theme.colorScheme.onSurface),
-                    child: icon,
+                if (icon != null) ...[
+                  SizedBox(
+                    width: Sizes.iconM,
+                    height: Sizes.iconM,
+                    child: IconTheme(
+                      data: IconThemeData(color: theme.colorScheme.onSurface),
+                      child: icon!,
+                    ),
                   ),
-                ),
-                const SizedBox(width: Spacing.goalCardIconGap),
-                // Text
+                  const SizedBox(width: Spacing.goalCardIconGap),
+                ],
                 Expanded(
                   child: Text(
                     title,
@@ -80,7 +80,6 @@ class GoalCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: Spacing.m),
-                // Custom radio button
                 CustomRadioCheck(selected: selected),
               ],
             ),

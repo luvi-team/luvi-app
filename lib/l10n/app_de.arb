@@ -26,7 +26,7 @@
   },
   "onboarding02Title": "Wann hast du\nGeburtstag?",
   "@onboarding02Title": {
-    "description": "Header title for onboarding step 2 (birthday)."
+    "description": "Header title for onboarding step 2 (birthday). Enthält einen erzwungenen Zeilenumbruch wie im Figma-Layout – bitte das '\\n' in allen Übersetzungen beibehalten."
   },
   "onboarding02CalloutSemantic": "Hinweis: Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.",
   "@onboarding02CalloutSemantic": {
@@ -39,6 +39,42 @@
   "onboarding02PickerSemantic": "Geburtsdatum auswählen",
   "@onboarding02PickerSemantic": {
     "description": "Semantics label for the birth date picker on onboarding step 2."
+  },
+  "onboarding03Title": "Was sind deine Ziele?",
+  "@onboarding03Title": {
+    "description": "Header title for onboarding step 3 (goals multi-select)."
+  },
+  "onboardingStepFraction": "{current}/{total}",
+  "@onboardingStepFraction": {
+    "description": "Short progress indicator displaying the current and total onboarding steps.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onboarding03GoalCycleUnderstanding": "Meinen Zyklus & Körper besser verstehen",
+  "@onboarding03GoalCycleUnderstanding": {
+    "description": "Goal option: understand the user's cycle and body better on onboarding step 3."
+  },
+  "onboarding03GoalTrainingAlignment": "Training an meinen Zyklus anpassen",
+  "@onboarding03GoalTrainingAlignment": {
+    "description": "Goal option: align training with the user's cycle on onboarding step 3."
+  },
+  "onboarding03GoalNutrition": "Ernährung optimieren & neue Rezepte entdecken",
+  "@onboarding03GoalNutrition": {
+    "description": "Goal option: optimize nutrition and find new recipes on onboarding step 3."
+  },
+  "onboarding03GoalWeightManagement": "Gewicht managen (Abnehmen/Halten)",
+  "@onboarding03GoalWeightManagement": {
+    "description": "Goal option: manage weight on onboarding step 3."
+  },
+  "onboarding03GoalMindfulness": "Stress reduzieren & Achtsamkeit stärken",
+  "@onboarding03GoalMindfulness": {
+    "description": "Goal option: reduce stress and strengthen mindfulness on onboarding step 3."
   },
   "onboarding04Title": "Wann hat deine letzte Periode angefangen?",
   "selectedDateLabel": "Ausgewähltes Datum: {date}",
@@ -71,7 +107,7 @@
     "description": "Label for primary continue CTA buttons."
   },
   "cycleLengthShort": "Kurz (alle 21-23 Tage)",
-  "cycleLengthLonger": "Etwas kürzer (alle 24-26 Tage)",
+  "cycleLengthLonger": "Etwas länger (alle 24-26 Tage)",
   "cycleLengthStandard": "Standard (alle 27-30 Tage)",
   "cycleLengthLong": "Länger (alle 31-35 Tage)",
   "cycleLengthVeryLong": "Sehr lang (36+ Tage)",
@@ -79,7 +115,7 @@
     "description": "Cycle length option describing short cycles."
   },
   "@cycleLengthLonger": {
-    "description": "Cycle length option describing slightly shorter cycles."
+    "description": "Cycle length option describing slightly longer cycles."
   },
   "@cycleLengthStandard": {
     "description": "Cycle length option describing standard cycles."

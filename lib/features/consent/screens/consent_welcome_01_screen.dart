@@ -4,9 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:luvi_app/core/assets.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/welcome_shell.dart';
+import 'consent_welcome_02_screen.dart';
 
 class ConsentWelcome01Screen extends StatelessWidget {
   const ConsentWelcome01Screen({super.key});
+
+  static const routeName = '/onboarding/w1';
 
   // Documented constants (formerly magic numbers)
   static const double _kHeroAspect = kWelcomeHeroAspect; // Figma aspect ratio
@@ -39,7 +42,7 @@ class ConsentWelcome01Screen extends StatelessWidget {
       ),
       subtitle:
           'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
-      onNext: () => context.go('/onboarding/w2'),
+      onNext: () => context.go(ConsentWelcome02Screen.routeName),
       hero: Image.asset(Assets.consentWelcome01, fit: BoxFit.cover),
       heroAspect: _kHeroAspect,
       waveHeightPx: _kWaveHeight,

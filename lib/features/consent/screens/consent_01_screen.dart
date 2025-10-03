@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/design_tokens/sizes.dart';
+import 'consent_welcome_03_screen.dart';
 
 class Consent01Screen extends StatelessWidget {
   const Consent01Screen({super.key});
@@ -24,7 +25,7 @@ class Consent01Screen extends StatelessWidget {
             left: 20,
             top: y(59), // 59 from top, equals safeAreaTop(47) + 12
             child: BackButtonCircle(
-              onPressed: () => context.go('/onboarding/w3'),
+              onPressed: () => context.go(ConsentWelcome03Screen.routeName),
             ),
           ),
 

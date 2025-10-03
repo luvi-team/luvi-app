@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
-import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
+import 'package:luvi_app/features/screens/onboarding_04.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding03: Goals multi-select screen
 /// Figma: 03_Onboarding (Ziele)
@@ -69,6 +70,11 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
   }
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
+    final title = l10n.onboarding03Title;
+    final stepSemantic = l10n.onboardingStepSemantic(3, 7);
+    final stepFraction = l10n.onboardingStepFraction(3, 7);
+
     return Row(
       children: [
         BackButtonCircle(
@@ -85,8 +91,9 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
         Expanded(
           child: Semantics(
             header: true,
+            label: title,
             child: Text(
-              'Was sind deine Ziele?',
+              title,
               textAlign: TextAlign.center,
               style: textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
@@ -97,9 +104,9 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
           ),
         ),
         Semantics(
-          label: 'Schritt 3 von 7',
+          label: stepSemantic,
           child: Text(
-            '3/7',
+            stepFraction,
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -110,36 +117,37 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
   }
 
   Widget _buildGoalList(OnboardingSpacing spacing) {
-    const goals = [
+    final l10n = AppLocalizations.of(context)!;
+    final goals = [
       _GoalItem(
-        icon: ExcludeSemantics(
+        icon: const ExcludeSemantics(
           child: Icon(Icons.favorite_border, size: 24),
         ),
-        title: 'Meinen Zyklus & Körper besser verstehen',
+        title: l10n.onboarding03GoalCycleUnderstanding,
       ),
       _GoalItem(
-        icon: ExcludeSemantics(
+        icon: const ExcludeSemantics(
           child: Icon(Icons.fitness_center, size: 24),
         ),
-        title: 'Training an meinen Zyklus anpassen',
+        title: l10n.onboarding03GoalTrainingAlignment,
       ),
       _GoalItem(
-        icon: ExcludeSemantics(
+        icon: const ExcludeSemantics(
           child: Icon(Icons.restaurant, size: 24),
         ),
-        title: 'Ernährung optimieren & neue Rezepte entdecken',
+        title: l10n.onboarding03GoalNutrition,
       ),
       _GoalItem(
-        icon: ExcludeSemantics(
+        icon: const ExcludeSemantics(
           child: Icon(Icons.monitor_weight, size: 24),
         ),
-        title: 'Gewicht managen (Abnehmen/Halten)',
+        title: l10n.onboarding03GoalWeightManagement,
       ),
       _GoalItem(
-        icon: ExcludeSemantics(
+        icon: const ExcludeSemantics(
           child: Icon(Icons.self_improvement, size: 24),
         ),
-        title: 'Stress reduzieren & Achtsamkeit stärken',
+        title: l10n.onboarding03GoalMindfulness,
       ),
     ];
 
@@ -163,13 +171,16 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
   }
 
   Widget _buildCta() {
+    final l10n = AppLocalizations.of(context)!;
+    final ctaLabel = l10n.commonContinue;
+
     return Semantics(
-      label: 'Weiter',
+      label: ctaLabel,
       button: true,
       child: ElevatedButton(
         key: const Key('onb_cta'),
         onPressed: _selectedGoals.isNotEmpty ? _handleContinue : null,
-        child: const Text('Weiter'),
+        child: Text(ctaLabel),
       ),
     );
   }

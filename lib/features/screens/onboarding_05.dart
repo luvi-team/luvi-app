@@ -129,7 +129,6 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
             ),
             child: GoalCard(
               key: Key('onb_option_$index'),
-              icon: const SizedBox.shrink(), // No icon for radio options
               title: options[index],
               selected: _selected == index,
               onTap: () => _selectOption(index),

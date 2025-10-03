@@ -1,6 +1,16 @@
 #!/usr/bin/env sh
 set -eu
 
+# Check for ripgrep dependency
+if ! command -v rg >/dev/null 2>&1; then
+  printf "Error: ripgrep (rg) is required but not installed.\n" >&2
+pass() { printf -- "- [OK] %s\n" "$1" >>"$REPORT"; }
+fail() { printf -- "- [DRIFT] %s\n" "$1" >>"$REPORT" || { echo "Error writing to $REPORT" >&2; exit 1; }; EXIT=1; }
+
+EXIT=0
+printf "# Agents Drift Report\n\nGenerated: %s\n\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >"$REPORT" || { echo "Error creating $REPORT" >&2; exit 1; }
+fi
+
 DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 REPORT="$DIR/_drift_report.md"
 

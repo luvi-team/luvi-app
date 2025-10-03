@@ -35,6 +35,29 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding02PickerSemantic => 'Geburtsdatum auswählen';
 
   @override
+  String get onboarding03Title => 'Was sind deine Ziele?';
+
+  @override
+  String onboardingStepFraction(int current, int total) {
+    return '$current/$total';
+  }
+
+  @override
+  String get onboarding03GoalCycleUnderstanding => 'Meinen Zyklus & Körper besser verstehen';
+
+  @override
+  String get onboarding03GoalTrainingAlignment => 'Training an meinen Zyklus anpassen';
+
+  @override
+  String get onboarding03GoalNutrition => 'Ernährung optimieren & neue Rezepte entdecken';
+
+  @override
+  String get onboarding03GoalWeightManagement => 'Gewicht managen (Abnehmen/Halten)';
+
+  @override
+  String get onboarding03GoalMindfulness => 'Stress reduzieren & Achtsamkeit stärken';
+
+  @override
   String get onboarding04Title => 'Wann hat deine letzte Periode angefangen?';
 
   @override
@@ -61,7 +84,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cycleLengthShort => 'Kurz (alle 21-23 Tage)';
 
   @override
-  String get cycleLengthLonger => 'Etwas kürzer (alle 24-26 Tage)';
+  String get cycleLengthLonger => 'Etwas länger (alle 24-26 Tage)';
 
   @override
   String get cycleLengthStandard => 'Standard (alle 27-30 Tage)';

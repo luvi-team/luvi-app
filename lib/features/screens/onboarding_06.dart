@@ -25,7 +25,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     final l10n = AppLocalizations.of(context);
     return [
       l10n?.cycleLengthShort ?? 'Kurz (alle 21-23 Tage)',
-      l10n?.cycleLengthLonger ?? 'Etwas kürzer (alle 24-26 Tage)',
+      l10n?.cycleLengthLonger ?? 'Etwas länger (alle 24-26 Tage)',
       l10n?.cycleLengthStandard ?? 'Standard (alle 27-30 Tage)',
       l10n?.cycleLengthLong ?? 'Länger (alle 31-35 Tage)',
       l10n?.cycleLengthVeryLong ?? 'Sehr lang (36+ Tage)',
@@ -123,21 +123,19 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
   }
 
   Widget _buildOptionList(OnboardingSpacing spacing) {
+    final options = _cycleLengthOptions(context);
     return Semantics(
       label: 'Zykluslänge auswählen',
       child: Column(
         children: List.generate(
-          _cycleLengthOptions(context).length,
+          options.length,
           (index) => Padding(
             padding: EdgeInsets.only(
-              bottom: index < _cycleLengthOptions(context).length - 1
-                  ? spacing.optionGap06
-                  : 0,
+              bottom: index < options.length - 1 ? spacing.optionGap06 : 0,
             ),
             child: GoalCard(
               key: Key('onb_option_$index'),
-              icon: const SizedBox.shrink(), // No icon for radio options
-              title: _cycleLengthOptions(context)[index],
+              title: options[index],
               selected: _selected == index,
               onTap: () => _selectOption(index),
             ),

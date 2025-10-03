@@ -143,6 +143,48 @@ abstract class AppLocalizations {
   /// **'Select birth date'**
   String get onboarding02PickerSemantic;
 
+  /// Header title for onboarding step 3 (goals multi-select).
+  ///
+  /// In en, this message translates to:
+  /// **'What are your goals?'**
+  String get onboarding03Title;
+
+  /// Short progress indicator displaying the current and total onboarding steps.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}/{total}'**
+  String onboardingStepFraction(int current, int total);
+
+  /// Goal option: understand the user's cycle and body better on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Understand my cycle & body better'**
+  String get onboarding03GoalCycleUnderstanding;
+
+  /// Goal option: align training with the user's cycle on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Align training with my cycle'**
+  String get onboarding03GoalTrainingAlignment;
+
+  /// Goal option: optimize nutrition and find new recipes on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimize nutrition & discover new recipes'**
+  String get onboarding03GoalNutrition;
+
+  /// Goal option: manage weight on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage my weight (lose/maintain)'**
+  String get onboarding03GoalWeightManagement;
+
+  /// Goal option: reduce stress and strengthen mindfulness on onboarding step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce stress & boost mindfulness'**
+  String get onboarding03GoalMindfulness;
+
   /// No description provided for @onboarding04Title.
   ///
   /// In en, this message translates to:
@@ -334,8 +376,6 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'de': return AppLocalizationsDe();
