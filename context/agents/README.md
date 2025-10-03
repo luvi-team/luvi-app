@@ -4,7 +4,6 @@ Kurzpreamble: 5 Rollen (ui-frontend · api-backend · db-admin · dataviz · qa-
 Steuerung: Auto-Role (Default) oder explicit role: … bei Misch-Tasks.
 Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit.
 SSOT Acceptance: context/agents/_acceptance_v1.1.md (non-blocking Drift-Check via acceptance_version).
-Auto-Role Map (SSOT): context/agents/_auto_role_map.md
 
 | Rolle | Dossier | Interop-Prompt (Legacy) | Haupt-Hand-off |
 |---|---|---|---|
