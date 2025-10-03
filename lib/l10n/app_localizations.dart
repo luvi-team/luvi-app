@@ -119,7 +119,7 @@ abstract class AppLocalizations {
   /// **'Enter your name'**
   String get onboarding01NameInputSemantic;
 
-  /// Header title for onboarding step 2 (birthday).
+  /// Header title for onboarding step 2 (birthday). Includes a forced line break to match the Figma layout; keep the newline when translating.
   ///
   /// In en, this message translates to:
   /// **'When is your\nbirthday?'**
@@ -233,10 +233,10 @@ abstract class AppLocalizations {
   /// **'Short (every 21-23 days)'**
   String get cycleLengthShort;
 
-  /// Cycle length option describing slightly shorter cycles.
+  /// Cycle length option describing slightly longer cycles.
   ///
   /// In en, this message translates to:
-  /// **'A bit shorter (every 24-26 days)'**
+  /// **'A bit longer (every 24-26 days)'**
   String get cycleLengthLonger;
 
   /// Cycle length option describing standard cycles.
@@ -268,6 +268,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How long does your cycle normally last?'**
   String get onboarding06Question;
+
+  /// Semantics label announcing the cycle length options list on step 6.
+  ///
+  /// In en, this message translates to:
+  /// **'Select cycle length'**
+  String get onboarding06OptionsSemantic;
 
   /// Supporting callout text shown below the cycle length options on step 6.
   ///
@@ -376,6 +382,8 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'de': return AppLocalizationsDe();

@@ -134,6 +134,10 @@
   "@onboarding06Question": {
     "description": "Question text for onboarding step 6 (cycle length)."
   },
+  "onboarding06OptionsSemantic": "Select cycle length",
+  "@onboarding06OptionsSemantic": {
+    "description": "Semantics label announcing the cycle length options list on step 6."
+  },
   "onboarding06Callout": "Every cycle is unique - just like you!",
   "@onboarding06Callout": {
     "description": "Supporting callout text shown below the cycle length options on step 6."

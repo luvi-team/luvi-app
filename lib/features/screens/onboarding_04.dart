@@ -12,6 +12,7 @@ import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:intl/intl.dart';
 
 /// Onboarding04: Last period start date input screen
 /// Figma: 04_Onboarding (Wann hat deine letzte Periode angefangen?)
@@ -29,7 +30,18 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
   DateTime _date = DateTime.now().subtract(const Duration(days: 14));
   bool _hasInteracted = false;
 
-  String get _formattedDate => DateFormatters.germanDayMonthYear(_date);
+  String _formattedDate(BuildContext context) {
+    final locale = Localizations.maybeLocaleOf(context);
+    final languageCode = locale?.languageCode;
+
+    if (languageCode == 'de') {
+      return DateFormatters.germanDayMonthYear(_date);
+    }
+
+    final localeName = locale?.toLanguageTag() ?? Intl.getCurrentLocale();
+    final formatter = DateFormat.yMMMMd(localeName);
+    return formatter.format(_date);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +98,9 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
+    final stepSemantic =
+        l10n?.onboardingStepSemantic(4, 7) ?? 'Schritt 4 von 7';
+    final stepFraction = l10n?.onboardingStepFraction(4, 7) ?? '4/7';
 
     return Row(
       children: [
@@ -118,9 +133,9 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
           ),
         ),
         Semantics(
-          label: 'Schritt 4 von 7',
+          label: stepSemantic,
           child: Text(
-            '4/7',
+            stepFraction,
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -136,10 +151,13 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context);
 
+    final formattedDate = _formattedDate(context);
+
     return Semantics(
-      label: l10n?.selectedDateLabel(_formattedDate) ?? 'Ausgewähltes Datum: $_formattedDate',
+      label: l10n?.selectedDateLabel(formattedDate) ??
+          'Ausgewähltes Datum: $formattedDate',
       child: Text(
-        _formattedDate,
+        formattedDate,
         style: textTheme.headlineMedium?.copyWith(
           color: colorScheme.onSurface,
           fontSize: TypographyTokens.size32,

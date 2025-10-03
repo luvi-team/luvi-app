@@ -19,11 +19,15 @@ class AuthStrings {
   static const signupTitle = 'Deine Reise beginnt hier 💜';
   static const signupSubtitle = 'Schnell registrieren - dann geht\'s los.';
   static const signupCta = 'Registrieren';
+  static const signupCtaLoadingSemantic = 'Registrierung läuft';
   static const signupLinkPrefix = 'Schon dabei? ';
   static const signupLinkAction = 'Anmelden';
   static const signupHintFirstName = 'Dein Vorname';
   static const signupHintLastName = 'Dein Nachname';
   static const signupHintPhone = 'Deine Telefonnummer';
+  static const signupMissingFields = 'Bitte E-Mail und Passwort eingeben.';
+  static const signupGenericError =
+      'Registrierung gerade nicht möglich. Bitte später erneut versuchen.';
   static const forgotTitle = 'Passwort vergessen? 💜';
   static const forgotSubtitle = 'E-Mail eingeben für Link.';
   static const forgotCta = 'Weiter';

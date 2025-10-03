@@ -79,6 +79,9 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context);
+    final stepSemantic =
+        l10n?.onboardingStepSemantic(6, 7) ?? 'Schritt 6 von 7';
+    final stepFraction = l10n?.onboardingStepFraction(6, 7) ?? '6/7';
     return Row(
       children: [
         BackButtonCircle(
@@ -110,9 +113,9 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           ),
         ),
         Semantics(
-          label: 'Schritt 6 von 7',
+          label: stepSemantic,
           child: Text(
-            '6/7',
+            stepFraction,
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -124,8 +127,9 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
 
   Widget _buildOptionList(OnboardingSpacing spacing) {
     final options = _cycleLengthOptions(context);
+    final l10n = AppLocalizations.of(context);
     return Semantics(
-      label: 'Zykluslänge auswählen',
+      label: l10n?.onboarding06OptionsSemantic ?? 'Zykluslänge auswählen',
       child: Column(
         children: List.generate(
           options.length,

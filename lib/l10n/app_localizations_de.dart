@@ -102,6 +102,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding06Question => 'Wie lange dauert dein Zyklus normalerweise?';
 
   @override
+  String get onboarding06OptionsSemantic => 'Zykluslänge auswählen';
+
+  @override
   String get onboarding06Callout => 'Jeder Zyklus ist einzigartig - wie du auch!';
 
   @override
@@ -114,10 +117,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding05OptUnder3 => 'Weniger als 3 Tage';
 
   @override
-  String get onboarding05Opt3to5 => 'Zwischen 3 und 5 Tage';
+  String get onboarding05Opt3to5 => 'Zwischen 3 und 5 Tagen';
 
   @override
-  String get onboarding05Opt5to7 => 'Zwischen 5 und 7 Tage';
+  String get onboarding05Opt5to7 => 'Zwischen 5 und 7 Tagen';
 
   @override
   String get onboarding05OptOver7 => 'Mehr als 7 Tage';

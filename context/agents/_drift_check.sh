@@ -1,21 +1,23 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -euo pipefail
 
 DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-REPORT="$DIR/_drift_report.md"
+if [[ -z "${REPORT:-}" ]]; then
+  REPORT="$DIR/_drift_report.md"
+fi
 
 pass() { printf -- "- [OK] %s\n" "$1" >>"$REPORT"; }
 fail() { printf -- "- [DRIFT] %s\n" "$1" >>"$REPORT"; EXIT=1; }
 
 EXIT=0
-printf "# Agents Drift Report\n\nGenerated: %s\n\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >"$REPORT"
 
 # Dependency check (ripgrep)
 if ! command -v rg >/dev/null 2>&1; then
-  fail "Dependency: ripgrep (rg) ist nicht installiert"
-  printf "\nExit status: DRIFT (dependency missing)\n" >>"$REPORT"
-  exit "$EXIT"
+  printf 'error: Dependency ripgrep (rg) is not installed.\n' >&2
+  exit 1
 fi
+
+printf "# Agents Drift Report\n\nGenerated: %s\n\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >"$REPORT"
 
 # 1) Dossiers 01–05: acceptance_version 1.1 present, and no 1.0 remnants
 #    Dynamisch ermitteln; Fallback auf bekannte Liste

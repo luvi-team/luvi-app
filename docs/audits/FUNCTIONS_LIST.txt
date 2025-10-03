@@ -1,2 +1,15 @@
+# Token Error Guidance (Generated via Supabase CLI)
+#
+# Generation context:
+#   - Created when `supabase functions list` runs without an access token during
+#     audit automation jobs (see `docs/audits/` workflow notes).
+#   - Logged as part of CI drift checks to highlight missing local Supabase
+#     credentials while keeping the command output reviewable in git.
+# Usage:
+#   - Follow the message below to authenticate (`supabase login`) or export the
+#     `SUPABASE_ACCESS_TOKEN` before re-running the command.
+#   - Once credentials are configured, regenerate the artifact to confirm access
+#     succeeds and update this file as needed.
+#
 Access token not provided. Supply an access token by running supabase login or setting the SUPABASE_ACCESS_TOKEN environment variable.
 Try rerunning the command with --debug to troubleshoot the error.

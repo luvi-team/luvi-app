@@ -161,14 +161,16 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   }
 
   Widget _buildUnderline(OnboardingSpacing spacing) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final dividerThickness = theme.dividerTheme.thickness ?? 1;
 
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
         width: spacing.underlineWidth,
         child: Divider(
-          thickness: 1,
+          thickness: dividerThickness,
           color: colorScheme.onSurface.withValues(
             alpha: OpacityTokens.inactive,
           ),
@@ -181,8 +183,14 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final dividerThickness = theme.dividerTheme.thickness ?? 1;
+    final iconSize = theme.iconTheme.size ?? TypographyTokens.size20;
 
     final l10n = AppLocalizations.of(context)!;
+    final baseTextStyle = textTheme.bodySmall?.copyWith(
+      color: colorScheme.onSurface,
+    );
+
     return Semantics(
       label: l10n.onboarding02CalloutSemantic,
       child: Container(
@@ -190,7 +198,10 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
         decoration: BoxDecoration(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(Sizes.radiusM),
-          border: Border.all(color: colorScheme.primary, width: 1),
+          border: Border.all(
+            color: colorScheme.primary,
+            width: dividerThickness,
+          ),
         ),
         child: Row(
           children: [
@@ -198,18 +209,14 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
               child: Icon(
                 Icons.info_outline,
                 color: colorScheme.onSurface,
-                size: 20,
+                size: iconSize,
               ),
             ),
             const SizedBox(width: Spacing.s),
             Expanded(
               child: Text(
                 l10n.onboarding02CalloutBody,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontSize: TypographyTokens.size14,
-                  height: TypographyTokens.lineHeightRatio24on14,
-                ),
+                style: baseTextStyle,
               ),
             ),
           ],

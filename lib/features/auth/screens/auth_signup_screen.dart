@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -9,18 +11,20 @@ import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
+import 'package:luvi_app/features/auth/state/auth_controller.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 const double _signupInputGap = Spacing.s + Spacing.xs; // 20
 const double _signupTopSpacer = Spacing.l + Spacing.xs;
 
-class AuthSignupScreen extends StatefulWidget {
+class AuthSignupScreen extends ConsumerStatefulWidget {
   const AuthSignupScreen({super.key});
 
   @override
-  State<AuthSignupScreen> createState() => _AuthSignupScreenState();
+  ConsumerState<AuthSignupScreen> createState() => _AuthSignupScreenState();
 }
 
-class _AuthSignupScreenState extends State<AuthSignupScreen> {
+class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -28,6 +32,70 @@ class _AuthSignupScreenState extends State<AuthSignupScreen> {
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+  bool _isSubmitting = false;
+  String? _errorMessage;
+
+  Future<void> _handleSignup() async {
+    if (_isSubmitting) return;
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _errorMessage = AuthStrings.signupMissingFields;
+      });
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _isSubmitting = true;
+      _errorMessage = null;
+    });
+
+    final metadata = <String, dynamic>{
+      'first_name': _firstNameController.text.trim(),
+      'last_name': _lastNameController.text.trim(),
+      'phone': _phoneController.text.trim(),
+    }..removeWhere((_, value) => (value as String).isEmpty);
+
+    final authRepository = ref.read(authRepositoryProvider);
+
+    try {
+      await authRepository.signUp(
+        email: email,
+        password: password,
+        data: metadata.isEmpty ? null : metadata,
+      );
+
+      if (!mounted) return;
+      context.goNamed(
+        'verify',
+        queryParameters: const {'variant': 'email'},
+      );
+    } on AuthException catch (error, stackTrace) {
+      debugPrint('Signup failed (auth): ${error.message}\n$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = error.message?.isNotEmpty == true
+            ? error.message!
+            : AuthStrings.signupGenericError;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('Signup failed: $error\n$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = AuthStrings.signupGenericError;
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -54,6 +122,8 @@ class _AuthSignupScreenState extends State<AuthSignupScreen> {
         topPadding: AuthLayout.inputToCta,
         child: _SignupCtaSection(
           onLoginPressed: () => context.goNamed('login'),
+          onSignupPressed: _handleSignup,
+          isLoading: _isSubmitting,
         ),
       ),
       body: AuthScreenShell(
@@ -71,7 +141,23 @@ class _AuthSignupScreenState extends State<AuthSignupScreen> {
             onToggleObscure: () {
               setState(() => _obscurePassword = !_obscurePassword);
             },
+            onSubmit: _handleSignup,
+            isSubmitting: _isSubmitting,
           ),
+          if (_errorMessage != null) ...[
+            const SizedBox(height: Spacing.s),
+            Semantics(
+              liveRegion: true,
+              label: _errorMessage,
+              child: Text(
+                _errorMessage!,
+                key: const ValueKey('signup_error_message'),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -116,6 +202,8 @@ class _SignupFields extends StatelessWidget {
     required this.obscurePassword,
     required this.scrollPadding,
     required this.onToggleObscure,
+    required this.onSubmit,
+    required this.isSubmitting,
   });
 
   final TextEditingController firstNameController;
@@ -126,6 +214,8 @@ class _SignupFields extends StatelessWidget {
   final bool obscurePassword;
   final EdgeInsets scrollPadding;
   final VoidCallback onToggleObscure;
+  final VoidCallback onSubmit;
+  final bool isSubmitting;
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +239,8 @@ class _SignupFields extends StatelessWidget {
           obscurePassword: obscurePassword,
           scrollPadding: scrollPadding,
           onToggleObscure: onToggleObscure,
+          onSubmit: onSubmit,
+          isSubmitting: isSubmitting,
         ),
         const SizedBox(height: AuthLayout.inputToCta),
       ],
@@ -157,9 +249,15 @@ class _SignupFields extends StatelessWidget {
 }
 
 class _SignupCtaSection extends StatelessWidget {
-  const _SignupCtaSection({required this.onLoginPressed});
+  const _SignupCtaSection({
+    required this.onLoginPressed,
+    required this.onSignupPressed,
+    required this.isLoading,
+  });
 
   final VoidCallback onLoginPressed;
+  final VoidCallback onSignupPressed;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -177,8 +275,11 @@ class _SignupCtaSection extends StatelessWidget {
           width: double.infinity,
           child: ElevatedButton(
             key: const ValueKey('signup_cta_button'),
-            onPressed: () {},
-            child: const Text(AuthStrings.signupCta),
+            onPressed: isLoading ? null : onSignupPressed,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              child: _SignupButtonChild(isLoading: isLoading),
+            ),
           ),
         ),
         const SizedBox(height: Spacing.s),
@@ -204,6 +305,38 @@ class _SignupCtaSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SignupButtonChild extends StatelessWidget {
+  const _SignupButtonChild({required this.isLoading});
+
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isLoading) {
+      return const Text(
+        AuthStrings.signupCta,
+        key: ValueKey('signup_cta_label'),
+      );
+    }
+
+    final theme = Theme.of(context);
+    return Semantics(
+      key: const ValueKey('signup_cta_loading_semantics'),
+      label: AuthStrings.signupCtaLoadingSemantic,
+      liveRegion: true,
+      child: SizedBox(
+        key: const ValueKey('signup_cta_loading'),
+        height: Sizes.buttonHeight / 2,
+        width: Sizes.buttonHeight / 2,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation(theme.colorScheme.onPrimary),
+        ),
+      ),
     );
   }
 }
@@ -272,6 +405,8 @@ class _EmailPasswordFields extends StatelessWidget {
     required this.obscurePassword,
     required this.scrollPadding,
     required this.onToggleObscure,
+    required this.onSubmit,
+    required this.isSubmitting,
   });
 
   final TextEditingController emailController;
@@ -279,6 +414,8 @@ class _EmailPasswordFields extends StatelessWidget {
   final bool obscurePassword;
   final EdgeInsets scrollPadding;
   final VoidCallback onToggleObscure;
+  final VoidCallback onSubmit;
+  final bool isSubmitting;
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +439,9 @@ class _EmailPasswordFields extends StatelessWidget {
           onChanged: (_) {},
           textInputAction: TextInputAction.done,
           onSubmitted: (_) {
-            // TODO: später CTA triggern.
+            if (!isSubmitting) {
+              onSubmit();
+            }
           },
           scrollPadding: scrollPadding,
           hintText: AuthStrings.passwordHint,

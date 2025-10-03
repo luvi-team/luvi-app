@@ -1,5 +1,3 @@
-// ignore: unused_import
-import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -100,6 +98,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding06Question => 'How long does your cycle normally last?';
+
+  @override
+  String get onboarding06OptionsSemantic => 'Select cycle length';
 
   @override
   String get onboarding06Callout => 'Every cycle is unique - just like you!';
