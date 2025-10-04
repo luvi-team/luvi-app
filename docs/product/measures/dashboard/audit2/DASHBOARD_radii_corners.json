@@ -1,0 +1,161 @@
+{
+  "source": "Figma MCP API (get_code)",
+  "extractionDate": "2025-10-04",
+  "containers": [
+    {
+      "name": "Hero Card (Workout Frame)",
+      "figmaNodeId": "68426:7272",
+      "borderRadius": null,
+      "cornerSmoothing": null,
+      "independentCorners": null,
+      "notes": "Parent container; rounded-rectangle child 68426:7273 has styling"
+    },
+    {
+      "name": "Main Activity Image",
+      "figmaNodeId": "68426:7273",
+      "type": "rounded-rectangle",
+      "geometry": {
+        "width": 327,
+        "height": 189
+      },
+      "borderRadius": null,
+      "perCorner": {
+        "topLeft": null,
+        "topRight": null,
+        "bottomRight": null,
+        "bottomLeft": null
+      },
+      "cornerSmoothing": null,
+      "independentCorners": null,
+      "notes": "MCP get_metadata identifies as 'rounded-rectangle' but does not expose radius value; requires REST API or manual inspection"
+    },
+    {
+      "name": "Info Card Background (CTA Button)",
+      "figmaNodeId": "68426:7276",
+      "type": "rounded-rectangle",
+      "geometry": {
+        "width": 291.0471496582031,
+        "height": 50.5052375793457
+      },
+      "borderRadius": null,
+      "perCorner": {
+        "topLeft": null,
+        "topRight": null,
+        "bottomRight": null,
+        "bottomLeft": null
+      },
+      "cornerSmoothing": null,
+      "independentCorners": null,
+      "notes": "CTA button background; radius not exposed via MCP"
+    },
+    {
+      "name": "Category Chip (Running Icon Container)",
+      "figmaNodeId": "68426:7298",
+      "type": "frame",
+      "geometry": {
+        "width": 60,
+        "height": 60
+      },
+      "borderRadius": "16px",
+      "perCorner": {
+        "topLeft": "16px",
+        "topRight": "16px",
+        "bottomRight": "16px",
+        "bottomLeft": "16px"
+      },
+      "cornerSmoothing": null,
+      "independentCorners": false,
+      "notes": "Extracted from get_code output: 'rounded-[16px]'; uniform corners"
+    },
+    {
+      "name": "Recommendation Card (Image Placeholder)",
+      "figmaNodeId": "68426:7323",
+      "type": "rounded-rectangle",
+      "geometry": {
+        "width": 155,
+        "height": 180
+      },
+      "borderRadius": "20px",
+      "perCorner": {
+        "topLeft": "20px",
+        "topRight": "20px",
+        "bottomRight": "20px",
+        "bottomLeft": "20px"
+      },
+      "cornerSmoothing": null,
+      "independentCorners": false,
+      "notes": "Extracted from get_code output: 'rounded-[20px]'; uniform corners; applied to both image and overlay gradient"
+    },
+    {
+      "name": "Highlight Overlay (Recommendation Card)",
+      "figmaNodeId": "68426:7324",
+      "type": "frame",
+      "geometry": {
+        "width": 155,
+        "height": 180
+      },
+      "borderRadius": "20px",
+      "perCorner": {
+        "topLeft": "20px",
+        "topRight": "20px",
+        "bottomRight": "20px",
+        "bottomLeft": "20px"
+      },
+      "cornerSmoothing": null,
+      "independentCorners": false,
+      "notes": "Matches parent image radius; gradient overlay"
+    },
+    {
+      "name": "Set Info Container",
+      "figmaNodeId": "68426:7325",
+      "type": "frame",
+      "borderRadius": "20px",
+      "perCorner": {
+        "topLeft": "20px",
+        "topRight": "20px",
+        "bottomRight": "20px",
+        "bottomLeft": "20px"
+      },
+      "cornerSmoothing": null,
+      "independentCorners": false,
+      "notes": "Extracted from get_code: 'rounded-[20px]'; inherits from parent card radius"
+    },
+    {
+      "name": "Header Icons (Search, Bell)",
+      "figmaNodeId": "68426:7254, 68426:7260",
+      "type": "frame",
+      "geometry": {
+        "width": 40,
+        "height": 40
+      },
+      "borderRadius": null,
+      "cornerSmoothing": null,
+      "independentCorners": null,
+      "notes": "No border-radius class in get_code output; likely square or small radius (<4px) not rendered in Tailwind"
+    },
+    {
+      "name": "Bottom Navigation Bar",
+      "figmaNodeId": "68427:7576",
+      "type": "instance",
+      "borderRadius": null,
+      "cornerSmoothing": null,
+      "independentCorners": null,
+      "notes": "Instance node; component definition required for radius data"
+    }
+  ],
+  "summary": {
+    "totalContainers": 9,
+    "extractedRadii": 3,
+    "nullRadii": 6,
+    "cornerSmoothingAvailable": 0,
+    "independentCornersDetected": 0
+  },
+  "limitations": [
+    "MCP get_code returns Tailwind classes (e.g., 'rounded-[16px]') for frames with auto-layout",
+    "rounded-rectangle nodes (68426:7273, 68426:7276, 68426:7323) do not include radius values in get_metadata",
+    "cornerSmoothing property not exposed via MCP API",
+    "independentCorners (per-corner radius) not detectable from Tailwind classes (uniform 'rounded-[Npx]')",
+    "Instance nodes (components) require parent component definition"
+  ],
+  "recommendation": "Use Figma REST API GET /v1/files/:file_key/nodes?ids=... to retrieve:\n- rectangleCornerRadii (array of 4 values for independent corners)\n- cornerRadius (single value for uniform)\n- cornerSmoothing (0-1 value)"
+}

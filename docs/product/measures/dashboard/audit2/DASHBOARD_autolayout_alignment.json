@@ -1,0 +1,280 @@
+{
+  "source": "Figma MCP API (get_code)",
+  "extractionDate": "2025-10-04",
+  "layouts": [
+    {
+      "name": "Header Section",
+      "figmaNodeId": "68426:7235",
+      "type": "frame",
+      "geometry": {
+        "width": 385,
+        "height": 66
+      },
+      "autoLayout": null,
+      "alignment": {
+        "justify": null,
+        "cross": null,
+        "notes": "No flexbox classes in get_code output (not retrieved); likely absolute positioning for children"
+      },
+      "resizing": {
+        "horizontal": null,
+        "vertical": null
+      },
+      "constraints": null,
+      "minMaxDimensions": {
+        "minWidth": null,
+        "maxWidth": null,
+        "minHeight": null,
+        "maxHeight": null
+      },
+      "notes": "MCP did not return get_code for this node; requires separate call or parent component inspection"
+    },
+    {
+      "name": "Hero Card (Workout Frame inner)",
+      "figmaNodeId": "68426:7274",
+      "type": "frame",
+      "geometry": {
+        "width": 338.3695373535156,
+        "height": 152.50523376464844
+      },
+      "autoLayout": null,
+      "alignment": {
+        "justify": null,
+        "cross": null,
+        "notes": "Overlay frame; absolute positioning for children (Activity Info Section at y=122.99, Statistics Container at y=20.99)"
+      },
+      "resizing": null,
+      "constraints": null,
+      "notes": "Not extracted via get_code; metadata shows absolute child positions"
+    },
+    {
+      "name": "Activity Info Section (CTA Button Container)",
+      "figmaNodeId": "68426:7275",
+      "type": "frame",
+      "geometry": {
+        "width": 291.0471496582031,
+        "height": 50.5052375793457
+      },
+      "autoLayout": null,
+      "alignment": {
+        "justify": "center",
+        "cross": "center",
+        "notes": "Inferred from child positioning (Info Button Group centered within card background)"
+      },
+      "resizing": null,
+      "constraints": null,
+      "notes": "Not directly extracted; requires component-level inspection"
+    },
+    {
+      "name": "Info Button Group (CTA Content)",
+      "figmaNodeId": "68426:7277",
+      "type": "frame",
+      "geometry": {
+        "width": 150.2388916015625,
+        "height": 24
+      },
+      "autoLayout": {
+        "enabled": true,
+        "mode": "horizontal",
+        "gap": null,
+        "padding": null
+      },
+      "alignment": {
+        "justify": "center",
+        "cross": "center",
+        "notes": "Extracted from get_code: 'flex items-center justify-center'"
+      },
+      "resizing": {
+        "horizontal": "hug",
+        "vertical": "hug",
+        "notes": "Container wraps content (icon + text)"
+      },
+      "constraints": null,
+      "notes": "Flexbox layout confirmed via Tailwind classes"
+    },
+    {
+      "name": "Categories Header",
+      "figmaNodeId": "68426:7293",
+      "type": "frame",
+      "geometry": {
+        "width": 372,
+        "height": 24
+      },
+      "autoLayout": null,
+      "alignment": {
+        "justify": "space-between",
+        "cross": "center",
+        "notes": "Inferred from child positions: 'Type Label' at x=0, 'See All Button' at x=324 (right-aligned)"
+      },
+      "resizing": {
+        "horizontal": "fixed",
+        "vertical": "hug"
+      },
+      "constraints": null,
+      "notes": "Not extracted via get_code; requires manual inspection or component call"
+    },
+    {
+      "name": "Categories Display (Grid)",
+      "figmaNodeId": "68426:7296",
+      "type": "frame",
+      "geometry": {
+        "width": 372,
+        "height": 92
+      },
+      "autoLayout": {
+        "enabled": true,
+        "mode": "horizontal",
+        "gap": "41px",
+        "padding": null,
+        "notes": "Calculated from child positions: chip1 at x=0 (60w), chip2 at x=101 → gap = 101-60 = 41px"
+      },
+      "alignment": {
+        "justify": "start",
+        "cross": "start"
+      },
+      "resizing": {
+        "horizontal": "fixed",
+        "vertical": "hug"
+      },
+      "constraints": null,
+      "notes": "Grid-like layout with 4 chips; gap inferred from metadata positions"
+    },
+    {
+      "name": "Exercise Category (Chip)",
+      "figmaNodeId": "68426:7297",
+      "type": "frame",
+      "geometry": {
+        "width": 60,
+        "height": 92
+      },
+      "autoLayout": {
+        "enabled": true,
+        "mode": "vertical",
+        "gap": "8px",
+        "padding": null
+      },
+      "alignment": {
+        "justify": "start",
+        "cross": "center",
+        "notes": "Extracted from get_code: 'flex flex-col gap-[8px] items-center'"
+      },
+      "resizing": {
+        "horizontal": "hug",
+        "vertical": "hug"
+      },
+      "constraints": null,
+      "notes": "Vertical stack: icon container (60×60) + label (60×24) with 8px gap"
+    },
+    {
+      "name": "Recommendations List",
+      "figmaNodeId": "68426:7321",
+      "type": "frame",
+      "geometry": {
+        "width": 495,
+        "height": 203
+      },
+      "autoLayout": {
+        "enabled": true,
+        "mode": "horizontal",
+        "gap": "15px",
+        "padding": "11.5px 0",
+        "notes": "Calculated: card1 at x=0 (155w), card2 at x=170 → gap = 170-155 = 15px; cards at y=11.5 → vertical padding"
+      },
+      "alignment": {
+        "justify": "start",
+        "cross": "start"
+      },
+      "resizing": {
+        "horizontal": "fixed",
+        "vertical": "fixed"
+      },
+      "constraints": null,
+      "notes": "Horizontal scrollable list (width 495 > viewport 385); 3 cards @ 155×180 + 15px gaps"
+    },
+    {
+      "name": "Workout Article (Recommendation Card)",
+      "figmaNodeId": "68426:7322",
+      "type": "frame",
+      "geometry": {
+        "width": 155,
+        "height": 180
+      },
+      "autoLayout": null,
+      "alignment": {
+        "justify": null,
+        "cross": null,
+        "notes": "Absolute positioning for image + overlay + text container"
+      },
+      "resizing": {
+        "horizontal": "fixed",
+        "vertical": "fixed"
+      },
+      "constraints": null,
+      "notes": "Extracted from get_code; stack of absolute layers (image, gradient, text)"
+    },
+    {
+      "name": "Set Info Container (Card Text)",
+      "figmaNodeId": "68426:7325",
+      "type": "frame",
+      "geometry": {
+        "position": {
+          "left": 14,
+          "top": 124
+        }
+      },
+      "autoLayout": {
+        "enabled": true,
+        "mode": "vertical",
+        "gap": "0px",
+        "padding": null
+      },
+      "alignment": {
+        "justify": "start",
+        "cross": "start",
+        "notes": "Extracted from get_code: 'flex flex-col items-start'"
+      },
+      "resizing": {
+        "horizontal": "hug",
+        "vertical": "hug"
+      },
+      "constraints": {
+        "horizontal": "left",
+        "vertical": "bottom",
+        "notes": "Positioned 14px from left, 56px from bottom (180 - 124 = 56)"
+      },
+      "notes": "Vertical stack: category label (12px) + title (16px)"
+    },
+    {
+      "name": "Bottom Action Pills",
+      "figmaNodeId": "68427:7576",
+      "type": "instance",
+      "geometry": {
+        "width": 388,
+        "height": 72
+      },
+      "autoLayout": null,
+      "alignment": null,
+      "resizing": null,
+      "constraints": null,
+      "notes": "Instance node; requires component definition for layout properties"
+    }
+  ],
+  "summary": {
+    "totalLayouts": 11,
+    "autoLayoutEnabled": 5,
+    "absolutePositioning": 4,
+    "instanceNodes": 1,
+    "unknownLayouts": 1,
+    "extractedAlignments": 4,
+    "extractedGaps": 3
+  },
+  "limitations": [
+    "MCP get_code returns Tailwind classes for some nodes only",
+    "Frame-level auto-layout properties (primaryAxisAlignItems, counterAxisAlignItems) not explicitly exposed",
+    "Constraints (left/right/top/bottom, scale/fixed) not returned via MCP",
+    "Min/Max dimensions not available",
+    "Instance nodes require parent component inspection",
+    "Gaps and padding calculated manually from child positions in get_metadata"
+  ],
+  "recommendation": "Use Figma REST API GET /v1/files/:file_key/nodes?ids=... to retrieve:\n- layoutMode (HORIZONTAL/VERTICAL/NONE)\n- primaryAxisAlignItems (MIN/CENTER/MAX/SPACE_BETWEEN)\n- counterAxisAlignItems (MIN/CENTER/MAX)\n- itemSpacing (gap)\n- paddingLeft/Right/Top/Bottom\n- layoutGrow (0=fixed, 1=fill)\n- constraints object"
+}
