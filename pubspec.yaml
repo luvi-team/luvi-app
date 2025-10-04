@@ -74,6 +74,7 @@ flutter:
   assets:
     - assets/images/auth/hero_login_default_00.png
     - assets/images/consent/
+    - assets/images/dashboard/
     - assets/icons/
       # requires: assets/icons/google_g.svg (official multicolor Google 'G')
 
