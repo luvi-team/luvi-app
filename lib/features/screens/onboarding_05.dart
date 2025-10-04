@@ -67,6 +67,9 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context)!;
     final title = l10n.onboarding05Title;
+    const step = 5;
+    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
+    final stepFraction = l10n.onboardingStepFraction(step, 7);
 
     return Row(
       children: [
@@ -99,9 +102,9 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
           ),
         ),
         Semantics(
-          label: l10n.onboardingStepSemantic(5, 7),
+          label: stepSemantic,
           child: Text(
-            '5/7',
+            stepFraction,
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),

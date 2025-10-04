@@ -43,8 +43,8 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   void _handleContinue() {
-    // Happy Path: no validation, navigate directly to step 2
-    context.go(Onboarding02Screen.routeName);
+    // push statt go: Back-Stack bewahren (Konsistenz mit 02–07)
+    context.push(Onboarding02Screen.routeName);
   }
 
   @override
@@ -82,6 +82,9 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context)!;
     final headerTitle = l10n.onboarding01Title;
+    const step = 1;
+    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
+    final stepFraction = l10n.onboardingStepFraction(step, 7);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -100,9 +103,9 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
         ),
         const SizedBox(width: Spacing.s),
         Semantics(
-          label: l10n.onboardingStepSemantic(1, 7),
+          label: stepSemantic,
           child: Text(
-            '1/7',
+            stepFraction,
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
@@ -129,6 +132,9 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     OnboardingSpacing spacing,
   ) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final dividerThickness = theme.dividerTheme.thickness ?? 1;
+
     return Column(
       children: [
         Semantics(
@@ -157,7 +163,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
             width: spacing.underlineWidth,
             child: Divider(
               height: 0,
-              thickness: 1,
+              thickness: dividerThickness,
               color: colorScheme.onSurface.withValues(
                 alpha: OpacityTokens.inactive,
               ),
