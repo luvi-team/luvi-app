@@ -97,10 +97,9 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final stepSemantic =
-        l10n?.onboardingStepSemantic(4, 7) ?? 'Schritt 4 von 7';
-    final stepFraction = l10n?.onboardingStepFraction(4, 7) ?? '4/7';
+    final l10n = AppLocalizations.of(context)!;
+    final stepSemantic = l10n.onboardingStepSemantic(4, 7);
+    final stepFraction = l10n.onboardingStepFraction(4, 7);
 
     return Row(
       children: [
@@ -118,8 +117,8 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
         Expanded(
           child: Semantics(
             header: true,
-            child: Text(
-              l10n?.onboarding04Title ?? 'Wann hat deine letzte Periode angefangen?',
+          child: Text(
+              l10n.onboarding04Title,
               textAlign: TextAlign.center,
               maxLines: 2,
               softWrap: true,
@@ -149,13 +148,12 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final formattedDate = _formattedDate(context);
 
     return Semantics(
-      label: l10n?.selectedDateLabel(formattedDate) ??
-          'Ausgewähltes Datum: $formattedDate',
+      label: l10n.selectedDateLabel(formattedDate),
       child: Text(
         formattedDate,
         style: textTheme.headlineMedium?.copyWith(
@@ -169,14 +167,16 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
   }
 
   Widget _buildUnderline(OnboardingSpacing spacing) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final dividerThickness = theme.dividerTheme.thickness ?? 1;
 
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
         width: spacing.underlineWidth,
         child: Divider(
-          thickness: 1,
+          thickness: dividerThickness,
           color: colorScheme.onSurface.withValues(
             alpha: OpacityTokens.inactive,
           ),
@@ -189,10 +189,12 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    final dividerThickness = theme.dividerTheme.thickness ?? 1;
+    final iconSize = theme.iconTheme.size ?? TypographyTokens.size20;
 
     return Semantics(
-      label: localizations?.onboarding04CalloutSemantics ?? 'Hinweis: Mach dir keine Sorgen, wenn du den exakten Tag nicht mehr weißt. Eine ungefähre Schätzung reicht für den Start völlig aus.',
+      label: localizations.onboarding04CalloutSemantics,
       child: Container(
         padding: const EdgeInsets.all(Spacing.m),
         decoration: BoxDecoration(
@@ -200,7 +202,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
           borderRadius: BorderRadius.circular(Sizes.radiusL),
           border: Border.all(
             color: colorScheme.primary,
-            width: 1,
+            width: dividerThickness,
           ),
         ),
         child: Row(
@@ -210,7 +212,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
               child: Icon(
                 Icons.info_outline,
                 color: colorScheme.onSurface,
-                size: 24,
+                size: iconSize,
               ),
             ),
             const SizedBox(width: Spacing.s),
@@ -224,10 +226,10 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                   ),
                   children: [
                     TextSpan(
-                      text: localizations?.onboarding04CalloutPrefix ?? 'Mach dir keine Sorgen, wenn du den ',
+                      text: localizations.onboarding04CalloutPrefix,
                     ),
                     TextSpan(
-                      text: localizations?.onboarding04CalloutHighlight ?? 'exakten Tag nicht mehr weißt',
+                      text: localizations.onboarding04CalloutHighlight,
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurface,
                         fontSize: TypographyTokens.size16,
@@ -236,7 +238,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                       ),
                     ),
                     TextSpan(
-                      text: localizations?.onboarding04CalloutSuffix ?? '. Eine ungefähre Schätzung reicht für den Start völlig aus.',
+                      text: localizations.onboarding04CalloutSuffix,
                     ),
                   ],
                 ),
@@ -249,10 +251,10 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
   }
 
   Widget _buildCta() {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Semantics(
-      label: localizations?.commonContinue ?? 'Weiter',
+      label: localizations.commonContinue,
       button: true,
       child: ElevatedButton(
         key: const Key('onb_cta'),
@@ -261,7 +263,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                 context.push(Onboarding05Screen.routeName);
               }
             : null,
-        child: Text(localizations?.commonContinue ?? 'Weiter'),
+        child: Text(localizations.commonContinue),
       ),
     );
   }

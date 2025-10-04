@@ -158,7 +158,7 @@
   "@onboarding05Opt3to5": {
     "description": "Option label for periods lasting three to five days."
   },
-  "onboarding05Opt5to7": "Zwischen 5 und 7 Tage",
+  "onboarding05Opt5to7": "Zwischen 5 und 7 Tagen",
   "@onboarding05Opt5to7": {
     "description": "Option label for periods lasting five to seven days."
   },

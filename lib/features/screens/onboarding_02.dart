@@ -102,6 +102,9 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final title = l10n.onboarding02Title;
+    const step = 2;
+    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
+    final stepFraction = l10n.onboardingStepFraction(step, 7);
 
     return Row(
       children: [
@@ -134,9 +137,9 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
           ),
         ),
         Semantics(
-          label: l10n.onboardingStepSemantic(2, 7),
+          label: stepSemantic,
           child: Text(
-            '2/7',
+            stepFraction,
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),

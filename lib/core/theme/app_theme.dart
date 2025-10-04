@@ -13,7 +13,7 @@ class AppTheme {
   static const Color _accentSubtle = Color(
     0xFFD9B6A3,
   ); // Accent-Subtle (nur "Superkraft.")
-  static const Color _onPrimary = Color(0xFFFFFFFF); // Grayscale/White
+  static const Color _onPrimary = Color(0xFF030401); // Grayscale/Black (CTA text on Gold)
   static const Color _onSurface = Color(0xFF030401); // Grayscale/Black
   static const Color _grayscale400 = Color(
     0xFFB0B0B0,
@@ -63,6 +63,13 @@ class AppTheme {
       colorScheme: _buildColorScheme(),
       scaffoldBackgroundColor: Colors.white,
       textTheme: _buildTextTheme(),
+      // Centralize common UI measurements to remove magic numbers in widgets
+      iconTheme: const IconThemeData(
+        size: TypographyTokens.size20,
+      ),
+      dividerTheme: const DividerThemeData(
+        thickness: 1.0,
+      ),
       // Button global stylen wie Figma
       elevatedButtonTheme: _buildElevatedButtonTheme(),
       textButtonTheme: _buildTextButtonTheme(),

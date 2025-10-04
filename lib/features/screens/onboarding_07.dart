@@ -68,6 +68,9 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context)!;
     final title = l10n.onboarding07Title;
+    const step = 7;
+    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
+    final stepFraction = l10n.onboardingStepFraction(step, 7);
 
     return Row(
       children: [
@@ -97,9 +100,9 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
           ),
         ),
         Semantics(
-          label: l10n.onboardingStepSemantic(7, 7),
+          label: stepSemantic,
           child: Text(
-            '7/7',
+            stepFraction,
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
@@ -110,7 +113,9 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   Widget _buildOptionList(OnboardingSpacing spacing) {
     // Icons: clock (⏰), energy/lightning (⚡), help (❓)
     // Using Material Icons.access_time, Icons.flash_on, Icons.help_outline as fallback
-    final iconColor = Theme.of(context).colorScheme.onSurface;
+    final theme = Theme.of(context);
+    final iconColor = theme.colorScheme.onSurface;
+    final iconSize = theme.iconTheme.size ?? TypographyTokens.size20;
     final l10n = AppLocalizations.of(context)!;
     final options = [
       (icon: Icons.access_time, label: l10n.onboarding07OptRegular),
@@ -130,7 +135,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             child: GoalCard(
               key: Key('onb_option_$index'),
               icon: ExcludeSemantics(
-                child: Icon(options[index].icon, size: 24, color: iconColor),
+                child: Icon(options[index].icon, size: iconSize, color: iconColor),
               ),
               title: options[index].label,
               selected: _selected == index,

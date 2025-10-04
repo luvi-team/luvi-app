@@ -118,34 +118,37 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
 
   Widget _buildGoalList(OnboardingSpacing spacing) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final iconSize = theme.iconTheme.size ?? TypographyTokens.size20;
+
     final goals = [
       _GoalItem(
-        icon: const ExcludeSemantics(
-          child: Icon(Icons.favorite_border, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.favorite_border, size: iconSize),
         ),
         title: l10n.onboarding03GoalCycleUnderstanding,
       ),
       _GoalItem(
-        icon: const ExcludeSemantics(
-          child: Icon(Icons.fitness_center, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.fitness_center, size: iconSize),
         ),
         title: l10n.onboarding03GoalTrainingAlignment,
       ),
       _GoalItem(
-        icon: const ExcludeSemantics(
-          child: Icon(Icons.restaurant, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.restaurant, size: iconSize),
         ),
         title: l10n.onboarding03GoalNutrition,
       ),
       _GoalItem(
-        icon: const ExcludeSemantics(
-          child: Icon(Icons.monitor_weight, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.monitor_weight, size: iconSize),
         ),
         title: l10n.onboarding03GoalWeightManagement,
       ),
       _GoalItem(
-        icon: const ExcludeSemantics(
-          child: Icon(Icons.self_improvement, size: 24),
+        icon: ExcludeSemantics(
+          child: Icon(Icons.self_improvement, size: iconSize),
         ),
         title: l10n.onboarding03GoalMindfulness,
       ),
