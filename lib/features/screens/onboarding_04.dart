@@ -152,6 +152,8 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
 
     final formattedDate = _formattedDate(context);
 
+    final formattedDate = _formattedDate(context);
+
     return Semantics(
       label: l10n.selectedDateLabel(formattedDate),
       child: Text(
