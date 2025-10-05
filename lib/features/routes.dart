@@ -20,6 +20,7 @@ import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
+import 'package:luvi_app/features/screens/dashboard_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
@@ -137,6 +138,11 @@ final List<GoRoute> featureRoutes = [
     name: 'signup',
     builder: (context, state) => const AuthSignupScreen(),
   ),
+  GoRoute(
+    path: DashboardScreen.routeName,
+    name: 'dashboard',
+    builder: (context, state) => const DashboardScreen(),
+  ),
 ];
 
 String? supabaseRedirect(BuildContext context, GoRouterState state) {
@@ -146,18 +152,29 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     defaultValue: false,
   );
 
+  // Dev-only bypass to allow opening the dashboard without auth during development
+  const allowDashboardDev = bool.fromEnvironment(
+    'ALLOW_DASHBOARD_DEV',
+    defaultValue: false,
+  );
+
   final isInitialized = SupabaseService.isInitialized;
   final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
   final isAuthEntry = state.matchedLocation.startsWith(
     AuthEntryScreen.routeName,
   );
   final isOnboarding = state.matchedLocation.startsWith('/onboarding/');
+  final isDashboard = state.matchedLocation.startsWith(DashboardScreen.routeName);
   final session = isInitialized
       ? SupabaseService.client.auth.currentSession
       : null;
 
   if (allowOnboardingDev && !kReleaseMode && isOnboarding) {
     return null; // allow onboarding routes in dev without auth
+  }
+
+  if (allowDashboardDev && !kReleaseMode && isDashboard) {
+    return null; // allow dashboard route in dev without auth
   }
 
   if (session == null) {
