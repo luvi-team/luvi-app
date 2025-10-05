@@ -6,6 +6,35 @@ import 'package:luvi_app/features/screens/dashboard_screen.dart';
 import 'package:luvi_app/features/widgets/category_chip.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
 
+class _ViewportConfig {
+  const _ViewportConfig({
+    required this.testLabel,
+    required this.logLabel,
+    required this.logicalSize,
+    required this.expectedBottomGap,
+  });
+
+  final String testLabel;
+  final String logLabel;
+  final Size logicalSize;
+  final double expectedBottomGap;
+}
+
+const List<_ViewportConfig> _viewportConfigs = <_ViewportConfig>[
+  _ViewportConfig(
+    testLabel: '390×844',
+    logLabel: '390x844',
+    logicalSize: Size(390, 844),
+    expectedBottomGap: 31.0,
+  ),
+  _ViewportConfig(
+    testLabel: '428×926',
+    logLabel: '428x926',
+    logicalSize: Size(428, 926),
+    expectedBottomGap: 31.0,
+  ),
+];
+
 void main() {
   group('DashboardScreen smoke tests', () {
     testWidgets('renders without crash and displays all key sections',
@@ -179,11 +208,11 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Verify bottom nav "Start" label
+      // Verify bottom nav "Home" label
       expect(
-        find.text('Start'),
+        find.text('Home'),
         findsOneWidget,
-        reason: 'Bottom nav "Start" label should be visible',
+        reason: 'Bottom nav "Home" label should be visible',
       );
 
       expect(
@@ -263,5 +292,196 @@ void main() {
         );
       }
     });
+
+    testWidgets('verifies equal horizontal spacing between 4 category chips',
+        (tester) async {
+      final view = tester.view;
+      view.physicalSize = const Size(390, 844);
+      view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        view.resetPhysicalSize();
+        view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const DashboardScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final chipFinder = find.byType(CategoryChip);
+      expect(chipFinder, findsNWidgets(4));
+
+      // Measure left x-coordinates and widths
+      final rects = List<Rect>.generate(
+        4,
+        (index) => tester.getRect(chipFinder.at(index)),
+      );
+
+      // Calculate gaps: distance from right edge of chip[i] to left edge of chip[i+1]
+      final gaps = <double>[
+        rects[1].left - rects[0].right,
+        rects[2].left - rects[1].right,
+        rects[3].left - rects[2].right,
+      ];
+
+      final baselineGap = gaps.first;
+      for (var index = 0; index < gaps.length; index++) {
+        expect(
+          (gaps[index] - baselineGap).abs(),
+          lessThanOrEqualTo(1.0),
+          reason: 'd${index + 1} (Δx between chips) should stay within ±1px at 390px viewport',
+        );
+      }
+    });
+
+    testWidgets('bottom nav pill sits close to screen bottom (≤4px gap)',
+        (tester) async {
+      final view = tester.view;
+      view.physicalSize = const Size(390, 844);
+      view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        view.resetPhysicalSize();
+        view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const DashboardScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final pillFinder = find.byKey(const Key('dashboard_bottom_nav_pill'));
+      expect(pillFinder, findsOneWidget);
+
+      final pillRect = tester.getRect(pillFinder);
+      final Size logicalSize = view.physicalSize / view.devicePixelRatio;
+      // Pill now renders via Scaffold.bottomNavigationBar SafeArea; ensure it hugs the bottom inset.
+      final double gap = logicalSize.height - pillRect.bottom;
+
+      expect(
+        gap,
+        lessThanOrEqualTo(4.0),
+        reason: 'Bottom nav pill should sit within 4px of screen bottom (Figma parity)',
+      );
+    });
+
+
+    for (final _ViewportConfig viewport in _viewportConfigs) {
+      testWidgets('validates vertical rhythm at ${viewport.testLabel}',
+          (tester) async {
+        final view = tester.view;
+        view.physicalSize = viewport.logicalSize;
+        view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          view.resetPhysicalSize();
+          view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.buildAppTheme(),
+            home: const DashboardScreen(),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final Finder scrollable = find.byType(CustomScrollView);
+        expect(
+          scrollable,
+          findsOneWidget,
+          reason:
+              'Dashboard nutzt CustomScrollView für Scroll + Fill, sollte in beiden Viewports verfügbar sein',
+        );
+        await tester.drag(scrollable, const Offset(0, -600));
+        await tester.pumpAndSettle();
+
+        const double tolerance = 0.5;
+
+        final Rect categoriesHeaderRect = tester.getRect(find.text('Kategorien'));
+        final Rect categoriesRect = tester.getRect(
+          find.byKey(const Key('dashboard_categories_grid')),
+        );
+        final Rect recsHeaderRect = tester.getRect(find.text('Empfehlungen'));
+        final Rect listRect = tester.getRect(
+          find.byKey(const Key('dashboard_recommendations_list')),
+        );
+        final Finder pillFinder =
+            find.byKey(const Key('dashboard_bottom_nav_pill'));
+        expect(pillFinder, findsOneWidget);
+        final Rect pillRect = tester.getRect(pillFinder);
+        final Rect navAreaRect = tester.getRect(
+          find
+              .ancestor(
+                of: pillFinder,
+                matching: find.byType(Padding),
+              )
+              .first,
+        );
+
+        final double gapCatsHeaderToGrid =
+            categoriesRect.top - categoriesHeaderRect.bottom;
+        final double gapCatsBlockToRecsHeader =
+            recsHeaderRect.top - categoriesRect.bottom;
+        final double gapRecsHeaderToList =
+            listRect.top - recsHeaderRect.bottom;
+        final double gapListToBottomBarTop =
+            pillRect.top - listRect.bottom;
+
+        String fmt(double value) {
+          const double epsilon = 1e-6;
+          final double fractional = (value - value.truncateToDouble()).abs();
+          if (fractional < epsilon) {
+            return value.truncate().toString();
+          }
+          return value.toStringAsFixed(1);
+        }
+
+        // keep debug log for audits per viewport.
+        // ignore: avoid_print
+        print(
+          'Viewport ${viewport.logLabel} → V-GAPS: '
+          'catsHdr→grid=${fmt(gapCatsHeaderToGrid)}, '
+          'catsBlock→recsHdr=${fmt(gapCatsBlockToRecsHeader)}, '
+          'recsHdr→list=${fmt(gapRecsHeaderToList)}, '
+          'list→bottom=${fmt(pillRect.top - listRect.bottom)} '
+          '(navTop→list=${fmt(gapListToBottomBarTop)} '
+          'target=${fmt(viewport.expectedBottomGap)}, '
+          'navPaddingTop=${fmt(navAreaRect.top)} '
+          'vs. listBottom=${fmt(listRect.bottom)})',
+        );
+
+        expect(
+          gapCatsHeaderToGrid,
+          moreOrLessEquals(12.0, epsilon: tolerance),
+          reason: 'Kategorien header → grid sollte 12px ±0.5 ergeben',
+        );
+
+        expect(
+          gapCatsBlockToRecsHeader,
+          moreOrLessEquals(24.0, epsilon: tolerance),
+          reason:
+              'Kategorien block → Empfehlungen header sollte 24px ±0.5 ergeben',
+        );
+
+        expect(
+          gapRecsHeaderToList,
+          moreOrLessEquals(12.0, epsilon: tolerance),
+          reason: 'Empfehlungen header → Liste sollte 12px ±0.5 ergeben',
+        );
+
+        expect(
+          gapListToBottomBarTop,
+          greaterThanOrEqualTo(viewport.expectedBottomGap - tolerance),
+          reason:
+              'Liste → Bottom-Pill top sollte mindestens ${viewport.expectedBottomGap}px betragen',
+        );
+      });
+    }
+
   });
 }

@@ -68,21 +68,23 @@ class CategoryChip extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Icon container
-            // from DASHBOARD_spec.json $.categories.chips[0].container (60×60, radius 16, padding 10)
+            // from DASHBOARD_spec.json $.categories.chips[0].container (60×60, radius 16, padding 10 baseline)
             Align(
               child: Container(
                 width: _iconContainerSize,
                 height: _iconContainerSize,
-                padding: const EdgeInsets.all(10),
+                // Visual tuning: padding 14→16 to increase whitespace around 10→6 px glyph
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: SvgPicture.asset(
                   iconPath,
-                  // TODO(assets): re-export SVGs with thinner stroke (1.5px, no scale-strokes); restore 24px.
-                  width: 22,
-                  height: 22,
+                  // TODO(assets): re-export thinner stroke (≈1.2–1.5 px, no scale-strokes); after reexport, restore 24 px glyph.
+                  width: 6,
+                  // TODO(assets): re-export thinner stroke (≈1.2–1.5 px, no scale-strokes); after reexport, restore 24 px glyph.
+                  height: 6,
                   fit: BoxFit.contain,
                 ),
               ),

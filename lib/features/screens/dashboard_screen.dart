@@ -49,7 +49,7 @@ const double _bottomIconMinExtent = 44.0; // TODO(audit): responsive fit at 390p
 const double _bottomIconHorizontalPadding = 20.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[1].style.padding.horizontal
 const double _bottomIconVerticalPadding = 18.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[1].style.padding.vertical
 const double _bottomIconNominalSize = 24.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[1].iconSize
-
+const double _kMinBottomGap = 31.0; // Figma min gap between list and bottom nav (allows expansion on tall viewports)
 /// Dashboard screen: 1:1 Figma implementation (audit-backed, static UI).
 class DashboardScreen extends StatefulWidget {
   static const String routeName = '/dashboard';
@@ -81,37 +81,53 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.l), // from DASHBOARD_spec.json $.frame.safeAreas.left (24px)
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: Spacing.m), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
-                _buildHeader(state.header, state.bottomNav.hasNotifications),
-                const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
-                _buildHeroCard(state.heroCard, state.heroCta),
-                const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
-                SectionHeader(
-                  title: 'Kategorien',
-                  showTrailingAction: false,
-                ),
-                const SizedBox(height: Spacing.m), // from DASHBOARD_spec.json $.categories.autoLayout.gap
-                _buildCategories(state.categories),
-                const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
-                const SectionHeader(
-                  title: 'Empfehlungen',
-                  trailingLabel: 'Alle',
-                ),
-                const SizedBox(height: Spacing.s), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
-                _buildRecommendations(state.recommendations),
-                const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
-                _buildBottomPill(state.bottomNav),
-                const SizedBox(height: 8), // TODO(audit: bottom safe-area buffer missing in spec -> keeping +8px)
-              ],
-            ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.only(bottom: 0),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: Spacing.l,
+            right: Spacing.l,
+            top: 0,
           ),
+          child: _buildBottomPill(state.bottomNav),
+        ),
+      ),
+      body: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: Spacing.l), // from DASHBOARD_spec.json $.frame.safeAreas.left (24px)
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    const SizedBox(height: Spacing.m), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
+                    _buildHeader(state.header, state.bottomNav.hasNotifications),
+                    const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
+                    _buildHeroCard(state.heroCard, state.heroCta),
+                    const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
+                    SectionHeader(
+                      title: 'Kategorien',
+                      showTrailingAction: false,
+                    ),
+                    const SizedBox(height: Spacing.s), // Figma: header→content 12px (Audit V3)
+                    _buildCategories(state.categories),
+                    const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
+                    const SectionHeader(
+                      title: 'Empfehlungen',
+                      trailingLabel: 'Alle',
+                    ),
+                    const SizedBox(height: Spacing.s), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
+                    _buildRecommendations(state.recommendations),
+                  ],
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: _kMinBottomGap),
+            ),
+          ],
         ),
       ),
     );
@@ -187,7 +203,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       width: 40,
       height: 40,
-      padding: const EdgeInsets.all(10), // from DASHBOARD_spec.json $.header.actions[0].container.padding
+      // Container 40x40, padding 10→8: eff 24x24 (H1 audit)
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(_headerIconRadius),
@@ -198,8 +215,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       child: SvgPicture.asset(
         assetPath,
-        width: 20, // from DASHBOARD_spec.json $.header.actions[0].iconSize.w
-        height: 20, // from DASHBOARD_spec.json $.header.actions[0].iconSize.h
+        width: 24, // Spec 20px → +4px tuning (Figma parity)
+        height: 24, // Spec 20px → +4px tuning (Figma parity)
       ),
     );
   }
@@ -577,7 +594,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         borderRadius: BorderRadius.circular(_bottomPillRadius),
       ),
       child: const Text(
-        'Start',
+        'Home',
         style: TextStyle(
           fontFamily: FontFamilies.figtree,
           fontSize: 16,

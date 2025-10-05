@@ -4,6 +4,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'dashboard_vm.dart';
 
 /// Props/Contracts for Dashboard components (audit-backed).
+/// See docs/ui/contracts/dashboard_state.md for field mappings and behavior.
 
 @immutable
 class HeaderProps {
@@ -96,16 +97,20 @@ class DashboardFixtureState {
   double get cycleProgressRatio => heroCard.progressRatio;
 
   /// Default CTA mirrors the "Zurück zum Training" copy in the hero card.
+  /// See docs/ui/contracts/dashboard_state.md (HeroCtaState → label mapping).
   HeroCtaState get heroCta => HeroCtaState.resumeActiveWorkout;
 
   /// Active category chip shown with gold highlight in UI mocks.
+  /// See docs/ui/contracts/dashboard_state.md (Category → chip highlight + future reco filter).
   Category get selectedCategory => Category.training;
 }
 
 /// Fixture states for Dashboard (3 variants: default, withNotifications, emptyRecommendations).
+/// Each variant exercises different UI states documented in docs/ui/contracts/dashboard_state.md.
 class DashboardFixtures {
   /// Variant A – Baseline: greeting + progress ring, CTA "Zurück zum Training",
-  /// gold-highlighted Training chip, Start tab active.
+  /// gold-highlighted Training chip, Home tab active.
+  /// See docs/ui/contracts/dashboard_state.md for field → UI mappings.
   static DashboardFixtureState defaultState() {
     return DashboardFixtureState(
       header: const HeaderProps(
@@ -156,7 +161,7 @@ class DashboardFixtures {
       ],
       bottomNav: const BottomNavProps(
         selectedIndex: 0,
-        items: ['Start', 'Flower', 'Social', 'Account'],
+        items: ['Home', 'Flower', 'Social', 'Account'], // 'Home' = first tab (index 0)
       ),
     );
   }
