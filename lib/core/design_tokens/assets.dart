@@ -25,6 +25,9 @@ class _Icons {
   final String navSocial = 'assets/icons/dashboard/icon.nav.social.svg';
   final String navAccount = 'assets/icons/dashboard/icon.nav.account.svg';
 
+  // Hero
+  final String heroTraining = 'assets/icons/dashboard/icon.hero.training.svg';
+
   // Optional/extras
   final String navChart = 'assets/icons/dashboard/icon.nav.chart.svg';
   final String cycleOutline = 'assets/icons/dashboard/icon.nav.cycle-outline.svg';
