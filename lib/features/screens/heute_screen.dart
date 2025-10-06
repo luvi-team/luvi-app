@@ -5,11 +5,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/features/screens/dashboard_fixtures.dart';
-import 'package:luvi_app/features/screens/dashboard_vm.dart';
+import 'package:luvi_app/features/screens/heute_fixtures.dart';
+import 'package:luvi_app/features/screens/heute_vm.dart';
 import 'package:luvi_app/features/widgets/category_chip.dart';
+import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
+import 'package:luvi_app/features/widgets/floating_sync_button.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/widgets/section_header.dart';
+import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 
 // Dashboard-only spacing (audit-backed)
 // from DASHBOARD_spec.json $.heroCard.autoLayout.padding (21px)
@@ -26,8 +29,6 @@ const double _categoriesMaxGap = 41.0;
 const double _headerIconRadius = 26.667;
 // from DASHBOARD_spec.json $.heroCard.container.radius.all (24px)
 const double _heroCardRadius = 24.0;
-// from DASHBOARD_spec.json $.bottomActions.container.radius.all (36.5px)
-const double _bottomPillRadius = 36.5;
 // from DASHBOARD_spec.json $.heroCard.progress.outerSize (59.92px)
 const double _heroProgressOuterSize = 59.92;
 const double _heroProgressFontSize = 16.12; // TODO(audit): visual fine-tune -1px; spec=17.12 from DASHBOARD_spec.json $.heroCard.progressPercentage.typography.size
@@ -40,34 +41,29 @@ const double _heroCtaHeight = 50.51; // from docs/product/measures/dashboard/DAS
 const double _heroCtaRadius = 17.12; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.radius.all
 const double _heroCtaHorizontalPadding = 12.0; // from docs/audits/ONB_07_measures.json $.cta.padding.horizontal
 const double _heroCtaVerticalPadding = 12.0; // TODO(audit): onboarding CTA padding top=11 bottom=12; using 12 for symmetry from docs/audits/ONB_07_measures.json $.cta.padding.bottom
-const double _bottomStartMinWidth = 104.75; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[0].style.w
-const double _bottomStartHeight = 60.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[0].style.h
-const double _bottomStartHorizontalPadding = 20.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[0].style.padding.horizontal
-const double _bottomStartVerticalPadding = 18.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[0].style.padding.vertical
-const double _bottomIconDefaultExtent = 60.0; // TODO(audit): icon container width missing from spec; aligning to Figma pill footprint ≈60px
-const double _bottomIconMinExtent = 44.0; // TODO(audit): responsive fit at 390px (screen constraint); spec lacks min width so using 44px floor
-const double _bottomIconHorizontalPadding = 20.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[1].style.padding.horizontal
-const double _bottomIconVerticalPadding = 18.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[1].style.padding.vertical
-const double _bottomIconNominalSize = 24.0; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.items[1].iconSize
 const double _kMinBottomGap = 31.0; // Figma min gap between list and bottom nav (allows expansion on tall viewports)
-/// Dashboard screen: 1:1 Figma implementation (audit-backed, static UI).
-class DashboardScreen extends StatefulWidget {
-  static const String routeName = '/dashboard';
 
-  const DashboardScreen({super.key});
+// Kodex: Bottom-nav geometry now imported from bottom_nav_tokens.dart (formula-based, no duplication)
+// - dockHeight, buttonDiameter, cutoutDepth, desiredGapToWaveTop, syncButtonBottom all from tokens
+/// Heute screen: 1:1 Figma implementation (audit-backed, static UI).
+class HeuteScreen extends StatefulWidget {
+  static const String routeName = '/heute';
+
+  const HeuteScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
+  State<HeuteScreen> createState() => _HeuteScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
-  late final DashboardFixtureState _fixtureState;
+class _HeuteScreenState extends State<HeuteScreen> {
+  late final HeuteFixtureState _fixtureState;
   late String _selectedCategory;
+  int _activeTabIndex = 0; // Dock nav state (0=Heute, 1=Zyklus, 2=Puls, 3=Profil)
 
   @override
   void initState() {
     super.initState();
-    _fixtureState = DashboardFixtures.defaultState();
+    _fixtureState = HeuteFixtures.defaultState();
     _selectedCategory = _fixtureState.categories.firstWhere(
       (cat) => cat.isSelected,
       orElse: () => _fixtureState.categories.first,
@@ -81,18 +77,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.only(bottom: 0),
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: Spacing.l,
-            right: Spacing.l,
-            top: 0,
-          ),
-          child: _buildBottomPill(state.bottomNav),
-        ),
-      ),
+      bottomNavigationBar: _buildDockNavigation(),
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
@@ -501,144 +486,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildBottomPill(BottomNavProps nav) {
-    // from DASHBOARD_spec.json $.bottomActions
-    return Container(
-      key: const Key('dashboard_bottom_nav_pill'),
-      padding: const EdgeInsets.all(6), // from DASHBOARD_spec.json $.bottomActions.autoLayout.padding.top
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.circular(_bottomPillRadius),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF000000).withValues(alpha: 0.12),
-            blurRadius: 24, // from DASHBOARD_spec.json $.bottomActions.container.shadow[0].blur
-            offset: const Offset(0, 0),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          _buildBottomNavStartButton(),
-          // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[3].value (6px)
-          const SizedBox(width: 6),
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                const double iconCount = 4;
-                const double iconGap = 6; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.bottomActions.autoLayout.gap
-                const double defaultIconWidth = _bottomIconDefaultExtent;
-                const double minIconWidth = _bottomIconMinExtent;
+  Widget _buildDockNavigation() {
+    final tabs = [
+      DockTab(iconPath: Assets.icons.navToday, label: 'Heute', key: const Key('nav_today')),
+      DockTab(iconPath: Assets.icons.navCycle, label: 'Zyklus', key: const Key('nav_cycle')),
+      DockTab(iconPath: Assets.icons.navPulse, label: 'Puls', key: const Key('nav_pulse')),
+      DockTab(iconPath: Assets.icons.navProfile, label: 'Profil', key: const Key('nav_profile')),
+    ];
 
-                final double availableWidth = constraints.maxWidth;
-                final double requiredWidth =
-                    (defaultIconWidth * iconCount) + (iconGap * (iconCount - 1));
-                final double resolvedIconWidth = availableWidth >= requiredWidth
-                    ? defaultIconWidth
-                    : ((availableWidth - (iconGap * (iconCount - 1))) / iconCount)
-                        .clamp(minIconWidth, defaultIconWidth); // TODO(audit): responsive fit at 390px
-
-                return FittedBox(
-                  // 390px viewport squeezes icon pill row; scale down uniformly to respect audit gaps.
-                  alignment: Alignment.centerRight,
-                  fit: BoxFit.scaleDown,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      _buildBottomNavIcon(
-                        Assets.icons.navFlower,
-                        key: const Key('dashboard_nav_flower'),
-                        width: resolvedIconWidth,
-                      ),
-                      const SizedBox(width: iconGap),
-                      _buildBottomNavIcon(
-                        Assets.icons.navSocial,
-                        key: const Key('dashboard_nav_social'),
-                        width: resolvedIconWidth,
-                      ),
-                      const SizedBox(width: iconGap),
-                      _buildBottomNavIcon(
-                        Assets.icons.navChart,
-                        key: const Key('dashboard_nav_chart'),
-                        width: resolvedIconWidth,
-                      ),
-                      const SizedBox(width: iconGap),
-                      _buildBottomNavIcon(
-                        Assets.icons.navAccount,
-                        key: const Key('dashboard_nav_account'),
-                        width: resolvedIconWidth,
-                      ),
-                    ],
-                  ),
-                );
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Dock bar with violet wave top-border (white bg, shadow)
+        BottomNavDock(
+          key: const Key('dashboard_dock_nav'),
+          activeIndex: _activeTabIndex == 4 ? -1 : _activeTabIndex, // When sync active (4), no dock tab is selected
+          onTabTap: (index) {
+            setState(() {
+              _activeTabIndex = index;
+            });
+          },
+          tabs: tabs,
+          // Kodex: height from tokens (96px, formula-based)
+        ),
+        // Floating sync button above center (index 4)
+        Positioned(
+          bottom: syncButtonBottom, // Kodex: Formula from tokens = 96 - 38 - 9 = 49px
+          left: 0,
+          right: 0,
+          child: Center(
+            child: FloatingSyncButton(
+              key: const Key('floating_sync_button'),
+              iconPath: Assets.icons.navSync,
+              // Kodex: size and iconSize from tokens (64px, 42px)
+              isActive: _activeTabIndex == 4, // Gold tint when sync is active
+              onTap: () {
+                setState(() {
+                  _activeTabIndex = 4; // Sync tab index
+                });
+                // TODO: sync action
               },
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavStartButton() {
-    return Container(
-      constraints: const BoxConstraints(minWidth: _bottomStartMinWidth),
-      height: _bottomStartHeight,
-      padding: const EdgeInsets.symmetric(
-        horizontal: _bottomStartHorizontalPadding,
-        vertical: _bottomStartVerticalPadding,
-      ),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: const Color(0xFFD9B18E),
-        borderRadius: BorderRadius.circular(_bottomPillRadius),
-      ),
-      child: const Text(
-        'Home',
-        style: TextStyle(
-          fontFamily: FontFamilies.figtree,
-          fontSize: 16,
-          height: 24 / 16,
-          fontWeight: FontWeight.w400,
-          color: Color(0xFFFFFFFF),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavIcon(String assetPath, {Key? key, double? width}) {
-    final double resolvedWidth = width ?? _bottomIconDefaultExtent;
-    final double baselinePadding = _bottomIconHorizontalPadding;
-    final double availablePadding = (resolvedWidth - _bottomIconNominalSize) / 2;
-    final double horizontalPadding = resolvedWidth >=
-            (_bottomIconNominalSize + (baselinePadding * 2))
-        ? baselinePadding
-        : math.max(0.0, availablePadding); // TODO(audit): responsive fit at 390px reduces padding when frame shrinks
-    final double resolvedIconSize = math
-        .max(0.0, resolvedWidth - (horizontalPadding * 2))
-        .clamp(0, _bottomIconNominalSize);
-
-    return Container(
-      key: key,
-      constraints: BoxConstraints.tightFor(
-        width: resolvedWidth,
-        height: _bottomStartHeight,
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: horizontalPadding,
-        vertical: _bottomIconVerticalPadding,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F8),
-        borderRadius: BorderRadius.circular(_bottomPillRadius),
-      ),
-      child: Center(
-        child: SvgPicture.asset(
-          assetPath,
-          width: resolvedIconSize,
-          height: resolvedIconSize,
-        ),
-      ),
+      ],
     );
   }
 

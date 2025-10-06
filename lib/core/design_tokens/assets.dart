@@ -20,16 +20,17 @@ class _Icons {
   final String catRegeneration = 'assets/icons/dashboard/icon.category.regeneration.svg';
   final String catMindfulness = 'assets/icons/dashboard/icon.category.mindfulness.svg';
 
-  // Bottom nav
-  final String navFlower = 'assets/icons/dashboard/icon.nav.flower.svg';
-  final String navSocial = 'assets/icons/dashboard/icon.nav.social.svg';
-  final String navAccount = 'assets/icons/dashboard/icon.nav.account.svg';
+  // Bottom nav (5-tab design)
+  final String navToday = 'assets/icons/dashboard/nav.today.svg';
+  final String navCycle = 'assets/icons/dashboard/nav.cycle.svg';
+  final String navSync = 'assets/icons/dashboard/nav.sync.svg';
+  final String navPulse = 'assets/icons/dashboard/nav.pulse.svg';
+  final String navProfile = 'assets/icons/dashboard/nav.profile.svg';
 
   // Hero
   final String heroTraining = 'assets/icons/dashboard/icon.hero.training.svg';
 
   // Optional/extras
-  final String navChart = 'assets/icons/dashboard/icon.nav.chart.svg';
   final String cycleOutline = 'assets/icons/dashboard/icon.nav.cycle-outline.svg';
 }
 

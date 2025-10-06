@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:luvi_app/core/design_tokens/assets.dart';
 
-import 'dashboard_vm.dart';
+import 'heute_vm.dart';
 
-/// Props/Contracts for Dashboard components (audit-backed).
+/// Props/Contracts for Heute screen components (audit-backed).
 /// See docs/ui/contracts/dashboard_state.md for field mappings and behavior.
 
 @immutable
@@ -72,14 +72,14 @@ class BottomNavProps {
 }
 
 @immutable
-class DashboardFixtureState {
+class HeuteFixtureState {
   final HeaderProps header;
   final HeroCardProps heroCard;
   final List<CategoryProps> categories;
   final List<RecommendationProps> recommendations;
   final BottomNavProps bottomNav;
 
-  const DashboardFixtureState({
+  const HeuteFixtureState({
     required this.header,
     required this.heroCard,
     required this.categories,
@@ -105,14 +105,14 @@ class DashboardFixtureState {
   Category get selectedCategory => Category.training;
 }
 
-/// Fixture states for Dashboard (3 variants: default, withNotifications, emptyRecommendations).
+/// Fixture states for Heute screen (3 variants: default, withNotifications, emptyRecommendations).
 /// Each variant exercises different UI states documented in docs/ui/contracts/dashboard_state.md.
-class DashboardFixtures {
+class HeuteFixtures {
   /// Variant A – Baseline: greeting + progress ring, CTA "Zurück zum Training",
   /// gold-highlighted Training chip, Home tab active.
   /// See docs/ui/contracts/dashboard_state.md for field → UI mappings.
-  static DashboardFixtureState defaultState() {
-    return DashboardFixtureState(
+  static HeuteFixtureState defaultState() {
+    return HeuteFixtureState(
       header: const HeaderProps(
         userName: 'Sarah',
         dateText: 'Heute, 28. Sept',
@@ -167,9 +167,9 @@ class DashboardFixtures {
   }
 
   /// Variant B – Notification badge: identical data, but activates bell indicator.
-  static DashboardFixtureState withNotifications() {
+  static HeuteFixtureState withNotifications() {
     final base = defaultState();
-    return DashboardFixtureState(
+    return HeuteFixtureState(
       header: base.header,
       heroCard: base.heroCard,
       categories: base.categories,
@@ -183,9 +183,9 @@ class DashboardFixtures {
   }
 
   /// Variant C – Empty recommendations: surfaces placeholder state under cards row.
-  static DashboardFixtureState emptyRecommendations() {
+  static HeuteFixtureState emptyRecommendations() {
     final base = defaultState();
-    return DashboardFixtureState(
+    return HeuteFixtureState(
       header: base.header,
       heroCard: base.heroCard,
       categories: base.categories,

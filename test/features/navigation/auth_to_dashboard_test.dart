@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
-import 'package:luvi_app/features/screens/dashboard_screen.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
@@ -22,10 +22,10 @@ void main() {
           builder: (context, state) => const SuccessScreen(),
         ),
         GoRoute(
-          path: DashboardScreen.routeName,
+          path: HeuteScreen.routeName,
           builder: (context, state) {
-            navigatedPath = DashboardScreen.routeName;
-            return const DashboardScreen();
+            navigatedPath = HeuteScreen.routeName;
+            return const HeuteScreen();
           },
         ),
       ],
@@ -56,7 +56,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify navigation to dashboard
-    expect(navigatedPath, DashboardScreen.routeName);
+    expect(navigatedPath, HeuteScreen.routeName);
 
     // Verify dashboard content is visible
     expect(find.text('Kategorien'), findsOneWidget);

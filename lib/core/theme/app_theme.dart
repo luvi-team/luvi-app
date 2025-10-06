@@ -142,6 +142,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     required this.successColor,
     required this.inputBorderLight,
     required this.authEntrySubhead,
+    required this.accentPurple,
   });
 
   final Color cardSurface; // Grayscale/100 (#F7F7F8)
@@ -151,6 +152,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
   final Color successColor; // Message/Green (#04B155)
   final Color inputBorderLight; // Subtle borders (#F7F7F8)
   final TextStyle authEntrySubhead; // Auth Entry subhead typography (shape-only)
+  final Color accentPurple; // Accent/300 (#CCB2F4) - dock wave, sync button
 
   static const DsTokens light = DsTokens(
     cardSurface: Color(0xFFF7F7F8),
@@ -166,6 +168,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
       height: 20 / 14,
       letterSpacing: 0,
     ),
+    accentPurple: Color(0xFFCCB2F4),
   );
 
   @override
@@ -177,6 +180,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     Color? successColor,
     Color? inputBorderLight,
     TextStyle? authEntrySubhead,
+    Color? accentPurple,
   }) => DsTokens(
     cardSurface: cardSurface ?? this.cardSurface,
     cardBorderSelected: cardBorderSelected ?? this.cardBorderSelected,
@@ -185,6 +189,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     successColor: successColor ?? this.successColor,
     inputBorderLight: inputBorderLight ?? this.inputBorderLight,
     authEntrySubhead: authEntrySubhead ?? this.authEntrySubhead,
+    accentPurple: accentPurple ?? this.accentPurple,
   );
 
   @override
@@ -206,6 +211,8 @@ class DsTokens extends ThemeExtension<DsTokens> {
       authEntrySubhead:
           TextStyle.lerp(authEntrySubhead, other.authEntrySubhead, t) ??
           authEntrySubhead,
+      accentPurple:
+          Color.lerp(accentPurple, other.accentPurple, t) ?? accentPurple,
     );
   }
 }

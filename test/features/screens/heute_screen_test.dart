@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/screens/dashboard_screen.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
 
 void main() {
-  group('DashboardScreen', () {
+  group('HeuteScreen', () {
     testWidgets('renders Kategorien and Empfehlungen sections', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: DashboardScreen(),
+          home: HeuteScreen(),
         ),
       );
 
@@ -19,7 +19,7 @@ void main() {
     testWidgets('renders 4 category labels', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: DashboardScreen(),
+          home: HeuteScreen(),
         ),
       );
 
@@ -33,7 +33,7 @@ void main() {
     testWidgets('renders horizontal list with 3 recommendation cards', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: DashboardScreen(),
+          home: HeuteScreen(),
         ),
       );
 

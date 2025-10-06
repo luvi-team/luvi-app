@@ -20,7 +20,7 @@ import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
-import 'package:luvi_app/features/screens/dashboard_screen.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
@@ -139,9 +139,9 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const AuthSignupScreen(),
   ),
   GoRoute(
-    path: DashboardScreen.routeName,
-    name: 'dashboard',
-    builder: (context, state) => const DashboardScreen(),
+    path: HeuteScreen.routeName,
+    name: 'heute',
+    builder: (context, state) => const HeuteScreen(),
   ),
 ];
 
@@ -164,7 +164,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     AuthEntryScreen.routeName,
   );
   final isOnboarding = state.matchedLocation.startsWith('/onboarding/');
-  final isDashboard = state.matchedLocation.startsWith(DashboardScreen.routeName);
+  final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final session = isInitialized
       ? SupabaseService.client.auth.currentSession
       : null;

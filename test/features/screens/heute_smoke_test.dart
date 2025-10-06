@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/screens/dashboard_screen.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/widgets/category_chip.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
 
@@ -36,14 +36,14 @@ const List<_ViewportConfig> _viewportConfigs = <_ViewportConfig>[
 ];
 
 void main() {
-  group('DashboardScreen smoke tests', () {
+  group('HeuteScreen smoke tests', () {
     testWidgets('renders without crash and displays all key sections',
         (tester) async {
-      // Pump DashboardScreen with theme & localization
+      // Pump HeuteScreen with theme & localization
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
 
@@ -76,9 +76,9 @@ void main() {
       );
 
       expect(
-        find.byKey(const Key('dashboard_bottom_nav_pill')),
+        find.byKey(const Key('dashboard_dock_nav')),
         findsOneWidget,
-        reason: 'Bottom navigation pill should be present',
+        reason: 'Bottom navigation dock should be present',
       );
     });
 
@@ -86,7 +86,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -115,7 +115,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -138,7 +138,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -160,7 +160,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -183,7 +183,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -199,44 +199,44 @@ void main() {
       );
     });
 
-    testWidgets('displays bottom navigation pill', (tester) async {
+    testWidgets('displays bottom navigation dock with 5 icon-only tabs (4 dock + 1 floating sync)', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
 
-      // Verify bottom nav "Home" label
+      // Phase A: 5 icon-only tabs (Heute/Zyklus/Sync/Puls/Profil), no "Home" label
       expect(
-        find.text('Home'),
+        find.byKey(const Key('nav_today')),
         findsOneWidget,
-        reason: 'Bottom nav "Home" label should be visible',
+        reason: 'Bottom nav should include Heute tab',
       );
 
       expect(
-        find.byKey(const Key('dashboard_nav_flower')),
+        find.byKey(const Key('nav_cycle')),
         findsOneWidget,
-        reason: 'Bottom nav should include the flower icon button',
+        reason: 'Bottom nav should include Zyklus tab',
       );
 
       expect(
-        find.byKey(const Key('dashboard_nav_social')),
+        find.byKey(const Key('floating_sync_button')),
         findsOneWidget,
-        reason: 'Bottom nav should include the social icon button',
+        reason: 'Bottom nav should include floating Sync button',
       );
 
       expect(
-        find.byKey(const Key('dashboard_nav_chart')),
+        find.byKey(const Key('nav_pulse')),
         findsOneWidget,
-        reason: 'Bottom nav should include the chart icon button',
+        reason: 'Bottom nav should include Puls tab',
       );
 
       expect(
-        find.byKey(const Key('dashboard_nav_account')),
+        find.byKey(const Key('nav_profile')),
         findsOneWidget,
-        reason: 'Bottom nav should include the account icon button',
+        reason: 'Bottom nav should include Profil tab',
       );
     });
 
@@ -244,7 +244,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -270,7 +270,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -306,7 +306,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -350,18 +350,18 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
-          home: const DashboardScreen(),
+          home: const HeuteScreen(),
         ),
       );
       await tester.pumpAndSettle();
 
-      final pillFinder = find.byKey(const Key('dashboard_bottom_nav_pill'));
-      expect(pillFinder, findsOneWidget);
+      final dockFinder = find.byKey(const Key('dashboard_dock_nav'));
+      expect(dockFinder, findsOneWidget);
 
-      final pillRect = tester.getRect(pillFinder);
+      final dockRect = tester.getRect(dockFinder);
       final Size logicalSize = view.physicalSize / view.devicePixelRatio;
-      // Pill now renders via Scaffold.bottomNavigationBar SafeArea; ensure it hugs the bottom inset.
-      final double gap = logicalSize.height - pillRect.bottom;
+      // Dock now renders via Scaffold.bottomNavigationBar SafeArea; ensure it hugs the bottom inset.
+      final double gap = logicalSize.height - dockRect.bottom;
 
       expect(
         gap,
@@ -385,7 +385,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.buildAppTheme(),
-            home: const DashboardScreen(),
+            home: const HeuteScreen(),
           ),
         );
         await tester.pumpAndSettle();
@@ -410,18 +410,11 @@ void main() {
         final Rect listRect = tester.getRect(
           find.byKey(const Key('dashboard_recommendations_list')),
         );
-        final Finder pillFinder =
-            find.byKey(const Key('dashboard_bottom_nav_pill'));
-        expect(pillFinder, findsOneWidget);
-        final Rect pillRect = tester.getRect(pillFinder);
-        final Rect navAreaRect = tester.getRect(
-          find
-              .ancestor(
-                of: pillFinder,
-                matching: find.byType(Padding),
-              )
-              .first,
-        );
+        final Finder dockFinder =
+            find.byKey(const Key('dashboard_dock_nav'));
+        expect(dockFinder, findsOneWidget);
+        final Rect dockRect = tester.getRect(dockFinder);
+        final Rect navAreaRect = dockRect; // Dock itself is the nav area
 
         final double gapCatsHeaderToGrid =
             categoriesRect.top - categoriesHeaderRect.bottom;
@@ -430,7 +423,7 @@ void main() {
         final double gapRecsHeaderToList =
             listRect.top - recsHeaderRect.bottom;
         final double gapListToBottomBarTop =
-            pillRect.top - listRect.bottom;
+            dockRect.top - listRect.bottom;
 
         String fmt(double value) {
           const double epsilon = 1e-6;
@@ -448,7 +441,7 @@ void main() {
           'catsHdr→grid=${fmt(gapCatsHeaderToGrid)}, '
           'catsBlock→recsHdr=${fmt(gapCatsBlockToRecsHeader)}, '
           'recsHdr→list=${fmt(gapRecsHeaderToList)}, '
-          'list→bottom=${fmt(pillRect.top - listRect.bottom)} '
+          'list→bottom=${fmt(dockRect.top - listRect.bottom)} '
           '(navTop→list=${fmt(gapListToBottomBarTop)} '
           'target=${fmt(viewport.expectedBottomGap)}, '
           'navPaddingTop=${fmt(navAreaRect.top)} '
@@ -482,6 +475,209 @@ void main() {
         );
       });
     }
+
+    testWidgets('bottom nav tabs have hit area ≥44×44 (4 dock + 1 floating sync)', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const HeuteScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      const List<String> navKeys = [
+        'nav_today',
+        'nav_cycle',
+        'nav_pulse',
+        'nav_profile',
+        'floating_sync_button',
+      ];
+
+      for (final keyString in navKeys) {
+        final finder = find.byKey(Key(keyString));
+        expect(finder, findsOneWidget, reason: 'Tab $keyString should exist');
+
+        final Size size = tester.getSize(finder);
+        expect(
+          size.width,
+          greaterThanOrEqualTo(44.0),
+          reason: 'Tab $keyString width should be ≥44px (actual: ${size.width})',
+        );
+        expect(
+          size.height,
+          greaterThanOrEqualTo(44.0),
+          reason: 'Tab $keyString height should be ≥44px (actual: ${size.height})',
+        );
+      }
+    });
+
+    testWidgets('floating sync button is positioned above dock (z-order)', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const HeuteScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final syncFinder = find.byKey(const Key('floating_sync_button'));
+      final dockFinder = find.byKey(const Key('dashboard_dock_nav'));
+
+      expect(syncFinder, findsOneWidget);
+      expect(dockFinder, findsOneWidget);
+
+      final syncRect = tester.getRect(syncFinder);
+      final dockRect = tester.getRect(dockFinder);
+
+      // Sync button should be positioned above dock (lower Y = higher on screen)
+      expect(
+        syncRect.top,
+        lessThan(dockRect.top),
+        reason: 'Floating sync button should be above dock-bar (z-order)',
+      );
+    });
+
+    testWidgets('active tab displays Gold tint (colorScheme.primary)', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const HeuteScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Default active tab is Heute (index 0)
+      // Verify exactly one tab has selected=true semantics (which corresponds to Gold tint)
+      final selectedSemantics = tester.widgetList<Semantics>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.selected == true &&
+              widget.properties.button == true,
+        ),
+      );
+
+      expect(
+        selectedSemantics.length,
+        equals(1),
+        reason: 'Exactly one tab should have selected=true (receives Gold tint)',
+      );
+
+      // Verify the active tab is "Heute" (default)
+      final heuteSemantics = tester.widget<Semantics>(
+        find.ancestor(
+          of: find.byKey(const Key('nav_today')),
+          matching: find.byWidgetPredicate((w) => w is Semantics),
+        ).first,
+      );
+
+      expect(
+        heuteSemantics.properties.selected,
+        isTrue,
+        reason: 'Heute tab should be active by default (receives Gold tint)',
+      );
+    });
+
+    testWidgets('sync button receives Gold tint when active (index==4)', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const HeuteScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap sync button to activate it
+      await tester.tap(find.byKey(const Key('floating_sync_button')));
+      await tester.pumpAndSettle();
+
+      // Verify sync button has selected=true (Gold tint)
+      final syncSemanticsWidgets = tester.widgetList<Semantics>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.label == 'Sync' &&
+              widget.properties.button == true,
+        ),
+      );
+
+      expect(
+        syncSemanticsWidgets.isNotEmpty,
+        isTrue,
+        reason: 'Sync button Semantics should exist',
+      );
+
+      final syncSemantics = syncSemanticsWidgets.first;
+      expect(
+        syncSemantics.properties.selected,
+        isTrue,
+        reason: 'Sync button should be active after tap (receives Gold tint)',
+      );
+
+      // Verify no dock tab is selected when sync is active
+      final dockTabsWithSelected = tester.widgetList<Semantics>(
+        find.descendant(
+          of: find.byKey(const Key('dashboard_dock_nav')),
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Semantics &&
+                widget.properties.selected == true &&
+                widget.properties.button == true,
+          ),
+        ),
+      );
+
+      expect(
+        dockTabsWithSelected.length,
+        equals(0),
+        reason: 'No dock tab should be selected when sync is active (index==4)',
+      );
+    });
+
+    testWidgets('bottom nav has exactly one active tab with semantics', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const HeuteScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Find all Semantics widgets with "selected" property
+      final selectedSemantics = tester.widgetList<Semantics>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.selected == true &&
+              widget.properties.button == true,
+        ),
+      );
+
+      expect(
+        selectedSemantics.length,
+        equals(1),
+        reason: 'Exactly one tab should have selected=true (active tab)',
+      );
+
+      // Verify active tab is "Heute" (index 0, default)
+      final todaySemantics = tester.widget<Semantics>(
+        find.ancestor(
+          of: find.byKey(const Key('nav_today')),
+          matching: find.byWidgetPredicate((w) => w is Semantics),
+        ).first,
+      );
+
+      expect(
+        todaySemantics.properties.label,
+        equals('Heute'),
+        reason: 'Active tab should have correct semantics label',
+      );
+      expect(
+        todaySemantics.properties.selected,
+        isTrue,
+        reason: 'Default active tab (Heute) should have selected=true',
+      );
+    });
 
   });
 }

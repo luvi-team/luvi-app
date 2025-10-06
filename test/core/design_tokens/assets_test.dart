@@ -11,10 +11,15 @@ void main() {
       expect(Assets.icons.catNutrition, 'assets/icons/dashboard/icon.category.nutrition.svg');
       expect(Assets.icons.catRegeneration, 'assets/icons/dashboard/icon.category.regeneration.svg');
       expect(Assets.icons.catMindfulness, 'assets/icons/dashboard/icon.category.mindfulness.svg');
-      expect(Assets.icons.navFlower, 'assets/icons/dashboard/icon.nav.flower.svg');
-      expect(Assets.icons.navSocial, 'assets/icons/dashboard/icon.nav.social.svg');
-      expect(Assets.icons.navAccount, 'assets/icons/dashboard/icon.nav.account.svg');
-      expect(Assets.icons.navChart, 'assets/icons/dashboard/icon.nav.chart.svg');
+
+      // Bottom nav icons (5-tab design)
+      expect(Assets.icons.navToday, 'assets/icons/dashboard/nav.today.svg');
+      expect(Assets.icons.navCycle, 'assets/icons/dashboard/nav.cycle.svg');
+      expect(Assets.icons.navSync, 'assets/icons/dashboard/nav.sync.svg');
+      expect(Assets.icons.navPulse, 'assets/icons/dashboard/nav.pulse.svg');
+      expect(Assets.icons.navProfile, 'assets/icons/dashboard/nav.profile.svg');
+
+      // Optional/extras
       expect(Assets.icons.cycleOutline, 'assets/icons/dashboard/icon.nav.cycle-outline.svg');
     });
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
@@ -11,7 +12,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding07Screen', () {
-    testWidgets('option tap enables CTA and navigates to done', (tester) async {
+    testWidgets('option tap enables CTA and navigates to heute screen', (tester) async {
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -19,9 +20,8 @@ void main() {
             builder: (context, state) => const Onboarding07Screen(),
           ),
           GoRoute(
-            path: '/onboarding/done',
-            builder: (context, state) =>
-                const Scaffold(body: Text('Onboarding abgeschlossen')),
+            path: HeuteScreen.routeName,
+            builder: (context, state) => const HeuteScreen(),
           ),
         ],
         initialLocation: Onboarding07Screen.routeName,
@@ -49,12 +49,14 @@ void main() {
       await tester.tap(firstOption);
       await tester.pumpAndSettle();
 
-      // enabled & navigates
+      // enabled & navigates to Heute screen
       expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNotNull);
       await tester.ensureVisible(cta);
       await tester.tap(cta);
       await tester.pumpAndSettle();
-      expect(find.text('Onboarding abgeschlossen'), findsOneWidget);
+      // Verify Heute screen content is visible
+      expect(find.text('Kategorien'), findsOneWidget);
+      expect(find.text('Empfehlungen'), findsOneWidget);
     });
 
     testWidgets('back button navigates to 06 when canPop is false', (
