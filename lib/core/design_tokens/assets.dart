@@ -27,6 +27,12 @@ class _Icons {
   final String navPulse = 'assets/icons/dashboard/nav.pulse.svg';
   final String navProfile = 'assets/icons/dashboard/nav.profile.svg';
 
+  // Hero/Sync badge (exported from Figma). Note: current asset is a PNG with a
+  // filename that includes ".svg"; we treat it as a generic image path and
+  // render with Image.asset. When a tight SVG is available, switch to that
+  // path and the UI will render via SvgPicture automatically.
+  final String syncBadge = 'assets/icons/dashboard/navhero.sync.png';
+
   // Hero
   final String heroTraining = 'assets/icons/dashboard/icon.hero.training.svg';
 
@@ -40,4 +46,7 @@ class _Images {
   final String recoBeinePo = 'assets/images/dashboard/reco.beine_po.png';
   final String recoRueckenSchulter = 'assets/images/dashboard/reco.ruecken_schulter.png';
   final String recoGanzkoerper = 'assets/images/dashboard/reco.ganzkoerper.png';
+
+  // Hero background (Luvi‑Sync preview)
+  final String heroSync01 = 'assets/images/dashboard/hero_sync_01.png';
 }

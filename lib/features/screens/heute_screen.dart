@@ -13,12 +13,14 @@ import 'package:luvi_app/features/widgets/floating_sync_button.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/widgets/section_header.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/features/widgets/hero_sync_preview.dart';
 
 // Dashboard-only spacing (audit-backed)
 // from DASHBOARD_spec.json $.heroCard.autoLayout.padding (21px)
 const double _pad21 = 21.0;
 // from DASHBOARD_spec_deltas.json $.deltas[9].newValue (15px)
-const double _gap15 = 15.0;
+const double _gap15 = 15.0; // legacy (kept for reference)
+const double _gap16 = 16.0; // Spec: recommendations list gap 16px
 // from DASHBOARD_spec.json $.categories.grid.columns (4)
 const int _categoriesColumns = 4;
 // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[4].value (8px)
@@ -41,7 +43,8 @@ const double _heroCtaHeight = 50.51; // from docs/product/measures/dashboard/DAS
 const double _heroCtaRadius = 17.12; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.radius.all
 const double _heroCtaHorizontalPadding = 12.0; // from docs/audits/ONB_07_measures.json $.cta.padding.horizontal
 const double _heroCtaVerticalPadding = 12.0; // TODO(audit): onboarding CTA padding top=11 bottom=12; using 12 for symmetry from docs/audits/ONB_07_measures.json $.cta.padding.bottom
-const double _kMinBottomGap = 31.0; // Figma min gap between list and bottom nav (allows expansion on tall viewports)
+const double _kMinBottomGap = 62.0; // increased breathing room above dock
+const double _sectionGapTight = 20.0; // tighter spacing between stacked sections
 
 // Kodex: Bottom-nav geometry now imported from bottom_nav_tokens.dart (formula-based, no duplication)
 // - dockHeight, buttonDiameter, cutoutDepth, desiredGapToWaveTop, syncButtonBottom all from tokens
@@ -89,16 +92,20 @@ class _HeuteScreenState extends State<HeuteScreen> {
                   [
                     const SizedBox(height: Spacing.m), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
                     _buildHeader(state.header, state.bottomNav.hasNotifications),
-                    const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
-                    _buildHeroCard(state.heroCard, state.heroCta),
-                    const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
+                    const SizedBox(height: _sectionGapTight),
+                    // New Luvi‑Sync Preview hero (image + badge + info card)
+                    HeroSyncPreview(
+                      imagePath: Assets.images.heroSync01,
+                      badgeAssetPath: Assets.icons.syncBadge,
+                    ),
+                    const SizedBox(height: _sectionGapTight),
                     SectionHeader(
                       title: 'Kategorien',
                       showTrailingAction: false,
                     ),
                     const SizedBox(height: Spacing.s), // Figma: header→content 12px (Audit V3)
                     _buildCategories(state.categories),
-                    const SizedBox(height: Spacing.l), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[12].value (24px)
+                    const SizedBox(height: _sectionGapTight),
                     const SectionHeader(
                       title: 'Empfehlungen',
                       trailingLabel: 'Alle',
@@ -141,7 +148,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
               const SizedBox(height: 2), // from DASHBOARD_spec.json $.spacingTokensObserved[1]
               // from DASHBOARD_spec.json $.header.subtitle.typography (Figtree 16/24)
               Text(
-                '${header.dateText}: ${header.cyclePhaseText}',
+                header.cyclePhaseText,
                 style: const TextStyle(
                   fontFamily: FontFamilies.figtree,
                   fontSize: 16,
@@ -155,9 +162,6 @@ class _HeuteScreenState extends State<HeuteScreen> {
         ),
         Row(
           children: [
-            _buildHeaderIcon(Assets.icons.search),
-            // from DASHBOARD_spec.json $.header.actions.gap (68426:7253)
-            const SizedBox(width: 8),
             Stack(
               children: [
                 _buildHeaderIcon(Assets.icons.notifications),
@@ -473,13 +477,17 @@ class _HeuteScreenState extends State<HeuteScreen> {
         clipBehavior: Clip.hardEdge,
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.zero,
-        separatorBuilder: (context, index) => const SizedBox(width: _gap15),
+        separatorBuilder: (context, index) => const SizedBox(width: _gap16),
         itemBuilder: (context, index) {
           final rec = recommendations[index];
           return RecommendationCard(
             imagePath: rec.imagePath,
             tag: rec.tag,
             title: rec.title,
+            showSyncBadge: rec.showSyncBadge,
+            badgeAssetPath: Assets.icons.syncBadge,
+            badgeSize: rec.badgeSize,
+            showTag: false,
           );
         },
       ),

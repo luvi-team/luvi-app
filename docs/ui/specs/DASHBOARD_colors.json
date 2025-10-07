@@ -1,0 +1,181 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "format": "hex"
+  },
+  "colors": {
+    "primary": {
+      "gold100": {
+        "value": "#D9B18E",
+        "name": "Primary color/100",
+        "usages": [
+          {
+            "location": "hero.cta.bg",
+            "nodeId": "68539:7991"
+          },
+          {
+            "location": "categories.chip.selectedBg",
+            "nodeId": "68539:7997"
+          },
+          {
+            "location": "recommendations.seeAll.color",
+            "nodeId": "68563:7903"
+          }
+        ]
+      }
+    },
+    "secondary": {
+      "secondary100": {
+        "value": "#1C1411",
+        "name": "Secondary color/100",
+        "usages": [
+          {
+            "location": "hero.cta.labelStyle.color",
+            "nodeId": "68539:7991"
+          }
+        ]
+      }
+    },
+    "grayscale": {
+      "black": {
+        "value": "#030401",
+        "name": "Grayscale/Black",
+        "usages": [
+          {
+            "location": "header.title.color",
+            "nodeId": "68539:7977"
+          },
+          {
+            "location": "hero.text.title.color",
+            "nodeId": "68539:7990"
+          },
+          {
+            "location": "hero.text.teaser.color",
+            "nodeId": "68539:7990"
+          },
+          {
+            "location": "categories.title.color",
+            "nodeId": "68539:7994"
+          },
+          {
+            "location": "categories.chip.label.color",
+            "nodeId": "68539:7999"
+          },
+          {
+            "location": "recommendations.title.color",
+            "nodeId": "68563:7902"
+          },
+          {
+            "location": "hero.badge.color",
+            "nodeId": "68563:7934"
+          }
+        ]
+      },
+      "subtext": {
+        "value": "#6D6D6D",
+        "name": "sub tex 2",
+        "usages": [
+          {
+            "location": "header.subtitle.color",
+            "nodeId": "68539:7978"
+          },
+          {
+            "location": "recommendations.text.tag.color"
+          }
+        ]
+      },
+      "white": {
+        "value": "#FFFFFF",
+        "name": "Grayscale/White",
+        "usages": [
+          {
+            "location": "hero.infoCard.bg",
+            "nodeId": "68539:7989"
+          },
+          {
+            "location": "hero.badge.fill",
+            "nodeId": "68563:7934"
+          },
+          {
+            "location": "recommendations.text.title.color",
+            "nodeId": "68563:7909"
+          }
+        ]
+      },
+      "gray100": {
+        "value": "#F7F7F8",
+        "name": "Grayscale/100",
+        "usages": [
+          {
+            "location": "categories.chip.normalBg",
+            "nodeId": "68539:8001"
+          }
+        ]
+      }
+    },
+    "additional": {
+      "accentPurple": {
+        "value": "#CCB2F4",
+        "name": "Accent Purple",
+        "usages": []
+      },
+      "dimgrey": {
+        "value": "#696969",
+        "name": "dimgrey",
+        "usages": [
+          {
+            "location": "hero.container.border.color",
+            "nodeId": "68539:7988"
+          },
+          {
+            "location": "hero.infoCard.border.color",
+            "nodeId": "68539:7989"
+          }
+        ]
+      }
+    },
+    "opacity": {
+      "whiteBorder8": {
+        "value": "#FFFFFF14",
+        "name": "rgba(255,255,255,0.08)",
+        "usages": [
+          {
+            "location": "header.actions.bell.container.border.color",
+            "nodeId": "68539:7986"
+          },
+          {
+            "location": "header.actions.search.container.border.color",
+            "nodeId": "68539:7980"
+          }
+        ]
+      },
+      "gradientStart": {
+        "value": "#001E1F24",
+        "name": "rgba(30,31,36,0.00)",
+        "usages": [
+          {
+            "location": "recommendations.card.gradient.colors[0]"
+          }
+        ]
+      },
+      "gradientEnd": {
+        "value": "#FF1E1F24",
+        "name": "rgba(30,31,36,1.00)",
+        "usages": [
+          {
+            "location": "recommendations.card.gradient.colors[1]"
+          }
+        ]
+      }
+    }
+  },
+  "tokens": {
+    "onSurface": "grayscale.black",
+    "onSurfaceVariant": "grayscale.subtext",
+    "surface": "grayscale.white",
+    "surfaceVariant": "grayscale.gray100",
+    "primary": "primary.gold100",
+    "onPrimary": "secondary.secondary100",
+    "accent": "additional.accentPurple"
+  }
+}

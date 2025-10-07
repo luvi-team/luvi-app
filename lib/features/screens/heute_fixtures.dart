@@ -50,11 +50,15 @@ class RecommendationProps {
   final String tag;
   final String title;
   final String imagePath;
+  final bool showSyncBadge;
+  final double? badgeSize;
 
   const RecommendationProps({
     required this.tag,
     required this.title,
     required this.imagePath,
+    this.showSyncBadge = false,
+    this.badgeSize,
   });
 }
 
@@ -147,6 +151,8 @@ class HeuteFixtures {
           tag: 'Kraft',
           title: 'Beine & Po',
           imagePath: Assets.images.recoBeinePo,
+          showSyncBadge: true,
+          badgeSize: 24,
         ),
         RecommendationProps(
           tag: 'Kraft',
