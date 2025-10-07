@@ -519,6 +519,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
               key: const Key('floating_sync_button'),
               iconPath: Assets.icons.navSync,
               // Kodex: size and iconSize from tokens (64px, 42px)
+              // Current SVG has 3px padding (26/32 glyph). Compensate to keep 65% fill.
+              iconTight: false,
               isActive: _activeTabIndex == 4, // Gold tint when sync is active
               onTap: () {
                 setState(() {

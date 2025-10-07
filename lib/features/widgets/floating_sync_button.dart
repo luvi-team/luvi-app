@@ -18,6 +18,7 @@ class FloatingSyncButton extends StatelessWidget {
   final String iconPath;
   final double size;
   final double iconSize;
+  final bool iconTight; // whether the SVG glyph tightly fits its viewBox (no padding)
   final Color? backgroundColor;
   final bool isActive;
 
@@ -26,7 +27,8 @@ class FloatingSyncButton extends StatelessWidget {
     required this.onTap,
     required this.iconPath,
     this.size = buttonDiameter, // Figma spec: 64px (from tokens)
-    this.iconSize = iconSizeTight, // Figma spec: 42px for 65% fill (from tokens)
+    this.iconSize = iconSizeTight, // Default assumes tight SVG (42px → 65% fill)
+    this.iconTight = true, // Current asset has padding → pass iconTight: false for compensation
     this.backgroundColor,
     this.isActive = false,
   });
@@ -58,19 +60,15 @@ class FloatingSyncButton extends StatelessWidget {
               color: dsTokens.accentPurple,
               width: ringStrokeWidth,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF000000).withValues(alpha: 0.18), // Figma spec: α=0.18
-                blurRadius: 16.0, // Figma spec: 16px
-                offset: const Offset(0, 6), // Figma spec: (0,6)
-              ),
-            ],
+            // Shadow removed per visual feedback to avoid large grey disc under button
+            boxShadow: const [],
           ),
           child: Center(
             child: SvgPicture.asset(
               iconPath,
-              width: iconSize, // Figma spec: iconSizeTight = 42px (65% fill)
-              height: iconSize,
+              // If the SVG has padding (non-tight), compensate so the visible glyph fills 65%
+              width: iconTight ? iconSize : iconSizeCompensated,
+              height: iconTight ? iconSize : iconSizeCompensated,
               colorFilter: ColorFilter.mode(
                 iconColor,
                 BlendMode.srcIn,

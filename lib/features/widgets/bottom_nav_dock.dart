@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/painters/bottom_wave_border_painter.dart';
-import 'package:luvi_app/features/widgets/painters/wave_clip.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 
 /// Bottom navigation dock with violet wave top-border and center cutout.
@@ -47,44 +47,64 @@ class BottomNavDock extends StatelessWidget {
 
     return Container(
       height: height,
-      decoration: BoxDecoration(
-        color: Colors.transparent, // Transparent outer, clipped child has surface color
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF000000).withValues(alpha: 0.12),
-            blurRadius: 24.0,
-            offset: const Offset(0, -2),
-          ),
-        ],
+      decoration: const BoxDecoration(
+        color: Colors.transparent, // Outer: transparent, inner carries surface color
+        // Remove outer box shadow to avoid any top-edge halo/line
+        boxShadow: [],
       ),
-      child: ClipPath(
-        clipper: const WavePunchOutClipper(), // Kodex: Removes white edge under button
-        child: Container(
-          color: effectiveBackgroundColor, // Surface color, clipped with punch-out
-          child: CustomPaint(
-            painter: BottomWaveBorderPainter(
-              borderColor: effectiveCradleColor,
-              borderWidth: borderWidth,
-            ),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: dockPadding),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Left tabs (Heute, Zyklus)
-                    for (int i = 0; i < 2; i++)
-                      _buildTab(tabs[i], i, activeIndex == i, context),
+      // Important: No ClipPath punch-out → avoids transparent hole (grey disc from content behind)
+      child: Container(
+        color: effectiveBackgroundColor, // Surface color (keeps area under button solid)
+        child: CustomPaint(
+          painter: BottomWaveBorderPainter(
+            borderColor: effectiveCradleColor,
+            borderWidth: borderWidth,
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: dockPadding),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Compute dynamic center gap to prevent overflow while keeping
+                  // at least the visual clearance required by the wave cutout.
+                  final double available = constraints.maxWidth;
+                  const double tabW = minTapArea; // 44 px
+                  const double leftGroupW = tabW + innerGapLeftGroup + tabW;
+                  const double rightGroupW = tabW + innerGapRightGroup + tabW;
+                  // Remainder for the center gap; allow it to shrink below the wave
+                  // cutout width to avoid overflow on narrow viewports.
+                  final double computedCenter = available - leftGroupW - rightGroupW;
+                  final double effectiveCenterGap = math.max(8.0, computedCenter);
 
-                    // Kodex: Center gap from formula (2 × cutoutHalfWidth = 118px)
-                    const SizedBox(width: centerGap),
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Left group: Home, inner gap, Flower (Home stays anchored)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildTab(tabs[0], 0, activeIndex == 0, context),
+                          const SizedBox(width: innerGapLeftGroup),
+                          _buildTab(tabs[1], 1, activeIndex == 1, context),
+                        ],
+                      ),
 
-                    // Right tabs (Puls, Profil)
-                    for (int i = 2; i < 4; i++)
-                      _buildTab(tabs[i], i, activeIndex == i, context),
-                  ],
-                ),
+                      // Dynamic center gap (shrinks as needed to prevent overflow)
+                      SizedBox(width: effectiveCenterGap),
+
+                      // Right group: Diagram, inner gap, Profile (Profile stays anchored)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildTab(tabs[2], 2, activeIndex == 2, context),
+                          const SizedBox(width: innerGapRightGroup),
+                          _buildTab(tabs[3], 3, activeIndex == 3, context),
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),

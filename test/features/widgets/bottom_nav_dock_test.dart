@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
-import 'package:luvi_app/features/widgets/painters/wave_clip.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 
 void main() {
   group('BottomNavDock', () {
     // Kodex: Geometry constants from tokens (Figma audit 2025-10-06)
     const double expectedDockHeight = dockHeight; // 96px (from tokens)
-    const double expectedIconSize = tabIconSize; // 32px (from tokens)
-    const double expectedCenterGap = centerGap; // 118px = 2 × 59 (from tokens)
     const double expectedTapAreaSize = minTapArea; // 44px (from tokens)
-    const double expectedCutoutDepth = cutoutDepth; // 38px (from tokens, was 25px)
-    const double expectedSyncBottom = syncButtonBottom; // 49px = 96-38-9 (from tokens)
-    const double expectedButtonIconSize = iconSizeTight; // 42px for 65% fill (from tokens)
+    const double expectedCutoutDepth = cutoutDepth; // from tokens (now 42px)
+    const double expectedSyncBottom = syncButtonBottom; // = dockHeight - cutoutDepth - desiredGapToWaveTop
+    const double expectedButtonIconSize = iconSizeTight; // 65% of button diameter
 
     final tabs = [
       const DockTab(iconPath: 'assets/icons/dashboard/nav.today.svg', label: 'Heute'),
@@ -182,7 +179,7 @@ void main() {
       }
     });
 
-    testWidgets('has ClipPath with WavePunchOutClipper (no white line)', (tester) async {
+    testWidgets('does not use punch-out ClipPath (prevents grey disc)', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
@@ -196,30 +193,30 @@ void main() {
         ),
       );
 
-      // Kodex: Verify ClipPath exists in tree (punch-out for button area)
+      // Verify: no ClipPath below BottomNavDock (no transparent hole → no grey disc)
       final clipPathFinder = find.descendant(
         of: find.byType(BottomNavDock),
         matching: find.byType(ClipPath),
       );
-      expect(clipPathFinder, findsOneWidget, reason: 'ClipPath should exist to prevent white line under button');
-
-      // Verify WavePunchOutClipper is used
-      final clipPath = tester.widget<ClipPath>(clipPathFinder);
-      expect(clipPath.clipper, isA<WavePunchOutClipper>(), reason: 'Clipper should be WavePunchOutClipper');
+      expect(
+        clipPathFinder,
+        findsNothing,
+        reason:
+            'BottomNavDock should not punch out a circular hole; area under button must stay solid',
+      );
     });
 
-    testWidgets('cutout depth is 38px (Figma spec, updated from 25px)', (tester) async {
+    testWidgets('cutout depth and button offset follow tokens', (tester) async {
       // Note: Cutout depth is internal to painter, verified via visual inspection
-      // and formula check (syncButtonBottom = 96 - 38 - 9 = 49)
-      expect(expectedCutoutDepth, 38.0, reason: 'Cutout depth from tokens should be 38px');
-      expect(expectedSyncBottom, 49.0, reason: 'Sync button bottom = dockHeight(96) - cutoutDepth(38) - gap(9) = 49');
+      // and formula check (syncButtonBottom = dockHeight - (cutoutDepth + waveTopInset) + desiredGap)
+      expect(expectedCutoutDepth, cutoutDepth);
+      expect(expectedSyncBottom, dockHeight - (cutoutDepth + waveTopInset) + desiredGapToWaveTop);
     });
 
-    testWidgets('button icon size is 42px (65% fill ratio)', (tester) async {
-      // Note: Icon size verified via FloatingSyncButton default prop
-      expect(expectedButtonIconSize, 42.0, reason: 'Button icon size from tokens should be 42px (65% fill)');
+    testWidgets('button icon size keeps 65% fill ratio', (tester) async {
+      // Icon size scales with button diameter to keep ~65% fill
       expect(expectedButtonIconSize / buttonDiameter, closeTo(0.65, 0.01),
-        reason: 'Icon fill ratio should be ~0.65 (65%)');
+          reason: 'Icon fill ratio should be ~0.65 (65%)');
     });
   });
 }

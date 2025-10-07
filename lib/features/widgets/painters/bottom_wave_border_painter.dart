@@ -37,44 +37,46 @@ class BottomWaveBorderPainter extends CustomPainter {
     final a = cutoutHalfWidth; // 59px
     final d = cutoutDepth; // 38px
 
-    // Control point offset for smooth cubic curve with horizontal tangents
-    // α = 0.55 × halfWidth is standard approximation for circle-like curves
-    final alpha = 0.55 * a; // ≈ 32.45px
+    // Control point offsets for smooth cubic curve with horizontal tangents
+    // Tunable via tokens: waveCpAlpha and waveCpBeta
+    final alpha = waveCpAlpha * a; // default ≈ 0.55×a → circle-like
 
-    // Start from left edge
-    path.moveTo(0, 0);
+    // Start from left edge (inset from top to avoid AA seam)
+    path.moveTo(0, waveTopInset);
 
     // Line to left side of cutout
-    path.lineTo(centerX - a, 0);
+    path.lineTo(centerX - a, waveTopInset);
 
     // Cutout curve: Two symmetrical cubic Bezier segments
     // Segment 1: (-a, 0) → (0, -d)
     // - cp1 at (-a + α, 0) for horizontal tangent at left end
     // - cp2 at (-0.275×a, -d) for smooth transition at center
     path.cubicTo(
-      centerX - a + alpha, 0, // cp1: horizontal tangent at left endpoint
-      centerX - 0.275 * a, d, // cp2: smooth approach to center bottom
-      centerX, d, // endpoint: center bottom of wave
+      centerX - a + alpha, waveTopInset, // cp1: horizontal tangent at left endpoint
+      centerX - waveCpBeta * a, waveTopInset + d, // cp2: smooth approach to center bottom
+      centerX, waveTopInset + d, // endpoint: center bottom of wave
     );
 
     // Segment 2: (0, -d) → (+a, 0)
     // - cp1 at (+0.275×a, -d) for smooth transition from center
     // - cp2 at (+a - α, 0) for horizontal tangent at right end
     path.cubicTo(
-      centerX + 0.275 * a, d, // cp1: smooth departure from center bottom
-      centerX + a - alpha, 0, // cp2: horizontal tangent at right endpoint
-      centerX + a, 0, // endpoint: right side of cutout
+      centerX + waveCpBeta * a, waveTopInset + d, // cp1: smooth departure from center bottom
+      centerX + a - alpha, waveTopInset, // cp2: horizontal tangent at right endpoint
+      centerX + a, waveTopInset, // endpoint: right side of cutout
     );
 
     // Line to right edge
-    path.lineTo(size.width, 0);
+    path.lineTo(size.width, waveTopInset);
 
     canvas.drawPath(path, paint);
   }
 
   @override
   bool shouldRepaint(covariant BottomWaveBorderPainter oldDelegate) {
-    return oldDelegate.borderColor != borderColor ||
-        oldDelegate.borderWidth != borderWidth;
+    // Repaint whenever any tokenized geometry may have changed (cutout width/depth,
+    // control point factors, top inset). Tokens are not part of the constructor, so
+    // we conservatively return true to avoid stale wave geometry.
+    return true;
   }
 }

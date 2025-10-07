@@ -5,6 +5,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/widgets/category_chip.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
+import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 
 class _ViewportConfig {
   const _ViewportConfig({
@@ -677,6 +678,33 @@ void main() {
         isTrue,
         reason: 'Default active tab (Heute) should have selected=true',
       );
+    });
+
+    testWidgets('sync icon uses compensated size when asset not tight', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const HeuteScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Find the SvgPicture inside the floating sync button
+      final Finder syncButtonFinder = find.byKey(const Key('floating_sync_button'));
+      expect(syncButtonFinder, findsOneWidget);
+
+      final svgInButton = find.descendant(
+        of: syncButtonFinder,
+        matching: find.byType(SvgPicture),
+      );
+      expect(svgInButton, findsOneWidget);
+
+      final SvgPicture svg = tester.widget<SvgPicture>(svgInButton);
+
+      // The HeuteScreen passes iconTight: false, so the effective icon size should be
+      // iconSizeCompensated (auto-derived from tokens and current SVG glyph ratio).
+      expect(svg.width, moreOrLessEquals(iconSizeCompensated, epsilon: 0.1));
+      expect(svg.height, moreOrLessEquals(iconSizeCompensated, epsilon: 0.1));
     });
 
   });
