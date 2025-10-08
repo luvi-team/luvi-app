@@ -73,18 +73,17 @@ class CategoryChip extends StatelessWidget {
               child: Container(
                 width: _iconContainerSize,
                 height: _iconContainerSize,
-                // Visual tuning: padding 14→16 to increase whitespace around 10→6 px glyph
-                padding: const EdgeInsets.all(16),
+                // Visual tuning: padding 16→14 to allow a 32 px glyph within 60 px container
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: SvgPicture.asset(
                   iconPath,
-                  // TODO(assets): re-export thinner stroke (≈1.2–1.5 px, no scale-strokes); after reexport, restore 24 px glyph.
-                  width: 6,
-                  // TODO(assets): re-export thinner stroke (≈1.2–1.5 px, no scale-strokes); after reexport, restore 24 px glyph.
-                  height: 6,
+                  // 60 − 2×14 = 32 → exact inner space for the glyph
+                  width: 32,
+                  height: 32,
                   fit: BoxFit.contain,
                 ),
               ),
