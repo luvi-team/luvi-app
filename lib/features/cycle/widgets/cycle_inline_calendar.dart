@@ -8,12 +8,22 @@ import '../../../core/theme/app_theme.dart';
 import '../domain/phase.dart';
 import '../domain/week_strip.dart';
 
-const double _trackHeight = 38.0;
+const double _trackHeight = 50.0;
 const double _dayWidth = 25.31;
 const double _todayWidth = 55.94;
-const double _segmentRadius = 40.0;
-const double _weekdayFontSize = 12.0;
-const double _dayFontSize = 16.0;
+const double _weekdayFontSize = 14.0;
+const double _weekdayLineHeight = 1.12;
+const double _weekdaySpacing = 7.0;
+const double _dayFontSize = 18.0;
+const double _dayLineHeight = 1.15;
+const double _topPadding = 4.0;
+const double _bottomPadding = 2.0;
+
+const double _weekdayTextHeight = _weekdayFontSize * _weekdayLineHeight;
+const double _segmentTopOffset =
+    _topPadding + _weekdayTextHeight + _weekdaySpacing;
+const double _segmentHeight =
+    _trackHeight - _segmentTopOffset - _bottomPadding;
 
 String _formatWeekdayUpper(DateTime date) {
   try {
@@ -57,16 +67,47 @@ class CycleInlineCalendar extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final dayGeometries =
-        _computeGeometries(view.days, radiusTokens.calendarGap);
-    if (dayGeometries.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
 
-    final totalWidth = dayGeometries.last.end;
-    final todayIndex = view.days.indexWhere((day) => day.isToday);
-    final todayGeometry = todayIndex >= 0 ? dayGeometries[todayIndex] : null;
-    final todayDay = todayIndex >= 0 ? view.days[todayIndex] : null;
+        final dayGeometries = _computeGeometries(
+          view.days,
+          radiusTokens.calendarGap,
+          availableWidth,
+        );
+        if (dayGeometries.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final todayIndex = view.days.indexWhere((day) => day.isToday);
+        final todayGeometry = todayIndex >= 0 ? dayGeometries[todayIndex] : null;
+        final todayDay = todayIndex >= 0 ? view.days[todayIndex] : null;
+
+        return _buildCalendarContent(
+          context,
+          availableWidth,
+          dayGeometries,
+          todayGeometry,
+          todayDay,
+          phaseTokens,
+          textTokens,
+          radiusTokens,
+        );
+      },
+    );
+  }
+
+  Widget _buildCalendarContent(
+    BuildContext context,
+    double availableWidth,
+    List<_DayGeometry> dayGeometries,
+    _DayGeometry? todayGeometry,
+    WeekStripDay? todayDay,
+    CyclePhaseTokens phaseTokens,
+    TextColorTokens textTokens,
+    CalendarRadiusTokens radiusTokens,
+  ) {
 
     final dayWidgets = <Widget>[];
 
@@ -77,44 +118,46 @@ class CycleInlineCalendar extends StatelessWidget {
       final weekdayLabel = _formatWeekdayUpper(day.date);
       final dayNumber = day.date.day.toString();
       final isToday = day.isToday;
-      final baseTextColor =
-          isToday ? Colors.white : textTokens.primary;
-      final secondaryTextColor =
-          isToday ? Colors.white : textTokens.secondary;
+      final baseTextColor = isToday ? Colors.white : textTokens.primary;
+      final weekdayTextColor = textTokens.secondary;
 
       dayWidgets.add(
         SizedBox(
           width: geometry.width,
           height: _trackHeight,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                weekdayLabel,
-                maxLines: 1,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  fontFamily: FontFamilies.figtree,
-                  fontWeight: FontWeight.w600,
-                  fontSize: _weekdayFontSize,
-                  height: 1.0,
-                  color: secondaryTextColor,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: _topPadding, bottom: _bottomPadding),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  weekdayLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.clip,
+                  style: TextStyle(
+                    fontFamily: FontFamilies.figtree,
+                    fontWeight: FontWeight.w600,
+                    fontSize: _weekdayFontSize,
+                    height: _weekdayLineHeight,
+                    color: weekdayTextColor,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                dayNumber,
-                maxLines: 1,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  fontFamily: FontFamilies.figtree,
-                  fontWeight: FontWeight.w700,
-                  fontSize: _dayFontSize,
-                  height: 1.2,
-                  color: baseTextColor,
+                const SizedBox(height: _weekdaySpacing),
+                Text(
+                  dayNumber,
+                  maxLines: 1,
+                  overflow: TextOverflow.clip,
+                  style: TextStyle(
+                    fontFamily: FontFamilies.figtree,
+                    fontWeight: FontWeight.w700,
+                    fontSize: _dayFontSize,
+                    height: _dayLineHeight,
+                    color: baseTextColor,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -128,9 +171,11 @@ class CycleInlineCalendar extends StatelessWidget {
     if (todayDay != null) {
       final formattedDate = _formatDayMonthDe(todayDay.date);
       semanticsLabel =
-          'Zykluskalender. Heute $formattedDate Phase: ${todayDay.phase.label}.';
+          'Zykluskalender. Heute $formattedDate Phase: ${todayDay.phase.label}. '
+          'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
     } else {
-      semanticsLabel = 'Zykluskalender. Zur Zyklusübersicht wechseln.';
+      semanticsLabel = 'Zykluskalender. Zur Zyklusübersicht wechseln. '
+          'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
     }
 
     return Semantics(
@@ -146,28 +191,31 @@ class CycleInlineCalendar extends StatelessWidget {
             onTap: () => context.go('/zyklus'),
             borderRadius: BorderRadius.zero,
             child: SizedBox(
-              width: totalWidth,
+              width: availableWidth,
               height: _trackHeight,
               child: Stack(
                 children: [
                   CustomPaint(
-                    size: Size(totalWidth, _trackHeight),
+                    size: Size(availableWidth, _trackHeight),
                     painter: _SegmentPainter(
                       segments: view.segments,
                       geometries: dayGeometries,
                       tokens: phaseTokens,
+                      radiusTokens: radiusTokens,
+                      topOffset: _segmentTopOffset,
+                      segmentHeight: _segmentHeight,
                     ),
                   ),
                   if (todayGeometry != null && todayDay != null)
                     Positioned(
                       left: todayGeometry.start,
-                      top: 0,
+                      top: _segmentTopOffset,
                       child: Container(
                         width: todayGeometry.width,
-                        height: _trackHeight,
+                        height: _segmentHeight,
                         decoration: BoxDecoration(
                           color: _todayColor(todayDay.phase, phaseTokens),
-                          borderRadius: BorderRadius.circular(_segmentRadius),
+                          borderRadius: BorderRadius.circular(radiusTokens.calendarChip),
                         ),
                       ),
                     ),
@@ -175,7 +223,7 @@ class CycleInlineCalendar extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: SizedBox(
-                        width: totalWidth,
+                        width: availableWidth,
                         height: _trackHeight,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -224,16 +272,42 @@ class _DayGeometry {
 List<_DayGeometry> _computeGeometries(
   List<WeekStripDay> days,
   double calendarGap,
+  double availableWidth,
 ) {
+  if (days.isEmpty) return [];
+
+  // Calculate flexible width ratio: today pill is ~2.21× wider than regular day
+  const todayFlex = _todayWidth / _dayWidth; // ≈ 2.21
+
+  // Count phase change boundaries (where gaps will be inserted)
+  int boundariesCount = 0;
+  for (var i = 0; i < days.length - 1; i++) {
+    if (days[i].phase != days[i + 1].phase) {
+      boundariesCount++;
+    }
+  }
+
+  // Calculate total gap space
+  final totalGapsPx = boundariesCount * calendarGap;
+
+  // Calculate total flex units (sum of all day flex values)
+  double totalFlexUnits = 0.0;
+  for (final day in days) {
+    totalFlexUnits += day.isToday ? todayFlex : 1.0;
+  }
+
+  // Calculate base width per flex unit
+  final baseWidth = (availableWidth - totalGapsPx) / totalFlexUnits;
+
+  // Generate geometries with distributed widths
   var cursor = 0.0;
   return List<_DayGeometry>.generate(days.length, (index) {
     final day = days[index];
-    final width = day.isToday ? _todayWidth : _dayWidth;
+    final width = baseWidth * (day.isToday ? todayFlex : 1.0);
     final hasPhaseChangeAhead =
         index < days.length - 1 && day.phase != days[index + 1].phase;
-    final gapAfter = (hasPhaseChangeAhead && index != days.length - 1)
-        ? calendarGap
-        : 0.0;
+    final gapAfter = hasPhaseChangeAhead ? calendarGap : 0.0;
+
     final geometry = _DayGeometry(
       start: cursor,
       width: width,
@@ -249,11 +323,17 @@ class _SegmentPainter extends CustomPainter {
     required this.segments,
     required this.geometries,
     required this.tokens,
+    required this.radiusTokens,
+    required this.topOffset,
+    required this.segmentHeight,
   });
 
   final List<WeekStripSegment> segments;
   final List<_DayGeometry> geometries;
   final CyclePhaseTokens tokens;
+  final CalendarRadiusTokens radiusTokens;
+  final double topOffset;
+  final double segmentHeight;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -262,13 +342,13 @@ class _SegmentPainter extends CustomPainter {
       final endGeometry = geometries[segment.endIndex];
       final left = startGeometry.start;
       final right = endGeometry.end;
-      final rect = Rect.fromLTWH(left, 0, right - left, size.height);
+      final rect = Rect.fromLTWH(left, topOffset, right - left, segmentHeight);
       final radiusLeft = segment.startIndex == 0
-          ? Radius.zero
-          : const Radius.circular(_segmentRadius);
+          ? Radius.circular(radiusTokens.calendarSegmentEdge)
+          : Radius.circular(radiusTokens.calendarSegmentInner);
       final radiusRight = segment.endIndex == geometries.length - 1
-          ? Radius.zero
-          : const Radius.circular(_segmentRadius);
+          ? Radius.circular(radiusTokens.calendarSegmentEdge)
+          : Radius.circular(radiusTokens.calendarSegmentInner);
       final rrect = RRect.fromRectAndCorners(
         rect,
         topLeft: radiusLeft,
@@ -285,26 +365,37 @@ class _SegmentPainter extends CustomPainter {
   bool shouldRepaint(covariant _SegmentPainter oldDelegate) {
     return !listEquals(oldDelegate.segments, segments) ||
         !listEquals(oldDelegate.geometries, geometries) ||
-        oldDelegate.tokens != tokens;
+        oldDelegate.tokens != tokens ||
+        oldDelegate.radiusTokens != radiusTokens ||
+        oldDelegate.topOffset != topOffset ||
+        oldDelegate.segmentHeight != segmentHeight;
   }
 }
 
 Color _segmentColor(Phase phase, CyclePhaseTokens tokens) {
+  // Segment background colors with explicit opacities per Figma design
+  switch (phase) {
+    case Phase.menstruation:
+      return tokens.menstruation.withValues(alpha: 0.25);
+    case Phase.follicular:
+      return tokens.follicularDark.withValues(alpha: 0.20);
+    case Phase.ovulation:
+      return tokens.ovulation.withValues(alpha: 0.50);
+    case Phase.luteal:
+      return tokens.luteal.withValues(alpha: 0.25);
+  }
+}
+
+Color _todayColor(Phase phase, CyclePhaseTokens tokens) {
+  // Today pill always uses full phase color (100% opacity)
   switch (phase) {
     case Phase.menstruation:
       return tokens.menstruation;
     case Phase.follicular:
-      return tokens.follicularLight;
+      return tokens.follicularDark;
     case Phase.ovulation:
       return tokens.ovulation;
     case Phase.luteal:
       return tokens.luteal;
   }
-}
-
-Color _todayColor(Phase phase, CyclePhaseTokens tokens) {
-  if (phase == Phase.follicular) {
-    return tokens.follicularDark;
-  }
-  return phase.mapToColorTokens(tokens);
 }

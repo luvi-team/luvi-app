@@ -135,7 +135,10 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     ), // Figma: header→content 12px (Audit V3)
                     _buildCategories(state.categories),
                     const SizedBox(height: Spacing.m),
-                    // Deine Top-Empfehlung direkt nach den Kategorien
+                    // Section header: Deine Top-Empfehlung
+                    const SectionHeader(title: 'Deine Top-Empfehlung', showTrailingAction: false),
+                    const SizedBox(height: Spacing.s),
+                    // Top recommendation tile
                     TopRecommendationTile(
                       workoutId: topRecommendation.id,
                       tag: topRecommendation.tag,
@@ -143,6 +146,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                       imagePath: topRecommendation.imagePath,
                       badgeAssetPath: topRecommendation.badgeAssetPath,
                       fromLuviSync: topRecommendation.fromLuviSync,
+                      duration: topRecommendation.duration,
                     ),
                     const SizedBox(height: _sectionGapTight),
                     const SectionHeader(
@@ -181,46 +185,47 @@ class _HeuteScreenState extends State<HeuteScreen> {
     bool hasNotifications,
     WeekStripView weekView,
   ) {
-    return Row(
+    return Column(
       key: const Key('dashboard_header'),
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // from DASHBOARD_spec.json $.header.title.typography (Playfair Display 32/40)
-              Text(
-                'Hey, ${header.userName} 💜',
-                style: const TextStyle(
-                  fontFamily: FontFamilies.playfairDisplay,
-                  fontSize: 32,
-                  height: 40 / 32,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF030401),
-                ),
-              ),
-              const SizedBox(
-                height: 2,
-              ), // from DASHBOARD_spec.json $.spacingTokensObserved[1]
-              // from DASHBOARD_spec.json $.header.subtitle.typography (Figtree 16/24)
-              Text(
-                header.phaseLabel,
-                style: const TextStyle(
-                  fontFamily: FontFamilies.figtree,
-                  fontSize: 16,
-                  height: 24 / 16,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF6d6d6d),
-                ),
-              ),
-              const SizedBox(height: Spacing.m),
-              CycleInlineCalendar(view: weekView),
-            ],
-          ),
-        ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // from DASHBOARD_spec.json $.header.title.typography (Playfair Display 32/40)
+                  Text(
+                    'Hey, ${header.userName} 💜',
+                    style: const TextStyle(
+                      fontFamily: FontFamilies.playfairDisplay,
+                      fontSize: 32,
+                      height: 40 / 32,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF030401),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ), // from DASHBOARD_spec.json $.spacingTokensObserved[1]
+                  // from DASHBOARD_spec.json $.header.subtitle.typography (Figtree 16/24)
+                  Text(
+                    header.phaseLabel,
+                    style: const TextStyle(
+                      fontFamily: FontFamilies.figtree,
+                      fontSize: 16,
+                      height: 24 / 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF6d6d6d),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
             Stack(
               children: [
                 _buildHeaderIcon(Assets.icons.notifications),
@@ -242,6 +247,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
             ),
           ],
         ),
+        const SizedBox(height: Spacing.m),
+        CycleInlineCalendar(view: weekView),
       ],
     );
   }

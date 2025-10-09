@@ -101,6 +101,12 @@ void main() {
       );
 
       expect(
+        find.text('Deine Top-Empfehlung'),
+        findsOneWidget,
+        reason: 'Top recommendation section header should be visible',
+      );
+
+      expect(
         find.text('Weitere Trainings'),
         findsOneWidget,
         reason: 'Recommendations section header should be visible',
@@ -168,11 +174,12 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Puls'), findsOneWidget);
-      expect(find.text('Verbrannte Energie'), findsOneWidget);
+      expect(find.text('Verbrannte\nEnergie'), findsOneWidget);
       expect(find.text('Schritte'), findsOneWidget);
       expect(find.text('94'), findsOneWidget);
-      expect(find.text('500'), findsOneWidget);
+      expect(find.textContaining('500'), findsOneWidget);
       expect(find.text('2.500'), findsOneWidget);
+      expect(find.text('bpm'), findsOneWidget);
     });
 
     testWidgets('displays header greeting and cycle info', (tester) async {
@@ -418,6 +425,9 @@ void main() {
         final Rect categoriesRect = tester.getRect(
           find.byKey(const Key('dashboard_categories_grid')),
         );
+        final Rect topRecoHeaderRect = tester.getRect(
+          find.text('Deine Top-Empfehlung'),
+        );
         final Rect topRecoRect = tester.getRect(
           find.byType(TopRecommendationTile),
         );
@@ -434,8 +444,10 @@ void main() {
 
         final double gapCatsHeaderToGrid =
             categoriesRect.top - categoriesHeaderRect.bottom;
-        final double gapCatsBlockToTopReco =
-            topRecoRect.top - categoriesRect.bottom;
+        final double gapCatsBlockToTopRecoHeader =
+            topRecoHeaderRect.top - categoriesRect.bottom;
+        final double gapTopRecoHeaderToTile =
+            topRecoRect.top - topRecoHeaderRect.bottom;
         final double gapTopRecoToRecsHeader =
             recsHeaderRect.top - topRecoRect.bottom;
         final double gapRecsHeaderToList = listRect.top - recsHeaderRect.bottom;
@@ -455,7 +467,8 @@ void main() {
         print(
           'Viewport ${viewport.logLabel} → V-GAPS: '
           'catsHdr→grid=${fmt(gapCatsHeaderToGrid)}, '
-          'catsBlock→topReco=${fmt(gapCatsBlockToTopReco)}, '
+          'catsBlock→topRecoHdr=${fmt(gapCatsBlockToTopRecoHeader)}, '
+          'topRecoHdr→tile=${fmt(gapTopRecoHeaderToTile)}, '
           'topReco→recsHdr=${fmt(gapTopRecoToRecsHeader)}, '
           'recsHdr→list=${fmt(gapRecsHeaderToList)}, '
           'list→bottom=${fmt(dockRect.top - listRect.bottom)} '
@@ -472,16 +485,22 @@ void main() {
         );
 
         expect(
-          gapCatsBlockToTopReco,
+          gapCatsBlockToTopRecoHeader,
           moreOrLessEquals(16.0, epsilon: tolerance),
-          reason: 'Kategorien block → Top-Empfehlung sollte 16px ±0.5 ergeben',
+          reason: 'Kategorien block → "Deine Top-Empfehlung" header sollte 16px ±0.5 ergeben',
+        );
+
+        expect(
+          gapTopRecoHeaderToTile,
+          moreOrLessEquals(12.0, epsilon: tolerance),
+          reason: '"Deine Top-Empfehlung" header → tile sollte 12px ±0.5 ergeben',
         );
 
         expect(
           gapTopRecoToRecsHeader,
           moreOrLessEquals(20.0, epsilon: tolerance),
           reason:
-              'Top-Empfehlung → Weitere Trainings header sollte 20px ±0.5 ergeben',
+              'Top-Empfehlung tile → "Weitere Trainings" header sollte 20px ±0.5 ergeben',
         );
 
         expect(

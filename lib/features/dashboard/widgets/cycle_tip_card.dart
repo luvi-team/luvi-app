@@ -24,7 +24,7 @@ class CycleTipCard extends StatelessWidget {
     Phase.follicular: _CycleTipCopy(
       headline: 'Follikelphase',
       body:
-          'Nutze dein Energiehoch für bewusst intensivere Workouts - achte trotzdem auf klare Körpersignale.',
+          'Du bist heute in der Follikelphase. Aufgrund des erhöhten Progesterons hast du mehr Energie. Beste Zeit für ein intensiveres Training.',
     ),
     Phase.ovulation: _CycleTipCopy(
       headline: 'Ovulationsfenster',

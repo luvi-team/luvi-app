@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -10,10 +8,36 @@ import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
 import 'package:luvi_app/features/screens/heute_fixtures.dart';
 
 const double _cardGap = Spacing.m; // 16px between stat cards
-const double _cardPadding = 20;
+const double _cardPadding = 16; // Reduced from 20 to fit content in 159px height
 const double _iconCircleDiameter = 29.5;
 const double _iconSize = 18;
-const double _chartHeight = 44;
+// HR glyph positioning (Figma node 68589:7675, anchored to bottom for overflow-free layout)
+const double _hrGlyphLeft = 50;
+const double _hrGlyphBottom = 36;
+const double _hrGlyphWidth = 101;
+const double _hrGlyphHeight = 35;
+const double _valueAreaHeight = 58;
+const double _labelToValueGap = 10; // Space between label block and value block
+const int _labelWrapThreshold = 12;
+const double _stepsValueAlignmentX = 0.25;
+const TextHeightBehavior _valueHeightBehavior = TextHeightBehavior(
+  applyHeightToFirstAscent: false,
+  applyHeightToLastDescent: false,
+);
+const TextHeightBehavior _unitHeightBehavior = TextHeightBehavior(
+  applyHeightToFirstAscent: false,
+  applyHeightToLastDescent: false,
+);
+
+/// Ensures multi-word stat labels (e.g. "Verbrannte Energie") wrap like the Figma spec.
+String _formatStatLabel(String rawLabel) {
+  final trimmed = rawLabel.trim();
+  final words = trimmed.split(RegExp(r'\s+'));
+  if (words.length == 2 && trimmed.length > _labelWrapThreshold) {
+    return '${words.first}\n${words.last}';
+  }
+  return trimmed;
+}
 
 /// Horizontally scrollable training stats with glass cards.
 class StatsScroller extends StatelessWidget {
@@ -51,8 +75,7 @@ class StatsScroller extends StatelessWidget {
         clipBehavior: Clip.none,
         itemCount: trainingStats.length,
         separatorBuilder: (context, index) => const SizedBox(width: _cardGap),
-        itemBuilder: (context, index) =>
-            _TrainingStatCard(data: trainingStats[index]),
+        itemBuilder: (context, index) => _TrainingStatCard(data: trainingStats[index]),
       ),
     );
   }
@@ -65,88 +88,166 @@ class _TrainingStatCard extends StatelessWidget {
 
   static final NumberFormat _formatter = NumberFormat.decimalPattern('de_DE');
 
+  Widget _buildValueGroup(
+    BuildContext context,
+    Color valueColor,
+    Color titleColor,
+  ) {
+    final formattedValue = _formatter.format(data.value);
+    final valueStyle = TextStyle(
+      fontFamily: FontFamilies.playfairDisplay,
+      fontSize: TypographyTokens.size28,
+      height: TypographyTokens.lineHeightRatio36on28,
+      fontWeight: FontWeight.w400,
+      color: valueColor,
+    );
+    final unitStyle = TextStyle(
+      fontFamily: FontFamilies.figtree,
+      fontSize: TypographyTokens.size12,
+      height: TypographyTokens.lineHeightRatio16on12,
+      fontWeight: FontWeight.w500,
+      color: titleColor,
+    );
+
+    if (data.heartRateGlyphAsset != null) {
+      return Align(
+        alignment: Alignment.topLeft,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              formattedValue,
+              style: valueStyle,
+              textHeightBehavior: _valueHeightBehavior,
+            ),
+            if (data.unit != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  data.unit!,
+                  style: unitStyle,
+                  textHeightBehavior: _unitHeightBehavior,
+                ),
+              ),
+          ],
+        ),
+      );
+    }
+
+    if (data.unit == null) {
+      return Align(
+        alignment: Alignment(_stepsValueAlignmentX, -1),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: Text(
+            formattedValue,
+            style: valueStyle,
+            textHeightBehavior: _valueHeightBehavior,
+          ),
+        ),
+      );
+    }
+
+    return Align(
+      alignment: Alignment.topLeft,
+      child: RichText(
+        textHeightBehavior: _valueHeightBehavior,
+        text: TextSpan(
+          text: formattedValue,
+          style: valueStyle,
+          children: [
+            TextSpan(
+              text: ' ${data.unit!}',
+              style: unitStyle,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final glassTokens = Theme.of(context).extension<GlassTokens>();
     final textTokens = Theme.of(context).extension<TextColorTokens>();
     final dsTokens = Theme.of(context).extension<DsTokens>();
 
-    final backgroundColor = glassTokens?.background ?? const Color(0x8CFFFFFF);
-    final borderSide =
-        glassTokens?.border ?? const BorderSide(color: Color(0x14000000));
-    final blur = glassTokens?.blur ?? 16.0;
     final titleColor = textTokens?.secondary ?? const Color(0xFF6D6D6D);
     final valueColor = textTokens?.primary ?? const Color(0xFF030401);
     final badgeFill =
         dsTokens?.color.icon.badge.goldCircle ?? const Color(0xFFD9B18E);
+    final formattedLabel = _formatStatLabel(data.label);
+    final labelMaxLines = formattedLabel.contains('\n') ? 2 : 1;
 
     return RepaintBoundary(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(kStatsCardRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Container(
-            width: kStatsCardWidth,
-            height: kStatsCardHeight,
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(kStatsCardRadius),
-              border: Border.fromBorderSide(borderSide),
-            ),
-            padding: const EdgeInsets.all(_cardPadding),
-            child: Column(
+      child: Container(
+        width: kStatsCardWidth,
+        height: kStatsCardHeight,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF1F1F1), // Figma: solid gray background
+          borderRadius: BorderRadius.circular(kStatsCardRadius),
+          border: Border.all(
+            color: const Color(0x1A000000), // Figma: 1dp @ 10% black
+            width: 1,
+          ),
+        ),
+        padding: const EdgeInsets.all(_cardPadding),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        data.label,
-                        style: TextStyle(
-                          fontFamily: FontFamilies.figtree,
-                          fontSize: TypographyTokens.size14,
-                          height: TypographyTokens.lineHeightRatio24on14,
-                          fontWeight: FontWeight.w500,
-                          color: titleColor,
+                SizedBox(
+                  height: TypographyTokens.size14 * TypographyTokens.lineHeightRatio24on14 * 2,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          formattedLabel,
+                          maxLines: labelMaxLines,
+                          overflow: labelMaxLines == 1
+                              ? TextOverflow.ellipsis
+                              : TextOverflow.visible,
+                          softWrap: labelMaxLines > 1,
+                          style: TextStyle(
+                            fontFamily: FontFamilies.figtree,
+                            fontSize: TypographyTokens.size14,
+                            height: TypographyTokens.lineHeightRatio24on14,
+                            fontWeight: FontWeight.w500,
+                            color: titleColor,
+                          ),
                         ),
                       ),
-                    ),
-                    _IconBadge(
-                      assetPath: data.iconAssetPath,
-                      backgroundColor: badgeFill,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  _formatter.format(data.value),
-                  style: TextStyle(
-                    fontFamily: FontFamilies.playfairDisplay,
-                    fontSize: TypographyTokens.size32,
-                    height: TypographyTokens.lineHeightRatio40on32,
-                    fontWeight: FontWeight.w400,
-                    color: valueColor,
+                      _IconBadge(
+                        assetPath: data.iconAssetPath,
+                        backgroundColor: badgeFill,
+                      ),
+                    ],
                   ),
                 ),
-                if (data.unit != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    data.unit!,
-                    style: TextStyle(
-                      fontFamily: FontFamilies.figtree,
-                      fontSize: TypographyTokens.size14,
-                      height: TypographyTokens.lineHeightRatio24on14,
-                      fontWeight: FontWeight.w400,
-                      color: titleColor,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 12),
-                Expanded(child: _SparklineStub(values: data.trend)),
+                const SizedBox(height: _labelToValueGap),
+                SizedBox(
+                  height: _valueAreaHeight,
+                  child: _buildValueGroup(context, valueColor, titleColor),
+                ),
               ],
             ),
-          ),
+            // HR glyph (decorative) only when provided
+            if (data.heartRateGlyphAsset != null)
+              Positioned(
+                left: _hrGlyphLeft,
+                bottom: _hrGlyphBottom,
+                child: SvgPicture.asset(
+                  data.heartRateGlyphAsset!,
+                  width: _hrGlyphWidth,
+                  height: _hrGlyphHeight,
+                  excludeFromSemantics: true,
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -174,106 +275,5 @@ class _IconBadge extends StatelessWidget {
         colorFilter: const ColorFilter.mode(Color(0xFF1C1411), BlendMode.srcIn),
       ),
     );
-  }
-}
-
-class _SparklineStub extends StatelessWidget {
-  const _SparklineStub({required this.values});
-
-  final List<double> values;
-
-  @override
-  Widget build(BuildContext context) {
-    if (values.length < 2) {
-      return const SizedBox.shrink();
-    }
-
-    final dsTokens = Theme.of(context).extension<DsTokens>();
-    final accent = dsTokens?.accentPurple ?? const Color(0xFFCCB2F4);
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double maxHeight = constraints.maxHeight.isFinite
-            ? constraints.maxHeight
-            : _chartHeight;
-        final double height =
-            maxHeight.clamp(0.0, _chartHeight).toDouble();
-
-        return Align(
-          alignment: Alignment.bottomLeft,
-          child: SizedBox(
-            height: height,
-            width: double.infinity,
-            child: CustomPaint(painter: _SparklineStubPainter(values, accent)),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _SparklineStubPainter extends CustomPainter {
-  _SparklineStubPainter(this.values, this.accent);
-
-  final List<double> values;
-  final Color accent;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (values.length < 2) return;
-
-    final clamped = values.map((v) => v.clamp(0.0, 1.0)).toList();
-    final step = size.width / (clamped.length - 1);
-
-    final linePath = Path();
-    final fillPath = Path();
-
-    for (var i = 0; i < clamped.length; i++) {
-      final x = step * i;
-      final y = size.height * (1 - clamped[i]);
-      if (i == 0) {
-        linePath.moveTo(x, y);
-        fillPath.moveTo(x, size.height);
-        fillPath.lineTo(x, y);
-      } else {
-        linePath.lineTo(x, y);
-        fillPath.lineTo(x, y);
-      }
-    }
-
-    fillPath.lineTo(size.width, size.height);
-    fillPath.close();
-
-    final fillPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          accent.withValues(alpha: 0.35),
-          accent.withValues(alpha: 0.05),
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
-
-    final strokePaint = Paint()
-      ..color = accent
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    canvas.drawPath(fillPath, fillPaint);
-    canvas.drawPath(linePath, strokePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _SparklineStubPainter oldDelegate) {
-    if (identical(oldDelegate.values, values)) return false;
-    if (oldDelegate.values.length != values.length) return true;
-    for (var i = 0; i < values.length; i++) {
-      if (oldDelegate.values[i] != values[i]) {
-        return true;
-      }
-    }
-    return false;
   }
 }

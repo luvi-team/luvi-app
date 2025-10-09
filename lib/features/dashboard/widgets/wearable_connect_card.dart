@@ -1,11 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 
 const double kStatsCardWidth = 173;
-const double kStatsCardHeight = 210;
+const double kStatsCardHeight = 159;
 const double kStatsCardRadius = 24;
 
 /// Glassmorphism fallback card shown when no wearable is connected.
@@ -20,13 +18,8 @@ class WearableConnectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final glassTokens = Theme.of(context).extension<GlassTokens>();
     final textTokens = Theme.of(context).extension<TextColorTokens>();
 
-    final backgroundColor = glassTokens?.background ?? const Color(0x8CFFFFFF);
-    final borderSide =
-        glassTokens?.border ?? const BorderSide(color: Color(0x14000000));
-    final blur = glassTokens?.blur ?? 16.0;
     final textColor = textTokens?.secondary ?? const Color(0xFF6D6D6D);
 
     return Semantics(
@@ -34,31 +27,28 @@ class WearableConnectCard extends StatelessWidget {
       label: message,
       child: ExcludeSemantics(
         child: RepaintBoundary(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(kStatsCardRadius),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-              child: Container(
-                width: kStatsCardWidth,
-                height: kStatsCardHeight,
-                decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: BorderRadius.circular(kStatsCardRadius),
-                  border: Border.fromBorderSide(borderSide),
-                ),
-                padding: const EdgeInsets.all(20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    message,
-                    style: TextStyle(
-                      fontFamily: FontFamilies.figtree,
-                      fontSize: TypographyTokens.size16,
-                      height: TypographyTokens.lineHeightRatio24on16,
-                      fontWeight: FontWeight.w500,
-                      color: textColor,
-                    ),
-                  ),
+          child: Container(
+            width: kStatsCardWidth,
+            height: kStatsCardHeight,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F1F1), // Figma: solid gray background
+              borderRadius: BorderRadius.circular(kStatsCardRadius),
+              border: Border.all(
+                color: const Color(0x1A000000), // Figma: 1dp @ 10% black
+                width: 1,
+              ),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                message,
+                style: TextStyle(
+                  fontFamily: FontFamilies.figtree,
+                  fontSize: TypographyTokens.size16,
+                  height: TypographyTokens.lineHeightRatio24on16,
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
                 ),
               ),
             ),

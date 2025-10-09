@@ -45,20 +45,74 @@ class CycleInfo {
   ///
   /// Returns one of: "Menstruation", "Follikel", "Ovulationsfenster", "Luteal"
   String phaseOn(DateTime d) {
-    final start = DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day);
-    final q = DateTime(d.year, d.month, d.day);
-    final diff = q.difference(start).inDays;
-    final day = ((diff % cycleLength) + cycleLength) % cycleLength;
+    final phase = _phaseForDate(
+      date: d,
+      lastPeriod: lastPeriod,
+      cycleLength: cycleLength,
+      periodDuration: periodDuration,
+    );
 
-    if (day < periodDuration) {
-      return "Menstruation";
+    switch (phase) {
+      case _Phase.menstruation:
+        return "Menstruation";
+      case _Phase.follicular:
+        return "Follikel";
+      case _Phase.ovulation:
+        return "Ovulationsfenster";
+      case _Phase.luteal:
+        return "Luteal";
     }
-    if (day < periodDuration + 6) {
-      return "Follikel";
-    }
-    if (day >= cycleLength - 14 && day < cycleLength - 10) {
-      return "Ovulationsfenster";
-    }
-    return "Luteal";
   }
+}
+
+/// Internal phase enum for pure function calculation.
+enum _Phase { menstruation, follicular, ovulation, luteal }
+
+/// Pure function for evidence-based phase calculation (internal).
+///
+/// Calculates menstrual cycle phase using backwards ovulation timing:
+/// ovulationDay = cycleLength - lutealLength (typically day 15 for 28-day cycle).
+///
+/// Parameters:
+/// - [date]: The date to calculate phase for
+/// - [lastPeriod]: Start date of last menstrual period
+/// - [cycleLength]: Total cycle length in days
+/// - [periodDuration]: Menstruation duration in days
+/// - [lutealLength]: Luteal phase length (default 13, evidence-based typical 12-14)
+/// - [ovulationWindowDays]: UI highlighting window around ovulation (±days, default 1)
+///
+/// Returns: Phase enum value (menstruation, follicular, ovulation, luteal)
+_Phase _phaseForDate({
+  required DateTime date,
+  required DateTime lastPeriod,
+  required int cycleLength,
+  required int periodDuration,
+  int lutealLength = 13,
+  int ovulationWindowDays = 1,
+}) {
+  // Normalize to day-only comparison (ignore time)
+  final start = DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day);
+  final q = DateTime(date.year, date.month, date.day);
+  final diff = q.difference(start).inDays;
+
+  // Calculate 1-based cycle day (wrap negatives cyclically)
+  final day = 1 + ((diff % cycleLength) + cycleLength) % cycleLength;
+
+  // Ovulation occurs ~lutealLength days before next period (backwards calculation)
+  final ovulationDay = (cycleLength - lutealLength).clamp(1, cycleLength);
+
+  // Check if date falls within ovulation window (±ovulationWindowDays)
+  final inOvulationWindow = (day - ovulationDay).abs() <= ovulationWindowDays;
+
+  // Phase logic (medical evidence-based)
+  if (day <= periodDuration) {
+    return _Phase.menstruation;
+  }
+  if (inOvulationWindow) {
+    return _Phase.ovulation;
+  }
+  if (day < ovulationDay) {
+    return _Phase.follicular;
+  }
+  return _Phase.luteal;
 }

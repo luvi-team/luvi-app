@@ -67,8 +67,9 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Puls'), findsOneWidget);
-      expect(find.text('Verbrannte Energie'), findsOneWidget);
+      expect(find.text('Verbrannte\nEnergie'), findsOneWidget);
       expect(find.text('Schritte'), findsOneWidget);
+      expect(find.text('bpm'), findsOneWidget);
       expect(find.text('2.500'), findsOneWidget);
     });
   });

@@ -59,4 +59,6 @@ class _DashboardStatIcons {
   final String heart = 'assets/icons/dashboard/heart_fill.svg';
   final String kcal = 'assets/icons/dashboard/kcal.svg';
   final String run = 'assets/icons/dashboard/run.svg';
+  final String time = 'assets/icons/dashboard/time.svg';
+  final String heartRateGlyph = 'assets/icons/dashboard/Heart Rate Icon.svg';
 }

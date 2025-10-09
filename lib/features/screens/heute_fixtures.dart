@@ -73,6 +73,7 @@ class TopRecommendationProps {
   final String imagePath;
   final String badgeAssetPath;
   final bool fromLuviSync;
+  final String? duration;
 
   const TopRecommendationProps({
     required this.id,
@@ -81,6 +82,7 @@ class TopRecommendationProps {
     required this.imagePath,
     required this.badgeAssetPath,
     this.fromLuviSync = true,
+    this.duration,
   });
 }
 
@@ -104,6 +106,7 @@ class TrainingStatProps {
   final String iconAssetPath;
   final String? unit;
   final List<double> trend;
+  final String? heartRateGlyphAsset;
 
   const TrainingStatProps({
     required this.label,
@@ -111,6 +114,7 @@ class TrainingStatProps {
     required this.iconAssetPath,
     this.unit,
     this.trend = const [],
+    this.heartRateGlyphAsset,
   });
 }
 
@@ -174,7 +178,7 @@ class HeuteFixtures {
   static HeuteFixtureState defaultState() {
     final today = DateTime(2023, 9, 28);
     final cycleInfo = CycleInfo(
-      lastPeriod: DateTime(2023, 9, 19),
+      lastPeriod: DateTime(2023, 9, 16),
       cycleLength: 28,
       periodDuration: 5,
     );
@@ -201,6 +205,7 @@ class HeuteFixtures {
         title: 'Shoulder Stretching',
         imagePath: Assets.images.recoGanzkoerper,
         badgeAssetPath: Assets.icons.syncBadge,
+        duration: '15 Min',
       ),
       categories: [
         CategoryProps(
@@ -242,6 +247,7 @@ class HeuteFixtures {
           unit: 'bpm',
           iconAssetPath: Assets.icons.dashboard.heart,
           trend: [0.62, 0.58, 0.67, 0.71, 0.68],
+          heartRateGlyphAsset: Assets.icons.dashboard.heartRateGlyph,
         ),
         TrainingStatProps(
           label: 'Verbrannte Energie',
