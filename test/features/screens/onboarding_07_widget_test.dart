@@ -12,7 +12,9 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding07Screen', () {
-    testWidgets('option tap enables CTA and navigates to heute screen', (tester) async {
+    testWidgets('option tap enables CTA and navigates to heute screen', (
+      tester,
+    ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -56,7 +58,7 @@ void main() {
       await tester.pumpAndSettle();
       // Verify Heute screen content is visible
       expect(find.text('Kategorien'), findsOneWidget);
-      expect(find.text('Empfehlungen'), findsOneWidget);
+      expect(find.text('Weitere Trainings'), findsOneWidget);
     });
 
     testWidgets('back button navigates to 06 when canPop is false', (

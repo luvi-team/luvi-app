@@ -8,8 +8,9 @@ import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('Auth SuccessScreen navigates to Dashboard on CTA tap',
-      (WidgetTester tester) async {
+  testWidgets('Auth SuccessScreen navigates to Dashboard on CTA tap', (
+    WidgetTester tester,
+  ) async {
     // Track navigation
     String? navigatedPath;
 
@@ -60,6 +61,6 @@ void main() {
 
     // Verify dashboard content is visible
     expect(find.text('Kategorien'), findsOneWidget);
-    expect(find.text('Empfehlungen'), findsOneWidget);
+    expect(find.text('Weitere Trainings'), findsOneWidget);
   });
 }
