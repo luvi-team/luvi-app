@@ -9,6 +9,8 @@ class Assets {
 class _Icons {
   const _Icons();
 
+  final _DashboardStatIcons dashboard = const _DashboardStatIcons();
+
   // Top bar
   final String search = 'assets/icons/dashboard/icon.search.svg';
   final String notifications = 'assets/icons/dashboard/icon.notifications.svg';
@@ -49,4 +51,12 @@ class _Images {
 
   // Hero background (Luvi‑Sync preview)
   final String heroSync01 = 'assets/images/dashboard/hero_sync_01.png';
+}
+
+class _DashboardStatIcons {
+  const _DashboardStatIcons();
+
+  final String heart = 'assets/icons/dashboard/heart_fill.svg';
+  final String kcal = 'assets/icons/dashboard/kcal.svg';
+  final String run = 'assets/icons/dashboard/run.svg';
 }

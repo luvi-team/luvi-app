@@ -19,6 +19,7 @@ import 'package:luvi_app/features/widgets/hero_sync_preview.dart';
 // from DASHBOARD_spec.json $.heroCard.autoLayout.padding (21px)
 const double _pad21 = 21.0;
 // from DASHBOARD_spec_deltas.json $.deltas[9].newValue (15px)
+// ignore: unused_element
 const double _gap15 = 15.0; // legacy (kept for reference)
 const double _gap16 = 16.0; // Spec: recommendations list gap 16px
 // from DASHBOARD_spec.json $.categories.grid.columns (4)
@@ -210,6 +211,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildHeroCard(HeroCardProps hero, HeroCtaState heroCta) {
     final ctaLabel = _resolveHeroCtaLabel(heroCta);
 

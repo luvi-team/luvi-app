@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 
 /// Luvi‑Sync Preview hero section: background image, top‑right badge, bottom
@@ -157,4 +156,3 @@ class _MehrButton extends StatelessWidget {
     );
   }
 }
-
