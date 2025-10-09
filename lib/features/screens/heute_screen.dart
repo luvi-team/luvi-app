@@ -98,6 +98,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     HeroSyncPreview(
                       imagePath: Assets.images.heroSync01,
                       badgeAssetPath: Assets.icons.syncBadge,
+                      dateText: state.heroCard.dateText,
+                      subtitle: state.heroCard.subtitle,
                     ),
                     const SizedBox(height: _sectionGapTight),
                     SectionHeader(
@@ -149,7 +151,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
               const SizedBox(height: 2), // from DASHBOARD_spec.json $.spacingTokensObserved[1]
               // from DASHBOARD_spec.json $.header.subtitle.typography (Figtree 16/24)
               Text(
-                header.cyclePhaseText,
+                header.phaseLabel,
                 style: const TextStyle(
                   fontFamily: FontFamilies.figtree,
                   fontSize: 16,

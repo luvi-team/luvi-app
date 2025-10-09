@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/features/cycle/domain/cycle.dart';
+import 'package:luvi_app/features/cycle/domain/date_utils.dart';
+import 'package:luvi_app/features/cycle/domain/phase.dart';
 
 import 'heute_vm.dart';
 
@@ -10,12 +13,12 @@ import 'heute_vm.dart';
 class HeaderProps {
   final String userName;
   final String dateText;
-  final String cyclePhaseText;
+  final String phaseLabel;
 
   const HeaderProps({
     required this.userName,
     required this.dateText,
-    required this.cyclePhaseText,
+    required this.phaseLabel,
   });
 }
 
@@ -24,11 +27,15 @@ class HeroCardProps {
   final String programTitle;
   final String openCountText;
   final double progressRatio; // 0.0–1.0
+  final String dateText;
+  final String subtitle;
 
   const HeroCardProps({
     required this.programTitle,
     required this.openCountText,
     required this.progressRatio,
+    required this.dateText,
+    required this.subtitle,
   });
 }
 
@@ -96,7 +103,7 @@ class HeuteFixtureState {
 
   String get dateText => header.dateText;
 
-  String get cyclePhaseText => header.cyclePhaseText;
+  String get phaseLabel => header.phaseLabel;
 
   double get cycleProgressRatio => heroCard.progressRatio;
 
@@ -116,16 +123,28 @@ class HeuteFixtures {
   /// gold-highlighted Training chip, Home tab active.
   /// See docs/ui/contracts/dashboard_state.md for field → UI mappings.
   static HeuteFixtureState defaultState() {
+    final today = DateTime(2023, 9, 28);
+    final cycleInfo = CycleInfo(
+      lastPeriod: DateTime(2023, 9, 19),
+      cycleLength: 28,
+      periodDuration: 5,
+    );
+    final phase = cycleInfo.phaseFor(today);
+    final dateText = CycleDateUtils.formatTodayDe(today);
+
     return HeuteFixtureState(
-      header: const HeaderProps(
+      header: HeaderProps(
         userName: 'Sarah',
-        dateText: 'Heute, 28. Sept',
-        cyclePhaseText: 'Follikelphase',
+        dateText: dateText,
+        phaseLabel: phase.label,
       ),
-      heroCard: const HeroCardProps(
+      heroCard: HeroCardProps(
         programTitle: 'Kraft - Ganzkörper',
         openCountText: '12 Übungen offen',
         progressRatio: 0.25,
+        dateText: dateText,
+        subtitle:
+            'Wir starten heute ruhig und strukturiert - eine lockere Cardio Einheit hilft dir fokussiert zu bleiben...',
       ),
       categories: [
         CategoryProps(

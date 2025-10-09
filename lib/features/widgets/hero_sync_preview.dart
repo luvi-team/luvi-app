@@ -7,11 +7,15 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 class HeroSyncPreview extends StatelessWidget {
   final String imagePath;
   final String badgeAssetPath;
+  final String dateText;
+  final String subtitle;
 
   const HeroSyncPreview({
     super.key,
     required this.imagePath,
     required this.badgeAssetPath,
+    required this.dateText,
+    required this.subtitle,
   });
 
   @override
@@ -65,12 +69,12 @@ class HeroSyncPreview extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
-                            'Heute, 28. Sept',
+                            dateText,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: FontFamilies.figtree,
                               fontSize: 16,
                               height: 24 / 16,
@@ -78,12 +82,12 @@ class HeroSyncPreview extends StatelessWidget {
                               color: Color(0xFF030401),
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            'Wir starten heute ruhig und strukturiert - eine lockere Cardio Einheit hilft dir fokussiert zu bleiben...',
+                            subtitle,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: FontFamilies.figtree,
                               fontSize: 14,
                               height: 24 / 14,
