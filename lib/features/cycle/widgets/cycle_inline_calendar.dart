@@ -15,6 +15,30 @@ const double _segmentRadius = 40.0;
 const double _weekdayFontSize = 12.0;
 const double _dayFontSize = 16.0;
 
+String _formatWeekdayUpper(DateTime date) {
+  try {
+    return DateFormat('EEEEE', 'de_DE').format(date).toUpperCase();
+  } catch (_) {
+    // Manual German weekday abbreviations (Mo–So) → upper-case
+    const days = ['MO', 'DI', 'MI', 'DO', 'FR', 'SA', 'SO'];
+    final idx = date.weekday - 1;
+    return (idx >= 0 && idx < days.length) ? days[idx] : '';
+  }
+}
+
+String _formatDayMonthDe(DateTime date) {
+  try {
+    return DateFormat('d. MMM', 'de_DE').format(date);
+  } catch (_) {
+    const months = [
+      'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'
+    ];
+    final m = (date.month >= 1 && date.month <= 12) ? months[date.month - 1] : '';
+    return '${date.day}. $m';
+  }
+}
+
 /// Inline calendar used on the dashboard header.
 class CycleInlineCalendar extends StatelessWidget {
   const CycleInlineCalendar({super.key, required this.view});
@@ -44,14 +68,13 @@ class CycleInlineCalendar extends StatelessWidget {
     final todayGeometry = todayIndex >= 0 ? dayGeometries[todayIndex] : null;
     final todayDay = todayIndex >= 0 ? view.days[todayIndex] : null;
 
-    final weekdayFormat = DateFormat('EEEEE', 'de_DE');
     final dayWidgets = <Widget>[];
 
     for (var i = 0; i < view.days.length; i++) {
       final day = view.days[i];
       final geometry = dayGeometries[i];
 
-      final weekdayLabel = weekdayFormat.format(day.date).toUpperCase();
+      final weekdayLabel = _formatWeekdayUpper(day.date);
       final dayNumber = day.date.day.toString();
       final isToday = day.isToday;
       final baseTextColor =
@@ -101,10 +124,9 @@ class CycleInlineCalendar extends StatelessWidget {
       }
     }
 
-    final dateFormat = DateFormat('d. MMM', 'de_DE');
     final String semanticsLabel;
     if (todayDay != null) {
-      final formattedDate = dateFormat.format(todayDay.date);
+      final formattedDate = _formatDayMonthDe(todayDay.date);
       semanticsLabel =
           'Zykluskalender. Heute $formattedDate Phase: ${todayDay.phase.label}.';
     } else {
