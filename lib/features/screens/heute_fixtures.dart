@@ -120,7 +120,7 @@ class HeuteFixtures {
       header: const HeaderProps(
         userName: 'Sarah',
         dateText: 'Heute, 28. Sept',
-        cyclePhaseText: 'Folikelphase',
+        cyclePhaseText: 'Follikelphase',
       ),
       heroCard: const HeroCardProps(
         programTitle: 'Kraft - Ganzkörper',

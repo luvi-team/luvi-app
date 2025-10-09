@@ -174,7 +174,7 @@ void main() {
       );
 
       expect(
-        find.textContaining('Folikelphase'),
+        find.textContaining('Follikelphase'),
         findsOneWidget,
         reason: 'Cycle phase info should be visible',
       );
