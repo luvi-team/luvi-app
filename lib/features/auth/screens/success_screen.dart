@@ -95,7 +95,7 @@ class SuccessScreen extends StatelessWidget {
       ),
       bottomNavigationBar: AuthBottomCta(
         child: _BottomCta(
-          onPressed: () => context.goNamed('login'),
+          onPressed: () => context.go('/heute'),
           isLoading: false,
         ),
       ),

@@ -14,6 +14,12 @@ import 'package:luvi_app/features/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/widgets/section_header.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 import 'package:luvi_app/features/widgets/hero_sync_preview.dart';
+import 'package:luvi_app/features/cycle/domain/week_strip.dart';
+import 'package:luvi_app/features/cycle/domain/phase.dart';
+import 'package:luvi_app/features/cycle/widgets/cycle_inline_calendar.dart';
+import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
+import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
+import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 
 // Dashboard-only spacing (audit-backed)
 // from DASHBOARD_spec.json $.heroCard.autoLayout.padding (21px)
@@ -34,18 +40,25 @@ const double _headerIconRadius = 26.667;
 const double _heroCardRadius = 24.0;
 // from DASHBOARD_spec.json $.heroCard.progress.outerSize (59.92px)
 const double _heroProgressOuterSize = 59.92;
-const double _heroProgressFontSize = 16.12; // TODO(audit): visual fine-tune -1px; spec=17.12 from DASHBOARD_spec.json $.heroCard.progressPercentage.typography.size
+const double _heroProgressFontSize =
+    16.12; // TODO(audit): visual fine-tune -1px; spec=17.12 from DASHBOARD_spec.json $.heroCard.progressPercentage.typography.size
 // from DASHBOARD_spec.json heroCard.progress positioning (title.x - (progress.x + outerSize) ≈ 12.84px)
 const double _heroProgressGap = 12.84;
 // TODO(audit: hero icon-text gap missing; using DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (14px) until verified)
 const double _heroIconTextGap = 14.0;
-const double _heroCtaWidth = 291.05; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.width
-const double _heroCtaHeight = 50.51; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.height
-const double _heroCtaRadius = 17.12; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.radius.all
-const double _heroCtaHorizontalPadding = 12.0; // from docs/audits/ONB_07_measures.json $.cta.padding.horizontal
-const double _heroCtaVerticalPadding = 12.0; // TODO(audit): onboarding CTA padding top=11 bottom=12; using 12 for symmetry from docs/audits/ONB_07_measures.json $.cta.padding.bottom
+const double _heroCtaWidth =
+    291.05; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.width
+const double _heroCtaHeight =
+    50.51; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.height
+const double _heroCtaRadius =
+    17.12; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.radius.all
+const double _heroCtaHorizontalPadding =
+    12.0; // from docs/audits/ONB_07_measures.json $.cta.padding.horizontal
+const double _heroCtaVerticalPadding =
+    12.0; // TODO(audit): onboarding CTA padding top=11 bottom=12; using 12 for symmetry from docs/audits/ONB_07_measures.json $.cta.padding.bottom
 const double _kMinBottomGap = 62.0; // increased breathing room above dock
-const double _sectionGapTight = 20.0; // tighter spacing between stacked sections
+const double _sectionGapTight =
+    20.0; // tighter spacing between stacked sections
 
 // Kodex: Bottom-nav geometry now imported from bottom_nav_tokens.dart (formula-based, no duplication)
 // - dockHeight, buttonDiameter, cutoutDepth, desiredGapToWaveTop, syncButtonBottom all from tokens
@@ -62,22 +75,28 @@ class HeuteScreen extends StatefulWidget {
 class _HeuteScreenState extends State<HeuteScreen> {
   late final HeuteFixtureState _fixtureState;
   late String _selectedCategory;
-  int _activeTabIndex = 0; // Dock nav state (0=Heute, 1=Zyklus, 2=Puls, 3=Profil)
+  int _activeTabIndex =
+      0; // Dock nav state (0=Heute, 1=Zyklus, 2=Puls, 3=Profil)
 
   @override
   void initState() {
     super.initState();
     _fixtureState = HeuteFixtures.defaultState();
-    _selectedCategory = _fixtureState.categories.firstWhere(
-      (cat) => cat.isSelected,
-      orElse: () => _fixtureState.categories.first,
-    ).label;
+    _selectedCategory = _fixtureState.categories
+        .firstWhere(
+          (cat) => cat.isSelected,
+          orElse: () => _fixtureState.categories.first,
+        )
+        .label;
   }
 
   @override
   Widget build(BuildContext context) {
     // Use default fixture state (can be parameterized later)
     final state = _fixtureState;
+    final weekView = weekViewFor(state.referenceDate, state.cycleInfo);
+    final topRecommendation = state.topRecommendation;
+    final currentPhase = state.cycleInfo.phaseFor(state.referenceDate);
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
@@ -87,40 +106,69 @@ class _HeuteScreenState extends State<HeuteScreen> {
         child: CustomScrollView(
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.l), // from DASHBOARD_spec.json $.frame.safeAreas.left (24px)
-              sliver: SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    const SizedBox(height: Spacing.m), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
-                    _buildHeader(state.header, state.bottomNav.hasNotifications),
+              padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(
+                      height: Spacing.m,
+                    ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
+                    _buildHeader(
+                      state.header,
+                      state.bottomNav.hasNotifications,
+                      weekView,
+                    ),
                     const SizedBox(height: _sectionGapTight),
-                    // New Luvi‑Sync Preview hero (image + badge + info card)
+                    // Hero Sync Preview (image + badge + info card)
                     HeroSyncPreview(
+                      key: const Key('dashboard_hero_sync_preview'),
                       imagePath: Assets.images.heroSync01,
                       badgeAssetPath: Assets.icons.syncBadge,
                       dateText: state.heroCard.dateText,
                       subtitle: state.heroCard.subtitle,
                     ),
                     const SizedBox(height: _sectionGapTight),
-                    SectionHeader(
-                      title: 'Kategorien',
-                      showTrailingAction: false,
-                    ),
-                    const SizedBox(height: Spacing.s), // Figma: header→content 12px (Audit V3)
+                    const SectionHeader(title: 'Kategorien', showTrailingAction: false),
+                    const SizedBox(
+                      height: Spacing.s,
+                    ), // Figma: header→content 12px (Audit V3)
                     _buildCategories(state.categories),
+                    const SizedBox(height: Spacing.m),
+                    // Deine Top-Empfehlung direkt nach den Kategorien
+                    TopRecommendationTile(
+                      workoutId: topRecommendation.id,
+                      tag: topRecommendation.tag,
+                      title: topRecommendation.title,
+                      imagePath: topRecommendation.imagePath,
+                      badgeAssetPath: topRecommendation.badgeAssetPath,
+                      fromLuviSync: topRecommendation.fromLuviSync,
+                    ),
                     const SizedBox(height: _sectionGapTight),
                     const SectionHeader(
-                      title: 'Empfehlungen',
+                      title: 'Weitere Trainings',
                       trailingLabel: 'Alle',
                     ),
-                    const SizedBox(height: Spacing.s), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
+                    const SizedBox(
+                      height: Spacing.s,
+                    ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
                     _buildRecommendations(state.recommendations),
+                    const SizedBox(height: _sectionGapTight),
+                    const SectionHeader(
+                      title: 'Deine Trainingsdaten',
+                      showTrailingAction: false,
+                    ),
+                    const SizedBox(height: Spacing.s),
+                    StatsScroller(
+                      trainingStats: state.trainingStats,
+                      isWearableConnected: state.wearable.connected,
+                    ),
+                    const SizedBox(height: Spacing.m),
+                    CycleTipCard(phase: currentPhase),
+                    const SizedBox(height: _kMinBottomGap),
                   ],
                 ),
               ),
-            ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: _kMinBottomGap),
             ),
           ],
         ),
@@ -128,7 +176,11 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
-  Widget _buildHeader(HeaderProps header, bool hasNotifications) {
+  Widget _buildHeader(
+    HeaderProps header,
+    bool hasNotifications,
+    WeekStripView weekView,
+  ) {
     return Row(
       key: const Key('dashboard_header'),
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,7 +200,9 @@ class _HeuteScreenState extends State<HeuteScreen> {
                   color: Color(0xFF030401),
                 ),
               ),
-              const SizedBox(height: 2), // from DASHBOARD_spec.json $.spacingTokensObserved[1]
+              const SizedBox(
+                height: 2,
+              ), // from DASHBOARD_spec.json $.spacingTokensObserved[1]
               // from DASHBOARD_spec.json $.header.subtitle.typography (Figtree 16/24)
               Text(
                 header.phaseLabel,
@@ -160,6 +214,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
                   color: Color(0xFF6d6d6d),
                 ),
               ),
+              const SizedBox(height: Spacing.m),
+              CycleInlineCalendar(view: weekView),
             ],
           ),
         ),
@@ -202,7 +258,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
         borderRadius: BorderRadius.circular(_headerIconRadius),
         border: Border.all(
           color: const Color(0xFFFFFFFF).withValues(alpha: 0.08),
-          width: 0.769, // from DASHBOARD_spec.json $.header.actions[0].container.border.width
+          width:
+              0.769, // from DASHBOARD_spec.json $.header.actions[0].container.border.width
         ),
       ),
       child: SvgPicture.asset(
@@ -220,7 +277,9 @@ class _HeuteScreenState extends State<HeuteScreen> {
     return Container(
       key: const Key('dashboard_hero_card'),
       width: double.infinity,
-      padding: const EdgeInsets.all(_pad21), // from DASHBOARD_spec.json $.heroCard.autoLayout.padding
+      padding: const EdgeInsets.all(
+        _pad21,
+      ), // from DASHBOARD_spec.json $.heroCard.autoLayout.padding
       decoration: BoxDecoration(
         // from DASHBOARD_spec.json $.heroCard.container.bg.hex
         color: const Color(0xFFCCB2F4),
@@ -228,7 +287,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
         // from DASHBOARD_spec.json $.heroCard.container.stroke
         border: Border.all(
           color: const Color(0xFF696969),
-          width: 1, // from DASHBOARD_spec.json $.heroCard.container.stroke.width
+          width:
+              1, // from DASHBOARD_spec.json $.heroCard.container.stroke.width
         ),
       ),
       child: Column(
@@ -290,7 +350,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
                       '${(hero.progressRatio * 100).toInt()}%',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontFamily: 'Urbanist', // TODO(font): non-brand; not in pubspec → runtime fallback expected
+                        fontFamily:
+                            'Urbanist', // TODO(font): non-brand; not in pubspec → runtime fallback expected
                         fontSize: _heroProgressFontSize,
                         height: 1.2,
                         fontWeight: FontWeight.w500,
@@ -359,7 +420,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
   Widget _buildCategories(List<CategoryProps> categories) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final contentWidth = constraints.maxWidth; // from layout: content width nach Padding
+        final contentWidth =
+            constraints.maxWidth; // from layout: content width nach Padding
         if (categories.isEmpty) {
           return const SizedBox.shrink();
         }
@@ -421,12 +483,15 @@ class _HeuteScreenState extends State<HeuteScreen> {
         final rawGap = gapCount > 0
             ? (contentWidth - totalWidth) / gapCount
             : _categoriesMinGap;
-        final gap = rawGap.clamp(_categoriesMinGap, _categoriesMaxGap).toDouble();
+        final gap = rawGap
+            .clamp(_categoriesMinGap, _categoriesMaxGap)
+            .toDouble();
 
         return Wrap(
           key: const Key('dashboard_categories_grid'),
           spacing: columnCount > 1 ? gap : 0,
-          runSpacing: 8, // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[4].value (8px rows)
+          runSpacing:
+              8, // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[4].value (8px rows)
           children: [
             for (var i = 0; i < categories.length; i++)
               CategoryChip(
@@ -456,7 +521,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
     if (recommendations.isEmpty) {
       // Placeholder for empty state
       return const SizedBox(
-        height: 180, // from DASHBOARD_spec.json $.recommendations.list.itemSize.h (placeholder uses same height)
+        height:
+            180, // from DASHBOARD_spec.json $.recommendations.list.itemSize.h (placeholder uses same height)
         child: Center(
           child: Text(
             'Keine Empfehlungen verfügbar',
@@ -488,9 +554,6 @@ class _HeuteScreenState extends State<HeuteScreen> {
             imagePath: rec.imagePath,
             tag: rec.tag,
             title: rec.title,
-            showSyncBadge: rec.showSyncBadge,
-            badgeAssetPath: Assets.icons.syncBadge,
-            badgeSize: rec.badgeSize,
             showTag: false,
           );
         },
@@ -500,10 +563,26 @@ class _HeuteScreenState extends State<HeuteScreen> {
 
   Widget _buildDockNavigation() {
     final tabs = [
-      DockTab(iconPath: Assets.icons.navToday, label: 'Heute', key: const Key('nav_today')),
-      DockTab(iconPath: Assets.icons.navCycle, label: 'Zyklus', key: const Key('nav_cycle')),
-      DockTab(iconPath: Assets.icons.navPulse, label: 'Puls', key: const Key('nav_pulse')),
-      DockTab(iconPath: Assets.icons.navProfile, label: 'Profil', key: const Key('nav_profile')),
+      DockTab(
+        iconPath: Assets.icons.navToday,
+        label: 'Heute',
+        key: const Key('nav_today'),
+      ),
+      DockTab(
+        iconPath: Assets.icons.navCycle,
+        label: 'Zyklus',
+        key: const Key('nav_cycle'),
+      ),
+      DockTab(
+        iconPath: Assets.icons.navPulse,
+        label: 'Puls',
+        key: const Key('nav_pulse'),
+      ),
+      DockTab(
+        iconPath: Assets.icons.navProfile,
+        label: 'Profil',
+        key: const Key('nav_profile'),
+      ),
     ];
 
     return Stack(
@@ -512,7 +591,9 @@ class _HeuteScreenState extends State<HeuteScreen> {
         // Dock bar with violet wave top-border (white bg, shadow)
         BottomNavDock(
           key: const Key('dashboard_dock_nav'),
-          activeIndex: _activeTabIndex == 4 ? -1 : _activeTabIndex, // When sync active (4), no dock tab is selected
+          activeIndex: _activeTabIndex == 4
+              ? -1
+              : _activeTabIndex, // When sync active (4), no dock tab is selected
           onTabTap: (index) {
             setState(() {
               _activeTabIndex = index;
@@ -523,7 +604,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
         ),
         // Floating sync button above center (index 4)
         Positioned(
-          bottom: syncButtonBottom, // Kodex: Formula from tokens = 96 - 38 - 9 = 49px
+          bottom:
+              syncButtonBottom, // Kodex: Formula from tokens = 96 - 38 - 9 = 49px
           left: 0,
           right: 0,
           child: Center(

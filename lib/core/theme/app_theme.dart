@@ -17,7 +17,9 @@ class AppTheme {
   static const Color _accentSubtle = Color(
     0xFFD9B6A3,
   ); // Accent-Subtle (nur "Superkraft.")
-  static const Color _onPrimary = Color(0xFF030401); // Grayscale/Black (CTA text on Gold)
+  static const Color _onPrimary = Color(
+    0xFF030401,
+  ); // Grayscale/Black (CTA text on Gold)
   static const Color _onSurface = Color(0xFF030401); // Grayscale/Black
   static const Color _grayscale400 = Color(
     0xFFB0B0B0,
@@ -68,12 +70,8 @@ class AppTheme {
       scaffoldBackgroundColor: Colors.white,
       textTheme: _buildTextTheme(),
       // Centralize common UI measurements to remove magic numbers in widgets
-      iconTheme: const IconThemeData(
-        size: TypographyTokens.size20,
-      ),
-      dividerTheme: const DividerThemeData(
-        thickness: 1.0,
-      ),
+      iconTheme: const IconThemeData(size: TypographyTokens.size20),
+      dividerTheme: const DividerThemeData(thickness: 1.0),
       // Button global stylen wie Figma
       elevatedButtonTheme: _buildElevatedButtonTheme(),
       textButtonTheme: _buildTextButtonTheme(),
@@ -155,6 +153,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     required this.inputBorderLight,
     required this.authEntrySubhead,
     required this.accentPurple,
+    required this.color,
   });
 
   final Color cardSurface; // Grayscale/100 (#F7F7F8)
@@ -163,8 +162,10 @@ class DsTokens extends ThemeExtension<DsTokens> {
   final Color grayscale500; // Placeholder / secondary text
   final Color successColor; // Message/Green (#04B155)
   final Color inputBorderLight; // Subtle borders (#F7F7F8)
-  final TextStyle authEntrySubhead; // Auth Entry subhead typography (shape-only)
+  final TextStyle
+  authEntrySubhead; // Auth Entry subhead typography (shape-only)
   final Color accentPurple; // Accent/300 (#CCB2F4) - dock wave, sync button
+  final DsColorTokens color; // Nested DS color tokens
 
   static const DsTokens light = DsTokens(
     cardSurface: Color(0xFFF7F7F8),
@@ -181,6 +182,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
       letterSpacing: 0,
     ),
     accentPurple: Color(0xFFCCB2F4),
+    color: DsColorTokens.light,
   );
 
   @override
@@ -193,6 +195,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     Color? inputBorderLight,
     TextStyle? authEntrySubhead,
     Color? accentPurple,
+    DsColorTokens? color,
   }) => DsTokens(
     cardSurface: cardSurface ?? this.cardSurface,
     cardBorderSelected: cardBorderSelected ?? this.cardBorderSelected,
@@ -202,6 +205,7 @@ class DsTokens extends ThemeExtension<DsTokens> {
     inputBorderLight: inputBorderLight ?? this.inputBorderLight,
     authEntrySubhead: authEntrySubhead ?? this.authEntrySubhead,
     accentPurple: accentPurple ?? this.accentPurple,
+    color: color ?? this.color,
   );
 
   @override
@@ -225,8 +229,56 @@ class DsTokens extends ThemeExtension<DsTokens> {
           authEntrySubhead,
       accentPurple:
           Color.lerp(accentPurple, other.accentPurple, t) ?? accentPurple,
+      color: color.lerp(other.color, t),
     );
   }
+}
+
+@immutable
+class DsColorTokens {
+  const DsColorTokens({required this.icon});
+
+  final DsIconColorTokens icon;
+
+  static const DsColorTokens light = DsColorTokens(
+    icon: DsIconColorTokens(
+      badge: DsIconBadgeColorTokens(goldCircle: Color(0xFFD9B18E)),
+    ),
+  );
+
+  DsColorTokens copyWith({DsIconColorTokens? icon}) =>
+      DsColorTokens(icon: icon ?? this.icon);
+
+  DsColorTokens lerp(DsColorTokens other, double t) =>
+      DsColorTokens(icon: icon.lerp(other.icon, t));
+}
+
+@immutable
+class DsIconColorTokens {
+  const DsIconColorTokens({required this.badge});
+
+  final DsIconBadgeColorTokens badge;
+
+  DsIconColorTokens copyWith({DsIconBadgeColorTokens? badge}) =>
+      DsIconColorTokens(badge: badge ?? this.badge);
+
+  DsIconColorTokens lerp(DsIconColorTokens other, double t) =>
+      DsIconColorTokens(badge: badge.lerp(other.badge, t));
+}
+
+@immutable
+class DsIconBadgeColorTokens {
+  const DsIconBadgeColorTokens({required this.goldCircle});
+
+  final Color goldCircle;
+
+  DsIconBadgeColorTokens copyWith({Color? goldCircle}) =>
+      DsIconBadgeColorTokens(goldCircle: goldCircle ?? this.goldCircle);
+
+  DsIconBadgeColorTokens lerp(DsIconBadgeColorTokens other, double t) =>
+      DsIconBadgeColorTokens(
+        goldCircle: Color.lerp(goldCircle, other.goldCircle, t) ?? goldCircle,
+      );
 }
 
 @immutable
@@ -248,15 +300,12 @@ class TextColorTokens extends ThemeExtension<TextColorTokens> {
   );
 
   @override
-  TextColorTokens copyWith({
-    Color? primary,
-    Color? secondary,
-    Color? muted,
-  }) => TextColorTokens(
-    primary: primary ?? this.primary,
-    secondary: secondary ?? this.secondary,
-    muted: muted ?? this.muted,
-  );
+  TextColorTokens copyWith({Color? primary, Color? secondary, Color? muted}) =>
+      TextColorTokens(
+        primary: primary ?? this.primary,
+        secondary: secondary ?? this.secondary,
+        muted: muted ?? this.muted,
+      );
 
   @override
   TextColorTokens lerp(ThemeExtension<TextColorTokens>? other, double t) {
@@ -299,15 +348,11 @@ class SurfaceColorTokens extends ThemeExtension<SurfaceColorTokens> {
   );
 
   @override
-  SurfaceColorTokens lerp(
-    ThemeExtension<SurfaceColorTokens>? other,
-    double t,
-  ) {
+  SurfaceColorTokens lerp(ThemeExtension<SurfaceColorTokens>? other, double t) {
     if (other is! SurfaceColorTokens) return this;
     return SurfaceColorTokens(
       infoBackground:
-          Color.lerp(infoBackground, other.infoBackground, t) ??
-          infoBackground,
+          Color.lerp(infoBackground, other.infoBackground, t) ?? infoBackground,
       cardBackgroundNeutral:
           Color.lerp(cardBackgroundNeutral, other.cardBackgroundNeutral, t) ??
           cardBackgroundNeutral,
@@ -356,15 +401,11 @@ class CyclePhaseTokens extends ThemeExtension<CyclePhaseTokens> {
   );
 
   @override
-  CyclePhaseTokens lerp(
-    ThemeExtension<CyclePhaseTokens>? other,
-    double t,
-  ) {
+  CyclePhaseTokens lerp(ThemeExtension<CyclePhaseTokens>? other, double t) {
     if (other is! CyclePhaseTokens) return this;
     return CyclePhaseTokens(
       follicularDark:
-          Color.lerp(follicularDark, other.follicularDark, t) ??
-          follicularDark,
+          Color.lerp(follicularDark, other.follicularDark, t) ?? follicularDark,
       follicularLight:
           Color.lerp(follicularLight, other.follicularLight, t) ??
           follicularLight,
@@ -434,33 +475,23 @@ class CalendarRadiusTokens extends ThemeExtension<CalendarRadiusTokens> {
     return CalendarRadiusTokens(
       calendarChip:
           lerpDouble(calendarChip, other.calendarChip, t) ?? calendarChip,
-      calendarSegmentEdge: lerpDouble(
-            calendarSegmentEdge,
-            other.calendarSegmentEdge,
-            t,
-          ) ??
+      calendarSegmentEdge:
+          lerpDouble(calendarSegmentEdge, other.calendarSegmentEdge, t) ??
           calendarSegmentEdge,
-      calendarSegmentInner: lerpDouble(
-            calendarSegmentInner,
-            other.calendarSegmentInner,
-            t,
-          ) ??
+      calendarSegmentInner:
+          lerpDouble(calendarSegmentInner, other.calendarSegmentInner, t) ??
           calendarSegmentInner,
       calendarGap: lerpDouble(calendarGap, other.calendarGap, t) ?? calendarGap,
       cardLarge: lerpDouble(cardLarge, other.cardLarge, t) ?? cardLarge,
       cardStat: lerpDouble(cardStat, other.cardStat, t) ?? cardStat,
-      cardWorkout:
-          lerpDouble(cardWorkout, other.cardWorkout, t) ?? cardWorkout,
+      cardWorkout: lerpDouble(cardWorkout, other.cardWorkout, t) ?? cardWorkout,
     );
   }
 }
 
 @immutable
 class ShadowTokens extends ThemeExtension<ShadowTokens> {
-  const ShadowTokens({
-    required this.heroDrop,
-    required this.tileDrop,
-  });
+  const ShadowTokens({required this.heroDrop, required this.tileDrop});
 
   final BoxShadow heroDrop;
   final BoxShadow tileDrop;
@@ -481,13 +512,11 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
   );
 
   @override
-  ShadowTokens copyWith({
-    BoxShadow? heroDrop,
-    BoxShadow? tileDrop,
-  }) => ShadowTokens(
-    heroDrop: heroDrop ?? this.heroDrop,
-    tileDrop: tileDrop ?? this.tileDrop,
-  );
+  ShadowTokens copyWith({BoxShadow? heroDrop, BoxShadow? tileDrop}) =>
+      ShadowTokens(
+        heroDrop: heroDrop ?? this.heroDrop,
+        tileDrop: tileDrop ?? this.tileDrop,
+      );
 
   @override
   ShadowTokens lerp(ThemeExtension<ShadowTokens>? other, double t) {
@@ -513,23 +542,17 @@ class GlassTokens extends ThemeExtension<GlassTokens> {
 
   static const GlassTokens light = GlassTokens(
     background: Color(0x8CFFFFFF),
-    border: BorderSide(
-      color: Color(0x14000000),
-      width: 1,
-    ),
+    border: BorderSide(color: Color(0x14000000), width: 1),
     blur: 16,
   );
 
   @override
-  GlassTokens copyWith({
-    Color? background,
-    BorderSide? border,
-    double? blur,
-  }) => GlassTokens(
-    background: background ?? this.background,
-    border: border ?? this.border,
-    blur: blur ?? this.blur,
-  );
+  GlassTokens copyWith({Color? background, BorderSide? border, double? blur}) =>
+      GlassTokens(
+        background: background ?? this.background,
+        border: border ?? this.border,
+        blur: blur ?? this.blur,
+      );
 
   @override
   GlassTokens lerp(ThemeExtension<GlassTokens>? other, double t) {

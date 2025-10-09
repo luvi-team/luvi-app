@@ -21,6 +21,8 @@ import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
+import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
@@ -142,6 +144,19 @@ final List<GoRoute> featureRoutes = [
     path: HeuteScreen.routeName,
     name: 'heute',
     builder: (context, state) => const HeuteScreen(),
+  ),
+  GoRoute(
+    path: CycleOverviewStubScreen.routeName,
+    name: 'cycle_overview_stub',
+    builder: (context, state) => const CycleOverviewStubScreen(),
+  ),
+  GoRoute(
+    path: '/workout/:id',
+    name: 'workout_detail_stub',
+    builder: (context, state) {
+      final id = state.pathParameters['id'] ?? 'unknown';
+      return WorkoutDetailStubScreen(workoutId: id);
+    },
   ),
 ];
 

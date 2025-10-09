@@ -57,15 +57,30 @@ class RecommendationProps {
   final String tag;
   final String title;
   final String imagePath;
-  final bool showSyncBadge;
-  final double? badgeSize;
 
   const RecommendationProps({
     required this.tag,
     required this.title,
     required this.imagePath,
-    this.showSyncBadge = false,
-    this.badgeSize,
+  });
+}
+
+@immutable
+class TopRecommendationProps {
+  final String id;
+  final String tag;
+  final String title;
+  final String imagePath;
+  final String badgeAssetPath;
+  final bool fromLuviSync;
+
+  const TopRecommendationProps({
+    required this.id,
+    required this.tag,
+    required this.title,
+    required this.imagePath,
+    required this.badgeAssetPath,
+    this.fromLuviSync = true,
   });
 }
 
@@ -83,19 +98,53 @@ class BottomNavProps {
 }
 
 @immutable
+class TrainingStatProps {
+  final String label;
+  final num value;
+  final String iconAssetPath;
+  final String? unit;
+  final List<double> trend;
+
+  const TrainingStatProps({
+    required this.label,
+    required this.value,
+    required this.iconAssetPath,
+    this.unit,
+    this.trend = const [],
+  });
+}
+
+@immutable
+class WearableProps {
+  final bool connected;
+
+  const WearableProps({required this.connected});
+}
+
+@immutable
 class HeuteFixtureState {
   final HeaderProps header;
   final HeroCardProps heroCard;
+  final TopRecommendationProps topRecommendation;
   final List<CategoryProps> categories;
   final List<RecommendationProps> recommendations;
+  final List<TrainingStatProps> trainingStats;
+  final WearableProps wearable;
   final BottomNavProps bottomNav;
+  final DateTime referenceDate;
+  final CycleInfo cycleInfo;
 
   const HeuteFixtureState({
     required this.header,
     required this.heroCard,
+    required this.topRecommendation,
     required this.categories,
     required this.recommendations,
+    required this.trainingStats,
+    required this.wearable,
     required this.bottomNav,
+    required this.referenceDate,
+    required this.cycleInfo,
   });
 
   /// Convenience forwards so the view model bridge stays explicit in fixtures.
@@ -146,16 +195,20 @@ class HeuteFixtures {
         subtitle:
             'Wir starten heute ruhig und strukturiert - eine lockere Cardio Einheit hilft dir fokussiert zu bleiben...',
       ),
+      topRecommendation: TopRecommendationProps(
+        id: 'reco-shoulder-stretching',
+        tag: 'Kraft',
+        title: 'Shoulder Stretching',
+        imagePath: Assets.images.recoGanzkoerper,
+        badgeAssetPath: Assets.icons.syncBadge,
+      ),
       categories: [
         CategoryProps(
           iconPath: Assets.icons.catTraining,
           label: 'Training',
           isSelected: true,
         ),
-        CategoryProps(
-          iconPath: Assets.icons.catNutrition,
-          label: 'Ernährung',
-        ),
+        CategoryProps(iconPath: Assets.icons.catNutrition, label: 'Ernährung'),
         CategoryProps(
           iconPath: Assets.icons.catRegeneration,
           label: 'Regeneration',
@@ -170,8 +223,6 @@ class HeuteFixtures {
           tag: 'Kraft',
           title: 'Beine & Po',
           imagePath: Assets.images.recoBeinePo,
-          showSyncBadge: true,
-          badgeSize: 24,
         ),
         RecommendationProps(
           tag: 'Kraft',
@@ -184,10 +235,40 @@ class HeuteFixtures {
           imagePath: Assets.images.recoGanzkoerper,
         ),
       ],
+      trainingStats: [
+        TrainingStatProps(
+          label: 'Puls',
+          value: 94,
+          unit: 'bpm',
+          iconAssetPath: Assets.icons.dashboard.heart,
+          trend: [0.62, 0.58, 0.67, 0.71, 0.68],
+        ),
+        TrainingStatProps(
+          label: 'Verbrannte Energie',
+          value: 500,
+          unit: 'kcal',
+          iconAssetPath: Assets.icons.dashboard.kcal,
+          trend: [0.32, 0.45, 0.38, 0.52, 0.6],
+        ),
+        TrainingStatProps(
+          label: 'Schritte',
+          value: 2500,
+          iconAssetPath: Assets.icons.dashboard.run,
+          trend: [0.18, 0.24, 0.36, 0.4, 0.48],
+        ),
+      ],
+      wearable: const WearableProps(connected: true),
       bottomNav: const BottomNavProps(
         selectedIndex: 0,
-        items: ['Home', 'Flower', 'Social', 'Account'], // 'Home' = first tab (index 0)
+        items: [
+          'Home',
+          'Flower',
+          'Social',
+          'Account',
+        ], // 'Home' = first tab (index 0)
       ),
+      referenceDate: today,
+      cycleInfo: cycleInfo,
     );
   }
 
@@ -197,13 +278,18 @@ class HeuteFixtures {
     return HeuteFixtureState(
       header: base.header,
       heroCard: base.heroCard,
+      topRecommendation: base.topRecommendation,
       categories: base.categories,
       recommendations: base.recommendations,
+      trainingStats: base.trainingStats,
+      wearable: base.wearable,
       bottomNav: BottomNavProps(
         selectedIndex: base.bottomNav.selectedIndex,
         items: base.bottomNav.items,
         hasNotifications: true,
       ),
+      referenceDate: base.referenceDate,
+      cycleInfo: base.cycleInfo,
     );
   }
 
@@ -213,9 +299,14 @@ class HeuteFixtures {
     return HeuteFixtureState(
       header: base.header,
       heroCard: base.heroCard,
+      topRecommendation: base.topRecommendation,
       categories: base.categories,
       recommendations: const [], // empty
+      trainingStats: base.trainingStats,
+      wearable: base.wearable,
       bottomNav: base.bottomNav,
+      referenceDate: base.referenceDate,
+      cycleInfo: base.cycleInfo,
     );
   }
 }

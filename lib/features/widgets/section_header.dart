@@ -19,18 +19,25 @@ class SectionHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontFamily: FontFamilies.figtree,
-            fontSize: TypographyTokens.size20,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF030401),
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontFamily: FontFamilies.figtree,
+              fontSize: TypographyTokens.size20,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF030401),
+            ),
           ),
         ),
-        if (showTrailingAction)
+        if (showTrailingAction) ...[
+          const SizedBox(width: 12),
           Text(
             trailingLabel,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontFamily: FontFamilies.figtree,
               fontSize: TypographyTokens.size14,
@@ -38,6 +45,7 @@ class SectionHeader extends StatelessWidget {
               color: Color(0xFFD9B18E),
             ),
           ),
+        ],
       ],
     );
   }
