@@ -42,7 +42,7 @@ String _formatStatLabel(String rawLabel) {
 /// Horizontally scrollable training stats with glass cards.
 class StatsScroller extends StatelessWidget {
   const StatsScroller({
-    super.key = const Key('dashboard_training_stats_scroller'),
+    super.key,
     required this.trainingStats,
     required this.isWearableConnected,
   });
@@ -171,6 +171,7 @@ class _TrainingStatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTokens = Theme.of(context).extension<TextColorTokens>();
     final dsTokens = Theme.of(context).extension<DsTokens>();
+    final surfaceTokens = Theme.of(context).extension<SurfaceColorTokens>();
 
     final titleColor = textTokens?.secondary ?? const Color(0xFF6D6D6D);
     final valueColor = textTokens?.primary ?? const Color(0xFF030401);
@@ -184,7 +185,7 @@ class _TrainingStatCard extends StatelessWidget {
         width: kStatsCardWidth,
         height: kStatsCardHeight,
         decoration: BoxDecoration(
-          color: const Color(0xFFF1F1F1), // Figma: solid gray background
+          color: surfaceTokens?.cardBackgroundNeutral ?? const Color(0xFFF1F1F1),
           borderRadius: BorderRadius.circular(kStatsCardRadius),
           border: Border.all(
             color: const Color(0x1A000000), // Figma: 1dp @ 10% black

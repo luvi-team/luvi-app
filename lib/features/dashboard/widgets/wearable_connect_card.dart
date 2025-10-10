@@ -19,6 +19,7 @@ class WearableConnectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTokens = Theme.of(context).extension<TextColorTokens>();
+    final surfaceTokens = Theme.of(context).extension<SurfaceColorTokens>();
 
     final textColor = textTokens?.secondary ?? const Color(0xFF6D6D6D);
 
@@ -31,7 +32,7 @@ class WearableConnectCard extends StatelessWidget {
             width: kStatsCardWidth,
             height: kStatsCardHeight,
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F1F1), // Figma: solid gray background
+              color: surfaceTokens?.cardBackgroundNeutral ?? const Color(0xFFF1F1F1),
               borderRadius: BorderRadius.circular(kStatsCardRadius),
               border: Border.all(
                 color: const Color(0x1A000000), // Figma: 1dp @ 10% black
