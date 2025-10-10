@@ -93,7 +93,6 @@ class _TrainingStatCard extends StatelessWidget {
   static final NumberFormat _formatter = NumberFormat.decimalPattern('de_DE');
 
   Widget _buildValueGroup(
-    BuildContext context,
     Color valueColor,
     Color titleColor,
   ) {
@@ -114,59 +113,125 @@ class _TrainingStatCard extends StatelessWidget {
     );
 
     if (data.heartRateGlyphAsset != null) {
-      return Align(
-        alignment: Alignment.topLeft,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              formattedValue,
-              style: valueStyle,
-              textHeightBehavior: _valueHeightBehavior,
-            ),
-            if (data.unit != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  data.unit!,
-                  style: unitStyle,
-                  textHeightBehavior: _unitHeightBehavior,
-                ),
-              ),
-          ],
-        ),
+      return _buildStackedValue(
+        formattedValue,
+        data.unit,
+        valueStyle,
+        unitStyle,
+        glyph: _buildHeartGlyphIfAny(),
       );
     }
 
     if (data.unit == null) {
-      return Align(
-        alignment: Alignment(_stepsValueAlignmentX, -1),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 8),
-          child: Text(
-            formattedValue,
+      return _buildCenteredValue(formattedValue, valueStyle);
+    }
+
+    return _buildInlineValue(
+      formattedValue,
+      data.unit!,
+      valueStyle,
+      unitStyle,
+    );
+  }
+
+  Widget _buildStackedValue(
+    String value,
+    String? unit,
+    TextStyle valueStyle,
+    TextStyle unitStyle, {
+    Widget? glyph,
+  }) {
+    final content = Align(
+      alignment: Alignment.topLeft,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
             style: valueStyle,
             textHeightBehavior: _valueHeightBehavior,
           ),
-        ),
-      );
+          if (unit != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                unit,
+                style: unitStyle,
+                textHeightBehavior: _unitHeightBehavior,
+              ),
+            ),
+        ],
+      ),
+    );
+
+    if (glyph == null) {
+      return content;
     }
 
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        content,
+        glyph,
+      ],
+    );
+  }
+
+  Widget _buildInlineValue(
+    String value,
+    String unit,
+    TextStyle valueStyle,
+    TextStyle unitStyle,
+  ) {
     return Align(
       alignment: Alignment.topLeft,
       child: RichText(
         textHeightBehavior: _valueHeightBehavior,
         text: TextSpan(
-          text: formattedValue,
+          text: value,
           style: valueStyle,
           children: [
             TextSpan(
-              text: ' ${data.unit!}',
+              text: ' $unit',
               style: unitStyle,
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildCenteredValue(
+    String value,
+    TextStyle valueStyle,
+  ) {
+    return Align(
+      alignment: Alignment(_stepsValueAlignmentX, -1),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: Text(
+          value,
+          style: valueStyle,
+          textHeightBehavior: _valueHeightBehavior,
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildHeartGlyphIfAny() {
+    final asset = data.heartRateGlyphAsset;
+    if (asset == null) {
+      return null;
+    }
+    return Positioned(
+      left: _hrGlyphLeft,
+      bottom: _hrGlyphBottom - _cardPadding,
+      child: SvgPicture.asset(
+        asset,
+        width: _hrGlyphWidth,
+        height: _hrGlyphHeight,
+        excludeFromSemantics: true,
       ),
     );
   }
@@ -236,22 +301,10 @@ class _TrainingStatCard extends StatelessWidget {
                 const SizedBox(height: _labelToValueGap),
                 SizedBox(
                   height: _valueAreaHeight,
-                  child: _buildValueGroup(context, valueColor, titleColor),
+                  child: _buildValueGroup(valueColor, titleColor),
                 ),
               ],
             ),
-            // HR glyph (decorative) only when provided
-            if (data.heartRateGlyphAsset != null)
-              Positioned(
-                left: _hrGlyphLeft,
-                bottom: _hrGlyphBottom,
-                child: SvgPicture.asset(
-                  data.heartRateGlyphAsset!,
-                  width: _hrGlyphWidth,
-                  height: _hrGlyphHeight,
-                  excludeFromSemantics: true,
-                ),
-              ),
           ],
         ),
       ),
