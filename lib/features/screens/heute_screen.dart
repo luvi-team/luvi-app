@@ -21,9 +21,6 @@ import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 
 // Dashboard-only spacing (audit-backed)
-// from DASHBOARD_spec_deltas.json $.deltas[9].newValue (15px)
-// ignore: unused_element
-const double _gap15 = 15.0; // legacy (kept for reference)
 const double _gap16 = 16.0; // Spec: recommendations list gap 16px
 // from DASHBOARD_spec.json $.categories.grid.columns (4)
 const int _categoriesColumns = 4;
