@@ -14,7 +14,7 @@ const double _iconSize = 24;
 /// Purple info card that surfaces a short, phase-specific recommendation.
 class CycleTipCard extends StatelessWidget {
   const CycleTipCard({
-    super.key = const Key('dashboard_cycle_tip_card'),
+    super.key,
     required this.phase,
   });
 

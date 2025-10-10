@@ -9,7 +9,7 @@ const double kStatsCardRadius = 24;
 /// Glassmorphism fallback card shown when no wearable is connected.
 class WearableConnectCard extends StatelessWidget {
   const WearableConnectCard({
-    super.key = const Key('dashboard_wearable_connect_card'),
+    super.key,
     this.message =
         'Verbinde dein Wearable, um deine Trainingsdaten anzeigen zu lassen.',
   });
