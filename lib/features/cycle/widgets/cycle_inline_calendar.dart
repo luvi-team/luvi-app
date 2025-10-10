@@ -88,105 +88,69 @@ class CycleInlineCalendar extends StatelessWidget {
         final todayGeometry = todayIndex >= 0 ? dayGeometries[todayIndex] : null;
         final todayDay = todayIndex >= 0 ? view.days[todayIndex] : null;
 
-        return _buildCalendarContent(
-          context,
-          availableWidth,
-          dayGeometries,
-          todayGeometry,
-          todayDay,
-          phaseTokens,
-          textTokens,
-          radiusTokens,
+        return _CalendarContent(
+          availableWidth: availableWidth,
+          dayGeometries: dayGeometries,
+          todayGeometry: todayGeometry,
+          todayDay: todayDay,
+          phaseTokens: phaseTokens,
+          textTokens: textTokens,
+          radiusTokens: radiusTokens,
+          days: view.days,
+          segments: view.segments,
         );
       },
     );
   }
+}
 
-  Widget _buildCalendarContent(
-    BuildContext context,
-    double availableWidth,
-    List<_DayGeometry> dayGeometries,
-    _DayGeometry? todayGeometry,
-    WeekStripDay? todayDay,
-    CyclePhaseTokens phaseTokens,
-    TextColorTokens textTokens,
-    CalendarRadiusTokens radiusTokens,
-  ) {
+class _CalendarContent extends StatelessWidget {
+  const _CalendarContent({
+    required this.availableWidth,
+    required this.dayGeometries,
+    required this.todayGeometry,
+    required this.todayDay,
+    required this.phaseTokens,
+    required this.textTokens,
+    required this.radiusTokens,
+    required this.days,
+    required this.segments,
+  });
 
+  final double availableWidth;
+  final List<_DayGeometry> dayGeometries;
+  final _DayGeometry? todayGeometry;
+  final WeekStripDay? todayDay;
+  final CyclePhaseTokens phaseTokens;
+  final TextColorTokens textTokens;
+  final CalendarRadiusTokens radiusTokens;
+  final List<WeekStripDay> days;
+  final List<WeekStripSegment> segments;
+
+  @override
+  Widget build(BuildContext context) {
     final dayWidgets = <Widget>[];
+    final localTodayGeometry = todayGeometry;
+    final localTodayDay = todayDay;
 
-    for (var i = 0; i < view.days.length; i++) {
-      final day = view.days[i];
+    for (var i = 0; i < days.length; i++) {
+      final day = days[i];
       final geometry = dayGeometries[i];
 
-      final weekdayLabel = _formatWeekdayUpper(day.date);
-      final dayNumber = day.date.day.toString();
-      final isToday = day.isToday;
-      final baseTextColor = isToday ? Colors.white : textTokens.primary;
-      final weekdayTextColor = textTokens.secondary;
-
       dayWidgets.add(
-        SizedBox(
-          width: geometry.width,
-          height: _trackHeight,
-          child: Padding(
-            padding:
-                const EdgeInsets.only(top: _topPadding, bottom: _bottomPadding),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  weekdayLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.clip,
-                  style: TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontWeight: FontWeight.w600,
-                    fontSize: _weekdayFontSize,
-                    height: _weekdayLineHeight,
-                    color: weekdayTextColor,
-                  ),
-                ),
-                const SizedBox(height: _weekdaySpacing),
-                Text(
-                  dayNumber,
-                  maxLines: 1,
-                  overflow: TextOverflow.clip,
-                  style: TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontWeight: FontWeight.w700,
-                    fontSize: _dayFontSize,
-                    height: _dayLineHeight,
-                    color: baseTextColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        _buildDayColumn(day, geometry, textTokens),
       );
 
-      if (geometry.gapAfter > 0 && i != view.days.length - 1) {
+      if (geometry.gapAfter > 0 && i != days.length - 1) {
         dayWidgets.add(SizedBox(width: geometry.gapAfter));
       }
-    }
-
-    final String semanticsLabel;
-    if (todayDay != null) {
-      final formattedDate = _formatDayMonthDe(todayDay.date);
-      semanticsLabel =
-          'Zykluskalender. Heute $formattedDate Phase: ${todayDay.phase.label}. '
-          'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
-    } else {
-      semanticsLabel = 'Zykluskalender. Zur Zyklusübersicht wechseln. '
-          'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
     }
 
     return Semantics(
       key: const ValueKey('cycle_inline_calendar_semantics'),
       container: true,
       button: true,
-      label: semanticsLabel,
+      label: _buildSemanticsLabel(todayDay),
       hint: 'Zur Zyklusübersicht wechseln.',
       child: ExcludeSemantics(
         child: Material(
@@ -202,7 +166,7 @@ class CycleInlineCalendar extends StatelessWidget {
                   CustomPaint(
                     size: Size(availableWidth, _trackHeight),
                     painter: _SegmentPainter(
-                      segments: view.segments,
+                      segments: segments,
                       geometries: dayGeometries,
                       tokens: phaseTokens,
                       radiusTokens: radiusTokens,
@@ -210,16 +174,17 @@ class CycleInlineCalendar extends StatelessWidget {
                       segmentHeight: _segmentHeight,
                     ),
                   ),
-                  if (todayGeometry != null && todayDay != null)
+                  if (localTodayGeometry != null && localTodayDay != null)
                     Positioned(
-                      left: todayGeometry.start,
+                      left: localTodayGeometry.start,
                       top: _segmentTopOffset,
                       child: Container(
-                        width: todayGeometry.width,
+                        width: localTodayGeometry.width,
                         height: _segmentHeight,
                         decoration: BoxDecoration(
-                          color: _todayColor(todayDay.phase, phaseTokens),
-                          borderRadius: BorderRadius.circular(radiusTokens.calendarChip),
+                          color: _todayColor(localTodayDay.phase, phaseTokens),
+                          borderRadius:
+                              BorderRadius.circular(radiusTokens.calendarChip),
                         ),
                       ),
                     ),
@@ -241,6 +206,66 @@ class CycleInlineCalendar extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  String _buildSemanticsLabel(WeekStripDay? todayDay) {
+    if (todayDay != null) {
+      final formattedDate = _formatDayMonthDe(todayDay.date);
+      return 'Zykluskalender. Heute $formattedDate Phase: ${todayDay.phase.label}. '
+          'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+    }
+    return 'Zykluskalender. Zur Zyklusübersicht wechseln. '
+        'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+  }
+
+  Widget _buildDayColumn(
+    WeekStripDay day,
+    _DayGeometry geometry,
+    TextColorTokens textTokens,
+  ) {
+    final weekdayLabel = _formatWeekdayUpper(day.date);
+    final dayNumber = day.date.day.toString();
+    final isToday = day.isToday;
+    final baseTextColor = isToday ? Colors.white : textTokens.primary;
+    final weekdayTextColor = textTokens.secondary;
+
+    return SizedBox(
+      width: geometry.width,
+      height: _trackHeight,
+      child: Padding(
+        padding: const EdgeInsets.only(top: _topPadding, bottom: _bottomPadding),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              weekdayLabel,
+              maxLines: 1,
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                fontFamily: FontFamilies.figtree,
+                fontWeight: FontWeight.w600,
+                fontSize: _weekdayFontSize,
+                height: _weekdayLineHeight,
+                color: weekdayTextColor,
+              ),
+            ),
+            const SizedBox(height: _weekdaySpacing),
+            Text(
+              dayNumber,
+              maxLines: 1,
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                fontFamily: FontFamilies.figtree,
+                fontWeight: FontWeight.w700,
+                fontSize: _dayFontSize,
+                height: _dayLineHeight,
+                color: baseTextColor,
+              ),
+            ),
+          ],
         ),
       ),
     );
