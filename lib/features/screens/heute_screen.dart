@@ -16,7 +16,7 @@ import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 import 'package:luvi_app/features/widgets/hero_sync_preview.dart';
 import 'package:luvi_app/features/cycle/domain/week_strip.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
-import 'package:luvi_app/features/cycle/widgets/cycle_inline_calendar.dart';
+import 'package:luvi_app/features/widgets/dashboard_calendar.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
 import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
@@ -227,7 +227,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
           ],
         ),
         const SizedBox(height: Spacing.m),
-        CycleInlineCalendar(view: weekView),
+        DashboardCalendar(view: weekView),
       ],
     );
   }
