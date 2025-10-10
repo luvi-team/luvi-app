@@ -19,14 +19,15 @@ const double _dayLineHeight = 1.15;
 const double _topPadding = 4.0; // Unchanged to preserve header position and external spacing
 const double _bottomPadding = 0.0; // Reduced from 2.0 for much more segment depth (aggressive)
 
-// Overhang: how much the colored segment extends above and below the day numbers
-const double _segmentOverhang = 3.0; // Adds visual "breathing room" around numbers
+// Asymmetric overhang: segment extends ONLY above the day numbers (prevents overflow)
+const double _segmentOverhangTop = 3.0;    // Extends upward for visual depth
+const double _segmentOverhangBottom = 0.0; // No bottom overhang (prevents container overflow)
 
 const double _weekdayTextHeight = _weekdayFontSize * _weekdayLineHeight;
 const double _segmentTopOffset =
-    _topPadding + _weekdayTextHeight + _weekdaySpacing - _segmentOverhang;
+    _topPadding + _weekdayTextHeight + _weekdaySpacing - _segmentOverhangTop;
 const double _segmentHeight =
-    _trackHeight - _segmentTopOffset - _bottomPadding + _segmentOverhang;
+    _trackHeight - _segmentTopOffset - _bottomPadding + _segmentOverhangBottom;
 
 String _formatWeekdayUpper(DateTime date) {
   try {
