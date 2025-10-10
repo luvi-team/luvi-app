@@ -4,7 +4,7 @@ import 'package:luvi_app/features/cycle/domain/cycle.dart';
 import 'package:luvi_app/features/cycle/domain/date_utils.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 
-import 'heute_vm.dart';
+import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
 
 /// Props/Contracts for Heute screen components (audit-backed).
 /// See docs/ui/contracts/dashboard_state.md for field mappings and behavior.
