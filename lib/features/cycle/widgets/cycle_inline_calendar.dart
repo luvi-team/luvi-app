@@ -380,13 +380,13 @@ Color _segmentColor(Phase phase, CyclePhaseTokens tokens) {
   // Segment background colors with explicit opacities per Figma design
   switch (phase) {
     case Phase.menstruation:
-      return tokens.menstruation.withOpacity(0.25);
+      return tokens.menstruation.withValues(alpha: 0.25);
     case Phase.follicular:
-      return tokens.follicularDark.withOpacity(0.20);
+      return tokens.follicularDark.withValues(alpha: 0.20);
     case Phase.ovulation:
-      return tokens.ovulation.withOpacity(0.50);
+      return tokens.ovulation.withValues(alpha: 0.50);
     case Phase.luteal:
-      return tokens.luteal.withOpacity(0.25);
+      return tokens.luteal.withValues(alpha: 0.25);
   }
 }
 

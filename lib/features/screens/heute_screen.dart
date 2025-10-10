@@ -242,7 +242,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(_headerIconRadius),
         border: Border.all(
-          color: Color(0xFFFFFFFF).withOpacity(0.08),
+          color: Color(0xFFFFFFFF).withValues(alpha: 0.08),
           width:
               0.769, // from DASHBOARD_spec.json $.header.actions[0].container.border.width
         ),
