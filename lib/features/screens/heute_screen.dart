@@ -267,59 +267,19 @@ class _HeuteScreenState extends State<HeuteScreen> {
         }
 
         final textDirection = Directionality.of(context);
-        final measuredWidths = categories
-            .map((cat) => CategoryChip.measuredWidth(cat.label, textDirection))
-            .toList();
-
+        final measuredWidths = _measureChipWidths(categories, textDirection);
         final columnCount = math.min(categories.length, _categoriesColumns);
+        final resolvedWidths = _compressFirstRowWidths(
+          measuredWidths,
+          contentWidth,
+          columnCount,
+          _categoriesMinGap,
+          CategoryChip.minWidth,
+        );
         final gapCount = columnCount > 1 ? columnCount - 1 : 0;
-        final resolvedWidths = List<double>.from(measuredWidths);
-
-        final minGapTotal = gapCount * _categoriesMinGap;
-        final minWidth = CategoryChip.minWidth;
-        var totalWidth = resolvedWidths
+        final totalWidth = resolvedWidths
             .take(columnCount)
             .fold<double>(0, (sum, width) => sum + width);
-        final availableForItems = math.max(0, contentWidth - minGapTotal);
-
-        if (columnCount > 0 && gapCount > 0 && totalWidth > availableForItems) {
-          var overflow = totalWidth - availableForItems;
-          var adjustable = <int>[
-            for (var i = 0; i < columnCount; i++)
-              if (resolvedWidths[i] > minWidth) i,
-          ];
-          var guard = 0;
-          while (overflow > 0.1 && adjustable.isNotEmpty && guard < 6) {
-            // Evenly compress chip widths until first-row total fits the 390–428px viewport window.
-            final perItemReduction = overflow / adjustable.length;
-            double consumed = 0;
-            final nextAdjustable = <int>[];
-            for (final index in adjustable) {
-              final maxReduction = resolvedWidths[index] - minWidth;
-              if (maxReduction <= 0.1) {
-                continue;
-              }
-              final reduction = math.min(maxReduction, perItemReduction);
-              if (reduction > 0) {
-                resolvedWidths[index] -= reduction;
-                consumed += reduction;
-              }
-              if ((resolvedWidths[index] - minWidth) > 0.1) {
-                nextAdjustable.add(index);
-              }
-            }
-            if (consumed == 0) {
-              break;
-            }
-            overflow = math.max(0, overflow - consumed);
-            adjustable = nextAdjustable;
-            guard++;
-          }
-          totalWidth = resolvedWidths
-              .take(columnCount)
-              .fold<double>(0, (sum, width) => sum + width);
-        }
-
         final rawGap = gapCount > 0
             ? (contentWidth - totalWidth) / gapCount
             : _categoriesMinGap;
@@ -327,24 +287,98 @@ class _HeuteScreenState extends State<HeuteScreen> {
             .clamp(_categoriesMinGap, _categoriesMaxGap)
             .toDouble();
 
-        return Wrap(
-          key: const Key('dashboard_categories_grid'),
-          spacing: columnCount > 1 ? gap : 0,
-          runSpacing:
-              8, // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[4].value (8px rows)
-          children: [
-            for (var i = 0; i < categories.length; i++)
-              CategoryChip(
-                key: ValueKey(categories[i].label),
-                iconPath: categories[i].iconPath,
-                label: categories[i].label,
-                isSelected: categories[i].label == _selectedCategory,
-                width: resolvedWidths[i],
-                onTap: () => _onCategoryTap(categories[i]),
-              ),
-          ],
-        );
+        return _buildCategoryWrap(categories, resolvedWidths, gap);
       },
+    );
+  }
+
+  List<double> _measureChipWidths(
+    List<CategoryProps> categories,
+    TextDirection dir,
+  ) {
+    return [
+      for (final category in categories)
+        CategoryChip.measuredWidth(category.label, dir),
+    ];
+  }
+
+  List<double> _compressFirstRowWidths(
+    List<double> measured,
+    double contentWidth,
+    int columnCount,
+    double minGap,
+    double minWidth,
+  ) {
+    final resolvedWidths = List<double>.from(measured);
+    final gapCount = columnCount > 1 ? columnCount - 1 : 0;
+    final minGapTotal = gapCount * minGap;
+    final availableForItems = math.max(0, contentWidth - minGapTotal);
+
+    if (columnCount > 0 && gapCount > 0) {
+      var totalWidth = resolvedWidths
+          .take(columnCount)
+          .fold<double>(0, (sum, width) => sum + width);
+      if (totalWidth > availableForItems) {
+        var overflow = totalWidth - availableForItems;
+        var adjustable = <int>[
+          for (var i = 0; i < columnCount; i++)
+            if (resolvedWidths[i] > minWidth) i,
+        ];
+        var guard = 0;
+        while (overflow > 0.1 && adjustable.isNotEmpty && guard < 6) {
+          // Evenly compress chip widths until first-row total fits the 390–428px viewport window.
+          final perItemReduction = overflow / adjustable.length;
+          double consumed = 0;
+          final nextAdjustable = <int>[];
+          for (final index in adjustable) {
+            final maxReduction = resolvedWidths[index] - minWidth;
+            if (maxReduction <= 0.1) {
+              continue;
+            }
+            final reduction = math.min(maxReduction, perItemReduction);
+            if (reduction > 0) {
+              resolvedWidths[index] -= reduction;
+              consumed += reduction;
+            }
+            if ((resolvedWidths[index] - minWidth) > 0.1) {
+              nextAdjustable.add(index);
+            }
+          }
+          if (consumed == 0) {
+            break;
+          }
+          overflow = math.max(0, overflow - consumed);
+          adjustable = nextAdjustable;
+          guard++;
+        }
+      }
+    }
+
+    return resolvedWidths;
+  }
+
+  Widget _buildCategoryWrap(
+    List<CategoryProps> categories,
+    List<double> resolvedWidths,
+    double gap,
+  ) {
+    final columnCount = math.min(categories.length, _categoriesColumns);
+    return Wrap(
+      key: const Key('dashboard_categories_grid'),
+      spacing: columnCount > 1 ? gap : 0,
+      runSpacing:
+          8, // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[4].value (8px rows)
+      children: [
+        for (var i = 0; i < categories.length; i++)
+          CategoryChip(
+            key: ValueKey(categories[i].label),
+            iconPath: categories[i].iconPath,
+            label: categories[i].label,
+            isSelected: categories[i].label == _selectedCategory,
+            width: resolvedWidths[i],
+            onTap: () => _onCategoryTap(categories[i]),
+          ),
+      ],
     );
   }
 
