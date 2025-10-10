@@ -129,23 +129,6 @@ class _CalendarContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dayWidgets = <Widget>[];
-    final localTodayGeometry = todayGeometry;
-    final localTodayDay = todayDay;
-
-    for (var i = 0; i < days.length; i++) {
-      final day = days[i];
-      final geometry = dayGeometries[i];
-
-      dayWidgets.add(
-        _buildDayColumn(day, geometry, textTokens),
-      );
-
-      if (geometry.gapAfter > 0 && i != days.length - 1) {
-        dayWidgets.add(SizedBox(width: geometry.gapAfter));
-      }
-    }
-
     return Semantics(
       key: const ValueKey('cycle_inline_calendar_semantics'),
       container: true,
@@ -163,41 +146,29 @@ class _CalendarContent extends StatelessWidget {
               height: _trackHeight,
               child: Stack(
                 children: [
-                  CustomPaint(
-                    size: Size(availableWidth, _trackHeight),
-                    painter: _SegmentPainter(
-                      segments: segments,
-                      geometries: dayGeometries,
-                      tokens: phaseTokens,
-                      radiusTokens: radiusTokens,
-                      topOffset: _segmentTopOffset,
-                      segmentHeight: _segmentHeight,
-                    ),
+                  _SegmentLayer(
+                    availableWidth: availableWidth,
+                    dayGeometries: dayGeometries,
+                    segments: segments,
+                    tokens: phaseTokens,
+                    radiusTokens: radiusTokens,
                   ),
-                  if (localTodayGeometry != null && localTodayDay != null)
-                    Positioned(
-                      left: localTodayGeometry.start,
-                      top: _segmentTopOffset,
-                      child: Container(
-                        width: localTodayGeometry.width,
-                        height: _segmentHeight,
-                        decoration: BoxDecoration(
-                          color: _todayColor(localTodayDay.phase, phaseTokens),
-                          borderRadius:
-                              BorderRadius.circular(radiusTokens.calendarChip),
-                        ),
-                      ),
-                    ),
+                  _TodayPillLayer(
+                    todayGeometry: todayGeometry,
+                    todayDay: todayDay,
+                    tokens: phaseTokens,
+                    radiusTokens: radiusTokens,
+                  ),
                   Positioned.fill(
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: SizedBox(
                         width: availableWidth,
                         height: _trackHeight,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: dayWidgets,
+                        child: _DaysRow(
+                          days: days,
+                          dayGeometries: dayGeometries,
+                          textTokens: textTokens,
                         ),
                       ),
                     ),
@@ -221,7 +192,7 @@ class _CalendarContent extends StatelessWidget {
         'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
   }
 
-  Widget _buildDayColumn(
+  static Widget _buildDayColumn(
     WeekStripDay day,
     _DayGeometry geometry,
     TextColorTokens textTokens,
@@ -268,6 +239,107 @@ class _CalendarContent extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SegmentLayer extends StatelessWidget {
+  const _SegmentLayer({
+    required this.availableWidth,
+    required this.dayGeometries,
+    required this.segments,
+    required this.tokens,
+    required this.radiusTokens,
+  });
+
+  final double availableWidth;
+  final List<_DayGeometry> dayGeometries;
+  final List<WeekStripSegment> segments;
+  final CyclePhaseTokens tokens;
+  final CalendarRadiusTokens radiusTokens;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(availableWidth, _trackHeight),
+      painter: _SegmentPainter(
+        segments: segments,
+        geometries: dayGeometries,
+        tokens: tokens,
+        radiusTokens: radiusTokens,
+        topOffset: _segmentTopOffset,
+        segmentHeight: _segmentHeight,
+      ),
+    );
+  }
+}
+
+class _TodayPillLayer extends StatelessWidget {
+  const _TodayPillLayer({
+    required this.todayGeometry,
+    required this.todayDay,
+    required this.tokens,
+    required this.radiusTokens,
+  });
+
+  final _DayGeometry? todayGeometry;
+  final WeekStripDay? todayDay;
+  final CyclePhaseTokens tokens;
+  final CalendarRadiusTokens radiusTokens;
+
+  @override
+  Widget build(BuildContext context) {
+    if (todayGeometry == null || todayDay == null) {
+      return const SizedBox.shrink();
+    }
+
+    final geometry = todayGeometry!;
+    final day = todayDay!;
+
+    return Positioned(
+      left: geometry.start,
+      top: _segmentTopOffset,
+      child: Container(
+        width: geometry.width,
+        height: _segmentHeight,
+        decoration: BoxDecoration(
+          color: _todayColor(day.phase, tokens),
+          borderRadius: BorderRadius.circular(radiusTokens.calendarChip),
+        ),
+      ),
+    );
+  }
+}
+
+class _DaysRow extends StatelessWidget {
+  const _DaysRow({
+    required this.days,
+    required this.dayGeometries,
+    required this.textTokens,
+  });
+
+  final List<WeekStripDay> days;
+  final List<_DayGeometry> dayGeometries;
+  final TextColorTokens textTokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final children = <Widget>[];
+    for (var i = 0; i < days.length; i++) {
+      final day = days[i];
+      final geometry = dayGeometries[i];
+      children.add(
+        _CalendarContent._buildDayColumn(day, geometry, textTokens),
+      );
+      if (geometry.gapAfter > 0 && i != days.length - 1) {
+        children.add(SizedBox(width: geometry.gapAfter));
+      }
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: children,
     );
   }
 }
