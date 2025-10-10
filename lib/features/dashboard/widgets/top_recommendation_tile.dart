@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';
 
 import '../../../core/design_tokens/assets.dart';
 import '../../../core/design_tokens/typography.dart';
@@ -16,6 +17,8 @@ const double _durationIconTextGap = 4.0; // Figma: 4px gap
 const Color _duration60White = Color(0x99FFFFFF); // 60% white (0x99 = 153 / 255 ≈ 60%)
 
 /// Prominent recommendation tile that surfaces one featured workout.
+///
+/// Use [TopRecommendationProps] to populate this widget from dashboard fixtures.
 class TopRecommendationTile extends StatelessWidget {
   const TopRecommendationTile({
     super.key,
