@@ -39,6 +39,9 @@ String _formatStatLabel(String rawLabel) {
   return trimmed;
 }
 
+@visibleForTesting
+String formatStatLabelForTest(String rawLabel) => _formatStatLabel(rawLabel);
+
 /// Horizontally scrollable training stats with glass cards.
 class StatsScroller extends StatelessWidget {
   const StatsScroller({
