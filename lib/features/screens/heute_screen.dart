@@ -6,7 +6,6 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/screens/heute_fixtures.dart';
-import 'package:luvi_app/features/screens/heute_vm.dart';
 import 'package:luvi_app/features/widgets/category_chip.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
 import 'package:luvi_app/features/widgets/floating_sync_button.dart';
@@ -22,8 +21,6 @@ import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 
 // Dashboard-only spacing (audit-backed)
-// from DASHBOARD_spec.json $.heroCard.autoLayout.padding (21px)
-const double _pad21 = 21.0;
 // from DASHBOARD_spec_deltas.json $.deltas[9].newValue (15px)
 // ignore: unused_element
 const double _gap15 = 15.0; // legacy (kept for reference)
@@ -36,26 +33,6 @@ const double _categoriesMinGap = 8.0;
 const double _categoriesMaxGap = 41.0;
 // TODO(audit): DASHBOARD_radii_corners.json node 68426:7254 → null; baseSpec 26.667 UNCONFIRMED (screenshot plausible)
 const double _headerIconRadius = 26.667;
-// from DASHBOARD_spec.json $.heroCard.container.radius.all (24px)
-const double _heroCardRadius = 24.0;
-// from DASHBOARD_spec.json $.heroCard.progress.outerSize (59.92px)
-const double _heroProgressOuterSize = 59.92;
-const double _heroProgressFontSize =
-    16.12; // TODO(audit): visual fine-tune -1px; spec=17.12 from DASHBOARD_spec.json $.heroCard.progressPercentage.typography.size
-// from DASHBOARD_spec.json heroCard.progress positioning (title.x - (progress.x + outerSize) ≈ 12.84px)
-const double _heroProgressGap = 12.84;
-// TODO(audit: hero icon-text gap missing; using DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (14px) until verified)
-const double _heroIconTextGap = 14.0;
-const double _heroCtaWidth =
-    291.05; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.width
-const double _heroCtaHeight =
-    50.51; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.height
-const double _heroCtaRadius =
-    17.12; // from docs/product/measures/dashboard/DASHBOARD_spec.json $.heroCard.cta.style.radius.all
-const double _heroCtaHorizontalPadding =
-    12.0; // from docs/audits/ONB_07_measures.json $.cta.padding.horizontal
-const double _heroCtaVerticalPadding =
-    12.0; // TODO(audit): onboarding CTA padding top=11 bottom=12; using 12 for symmetry from docs/audits/ONB_07_measures.json $.cta.padding.bottom
 const double _kMinBottomGap = 62.0; // increased breathing room above dock
 const double _sectionGapTight =
     20.0; // tighter spacing between stacked sections
@@ -277,152 +254,6 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
-  // ignore: unused_element
-  Widget _buildHeroCard(HeroCardProps hero, HeroCtaState heroCta) {
-    final ctaLabel = _resolveHeroCtaLabel(heroCta);
-
-    return Container(
-      key: const Key('dashboard_hero_card'),
-      width: double.infinity,
-      padding: const EdgeInsets.all(
-        _pad21,
-      ), // from DASHBOARD_spec.json $.heroCard.autoLayout.padding
-      decoration: BoxDecoration(
-        // from DASHBOARD_spec.json $.heroCard.container.bg.hex
-        color: const Color(0xFFCCB2F4),
-        borderRadius: BorderRadius.circular(_heroCardRadius),
-        // from DASHBOARD_spec.json $.heroCard.container.stroke
-        border: Border.all(
-          color: const Color(0xFF696969),
-          width:
-              1, // from DASHBOARD_spec.json $.heroCard.container.stroke.width
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // TODO(audit: hero icon container styling missing → using raw SVG)
-              SvgPicture.asset(Assets.icons.heroTraining),
-              const SizedBox(width: _heroIconTextGap),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // from DASHBOARD_spec.json $.heroCard.title.typography (Figtree 20/24)
-                    Text(
-                      hero.programTitle,
-                      style: const TextStyle(
-                        fontFamily: FontFamilies.figtree,
-                        fontSize: 20,
-                        height: 24 / 20,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFFFFFFFF),
-                      ),
-                    ),
-                    // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[3].value (6px)
-                    const SizedBox(height: 6),
-                    // from DASHBOARD_spec.json $.heroCard.subtitle.typography (Figtree 16/24)
-                    Text(
-                      hero.openCountText,
-                      style: const TextStyle(
-                        fontFamily: FontFamilies.figtree,
-                        fontSize: 16,
-                        height: 24 / 16,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF6d6d6d),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: _heroProgressGap),
-              SizedBox(
-                width: _heroProgressOuterSize,
-                height: _heroProgressOuterSize,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Progress ring placeholder (from DASHBOARD_spec.json $.heroCard.progress)
-                    SvgPicture.asset(
-                      Assets.icons.cycleOutline,
-                      width: _heroProgressOuterSize,
-                      height: _heroProgressOuterSize,
-                    ),
-                    // from DASHBOARD_spec.json $.heroCard.progressPercentage.typography
-                    Text(
-                      '${(hero.progressRatio * 100).toInt()}%',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily:
-                            'Urbanist', // TODO(font): non-brand; not in pubspec → runtime fallback expected
-                        fontSize: _heroProgressFontSize,
-                        height: 1.2,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFFFFFFF),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[13].value (24px)
-          const SizedBox(height: 24),
-          Center(
-            child: Container(
-              constraints: const BoxConstraints(minWidth: _heroCtaWidth),
-              height: _heroCtaHeight,
-              padding: const EdgeInsets.symmetric(
-                horizontal: _heroCtaHorizontalPadding,
-                vertical: _heroCtaVerticalPadding,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFFFFF),
-                borderRadius: BorderRadius.circular(_heroCtaRadius),
-              ),
-              alignment: Alignment.center,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Text(
-                    ctaLabel,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontFamily: FontFamilies.figtree,
-                      fontSize: 16,
-                      height: 24 / 16,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF030401),
-                    ),
-                  ),
-                  const Opacity(
-                    opacity: 0.0,
-                    child: Text(
-                      'Training ansehen',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: FontFamilies.figtree,
-                        fontSize: 16,
-                        height: 24 / 16,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF030401),
-                      ),
-                    ),
-                  ), // from DASHBOARD_spec.json $.heroCard.cta.label (secondary state fixture)
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildCategories(List<CategoryProps> categories) {
     return LayoutBuilder(
@@ -636,13 +467,4 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
-  String _resolveHeroCtaLabel(HeroCtaState state) {
-    // from docs/ui/contracts/dashboard_state.md (HeroCtaState → label mapping)
-    switch (state) {
-      case HeroCtaState.resumeActiveWorkout:
-        return 'Zurück zum Training';
-      case HeroCtaState.startNewWorkout:
-        return 'Starte dein Training';
-    }
-  }
 }
