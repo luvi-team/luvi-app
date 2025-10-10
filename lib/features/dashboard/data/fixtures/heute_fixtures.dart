@@ -3,7 +3,8 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
 import 'package:luvi_app/features/cycle/domain/date_utils.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
-
+import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';
+import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
 
 /// Props/Contracts for Heute screen components (audit-backed).
@@ -11,25 +12,19 @@ import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
 
 @immutable
 class HeaderProps {
-  final String userName;
-  final String dateText;
-  final String phaseLabel;
-
   const HeaderProps({
     required this.userName,
     required this.dateText,
     required this.phaseLabel,
   });
+
+  final String userName;
+  final String dateText;
+  final String phaseLabel;
 }
 
 @immutable
 class HeroCardProps {
-  final String programTitle;
-  final String openCountText;
-  final double progressRatio; // 0.0–1.0
-  final String dateText;
-  final String subtitle;
-
   const HeroCardProps({
     required this.programTitle,
     required this.openCountText,
@@ -37,107 +32,62 @@ class HeroCardProps {
     required this.dateText,
     required this.subtitle,
   });
+
+  final String programTitle;
+  final String openCountText;
+  final double progressRatio; // 0.0–1.0
+  final String dateText;
+  final String subtitle;
 }
 
 @immutable
 class CategoryProps {
-  final String iconPath;
-  final String label;
-  final bool isSelected;
-
   const CategoryProps({
     required this.iconPath,
     required this.label,
     this.isSelected = false,
   });
+
+  final String iconPath;
+  final String label;
+  final bool isSelected;
 }
 
 @immutable
 class RecommendationProps {
-  final String tag;
-  final String title;
-  final String imagePath;
-
   const RecommendationProps({
     required this.tag,
     required this.title,
     required this.imagePath,
   });
-}
 
-@immutable
-class TopRecommendationProps {
-  final String id;
   final String tag;
   final String title;
   final String imagePath;
-  final String badgeAssetPath;
-  final bool fromLuviSync;
-  final String? duration;
-
-  const TopRecommendationProps({
-    required this.id,
-    required this.tag,
-    required this.title,
-    required this.imagePath,
-    required this.badgeAssetPath,
-    this.fromLuviSync = true,
-    this.duration,
-  });
 }
 
 @immutable
 class BottomNavProps {
-  final int selectedIndex;
-  final List<String> items;
-  final bool hasNotifications;
-
   const BottomNavProps({
     required this.selectedIndex,
     required this.items,
     this.hasNotifications = false,
   });
-}
 
-@immutable
-class TrainingStatProps {
-  final String label;
-  final num value;
-  final String iconAssetPath;
-  final String? unit;
-  final List<double> trend;
-  final String? heartRateGlyphAsset;
-
-  const TrainingStatProps({
-    required this.label,
-    required this.value,
-    required this.iconAssetPath,
-    this.unit,
-    this.trend = const [],
-    this.heartRateGlyphAsset,
-  });
+  final int selectedIndex;
+  final List<String> items;
+  final bool hasNotifications;
 }
 
 @immutable
 class WearableProps {
-  final bool connected;
-
   const WearableProps({required this.connected});
+
+  final bool connected;
 }
 
 @immutable
 class HeuteFixtureState {
-  final HeaderProps header;
-  final HeroCardProps heroCard;
-  final TopRecommendationProps topRecommendation;
-  final List<CategoryProps> categories;
-  final List<RecommendationProps> recommendations;
-  final List<TrainingStatProps> trainingStats;
-  final WearableProps wearable;
-  final BottomNavProps bottomNav;
-  final DateTime referenceDate;
-  final CycleInfo cycleInfo;
-
   const HeuteFixtureState({
     required this.header,
     required this.heroCard,
@@ -150,6 +100,17 @@ class HeuteFixtureState {
     required this.referenceDate,
     required this.cycleInfo,
   });
+
+  final HeaderProps header;
+  final HeroCardProps heroCard;
+  final TopRecommendationProps topRecommendation;
+  final List<CategoryProps> categories;
+  final List<RecommendationProps> recommendations;
+  final List<TrainingStatProps> trainingStats;
+  final WearableProps wearable;
+  final BottomNavProps bottomNav;
+  final DateTime referenceDate;
+  final CycleInfo cycleInfo;
 
   /// Convenience forwards so the view model bridge stays explicit in fixtures.
   String get userName => header.userName;

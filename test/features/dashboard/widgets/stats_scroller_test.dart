@@ -4,7 +4,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
 import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
-import 'package:luvi_app/features/screens/heute_fixtures.dart';
+import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 
 void main() {
   group('StatsScroller', () {

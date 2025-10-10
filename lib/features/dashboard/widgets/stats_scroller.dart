@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
-import 'package:luvi_app/features/screens/heute_fixtures.dart';
 
 const double _cardGap = Spacing.m; // 16px between stat cards
 const double _cardPadding = 16; // Reduced from 20 to fit content in 159px height
