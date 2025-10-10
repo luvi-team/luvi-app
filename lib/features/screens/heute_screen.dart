@@ -141,6 +141,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     ),
                     const SizedBox(height: Spacing.s),
                     StatsScroller(
+                      key: const Key('dashboard_training_stats_scroller'),
                       trainingStats: state.trainingStats,
                       isWearableConnected: state.wearable.connected,
                     ),

@@ -61,7 +61,11 @@ class StatsScroller extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           padding: EdgeInsets.zero,
           physics: const BouncingScrollPhysics(),
-          children: const [WearableConnectCard()],
+          children: const [
+            WearableConnectCard(
+              key: Key('dashboard_wearable_connect_card'),
+            ),
+          ],
         ),
       );
     }
