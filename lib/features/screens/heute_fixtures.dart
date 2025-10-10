@@ -201,7 +201,7 @@ class HeuteFixtures {
       ),
       topRecommendation: TopRecommendationProps(
         id: 'reco-shoulder-stretching',
-        tag: 'Kraft',
+        tag: '', // Empty tag -> conditional rendering hides "KRAFT"
         title: 'Shoulder Stretching',
         imagePath: Assets.images.recoGanzkoerper,
         badgeAssetPath: Assets.icons.syncBadge,

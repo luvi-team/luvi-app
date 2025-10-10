@@ -123,18 +123,20 @@ class TopRecommendationTile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(
-                            tag.toUpperCase(),
-                            style: const TextStyle(
-                              fontFamily: FontFamilies.figtree,
-                              fontSize: 12,
-                              height: 18 / 12,
-                              letterSpacing: 0.12,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFFB9BAC1),
+                          if (tag.isNotEmpty) ...[
+                            Text(
+                              tag.toUpperCase(),
+                              style: const TextStyle(
+                                fontFamily: FontFamilies.figtree,
+                                fontSize: 12,
+                                height: 18 / 12,
+                                letterSpacing: 0.12,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFFB9BAC1),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
+                            const SizedBox(height: 6),
+                          ],
                           Text(
                             title,
                             maxLines: 2,
