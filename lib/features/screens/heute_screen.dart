@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/heute_fixtures.dart';
 import 'package:luvi_app/features/widgets/category_chip.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
@@ -89,6 +90,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                       height: Spacing.m,
                     ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
                     _buildHeader(
+                      context,
                       state.header,
                       state.bottomNav.hasNotifications,
                       weekView,
@@ -156,10 +158,12 @@ class _HeuteScreenState extends State<HeuteScreen> {
   }
 
   Widget _buildHeader(
+    BuildContext context,
     HeaderProps header,
     bool hasNotifications,
     WeekStripView weekView,
   ) {
+    final textTokens = Theme.of(context).extension<TextColorTokens>();
     return Column(
       key: const Key('dashboard_header'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -189,12 +193,12 @@ class _HeuteScreenState extends State<HeuteScreen> {
                   // from DASHBOARD_spec.json $.header.subtitle.typography (Figtree 16/24)
                   Text(
                     header.phaseLabel,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: FontFamilies.figtree,
                       fontSize: 16,
                       height: 24 / 16,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF6d6d6d),
+                      color: (textTokens?.secondary ?? const Color(0xFF6d6d6d)),
                     ),
                   ),
                 ],

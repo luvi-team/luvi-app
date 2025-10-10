@@ -134,7 +134,11 @@ class TopRecommendationTile extends StatelessWidget {
     return semanticsBuffer.toString();
   }
 
-  Widget _buildInkWell(BuildContext context, BoxShadow tileShadow) {
+  Widget _buildInkWell(
+    BuildContext context,
+    BoxShadow tileShadow,
+    TextColorTokens? textTokens,
+  ) {
     return InkWell(
       onTap: () => context.go('/workout/$workoutId'),
       borderRadius: _tileRadius,
@@ -173,13 +177,14 @@ class TopRecommendationTile extends StatelessWidget {
                     if (tag.isNotEmpty) ...[
                       Text(
                         tag.toUpperCase(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: FontFamilies.figtree,
                           fontSize: 12,
                           height: 18 / 12,
                           letterSpacing: 0.12,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFFB9BAC1),
+                          color:
+                              (textTokens?.muted ?? const Color(0xFFB9BAC1)),
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -202,6 +207,7 @@ class TopRecommendationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shadowTokens = Theme.of(context).extension<ShadowTokens>();
+    final textTokens = Theme.of(context).extension<TextColorTokens>();
     final tileShadow =
         shadowTokens?.tileDrop ??
         const BoxShadow(
@@ -218,7 +224,7 @@ class TopRecommendationTile extends StatelessWidget {
       child: ExcludeSemantics(
         child: Material(
           color: Colors.transparent,
-          child: _buildInkWell(context, tileShadow),
+          child: _buildInkWell(context, tileShadow, textTokens),
         ),
       ),
     );
