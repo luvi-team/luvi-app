@@ -335,6 +335,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
           children: [
             for (var i = 0; i < categories.length; i++)
               CategoryChip(
+                key: ValueKey(categories[i].label),
                 iconPath: categories[i].iconPath,
                 label: categories[i].label,
                 isSelected: categories[i].label == _selectedCategory,
