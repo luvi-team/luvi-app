@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -8,6 +9,9 @@ void main() {
   Widget wrap(Widget child) {
     return MaterialApp(
       home: Scaffold(body: Center(child: child)),
+      locale: const Locale('de'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
     );
   }
 
@@ -23,16 +27,17 @@ void main() {
         ),
       );
 
-      await tester.pump();
+      await tester.pumpAndSettle();
+
+      final context = tester.element(find.byType(StatsScroller));
+      final loc = AppLocalizations.of(context)!;
 
       expect(
         find.byKey(const Key('dashboard_wearable_connect_card')),
         findsOneWidget,
       );
       expect(
-        find.bySemanticsLabel(
-          'Verbinde dein Wearable, um deine Trainingsdaten anzeigen zu lassen.',
-        ),
+        find.bySemanticsLabel(loc.dashboardWearableConnectMessage),
         findsOneWidget,
       );
     },
