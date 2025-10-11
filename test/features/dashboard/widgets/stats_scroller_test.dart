@@ -5,6 +5,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
 import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   group('StatsScroller', () {
@@ -17,6 +18,9 @@ void main() {
           home: const Scaffold(
             body: StatsScroller(trainingStats: [], isWearableConnected: false),
           ),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       );
       await tester.pumpAndSettle();
@@ -67,6 +71,9 @@ void main() {
               ),
             ),
           ),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       );
       await tester.pumpAndSettle();
@@ -110,6 +117,9 @@ void main() {
               isWearableConnected: true,
             ),
           ),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       );
       await tester.pumpAndSettle();
@@ -173,6 +183,9 @@ void main() {
               isWearableConnected: true,
             ),
           ),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       );
       await tester.pumpAndSettle();
@@ -262,6 +275,9 @@ void main() {
               isWearableConnected: true,
             ),
           ),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       );
       await tester.pumpAndSettle();
@@ -295,6 +311,9 @@ void main() {
               isWearableConnected: true,
             ),
           ),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       );
       await tester.pumpAndSettle();

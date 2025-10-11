@@ -57,8 +57,10 @@ void main() {
       await tester.tap(cta);
       await tester.pumpAndSettle();
       // Verify Heute screen content is visible
-      expect(find.text('Kategorien'), findsOneWidget);
-      expect(find.text('Weitere Trainings'), findsOneWidget);
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final loc = AppLocalizations.of(heuteContext)!;
+      expect(find.text(loc.dashboardCategoriesTitle), findsOneWidget);
+      expect(find.text(loc.dashboardMoreTrainingsTitle), findsOneWidget);
     });
 
     testWidgets('back button navigates to 06 when canPop is false', (

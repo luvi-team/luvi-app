@@ -67,12 +67,28 @@ class _HeuteScreenState extends State<HeuteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final maybeL10n = AppLocalizations.of(context);
+    if (maybeL10n == null) {
+      return Localizations.override(
+        context: context,
+        delegates: AppLocalizations.localizationsDelegates,
+        locale: AppLocalizations.supportedLocales.first,
+        child: Builder(
+          builder: (overrideContext) => _buildLocalizedScaffold(overrideContext),
+        ),
+      );
+    }
+
+    return _buildLocalizedScaffold(context);
+  }
+
+  Widget _buildLocalizedScaffold(BuildContext context) {
     // Use default fixture state (can be parameterized later)
     final state = _fixtureState;
     final weekView = weekViewFor(state.referenceDate, state.cycleInfo);
     final topRecommendation = state.topRecommendation;
     final currentPhase = state.cycleInfo.phaseFor(state.referenceDate);
-    final l10n = AppLocalizations.of(context);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
@@ -109,7 +125,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     ),
                     const SizedBox(height: _sectionGapTight),
                     SectionHeader(
-                      title: l10n?.dashboardCategoriesTitle ?? 'Kategorien',
+                      title: l10n.dashboardCategoriesTitle,
                       showTrailingAction: false,
                     ),
                     const SizedBox(
@@ -119,8 +135,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     const SizedBox(height: Spacing.m),
                     // Section header: Deine Top-Empfehlung
                     SectionHeader(
-                      title:
-                          l10n?.dashboardTopRecommendationTitle ?? 'Deine Top-Empfehlung',
+                      title: l10n.dashboardTopRecommendationTitle,
                       showTrailingAction: false,
                     ),
                     const SizedBox(height: Spacing.s),
@@ -136,8 +151,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     ),
                     const SizedBox(height: _sectionGapTight),
                     SectionHeader(
-                      title:
-                          l10n?.dashboardMoreTrainingsTitle ?? 'Weitere Trainings',
+                      title: l10n.dashboardMoreTrainingsTitle,
                     ),
                     const SizedBox(
                       height: Spacing.s,
@@ -145,8 +159,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     _buildRecommendations(context, l10n, state.recommendations),
                     const SizedBox(height: _sectionGapTight),
                     SectionHeader(
-                      title:
-                          l10n?.dashboardTrainingDataTitle ?? 'Deine Trainingsdaten',
+                      title: l10n.dashboardTrainingDataTitle,
                       showTrailingAction: false,
                     ),
                     const SizedBox(height: Spacing.s),
@@ -170,7 +183,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
 
   Widget _buildHeader(
     BuildContext context,
-    AppLocalizations? l10n,
+    AppLocalizations l10n,
     HeaderProps header,
     Phase currentPhase,
     bool hasNotifications,
@@ -180,8 +193,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
     final primaryColor = textTokens?.primary ?? DsColors.textPrimary;
     final secondaryColor =
         textTokens?.secondary ?? ColorTokens.recommendationTag;
-    final greeting =
-        l10n?.dashboardGreeting(header.userName) ?? 'Hey, ${header.userName} 💜';
+    final greeting = l10n.dashboardGreeting(header.userName);
     final phaseLabel = _localizedPhaseLabel(l10n, currentPhase);
     return Column(
       key: const Key('dashboard_header'),
@@ -276,7 +288,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
 
 
   Widget _buildCategories(
-    AppLocalizations? l10n,
+    AppLocalizations l10n,
     List<CategoryProps> categories,
   ) {
     return LayoutBuilder(
@@ -397,7 +409,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
 
   Widget _buildRecommendations(
     BuildContext context,
-    AppLocalizations? l10n,
+    AppLocalizations l10n,
     List<RecommendationProps> recommendations,
   ) {
     final textTokens = Theme.of(context).extension<TextColorTokens>();
@@ -410,7 +422,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
             180, // from DASHBOARD_spec.json $.recommendations.list.itemSize.h (placeholder uses same height)
         child: Center(
           child: Text(
-            l10n?.dashboardRecommendationsEmpty ?? 'Keine Empfehlungen verfügbar',
+            l10n.dashboardRecommendationsEmpty,
             style: TextStyle(
               fontFamily: FontFamilies.figtree,
               fontSize: 16,
@@ -446,26 +458,26 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
-  Widget _buildDockNavigation(AppLocalizations? l10n) {
+  Widget _buildDockNavigation(AppLocalizations l10n) {
     final tabs = [
       DockTab(
         iconPath: Assets.icons.navToday,
-        label: l10n?.dashboardNavToday ?? 'Heute',
+        label: l10n.dashboardNavToday,
         key: const Key('nav_today'),
       ),
       DockTab(
         iconPath: Assets.icons.navCycle,
-        label: l10n?.dashboardNavCycle ?? 'Zyklus',
+        label: l10n.dashboardNavCycle,
         key: const Key('nav_cycle'),
       ),
       DockTab(
         iconPath: Assets.icons.navPulse,
-        label: l10n?.dashboardNavPulse ?? 'Puls',
+        label: l10n.dashboardNavPulse,
         key: const Key('nav_pulse'),
       ),
       DockTab(
         iconPath: Assets.icons.navProfile,
-        label: l10n?.dashboardNavProfile ?? 'Profil',
+        label: l10n.dashboardNavProfile,
         key: const Key('nav_profile'),
       ),
     ];
@@ -514,29 +526,29 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
-  String _categoryLabel(AppLocalizations? l10n, Category category) {
+  String _categoryLabel(AppLocalizations l10n, Category category) {
     switch (category) {
       case Category.training:
-        return l10n?.dashboardCategoryTraining ?? 'Training';
+        return l10n.dashboardCategoryTraining;
       case Category.nutrition:
-        return l10n?.dashboardCategoryNutrition ?? 'Ernährung';
+        return l10n.dashboardCategoryNutrition;
       case Category.regeneration:
-        return l10n?.dashboardCategoryRegeneration ?? 'Regeneration';
+        return l10n.dashboardCategoryRegeneration;
       case Category.mindfulness:
-        return l10n?.dashboardCategoryMindfulness ?? 'Achtsamkeit';
+        return l10n.dashboardCategoryMindfulness;
     }
   }
 
-  String _localizedPhaseLabel(AppLocalizations? l10n, Phase phase) {
+  String _localizedPhaseLabel(AppLocalizations l10n, Phase phase) {
     switch (phase) {
       case Phase.menstruation:
-        return l10n?.cyclePhaseMenstruation ?? 'Menstruation';
+        return l10n.cyclePhaseMenstruation;
       case Phase.follicular:
-        return l10n?.cyclePhaseFollicular ?? 'Follikelphase';
+        return l10n.cyclePhaseFollicular;
       case Phase.ovulation:
-        return l10n?.cyclePhaseOvulation ?? 'Ovulationsfenster';
+        return l10n.cyclePhaseOvulation;
       case Phase.luteal:
-        return l10n?.cyclePhaseLuteal ?? 'Lutealphase';
+        return l10n.cyclePhaseLuteal;
     }
   }
 

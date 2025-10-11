@@ -2,13 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   testWidgets(
     'Consent02Screen enables Weiter after required, and disables Alle akzeptieren after selection',
     (tester) async {
       await tester.pumpWidget(
-        const ProviderScope(child: MaterialApp(home: Consent02Screen())),
+        ProviderScope(
+          child: MaterialApp(
+            home: const Consent02Screen(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        ),
       );
 
       // Weiter disabled initially

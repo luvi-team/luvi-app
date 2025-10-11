@@ -65,6 +65,7 @@ Future<GoRouter> _pumpHeuteScreen(
       routerConfig: goRouter,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('de'),
     ),
   );
   await tester.pumpAndSettle();

@@ -6,11 +6,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -43,6 +45,9 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );
@@ -57,14 +62,14 @@ void main() {
     await tester.enterText(passwordField, 'wrongpw');
 
     // Tap the CTA button
-    final loginButton = find.widgetWithText(ElevatedButton, 'Anmelden');
+    final loginButton = find.widgetWithText(ElevatedButton, AuthStrings.loginCta);
     expect(loginButton, findsOneWidget);
 
     await tester.tap(loginButton);
     await tester.pumpAndSettle();
 
     // Expect error message from invalid credentials handling
-    expect(find.text('E-Mail oder Passwort ist falsch.'), findsOneWidget);
+    expect(find.text(AuthStrings.invalidCredentials), findsOneWidget);
 
     // Button should be disabled because validation errors are present
     final btn = tester.widget<ElevatedButton>(loginButton);
@@ -97,6 +102,9 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );
@@ -148,6 +156,9 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );
@@ -157,12 +168,11 @@ void main() {
     await tester.enterText(emailField, 'user@example.com');
     await tester.enterText(passwordField, 'correctpw');
 
-    final loginButton = find.widgetWithText(ElevatedButton, 'Anmelden');
+    final loginButton = find.widgetWithText(ElevatedButton, AuthStrings.loginCta);
     await tester.tap(loginButton);
     await tester.pumpAndSettle();
 
-    final confirmBanner =
-        find.text('Bitte E-Mail bestätigen (Link erneut senden?)');
+    final confirmBanner = find.text(AuthStrings.errConfirmEmail);
     expect(confirmBanner, findsOneWidget);
 
     await tester.enterText(emailField, 'user@example.com1');
@@ -170,8 +180,8 @@ void main() {
 
     expect(confirmBanner, findsNothing);
     // Field errors remain untouched (stay null)
-    expect(find.text('Ups, bitte E-Mail überprüfen'), findsNothing);
-    expect(find.text('Ups, bitte Passwort überprüfen'), findsNothing);
+    expect(find.text(AuthStrings.errEmailInvalid), findsNothing);
+    expect(find.text(AuthStrings.errPasswordInvalid), findsNothing);
   });
 
   testWidgets('Global error banner clears when tapped', (tester) async {
@@ -197,6 +207,9 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );
@@ -206,19 +219,18 @@ void main() {
     await tester.enterText(emailField, 'user@example.com');
     await tester.enterText(passwordField, 'correctpw');
 
-    final loginButton = find.widgetWithText(ElevatedButton, 'Anmelden');
+    final loginButton = find.widgetWithText(ElevatedButton, AuthStrings.loginCta);
     await tester.tap(loginButton);
     await tester.pumpAndSettle();
 
-    final confirmBanner =
-        find.text('Bitte E-Mail bestätigen (Link erneut senden?)');
+    final confirmBanner = find.text(AuthStrings.errConfirmEmail);
     expect(confirmBanner, findsOneWidget);
 
     await tester.tap(find.byType(GlobalErrorBanner));
     await tester.pump();
 
     expect(confirmBanner, findsNothing);
-    expect(find.text('Ups, bitte E-Mail überprüfen'), findsNothing);
-    expect(find.text('Ups, bitte Passwort überprüfen'), findsNothing);
+    expect(find.text(AuthStrings.errEmailInvalid), findsNothing);
+    expect(find.text(AuthStrings.errPasswordInvalid), findsNothing);
   });
 }

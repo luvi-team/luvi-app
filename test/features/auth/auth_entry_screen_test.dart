@@ -3,11 +3,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('AuthEntryScreen shows both CTAs', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: AuthEntryScreen())),
+      ProviderScope(
+        child: MaterialApp(
+          home: const AuthEntryScreen(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+        ),
+      ),
     );
 
     expect(
@@ -21,7 +29,14 @@ void main() {
     'AuthEntryScreen has screen key and title is wrapped in Semantics',
     (tester) async {
       await tester.pumpWidget(
-        const ProviderScope(child: MaterialApp(home: AuthEntryScreen())),
+        ProviderScope(
+          child: MaterialApp(
+            home: const AuthEntryScreen(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        ),
       );
 
       expect(find.byKey(const ValueKey('auth_entry_screen')), findsWidgets);
