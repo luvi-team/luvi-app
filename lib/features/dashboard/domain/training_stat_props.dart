@@ -2,14 +2,14 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class TrainingStatProps {
-  const TrainingStatProps({
+  TrainingStatProps({
     required this.label,
     required this.value,
     required this.iconAssetPath,
     this.unit,
-    this.trend = const [],
+    List<double> trend = const [],
     this.heartRateGlyphAsset,
-  });
+  }) : trend = List.unmodifiable(trend);
 
   final String label;
   final num value;
@@ -33,7 +33,7 @@ class TrainingStatProps {
         value: value ?? this.value,
         iconAssetPath: iconAssetPath ?? this.iconAssetPath,
         unit: identical(unit, _unset) ? this.unit : unit as String?,
-        trend: trend ?? this.trend,
+        trend: trend == null ? this.trend : List.unmodifiable(trend),
         heartRateGlyphAsset: identical(heartRateGlyphAsset, _unset)
             ? this.heartRateGlyphAsset
             : heartRateGlyphAsset as String?,
