@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class WorkoutDetailStubScreen extends StatelessWidget {
   const WorkoutDetailStubScreen({super.key, required this.workoutId});
@@ -10,6 +11,7 @@ class WorkoutDetailStubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final titleStyle = theme.textTheme.titleMedium?.copyWith(
@@ -27,7 +29,7 @@ class WorkoutDetailStubScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Workout',
+          l10n.workoutTitle,
           style: titleStyle ??
               const TextStyle(
                 fontFamily: FontFamilies.figtree,

@@ -179,6 +179,10 @@
   "@dashboardLuviSyncPlaceholder": {
     "description": "Placeholder copy for the Luvi Sync Journal stub screen body."
   },
+  "workoutTitle": "Workout",
+  "@workoutTitle": {
+    "description": "App bar title for the workout detail stub screen."
+  },
   "dashboardRecommendationsEmpty": "No recommendations available",
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder text shown when there are no dashboard recommendations."

@@ -329,6 +329,12 @@ abstract class AppLocalizations {
   /// **'Luvi Sync Journal content coming soon.'**
   String get dashboardLuviSyncPlaceholder;
 
+  /// App bar title for the workout detail stub screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout'**
+  String get workoutTitle;
+
   /// Placeholder text shown when there are no dashboard recommendations.
   ///
   /// In en, this message translates to:

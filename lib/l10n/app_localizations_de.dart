@@ -134,6 +134,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardLuviSyncPlaceholder => 'Luvi Sync Journal Inhalte folgen bald.';
 
   @override
+  String get workoutTitle => 'Workout';
+
+  @override
   String get dashboardRecommendationsEmpty => 'Keine Empfehlungen verfügbar';
 
   @override

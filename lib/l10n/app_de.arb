@@ -179,6 +179,10 @@
   "@dashboardLuviSyncPlaceholder": {
     "description": "Platzhaltertext für den Luvi Sync Journal Stub-Screen."
   },
+  "workoutTitle": "Workout",
+  "@workoutTitle": {
+    "description": "App-Bar-Titel für den Workout-Detail-Stub."
+  },
   "dashboardRecommendationsEmpty": "Keine Empfehlungen verfügbar",
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder-Text, wenn keine Empfehlungen auf dem Dashboard vorhanden sind."
