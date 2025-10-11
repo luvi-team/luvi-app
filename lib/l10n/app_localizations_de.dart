@@ -140,6 +140,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardWearableConnectMessage => 'Verbinde dein Wearable, um deine Trainingsdaten anzeigen zu lassen.';
 
   @override
+  String get dashboardHeroCtaMore => 'Mehr';
+
+  @override
   String get dashboardRecommendationsEmpty => 'Keine Empfehlungen verfügbar';
 
   @override

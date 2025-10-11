@@ -187,6 +187,10 @@
   "@dashboardWearableConnectMessage": {
     "description": "Fallback-Nachricht, wenn kein Wearable verbunden ist."
   },
+  "dashboardHeroCtaMore": "Mehr",
+  "@dashboardHeroCtaMore": {
+    "description": "CTA-Label auf der Dashboard-Hero-Karte, um weitere Inhalte zu sehen."
+  },
   "dashboardRecommendationsEmpty": "Keine Empfehlungen verfügbar",
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder text when no recommendations are available on the dashboard."

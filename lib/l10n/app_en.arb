@@ -187,6 +187,10 @@
   "@dashboardWearableConnectMessage": {
     "description": "Fallback message shown when no wearable is connected to sync stats."
   },
+  "dashboardHeroCtaMore": "More",
+  "@dashboardHeroCtaMore": {
+    "description": "CTA label on dashboard hero card to see more content."
+  },
   "dashboardRecommendationsEmpty": "No recommendations available",
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder text shown when there are no dashboard recommendations."

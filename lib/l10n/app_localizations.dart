@@ -341,6 +341,12 @@ abstract class AppLocalizations {
   /// **'Connect your wearable to display your training data.'**
   String get dashboardWearableConnectMessage;
 
+  /// CTA label on dashboard hero card to see more content.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get dashboardHeroCtaMore;
+
   /// Placeholder text shown when there are no dashboard recommendations.
   ///
   /// In en, this message translates to:
