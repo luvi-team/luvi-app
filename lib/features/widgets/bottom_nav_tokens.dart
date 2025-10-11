@@ -7,14 +7,14 @@
 const double dockHeight = 96.0;
 
 /// Wave cutout horizontal half-width (controls how wide the cradle opens)
-/// Noch etwas breiter → 86px.
+/// Slightly wider → 86px.
 const double cutoutHalfWidth = 86.0;
 
 /// Wave cutout vertical depth (deepens the cradle). Was 38px; adjusted to 42px for better embed.
 const double cutoutDepth = 42.0;
 
 /// Desired visual gap between button bottom edge and wave top edge
-/// Noch etwas mehr Schweben → 12px.
+/// Adds a touch more hover clearance → 12px.
 const double desiredGapToWaveTop = 12.0;
 
 /// Floating sync button outer diameter. Was 64px; reduced to 60px per visual feedback.
@@ -42,7 +42,7 @@ const double iconSizeCompensated = iconSizeTight / svgGlyphToViewBoxRatio;
 const double centerGap = 2 * cutoutHalfWidth;
 
 /// Small vertical inset to draw the wave path fully inside the dock to avoid
-/// a subpixel AA-Hairline an der Dock-Oberkante.
+/// a subpixel AA hairline along the dock top edge.
 const double waveTopInset = 1.0;
 
 /// Sync button bottom position (distance from dock bottom to button bottom)
@@ -66,8 +66,8 @@ const double waveStrokeWidth = 1.5;
 /// Wave cubic control point factors (for fine-tuning the silhouette)
 /// alpha controls horizontal offset from endpoints (approximate circle arc = 0.55)
 /// beta controls center-side proximity (0.275 is a balanced default)
-const double waveCpAlpha = 0.58; // etwas weiter nach innen für glattere Schultern
-const double waveCpBeta = 0.36; // weniger spitz in der Mitte
+const double waveCpAlpha = 0.58; // slightly further inward for smoother shoulders
+const double waveCpBeta = 0.36; // less pointed in the center
 
 /// Tab icon size (Figma spec: 32px, was 24px)
 const double tabIconSize = 32.0;
