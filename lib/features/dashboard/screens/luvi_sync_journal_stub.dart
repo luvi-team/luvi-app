@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
-class WorkoutDetailStubScreen extends StatelessWidget {
-  const WorkoutDetailStubScreen({super.key, required this.workoutId});
+/// Temporary Luvi Sync / Journal destination.
+class LuviSyncJournalStubScreen extends StatelessWidget {
+  const LuviSyncJournalStubScreen({super.key});
 
-  final String workoutId;
-
-  static const String route = '/workout/:id';
+  static const String route = '/luvi-sync';
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+
     final titleStyle = theme.textTheme.titleMedium?.copyWith(
       fontFamily: FontFamilies.figtree,
       fontSize: TypographyTokens.size20,
       fontWeight: FontWeight.w600,
     );
+
     final bodyStyle = (theme.textTheme.bodyMedium ?? const TextStyle()).copyWith(
       fontFamily: FontFamilies.figtree,
-      fontWeight: FontWeight.w400,
       fontSize: TypographyTokens.size16,
       height: TypographyTokens.lineHeightRatio24on16,
     );
@@ -27,7 +29,7 @@ class WorkoutDetailStubScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Workout',
+          l10n?.dashboardLuviSyncTitle ?? 'Luvi Sync Journal',
           style: titleStyle ??
               const TextStyle(
                 fontFamily: FontFamilies.figtree,
@@ -42,7 +44,8 @@ class WorkoutDetailStubScreen extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Center(
         child: Text(
-          'Workout Detail (Stub)\nID: $workoutId',
+          l10n?.dashboardLuviSyncPlaceholder ??
+              'Luvi Sync Journal content coming soon.',
           textAlign: TextAlign.center,
           style: bodyStyle,
         ),
