@@ -108,7 +108,7 @@
   },
   "dashboardGreeting": "Hey, {name} 💜",
   "@dashboardGreeting": {
-    "description": "Begrüßung im Dashboard-Header mit dem bevorzugten Namen.",
+    "description": "Dashboard header greeting with the user's preferred name.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -133,19 +133,19 @@
   },
   "dashboardNavToday": "Heute",
   "@dashboardNavToday": {
-    "description": "Label for the Heute tab in the bottom navigation dock."
+    "description": "Label for the Today tab in the bottom navigation dock."
   },
   "dashboardNavCycle": "Zyklus",
   "@dashboardNavCycle": {
-    "description": "Label for the Zyklus tab in the bottom navigation dock."
+    "description": "Label for the Cycle tab in the bottom navigation dock."
   },
   "dashboardNavPulse": "Puls",
   "@dashboardNavPulse": {
-    "description": "Label for the Puls tab in the bottom navigation dock."
+    "description": "Label for the Pulse tab in the bottom navigation dock."
   },
   "dashboardNavProfile": "Profil",
   "@dashboardNavProfile": {
-    "description": "Label for the Profil tab in the bottom navigation dock."
+    "description": "Label for the Profile tab in the bottom navigation dock."
   },
   "dashboardNavSync": "Sync",
   "@dashboardNavSync": {
@@ -169,15 +169,15 @@
   },
   "dashboardViewAll": "Alle",
   "@dashboardViewAll": {
-    "description": "\"View all\" trailing action label in dashboard section headers."
+    "description": "View all trailing action label in dashboard section headers."
   },
   "dashboardLuviSyncTitle": "Luvi Sync Journal",
   "@dashboardLuviSyncTitle": {
-    "description": "App-Bar-Titel für den Luvi Sync Journal Stub-Screen."
+    "description": "App bar title for the Luvi Sync Journal stub screen."
   },
   "dashboardLuviSyncPlaceholder": "Luvi Sync Journal Inhalte folgen bald.",
   "@dashboardLuviSyncPlaceholder": {
-    "description": "Platzhaltertext für den Luvi Sync Journal Stub-Screen."
+    "description": "Placeholder text for the Luvi Sync Journal stub screen."
   },
   "workoutTitle": "Workout",
   "@workoutTitle": {
@@ -189,23 +189,23 @@
   },
   "dashboardRecommendationsEmpty": "Keine Empfehlungen verfügbar",
   "@dashboardRecommendationsEmpty": {
-    "description": "Placeholder-Text, wenn keine Empfehlungen auf dem Dashboard vorhanden sind."
+    "description": "Placeholder text when no recommendations are available on the dashboard."
   },
   "cyclePhaseMenstruation": "Menstruation",
   "@cyclePhaseMenstruation": {
-    "description": "Anzeigename für die Menstruationsphase."
+    "description": "Display name for the menstruation phase."
   },
   "cyclePhaseFollicular": "Follikelphase",
   "@cyclePhaseFollicular": {
-    "description": "Anzeigename für die Follikelphase."
+    "description": "Display name for the follicular phase."
   },
   "cyclePhaseOvulation": "Ovulationsfenster",
   "@cyclePhaseOvulation": {
-    "description": "Anzeigename für das Ovulationsfenster."
+    "description": "Display name for the ovulation window."
   },
   "cyclePhaseLuteal": "Lutealphase",
   "@cyclePhaseLuteal": {
-    "description": "Anzeigename für die Lutealphase."
+    "description": "Display name for the luteal phase."
   },
   "cycleLengthShort": "Kurz (alle 21-23 Tage)",
   "cycleLengthLonger": "Etwas länger (alle 24-26 Tage)",
