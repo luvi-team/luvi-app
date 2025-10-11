@@ -137,9 +137,6 @@ void main() {
       );
       final energyValueTop = tester.getTopLeft(energyFinder);
       final stepsValueTop = tester.getTopLeft(find.text('2.500'));
-      debugPrint(
-        'heartY=${heartValueTop.dy}, energyY=${energyValueTop.dy}, stepsY=${stepsValueTop.dy}',
-      );
       expect((heartValueTop.dy - energyValueTop.dy).abs(), lessThan(1.5),
           reason: 'Pulse and energy values should share the same vertical band');
       expect((heartValueTop.dy - stepsValueTop.dy).abs(), lessThan(1.5),
