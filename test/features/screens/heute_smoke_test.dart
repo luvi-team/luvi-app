@@ -235,7 +235,13 @@ void main() {
         find.byKey(const Key('dashboard_hero_sync_preview')),
         findsOneWidget,
       );
-      expect(find.text('Mehr'), findsOneWidget);
+      expect(
+        find.byKey(const Key('dashboard_hero_sync_preview')),
+        findsOneWidget,
+      );
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final l10n = AppLocalizations.of(heuteContext)!;
+      expect(find.text(l10n.dashboardHeroCtaMore), findsOneWidget);
     });
 
     testWidgets(
