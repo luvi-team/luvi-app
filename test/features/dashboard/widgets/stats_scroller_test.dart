@@ -211,14 +211,8 @@ void main() {
       );
 
       // Verify background color and border
-      final container = tester.widget<Container>(
-        find
-            .descendant(
-              of: find.byType(RepaintBoundary),
-              matching: find.byType(Container),
-            )
-            .first,
-      );
+      final containerFinder = find.byKey(const Key('stats_card_container'));
+      final container = tester.widget<Container>(containerFinder);
 
       final decoration = container.decoration as BoxDecoration;
 

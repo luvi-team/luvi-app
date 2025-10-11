@@ -254,6 +254,7 @@ class _TrainingStatCard extends StatelessWidget {
 
     return RepaintBoundary(
       child: Container(
+        key: const Key('stats_card_container'),
         width: kStatsCardWidth,
         height: kStatsCardHeight,
         decoration: BoxDecoration(
