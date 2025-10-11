@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/widgets/category_chip.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class _ViewportConfig {
   const _ViewportConfig({
@@ -37,18 +40,48 @@ const List<_ViewportConfig> _viewportConfigs = <_ViewportConfig>[
   ),
 ];
 
+GoRouter _createTestRouter() => GoRouter(
+      initialLocation: '/heute',
+      routes: [
+        GoRoute(
+          path: '/heute',
+          builder: (context, state) => const HeuteScreen(),
+        ),
+        GoRoute(
+          path: LuviSyncJournalStubScreen.route,
+          builder: (context, state) => const LuviSyncJournalStubScreen(),
+        ),
+      ],
+    );
+
+Future<GoRouter> _pumpHeuteScreen(
+  WidgetTester tester, {
+  GoRouter? router,
+}) async {
+  final goRouter = router ?? _createTestRouter();
+  await tester.pumpWidget(
+    MaterialApp.router(
+      theme: AppTheme.buildAppTheme(),
+      routerConfig: goRouter,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+    ),
+  );
+  await tester.pumpAndSettle();
+  return goRouter;
+}
+
 void main() {
   group('HeuteScreen smoke tests', () {
     testWidgets('renders without crash and displays all key sections', (
       tester,
     ) async {
       // Pump HeuteScreen with theme & localization
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-
-      // Wait for all widgets to settle
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final l10n = AppLocalizations.of(heuteContext)!;
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final l10n = AppLocalizations.of(heuteContext)!;
 
       // Verify key widgets are present
       expect(
@@ -88,10 +121,7 @@ void main() {
     });
 
     testWidgets('displays section headers', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       // Verify section headers
       expect(
@@ -125,10 +155,7 @@ void main() {
     });
 
     testWidgets('displays 4 category chips', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       // Verify 4 category chips (from default fixture)
       expect(
@@ -145,10 +172,7 @@ void main() {
     });
 
     testWidgets('displays 3 recommendation cards', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       // Verify 3 recommendation cards (from default fixture)
       expect(
@@ -166,10 +190,7 @@ void main() {
     testWidgets('displays three stat cards with formatted values', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
       await tester.pumpAndSettle();
 
@@ -183,10 +204,7 @@ void main() {
     });
 
     testWidgets('displays header greeting and cycle info', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       // Verify header text (from default fixture)
       expect(
@@ -207,10 +225,7 @@ void main() {
     });
 
     testWidgets('displays hero sync preview content', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       // Verify hero sync preview is present and shows CTA label "Mehr"
       expect(
@@ -223,13 +238,7 @@ void main() {
     testWidgets(
       'displays bottom navigation dock with 5 icon-only tabs (4 dock + 1 floating sync)',
       (tester) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.buildAppTheme(),
-            home: const HeuteScreen(),
-          ),
-        );
-        await tester.pumpAndSettle();
+        await _pumpHeuteScreen(tester);
 
         // Phase A: 5 icon-only tabs (Heute/Zyklus/Sync/Puls/Profil), no "Home" label
         expect(
@@ -265,10 +274,7 @@ void main() {
     );
 
     testWidgets('renders at least six SVG icons', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       final svgCount = tester.widgetList(find.byType(SvgPicture)).length;
       expect(
@@ -289,10 +295,7 @@ void main() {
         view.resetDevicePixelRatio();
       });
 
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       final chipFinder = find.byType(CategoryChip);
       expect(chipFinder, findsNWidgets(4));
@@ -323,10 +326,7 @@ void main() {
         view.resetDevicePixelRatio();
       });
 
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       final chipFinder = find.byType(CategoryChip);
       expect(chipFinder, findsNWidgets(4));
@@ -366,10 +366,7 @@ void main() {
         view.resetDevicePixelRatio();
       });
 
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       final dockFinder = find.byKey(const Key('dashboard_dock_nav'));
       expect(dockFinder, findsOneWidget);
@@ -399,13 +396,7 @@ void main() {
           view.resetDevicePixelRatio();
         });
 
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.buildAppTheme(),
-            home: const HeuteScreen(),
-          ),
-        );
-        await tester.pumpAndSettle();
+        await _pumpHeuteScreen(tester);
 
         final Finder scrollable = find.byType(CustomScrollView);
         expect(
@@ -561,10 +552,7 @@ void main() {
     testWidgets('floating sync button is positioned above dock (z-order)', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       final syncFinder = find.byKey(const Key('floating_sync_button'));
       final dockFinder = find.byKey(const Key('dashboard_dock_nav'));
@@ -586,10 +574,7 @@ void main() {
     testWidgets('active tab displays Gold tint (colorScheme.primary)', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       // Default active tab is Heute (index 0)
       // Verify exactly one tab has selected=true semantics (which corresponds to Gold tint)
@@ -626,68 +611,61 @@ void main() {
       );
     });
 
-    testWidgets('sync button receives Gold tint when active (index==4)', (
+    testWidgets('floating sync button exposes semantics and navigates to journal', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      final goRouter = await _pumpHeuteScreen(tester);
 
-      // Tap sync button to activate it
-      await tester.tap(find.byKey(const Key('floating_sync_button')));
-      await tester.pumpAndSettle();
+      final syncButtonFinder = find.byKey(const Key('floating_sync_button'));
+      expect(syncButtonFinder, findsOneWidget);
 
-      // Verify sync button has selected=true (Gold tint)
-      final syncSemanticsWidgets = tester.widgetList<Semantics>(
-        find.byWidgetPredicate(
+      final syncContext = tester.element(syncButtonFinder);
+      final l10n = AppLocalizations.of(syncContext)!;
+
+      final semanticsFinder = find.descendant(
+        of: syncButtonFinder,
+        matching: find.byWidgetPredicate(
           (widget) =>
-              widget is Semantics &&
-              widget.properties.label == 'Sync' &&
-              widget.properties.button == true,
+              widget is Semantics && widget.properties.button == true,
         ),
       );
 
       expect(
-        syncSemanticsWidgets.isNotEmpty,
-        isTrue,
-        reason: 'Sync button Semantics should exist',
+        semanticsFinder,
+        findsOneWidget,
+        reason: 'Floating sync button should expose semantics entry',
       );
 
-      final syncSemantics = syncSemanticsWidgets.first;
+      final Semantics semantics = tester.widget<Semantics>(semanticsFinder);
       expect(
-        syncSemantics.properties.selected,
-        isTrue,
-        reason: 'Sync button should be active after tap (receives Gold tint)',
+        semantics.properties.label,
+        equals(l10n.dashboardNavSync),
+        reason: 'Semantics label should use localized sync label',
       );
-
-      // Verify no dock tab is selected when sync is active
-      final dockTabsWithSelected = tester.widgetList<Semantics>(
-        find.descendant(
-          of: find.byKey(const Key('dashboard_dock_nav')),
-          matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is Semantics &&
-                widget.properties.selected == true &&
-                widget.properties.button == true,
-          ),
-        ),
-      );
-
       expect(
-        dockTabsWithSelected.length,
-        equals(0),
-        reason: 'No dock tab should be selected when sync is active (index==4)',
+        semantics.properties.selected,
+        isFalse,
+        reason: 'Sync button should be inactive before tap',
+      );
+
+      await tester.tap(syncButtonFinder);
+      await tester.pumpAndSettle();
+
+      final currentUri =
+          goRouter.routerDelegate.currentConfiguration.uri.toString();
+      expect(
+        currentUri,
+        equals(LuviSyncJournalStubScreen.route),
+        reason: 'Tap on sync should navigate to Luvi Sync journal',
       );
     });
 
     testWidgets('bottom nav has exactly one active tab with semantics', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final l10n = AppLocalizations.of(heuteContext)!;
 
       // Find all Semantics widgets with "selected" property
       final selectedSemantics = tester.widgetList<Semantics>(
@@ -717,7 +695,7 @@ void main() {
 
       expect(
         todaySemantics.properties.label,
-        equals('Heute'),
+        equals(l10n.dashboardNavToday),
         reason: 'Active tab should have correct semantics label',
       );
       expect(
@@ -730,10 +708,7 @@ void main() {
     testWidgets('sync icon uses compensated size when asset not tight', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.buildAppTheme(), home: const HeuteScreen()),
-      );
-      await tester.pumpAndSettle();
+      await _pumpHeuteScreen(tester);
 
       // Find the SvgPicture inside the floating sync button
       final Finder syncButtonFinder = find.byKey(
