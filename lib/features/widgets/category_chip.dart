@@ -2,7 +2,9 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 
 /// Category chip for Dashboard: Column layout (icon above label).
 /// from DASHBOARD_spec.json $.categories.chips (60×92, icon 60×60, label below, gap 8px)
@@ -27,18 +29,17 @@ class CategoryChip extends StatelessWidget {
   static const double _maxChipWidth = 88; // from DASHBOARD_spec.json $.categories.chips.widthRange (≈60–88px)
   static const double _labelGuardPadding = 4; // audit delta: min padding while keeping 4 chips inside 390px viewport
 
-  static const TextStyle _labelStyle = TextStyle(
+  static const TextStyle _baseLabelStyle = TextStyle(
     fontFamily: FontFamilies.figtree,
     fontSize: 14,
     height: 24 / 14,
     fontWeight: FontWeight.w400,
-    color: Color(0xFF030401),
   );
 
   /// Measures the required width for the label and clamps it to audit bounds.
   static double measuredWidth(String label, TextDirection textDirection) {
     final painter = TextPainter(
-      text: TextSpan(text: label, style: _labelStyle),
+      text: TextSpan(text: label, style: _baseLabelStyle),
       textDirection: textDirection,
       maxLines: 1,
     )..layout(maxWidth: double.infinity);
@@ -52,12 +53,18 @@ class CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dsTokens = Theme.of(context).extension<DsTokens>();
+    final textTokens = Theme.of(context).extension<TextColorTokens>();
+
     // from DASHBOARD_spec_deltas.json $.deltas[5] (selected state)
     final backgroundColor = isSelected
-        ? const Color(0xFFD9B18E) // selected (beige/gold)
-        : const Color(0xFFF7F7F8); // normal (gray)
+        ? (dsTokens?.color.icon.badge.goldCircle ?? ColorTokens.chipSelected)
+        : (dsTokens?.cardSurface ?? ColorTokens.chipDefault);
 
     final chipWidth = width ?? measuredWidth(label, Directionality.of(context));
+    final labelStyle = _baseLabelStyle.copyWith(
+      color: textTokens?.primary ?? ColorTokens.sectionTitle,
+    );
 
     return SizedBox(
       width: chipWidth,
@@ -85,6 +92,21 @@ class CategoryChip extends StatelessWidget {
                   width: 32,
                   height: 32,
                   fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    debugPrint(
+                      'CategoryChip: failed to load SVG $iconPath. Error: $error',
+                    );
+                    return const SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: Center(
+                        child: Icon(
+                          Icons.broken_image,
+                          size: 20,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -97,7 +119,7 @@ class CategoryChip extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.visible,
               softWrap: false,
-              style: _labelStyle,
+              style: labelStyle,
             ),
           ],
         ),

@@ -71,4 +71,28 @@ class DsColors {
   /// White surface token.
   /// Hex: #FFFFFF
   static const Color white = grayscaleWhite;
+
+  /// Low-emphasis border color for neutral cards.
+  /// Hex: #000000 @ 10% alpha
+  static const Color borderSubtle = Color(0x1A000000);
+}
+
+/// Widget-facing color tokens that map named usages to DS palette values.
+class ColorTokens {
+  const ColorTokens._();
+
+  /// Selected background for category chips (Figma: Primary color/100).
+  static const Color chipSelected = DsColors.primaryGold;
+
+  /// Default background for category chips (Figma: Grayscale/100).
+  static const Color chipDefault = Color(0xFFF7F7F8);
+
+  /// Text color for card tags that ensures WCAG-AA contrast.
+  static const Color recommendationTag = Color(0xFFA0A0A0);
+
+  /// Section header title color (maps to textPrimary).
+  static const Color sectionTitle = DsColors.textPrimary;
+
+  /// Section header trailing action color (maps to primary gold).
+  static const Color sectionTrailing = DsColors.primaryGold;
 }

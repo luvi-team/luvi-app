@@ -2,7 +2,7 @@
 /// All values derived from Spec-JSON and formulas (no magic numbers).
 ///
 /// Kodex: Formula-based constants for maintainability and dark-mode compatibility.
-library;
+library bottom_nav_tokens; // ignore: unnecessary_library_name
 
 /// Dock container height (Figma spec: 96px, was 72px)
 const double dockHeight = 96.0;
