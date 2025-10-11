@@ -183,6 +183,10 @@
   "@workoutTitle": {
     "description": "App bar title for the workout detail stub screen."
   },
+  "dashboardWearableConnectMessage": "Connect your wearable to display your training data.",
+  "@dashboardWearableConnectMessage": {
+    "description": "Fallback message shown when no wearable is connected to sync stats."
+  },
   "dashboardRecommendationsEmpty": "No recommendations available",
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder text shown when there are no dashboard recommendations."

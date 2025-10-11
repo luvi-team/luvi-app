@@ -335,6 +335,12 @@ abstract class AppLocalizations {
   /// **'Workout'**
   String get workoutTitle;
 
+  /// Fallback message shown when no wearable is connected to sync stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your wearable to display your training data.'**
+  String get dashboardWearableConnectMessage;
+
   /// Placeholder text shown when there are no dashboard recommendations.
   ///
   /// In en, this message translates to:

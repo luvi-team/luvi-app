@@ -137,6 +137,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get workoutTitle => 'Workout';
 
   @override
+  String get dashboardWearableConnectMessage => 'Verbinde dein Wearable, um deine Trainingsdaten anzeigen zu lassen.';
+
+  @override
   String get dashboardRecommendationsEmpty => 'Keine Empfehlungen verfügbar';
 
   @override

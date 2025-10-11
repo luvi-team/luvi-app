@@ -25,11 +25,17 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      final testContext = tester.element(find.byType(StatsScroller));
+      final loc = AppLocalizations.of(testContext)!;
+
       expect(
         find.byKey(const Key('dashboard_wearable_connect_card')),
         findsOneWidget,
       );
-      expect(find.textContaining('Verbinde dein Wearable'), findsOneWidget);
+      expect(
+        find.textContaining(loc.dashboardWearableConnectMessage),
+        findsOneWidget,
+      );
     });
 
     testWidgets('renders three stat cards with formatted values', (

@@ -183,6 +183,10 @@
   "@workoutTitle": {
     "description": "App-Bar-Titel für den Workout-Detail-Stub."
   },
+  "dashboardWearableConnectMessage": "Verbinde dein Wearable, um deine Trainingsdaten anzeigen zu lassen.",
+  "@dashboardWearableConnectMessage": {
+    "description": "Fallback-Nachricht, wenn kein Wearable verbunden ist."
+  },
   "dashboardRecommendationsEmpty": "Keine Empfehlungen verfügbar",
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder-Text, wenn keine Empfehlungen auf dem Dashboard vorhanden sind."
