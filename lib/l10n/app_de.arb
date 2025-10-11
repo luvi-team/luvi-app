@@ -106,6 +106,99 @@
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
   },
+  "dashboardGreeting": "Hey, {name} 💜",
+  "@dashboardGreeting": {
+    "description": "Begrüßung im Dashboard-Header mit dem bevorzugten Namen.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardCategoriesTitle": "Kategorien",
+  "@dashboardCategoriesTitle": {
+    "description": "Section header title for the dashboard categories grid."
+  },
+  "dashboardTopRecommendationTitle": "Deine Top-Empfehlung",
+  "@dashboardTopRecommendationTitle": {
+    "description": "Section header title for the dashboard top recommendation card."
+  },
+  "dashboardMoreTrainingsTitle": "Weitere Trainings",
+  "@dashboardMoreTrainingsTitle": {
+    "description": "Section header title for the additional trainings list."
+  },
+  "dashboardTrainingDataTitle": "Deine Trainingsdaten",
+  "@dashboardTrainingDataTitle": {
+    "description": "Section header title for the dashboard training stats scroller."
+  },
+  "dashboardNavToday": "Heute",
+  "@dashboardNavToday": {
+    "description": "Label for the Heute tab in the bottom navigation dock."
+  },
+  "dashboardNavCycle": "Zyklus",
+  "@dashboardNavCycle": {
+    "description": "Label for the Zyklus tab in the bottom navigation dock."
+  },
+  "dashboardNavPulse": "Puls",
+  "@dashboardNavPulse": {
+    "description": "Label for the Puls tab in the bottom navigation dock."
+  },
+  "dashboardNavProfile": "Profil",
+  "@dashboardNavProfile": {
+    "description": "Label for the Profil tab in the bottom navigation dock."
+  },
+  "dashboardNavSync": "Sync",
+  "@dashboardNavSync": {
+    "description": "Label for the floating Luvi Sync button on the dashboard bottom dock."
+  },
+  "dashboardCategoryTraining": "Training",
+  "@dashboardCategoryTraining": {
+    "description": "Label for the Training category chip on the dashboard."
+  },
+  "dashboardCategoryNutrition": "Ernährung",
+  "@dashboardCategoryNutrition": {
+    "description": "Label for the Nutrition category chip on the dashboard."
+  },
+  "dashboardCategoryRegeneration": "Regeneration",
+  "@dashboardCategoryRegeneration": {
+    "description": "Label for the Regeneration category chip on the dashboard."
+  },
+  "dashboardCategoryMindfulness": "Achtsamkeit",
+  "@dashboardCategoryMindfulness": {
+    "description": "Label for the Mindfulness category chip on the dashboard."
+  },
+  "dashboardViewAll": "Alle",
+  "@dashboardViewAll": {
+    "description": "\"View all\" trailing action label in dashboard section headers."
+  },
+  "dashboardLuviSyncTitle": "Luvi Sync Journal",
+  "@dashboardLuviSyncTitle": {
+    "description": "App-Bar-Titel für den Luvi Sync Journal Stub-Screen."
+  },
+  "dashboardLuviSyncPlaceholder": "Luvi Sync Journal Inhalte folgen bald.",
+  "@dashboardLuviSyncPlaceholder": {
+    "description": "Platzhaltertext für den Luvi Sync Journal Stub-Screen."
+  },
+  "dashboardRecommendationsEmpty": "Keine Empfehlungen verfügbar",
+  "@dashboardRecommendationsEmpty": {
+    "description": "Placeholder-Text, wenn keine Empfehlungen auf dem Dashboard vorhanden sind."
+  },
+  "cyclePhaseMenstruation": "Menstruation",
+  "@cyclePhaseMenstruation": {
+    "description": "Anzeigename für die Menstruationsphase."
+  },
+  "cyclePhaseFollicular": "Follikelphase",
+  "@cyclePhaseFollicular": {
+    "description": "Anzeigename für die Follikelphase."
+  },
+  "cyclePhaseOvulation": "Ovulationsfenster",
+  "@cyclePhaseOvulation": {
+    "description": "Anzeigename für das Ovulationsfenster."
+  },
+  "cyclePhaseLuteal": "Lutealphase",
+  "@cyclePhaseLuteal": {
+    "description": "Anzeigename für die Lutealphase."
+  },
   "cycleLengthShort": "Kurz (alle 21-23 Tage)",
   "cycleLengthLonger": "Etwas länger (alle 24-26 Tage)",
   "cycleLengthStandard": "Standard (alle 27-30 Tage)",

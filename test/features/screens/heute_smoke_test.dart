@@ -78,10 +78,6 @@ void main() {
     ) async {
       // Pump HeuteScreen with theme & localization
       await _pumpHeuteScreen(tester);
-      final heuteContext = tester.element(find.byType(HeuteScreen));
-      final l10n = AppLocalizations.of(heuteContext)!;
-      final heuteContext = tester.element(find.byType(HeuteScreen));
-      final l10n = AppLocalizations.of(heuteContext)!;
 
       // Verify key widgets are present
       expect(
@@ -122,33 +118,35 @@ void main() {
 
     testWidgets('displays section headers', (tester) async {
       await _pumpHeuteScreen(tester);
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final l10n = AppLocalizations.of(heuteContext)!;
 
       // Verify section headers
       expect(
-        find.text('Kategorien'),
+        find.text(l10n.dashboardCategoriesTitle),
         findsOneWidget,
         reason: 'Categories section header should be visible',
       );
 
       expect(
-        find.text('Deine Top-Empfehlung'),
+        find.text(l10n.dashboardTopRecommendationTitle),
         findsOneWidget,
         reason: 'Top recommendation section header should be visible',
       );
 
       expect(
-        find.text('Weitere Trainings'),
+        find.text(l10n.dashboardMoreTrainingsTitle),
         findsOneWidget,
         reason: 'Recommendations section header should be visible',
       );
       expect(
-        find.text('Deine Trainingsdaten'),
+        find.text(l10n.dashboardTrainingDataTitle),
         findsOneWidget,
         reason: 'Training stats section header should be visible',
       );
 
       expect(
-        find.text('Alle'),
+        find.text(l10n.dashboardViewAll),
         findsOneWidget,
         reason: 'Recommendations header should expose trailing "Alle" CTA',
       );
@@ -156,6 +154,8 @@ void main() {
 
     testWidgets('displays 4 category chips', (tester) async {
       await _pumpHeuteScreen(tester);
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final l10n = AppLocalizations.of(heuteContext)!;
 
       // Verify 4 category chips (from default fixture)
       expect(
@@ -165,10 +165,10 @@ void main() {
       );
 
       // Verify category labels
-      expect(find.text('Training'), findsOneWidget);
-      expect(find.text('Ernährung'), findsOneWidget);
-      expect(find.text('Regeneration'), findsOneWidget);
-      expect(find.text('Achtsamkeit'), findsOneWidget);
+      expect(find.text(l10n.dashboardCategoryTraining), findsOneWidget);
+      expect(find.text(l10n.dashboardCategoryNutrition), findsOneWidget);
+      expect(find.text(l10n.dashboardCategoryRegeneration), findsOneWidget);
+      expect(find.text(l10n.dashboardCategoryMindfulness), findsOneWidget);
     });
 
     testWidgets('displays 3 recommendation cards', (tester) async {
@@ -205,10 +205,12 @@ void main() {
 
     testWidgets('displays header greeting and cycle info', (tester) async {
       await _pumpHeuteScreen(tester);
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final l10n = AppLocalizations.of(heuteContext)!;
 
       // Verify header text (from default fixture)
       expect(
-        find.textContaining('Hey, Sarah'),
+        find.textContaining(l10n.dashboardGreeting('Sarah')),
         findsOneWidget,
         reason: 'Header greeting should be visible',
       );
@@ -217,7 +219,7 @@ void main() {
       expect(
         find.descendant(
           of: header,
-          matching: find.textContaining('Follikelphase'),
+          matching: find.textContaining(l10n.cyclePhaseFollicular),
         ),
         findsOneWidget,
         reason: 'Cycle phase info should be visible in header only',
@@ -396,9 +398,11 @@ void main() {
           view.resetDevicePixelRatio();
         });
 
-        await _pumpHeuteScreen(tester);
+      await _pumpHeuteScreen(tester);
+      final heuteContext = tester.element(find.byType(HeuteScreen));
+      final l10n = AppLocalizations.of(heuteContext)!;
 
-        final Finder scrollable = find.byType(CustomScrollView);
+      final Finder scrollable = find.byType(CustomScrollView);
         expect(
           scrollable,
           findsOneWidget,
@@ -411,19 +415,19 @@ void main() {
         const double tolerance = 0.5;
 
         final Rect categoriesHeaderRect = tester.getRect(
-          find.text('Kategorien'),
+          find.text(l10n.dashboardCategoriesTitle),
         );
         final Rect categoriesRect = tester.getRect(
           find.byKey(const Key('dashboard_categories_grid')),
         );
         final Rect topRecoHeaderRect = tester.getRect(
-          find.text('Deine Top-Empfehlung'),
+          find.text(l10n.dashboardTopRecommendationTitle),
         );
         final Rect topRecoRect = tester.getRect(
           find.byType(TopRecommendationTile),
         );
         final Rect recsHeaderRect = tester.getRect(
-          find.text('Weitere Trainings'),
+          find.text(l10n.dashboardMoreTrainingsTitle),
         );
         final Rect listRect = tester.getRect(
           find.byKey(const Key('dashboard_recommendations_list')),

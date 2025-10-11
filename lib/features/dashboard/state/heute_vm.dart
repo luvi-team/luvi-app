@@ -18,6 +18,30 @@ class DashboardVM {
     required this.heroCta,
     required this.selectedCategory,
   });
+
+  DashboardVM copyWith({
+    double? cycleProgressRatio,
+    HeroCtaState? heroCta,
+    Category? selectedCategory,
+  }) =>
+      DashboardVM(
+        cycleProgressRatio: cycleProgressRatio ?? this.cycleProgressRatio,
+        heroCta: heroCta ?? this.heroCta,
+        selectedCategory: selectedCategory ?? this.selectedCategory,
+      );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is DashboardVM &&
+        other.cycleProgressRatio == cycleProgressRatio &&
+        other.heroCta == heroCta &&
+        other.selectedCategory == selectedCategory;
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(cycleProgressRatio, heroCta, selectedCategory);
 }
 
 /// Hero CTA state: resumes a running program or starts a fresh one.

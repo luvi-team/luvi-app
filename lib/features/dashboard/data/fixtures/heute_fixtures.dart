@@ -21,6 +21,18 @@ class HeaderProps {
   final String userName;
   final String dateText;
   final String phaseLabel;
+
+  HeaderProps copyWith({
+    String? userName,
+    String? dateText,
+    String? phaseLabel,
+  }) {
+    return HeaderProps(
+      userName: userName ?? this.userName,
+      dateText: dateText ?? this.dateText,
+      phaseLabel: phaseLabel ?? this.phaseLabel,
+    );
+  }
 }
 
 @immutable
@@ -31,13 +43,41 @@ class HeroCardProps {
     required this.progressRatio,
     required this.dateText,
     required this.subtitle,
-  });
+    this.ctaState = HeroCtaState.resumeActiveWorkout,
+  }) : assert(
+          progressRatio >= 0.0 && progressRatio <= 1.0,
+          'progressRatio must be between 0.0 and 1.0',
+        );
 
   final String programTitle;
   final String openCountText;
   final double progressRatio; // 0.0–1.0
   final String dateText;
   final String subtitle;
+  final HeroCtaState ctaState;
+
+  HeroCardProps copyWith({
+    String? programTitle,
+    String? openCountText,
+    double? progressRatio,
+    String? dateText,
+    String? subtitle,
+    HeroCtaState? ctaState,
+  }) {
+    final double nextProgress = progressRatio ?? this.progressRatio;
+    assert(
+      nextProgress >= 0.0 && nextProgress <= 1.0,
+      'progressRatio must be between 0.0 and 1.0',
+    );
+    return HeroCardProps(
+      programTitle: programTitle ?? this.programTitle,
+      openCountText: openCountText ?? this.openCountText,
+      progressRatio: nextProgress,
+      dateText: dateText ?? this.dateText,
+      subtitle: subtitle ?? this.subtitle,
+      ctaState: ctaState ?? this.ctaState,
+    );
+  }
 }
 
 @immutable
@@ -45,12 +85,28 @@ class CategoryProps {
   const CategoryProps({
     required this.iconPath,
     required this.label,
+    required this.category,
     this.isSelected = false,
   });
 
   final String iconPath;
   final String label;
+  final Category category;
   final bool isSelected;
+
+  CategoryProps copyWith({
+    String? iconPath,
+    String? label,
+    Category? category,
+    bool? isSelected,
+  }) {
+    return CategoryProps(
+      iconPath: iconPath ?? this.iconPath,
+      label: label ?? this.label,
+      category: category ?? this.category,
+      isSelected: isSelected ?? this.isSelected,
+    );
+  }
 }
 
 @immutable
@@ -64,6 +120,18 @@ class RecommendationProps {
   final String tag;
   final String title;
   final String imagePath;
+
+  RecommendationProps copyWith({
+    String? tag,
+    String? title,
+    String? imagePath,
+  }) {
+    return RecommendationProps(
+      tag: tag ?? this.tag,
+      title: title ?? this.title,
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
 }
 
 @immutable
@@ -77,6 +145,18 @@ class BottomNavProps {
   final int selectedIndex;
   final List<String> items;
   final bool hasNotifications;
+
+  BottomNavProps copyWith({
+    int? selectedIndex,
+    List<String>? items,
+    bool? hasNotifications,
+  }) {
+    return BottomNavProps(
+      selectedIndex: selectedIndex ?? this.selectedIndex,
+      items: items ?? this.items,
+      hasNotifications: hasNotifications ?? this.hasNotifications,
+    );
+  }
 }
 
 @immutable
@@ -84,6 +164,10 @@ class WearableProps {
   const WearableProps({required this.connected});
 
   final bool connected;
+
+  WearableProps copyWith({bool? connected}) {
+    return WearableProps(connected: connected ?? this.connected);
+  }
 }
 
 @immutable
@@ -112,6 +196,32 @@ class HeuteFixtureState {
   final DateTime referenceDate;
   final CycleInfo cycleInfo;
 
+  HeuteFixtureState copyWith({
+    HeaderProps? header,
+    HeroCardProps? heroCard,
+    TopRecommendationProps? topRecommendation,
+    List<CategoryProps>? categories,
+    List<RecommendationProps>? recommendations,
+    List<TrainingStatProps>? trainingStats,
+    WearableProps? wearable,
+    BottomNavProps? bottomNav,
+    DateTime? referenceDate,
+    CycleInfo? cycleInfo,
+  }) {
+    return HeuteFixtureState(
+      header: header ?? this.header,
+      heroCard: heroCard ?? this.heroCard,
+      topRecommendation: topRecommendation ?? this.topRecommendation,
+      categories: categories ?? this.categories,
+      recommendations: recommendations ?? this.recommendations,
+      trainingStats: trainingStats ?? this.trainingStats,
+      wearable: wearable ?? this.wearable,
+      bottomNav: bottomNav ?? this.bottomNav,
+      referenceDate: referenceDate ?? this.referenceDate,
+      cycleInfo: cycleInfo ?? this.cycleInfo,
+    );
+  }
+
   /// Convenience forwards so the view model bridge stays explicit in fixtures.
   String get userName => header.userName;
 
@@ -123,11 +233,20 @@ class HeuteFixtureState {
 
   /// Default CTA mirrors the "Zurück zum Training" copy in the hero card.
   /// See docs/ui/contracts/dashboard_state.md (HeroCtaState → label mapping).
-  HeroCtaState get heroCta => HeroCtaState.resumeActiveWorkout;
+  HeroCtaState get heroCta => heroCard.ctaState;
 
   /// Active category chip shown with gold highlight in UI mocks.
   /// See docs/ui/contracts/dashboard_state.md (Category → chip highlight + future reco filter).
-  Category get selectedCategory => Category.training;
+  Category get selectedCategory {
+    if (categories.isEmpty) {
+      return Category.training;
+    }
+    final CategoryProps selected = categories.firstWhere(
+      (category) => category.isSelected,
+      orElse: () => categories.first,
+    );
+    return selected.category;
+  }
 }
 
 /// Fixture states for Heute screen (3 variants: default, withNotifications, emptyRecommendations).
@@ -159,6 +278,7 @@ class HeuteFixtures {
         dateText: dateText,
         subtitle:
             'Wir starten heute ruhig und strukturiert - eine lockere Cardio Einheit hilft dir fokussiert zu bleiben...',
+        ctaState: HeroCtaState.resumeActiveWorkout,
       ),
       topRecommendation: TopRecommendationProps(
         id: 'reco-shoulder-stretching',
@@ -172,16 +292,23 @@ class HeuteFixtures {
         CategoryProps(
           iconPath: Assets.icons.catTraining,
           label: 'Training',
+          category: Category.training,
           isSelected: true,
         ),
-        CategoryProps(iconPath: Assets.icons.catNutrition, label: 'Ernährung'),
+        CategoryProps(
+          iconPath: Assets.icons.catNutrition,
+          label: 'Ernährung',
+          category: Category.nutrition,
+        ),
         CategoryProps(
           iconPath: Assets.icons.catRegeneration,
           label: 'Regeneration',
+          category: Category.regeneration,
         ),
         CategoryProps(
           iconPath: Assets.icons.catMindfulness,
           label: 'Achtsamkeit',
+          category: Category.mindfulness,
         ),
       ],
       recommendations: [
@@ -242,38 +369,19 @@ class HeuteFixtures {
   /// Variant B – Notification badge: identical data, but activates bell indicator.
   static HeuteFixtureState withNotifications() {
     final base = defaultState();
-    return HeuteFixtureState(
-      header: base.header,
-      heroCard: base.heroCard,
-      topRecommendation: base.topRecommendation,
-      categories: base.categories,
-      recommendations: base.recommendations,
-      trainingStats: base.trainingStats,
-      wearable: base.wearable,
-      bottomNav: BottomNavProps(
-        selectedIndex: base.bottomNav.selectedIndex,
-        items: base.bottomNav.items,
-        hasNotifications: true,
-      ),
-      referenceDate: base.referenceDate,
-      cycleInfo: base.cycleInfo,
+    return base.copyWith(
+      bottomNav: base.bottomNav.copyWith(hasNotifications: true),
     );
   }
 
   /// Variant C – Empty recommendations: surfaces placeholder state under cards row.
   static HeuteFixtureState emptyRecommendations() {
     final base = defaultState();
-    return HeuteFixtureState(
-      header: base.header,
-      heroCard: base.heroCard,
-      topRecommendation: base.topRecommendation,
-      categories: base.categories,
-      recommendations: const [], // empty
-      trainingStats: base.trainingStats,
-      wearable: base.wearable,
-      bottomNav: base.bottomNav,
-      referenceDate: base.referenceDate,
-      cycleInfo: base.cycleInfo,
+    return base.copyWith(
+      heroCard: base.heroCard.copyWith(
+        ctaState: HeroCtaState.startNewWorkout,
+      ),
+      recommendations: const [],
     );
   }
 }

@@ -81,6 +81,74 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonContinue => 'Weiter';
 
   @override
+  String dashboardGreeting(String name) {
+    return 'Hey, $name 💜';
+  }
+
+  @override
+  String get dashboardCategoriesTitle => 'Kategorien';
+
+  @override
+  String get dashboardTopRecommendationTitle => 'Deine Top-Empfehlung';
+
+  @override
+  String get dashboardMoreTrainingsTitle => 'Weitere Trainings';
+
+  @override
+  String get dashboardTrainingDataTitle => 'Deine Trainingsdaten';
+
+  @override
+  String get dashboardNavToday => 'Heute';
+
+  @override
+  String get dashboardNavCycle => 'Zyklus';
+
+  @override
+  String get dashboardNavPulse => 'Puls';
+
+  @override
+  String get dashboardNavProfile => 'Profil';
+
+  @override
+  String get dashboardNavSync => 'Sync';
+
+  @override
+  String get dashboardCategoryTraining => 'Training';
+
+  @override
+  String get dashboardCategoryNutrition => 'Ernährung';
+
+  @override
+  String get dashboardCategoryRegeneration => 'Regeneration';
+
+  @override
+  String get dashboardCategoryMindfulness => 'Achtsamkeit';
+
+  @override
+  String get dashboardViewAll => 'Alle';
+
+  @override
+  String get dashboardLuviSyncTitle => 'Luvi Sync Journal';
+
+  @override
+  String get dashboardLuviSyncPlaceholder => 'Luvi Sync Journal Inhalte folgen bald.';
+
+  @override
+  String get dashboardRecommendationsEmpty => 'Keine Empfehlungen verfügbar';
+
+  @override
+  String get cyclePhaseMenstruation => 'Menstruation';
+
+  @override
+  String get cyclePhaseFollicular => 'Follikelphase';
+
+  @override
+  String get cyclePhaseOvulation => 'Ovulationsfenster';
+
+  @override
+  String get cyclePhaseLuteal => 'Lutealphase';
+
+  @override
   String get cycleLengthShort => 'Kurz (alle 21-23 Tage)';
 
   @override

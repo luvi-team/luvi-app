@@ -2,8 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
@@ -20,6 +22,9 @@ import 'package:luvi_app/features/widgets/dashboard_calendar.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
 import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
+import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
+import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 // Dashboard-only spacing (audit-backed)
 const double _gap16 = 16.0; // Spec: recommendations list gap 16px
@@ -49,7 +54,7 @@ class HeuteScreen extends StatefulWidget {
 
 class _HeuteScreenState extends State<HeuteScreen> {
   late final HeuteFixtureState _fixtureState;
-  late String _selectedCategory;
+  late Category _selectedCategory;
   int _activeTabIndex =
       0; // Dock nav state (0=Heute, 1=Zyklus, 2=Puls, 3=Profil)
 
@@ -57,12 +62,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
   void initState() {
     super.initState();
     _fixtureState = HeuteFixtures.defaultState();
-    _selectedCategory = _fixtureState.categories
-        .firstWhere(
-          (cat) => cat.isSelected,
-          orElse: () => _fixtureState.categories.first,
-        )
-        .label;
+    _selectedCategory = _fixtureState.selectedCategory;
   }
 
   @override
@@ -72,10 +72,11 @@ class _HeuteScreenState extends State<HeuteScreen> {
     final weekView = weekViewFor(state.referenceDate, state.cycleInfo);
     final topRecommendation = state.topRecommendation;
     final currentPhase = state.cycleInfo.phaseFor(state.referenceDate);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      bottomNavigationBar: _buildDockNavigation(),
+      bottomNavigationBar: _buildDockNavigation(l10n),
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
@@ -91,7 +92,9 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
                     _buildHeader(
                       context,
+                      l10n,
                       state.header,
+                      currentPhase,
                       state.bottomNav.hasNotifications,
                       weekView,
                     ),
@@ -105,14 +108,21 @@ class _HeuteScreenState extends State<HeuteScreen> {
                       subtitle: state.heroCard.subtitle,
                     ),
                     const SizedBox(height: _sectionGapTight),
-                    const SectionHeader(title: 'Kategorien', showTrailingAction: false),
+                    SectionHeader(
+                      title: l10n?.dashboardCategoriesTitle ?? 'Kategorien',
+                      showTrailingAction: false,
+                    ),
                     const SizedBox(
                       height: Spacing.s,
                     ), // Figma: header→content 12px (Audit V3)
-                    _buildCategories(state.categories),
+                    _buildCategories(l10n, state.categories),
                     const SizedBox(height: Spacing.m),
                     // Section header: Deine Top-Empfehlung
-                    const SectionHeader(title: 'Deine Top-Empfehlung', showTrailingAction: false),
+                    SectionHeader(
+                      title:
+                          l10n?.dashboardTopRecommendationTitle ?? 'Deine Top-Empfehlung',
+                      showTrailingAction: false,
+                    ),
                     const SizedBox(height: Spacing.s),
                     // Top recommendation tile
                     TopRecommendationTile(
@@ -125,17 +135,18 @@ class _HeuteScreenState extends State<HeuteScreen> {
                       duration: topRecommendation.duration,
                     ),
                     const SizedBox(height: _sectionGapTight),
-                    const SectionHeader(
-                      title: 'Weitere Trainings',
-                      trailingLabel: 'Alle',
+                    SectionHeader(
+                      title:
+                          l10n?.dashboardMoreTrainingsTitle ?? 'Weitere Trainings',
                     ),
                     const SizedBox(
                       height: Spacing.s,
                     ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
-                    _buildRecommendations(state.recommendations),
+                    _buildRecommendations(context, l10n, state.recommendations),
                     const SizedBox(height: _sectionGapTight),
-                    const SectionHeader(
-                      title: 'Deine Trainingsdaten',
+                    SectionHeader(
+                      title:
+                          l10n?.dashboardTrainingDataTitle ?? 'Deine Trainingsdaten',
                       showTrailingAction: false,
                     ),
                     const SizedBox(height: Spacing.s),
@@ -159,11 +170,19 @@ class _HeuteScreenState extends State<HeuteScreen> {
 
   Widget _buildHeader(
     BuildContext context,
+    AppLocalizations? l10n,
     HeaderProps header,
+    Phase currentPhase,
     bool hasNotifications,
     WeekStripView weekView,
   ) {
     final textTokens = Theme.of(context).extension<TextColorTokens>();
+    final primaryColor = textTokens?.primary ?? DsColors.textPrimary;
+    final secondaryColor =
+        textTokens?.secondary ?? ColorTokens.recommendationTag;
+    final greeting =
+        l10n?.dashboardGreeting(header.userName) ?? 'Hey, ${header.userName} 💜';
+    final phaseLabel = _localizedPhaseLabel(l10n, currentPhase);
     return Column(
       key: const Key('dashboard_header'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -178,27 +197,26 @@ class _HeuteScreenState extends State<HeuteScreen> {
                 children: [
                   // from DASHBOARD_spec.json $.header.title.typography (Playfair Display 32/40)
                   Text(
-                    'Hey, ${header.userName} 💜',
+                    greeting,
                     style: const TextStyle(
                       fontFamily: FontFamilies.playfairDisplay,
                       fontSize: 32,
                       height: 40 / 32,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF030401),
-                    ),
+                    ).copyWith(color: primaryColor),
                   ),
                   const SizedBox(
                     height: 2,
                   ), // from DASHBOARD_spec.json $.spacingTokensObserved[1]
                   // from DASHBOARD_spec.json $.header.subtitle.typography (Figtree 16/24)
                   Text(
-                    header.phaseLabel,
+                    phaseLabel,
                     style: TextStyle(
                       fontFamily: FontFamilies.figtree,
                       fontSize: 16,
                       height: 24 / 16,
                       fontWeight: FontWeight.w400,
-                      color: (textTokens?.secondary ?? const Color(0xFF6d6d6d)),
+                      color: secondaryColor,
                     ),
                   ),
                 ],
@@ -243,7 +261,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(_headerIconRadius),
         border: Border.all(
-          color: Color(0xFFFFFFFF).withValues(alpha: 0.08),
+          color: Colors.white.withValues(alpha: 0.08),
           width:
               0.769, // from DASHBOARD_spec.json $.header.actions[0].container.border.width
         ),
@@ -257,7 +275,10 @@ class _HeuteScreenState extends State<HeuteScreen> {
   }
 
 
-  Widget _buildCategories(List<CategoryProps> categories) {
+  Widget _buildCategories(
+    AppLocalizations? l10n,
+    List<CategoryProps> categories,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final contentWidth =
@@ -267,7 +288,11 @@ class _HeuteScreenState extends State<HeuteScreen> {
         }
 
         final textDirection = Directionality.of(context);
-        final measuredWidths = _measureChipWidths(categories, textDirection);
+        final labels = [
+          for (final category in categories)
+            _categoryLabel(l10n, category.category),
+        ];
+        final measuredWidths = _measureChipWidths(labels, textDirection);
         final columnCount = math.min(categories.length, _categoriesColumns);
         final resolvedWidths = _compressFirstRowWidths(
           measuredWidths,
@@ -287,18 +312,22 @@ class _HeuteScreenState extends State<HeuteScreen> {
             .clamp(_categoriesMinGap, _categoriesMaxGap)
             .toDouble();
 
-        return _buildCategoryWrap(categories, resolvedWidths, gap);
+        return _buildCategoryWrap(
+          categories,
+          labels,
+          resolvedWidths,
+          gap,
+        );
       },
     );
   }
 
   List<double> _measureChipWidths(
-    List<CategoryProps> categories,
+    List<String> labels,
     TextDirection dir,
   ) {
     return [
-      for (final category in categories)
-        CategoryChip.measuredWidth(category.label, dir),
+      for (final label in labels) CategoryChip.measuredWidth(label, dir),
     ];
   }
 
@@ -314,42 +343,15 @@ class _HeuteScreenState extends State<HeuteScreen> {
     final minGapTotal = gapCount * minGap;
     final availableForItems = math.max(0, contentWidth - minGapTotal);
 
-    if (columnCount > 0 && gapCount > 0) {
-      var totalWidth = resolvedWidths
+    if (columnCount > 0 && availableForItems > 0) {
+      final totalWidth = resolvedWidths
           .take(columnCount)
           .fold<double>(0, (sum, width) => sum + width);
       if (totalWidth > availableForItems) {
-        var overflow = totalWidth - availableForItems;
-        var adjustable = <int>[
-          for (var i = 0; i < columnCount; i++)
-            if (resolvedWidths[i] > minWidth) i,
-        ];
-        var guard = 0;
-        while (overflow > 0.1 && adjustable.isNotEmpty && guard < 6) {
-          // Evenly compress chip widths until first-row total fits the 390–428px viewport window.
-          final perItemReduction = overflow / adjustable.length;
-          double consumed = 0;
-          final nextAdjustable = <int>[];
-          for (final index in adjustable) {
-            final maxReduction = resolvedWidths[index] - minWidth;
-            if (maxReduction <= 0.1) {
-              continue;
-            }
-            final reduction = math.min(maxReduction, perItemReduction);
-            if (reduction > 0) {
-              resolvedWidths[index] -= reduction;
-              consumed += reduction;
-            }
-            if ((resolvedWidths[index] - minWidth) > 0.1) {
-              nextAdjustable.add(index);
-            }
-          }
-          if (consumed == 0) {
-            break;
-          }
-          overflow = math.max(0, overflow - consumed);
-          adjustable = nextAdjustable;
-          guard++;
+        final shrinkFactor = availableForItems / totalWidth;
+        for (var i = 0; i < columnCount; i++) {
+          final scaledWidth = resolvedWidths[i] * shrinkFactor;
+          resolvedWidths[i] = math.max(minWidth, scaledWidth);
         }
       }
     }
@@ -359,6 +361,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
 
   Widget _buildCategoryWrap(
     List<CategoryProps> categories,
+    List<String> labels,
     List<double> resolvedWidths,
     double gap,
   ) {
@@ -371,10 +374,10 @@ class _HeuteScreenState extends State<HeuteScreen> {
       children: [
         for (var i = 0; i < categories.length; i++)
           CategoryChip(
-            key: ValueKey(categories[i].label),
+            key: ValueKey(categories[i].category),
             iconPath: categories[i].iconPath,
-            label: categories[i].label,
-            isSelected: categories[i].label == _selectedCategory,
+            label: labels[i],
+            isSelected: categories[i].category == _selectedCategory,
             width: resolvedWidths[i],
             onTap: () => _onCategoryTap(categories[i]),
           ),
@@ -383,28 +386,35 @@ class _HeuteScreenState extends State<HeuteScreen> {
   }
 
   void _onCategoryTap(CategoryProps category) {
-    if (_selectedCategory == category.label) {
+    if (_selectedCategory == category.category) {
       return;
     }
     setState(() {
-      _selectedCategory = category.label;
+      _selectedCategory = category.category;
     });
     // TODO(reco-filter): hook selection into recommendations filter once feature lands.
   }
 
-  Widget _buildRecommendations(List<RecommendationProps> recommendations) {
+  Widget _buildRecommendations(
+    BuildContext context,
+    AppLocalizations? l10n,
+    List<RecommendationProps> recommendations,
+  ) {
+    final textTokens = Theme.of(context).extension<TextColorTokens>();
     if (recommendations.isEmpty) {
       // Placeholder for empty state
-      return const SizedBox(
+      final Color emptyTextColor =
+          textTokens?.secondary ?? ColorTokens.recommendationTag;
+      return SizedBox(
         height:
             180, // from DASHBOARD_spec.json $.recommendations.list.itemSize.h (placeholder uses same height)
         child: Center(
           child: Text(
-            'Keine Empfehlungen verfügbar',
+            l10n?.dashboardRecommendationsEmpty ?? 'Keine Empfehlungen verfügbar',
             style: TextStyle(
               fontFamily: FontFamilies.figtree,
               fontSize: 16,
-              color: Color(0xFF6d6d6d),
+              color: emptyTextColor,
             ),
           ),
         ),
@@ -436,26 +446,26 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
-  Widget _buildDockNavigation() {
+  Widget _buildDockNavigation(AppLocalizations? l10n) {
     final tabs = [
       DockTab(
         iconPath: Assets.icons.navToday,
-        label: 'Heute',
+        label: l10n?.dashboardNavToday ?? 'Heute',
         key: const Key('nav_today'),
       ),
       DockTab(
         iconPath: Assets.icons.navCycle,
-        label: 'Zyklus',
+        label: l10n?.dashboardNavCycle ?? 'Zyklus',
         key: const Key('nav_cycle'),
       ),
       DockTab(
         iconPath: Assets.icons.navPulse,
-        label: 'Puls',
+        label: l10n?.dashboardNavPulse ?? 'Puls',
         key: const Key('nav_pulse'),
       ),
       DockTab(
         iconPath: Assets.icons.navProfile,
-        label: 'Profil',
+        label: l10n?.dashboardNavProfile ?? 'Profil',
         key: const Key('nav_profile'),
       ),
     ];
@@ -495,13 +505,39 @@ class _HeuteScreenState extends State<HeuteScreen> {
                 setState(() {
                   _activeTabIndex = 4; // Sync tab index
                 });
-                // TODO: sync action
+                context.go(LuviSyncJournalStubScreen.route);
               },
             ),
           ),
         ),
       ],
     );
+  }
+
+  String _categoryLabel(AppLocalizations? l10n, Category category) {
+    switch (category) {
+      case Category.training:
+        return l10n?.dashboardCategoryTraining ?? 'Training';
+      case Category.nutrition:
+        return l10n?.dashboardCategoryNutrition ?? 'Ernährung';
+      case Category.regeneration:
+        return l10n?.dashboardCategoryRegeneration ?? 'Regeneration';
+      case Category.mindfulness:
+        return l10n?.dashboardCategoryMindfulness ?? 'Achtsamkeit';
+    }
+  }
+
+  String _localizedPhaseLabel(AppLocalizations? l10n, Phase phase) {
+    switch (phase) {
+      case Phase.menstruation:
+        return l10n?.cyclePhaseMenstruation ?? 'Menstruation';
+      case Phase.follicular:
+        return l10n?.cyclePhaseFollicular ?? 'Follikelphase';
+      case Phase.ovulation:
+        return l10n?.cyclePhaseOvulation ?? 'Ovulationsfenster';
+      case Phase.luteal:
+        return l10n?.cyclePhaseLuteal ?? 'Lutealphase';
+    }
   }
 
 }
