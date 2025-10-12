@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 const double _cardWidth = 380;
 const double _cardRadius = 24;
@@ -20,28 +21,7 @@ class CycleTipCard extends StatelessWidget {
 
   final Phase phase;
 
-  static const Map<Phase, _CycleTipCopy> _copyByPhase = <Phase, _CycleTipCopy>{
-    Phase.follicular: _CycleTipCopy(
-      headline: 'Follikelphase',
-      body:
-          'Du bist heute in der Follikelphase. Aufgrund des erhöhten Progesterons hast du mehr Energie. Beste Zeit für ein intensiveres Training.',
-    ),
-    Phase.ovulation: _CycleTipCopy(
-      headline: 'Ovulationsfenster',
-      body:
-          'Kurze, knackige Sessions funktionieren jetzt meist am besten. Plane danach bewusst Cool-down & Hydration ein.',
-    ),
-    Phase.luteal: _CycleTipCopy(
-      headline: 'Lutealphase',
-      body:
-          'Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten.',
-    ),
-    Phase.menstruation: _CycleTipCopy(
-      headline: 'Menstruation',
-      body:
-          'Sanfte Bewegung, Stretching oder ein Spaziergang sind heute ideale Begleiter - alles darf, nichts muss.',
-    ),
-  };
+  // Copy moved to l10n. Headline/body resolved via AppLocalizations per phase.
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +31,28 @@ class CycleTipCard extends StatelessWidget {
         surfaceTokens?.infoBackground ?? DsColors.infoBackground;
     final textColor = textTokens?.primary ?? DsColors.textPrimary;
 
-    final copy = _copyByPhase[phase] ?? _copyByPhase[Phase.follicular]!;
-    final semanticsLabel = 'Phasenhinweis ${copy.headline}. ${copy.body}';
+    final l10n = AppLocalizations.of(context)!;
+    late final String headline;
+    late final String body;
+    switch (phase) {
+      case Phase.menstruation:
+        headline = l10n.cycleTipHeadlineMenstruation;
+        body = l10n.cycleTipBodyMenstruation;
+        break;
+      case Phase.follicular:
+        headline = l10n.cycleTipHeadlineFollicular;
+        body = l10n.cycleTipBodyFollicular;
+        break;
+      case Phase.ovulation:
+        headline = l10n.cycleTipHeadlineOvulation;
+        body = l10n.cycleTipBodyOvulation;
+        break;
+      case Phase.luteal:
+        headline = l10n.cycleTipHeadlineLuteal;
+        body = l10n.cycleTipBodyLuteal;
+        break;
+    }
+    final semanticsLabel = '$headline. $body';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -89,7 +89,7 @@ class CycleTipCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                copy.headline,
+                                headline,
                                 style: TextStyle(
                                   fontFamily: FontFamilies.figtree,
                                   fontSize: TypographyTokens.size16,
@@ -101,7 +101,7 @@ class CycleTipCard extends StatelessWidget {
                               ),
                               const SizedBox(height: Spacing.xs),
                               Text(
-                                copy.body,
+                                body,
                                 style: TextStyle(
                                   fontFamily: FontFamilies.figtree,
                                   fontSize: TypographyTokens.size14,
@@ -127,9 +127,3 @@ class CycleTipCard extends StatelessWidget {
   }
 }
 
-class _CycleTipCopy {
-  const _CycleTipCopy({required this.headline, required this.body});
-
-  final String headline;
-  final String body;
-}

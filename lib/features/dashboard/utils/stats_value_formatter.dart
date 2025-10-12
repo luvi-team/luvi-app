@@ -3,6 +3,10 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
+final Map<String, NumberFormat> _decimalPatternCache = <String, NumberFormat>{};
+NumberFormat _cachedDecimalPattern(String locale) =>
+    _decimalPatternCache.putIfAbsent(locale, () => NumberFormat.decimalPattern(locale));
+
 /// Value and unit presentation used by [StatsScroller] to render statistics.
 @immutable
 class StatValueFormatResult {
@@ -37,7 +41,7 @@ StatValueFormatResult formatStatValue({
   final hasUnit = trimmedUnit != null && trimmedUnit.isNotEmpty;
   final hasNumericValue = value != null;
   final numberText = hasNumericValue
-      ? NumberFormat.decimalPattern(locale.toString()).format(value)
+      ? _cachedDecimalPattern(locale.toString()).format(value)
       : '--';
 
   return StatValueFormatResult(

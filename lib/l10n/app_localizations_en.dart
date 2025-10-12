@@ -249,4 +249,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingComplete => 'Onboarding complete';
+
+  @override
+  String get cycleTipHeadlineMenstruation => 'Menstruation';
+
+  @override
+  String get cycleTipBodyMenstruation => 'Gentle movement, stretching, or a walk are ideal today — everything is allowed, nothing is mandatory.';
+
+  @override
+  String get cycleTipHeadlineFollicular => 'Follicular phase';
+
+  @override
+  String get cycleTipBodyFollicular => 'You\'re in the follicular phase today. With higher progesterone you may feel more energy. A great time for more intensive training.';
+
+  @override
+  String get cycleTipHeadlineOvulation => 'Ovulation window';
+
+  @override
+  String get cycleTipBodyOvulation => 'Short, crisp sessions often work best now. Plan a conscious cool down and hydration afterwards.';
+
+  @override
+  String get cycleTipHeadlineLuteal => 'Luteal phase';
+
+  @override
+  String get cycleTipBodyLuteal => 'Switch to calm strength or mobility work. Extra breaks help you maintain your energy level.';
 }

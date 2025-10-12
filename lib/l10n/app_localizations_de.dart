@@ -249,4 +249,28 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboardingComplete => 'Onboarding abgeschlossen';
+
+  @override
+  String get cycleTipHeadlineMenstruation => 'Menstruation';
+
+  @override
+  String get cycleTipBodyMenstruation => 'Sanfte Bewegung, Stretching oder ein Spaziergang sind heute ideale Begleiter - alles darf, nichts muss.';
+
+  @override
+  String get cycleTipHeadlineFollicular => 'Follikelphase';
+
+  @override
+  String get cycleTipBodyFollicular => 'Du bist heute in der Follikelphase. Aufgrund des steigenden Östrogenspiegels hast du mehr Energie. Beste Zeit für ein intensiveres Training.';
+
+  @override
+  String get cycleTipHeadlineOvulation => 'Ovulationsfenster';
+
+  @override
+  String get cycleTipBodyOvulation => 'Kurze, knackige Sessions funktionieren jetzt meist am besten. Plane danach bewusst Cool-down & Hydration ein.';
+
+  @override
+  String get cycleTipHeadlineLuteal => 'Lutealphase';
+
+  @override
+  String get cycleTipBodyLuteal => 'Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten.';
 }

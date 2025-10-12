@@ -43,8 +43,18 @@ class BottomNavDock extends StatelessWidget {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     // Kodex: Use colorScheme.surface (not Colors.white) for dark-mode compatibility
     final effectiveBackgroundColor = backgroundColor ?? colorScheme.surface;
-    // Safe fallback if theme extension is not registered
-    assert(dsTokens != null, 'BottomNavDock: DsTokens not found in theme. Ensure app_theme is properly configured.');
+    // Safe fallback if theme extension is not registered (visible in release builds)
+    if (dsTokens == null) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: FlutterError(
+            'BottomNavDock: DsTokens not found in theme. Ensure app_theme is properly configured.',
+          ),
+          library: 'widgets',
+          context: ErrorDescription('building BottomNavDock'),
+        ),
+      );
+    }
     final effectiveCradleColor = cradleColor ?? dsTokens?.accentPurple ?? colorScheme.primary;
 
     return Container(

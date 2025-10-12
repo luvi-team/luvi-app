@@ -152,9 +152,9 @@ class _MehrButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 32,
+        height: 44,
         constraints: const BoxConstraints(minWidth: 67),
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.m, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.m, vertical: 10),
         decoration: BoxDecoration(
           color: colorScheme.primary,
           borderRadius: BorderRadius.circular(Sizes.radiusM),

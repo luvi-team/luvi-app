@@ -68,62 +68,71 @@ class CategoryChip extends StatelessWidget {
       color: textTokens?.primary ?? ColorTokens.sectionTitle,
     );
 
-    return SizedBox(
-      width: chipWidth,
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Icon container
-            // from DASHBOARD_spec.json $.categories.chips[0].container (60×60, radius 16, padding 10 baseline)
-            Align(
-              child: Container(
-                width: _iconContainerSize,
-                height: _iconContainerSize,
-                // Visual tuning: padding 16→14 to allow a 32 px glyph within 60 px container
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: SvgPicture.asset(
-                  iconPath,
-                  // 60 − 2×14 = 32 → exact inner space for the glyph
-                  width: 32,
-                  height: 32,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    debugPrint(
-                      'CategoryChip: failed to load SVG $iconPath. Error: $error',
-                    );
-                    return const SizedBox(
-                      width: 32,
-                      height: 32,
-                      child: Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          size: 20,
-                        ),
+    return Semantics(
+      button: true,
+      label: label,
+      child: ExcludeSemantics(
+        child: SizedBox(
+          width: chipWidth,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Icon container
+                  // from DASHBOARD_spec.json $.categories.chips[0].container (60×60, radius 16, padding 10 baseline)
+                  Align(
+                    child: Container(
+                      width: _iconContainerSize,
+                      height: _iconContainerSize,
+                      // Visual tuning: padding 16→14 to allow a 32 px glyph within 60 px container
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                    );
-                  },
-                ),
+                      child: SvgPicture.asset(
+                        iconPath,
+                        // 60 − 2×14 = 32 → exact inner space for the glyph
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          debugPrint(
+                            'CategoryChip: failed to load SVG $iconPath. Error: $error',
+                          );
+                          return const SizedBox(
+                            width: 32,
+                            height: 32,
+                            child: Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                size: 20,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8), // from DASHBOARD_spec.json $.spacingTokensObserved[4] (gap 8px)
+                  // Label
+                  // from DASHBOARD_spec.json $.categories.chips[0].labelTypography (Figtree 14/24)
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.visible,
+                    softWrap: false,
+                    style: labelStyle,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8), // from DASHBOARD_spec.json $.spacingTokensObserved[4] (gap 8px)
-            // Label
-            // from DASHBOARD_spec.json $.categories.chips[0].labelTypography (Figtree 14/24)
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.visible,
-              softWrap: false,
-              style: labelStyle,
-            ),
-          ],
+          ),
         ),
       ),
     );

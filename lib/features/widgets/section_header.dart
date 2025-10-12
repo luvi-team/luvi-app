@@ -60,16 +60,25 @@ class SectionHeader extends StatelessWidget {
             Semantics(
               button: true,
               label: resolvedTrailingLabel ?? '',
-              child: InkWell(
-                onTap: onTrailingTap,
-                borderRadius: BorderRadius.circular(6),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  child: Text(
-                    resolvedTrailingLabel ?? '',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: _baseTrailingStyle.copyWith(color: trailingColor),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onTrailingTap,
+                  borderRadius: BorderRadius.circular(6),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          resolvedTrailingLabel ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: _baseTrailingStyle.copyWith(color: trailingColor),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -556,6 +556,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Onboarding complete'**
   String get onboardingComplete;
+
+  /// Headline for the cycle tip card during menstruation.
+  String get cycleTipHeadlineMenstruation;
+
+  /// Body text for the cycle tip card during menstruation.
+  String get cycleTipBodyMenstruation;
+
+  /// Headline for the cycle tip card during the follicular phase.
+  String get cycleTipHeadlineFollicular;
+
+  /// Body text for the cycle tip card during the follicular phase.
+  String get cycleTipBodyFollicular;
+
+  /// Headline for the cycle tip card during the ovulation window.
+  String get cycleTipHeadlineOvulation;
+
+  /// Body text for the cycle tip card during the ovulation window.
+  String get cycleTipBodyOvulation;
+
+  /// Headline for the cycle tip card during the luteal phase.
+  String get cycleTipHeadlineLuteal;
+
+  /// Body text for the cycle tip card during the luteal phase.
+  String get cycleTipBodyLuteal;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
