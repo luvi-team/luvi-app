@@ -260,7 +260,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cycleTipHeadlineFollicular => 'Follikelphase';
 
   @override
-  String get cycleTipBodyFollicular => 'Du bist heute in der Follikelphase. Aufgrund des erhöhten Progesterons hast du mehr Energie. Beste Zeit für ein intensiveres Training.';
+  String get cycleTipBodyFollicular => 'Du bist heute in der Follikelphase. Aufgrund des steigenden Östrogenspiegels hast du mehr Energie. Beste Zeit für ein intensiveres Training.';
 
   @override
   String get cycleTipHeadlineOvulation => 'Ovulationsfenster';

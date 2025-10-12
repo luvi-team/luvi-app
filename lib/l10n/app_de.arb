@@ -347,7 +347,7 @@
 
   "cycleTipHeadlineFollicular": "Follikelphase",
   "@cycleTipHeadlineFollicular": {"description": "Headline for the cycle tip card during the follicular phase."},
-  "cycleTipBodyFollicular": "Du bist heute in der Follikelphase. Aufgrund des erhöhten Progesterons hast du mehr Energie. Beste Zeit für ein intensiveres Training.",
+  "cycleTipBodyFollicular": "Du bist heute in der Follikelphase. Aufgrund des steigenden Östrogenspiegels hast du mehr Energie. Beste Zeit für ein intensiveres Training.",
   "@cycleTipBodyFollicular": {"description": "Body text for the cycle tip card during the follicular phase."},
 
   "cycleTipHeadlineOvulation": "Ovulationsfenster",
