@@ -16,6 +16,7 @@ import 'package:luvi_app/features/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/widgets/section_header.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 import 'package:luvi_app/features/widgets/hero_sync_preview.dart';
+import 'package:luvi_app/features/screens/heute_layout_utils.dart';
 import 'package:luvi_app/features/cycle/domain/week_strip.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 import 'package:luvi_app/features/widgets/dashboard_calendar.dart';
@@ -63,6 +64,20 @@ class _HeuteScreenState extends State<HeuteScreen> {
     super.initState();
     _fixtureState = HeuteFixtures.defaultState();
     _selectedCategory = _fixtureState.selectedCategory;
+  }
+
+  bool _imagesPrecached = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_imagesPrecached) {
+      // Precache Hero background and top recommendation image to avoid first-frame jank.
+      precacheImage(AssetImage(Assets.images.heroSync01), context);
+      final topImage = _fixtureState.topRecommendation.imagePath;
+      precacheImage(AssetImage(topImage), context);
+      _imagesPrecached = true;
+    }
   }
 
   @override
@@ -306,12 +321,12 @@ class _HeuteScreenState extends State<HeuteScreen> {
         ];
         final measuredWidths = _measureChipWidths(labels, textDirection);
         final columnCount = math.min(categories.length, _categoriesColumns);
-        final resolvedWidths = _compressFirstRowWidths(
-          measuredWidths,
-          contentWidth,
-          columnCount,
-          _categoriesMinGap,
-          CategoryChip.minWidth,
+        final resolvedWidths = compressFirstRowWidths(
+          measured: measuredWidths,
+          contentWidth: contentWidth,
+          columnCount: columnCount,
+          minGap: _categoriesMinGap,
+          minWidth: CategoryChip.minWidth,
         );
         final gapCount = columnCount > 1 ? columnCount - 1 : 0;
         final totalWidth = resolvedWidths
@@ -343,33 +358,6 @@ class _HeuteScreenState extends State<HeuteScreen> {
     ];
   }
 
-  List<double> _compressFirstRowWidths(
-    List<double> measured,
-    double contentWidth,
-    int columnCount,
-    double minGap,
-    double minWidth,
-  ) {
-    final resolvedWidths = List<double>.from(measured);
-    final gapCount = columnCount > 1 ? columnCount - 1 : 0;
-    final minGapTotal = gapCount * minGap;
-    final availableForItems = math.max(0, contentWidth - minGapTotal);
-
-    if (columnCount > 0 && availableForItems > 0) {
-      final totalWidth = resolvedWidths
-          .take(columnCount)
-          .fold<double>(0, (sum, width) => sum + width);
-      if (totalWidth > availableForItems) {
-        final shrinkFactor = availableForItems / totalWidth;
-        for (var i = 0; i < columnCount; i++) {
-          final scaledWidth = resolvedWidths[i] * shrinkFactor;
-          resolvedWidths[i] = math.max(minWidth, scaledWidth);
-        }
-      }
-    }
-
-    return resolvedWidths;
-  }
 
   Widget _buildCategoryWrap(
     List<CategoryProps> categories,

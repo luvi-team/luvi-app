@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Floating circular sync button with yin-yang icon.
 /// Positioned above dock-bar center cutout.
@@ -43,39 +45,58 @@ class FloatingSyncButton extends StatelessWidget {
         ? colorScheme.primary // Gold #D9B18E when active
         : colorScheme.onSurface; // Black #030401 when inactive
 
+    final l10n = AppLocalizations.of(context);
     return Semantics(
-      label: 'Sync',
+      label: l10n?.dashboardNavSync ?? 'Sync',
       selected: isActive,
       button: true,
-      child: Material(
-        color: Colors.transparent,
-        shape: const CircleBorder(),
-        child: InkWell(
-          onTap: onTap,
-          customBorder: const CircleBorder(),
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              color: effectiveBackgroundColor,
-              shape: BoxShape.circle,
-              // Kodex: Ring stroke from tokens (ringStrokeWidth = 2.0px)
-              border: Border.all(
-                color: dsTokens.accentPurple,
-                width: ringStrokeWidth,
-              ),
-              // Shadow removed per visual feedback to avoid large grey disc under button
-              boxShadow: const [],
+      child: Shortcuts(
+        shortcuts: <ShortcutActivator, Intent>{
+          const SingleActivator(LogicalKeyboardKey.enter): const ActivateIntent(),
+          const SingleActivator(LogicalKeyboardKey.space): const ActivateIntent(),
+        },
+        child: Actions(
+          actions: <Type, Action<Intent>>{
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (intent) {
+                onTap();
+                return null;
+              },
             ),
-            child: Center(
-              child: SvgPicture.asset(
-                iconPath,
-                // If the SVG has padding (non-tight), compensate so the visible glyph fills 65%
-                width: iconTight ? iconSize : iconSizeCompensated,
-                height: iconTight ? iconSize : iconSizeCompensated,
-                colorFilter: ColorFilter.mode(
-                  iconColor,
-                  BlendMode.srcIn,
+          },
+          child: FocusableActionDetector(
+            child: Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                onTap: onTap,
+                customBorder: const CircleBorder(),
+                child: Container(
+                  width: size,
+                  height: size,
+                  decoration: BoxDecoration(
+                    color: effectiveBackgroundColor,
+                    shape: BoxShape.circle,
+                    // Kodex: Ring stroke from tokens (ringStrokeWidth = 2.0px)
+                    border: Border.all(
+                      color: dsTokens.accentPurple,
+                      width: ringStrokeWidth,
+                    ),
+                    // Shadow removed per visual feedback to avoid large grey disc under button
+                    boxShadow: const [],
+                  ),
+                  child: Center(
+                    child: SvgPicture.asset(
+                      iconPath,
+                      // If the SVG has padding (non-tight), compensate so the visible glyph fills 65%
+                      width: iconTight ? iconSize : iconSizeCompensated,
+                      height: iconTight ? iconSize : iconSizeCompensated,
+                      colorFilter: ColorFilter.mode(
+                        iconColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
