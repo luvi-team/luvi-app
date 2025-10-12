@@ -34,7 +34,7 @@ const double svgGlyphToViewBoxRatio = 26.0 / 32.0;
 const double iconSizeTight = iconFillRatioK * buttonDiameter; // e.g., 0.65 × 60 = 39px
 
 /// Compensated icon size for current SVG (with 3px padding on all sides)
-/// Formula: iconSizeTight / svgGlyphToViewBoxRatio = 39 / 0.8125 ≈ 48px
+/// Formula: iconSizeTight / svgGlyphToViewBoxRatio = 42 / 0.8125 ≈ 51.7px
 const double iconSizeCompensated = iconSizeTight / svgGlyphToViewBoxRatio;
 
 /// Center gap between left and right tab groups (formula: 2 × cutoutHalfWidth)

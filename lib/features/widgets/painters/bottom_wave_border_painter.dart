@@ -74,7 +74,9 @@ class BottomWaveBorderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant BottomWaveBorderPainter oldDelegate) {
-    return borderColor != oldDelegate.borderColor ||
-           borderWidth != oldDelegate.borderWidth;
+    // Repaint whenever any tokenized geometry may have changed (cutout width/depth,
+    // control point factors, top inset). Tokens are not part of the constructor, so
+    // we conservatively return true to avoid stale wave geometry.
+    return true;
   }
 }

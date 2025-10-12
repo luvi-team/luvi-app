@@ -1,46 +1,28 @@
 import 'package:flutter/material.dart';
 
-import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import 'cycle.dart';
 
 /// Enumerates the distinct phases within the menstrual cycle.
-enum Phase { menstruation, follicular, ovulation, luteal, unknown }
+enum Phase {
+  menstruation,
+  follicular,
+  ovulation,
+  luteal,
+}
 
 extension PhaseLabel on Phase {
   /// Localized label used across dashboard surfaces.
-  String label(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    if (l10n == null) {
-      return localizationKey;
-    }
+  String get label {
     switch (this) {
       case Phase.menstruation:
-        return l10n.cyclePhaseMenstruation;
+        return 'Menstruation';
       case Phase.follicular:
-        return l10n.cyclePhaseFollicular;
+        return 'Follikelphase';
       case Phase.ovulation:
-        return l10n.cyclePhaseOvulation;
+        return 'Ovulationsfenster';
       case Phase.luteal:
-        return l10n.cyclePhaseLuteal;
-      case Phase.unknown:
-        return 'Unknown phase';
-    }
-  }
-
-  /// Stable identifier for fixtures/tests when localization context is unavailable.
-  String get localizationKey {
-    switch (this) {
-      case Phase.menstruation:
-        return 'cyclePhaseMenstruation';
-      case Phase.follicular:
-        return 'cyclePhaseFollicular';
-      case Phase.ovulation:
-        return 'cyclePhaseOvulation';
-      case Phase.luteal:
-        return 'cyclePhaseLuteal';
-      case Phase.unknown:
-        return 'cyclePhaseUnknown';
+        return 'Lutealphase';
     }
   }
 }
@@ -57,8 +39,6 @@ extension PhaseColorTokens on Phase {
         return tokens.ovulation;
       case Phase.luteal:
         return tokens.luteal;
-      case Phase.unknown:
-        return tokens.follicularDark;
     }
   }
 }
@@ -73,14 +53,7 @@ const Map<String, Phase> _legacyLabelToPhase = <String, Phase>{
 /// Maps the existing CycleInfo legacy labels to the new [Phase] enum.
 Phase phaseFromLegacyLabel(String legacyLabel) {
   final key = legacyLabel.trim().toLowerCase();
-  final phase = _legacyLabelToPhase[key];
-  if (phase == null) {
-    debugPrint(
-      'Warning: phaseFromLegacyLabel received unknown legacy label "$legacyLabel" (normalized: "$key")',
-    );
-    return Phase.unknown;
-  }
-  return phase;
+  return _legacyLabelToPhase[key] ?? Phase.follicular;
 }
 
 extension CycleInfoPhaseAdapter on CycleInfo {
