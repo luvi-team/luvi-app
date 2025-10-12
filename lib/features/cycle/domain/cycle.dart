@@ -79,7 +79,7 @@ enum _Phase { menstruation, follicular, ovulation, luteal }
 /// - [cycleLength]: Total cycle length in days
 /// - [periodDuration]: Menstruation duration in days
 /// - [lutealLength]: Luteal phase length (default 13, evidence-based typical 12-14)
-/// - [ovulationWindowDays]: UI highlighting window around ovulation (±days, default 1)
+/// - [ovulationWindowDays]: UI highlighting window around ovulation (±days, default 2)
 ///
 /// Returns: Phase enum value (menstruation, follicular, ovulation, luteal)
 _Phase _phaseForDate({
@@ -88,7 +88,7 @@ _Phase _phaseForDate({
   required int cycleLength,
   required int periodDuration,
   int lutealLength = 13,
-  int ovulationWindowDays = 1,
+  int ovulationWindowDays = 2,
 }) {
   // Normalize to day-only comparison (ignore time)
   final start = DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day);

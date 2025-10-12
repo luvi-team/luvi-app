@@ -353,6 +353,48 @@ abstract class AppLocalizations {
   /// **'No recommendations available'**
   String get dashboardRecommendationsEmpty;
 
+  /// Semantics prefix describing the dashboard top recommendation tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Top recommendation'**
+  String get topRecommendation;
+
+  /// Label used when announcing the category in a semantics description.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// Phrase appended when a recommendation originates from LUVI Sync.
+  ///
+  /// In en, this message translates to:
+  /// **'From LUVI Sync'**
+  String get fromLuviSync;
+
+  /// Semantics hint instructing the user to tap to open the workout.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to open workout.'**
+  String get tapToOpenWorkout;
+
+  /// Semantics hint for the inline cycle calendar prompting navigation to the cycle overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to the cycle overview.'**
+  String get cycleInlineCalendarHint;
+
+  /// Semantics label for the inline cycle calendar when today's date and phase are available.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle calendar. Today {date} phase: {phase}. For orientation only - not a medical prediction or diagnostic tool.'**
+  String cycleInlineCalendarLabelToday(String date, String phase);
+
+  /// Semantics label for the inline cycle calendar when today's information is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle calendar. Switch to the cycle overview. For orientation only - not a medical prediction or diagnostic tool.'**
+  String get cycleInlineCalendarLabelDefault;
+
   /// Display name for the menstruation phase.
   ///
   /// In en, this message translates to:

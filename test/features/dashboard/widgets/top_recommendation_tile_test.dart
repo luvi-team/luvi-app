@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   group('TopRecommendationTile', () {
@@ -12,6 +13,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('de'),
           home: Scaffold(
             body: TopRecommendationTile(
               workoutId: 'test-workout',
@@ -44,6 +48,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('de'),
           home: Scaffold(
             body: TopRecommendationTile(
               workoutId: 'test-workout',
@@ -73,6 +80,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('de'),
           home: Scaffold(
             body: TopRecommendationTile(
               workoutId: 'test-workout',
@@ -124,6 +134,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('de'),
           home: Scaffold(
             body: TopRecommendationTile(
               workoutId: 'test-workout',

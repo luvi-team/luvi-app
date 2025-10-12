@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
@@ -112,7 +113,7 @@ void main() {
       expect(size.height, expectedDockHeight, reason: 'Dock height should match Figma spec (96px)');
     });
 
-    testWidgets('tab icons are 32×32px (Figma spec)', (tester) async {
+    testWidgets('tab icons render as 32×32px SvgPicture widgets', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
@@ -126,9 +127,16 @@ void main() {
         ),
       );
 
-      // Note: Icon size is passed to SvgPicture.asset(width: 32, height: 32)
-      // Visual check via inspector, not directly testable via finder
-      expect(find.byType(BottomNavDock), findsOneWidget);
+      final svgFinder = find.byType(SvgPicture);
+      expect(svgFinder, findsNWidgets(tabs.length));
+
+      final svgWidgets = tester.widgetList<SvgPicture>(svgFinder);
+      for (final svg in svgWidgets) {
+        expect(svg.width, tabIconSize,
+            reason: 'Each tab icon should match the Figma spec width (32px)');
+        expect(svg.height, tabIconSize,
+            reason: 'Each tab icon should match the Figma spec height (32px)');
+      }
     });
 
     testWidgets('center gap is 118px (2 × cutoutHalfWidth)', (tester) async {
@@ -217,6 +225,34 @@ void main() {
       // Icon size scales with button diameter to keep ~65% fill
       expect(expectedButtonIconSize / buttonDiameter, closeTo(0.65, 0.01),
           reason: 'Icon fill ratio should be ~0.65 (65%)');
+    });
+
+    testWidgets('renders without overflow on very narrow viewport (<240px)', (tester) async {
+      final view = tester.view;
+      addTearDown(() {
+        view.resetPhysicalSize();
+        view.resetDevicePixelRatio();
+      });
+
+      view.physicalSize = const Size(220, 800);
+      view.devicePixelRatio = 1.0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: Scaffold(
+            bottomNavigationBar: BottomNavDock(
+              activeIndex: 0,
+              onTabTap: (_) {},
+              tabs: tabs,
+            ),
+          ),
+        ),
+      );
+
+      // Should render without throwing overflow exceptions
+      await tester.pumpAndSettle();
+      expect(find.byType(BottomNavDock), findsOneWidget);
     });
   });
 }

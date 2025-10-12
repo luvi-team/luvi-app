@@ -146,6 +146,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardRecommendationsEmpty => 'Keine Empfehlungen verfügbar';
 
   @override
+  String get topRecommendation => 'Top-Empfehlung';
+
+  @override
+  String get category => 'Kategorie';
+
+  @override
+  String get fromLuviSync => 'Von LUVI Sync';
+
+  @override
+  String get tapToOpenWorkout => 'Tippe, um das Workout zu öffnen.';
+
+  @override
+  String get cycleInlineCalendarHint => 'Zur Zyklusübersicht wechseln.';
+
+  @override
+  String cycleInlineCalendarLabelToday(String date, String phase) {
+    return 'Zykluskalender. Heute $date Phase: $phase. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+  }
+
+  @override
+  String get cycleInlineCalendarLabelDefault =>
+      'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+
+  @override
   String get cyclePhaseMenstruation => 'Menstruation';
 
   @override

@@ -146,6 +146,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardRecommendationsEmpty => 'No recommendations available';
 
   @override
+  String get topRecommendation => 'Top recommendation';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get fromLuviSync => 'From LUVI Sync';
+
+  @override
+  String get tapToOpenWorkout => 'Tap to open workout.';
+
+  @override
+  String get cycleInlineCalendarHint => 'Switch to the cycle overview.';
+
+  @override
+  String cycleInlineCalendarLabelToday(String date, String phase) {
+    return 'Cycle calendar. Today $date phase: $phase. For orientation only - not a medical prediction or diagnostic tool.';
+  }
+
+  @override
+  String get cycleInlineCalendarLabelDefault =>
+      'Cycle calendar. Switch to the cycle overview. For orientation only - not a medical prediction or diagnostic tool.';
+
+  @override
   String get cyclePhaseMenstruation => 'Menstruation';
 
   @override

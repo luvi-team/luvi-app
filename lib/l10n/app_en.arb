@@ -195,6 +195,42 @@
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder text shown when there are no dashboard recommendations."
   },
+  "topRecommendation": "Top recommendation",
+  "@topRecommendation": {
+    "description": "Semantics prefix describing the dashboard top recommendation tile."
+  },
+  "category": "Category",
+  "@category": {
+    "description": "Label used when announcing the category in a semantics description."
+  },
+  "fromLuviSync": "From LUVI Sync",
+  "@fromLuviSync": {
+    "description": "Phrase appended to semantics when a recommendation originates from LUVI Sync."
+  },
+  "tapToOpenWorkout": "Tap to open workout.",
+  "@tapToOpenWorkout": {
+    "description": "Semantics hint telling the user they can tap to open the workout."
+  },
+  "cycleInlineCalendarHint": "Switch to the cycle overview.",
+  "@cycleInlineCalendarHint": {
+    "description": "Semantics hint for the inline cycle calendar prompting navigation to the cycle overview."
+  },
+  "cycleInlineCalendarLabelToday": "Cycle calendar. Today {date} phase: {phase}. For orientation only - not a medical prediction or diagnostic tool.",
+  "@cycleInlineCalendarLabelToday": {
+    "description": "Semantics label for the inline cycle calendar when today's date and cycle phase are available.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleInlineCalendarLabelDefault": "Cycle calendar. Switch to the cycle overview. For orientation only - not a medical prediction or diagnostic tool.",
+  "@cycleInlineCalendarLabelDefault": {
+    "description": "Semantics label for the inline cycle calendar when today's information is unavailable."
+  },
   "cyclePhaseMenstruation": "Menstruation",
   "@cyclePhaseMenstruation": {
     "description": "Display name for the menstruation phase."

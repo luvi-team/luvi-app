@@ -203,6 +203,14 @@
       "usage": "Recommendation card 3 - reference only, content-driven"
     }
   },
+  "referenceOnlyWorkflow": {
+    "summary": "Assets, die als 'reference only' markiert sind, dienen als visuelle Referenz und werden nicht eigenständig exportiert oder verändert.",
+    "guidelines": [
+      "Nicht exportieren, wenn identisches Global-Icon bereits vorhanden ist.",
+      "Bei Abweichungen: mit globalen Assets abgleichen und nur nach Freigabe aktualisieren.",
+      "In Tests nicht als render-blocking behandeln (nur bei realem Einsatz prüfen)."
+    ]
+  },
   "exportPriority": {
     "critical": [
       "yinYangBadge",
