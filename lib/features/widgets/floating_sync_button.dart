@@ -47,31 +47,36 @@ class FloatingSyncButton extends StatelessWidget {
       label: 'Sync',
       selected: isActive,
       button: true,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            color: effectiveBackgroundColor,
-            shape: BoxShape.circle,
-            // Kodex: Ring stroke from tokens (ringStrokeWidth = 2.0px)
-            border: Border.all(
-              color: dsTokens.accentPurple,
-              width: ringStrokeWidth,
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: effectiveBackgroundColor,
+              shape: BoxShape.circle,
+              // Kodex: Ring stroke from tokens (ringStrokeWidth = 2.0px)
+              border: Border.all(
+                color: dsTokens.accentPurple,
+                width: ringStrokeWidth,
+              ),
+              // Shadow removed per visual feedback to avoid large grey disc under button
+              boxShadow: const [],
             ),
-            // Shadow removed per visual feedback to avoid large grey disc under button
-            boxShadow: const [],
-          ),
-          child: Center(
-            child: SvgPicture.asset(
-              iconPath,
-              // If the SVG has padding (non-tight), compensate so the visible glyph fills 65%
-              width: iconTight ? iconSize : iconSizeCompensated,
-              height: iconTight ? iconSize : iconSizeCompensated,
-              colorFilter: ColorFilter.mode(
-                iconColor,
-                BlendMode.srcIn,
+            child: Center(
+              child: SvgPicture.asset(
+                iconPath,
+                // If the SVG has padding (non-tight), compensate so the visible glyph fills 65%
+                width: iconTight ? iconSize : iconSizeCompensated,
+                height: iconTight ? iconSize : iconSizeCompensated,
+                colorFilter: ColorFilter.mode(
+                  iconColor,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
           ),

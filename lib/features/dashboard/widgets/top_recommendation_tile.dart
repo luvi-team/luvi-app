@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../../core/design_tokens/assets.dart';
 import '../../../core/design_tokens/typography.dart';
@@ -126,15 +127,16 @@ class TopRecommendationTile extends StatelessWidget {
     );
   }
 
-  String _buildSemanticsLabel() {
-    final semanticsBuffer = StringBuffer()
-      ..write('Top-Empfehlung $title. ')
-      ..write('Kategorie $tag.');
-    if (fromLuviSync) {
-      semanticsBuffer.write(' Von LUVI Sync.');
+  String _buildSemanticsLabel(AppLocalizations l10n) {
+    final buffer = StringBuffer()
+      ..write('${l10n.topRecommendation} $title. ');
+    if (tag.isNotEmpty) {
+      buffer.write('${l10n.category} $tag.');
     }
-
-    return semanticsBuffer.toString();
+    if (fromLuviSync) {
+      buffer.write(' ${l10n.fromLuviSync}.');
+    }
+    return buffer.toString();
   }
 
   Widget _buildInkWell(
@@ -218,12 +220,13 @@ class TopRecommendationTile extends StatelessWidget {
           blurRadius: 4,
           offset: Offset(0, 4),
         );
+    final l10n = AppLocalizations.of(context)!;
 
     return Semantics(
       container: true,
       button: true,
-      label: _buildSemanticsLabel(),
-      hint: 'Tippe, um das Workout zu öffnen.',
+      label: _buildSemanticsLabel(l10n),
+      hint: l10n.tapToOpenWorkout,
       child: ExcludeSemantics(
         child: Material(
           color: Colors.transparent,

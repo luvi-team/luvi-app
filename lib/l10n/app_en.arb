@@ -338,5 +338,24 @@
   "onboardingComplete": "Onboarding complete",
   "@onboardingComplete": {
     "description": "Completion message shown on the onboarding done route."
-  }
+  },
+
+  "cycleTipHeadlineMenstruation": "Menstruation",
+  "@cycleTipHeadlineMenstruation": {"description": "Headline for the cycle tip card during menstruation."},
+  "cycleTipBodyMenstruation": "Gentle movement, stretching, or a walk are ideal today — everything is allowed, nothing is mandatory.",
+  "@cycleTipBodyMenstruation": {"description": "Body text for the cycle tip card during menstruation."},
+
+  "cycleTipHeadlineFollicular": "Follicular phase",
+  "@cycleTipHeadlineFollicular": {"description": "Headline for the cycle tip card during the follicular phase."},
+  "cycleTipBodyFollicular": "You're in the follicular phase today. With higher progesterone you may feel more energy. A great time for more intensive training.",
+  "@cycleTipBodyFollicular": {"description": "Body text for the cycle tip card during the follicular phase."},
+
+  "cycleTipHeadlineOvulation": "Ovulation window",
+  "@cycleTipHeadlineOvulation": {"description": "Headline for the cycle tip card during the ovulation window."},
+  "cycleTipBodyOvulation": "Short, crisp sessions often work best now. Plan a conscious cool down and hydration afterwards.",
+  "@cycleTipBodyOvulation": {"description": "Body text for the cycle tip card during the ovulation window."},
+
+  "cycleTipHeadlineLuteal": "Luteal phase",
+  "@cycleTipHeadlineLuteal": {"description": "Headline for the cycle tip card during the luteal phase."},
+  "cycleTipBodyLuteal": "Switch to calm strength or mobility work. Extra breaks help you maintain your energy level."
 }

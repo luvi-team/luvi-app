@@ -338,5 +338,24 @@
   "onboardingComplete": "Onboarding abgeschlossen",
   "@onboardingComplete": {
     "description": "Completion message shown on the onboarding done route."
-  }
+  },
+
+  "cycleTipHeadlineMenstruation": "Menstruation",
+  "@cycleTipHeadlineMenstruation": {"description": "Headline for the cycle tip card during menstruation."},
+  "cycleTipBodyMenstruation": "Sanfte Bewegung, Stretching oder ein Spaziergang sind heute ideale Begleiter - alles darf, nichts muss.",
+  "@cycleTipBodyMenstruation": {"description": "Body text for the cycle tip card during menstruation."},
+
+  "cycleTipHeadlineFollicular": "Follikelphase",
+  "@cycleTipHeadlineFollicular": {"description": "Headline for the cycle tip card during the follicular phase."},
+  "cycleTipBodyFollicular": "Du bist heute in der Follikelphase. Aufgrund des erhöhten Progesterons hast du mehr Energie. Beste Zeit für ein intensiveres Training.",
+  "@cycleTipBodyFollicular": {"description": "Body text for the cycle tip card during the follicular phase."},
+
+  "cycleTipHeadlineOvulation": "Ovulationsfenster",
+  "@cycleTipHeadlineOvulation": {"description": "Headline for the cycle tip card during the ovulation window."},
+  "cycleTipBodyOvulation": "Kurze, knackige Sessions funktionieren jetzt meist am besten. Plane danach bewusst Cool-down & Hydration ein.",
+  "@cycleTipBodyOvulation": {"description": "Body text for the cycle tip card during the ovulation window."},
+
+  "cycleTipHeadlineLuteal": "Lutealphase",
+  "@cycleTipHeadlineLuteal": {"description": "Headline for the cycle tip card during the luteal phase."},
+  "cycleTipBodyLuteal": "Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten."
 }
