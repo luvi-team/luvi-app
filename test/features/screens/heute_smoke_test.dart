@@ -222,9 +222,19 @@ void main() {
 
       // Compute expected phase label from the same fixture state and localization
       final fixtureState = HeuteFixtures.defaultState();
-      final expectedPhaseLabel = fixtureState.cycleInfo
-          .phaseFor(fixtureState.referenceDate)
-          .label(heuteContext);
+      final phase = fixtureState.cycleInfo.phaseFor(fixtureState.referenceDate);
+      final expectedPhaseLabel = () {
+        switch (phase) {
+          case Phase.menstruation:
+            return l10n.cyclePhaseMenstruation;
+          case Phase.follicular:
+            return l10n.cyclePhaseFollicular;
+          case Phase.ovulation:
+            return l10n.cyclePhaseOvulation;
+          case Phase.luteal:
+            return l10n.cyclePhaseLuteal;
+        }
+      }();
 
       expect(
         find.descendant(
