@@ -226,5 +226,33 @@ void main() {
       expect(expectedButtonIconSize / buttonDiameter, closeTo(0.65, 0.01),
           reason: 'Icon fill ratio should be ~0.65 (65%)');
     });
+
+    testWidgets('renders without overflow on very narrow viewport (<240px)', (tester) async {
+      final view = tester.view;
+      addTearDown(() {
+        view.resetPhysicalSize();
+        view.resetDevicePixelRatio();
+      });
+
+      view.physicalSize = const Size(220, 800);
+      view.devicePixelRatio = 1.0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: Scaffold(
+            bottomNavigationBar: BottomNavDock(
+              activeIndex: 0,
+              onTabTap: (_) {},
+              tabs: tabs,
+            ),
+          ),
+        ),
+      );
+
+      // Should render without throwing overflow exceptions
+      await tester.pumpAndSettle();
+      expect(find.byType(BottomNavDock), findsOneWidget);
+    });
   });
 }

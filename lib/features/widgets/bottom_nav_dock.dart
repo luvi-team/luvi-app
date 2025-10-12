@@ -39,11 +39,13 @@ class BottomNavDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dsTokens = Theme.of(context).extension<DsTokens>()!;
+    final dsTokens = Theme.of(context).extension<DsTokens>();
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     // Kodex: Use colorScheme.surface (not Colors.white) for dark-mode compatibility
     final effectiveBackgroundColor = backgroundColor ?? colorScheme.surface;
-    final effectiveCradleColor = cradleColor ?? dsTokens.accentPurple;
+    // Safe fallback if theme extension is not registered
+    assert(dsTokens != null, 'BottomNavDock: DsTokens not found in theme. Ensure app_theme is properly configured.');
+    final effectiveCradleColor = cradleColor ?? dsTokens?.accentPurple ?? colorScheme.primary;
 
     return Container(
       height: height,
@@ -75,9 +77,9 @@ class BottomNavDock extends StatelessWidget {
                   // Remainder for the center gap; allow it to shrink below the wave
                   // cutout width to avoid overflow on narrow viewports.
                   final double computedCenter = available - leftGroupW - rightGroupW;
-                  final double effectiveCenterGap = math.max(8.0, computedCenter);
+                  final double effectiveCenterGap = math.max(0.0, computedCenter);
 
-                  return Row(
+                  final row = Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Left group: Home, inner gap, Flower (Home stays anchored)
@@ -104,6 +106,15 @@ class BottomNavDock extends StatelessWidget {
                       ),
                     ],
                   );
+
+                  if (computedCenter < 0.0) {
+                    return FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: row,
+                    );
+                  }
+                  return row;
                 },
               ),
             ),

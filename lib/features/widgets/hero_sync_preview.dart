@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Luvi‑Sync Preview hero section: background image, top‑right badge, bottom
 /// info card with title/teaser and CTA "Mehr".
@@ -20,7 +26,13 @@ class HeroSyncPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double containerRadius = 24.0;
+    final radiusTokens = Theme.of(context).extension<CalendarRadiusTokens>();
+    final surfaceTokens = Theme.of(context).extension<SurfaceColorTokens>();
+    final shadowTokens = Theme.of(context).extension<ShadowTokens>();
+    final dsTokens = Theme.of(context).extension<DsTokens>();
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final double containerRadius = radiusTokens?.cardLarge ?? 24.0;
     const double containerWidth = double.infinity; // fill parent
     const double containerHeight = 249.0; // from spec
 
@@ -40,7 +52,7 @@ class HeroSyncPreview extends StatelessWidget {
             // Top‑right Yin‑Yang badge (32×32, offsets: top 14, right 16)
             Positioned(
               top: 14,
-              right: 16,
+              right: Spacing.m,
               child: _Badge(assetPath: badgeAssetPath, size: 32),
             ),
             // Bottom info card (white, r=24, border 1px #696969)
@@ -49,18 +61,18 @@ class HeroSyncPreview extends StatelessWidget {
               child: Container(
                 height: 112,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFFFFF),
+                  color: surfaceTokens?.white ?? const Color(0xFFFFFFFF),
                   borderRadius: BorderRadius.circular(containerRadius),
-                  border: Border.all(color: const Color(0xFF696969), width: 1),
-                  boxShadow: const [
-                    BoxShadow(
+                  border: Border.all(color: dsTokens?.grayscale500 ?? const Color(0xFF696969), width: 1),
+                  boxShadow: [
+                    shadowTokens?.heroDrop ?? const BoxShadow(
                       color: Color(0x1F000000), // 12% black
                       blurRadius: 12,
                       offset: Offset(0, 4),
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.m, vertical: 14),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -74,12 +86,12 @@ class HeroSyncPreview extends StatelessWidget {
                             dateText,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: FontFamilies.figtree,
-                              fontSize: 16,
-                              height: 24 / 16,
+                              fontSize: TypographyTokens.size16,
+                              height: TypographyTokens.lineHeightRatio24on16,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF030401),
+                              color: colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -87,12 +99,12 @@ class HeroSyncPreview extends StatelessWidget {
                             subtitle,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: FontFamilies.figtree,
-                              fontSize: 14,
-                              height: 24 / 14,
+                              fontSize: TypographyTokens.size14,
+                              height: TypographyTokens.lineHeightRatio24on14,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFF030401),
+                              color: colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -101,7 +113,7 @@ class HeroSyncPreview extends StatelessWidget {
                     const SizedBox(width: 12),
                     // CTA "Mehr" (67×32, r=12, BG gold #D9B18E, label bold 16, color #1C1411)
                     _MehrButton(onTap: () {
-                      // TODO(route): navigate to Luvi‑Sync/Journal
+                      context.go(LuviSyncJournalStubScreen.route);
                     }),
                   ],
                 ),
@@ -135,25 +147,27 @@ class _MehrButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 32,
         constraints: const BoxConstraints(minWidth: 67),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.m, vertical: 4),
         decoration: BoxDecoration(
-          color: const Color(0xFFD9B18E),
-          borderRadius: BorderRadius.circular(12),
+          color: colorScheme.primary,
+          borderRadius: BorderRadius.circular(Sizes.radiusM),
         ),
         alignment: Alignment.center,
-        child: const Text(
-          'Mehr',
+        child: Text(
+          l10n?.dashboardHeroCtaMore ?? 'Mehr',
           style: TextStyle(
             fontFamily: FontFamilies.figtree,
-            fontSize: 16,
-            height: 24 / 16,
+            fontSize: TypographyTokens.size16,
+            height: TypographyTokens.lineHeightRatio24on16,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1C1411),
+            color: colorScheme.onPrimary,
           ),
         ),
       ),
