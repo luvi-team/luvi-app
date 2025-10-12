@@ -227,6 +227,156 @@ abstract class AppLocalizations {
   /// **'Continue'**
   String get commonContinue;
 
+  /// Greeting shown in the dashboard header.
+  ///
+  /// In en, this message translates to:
+  /// **'Hey, {name} 💜'**
+  String dashboardGreeting(String name);
+
+  /// Section header title for the dashboard categories grid.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get dashboardCategoriesTitle;
+
+  /// Section header title for the dashboard top recommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Top Recommendation'**
+  String get dashboardTopRecommendationTitle;
+
+  /// Section header title for the additional trainings list.
+  ///
+  /// In en, this message translates to:
+  /// **'More Trainings'**
+  String get dashboardMoreTrainingsTitle;
+
+  /// Section header title for the dashboard training stats scroller.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Training Data'**
+  String get dashboardTrainingDataTitle;
+
+  /// Label for the Today tab in the bottom navigation dock.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get dashboardNavToday;
+
+  /// Label for the Cycle tab in the bottom navigation dock.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get dashboardNavCycle;
+
+  /// Label for the Heart Rate tab in the bottom navigation dock.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart rate'**
+  String get dashboardNavPulse;
+
+  /// Label for the Profile tab in the bottom navigation dock.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get dashboardNavProfile;
+
+  /// Label for the floating Luvi Sync button on the dashboard bottom dock.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get dashboardNavSync;
+
+  /// Label for the Training category chip on the dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Training'**
+  String get dashboardCategoryTraining;
+
+  /// Label for the Nutrition category chip on the dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition'**
+  String get dashboardCategoryNutrition;
+
+  /// Label for the Recovery category chip on the dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery'**
+  String get dashboardCategoryRegeneration;
+
+  /// Label for the Mindfulness category chip on the dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Mindfulness'**
+  String get dashboardCategoryMindfulness;
+
+  /// "View all" trailing action label in dashboard section headers.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get dashboardViewAll;
+
+  /// App bar title for the Luvi Sync Journal stub screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Luvi Sync Journal'**
+  String get dashboardLuviSyncTitle;
+
+  /// Placeholder copy for the Luvi Sync Journal stub screen body.
+  ///
+  /// In en, this message translates to:
+  /// **'Luvi Sync Journal content coming soon.'**
+  String get dashboardLuviSyncPlaceholder;
+
+  /// App bar title for the workout detail stub screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout'**
+  String get workoutTitle;
+
+  /// Fallback message shown when no wearable is connected to sync stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your wearable to display your training data.'**
+  String get dashboardWearableConnectMessage;
+
+  /// CTA label on dashboard hero card to see more content.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get dashboardHeroCtaMore;
+
+  /// Placeholder text shown when there are no dashboard recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'No recommendations available'**
+  String get dashboardRecommendationsEmpty;
+
+  /// Display name for the menstruation phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Menstruation'**
+  String get cyclePhaseMenstruation;
+
+  /// Display name for the follicular phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Follicular phase'**
+  String get cyclePhaseFollicular;
+
+  /// Display name for the ovulation window.
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation window'**
+  String get cyclePhaseOvulation;
+
+  /// Display name for the luteal phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Luteal phase'**
+  String get cyclePhaseLuteal;
+
   /// Cycle length option describing short cycles.
   ///
   /// In en, this message translates to:

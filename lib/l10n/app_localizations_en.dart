@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -77,6 +79,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonContinue => 'Continue';
+
+  @override
+  String dashboardGreeting(String name) {
+    return 'Hey, $name 💜';
+  }
+
+  @override
+  String get dashboardCategoriesTitle => 'Categories';
+
+  @override
+  String get dashboardTopRecommendationTitle => 'Your Top Recommendation';
+
+  @override
+  String get dashboardMoreTrainingsTitle => 'More Trainings';
+
+  @override
+  String get dashboardTrainingDataTitle => 'Your Training Data';
+
+  @override
+  String get dashboardNavToday => 'Today';
+
+  @override
+  String get dashboardNavCycle => 'Cycle';
+
+  @override
+  String get dashboardNavPulse => 'Heart rate';
+
+  @override
+  String get dashboardNavProfile => 'Profile';
+
+  @override
+  String get dashboardNavSync => 'Sync';
+
+  @override
+  String get dashboardCategoryTraining => 'Training';
+
+  @override
+  String get dashboardCategoryNutrition => 'Nutrition';
+
+  @override
+  String get dashboardCategoryRegeneration => 'Recovery';
+
+  @override
+  String get dashboardCategoryMindfulness => 'Mindfulness';
+
+  @override
+  String get dashboardViewAll => 'View all';
+
+  @override
+  String get dashboardLuviSyncTitle => 'Luvi Sync Journal';
+
+  @override
+  String get dashboardLuviSyncPlaceholder => 'Luvi Sync Journal content coming soon.';
+
+  @override
+  String get workoutTitle => 'Workout';
+
+  @override
+  String get dashboardWearableConnectMessage => 'Connect your wearable to display your training data.';
+
+  @override
+  String get dashboardHeroCtaMore => 'More';
+
+  @override
+  String get dashboardRecommendationsEmpty => 'No recommendations available';
+
+  @override
+  String get cyclePhaseMenstruation => 'Menstruation';
+
+  @override
+  String get cyclePhaseFollicular => 'Follicular phase';
+
+  @override
+  String get cyclePhaseOvulation => 'Ovulation window';
+
+  @override
+  String get cyclePhaseLuteal => 'Luteal phase';
 
   @override
   String get cycleLengthShort => 'Short (every 21-23 days)';

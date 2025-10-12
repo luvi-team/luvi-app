@@ -4,10 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:luvi_app/core/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -40,12 +42,15 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );
 
-    expect(find.text('Willkommen zurück 💜'), findsOneWidget);
-    expect(find.text('Anmelden'), findsOneWidget);
+    expect(find.text(AuthStrings.loginHeadline), findsOneWidget);
+    expect(find.text(AuthStrings.loginCta), findsOneWidget);
   });
 
   testWidgets('CTA enabled before submit; disables on field errors', (tester) async {
@@ -65,11 +70,14 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );
 
-    final button = find.widgetWithText(ElevatedButton, 'Anmelden');
+    final button = find.widgetWithText(ElevatedButton, AuthStrings.loginCta);
 
     // Always enabled
     expect(tester.widget<ElevatedButton>(button).onPressed, isNotNull);
@@ -77,8 +85,8 @@ void main() {
     await tester.tap(button);
     await tester.pump();
 
-    expect(find.text('Ups, bitte E-Mail überprüfen'), findsOneWidget);
-    expect(find.text('Ups, bitte Passwort überprüfen'), findsOneWidget);
+    expect(find.text(AuthStrings.errEmailInvalid), findsOneWidget);
+    expect(find.text(AuthStrings.errPasswordInvalid), findsOneWidget);
     expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
   });
 }

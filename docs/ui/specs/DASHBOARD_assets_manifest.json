@@ -1,0 +1,229 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "generatedAt": "2025-10-07",
+    "figmaNodeId": "68539:7951"
+  },
+  "icons": {
+    "yinYangBadge": {
+      "figmaNodeId": "68563:7934",
+      "figmaLayerName": "Group",
+      "exportFormat": "svg",
+      "exportOptions": {
+        "tight": true,
+        "scalingMode": "noScaleStrokes",
+        "viewBoxTight": true
+      },
+      "targetPath": "assets/icons/dashboard/yin-yang-badge.svg",
+      "dimensions": {
+        "diameter": 32.0,
+        "glyphBounds": {
+          "w": 28.8,
+          "h": 28.8
+        },
+        "viewBox": "0 0 32 32"
+      },
+      "usage": "Hero sync badge (top-right), Recommendation card 1 badge (bottom-left)"
+    },
+    "categoryTraining": {
+      "figmaNodeId": "68540:9436",
+      "figmaLayerName": "Layer 2",
+      "exportFormat": "svg",
+      "exportOptions": {
+        "tight": true,
+        "scalingMode": "noScaleStrokes",
+        "viewBoxTight": true
+      },
+      "targetPath": "assets/icons/dashboard/category-training.svg",
+      "dimensions": {
+        "targetSize": 24.0,
+        "glyphBounds": {
+          "w": 40.0,
+          "h": 24.0
+        }
+      },
+      "usage": "Category chip 'Training'"
+    },
+    "categoryNutrition": {
+      "figmaNodeId": "68540:9446",
+      "figmaLayerName": "Vector",
+      "exportFormat": "svg",
+      "exportOptions": {
+        "tight": true,
+        "scalingMode": "noScaleStrokes",
+        "viewBoxTight": true
+      },
+      "targetPath": "assets/icons/dashboard/category-nutrition.svg",
+      "dimensions": {
+        "targetSize": 24.0,
+        "glyphBounds": {
+          "w": 40.0,
+          "h": 40.0
+        }
+      },
+      "usage": "Category chip 'Ernährung'"
+    },
+    "categoryRegeneration": {
+      "figmaNodeId": "68553:7466",
+      "figmaLayerName": "image",
+      "exportFormat": "svg",
+      "exportOptions": {
+        "tight": true,
+        "scalingMode": "noScaleStrokes",
+        "viewBoxTight": true
+      },
+      "targetPath": "assets/icons/dashboard/category-regeneration.svg",
+      "dimensions": {
+        "targetSize": 24.0,
+        "glyphBounds": {
+          "w": 52.0,
+          "h": 56.0
+        }
+      },
+      "usage": "Category chip 'Regeneration'"
+    },
+    "categoryMindfulness": {
+      "figmaNodeId": "68546:10321",
+      "figmaLayerName": "image",
+      "exportFormat": "svg",
+      "exportOptions": {
+        "tight": true,
+        "scalingMode": "noScaleStrokes",
+        "viewBoxTight": true
+      },
+      "targetPath": "assets/icons/dashboard/category-mindfulness.svg",
+      "dimensions": {
+        "targetSize": 24.0,
+        "glyphBounds": {
+          "w": 52.0,
+          "h": 56.0
+        }
+      },
+      "usage": "Category chip 'Achtsamkeit'"
+    },
+    "notificationBell": {
+      "figmaNodeId": "68539:7987",
+      "figmaLayerName": "ic / Notification",
+      "exportFormat": "svg",
+      "exportOptions": {
+        "tight": true,
+        "scalingMode": "noScaleStrokes",
+        "viewBoxTight": true
+      },
+      "targetPath": "assets/icons/dashboard/notification-bell.svg",
+      "dimensions": {
+        "targetSize": 24.0
+      },
+      "usage": "Header notification icon",
+      "note": "Reference only - may already exist in global icons"
+    },
+    "navHome": {
+      "figmaNodeId": "68539:8040",
+      "figmaLayerName": "ic / Home",
+      "exportFormat": "svg",
+      "targetPath": "assets/icons/nav/home.svg",
+      "usage": "Bottom navigation - reference only, do not modify"
+    },
+    "navCycle": {
+      "figmaNodeId": "68539:8036",
+      "figmaLayerName": "yin-yang-duotone",
+      "exportFormat": "svg",
+      "targetPath": "assets/icons/nav/cycle.svg",
+      "usage": "Bottom navigation - reference only, do not modify"
+    },
+    "navCalendar": {
+      "figmaNodeId": "68540:8104",
+      "figmaLayerName": "flower-tulip-thin",
+      "exportFormat": "svg",
+      "targetPath": "assets/icons/nav/calendar.svg",
+      "usage": "Bottom navigation - reference only, do not modify"
+    },
+    "navStats": {
+      "figmaNodeId": "68540:8106",
+      "figmaLayerName": "chart-bar-thin",
+      "exportFormat": "svg",
+      "targetPath": "assets/icons/nav/stats.svg",
+      "usage": "Bottom navigation - reference only, do not modify"
+    },
+    "navAccount": {
+      "figmaNodeId": "68539:8095",
+      "figmaLayerName": "ic / Account",
+      "exportFormat": "svg",
+      "targetPath": "assets/icons/nav/account.svg",
+      "usage": "Bottom navigation - reference only, do not modify"
+    }
+  },
+  "images": {
+    "heroBackground": {
+      "figmaNodeId": "68539:7988",
+      "figmaLayerName": "Workout Frame",
+      "exportFormat": "png",
+      "exportOptions": {
+        "scales": [2, 3],
+        "minWidth": 428.0
+      },
+      "targetPath": "assets/images/dashboard/hero-background@{scale}x.png",
+      "dimensions": {
+        "w": 385.0,
+        "h": 249.0
+      },
+      "usage": "Hero container background image"
+    },
+    "recoCard1": {
+      "figmaNodeId": "68563:7906",
+      "figmaLayerName": "Image Placeholder",
+      "exportFormat": "png",
+      "targetPath": "assets/images/dashboard/reco-card-1.png",
+      "dimensions": {
+        "w": 155.0,
+        "h": 180.0
+      },
+      "usage": "Recommendation card 1 - reference only, content-driven"
+    },
+    "recoCard2": {
+      "figmaNodeId": "68563:7911",
+      "figmaLayerName": "Image Placeholder",
+      "exportFormat": "png",
+      "targetPath": "assets/images/dashboard/reco-card-2.png",
+      "dimensions": {
+        "w": 155.0,
+        "h": 180.0
+      },
+      "usage": "Recommendation card 2 - reference only, content-driven"
+    },
+    "recoCard3": {
+      "figmaNodeId": "68563:7916",
+      "figmaLayerName": "Image Placeholder",
+      "exportFormat": "png",
+      "targetPath": "assets/images/dashboard/reco-card-3.png",
+      "dimensions": {
+        "w": 155.0,
+        "h": 180.0
+      },
+      "usage": "Recommendation card 3 - reference only, content-driven"
+    }
+  },
+  "exportPriority": {
+    "critical": [
+      "yinYangBadge",
+      "categoryTraining",
+      "categoryNutrition",
+      "categoryRegeneration",
+      "categoryMindfulness"
+    ],
+    "recommended": [
+      "heroBackground"
+    ],
+    "reference": [
+      "notificationBell",
+      "navHome",
+      "navCycle",
+      "navCalendar",
+      "navStats",
+      "navAccount",
+      "recoCard1",
+      "recoCard2",
+      "recoCard3"
+    ]
+  }
+}

@@ -106,6 +106,111 @@
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
   },
+  "dashboardGreeting": "Hey, {name} 💜",
+  "@dashboardGreeting": {
+    "description": "Dashboard header greeting with the user's preferred name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardCategoriesTitle": "Kategorien",
+  "@dashboardCategoriesTitle": {
+    "description": "Section header title for the dashboard categories grid."
+  },
+  "dashboardTopRecommendationTitle": "Deine Top-Empfehlung",
+  "@dashboardTopRecommendationTitle": {
+    "description": "Section header title for the dashboard top recommendation card."
+  },
+  "dashboardMoreTrainingsTitle": "Weitere Trainings",
+  "@dashboardMoreTrainingsTitle": {
+    "description": "Section header title for the additional trainings list."
+  },
+  "dashboardTrainingDataTitle": "Deine Trainingsdaten",
+  "@dashboardTrainingDataTitle": {
+    "description": "Section header title for the dashboard training stats scroller."
+  },
+  "dashboardNavToday": "Heute",
+  "@dashboardNavToday": {
+    "description": "Label for the Today tab in the bottom navigation dock."
+  },
+  "dashboardNavCycle": "Zyklus",
+  "@dashboardNavCycle": {
+    "description": "Label for the Cycle tab in the bottom navigation dock."
+  },
+  "dashboardNavPulse": "Puls",
+  "@dashboardNavPulse": {
+    "description": "Label for the Pulse tab in the bottom navigation dock."
+  },
+  "dashboardNavProfile": "Profil",
+  "@dashboardNavProfile": {
+    "description": "Label for the Profile tab in the bottom navigation dock."
+  },
+  "dashboardNavSync": "Sync",
+  "@dashboardNavSync": {
+    "description": "Label for the floating Luvi Sync button on the dashboard bottom dock."
+  },
+  "dashboardCategoryTraining": "Training",
+  "@dashboardCategoryTraining": {
+    "description": "Label for the Training category chip on the dashboard."
+  },
+  "dashboardCategoryNutrition": "Ernährung",
+  "@dashboardCategoryNutrition": {
+    "description": "Label for the Nutrition category chip on the dashboard."
+  },
+  "dashboardCategoryRegeneration": "Regeneration",
+  "@dashboardCategoryRegeneration": {
+    "description": "Label for the Regeneration category chip on the dashboard."
+  },
+  "dashboardCategoryMindfulness": "Achtsamkeit",
+  "@dashboardCategoryMindfulness": {
+    "description": "Label for the Mindfulness category chip on the dashboard."
+  },
+  "dashboardViewAll": "Alle",
+  "@dashboardViewAll": {
+    "description": "View all trailing action label in dashboard section headers."
+  },
+  "dashboardLuviSyncTitle": "Luvi Sync Journal",
+  "@dashboardLuviSyncTitle": {
+    "description": "App bar title for the Luvi Sync Journal stub screen."
+  },
+  "dashboardLuviSyncPlaceholder": "Luvi Sync Journal Inhalte folgen bald.",
+  "@dashboardLuviSyncPlaceholder": {
+    "description": "Placeholder text for the Luvi Sync Journal stub screen."
+  },
+  "workoutTitle": "Workout",
+  "@workoutTitle": {
+    "description": "App-Bar-Titel für den Workout-Detail-Stub."
+  },
+  "dashboardWearableConnectMessage": "Verbinde dein Wearable, um deine Trainingsdaten anzeigen zu lassen.",
+  "@dashboardWearableConnectMessage": {
+    "description": "Fallback-Nachricht, wenn kein Wearable verbunden ist."
+  },
+  "dashboardHeroCtaMore": "Mehr",
+  "@dashboardHeroCtaMore": {
+    "description": "CTA-Label auf der Dashboard-Hero-Karte, um weitere Inhalte zu sehen."
+  },
+  "dashboardRecommendationsEmpty": "Keine Empfehlungen verfügbar",
+  "@dashboardRecommendationsEmpty": {
+    "description": "Placeholder text when no recommendations are available on the dashboard."
+  },
+  "cyclePhaseMenstruation": "Menstruation",
+  "@cyclePhaseMenstruation": {
+    "description": "Display name for the menstruation phase."
+  },
+  "cyclePhaseFollicular": "Follikelphase",
+  "@cyclePhaseFollicular": {
+    "description": "Display name for the follicular phase."
+  },
+  "cyclePhaseOvulation": "Ovulationsfenster",
+  "@cyclePhaseOvulation": {
+    "description": "Display name for the ovulation window."
+  },
+  "cyclePhaseLuteal": "Lutealphase",
+  "@cyclePhaseLuteal": {
+    "description": "Display name for the luteal phase."
+  },
   "cycleLengthShort": "Kurz (alle 21-23 Tage)",
   "cycleLengthLonger": "Etwas länger (alle 24-26 Tage)",
   "cycleLengthStandard": "Standard (alle 27-30 Tage)",

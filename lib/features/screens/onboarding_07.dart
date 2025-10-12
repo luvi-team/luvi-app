@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
@@ -29,9 +30,8 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   void _handleContinue() {
-    // Last onboarding step - navigate to completion/dashboard
-    // TODO: Replace with actual dashboard/completion route when available
-    context.push('/onboarding/done');
+    // Last onboarding step - navigate to heute screen
+    context.go(HeuteScreen.routeName);
   }
 
   @override

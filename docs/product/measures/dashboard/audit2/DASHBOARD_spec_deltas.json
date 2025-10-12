@@ -1,0 +1,371 @@
+{
+  "meta": {
+    "baseSpec": "DASHBOARD_spec.json",
+    "extractionDate": "2025-10-04",
+    "extractionMethod": "Figma MCP API (audit2)",
+    "purpose": "补充/修正 baseSpec 中缺失或不准确的数据",
+    "notation": "JSONPath-like paths to target spec locations; 'ADD' = new key, 'UPDATE' = replace value, 'DELETE' = remove key"
+  },
+  "deltas": [
+    {
+      "path": "$.header.autoLayout.alignment",
+      "operation": "UPDATE",
+      "oldValue": null,
+      "newValue": {
+        "justify": "space-between",
+        "cross": "center"
+      },
+      "source": "DASHBOARD_autolayout_alignment.json",
+      "notes": "Inferred from child positions; Header Text Block at x=0, Icon Section at x=297"
+    },
+    {
+      "path": "$.header.actions[0].container.radius",
+      "operation": "UPDATE",
+      "oldValue": {
+        "all": 26.667,
+        "cornerSmoothing": null,
+        "independent": null
+      },
+      "newValue": {
+        "all": null,
+        "cornerSmoothing": null,
+        "independent": null,
+        "notes": "No border-radius detected in get_code; baseSpec value (26.667) not confirmed via MCP; requires manual verification"
+      },
+      "source": "DASHBOARD_radii_corners.json",
+      "notes": "MCP did not return radius for search icon container; baseSpec value may be from manual measurement"
+    },
+    {
+      "path": "$.header.actions[1].notificationDot",
+      "operation": "ADD",
+      "newValue": {
+        "figmaNode": "68426:7265",
+        "size": {
+          "w": 6.668,
+          "h": 6.668
+        },
+        "color": "#E53935",
+        "position": {
+          "top": "8.33%",
+          "left": "54.16%",
+          "relativeTo": "Bell Icon Group (68426:7261)"
+        },
+        "shape": "circle"
+      },
+      "source": "DASHBOARD_notification_dot.json",
+      "notes": "Notification dot was not documented in baseSpec; critical UI element for notifications"
+    },
+    {
+      "path": "$.heroCard.cta.states",
+      "operation": "ADD",
+      "newValue": {
+        "available": [],
+        "notes": "No interactive states (hover/pressed/focus) exposed via Figma MCP API; requires Component Variants inspection in Figma Desktop"
+      },
+      "source": "DASHBOARD_interactions.md",
+      "notes": "Interaction states missing from baseSpec; documented as limitation"
+    },
+    {
+      "path": "$.heroCard.progressRing.stroke",
+      "operation": "ADD",
+      "newValue": {
+        "strokeWidth": null,
+        "strokeLinecap": null,
+        "strokeLinejoin": null,
+        "strokeColor": null,
+        "trackColor": null,
+        "notes": "Stroke properties not exposed via MCP API for ellipse nodes; requires Figma REST API"
+      },
+      "source": "DASHBOARD_progress_svg.json",
+      "notes": "Critical for accurate progress ring rendering; visual estimate ~4-6px stroke width"
+    },
+    {
+      "path": "$.heroCard.progressRing.arc",
+      "operation": "ADD",
+      "newValue": {
+        "startAngle": null,
+        "endAngle": null,
+        "sweepAngle": null,
+        "notes": "Arc angles not exposed via MCP; required for progress animation"
+      },
+      "source": "DASHBOARD_progress_svg.json",
+      "notes": "Essential for implementing progress arc animation"
+    },
+    {
+      "path": "$.heroCard.image.radius",
+      "operation": "UPDATE",
+      "oldValue": null,
+      "newValue": null,
+      "source": "DASHBOARD_radii_corners.json",
+      "notes": "rounded-rectangle node 68426:7273 identified but radius value not returned by MCP; requires manual measurement or REST API"
+    },
+    {
+      "path": "$.categories.chips[0].states",
+      "operation": "ADD",
+      "newValue": {
+        "current": "selected",
+        "available": ["normal", "selected"],
+        "selectedStyle": {
+          "background": "#D9B18E",
+          "iconColor": null
+        },
+        "normalStyle": {
+          "background": null,
+          "iconColor": null,
+          "notes": "Unselected state styling not exposed via MCP"
+        }
+      },
+      "source": "DASHBOARD_interactions.md",
+      "notes": "Selected/unselected states inferred from filled background; normal state requires component variant inspection"
+    },
+    {
+      "path": "$.categories.grid.gap",
+      "operation": "UPDATE",
+      "oldValue": null,
+      "newValue": 41,
+      "source": "DASHBOARD_autolayout_alignment.json",
+      "notes": "Calculated from child positions: chip2.x (101) - chip1.x (0) - chip1.width (60) = 41px"
+    },
+    {
+      "path": "$.recommendations.cards[0].image.objectFit",
+      "operation": "ADD",
+      "newValue": "cover",
+      "source": "DASHBOARD_images_inventory.md",
+      "notes": "Extracted from get_code CSS classes"
+    },
+    {
+      "path": "$.recommendations.cards[0].image.objectPosition",
+      "operation": "ADD",
+      "newValue": "50% 50%",
+      "source": "DASHBOARD_images_inventory.md",
+      "notes": "Extracted from get_code CSS classes"
+    },
+    {
+      "path": "$.recommendations.cards[0].overlay.gradient",
+      "operation": "ADD",
+      "newValue": {
+        "direction": "to-b",
+        "stops": [
+          {
+            "position": "14.609%",
+            "color": "rgba(26, 26, 26, 0)"
+          },
+          {
+            "position": "95%",
+            "color": "#1A1A1A"
+          }
+        ]
+      },
+      "source": "DASHBOARD_images_inventory.md",
+      "notes": "Critical for text contrast on card images"
+    },
+    {
+      "path": "$.recommendations.cards[0].categoryLabel.contrast",
+      "operation": "ADD",
+      "newValue": {
+        "ratio": 2.6,
+        "wcagLevel": "Fail",
+        "recommendation": "Use #A0A0A0 (4.5:1) or #B8B8B8 (7:1) instead of #6D6D6D"
+      },
+      "source": "DASHBOARD_a11y_contrast_report.md",
+      "notes": "CRITICAL: Accessibility failure; must fix before production"
+    },
+    {
+      "path": "$.recommendations.list.gap",
+      "operation": "UPDATE",
+      "oldValue": null,
+      "newValue": 15,
+      "source": "DASHBOARD_autolayout_alignment.json",
+      "notes": "Calculated from card positions: card2.x (170) - card1.x (0) - card1.width (155) = 15px"
+    },
+    {
+      "path": "$.recommendations.list.padding",
+      "operation": "ADD",
+      "newValue": {
+        "vertical": 11.5,
+        "horizontal": 0
+      },
+      "source": "DASHBOARD_autolayout_alignment.json",
+      "notes": "Calculated from cards at y=11.5 within list container"
+    },
+    {
+      "path": "$.typography.styles",
+      "operation": "ADD",
+      "newValue": [
+        {
+          "name": "Heading/H1",
+          "family": "Playfair Display",
+          "size": 32,
+          "weight": 400,
+          "lineHeight": 40,
+          "usedIn": ["header.title"]
+        },
+        {
+          "name": "Regular klein",
+          "family": "Figtree",
+          "size": 16,
+          "weight": 400,
+          "lineHeight": 24,
+          "usedIn": ["heroCard.cta.label", "recommendations.cards.title"]
+        },
+        {
+          "name": "Regular klein 14",
+          "family": "Figtree",
+          "size": 14,
+          "weight": 400,
+          "lineHeight": 24,
+          "usedIn": ["categories.chips.label"]
+        },
+        {
+          "name": "Card Category Label (Custom)",
+          "family": "Figtree",
+          "size": 12,
+          "weight": 400,
+          "lineHeight": 18,
+          "letterSpacing": 0.12,
+          "usedIn": ["recommendations.cards.categoryLabel"],
+          "notes": "Not in Figma Text Styles; should be promoted to named style"
+        }
+      ],
+      "source": "DASHBOARD_typography_styles.json",
+      "notes": "Consolidated text styles with usage mapping"
+    },
+    {
+      "path": "$.colors.variables.duplicates",
+      "operation": "ADD",
+      "newValue": {
+        "white": [
+          "Additional Colors/White",
+          "Grayscale/White",
+          "White"
+        ],
+        "recommendation": "Consolidate to single 'Colors/White' variable"
+      },
+      "source": "DASHBOARD_typography_styles.json",
+      "notes": "Design system cleanup required"
+    },
+    {
+      "path": "$.icons.exports",
+      "operation": "ADD",
+      "newValue": [
+        {
+          "name": "Martial Arts Category",
+          "figmaNode": "68430:6936",
+          "format": "SVG",
+          "size": 19.8
+        },
+        {
+          "name": "ic / dish",
+          "figmaNode": "68430:7446",
+          "format": "SVG",
+          "size": 24
+        },
+        {
+          "name": "ic / enhance",
+          "figmaNode": "68430:7479",
+          "format": "SVG",
+          "size": 24
+        },
+        {
+          "name": "ic / explore",
+          "figmaNode": "68430:7501",
+          "format": "SVG",
+          "size": 24
+        },
+        {
+          "name": "ic / ai",
+          "figmaNode": "68430:7508",
+          "format": "SVG",
+          "size": 24
+        },
+        {
+          "name": "Bell Icon Group",
+          "figmaNode": "68426:7262",
+          "format": "SVG",
+          "size": 20
+        },
+        {
+          "name": "Play Button Vector",
+          "figmaNode": "68426:7278",
+          "format": "SVG",
+          "size": "23.11 × 20.84"
+        },
+        {
+          "name": "Notification Dot",
+          "figmaNode": "68426:7265",
+          "format": "SVG",
+          "size": 6.7
+        }
+      ],
+      "source": "DASHBOARD_icon_exports.csv",
+      "notes": "Icon inventory for asset pipeline; export settings (strokeScaling, trim) not exposed via MCP"
+    },
+    {
+      "path": "$.limitations",
+      "operation": "ADD",
+      "newValue": [
+        "Figma MCP API does not expose Component Variants/Interactive States (hover/pressed/focus/disabled)",
+        "Text Style IDs not returned (only definitions via get_variable_defs)",
+        "Stroke properties (width, cap, join, color, dasharray) for vector/ellipse nodes not exposed",
+        "Arc angles for progress rings not available",
+        "Corner smoothing values not returned",
+        "Export settings (strokeScaling, trim) not accessible via MCP",
+        "Constraints (left/right/top/bottom, scale/fixed) not exposed",
+        "Min/Max dimensions not available",
+        "Instance node properties require parent component inspection",
+        "Contrast ratios not calculated by Figma; require manual formula or Dev Mode inspection"
+      ],
+      "source": "All audit2 files",
+      "notes": "Comprehensive list of MCP API limitations discovered during extraction"
+    }
+  ],
+  "summary": {
+    "totalDeltas": 20,
+    "operations": {
+      "ADD": 14,
+      "UPDATE": 6,
+      "DELETE": 0
+    },
+    "criticalIssues": [
+      {
+        "path": "$.recommendations.cards[0].categoryLabel.contrast",
+        "severity": "HIGH",
+        "issue": "Accessibility failure (2.6:1 contrast ratio)",
+        "action": "MUST fix before production"
+      },
+      {
+        "path": "$.heroCard.progressRing.stroke",
+        "severity": "MEDIUM",
+        "issue": "Missing stroke properties for progress ring",
+        "action": "Requires manual measurement or REST API call"
+      },
+      {
+        "path": "$.heroCard.cta.states",
+        "severity": "MEDIUM",
+        "issue": "No interactive states documented",
+        "action": "Requires Component Variants inspection in Figma"
+      }
+    ],
+    "designSystemIssues": [
+      {
+        "path": "$.colors.variables.duplicates",
+        "issue": "Three duplicate white color variables",
+        "action": "Consolidate to single variable"
+      },
+      {
+        "path": "$.typography.styles[3]",
+        "issue": "Custom text style not in Figma Text Styles",
+        "action": "Promote 'Card Category Label' to named style"
+      }
+    ]
+  },
+  "nextSteps": [
+    "Fix critical contrast issue (Card Category Label color)",
+    "Use Figma REST API to extract missing properties (stroke, arc, radius, constraints)",
+    "Inspect Component Variants in Figma Desktop for interactive states",
+    "Consolidate duplicate white color variables",
+    "Promote custom text styles to Figma Text Styles for consistency",
+    "Run automated a11y audit on implemented UI",
+    "Document alt text requirements for all images"
+  ]
+}
