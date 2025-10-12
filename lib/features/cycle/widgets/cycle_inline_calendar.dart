@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../../core/design_tokens/typography.dart';
 import '../../../core/theme/app_theme.dart';
@@ -13,15 +14,19 @@ const double _dayWidth = 25.31;
 const double _todayWidth = 55.94;
 const double _weekdayFontSize = 14.0;
 const double _weekdayLineHeight = 1.12;
-const double _weekdaySpacing = 4.0; // Reduced from 7.0 for much more segment depth (aggressive)
+const double _weekdaySpacing =
+    4.0; // Reduced from 7.0 for much more segment depth (aggressive)
 const double _dayFontSize = 18.0;
 const double _dayLineHeight = 1.15;
-const double _topPadding = 4.0; // Unchanged to preserve header position and external spacing
-const double _bottomPadding = 0.0; // Reduced from 2.0 for much more segment depth (aggressive)
+const double _topPadding =
+    4.0; // Unchanged to preserve header position and external spacing
+const double _bottomPadding =
+    0.0; // Reduced from 2.0 for much more segment depth (aggressive)
 
 // Asymmetric overhang: segment extends ONLY above the day numbers (prevents overflow)
-const double _segmentOverhangTop = 3.0;    // Extends upward for visual depth
-const double _segmentOverhangBottom = 0.0; // No bottom overhang (prevents container overflow)
+const double _segmentOverhangTop = 3.0; // Extends upward for visual depth
+const double _segmentOverhangBottom =
+    0.0; // No bottom overhang (prevents container overflow)
 
 const double _weekdayTextHeight = _weekdayFontSize * _weekdayLineHeight;
 const double _segmentTopOffset =
@@ -45,10 +50,22 @@ String _formatDayMonthDe(DateTime date) {
     return DateFormat('d. MMM', 'de_DE').format(date);
   } catch (_) {
     const months = [
-      'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'
+      'Jan',
+      'Feb',
+      'Mär',
+      'Apr',
+      'Mai',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Dez',
     ];
-    final m = (date.month >= 1 && date.month <= 12) ? months[date.month - 1] : '';
+    final m = (date.month >= 1 && date.month <= 12)
+        ? months[date.month - 1]
+        : '';
     return '${date.day}. $m';
   }
 }
@@ -65,9 +82,7 @@ class CycleInlineCalendar extends StatelessWidget {
     final phaseTokens = theme.extension<CyclePhaseTokens>();
     final textTokens = theme.extension<TextColorTokens>();
     final radiusTokens = theme.extension<CalendarRadiusTokens>();
-    if (phaseTokens == null ||
-        textTokens == null ||
-        radiusTokens == null) {
+    if (phaseTokens == null || textTokens == null || radiusTokens == null) {
       return const SizedBox.shrink();
     }
 
@@ -85,7 +100,9 @@ class CycleInlineCalendar extends StatelessWidget {
         }
 
         final todayIndex = view.days.indexWhere((day) => day.isToday);
-        final todayGeometry = todayIndex >= 0 ? dayGeometries[todayIndex] : null;
+        final todayGeometry = todayIndex >= 0
+            ? dayGeometries[todayIndex]
+            : null;
         final todayDay = todayIndex >= 0 ? view.days[todayIndex] : null;
 
         return _CalendarContent(
@@ -129,12 +146,16 @@ class _CalendarContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    final semanticsHint =
+        localizations?.cycleInlineCalendarHint ?? 'Zur Zyklusübersicht wechseln.';
+
     return Semantics(
       key: const ValueKey('cycle_inline_calendar_semantics'),
       container: true,
       button: true,
-      label: _buildSemanticsLabel(todayDay),
-      hint: 'Zur Zyklusübersicht wechseln.',
+      label: _buildSemanticsLabel(context, localizations, todayDay),
+      hint: semanticsHint,
       child: ExcludeSemantics(
         child: Material(
           color: Colors.transparent,
@@ -182,14 +203,24 @@ class _CalendarContent extends StatelessWidget {
     );
   }
 
-  String _buildSemanticsLabel(WeekStripDay? todayDay) {
+  String _buildSemanticsLabel(
+    BuildContext context,
+    AppLocalizations? localizations,
+    WeekStripDay? todayDay,
+  ) {
     if (todayDay != null) {
       final formattedDate = _formatDayMonthDe(todayDay.date);
-      return 'Zykluskalender. Heute $formattedDate Phase: ${todayDay.phase.label}. '
-          'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+      final phaseLabel = todayDay.phase.label(context);
+      return localizations?.cycleInlineCalendarLabelToday(
+            formattedDate,
+            phaseLabel,
+          ) ??
+          'Zykluskalender. Heute $formattedDate Phase: $phaseLabel. '
+              'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
     }
-    return 'Zykluskalender. Zur Zyklusübersicht wechseln. '
-        'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+    return localizations?.cycleInlineCalendarLabelDefault ??
+        'Zykluskalender. Zur Zyklusübersicht wechseln. '
+            'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
   }
 
   static Widget _buildDayColumn(
@@ -207,7 +238,10 @@ class _CalendarContent extends StatelessWidget {
       width: geometry.width,
       height: _trackHeight,
       child: Padding(
-        padding: const EdgeInsets.only(top: _topPadding, bottom: _bottomPadding),
+        padding: const EdgeInsets.only(
+          top: _topPadding,
+          bottom: _bottomPadding,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -328,9 +362,7 @@ class _DaysRow extends StatelessWidget {
     for (var i = 0; i < days.length; i++) {
       final day = days[i];
       final geometry = dayGeometries[i];
-      children.add(
-        _CalendarContent._buildDayColumn(day, geometry, textTokens),
-      );
+      children.add(_CalendarContent._buildDayColumn(day, geometry, textTokens));
       if (geometry.gapAfter > 0 && i != days.length - 1) {
         children.add(SizedBox(width: geometry.gapAfter));
       }
@@ -484,6 +516,8 @@ Color _segmentColor(Phase phase, CyclePhaseTokens tokens) {
       return tokens.ovulation.withValues(alpha: 0.50);
     case Phase.luteal:
       return tokens.luteal.withValues(alpha: 0.25);
+    case Phase.unknown:
+      return tokens.follicularDark.withValues(alpha: 0.20);
   }
 }
 
@@ -498,5 +532,7 @@ Color _todayColor(Phase phase, CyclePhaseTokens tokens) {
       return tokens.ovulation;
     case Phase.luteal:
       return tokens.luteal;
+    case Phase.unknown:
+      return tokens.follicularDark;
   }
 }

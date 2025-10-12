@@ -45,9 +45,9 @@ class HeroCardProps {
     required this.subtitle,
     this.ctaState = HeroCtaState.resumeActiveWorkout,
   }) : assert(
-          progressRatio >= 0.0 && progressRatio <= 1.0,
-          'progressRatio must be between 0.0 and 1.0',
-        );
+         progressRatio >= 0.0 && progressRatio <= 1.0,
+         'progressRatio must be between 0.0 and 1.0',
+       );
 
   final String programTitle;
   final String openCountText;
@@ -269,7 +269,7 @@ class HeuteFixtures {
       header: HeaderProps(
         userName: 'Sarah',
         dateText: dateText,
-        phaseLabel: phase.label,
+        phaseLabel: phase.localizationKey,
       ),
       heroCard: HeroCardProps(
         programTitle: 'Kraft - Ganzkörper',
@@ -378,9 +378,7 @@ class HeuteFixtures {
   static HeuteFixtureState emptyRecommendations() {
     final base = defaultState();
     return base.copyWith(
-      heroCard: base.heroCard.copyWith(
-        ctaState: HeroCtaState.startNewWorkout,
-      ),
+      heroCard: base.heroCard.copyWith(ctaState: HeroCtaState.startNewWorkout),
       recommendations: const [],
     );
   }

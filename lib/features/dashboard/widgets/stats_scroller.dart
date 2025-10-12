@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
+import 'package:luvi_app/features/dashboard/utils/stats_value_formatter.dart';
 
 const double _cardGap = Spacing.m; // 16px between stat cards
 const double _cardPadding = 16; // Reduced from 20 to fit content in 159px height
@@ -93,13 +93,21 @@ class _TrainingStatCard extends StatelessWidget {
 
   final TrainingStatProps data;
 
-  static final NumberFormat _formatter = NumberFormat.decimalPattern('de_DE');
-
   Widget _buildValueGroup(
+    BuildContext context,
     Color valueColor,
     Color titleColor,
   ) {
-    final formattedValue = _formatter.format(data.value);
+    final locale = Localizations.localeOf(context);
+    final presentation = formatStatValue(
+      locale: locale,
+      value: data.value,
+      unit: data.unit,
+      stackUnit: data.heartRateGlyphAsset != null,
+    );
+    final formattedValue = presentation.valueText;
+    final formattedUnit = presentation.unitText;
+    final shouldStackUnit = presentation.stackUnit;
     final valueStyle = TextStyle(
       fontFamily: FontFamilies.playfairDisplay,
       fontSize: TypographyTokens.size28,
@@ -115,23 +123,23 @@ class _TrainingStatCard extends StatelessWidget {
       color: titleColor,
     );
 
-    if (data.heartRateGlyphAsset != null) {
+    if (shouldStackUnit) {
       return _buildStackedValue(
         formattedValue,
-        data.unit,
+        formattedUnit,
         valueStyle,
         unitStyle,
         glyph: _buildHeartGlyphIfAny(),
       );
     }
 
-    if (data.unit == null) {
+    if (formattedUnit == null) {
       return _buildCenteredValue(formattedValue, valueStyle);
     }
 
     return _buildInlineValue(
       formattedValue,
-      data.unit!,
+      formattedUnit,
       valueStyle,
       unitStyle,
     );
@@ -305,7 +313,7 @@ class _TrainingStatCard extends StatelessWidget {
                 const SizedBox(height: _labelToValueGap),
                 SizedBox(
                   height: _valueAreaHeight,
-                  child: _buildValueGroup(valueColor, titleColor),
+                  child: _buildValueGroup(context, valueColor, titleColor),
                 ),
               ],
             ),

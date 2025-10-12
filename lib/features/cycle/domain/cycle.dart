@@ -12,6 +12,12 @@ class CycleInfo {
   /// The period duration in days.
   final int periodDuration;
 
+  /// Luteal phase length in days (default 13, clinically typical range 12–14).
+  final int lutealLengthDays;
+
+  /// Highlight window around ovulation in days (±[ovulationWindowDays], default ±2).
+  final int ovulationWindowDays;
+
   /// Creates a new CycleInfo instance.
   ///
   /// Throws [ArgumentError] if:
@@ -21,6 +27,8 @@ class CycleInfo {
     required this.lastPeriod,
     required this.cycleLength,
     required this.periodDuration,
+    this.lutealLengthDays = 13,
+    this.ovulationWindowDays = 2,
   }) : assert(
          cycleLength >= 21 && cycleLength <= 60,
          'cycleLength should be between 21 and 60 days',
@@ -28,6 +36,14 @@ class CycleInfo {
        assert(
          periodDuration >= 1 && periodDuration <= 10,
          'periodDuration should be between 1 and 10 days',
+       ),
+       assert(
+         lutealLengthDays >= 12 && lutealLengthDays <= 14,
+         'lutealLengthDays should be between 12 and 14 days for physiological accuracy',
+       ),
+       assert(
+         ovulationWindowDays >= 0 && ovulationWindowDays <= 5,
+         'ovulationWindowDays should be between 0 and 5 days',
        ) {
     if (cycleLength <= 0) {
       throw ArgumentError.value(cycleLength, 'cycleLength', 'must be positive');
@@ -50,6 +66,8 @@ class CycleInfo {
       lastPeriod: lastPeriod,
       cycleLength: cycleLength,
       periodDuration: periodDuration,
+      lutealLength: lutealLengthDays,
+      ovulationWindowDays: ovulationWindowDays,
     );
 
     switch (phase) {
@@ -78,8 +96,8 @@ enum _Phase { menstruation, follicular, ovulation, luteal }
 /// - [lastPeriod]: Start date of last menstrual period
 /// - [cycleLength]: Total cycle length in days
 /// - [periodDuration]: Menstruation duration in days
-/// - [lutealLength]: Luteal phase length (default 13, evidence-based typical 12-14)
-/// - [ovulationWindowDays]: UI highlighting window around ovulation (±days, default 1)
+/// - [lutealLength]: Luteal phase length (default 13, evidence-backed typical 12–14)
+/// - [ovulationWindowDays]: UI highlighting window around ovulation (±days, default 2 for a 5-day fertile window)
 ///
 /// Returns: Phase enum value (menstruation, follicular, ovulation, luteal)
 _Phase _phaseForDate({
@@ -88,7 +106,7 @@ _Phase _phaseForDate({
   required int cycleLength,
   required int periodDuration,
   int lutealLength = 13,
-  int ovulationWindowDays = 1,
+  int ovulationWindowDays = 2,
 }) {
   // Normalize to day-only comparison (ignore time)
   final start = DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day);

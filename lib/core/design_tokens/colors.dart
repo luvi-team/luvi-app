@@ -54,7 +54,7 @@ class DsColors {
 
   /// Secondary text color.
   /// Hex: #6D6D6D
- static const Color textSecondary = subText2;
+  static const Color textSecondary = subText2;
   /// Muted text color.
   /// Hex: #C5C7C9
   static const Color textMuted = Color(0xFFC5C7C9);

@@ -74,7 +74,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
         delegates: AppLocalizations.localizationsDelegates,
         locale: AppLocalizations.supportedLocales.first,
         child: Builder(
-          builder: (overrideContext) => _buildLocalizedScaffold(overrideContext),
+          builder: (overrideContext) =>
+              _buildLocalizedScaffold(overrideContext),
         ),
       );
     }
@@ -150,9 +151,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                       duration: topRecommendation.duration,
                     ),
                     const SizedBox(height: _sectionGapTight),
-                    SectionHeader(
-                      title: l10n.dashboardMoreTrainingsTitle,
-                    ),
+                    SectionHeader(title: l10n.dashboardMoreTrainingsTitle),
                     const SizedBox(
                       height: Spacing.s,
                     ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
@@ -194,7 +193,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
     final secondaryColor =
         textTokens?.secondary ?? ColorTokens.recommendationTag;
     final greeting = l10n.dashboardGreeting(header.userName);
-    final phaseLabel = _localizedPhaseLabel(l10n, currentPhase);
+    final phaseLabel = _localizedPhaseLabel(context, currentPhase);
     return Column(
       key: const Key('dashboard_header'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -286,7 +285,6 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
-
   Widget _buildCategories(
     AppLocalizations l10n,
     List<CategoryProps> categories,
@@ -324,23 +322,13 @@ class _HeuteScreenState extends State<HeuteScreen> {
             .clamp(_categoriesMinGap, _categoriesMaxGap)
             .toDouble();
 
-        return _buildCategoryWrap(
-          categories,
-          labels,
-          resolvedWidths,
-          gap,
-        );
+        return _buildCategoryWrap(categories, labels, resolvedWidths, gap);
       },
     );
   }
 
-  List<double> _measureChipWidths(
-    List<String> labels,
-    TextDirection dir,
-  ) {
-    return [
-      for (final label in labels) CategoryChip.measuredWidth(label, dir),
-    ];
+  List<double> _measureChipWidths(List<String> labels, TextDirection dir) {
+    return [for (final label in labels) CategoryChip.measuredWidth(label, dir)];
   }
 
   List<double> _compressFirstRowWidths(
@@ -539,17 +527,6 @@ class _HeuteScreenState extends State<HeuteScreen> {
     }
   }
 
-  String _localizedPhaseLabel(AppLocalizations l10n, Phase phase) {
-    switch (phase) {
-      case Phase.menstruation:
-        return l10n.cyclePhaseMenstruation;
-      case Phase.follicular:
-        return l10n.cyclePhaseFollicular;
-      case Phase.ovulation:
-        return l10n.cyclePhaseOvulation;
-      case Phase.luteal:
-        return l10n.cyclePhaseLuteal;
-    }
-  }
-
+  String _localizedPhaseLabel(BuildContext context, Phase phase) =>
+      phase.label(context);
 }

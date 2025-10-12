@@ -11,6 +11,7 @@ class TypographyTokens {
   static const double size32 = 32.0;
 
   static const double lineHeightRatio16on12 = 16 / 12;
+  static const double lineHeightRatio24on12 = 24.0 / 12.0;
   static const double lineHeightRatio24on14 = 24 / 14;
   static const double lineHeightRatio24on16 = 24 / 16;
   static const double lineHeightRatio24on20 = 24 / 20;

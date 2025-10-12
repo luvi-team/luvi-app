@@ -195,6 +195,42 @@
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder text when no recommendations are available on the dashboard."
   },
+  "topRecommendation": "Top-Empfehlung",
+  "@topRecommendation": {
+    "description": "Semantik-Prefix der Top-Empfehlungskachel auf dem Dashboard."
+  },
+  "category": "Kategorie",
+  "@category": {
+    "description": "Label, das beim Vorlesen der Kategorie innerhalb einer Semantik verwendet wird."
+  },
+  "fromLuviSync": "Von LUVI Sync",
+  "@fromLuviSync": {
+    "description": "Phrase, die angehängt wird, wenn eine Empfehlung aus LUVI Sync stammt."
+  },
+  "tapToOpenWorkout": "Tippe, um das Workout zu öffnen.",
+  "@tapToOpenWorkout": {
+    "description": "Semantik-Hinweis, dass getippt werden kann, um das Workout zu öffnen."
+  },
+  "cycleInlineCalendarHint": "Zur Zyklusübersicht wechseln.",
+  "@cycleInlineCalendarHint": {
+    "description": "Semantik-Hinweis für den Inline-Zykluskalender, der auf die Navigation zur Zyklusübersicht hinweist."
+  },
+  "cycleInlineCalendarLabelToday": "Zykluskalender. Heute {date} Phase: {phase}. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.",
+  "@cycleInlineCalendarLabelToday": {
+    "description": "Semantik-Label für den Inline-Zykluskalender, wenn das heutige Datum und die Zyklusphase verfügbar sind.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleInlineCalendarLabelDefault": "Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.",
+  "@cycleInlineCalendarLabelDefault": {
+    "description": "Semantik-Label für den Inline-Zykluskalender, wenn keine Information zum heutigen Datum vorliegt."
+  },
   "cyclePhaseMenstruation": "Menstruation",
   "@cyclePhaseMenstruation": {
     "description": "Display name for the menstruation phase."

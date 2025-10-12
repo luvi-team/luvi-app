@@ -10,6 +10,8 @@ import 'package:luvi_app/features/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
+import 'package:luvi_app/features/cycle/domain/phase.dart';
 
 class _ViewportConfig {
   const _ViewportConfig({
@@ -217,10 +219,17 @@ void main() {
       );
 
       final header = find.byKey(const Key('dashboard_header'));
+
+      // Compute expected phase label from the same fixture state and localization
+      final fixtureState = HeuteFixtures.defaultState();
+      final expectedPhaseLabel = fixtureState.cycleInfo
+          .phaseFor(fixtureState.referenceDate)
+          .label(heuteContext);
+
       expect(
         find.descendant(
           of: header,
-          matching: find.textContaining(l10n.cyclePhaseFollicular),
+          matching: find.textContaining(expectedPhaseLabel),
         ),
         findsOneWidget,
         reason: 'Cycle phase info should be visible in header only',
@@ -523,13 +532,7 @@ void main() {
     testWidgets(
       'bottom nav tabs have hit area ≥44×44 (4 dock + 1 floating sync)',
       (tester) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.buildAppTheme(),
-            home: const HeuteScreen(),
-          ),
-        );
-        await tester.pumpAndSettle();
+        await _pumpHeuteScreen(tester);
 
         const List<String> navKeys = [
           'nav_today',

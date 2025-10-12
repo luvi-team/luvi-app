@@ -80,7 +80,8 @@
             "nodeId": "68539:7978"
           },
           {
-            "location": "recommendations.text.tag.color"
+            "location": "recommendations.text.tag.color",
+            "nodeId": null
           }
         ]
       },
