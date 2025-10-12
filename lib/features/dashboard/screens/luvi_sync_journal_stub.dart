@@ -30,12 +30,7 @@ class LuviSyncJournalStubScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           l10n?.dashboardLuviSyncTitle ?? 'Luvi Sync Journal',
-          style: titleStyle ??
-              const TextStyle(
-                fontFamily: FontFamilies.figtree,
-                fontSize: TypographyTokens.size20,
-                fontWeight: FontWeight.w600,
-              ),
+          style: titleStyle,
         ),
         elevation: 0,
         backgroundColor: colorScheme.surface,

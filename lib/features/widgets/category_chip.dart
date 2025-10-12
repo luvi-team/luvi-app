@@ -42,10 +42,12 @@ class CategoryChip extends StatelessWidget {
       text: TextSpan(text: label, style: _baseLabelStyle),
       textDirection: textDirection,
       maxLines: 1,
-    )..layout(maxWidth: double.infinity);
+    );
+    painter.layout(maxWidth: double.infinity);
 
     final textWidth = painter.width + _labelGuardPadding;
     final effectiveWidth = math.max(_iconContainerSize, textWidth);
+    painter.dispose();
     return effectiveWidth.clamp(_minChipWidth, _maxChipWidth);
   }
 
