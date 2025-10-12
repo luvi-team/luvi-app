@@ -161,7 +161,7 @@ class _MehrButton extends StatelessWidget {
         ),
         alignment: Alignment.center,
         child: Text(
-          l10n?.dashboardHeroCtaMore ?? 'More',
+          l10n?.dashboardHeroCtaMore ?? 'Mehr',
           style: TextStyle(
             fontFamily: FontFamilies.figtree,
             fontSize: TypographyTokens.size16,
