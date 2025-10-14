@@ -5,8 +5,8 @@ Dieses Dokument beschreibt das Konzept für eine holistische FemTech-App, die pe
 
 Ziel & Haltung
 
-Die App soll eine holistische Lösung für Frauen sein, die personalisierte Empfehlungen für Training, Ernährung und Regeneration/Mindfulness bietet. Dabei steht der Datenschutz im Vordergrund (DSGVO-first).
-
+Die App soll eine holistische Lösung für Frauen sein, die personalisierte Empfehlungen für Training, Ernährung sowie Regeneration und Achtsamkeit bietet.
+Dabei steht der Datenschutz im Vordergrund (DSGVO-first).
 
 Consent & Datenschutz (vor Nutzung)
 
@@ -100,10 +100,9 @@ Ernährung:
 
 "Mehr Kategorien":
 
-Nahrungsergänzungsmittel Tipps
+Nahrungsergänzungsmittel-Tipps
 
-Makronährstoff Tipps
-
+Makronährstoff-Tipps
 Evtl. Ernährungstagebuch
 
 Evtl. optionale KI Q&A
@@ -161,10 +160,9 @@ Weitere Screens
 
 Zyklus: Zykluskalender, Zyklusverlauf (der letzten Zyklen), Tipps/Erklärungen zu den Zyklusphasen, usw.
 
-LUVY Sync: Täglich von KI generiertes Journal/Briefing über den heutigen Tag:
+LUVI Sync: Täglich von KI generiertes Journal/Briefing über den heutigen Tag:
 
 Training, Ernährung, Regeneration, Achtsamkeit > immer mit einer "Top Empfehlung" mit klassichem LUVI Sync Ying Yang Icon
-
 Wearable-Datenintegration: Infos zum Schlaf, Regeneration usw.
 
 Infos über aktuellen Zyklusstand (evtl. präziser bei Wearable-Daten).
@@ -195,7 +193,6 @@ Monetarisierung
 
 Die App wird als Freemium-Modell angeboten:
 
-7 Tage Testversion
+7-Tage-Testversion
 
-Danach Pay Wall für Premium-Funktionen
-
+Danach Paywall für Premium-Funktionen
