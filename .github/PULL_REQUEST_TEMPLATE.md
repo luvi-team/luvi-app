@@ -28,6 +28,11 @@ Siehe `docs/engineering/assistant-answer-format.md`.
 ## DSGVO-Review
 - [ ] aktualisiert: docs/privacy/reviews/<id>.md
 
+## Traycer Trial (non-blocking)
+- Traycer-Plan (Link/Text):
+- Traycer-Self-Check (✅/❌):
+- Risiken (Stichworte):
+
 ## ADR-Referenzen
 - 0001 RAG-First
 - 0002 RLS
@@ -43,4 +48,3 @@ Siehe `docs/engineering/assistant-answer-format.md`.
 - [ ] Antwortformat (CLI) eingehalten: Mini‑Kontext, Warum, Schritte, Erfolgskriterien, Undo/Backout (Code‑Block), Nächster Schritt, Stop‑Kriterien
 - [ ] CI/DoD geprüft (flutter analyze/test; Privacy‑Gate falls DB)
 - [ ] CodeRabbit „green“ oder Findings adressiert
-
