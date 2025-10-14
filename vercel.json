@@ -3,9 +3,6 @@
   "functions": {
     "api/health.ts": {
       "maxDuration": 10
-    },
-    "api/ai/**": {
-      "maxDuration": 30
     }
   }
 }
