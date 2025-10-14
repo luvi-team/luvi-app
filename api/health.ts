@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { buildCorsHeaders } from './utils/cors';
 import logger from './utils/logger';
 

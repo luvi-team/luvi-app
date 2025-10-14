@@ -6,3 +6,4 @@ Vercel → Project → Settings → General → Root Directory auf `/` setzen, s
 
 # Fehlerbilder & Fix
 Falls das Log `api/api/**` meldet, war das Root fälschlich auf `api/` gestellt; auf `/` ändern und erneut deployen.
+
