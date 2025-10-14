@@ -52,12 +52,14 @@ describe('health endpoint', () => {
   });
 
   it('returns 405 for non-GET methods', async () => {
+    const warnSpy = jest.spyOn(logger, 'warn').mockImplementation(() => undefined);
     const request = mockRequest('POST');
     const response = await handler(request);
     const parsed = await parseResponse(response);
 
     expect(parsed.status).toBe(405);
     expect(parsed.body).toEqual({ error: 'Method not allowed' });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 
   it('handles OPTIONS preflight requests', async () => {
