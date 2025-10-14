@@ -7,7 +7,7 @@ Globale Invarianten (gelten für jeden Meilenstein)
 •	Daten/DSGVO: RLS owner-based, kein service_role im Client, Consent-Log {ts, version, scopes}, Audit-Trail via Edge Function.  
 •	DoD (immer): Feature nutzbar, Tests grün, Logs sichtbar, ADR/Docs aktualisiert.  
 •	Code-Qualität: flutter_lints aktiv; DCM als dev_dependency im CI (dart run dcm analyze || true); CodeRabbit-Reviews bei PRs.    
-•	CI/CD: Flutter-Version im Workflow gepinnt auf 3.35.2 (Dart 3.9.0).  
+•	CI/CD: Flutter-Version im Workflow gepinnt auf 3.35.4 (Dart 3.9.0).  
 •	Terminologie (vereinheitlicht): „Puls“ (statt „Statistics“); „LUVI Sync“ = tägliches (KI-)Briefing mit Top-Empfehlung je Bereich; „Profil“ als eigener Screen.  
  
 Meilensteine (1-Zeiler je Ziel + Deliverables)

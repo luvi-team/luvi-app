@@ -67,7 +67,7 @@ LUVI Sync Herobild + Text + Navigation zu LUVI Sync:
 
 Täglich von KI generiertes Journal/Briefing über den heutigen Tag:
 
-Training, Ernährung, Regeneration, Achtsamkeit > immer mit einer "Top Empfehlung" mit klassichem LUVI Sync Ying Yang Icon
+Training, Ernährung, Regeneration, Achtsamkeit > immer mit einer "Top Empfehlung" mit klassichem LUVI Sync Yin-Yang Icon
 
 Wearable-Datenintegration: Infos zum Schlaf, Regeneration usw.
 
@@ -84,7 +84,7 @@ Kategorien:
 
 Workout:
 
-"Deine Top-Empfehlung" (basierend auf LUVI Sync Briefing, mit LUVI Sync Ying Yang Icon).
+"Deine Top-Empfehlung" (basierend auf LUVI Sync Briefing, mit LUVI Sync Yin-Yang Icon).
 
 Klick auf "Top Empfehlung" > Workout Screen mit Übungsanleitung, Videos, Sätze/Wh.
 
@@ -162,7 +162,7 @@ Zyklus: Zykluskalender, Zyklusverlauf (der letzten Zyklen), Tipps/Erklärungen z
 
 LUVI Sync: Täglich von KI generiertes Journal/Briefing über den heutigen Tag:
 
-Training, Ernährung, Regeneration, Achtsamkeit > immer mit einer "Top Empfehlung" mit klassichem LUVI Sync Ying Yang Icon
+Training, Ernährung, Regeneration, Achtsamkeit > immer mit einer "Top Empfehlung" mit klassichem LUVI Sync Yin-Yang Icon
 Wearable-Datenintegration: Infos zum Schlaf, Regeneration usw.
 
 Infos über aktuellen Zyklusstand (evtl. präziser bei Wearable-Daten).
