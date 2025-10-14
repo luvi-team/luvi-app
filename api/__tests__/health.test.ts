@@ -1,5 +1,6 @@
-import handler from '../health';
-import logger from '../utils/logger';
+import { jest } from '@jest/globals';
+import handler from '../health.js';
+import logger from '../utils/logger.js';
 
 const ISO_8601_REGEX =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;

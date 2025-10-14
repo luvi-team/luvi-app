@@ -1,4 +1,4 @@
-import { buildCorsHeaders } from '../../utils/cors';
+import { buildCorsHeaders } from '../../utils/cors.js';
 
 describe('buildCorsHeaders', () => {
   it('returns wildcard when allowAll is true', () => {

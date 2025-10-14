@@ -1,4 +1,5 @@
-import logger, { REDACTED_VALUE } from '../../utils/logger';
+import { jest } from '@jest/globals';
+import logger, { REDACTED_VALUE } from '../../utils/logger.js';
 
 const ISO_8601_REGEX =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
