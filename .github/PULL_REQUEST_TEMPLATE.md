@@ -32,7 +32,9 @@ Siehe `docs/engineering/assistant-answer-format.md`.
 - Traycer-Plan (Link/Text):
 - Traycer-Self-Check (✅/❌):
 - Risiken (Stichworte):
-
+  Hinweis: Nur ausfüllen, wenn das PR-Label `trial-traycer` gesetzt ist. Siehe auch:
+  - docs/adr/ADR-00xx-traycer-integration.md
+  - docs/traycer/README.md
 - [ ] Traycer Privacy Mode ON
 - [ ] Keine PII/Secrets in Plan/PR
 
