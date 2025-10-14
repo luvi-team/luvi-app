@@ -147,3 +147,8 @@ test/_artifacts/
 # dev helpers
 lib/dev/
 tool/
+node_modules/
+api/node_modules/
+.env
+*.log
+.DS_Store
