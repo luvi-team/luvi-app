@@ -33,6 +33,9 @@ Siehe `docs/engineering/assistant-answer-format.md`.
 - Traycer-Self-Check (✅/❌):
 - Risiken (Stichworte):
 
+- [ ] Traycer Privacy Mode ON
+- [ ] Keine PII/Secrets in Plan/PR
+
 ## ADR-Referenzen
 - 0001 RAG-First
 - 0002 RLS
