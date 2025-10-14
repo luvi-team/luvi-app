@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const config = { runtime: 'edge' as const };
 
 import { buildCorsHeaders } from './utils/cors.js';
 import logger from './utils/logger.js';
