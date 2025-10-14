@@ -100,10 +100,9 @@ Ernährung:
 
 "Mehr Kategorien":
 
-Nahrungsergänzungsmittel Tipps
+Nahrungsergänzungsmittel-Tipps
 
-Makronährstoff Tipps
-
+Makronährstoff-Tipps
 Evtl. Ernährungstagebuch
 
 Evtl. optionale KI Q&A
