@@ -1,0 +1,33 @@
+Roadmap Ultra-Slim 
+
+04_Roadmap_Ultra-Slim_v1.0.docx
+
+Globale Invarianten (gelten für jeden Meilenstein)
+•	Tests/QA: mind. 1 Unit + 1 Widget (featurebezogen), DevTools-Perf-Check bei UI, Sentry aktiv, DSGVO-Checkliste gepflegt.  
+•	Daten/DSGVO: RLS owner-based, kein service_role im Client, Consent-Log {ts, version, scopes}, Audit-Trail via Edge Function.  
+•	DoD (immer): Feature nutzbar, Tests grün, Logs sichtbar, ADR/Docs aktualisiert.  
+•	Code-Qualität: flutter_lints aktiv; DCM als dev_dependency im CI (dart run dcm analyze || true); CodeRabbit-Reviews bei PRs.    
+•	CI/CD: Flutter-Version im Workflow gepinnt auf 3.35.2 (Dart 3.9.0).  
+•	Terminologie (vereinheitlicht): „Puls“ (statt „Statistics“); „LUVI Sync“ = tägliches (KI-)Briefing mit Top-Empfehlung je Bereich; „Profil“ als eigener Screen.  
+ 
+Meilensteine (1-Zeiler je Ziel + Deliverables)
+•	M0 Fundament: Repo/CI, iOS-Sim, Supabase init, Privacy-Ordner. ✅  
+•	M1 Multi-Agent: Agenten-Dossiers, BMAD/PRP-Schablonen, DoD im Repo. ✅  
+•	M2 Modellierung: Flows, ERD (users/consents/cycle/daily_plan/…), RLS-Matrix, Consent-Texte v1. ✅  
+•	M3 Auth & Consent (Status-Korrektur): UI fertig; Backend/Logging/RLS-Tests offen → Supabase Auth end-to-end, log_consent Edge Function, AGB/PP In-App Links, min. 1 Unit + 1 Widget Test. 🟡  
+•	M4 Core MVP (aktualisiert):
+Zyklus Minimal (Kalenderansicht, Verlauf, Phasenwissen) · LUVI Sync v1 (rules-basiert, AI optional) mit Top-Empfehlung je Bereich · Workout-Card (Phasen, Kategorien, Symptom-Anpassung, Offline-Cache) · Profil/Einstellungen Minimal (Präferenzen/Allergien/Level, Consent-Ansichten) · (optional) Puls (Live minimal) ohne Wearables (OS-Counter).  
+•	M5 AI Premium: Gateway (Routing, Caching, Limits), AI-Consent, LUVI Sync v2 (AI-Texte), 3 Workout-Prompts.  
+•	M6 Paywall: RevenueCat/IAP, 7-Tage-Trial, Entitlements, Feature-Gates.  
+•	M7 Nutrition: Pref-Onboarding, phasenbasierte Rezepte/Varianten, Einkaufsliste teilen (WhatsApp), Basis-Tracking.  
+•	M8 Regeneration & Mind: Empfehlungen, Journaling (KI-Partner opt-in), Mini-Scheduler → Calendar.  
+•	M9 Beta & Analytics: PostHog EU Events, TestFlight/Play, Crash-Budget, Feedback-Loop.  
+•	M10 Calendar: Monats/Agenda, Cycle-Overlay, Events/Termine/Symptom-Logs + CRUD, lokale Reminders.  
+•	M11 Puls (Trends) (ehem. „Statistics“): 3–4 Kerncharts (Zyklus, Stimmung/Energie, Training, einfacher Schlaf), nightly metrics.  
+•	M12 Newsletter: Brevo Double-Opt-In, Sync via Webhook, Logging.  
+•	M13+ Post-MVP: Community (Feed/Post/Kommentar) & Wearables (Sleep→Activity→HR/HRV; separate Consents).  
+ 
+Sprints (2-Wochen-Raster, 1 Zeile)
+
+S0 Fundament • S1 Multi-Agent • S2 Modellierung • S3 Auth/Consent • S4 Core MVP (Zyklus Minimal + LUVI Sync v1 + Profil Minimal [+ ggf. Puls Live minimal]) • S5 AI • S6 Paywall • S7 Nutrition • S8 Mind • S9 Beta/Analytics • S10 Calendar • S11 Puls (Trends) • S12 Newsletter • S13+ Community/Wearables  
+
