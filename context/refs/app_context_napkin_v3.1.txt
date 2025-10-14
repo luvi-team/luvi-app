@@ -194,7 +194,6 @@ Monetarisierung
 
 Die App wird als Freemium-Modell angeboten:
 
-7 Tage Testversion
+7-Tage-Testversion
 
-Danach Pay Wall für Premium-Funktionen
-
+Danach Paywall für Premium-Funktionen
