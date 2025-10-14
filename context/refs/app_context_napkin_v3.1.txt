@@ -5,8 +5,8 @@ Dieses Dokument beschreibt das Konzept für eine holistische FemTech-App, die pe
 
 Ziel & Haltung
 
-Die App soll eine holistische Lösung für Frauen sein, die personalisierte Empfehlungen für Training, Ernährung und Regeneration/Mindfulness bietet. Dabei steht der Datenschutz im Vordergrund (DSGVO-first).
-
+Die App soll eine holistische Lösung für Frauen sein, die personalisierte Empfehlungen für Training, Ernährung sowie Regeneration und Achtsamkeit bietet.
+Dabei steht der Datenschutz im Vordergrund (DSGVO-first).
 
 Consent & Datenschutz (vor Nutzung)
 
