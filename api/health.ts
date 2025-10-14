@@ -1,5 +1,7 @@
-import { buildCorsHeaders } from './utils/cors';
-import logger from './utils/logger';
+export const runtime = 'edge';
+
+import { buildCorsHeaders } from './utils/cors.js';
+import logger from './utils/logger.js';
 
 function createJsonResponse(
   status: number,
