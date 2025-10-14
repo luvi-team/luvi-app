@@ -30,7 +30,7 @@ const resolveAllowedOrigin = (
     }
   }
 
-  return normalizedAllowList[0];
+  return '';
 };
 
 export const buildCorsHeaders = (

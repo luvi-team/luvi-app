@@ -1,7 +1,7 @@
 # ADR-00xx: Traycer-Integration (Trial)
 
 Status: proposed
-Owner: <Team/Person>
+Owner: Developer Productivity Team
 Date: 2025-10-14
 
 ## Kontext
