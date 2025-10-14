@@ -1,0 +1,16 @@
+android/
+ios/
+build/
+.dart_tool/
+lib/
+test/
+pubspec.yaml
+pubspec.lock
+analysis_options.yaml
+supabase/
+docs/
+context/
+.git/
+.github/
+.vscode/
+.idea/
