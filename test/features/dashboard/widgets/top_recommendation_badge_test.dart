@@ -38,10 +38,7 @@ void main() {
       final expectedLabel = '$baseLabel ${l10n.fromLuviSync}.';
 
       expect(find.byKey(const Key('top_recommendation_badge')), findsOneWidget);
-      expect(
-        find.bySemanticsLabel(expectedLabel),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel(expectedLabel), findsOneWidget);
     },
   );
 
@@ -57,14 +54,8 @@ void main() {
       final syncLabel = '$baseLabel ${l10n.fromLuviSync}.';
 
       expect(find.byKey(const Key('top_recommendation_badge')), findsNothing);
-      expect(
-        find.bySemanticsLabel(syncLabel),
-        findsNothing,
-      );
-      expect(
-        find.bySemanticsLabel(baseLabel),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel(syncLabel), findsNothing);
+      expect(find.bySemanticsLabel(baseLabel), findsOneWidget);
     },
   );
 }

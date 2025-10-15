@@ -45,7 +45,7 @@ void main() {
       final testWindow = tester.binding.window;
       testWindow.viewInsetsTestValue = FakeViewPadding(bottom: keyboardHeight);
       testWindow.paddingTestValue = const FakeViewPadding(
-        top: 47,  // iPhone SafeTop
+        top: 47, // iPhone SafeTop
         bottom: 34, // iPhone SafeBottom
       );
 
@@ -54,7 +54,9 @@ void main() {
 
       // Focus field if specified
       if (focusFieldIndex != null) {
-        final passwordFieldKey = focusFieldIndex == 0 ? 'AuthPasswordField' : 'AuthConfirmPasswordField';
+        final passwordFieldKey = focusFieldIndex == 0
+            ? 'AuthPasswordField'
+            : 'AuthConfirmPasswordField';
         final fieldFinder = find.byKey(Key(passwordFieldKey));
         if (fieldFinder.evaluate().isNotEmpty) {
           await tester.tap(fieldFinder);
@@ -94,26 +96,44 @@ void main() {
     });
 
     testWidgets('K300/F1 - Window snap field 1', (tester) async {
-      final m = await windowMeasure(tester, keyboardHeight: 300, focusFieldIndex: 0);
-      print('- K300/F1: backY=${m['backY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}, gap=${m['gap']?.toStringAsFixed(0)}');
+      final m = await windowMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 0,
+      );
+      print(
+        '- K300/F1: backY=${m['backY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}, gap=${m['gap']?.toStringAsFixed(0)}',
+      );
     });
 
     testWidgets('K300/F2 - Window snap field 2', (tester) async {
-      final m = await windowMeasure(tester, keyboardHeight: 300, focusFieldIndex: 1);
-      print('- K300/F2: backY=${m['backY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}, gap=${m['gap']?.toStringAsFixed(0)}');
+      final m = await windowMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 1,
+      );
+      print(
+        '- K300/F2: backY=${m['backY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}, gap=${m['gap']?.toStringAsFixed(0)}',
+      );
 
       final backY = m['backY'] as double;
       final headerTop = m['headerTop'] as double;
       final gap = m['gap'] as double;
 
-      final backButtonResult = backY >= 59 ? 'PINNED' : 'FLOATING';  // safeTop(47) + inset(12)
+      final backButtonResult = backY >= 59
+          ? 'PINNED'
+          : 'FLOATING'; // safeTop(47) + inset(12)
       final headerResult = headerTop >= 47 ? 'VISIBLE' : 'HIDDEN';
       final gapResult = gap >= 24 ? 'SAFE' : 'OVERLAP';
 
       print('');
       print('WINDOW RESULTS:');
-      print('- BackButton pinning: $backButtonResult (Y=${backY.toStringAsFixed(0)})');
-      print('- Header visibility: $headerResult (Y=${headerTop.toStringAsFixed(0)})');
+      print(
+        '- BackButton pinning: $backButtonResult (Y=${backY.toStringAsFixed(0)})',
+      );
+      print(
+        '- Header visibility: $headerResult (Y=${headerTop.toStringAsFixed(0)})',
+      );
       print('- Gap safety: $gapResult (${gap.toStringAsFixed(0)}px)');
 
       final allOk = backY >= 59 && headerTop >= 47 && gap >= 24;

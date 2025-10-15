@@ -10,10 +10,7 @@ class LoginSubmitNotifier extends AutoDisposeAsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
-  Future<void> submit({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> submit({required String email, required String password}) async {
     if (state.isLoading) {
       return;
     }
@@ -94,5 +91,5 @@ class LoginSubmitNotifier extends AutoDisposeAsyncNotifier<void> {
 
 final loginSubmitProvider =
     AutoDisposeAsyncNotifierProvider<LoginSubmitNotifier, void>(
-  LoginSubmitNotifier.new,
-);
+      LoginSubmitNotifier.new,
+    );

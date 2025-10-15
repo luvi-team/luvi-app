@@ -15,26 +15,28 @@ class SupabaseService {
   }
 
   /// Attempt to load environment configuration and initialize Supabase.
-  static Future<void> tryInitialize({String envFile = '.env.development'}) async {
+  static Future<void> tryInitialize({
+    String envFile = '.env.development',
+  }) async {
     if (_initialized) return;
     try {
       await dotenv.load(fileName: envFile);
       final url =
           dotenv.maybeGet('SUPABASE_URL') ?? dotenv.maybeGet('SUPA_URL');
-      final anon = dotenv.maybeGet('SUPABASE_ANON_KEY') ??
+      final anon =
+          dotenv.maybeGet('SUPABASE_ANON_KEY') ??
           dotenv.maybeGet('SUPA_ANON_KEY');
       if (url != null && url.isNotEmpty && anon != null && anon.isNotEmpty) {
-        await Supabase.initialize(
-          url: url,
-          anonKey: anon,
-        );
+        await Supabase.initialize(url: url, anonKey: anon);
         _initialized = true;
       } else {
         debugPrint('Warning: SUPABASE_URL/ANON_KEY missing in $envFile');
         _initialized = false;
       }
     } catch (e) {
-      debugPrint('Warning: Could not load environment or initialize Supabase: $e');
+      debugPrint(
+        'Warning: Could not load environment or initialize Supabase: $e',
+      );
       _initialized = false;
     }
   }
@@ -44,11 +46,12 @@ class SupabaseService {
       _initialized && client.auth.currentUser != null;
 
   /// Get current user
-  static User? get currentUser =>
-      _initialized ? client.auth.currentUser : null;
+  static User? get currentUser => _initialized ? client.auth.currentUser : null;
 
   /// Initialize Supabase from environment variables
-  static Future<void> initializeFromEnv({String envFile = '.env.development'}) async {
+  static Future<void> initializeFromEnv({
+    String envFile = '.env.development',
+  }) async {
     await tryInitialize(envFile: envFile);
     if (!_initialized) {
       throw Exception('Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env file');

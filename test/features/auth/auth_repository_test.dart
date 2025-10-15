@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 
 class _MockGoTrueClient extends Mock implements GoTrueClient {}
+
 class _MockSupabaseClient extends Mock implements SupabaseClient {}
 
 void main() {
@@ -18,17 +19,18 @@ void main() {
   });
 
   test('signInWithPassword calls supabase with given credentials', () async {
-    when(() => auth.signInWithPassword(
-          email: any(named: 'email'),
-          password: any(named: 'password'),
-        )).thenAnswer((_) async => AuthResponse(session: null, user: null));
+    when(
+      () => auth.signInWithPassword(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenAnswer((_) async => AuthResponse(session: null, user: null));
 
     final repo = AuthRepository(sb);
     await repo.signInWithPassword(email: 'a@b.c', password: 'pw');
 
-    verify(() => auth.signInWithPassword(
-          email: 'a@b.c',
-          password: 'pw',
-        )).called(1);
+    verify(
+      () => auth.signInWithPassword(email: 'a@b.c', password: 'pw'),
+    ).called(1);
   });
 }

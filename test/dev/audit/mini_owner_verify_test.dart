@@ -44,7 +44,7 @@ void main() {
       final testWindow = tester.binding.window;
       testWindow.viewInsetsTestValue = FakeViewPadding(bottom: keyboardHeight);
       testWindow.paddingTestValue = const FakeViewPadding(
-        top: 47,  // iPhone SafeTop
+        top: 47, // iPhone SafeTop
         bottom: 34, // iPhone SafeBottom
       );
 
@@ -61,7 +61,9 @@ void main() {
       }
 
       // Find widgets
-      final backButtonFinder = find.byType(Container).first; // BackButtonCircle inner
+      final backButtonFinder = find
+          .byType(Container)
+          .first; // BackButtonCircle inner
       final subtitleFinder = find.text('Mach es stark.');
       final confirmFieldFinder = find.text('Neues Passwort bestätigen').first;
       final ctaFinder = find.byType(ElevatedButton);
@@ -73,7 +75,9 @@ void main() {
       final ctaRect = tester.getRect(ctaFinder);
 
       final gap = ctaRect.top - confirmRect.bottom;
-      final mediaQuery = MediaQuery.of(tester.element(find.byType(CreateNewPasswordScreen)));
+      final mediaQuery = MediaQuery.of(
+        tester.element(find.byType(CreateNewPasswordScreen)),
+      );
       final whiteSpace = mediaQuery.size.height - ctaRect.bottom;
 
       return {
@@ -94,17 +98,31 @@ void main() {
 
     testWidgets('K0 - Fixed baseline', (tester) async {
       final m = await verifyMeasure(tester, keyboardHeight: 0);
-      print('- K0:   gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      print(
+        '- K0:   gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
     });
 
     testWidgets('K300/F1 - Fixed keyboard + Field 1', (tester) async {
-      final m = await verifyMeasure(tester, keyboardHeight: 300, focusFieldIndex: 0);
-      print('- K300/F1: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      final m = await verifyMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 0,
+      );
+      print(
+        '- K300/F1: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
     });
 
     testWidgets('K300/F2 - Fixed keyboard + Field 2', (tester) async {
-      final m = await verifyMeasure(tester, keyboardHeight: 300, focusFieldIndex: 1);
-      print('- K300/F2: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      final m = await verifyMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 1,
+      );
+      print(
+        '- K300/F2: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
 
       // Final evaluation
       final gap = m['gap'] as double;
@@ -113,8 +131,14 @@ void main() {
       final whiteSpace = m['whiteSpace'] as double;
 
       final bottomOwner = 'footer-only'; // includeBottomReserve=false
-      final gapColor = gap >= 24 ? 'green' : gap >= 16 ? 'yellow' : 'red';
-      final visibilityColor = (backButtonY >= 47 && headerTop >= 47) ? 'green' : 'red';
+      final gapColor = gap >= 24
+          ? 'green'
+          : gap >= 16
+          ? 'yellow'
+          : 'red';
+      final visibilityColor = (backButtonY >= 47 && headerTop >= 47)
+          ? 'green'
+          : 'red';
       final whiteSpaceResult = whiteSpace <= 24 ? 'minimal' : 'excessive';
 
       print('');
@@ -122,7 +146,9 @@ void main() {
       print('- BottomOwner: $bottomOwner');
       print('- Gap(K300/F1,F2): $gapColor (${gap.toStringAsFixed(0)}px)');
       print('- Header/Back visibility(K300): $visibilityColor');
-      print('- White-Space über CTA: $whiteSpaceResult (${whiteSpace.toStringAsFixed(0)}px)');
+      print(
+        '- White-Space über CTA: $whiteSpaceResult (${whiteSpace.toStringAsFixed(0)}px)',
+      );
 
       // Acceptance criteria check
       final gapOk = gap >= 24;

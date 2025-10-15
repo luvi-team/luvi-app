@@ -9,10 +9,7 @@ const double kStatsCardRadius = 24;
 
 /// Glassmorphism fallback card shown when no wearable is connected.
 class WearableConnectCard extends StatelessWidget {
-  const WearableConnectCard({
-    super.key,
-    this.message,
-  });
+  const WearableConnectCard({super.key, this.message});
 
   final String? message;
 
@@ -34,7 +31,9 @@ class WearableConnectCard extends StatelessWidget {
             width: kStatsCardWidth,
             height: kStatsCardHeight,
             decoration: BoxDecoration(
-              color: surfaceTokens?.cardBackgroundNeutral ?? const Color(0xFFF1F1F1),
+              color:
+                  surfaceTokens?.cardBackgroundNeutral ??
+                  const Color(0xFFF1F1F1),
               borderRadius: BorderRadius.circular(kStatsCardRadius),
               border: Border.all(
                 color: const Color(0x1A000000), // Figma: 1dp @ 10% black

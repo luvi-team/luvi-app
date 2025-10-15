@@ -37,9 +37,8 @@ void main() {
   }
 
   Finder textFieldByHint(String hint) => find.byWidgetPredicate(
-        (widget) =>
-            widget is TextField && widget.decoration?.hintText == hint,
-      );
+    (widget) => widget is TextField && widget.decoration?.hintText == hint,
+  );
 
   group('AuthSignupScreen submit behaviour', () {
     late GoRouter router;
@@ -63,9 +62,7 @@ void main() {
           password: any(named: 'password'),
           data: any(named: 'data'),
         ),
-      ).thenAnswer(
-        (_) async => AuthResponse(session: null, user: null),
-      );
+      ).thenAnswer((_) async => AuthResponse(session: null, user: null));
 
       await pumpSignupScreen(tester, mockRepo, router);
 
@@ -151,10 +148,7 @@ void main() {
       await tester.tap(buttonFinder);
       await tester.pump();
 
-      expect(
-        find.byKey(const ValueKey('signup_cta_loading')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const ValueKey('signup_cta_loading')), findsOneWidget);
 
       final loadingButton = tester.widget<ElevatedButton>(buttonFinder);
       expect(loadingButton.onPressed, isNull);
@@ -162,10 +156,7 @@ void main() {
       completer.complete(AuthResponse(session: null, user: null));
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const ValueKey('signup_cta_loading')),
-        findsNothing,
-      );
+      expect(find.byKey(const ValueKey('signup_cta_loading')), findsNothing);
     });
   });
 }

@@ -68,9 +68,7 @@ class _EntryTitle extends StatelessWidget {
       header: true,
       child: Text(
         AuthEntryScreen._titleText,
-        style: textTheme.headlineMedium?.copyWith(
-          color: colorScheme.onSurface,
-        ),
+        style: textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface),
         textAlign: TextAlign.center,
       ),
     );
@@ -91,9 +89,7 @@ class _EntrySubtitle extends StatelessWidget {
       maxLines: 1,
       softWrap: false,
       overflow: TextOverflow.ellipsis,
-      style: ds?.authEntrySubhead.copyWith(
-        color: colorScheme.onSurfaceVariant,
-      ),
+      style: ds?.authEntrySubhead.copyWith(color: colorScheme.onSurfaceVariant),
     );
   }
 }
@@ -106,9 +102,7 @@ class _EntryPrimaryCta extends StatelessWidget {
     return ElevatedButton(
       key: const ValueKey('auth_entry_register_cta'),
       onPressed: () => context.push('/auth/signup'),
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(50),
-      ),
+      style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
       child: const Text('Registrieren'),
     );
   }
@@ -138,8 +132,10 @@ class _BottomRestSpacer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final safeBottom = MediaQuery.of(context).padding.bottom;
-    final diff = (AuthEntryLayout.bottomRest - safeBottom - Spacing.l)
-        .clamp(0.0, AuthEntryLayout.bottomRest);
+    final diff = (AuthEntryLayout.bottomRest - safeBottom - Spacing.l).clamp(
+      0.0,
+      AuthEntryLayout.bottomRest,
+    );
     return SizedBox(height: diff);
   }
 }

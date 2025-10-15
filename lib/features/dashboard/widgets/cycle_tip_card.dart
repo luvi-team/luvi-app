@@ -14,10 +14,7 @@ const double _iconSize = 24;
 
 /// Purple info card that surfaces a short, phase-specific recommendation.
 class CycleTipCard extends StatelessWidget {
-  const CycleTipCard({
-    super.key,
-    required this.phase,
-  });
+  const CycleTipCard({super.key, required this.phase});
 
   final Phase phase;
 
@@ -126,4 +123,3 @@ class CycleTipCard extends StatelessWidget {
     );
   }
 }
-

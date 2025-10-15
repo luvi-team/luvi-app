@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart' as dash_assets;
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
@@ -22,9 +22,12 @@ import 'package:luvi_app/features/cycle/domain/phase.dart';
 import 'package:luvi_app/features/widgets/dashboard_calendar.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
 import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
+import 'package:luvi_app/features/dashboard/widgets/weekly_training_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
 import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
+import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';
+import 'package:luvi_app/features/dashboard/domain/weekly_training_props.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 // Dashboard-only spacing (audit-backed)
@@ -40,6 +43,57 @@ const double _headerIconRadius = 26.667;
 const double _kMinBottomGap = 62.0; // increased breathing room above dock
 const double _sectionGapTight =
     20.0; // tighter spacing between stacked sections
+const double _weeklyTrainingCardHeight = 280.0;
+const double _weeklyTrainingCardMaxWidth = 340.0;
+const double _weeklyTrainingHorizontalInset = 48.0;
+const double _weeklyTrainingItemGap = 17.0;
+const double _phaseRecoWaveHeight = 72.0; // Beige wave vertical span
+const double _phaseRecoWaveAmplitude = 24.0; // Height of curved lip
+const double _phaseRecoFramePadding =
+    20.0; // Frame internal padding (from audit)
+const double _phaseRecoCardGap = 16.0; // Gap between cards in carousel
+const double _nutritionCardWidth = 160.0; // Nutrition card width (from audit)
+const double _nutritionCardHeight = 210.0; // Nutrition card height (from audit)
+const double _regenerationCardWidth =
+    165.0; // Regeneration card width (from audit)
+const double _regenerationCardHeight =
+    210.0; // Regeneration card height (from audit)
+const double _subsectionHeaderHeight = 40.0; // Subsection title + gap
+const double _subsectionGap =
+    24.0; // Gap between nutrition and regeneration subsections
+const bool featureDashboardV2 = true;
+
+double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
+  const double waveAssetWidth = 428.0;
+  const double waveArcHeight = 40.0;
+  final double viewportWidth = MediaQuery.sizeOf(context).width;
+  final double scale = viewportWidth / waveAssetWidth;
+  final double reveal = waveArcHeight * scale;
+  return math.min(reveal, heroToSectionGap);
+}
+
+double _calculatePhaseRecoSectionHeight() {
+  // Dynamic height calculation for responsive design
+  return _phaseRecoWaveHeight +
+      (_phaseRecoFramePadding * 2) +
+      40 +
+      Spacing.m +
+      _subsectionHeaderHeight +
+      _nutritionCardHeight +
+      _subsectionGap +
+      _subsectionHeaderHeight +
+      _regenerationCardHeight;
+}
+
+Color _phaseWaveBackgroundColor(BuildContext context) {
+  final theme = Theme.of(context);
+  final surfaceTokens = theme.extension<SurfaceColorTokens>();
+  if (surfaceTokens != null) {
+    return surfaceTokens.waveOverlayBeige;
+  }
+  return theme.extension<DsTokens>()?.cardSurface ??
+      SurfaceColorTokens.light.waveOverlayBeige;
+}
 
 // Kodex: Bottom-nav geometry now imported from bottom_nav_tokens.dart (formula-based, no duplication)
 // - dockHeight, buttonDiameter, cutoutDepth, desiredGapToWaveTop, syncButtonBottom all from tokens
@@ -73,9 +127,29 @@ class _HeuteScreenState extends State<HeuteScreen> {
     super.didChangeDependencies();
     if (!_imagesPrecached) {
       // Precache Hero background and top recommendation image to avoid first-frame jank.
-      precacheImage(AssetImage(Assets.images.heroSync01), context);
+      final heroImagePath = dash_assets.Assets.images.heroSync01;
+      precacheImage(AssetImage(heroImagePath), context);
       final topImage = _fixtureState.topRecommendation.imagePath;
       precacheImage(AssetImage(topImage), context);
+      final seenPaths = <String>{heroImagePath, topImage};
+      final weeklyTrainings = _fixtureState.weeklyTrainings;
+      if (weeklyTrainings.isNotEmpty) {
+        for (final training in weeklyTrainings.take(2)) {
+          if (seenPaths.add(training.imagePath)) {
+            precacheImage(AssetImage(training.imagePath), context);
+          }
+        }
+      }
+      for (final reco in _fixtureState.nutritionRecommendations.take(3)) {
+        if (seenPaths.add(reco.imagePath)) {
+          precacheImage(AssetImage(reco.imagePath), context);
+        }
+      }
+      for (final reco in _fixtureState.regenerationRecommendations.take(3)) {
+        if (seenPaths.add(reco.imagePath)) {
+          precacheImage(AssetImage(reco.imagePath), context);
+        }
+      }
       _imagesPrecached = true;
     }
   }
@@ -89,7 +163,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
         delegates: AppLocalizations.localizationsDelegates,
         locale: AppLocalizations.supportedLocales.first,
         child: Builder(
-          builder: (overrideContext) => _buildLocalizedScaffold(overrideContext),
+          builder: (overrideContext) =>
+              _buildLocalizedScaffold(overrideContext),
         ),
       );
     }
@@ -104,6 +179,13 @@ class _HeuteScreenState extends State<HeuteScreen> {
     final topRecommendation = state.topRecommendation;
     final currentPhase = state.cycleInfo.phaseFor(state.referenceDate);
     final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final layout = Theme.of(context).extension<DashboardLayoutTokens>();
+    final double heroToSectionGap = layout?.heroToSectionGapPx ?? 42;
+    final double bottomReveal = _waveBottomRevealFor(context, heroToSectionGap);
+    final double postWaveTopGap = math.max(
+      Spacing.xs,
+      heroToSectionGap - bottomReveal,
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
@@ -118,75 +200,121 @@ class _HeuteScreenState extends State<HeuteScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(
-                      height: Spacing.m,
-                    ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
+                    const SizedBox(height: Spacing.m),
                     _buildHeader(
                       context,
                       l10n,
                       state.header,
                       currentPhase,
                       state.bottomNav.hasNotifications,
-                      weekView,
-                    ),
-                    const SizedBox(height: _sectionGapTight),
-                    // Hero Sync Preview (image + badge + info card)
-                    HeroSyncPreview(
-                      key: const Key('dashboard_hero_sync_preview'),
-                      imagePath: Assets.images.heroSync01,
-                      badgeAssetPath: Assets.icons.syncBadge,
-                      dateText: state.heroCard.dateText,
-                      subtitle: state.heroCard.subtitle,
-                    ),
-                    const SizedBox(height: _sectionGapTight),
-                    SectionHeader(
-                      title: l10n.dashboardCategoriesTitle,
-                      showTrailingAction: false,
-                    ),
-                    const SizedBox(
-                      height: Spacing.s,
-                    ), // Figma: header→content 12px (Audit V3)
-                    _buildCategories(l10n, state.categories),
-                    const SizedBox(height: Spacing.m),
-                    // Section header: Deine Top-Empfehlung
-                    SectionHeader(
-                      title: l10n.dashboardTopRecommendationTitle,
-                      showTrailingAction: false,
-                    ),
-                    const SizedBox(height: Spacing.s),
-                    // Top recommendation tile
-                    TopRecommendationTile(
-                      workoutId: topRecommendation.id,
-                      tag: topRecommendation.tag,
-                      title: topRecommendation.title,
-                      imagePath: topRecommendation.imagePath,
-                      badgeAssetPath: topRecommendation.badgeAssetPath,
-                      fromLuviSync: topRecommendation.fromLuviSync,
-                      duration: topRecommendation.duration,
-                    ),
-                    const SizedBox(height: _sectionGapTight),
-                    SectionHeader(
-                      title: l10n.dashboardMoreTrainingsTitle,
-                    ),
-                    const SizedBox(
-                      height: Spacing.s,
-                    ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
-                    _buildRecommendations(context, l10n, state.recommendations),
-                    const SizedBox(height: _sectionGapTight),
-                    SectionHeader(
-                      title: l10n.dashboardTrainingDataTitle,
-                      showTrailingAction: false,
-                    ),
-                    const SizedBox(height: Spacing.s),
-                    StatsScroller(
-                      key: const Key('dashboard_training_stats_scroller'),
-                      trainingStats: state.trainingStats,
-                      isWearableConnected: state.wearable.connected,
                     ),
                     const SizedBox(height: Spacing.m),
-                    CycleTipCard(phase: currentPhase),
-                    const SizedBox(height: _kMinBottomGap),
                   ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(child: _buildCalendar(weekView)),
+            SliverToBoxAdapter(child: _buildWaveOverlay(context, state)),
+            if (featureDashboardV2)
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: postWaveTopGap),
+                    Padding(
+                      padding: const EdgeInsets.only(right: Spacing.l),
+                      child: _buildWeeklyTrainingSection(
+                        context,
+                        l10n,
+                        state.weeklyTrainings,
+                      ),
+                    ),
+                    const SizedBox(height: _sectionGapTight),
+                  ],
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: postWaveTopGap),
+                      SectionHeader(
+                        title: l10n.dashboardCategoriesTitle,
+                        showTrailingAction: false,
+                      ),
+                      const SizedBox(
+                        height: Spacing.s,
+                      ), // Figma: header→content 12px (Audit V3)
+                      _buildCategories(l10n, state.categories),
+                      const SizedBox(height: Spacing.m),
+                    ],
+                  ),
+                ),
+              ),
+            if (featureDashboardV2)
+              SliverToBoxAdapter(
+                child: _buildPhaseRecommendationsWaveSection(
+                  context,
+                  l10n,
+                  state.nutritionRecommendations,
+                  state.regenerationRecommendations,
+                ),
+              ),
+            SliverToBoxAdapter(
+              child: ColoredBox(
+                color: _phaseWaveBackgroundColor(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (!featureDashboardV2) ...[
+                        // Section header: Deine Top-Empfehlung
+                        SectionHeader(
+                          title: l10n.dashboardTopRecommendationTitle,
+                          showTrailingAction: false,
+                        ),
+                        const SizedBox(height: Spacing.s),
+                        // Top recommendation tile
+                        TopRecommendationTile(
+                          workoutId: topRecommendation.id,
+                          tag: topRecommendation.tag,
+                          title: topRecommendation.title,
+                          imagePath: topRecommendation.imagePath,
+                          badgeAssetPath: topRecommendation.badgeAssetPath,
+                          fromLuviSync: topRecommendation.fromLuviSync,
+                          duration: topRecommendation.duration,
+                        ),
+                        const SizedBox(height: _sectionGapTight),
+                        SectionHeader(title: l10n.dashboardMoreTrainingsTitle),
+                        const SizedBox(
+                          height: Spacing.s,
+                        ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
+                        _buildRecommendations(
+                          context,
+                          l10n,
+                          state.recommendations,
+                        ),
+                        const SizedBox(height: _sectionGapTight),
+                        SectionHeader(
+                          title: l10n.dashboardTrainingDataTitle,
+                          showTrailingAction: false,
+                        ),
+                        const SizedBox(height: Spacing.s),
+                        StatsScroller(
+                          key: const Key('dashboard_training_stats_scroller'),
+                          trainingStats: state.trainingStats,
+                          isWearableConnected: state.wearable.connected,
+                        ),
+                        const SizedBox(height: Spacing.m),
+                        CycleTipCard(phase: currentPhase),
+                      ],
+                      const SizedBox(height: _kMinBottomGap),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -202,7 +330,6 @@ class _HeuteScreenState extends State<HeuteScreen> {
     HeaderProps header,
     Phase currentPhase,
     bool hasNotifications,
-    WeekStripView weekView,
   ) {
     final textTokens = Theme.of(context).extension<TextColorTokens>();
     final primaryColor = textTokens?.primary ?? DsColors.textPrimary;
@@ -252,7 +379,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
             const SizedBox(width: 8),
             Stack(
               children: [
-                _buildHeaderIcon(Assets.icons.notifications),
+                _buildHeaderIcon(dash_assets.Assets.icons.notifications),
                 if (hasNotifications)
                   Positioned(
                     top: 8,
@@ -271,10 +398,391 @@ class _HeuteScreenState extends State<HeuteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: Spacing.m),
-        DashboardCalendar(view: weekView),
       ],
     );
+  }
+
+  Widget _buildCalendar(WeekStripView weekView) {
+    return DashboardCalendar(view: weekView);
+  }
+
+  Widget _buildWaveOverlay(BuildContext context, HeuteFixtureState state) {
+    final surface = Theme.of(context).extension<SurfaceColorTokens>();
+    final layout = Theme.of(context).extension<DashboardLayoutTokens>();
+    final Color waveColor =
+        surface?.waveOverlayPink ?? DsColors.waveOverlayPink;
+    final double waveHeight = layout?.waveHeightPx ?? 220;
+    final double heroMargin = layout?.heroHorizontalMarginPx ?? Spacing.l;
+    final double calendarGap = layout?.calendarToWaveGapPx ?? Spacing.xs;
+    assert(calendarGap >= 0);
+    final double heroToSectionGap = layout?.heroToSectionGapPx ?? 42;
+    final double heroHeight = HeroSyncPreview.kContainerHeight;
+    final double bottomReveal = _waveBottomRevealFor(context, heroToSectionGap);
+    final Color backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final double effectiveWaveHeight = math.max(
+      waveHeight,
+      heroHeight + calendarGap + bottomReveal,
+    );
+
+    return RepaintBoundary(
+      child: SizedBox(
+        height: effectiveWaveHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _WavePainter(
+                  color: waveColor,
+                  amplitude: bottomReveal,
+                  background: backgroundColor,
+                ),
+              ),
+            ),
+            Positioned(
+              left: heroMargin,
+              right: heroMargin,
+              bottom: bottomReveal,
+              child: HeroSyncPreview(
+                key: const Key('dashboard_hero_sync_preview'),
+                imagePath: dash_assets.Assets.images.heroSync01,
+                badgeAssetPath: dash_assets.Assets.icons.syncBadge,
+                dateText: state.heroCard.dateText,
+                subtitle: state.heroCard.subtitle,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeeklyTrainingSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<WeeklyTrainingProps> trainings,
+  ) {
+    final theme = Theme.of(context);
+    final typographyTokens = theme.extension<WorkoutCardTypographyTokens>();
+    final subtitleStyle =
+        typographyTokens?.sectionSubtitleStyle ??
+        const TextStyle(
+          fontFamily: FontFamilies.figtree,
+          fontWeight: FontWeight.w400,
+          fontSize: 16,
+          height: 24 / 16,
+          fontStyle: FontStyle.italic,
+          color: Color(0x99030401),
+        );
+    final viewMoreBaseStyle =
+        typographyTokens?.subtitleStyle ??
+        const TextStyle(
+          fontFamily: FontFamilies.figtree,
+          fontWeight: FontWeight.w400,
+          fontSize: 16,
+          height: 24 / 16,
+        );
+    final borderRadiusValue =
+        theme.extension<CalendarRadiusTokens>()?.cardWorkout ?? 20.0;
+    final borderRadius = BorderRadius.circular(borderRadiusValue);
+    final shadow =
+        theme.extension<ShadowTokens>()?.tileDrop ??
+        const BoxShadow(
+          offset: Offset(0, 4),
+          blurRadius: 4,
+          color: Color(0x40000000),
+        );
+    final viewMoreStyle = viewMoreBaseStyle.copyWith(
+      color: theme.colorScheme.onSurface,
+      fontWeight: FontWeight.w600,
+    );
+    final double cardWidth = _weeklyTrainingCardWidth(context);
+
+    Widget buildViewMoreCard() {
+      return Semantics(
+        container: true,
+        button: true,
+        label: l10n.dashboardViewMore,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => context.push(TrainingsOverviewStubScreen.route),
+            borderRadius: borderRadius,
+            child: Container(
+              width: cardWidth,
+              height: _weeklyTrainingCardHeight,
+              decoration: BoxDecoration(
+                color: theme.scaffoldBackgroundColor,
+                borderRadius: borderRadius,
+                boxShadow: [shadow],
+              ),
+              child: Center(
+                child: Text(
+                  l10n.dashboardViewMore,
+                  textAlign: TextAlign.center,
+                  style: viewMoreStyle,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      key: const Key('dashboard_weekly_training_section'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: Spacing.l),
+          child: SectionHeader(
+            title: l10n.dashboardTrainingWeekTitle,
+            showTrailingAction: false,
+          ),
+        ),
+        const SizedBox(height: Spacing.xs),
+        Padding(
+          padding: const EdgeInsets.only(left: Spacing.l),
+          child: Text(l10n.dashboardTrainingWeekSubtitle, style: subtitleStyle),
+        ),
+        const SizedBox(height: Spacing.s),
+        SizedBox(
+          height: _weeklyTrainingCardHeight,
+          child: ListView.separated(
+            padding: const EdgeInsets.only(left: Spacing.l),
+            scrollDirection: Axis.horizontal,
+            itemCount: trainings.length + 1,
+            physics: const BouncingScrollPhysics(),
+            clipBehavior: Clip.none,
+            separatorBuilder: (context, index) =>
+                const SizedBox(width: _weeklyTrainingItemGap),
+            itemBuilder: (context, index) {
+              if (index < trainings.length) {
+                final training = trainings[index];
+                return WeeklyTrainingCard(
+                  title: training.title,
+                  subtitle: training.subtitle,
+                  imagePath: training.imagePath,
+                  dayLabel: training.dayLabel,
+                  duration: training.duration,
+                  isCompleted: training.isCompleted,
+                  onTap: () => context.push('/workout/${training.id}'),
+                );
+              }
+              return buildViewMoreCard();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhaseRecommendationsWaveSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<RecommendationProps> nutritionRecos,
+    List<RecommendationProps> regenerationRecos,
+  ) {
+    final theme = Theme.of(context);
+    // Light gray for the frame container (recommendations card)
+    final frameSurface =
+        theme.extension<SurfaceColorTokens>()?.cardBackgroundNeutral ??
+        theme.extension<DsTokens>()?.cardSurface ??
+        SurfaceColorTokens.light.cardBackgroundNeutral;
+    // Softer beige for the wave background
+    final waveColor = _phaseWaveBackgroundColor(
+      context,
+    ); // Fallback to frame color if token missing (SSOT-compliant)
+    final borderRadiusValue =
+        theme.extension<CalendarRadiusTokens>()?.cardWorkout ?? 20.0;
+    final shadow = theme.extension<ShadowTokens>()?.tileDrop;
+    final sectionHeight = _calculatePhaseRecoSectionHeight();
+
+    return RepaintBoundary(
+      child: SizedBox(
+        height: sectionHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Beige wave with upward-bulging curve (flipVertical: true)
+            // Wave color (#F0E5DA) contrasts against the slightly darker frame surface
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _WavePainter(
+                  color: waveColor,
+                  amplitude: _phaseRecoWaveAmplitude,
+                  background: theme.scaffoldBackgroundColor,
+                  flipVertical: true,
+                ),
+              ),
+            ),
+            Positioned(
+              left: Spacing.l,
+              right: Spacing.l,
+              top: _phaseRecoWaveHeight - _phaseRecoWaveAmplitude,
+              child: Container(
+                padding: const EdgeInsets.all(_phaseRecoFramePadding),
+                decoration: BoxDecoration(
+                  color: frameSurface,
+                  borderRadius: BorderRadius.circular(borderRadiusValue),
+                  boxShadow: shadow != null ? [shadow] : null,
+                ),
+                clipBehavior: Clip.none,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SectionHeader(
+                      title: l10n.dashboardRecommendationsTitle,
+                      showTrailingAction: false,
+                    ),
+                    const SizedBox(height: Spacing.m),
+                    _buildRecommendationSubsection(
+                      context,
+                      l10n.dashboardNutritionTitle,
+                      nutritionRecos,
+                      _nutritionCardWidth,
+                      _nutritionCardHeight,
+                      l10n.nutritionRecommendation,
+                    ),
+                    const SizedBox(height: _subsectionGap),
+                    _buildRecommendationSubsection(
+                      context,
+                      l10n.dashboardRegenerationTitle,
+                      regenerationRecos,
+                      _regenerationCardWidth,
+                      _regenerationCardHeight,
+                      l10n.regenerationRecommendation,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecommendationSubsection(
+    BuildContext context,
+    String title,
+    List<RecommendationProps> recommendations,
+    double cardWidth,
+    double cardHeight,
+    String semanticPrefix,
+  ) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final borderRadiusValue =
+        theme.extension<CalendarRadiusTokens>()?.cardWorkout ?? 20.0;
+    final borderRadius = BorderRadius.circular(borderRadiusValue);
+    final shadow = theme.extension<ShadowTokens>()?.tileDrop;
+    const headerTextStyle = TextStyle(
+      fontFamily: FontFamilies.figtree,
+      fontSize: 16,
+      height: 24 / 16,
+      fontWeight: FontWeight.w600,
+    );
+
+    if (recommendations.isEmpty) {
+      final placeholderColor =
+          theme.extension<TextColorTokens>()?.secondary ??
+          ColorTokens.recommendationTag;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: headerTextStyle),
+          const SizedBox(height: Spacing.s),
+          Text(
+            l10n.dashboardRecommendationsEmpty,
+            style: TextStyle(
+              fontFamily: FontFamilies.figtree,
+              fontSize: 16,
+              height: 24 / 16,
+              color: placeholderColor,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: headerTextStyle),
+        const SizedBox(height: Spacing.s),
+        SizedBox(
+          height: cardHeight,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: recommendations.length + 1,
+            physics: const BouncingScrollPhysics(),
+            clipBehavior: Clip.hardEdge,
+            padding: EdgeInsets.zero,
+            separatorBuilder: (context, index) =>
+                const SizedBox(width: _phaseRecoCardGap),
+            itemBuilder: (context, index) {
+              if (index < recommendations.length) {
+                final reco = recommendations[index];
+                return Semantics(
+                  label:
+                      '$semanticPrefix: ${reco.title}${reco.subtitle != null ? ', ${reco.subtitle}' : ''}',
+                  child: RecommendationCard(
+                    imagePath: reco.imagePath,
+                    tag: reco.tag,
+                    title: reco.title,
+                    subtitle: reco.subtitle,
+                    showTag: false,
+                    width: cardWidth,
+                    height: cardHeight,
+                  ),
+                );
+              }
+              return Semantics(
+                container: true,
+                button: true,
+                label: l10n.dashboardViewMore,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () =>
+                        context.push(TrainingsOverviewStubScreen.route),
+                    borderRadius: borderRadius,
+                    child: Container(
+                      width: cardWidth,
+                      height: cardHeight,
+                      decoration: BoxDecoration(
+                        color: theme.scaffoldBackgroundColor,
+                        borderRadius: borderRadius,
+                        boxShadow: shadow != null ? [shadow] : null,
+                      ),
+                      child: Center(
+                        child: Text(
+                          l10n.dashboardViewMore,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: FontFamilies.figtree,
+                            fontSize: 16,
+                            height: 24 / 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  double _weeklyTrainingCardWidth(BuildContext context) {
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final availableWidth = viewportWidth - _weeklyTrainingHorizontalInset;
+    return math.min(_weeklyTrainingCardMaxWidth, availableWidth);
   }
 
   Widget _buildHeaderIcon(String assetPath) {
@@ -300,7 +808,6 @@ class _HeuteScreenState extends State<HeuteScreen> {
       ),
     );
   }
-
 
   Widget _buildCategories(
     AppLocalizations l10n,
@@ -339,25 +846,14 @@ class _HeuteScreenState extends State<HeuteScreen> {
             .clamp(_categoriesMinGap, _categoriesMaxGap)
             .toDouble();
 
-        return _buildCategoryWrap(
-          categories,
-          labels,
-          resolvedWidths,
-          gap,
-        );
+        return _buildCategoryWrap(categories, labels, resolvedWidths, gap);
       },
     );
   }
 
-  List<double> _measureChipWidths(
-    List<String> labels,
-    TextDirection dir,
-  ) {
-    return [
-      for (final label in labels) CategoryChip.measuredWidth(label, dir),
-    ];
+  List<double> _measureChipWidths(List<String> labels, TextDirection dir) {
+    return [for (final label in labels) CategoryChip.measuredWidth(label, dir)];
   }
-
 
   Widget _buildCategoryWrap(
     List<CategoryProps> categories,
@@ -449,22 +945,22 @@ class _HeuteScreenState extends State<HeuteScreen> {
   Widget _buildDockNavigation(AppLocalizations l10n) {
     final tabs = [
       DockTab(
-        iconPath: Assets.icons.navToday,
+        iconPath: dash_assets.Assets.icons.navToday,
         label: l10n.dashboardNavToday,
         key: const Key('nav_today'),
       ),
       DockTab(
-        iconPath: Assets.icons.navCycle,
+        iconPath: dash_assets.Assets.icons.navCycle,
         label: l10n.dashboardNavCycle,
         key: const Key('nav_cycle'),
       ),
       DockTab(
-        iconPath: Assets.icons.navPulse,
+        iconPath: dash_assets.Assets.icons.navPulse,
         label: l10n.dashboardNavPulse,
         key: const Key('nav_pulse'),
       ),
       DockTab(
-        iconPath: Assets.icons.navProfile,
+        iconPath: dash_assets.Assets.icons.navProfile,
         label: l10n.dashboardNavProfile,
         key: const Key('nav_profile'),
       ),
@@ -496,7 +992,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
           child: Center(
             child: FloatingSyncButton(
               key: const Key('floating_sync_button'),
-              iconPath: Assets.icons.navSync,
+              iconPath: dash_assets.Assets.icons.navSync,
               // Kodex: size and iconSize from tokens (64px, 42px)
               // Current SVG has 3px padding (26/32 glyph). Compensate to keep 65% fill.
               iconTight: false,
@@ -539,5 +1035,72 @@ class _HeuteScreenState extends State<HeuteScreen> {
         return l10n.cyclePhaseLuteal;
     }
   }
+}
 
+class _WavePainter extends CustomPainter {
+  const _WavePainter({
+    required this.color,
+    required this.amplitude,
+    required this.background,
+    this.flipVertical = false,
+  });
+
+  final Color color;
+  final double amplitude;
+  final Color background;
+  // If true, curve bulges upward; if false, curve bulges downward.
+  final bool flipVertical;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final double w = size.width;
+    final double h = size.height;
+    if (w == 0 || h == 0) {
+      return;
+    }
+    final double arc = amplitude.clamp(0.0, h);
+    if (arc <= 0) {
+      canvas.drawRect(Offset.zero & size, paint);
+      return;
+    }
+
+    canvas.drawRect(Offset.zero & size, paint);
+
+    // Ratios derived from consent_wave.svg control points (85.5, 214, 342.5 of width 428).
+    const double c1Ratio = 85.5 / 428.0;
+    const double midRatio = 214.0 / 428.0;
+    const double c2Ratio = 342.5 / 428.0;
+
+    final double baseY = flipVertical ? arc : h - arc;
+    // Calculate curve offset based on flip direction.
+    final double curveOffset = flipVertical ? baseY - arc : baseY + arc;
+
+    final Path path = Path()
+      ..moveTo(0, baseY)
+      ..cubicTo(0, baseY, w * c1Ratio, curveOffset, w * midRatio, curveOffset)
+      ..cubicTo(w * c2Ratio, curveOffset, w, baseY, w, baseY);
+
+    if (flipVertical) {
+      path
+        ..lineTo(w, 0)
+        ..lineTo(0, 0);
+    } else {
+      path
+        ..lineTo(w, h)
+        ..lineTo(0, h);
+    }
+    path.close();
+
+    final Paint cutPaint = Paint()..color = background;
+    canvas.drawPath(path, cutPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _WavePainter oldDelegate) {
+    return oldDelegate.color != color ||
+        oldDelegate.amplitude != amplitude ||
+        oldDelegate.background != background ||
+        oldDelegate.flipVertical != flipVertical;
+  }
 }

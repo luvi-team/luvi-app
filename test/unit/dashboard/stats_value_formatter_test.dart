@@ -14,10 +14,7 @@ void main() {
 
   group('formatStatValue', () {
     test('formats thousands with German separators', () {
-      final result = formatStatValue(
-        locale: germanLocale,
-        value: 2500,
-      );
+      final result = formatStatValue(locale: germanLocale, value: 2500);
 
       expect(result.valueText, '2.500');
       expect(result.displayText, '2.500');
@@ -80,10 +77,7 @@ void main() {
     });
 
     test('formats large numbers with grouping separators', () {
-      final result = formatStatValue(
-        locale: germanLocale,
-        value: 9876543,
-      );
+      final result = formatStatValue(locale: germanLocale, value: 9876543);
 
       expect(result.valueText, '9.876.543');
       expect(result.displayText, '9.876.543');

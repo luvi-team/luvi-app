@@ -18,9 +18,8 @@ void main() {
         ),
         GoRoute(
           path: Onboarding04Screen.routeName,
-          builder: (context, state) => const Scaffold(
-            body: Text('Onboarding 04 (Stub)'),
-          ),
+          builder: (context, state) =>
+              const Scaffold(body: Text('Onboarding 04 (Stub)')),
         ),
       ],
       initialLocation: Onboarding03Screen.routeName,

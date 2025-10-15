@@ -27,10 +27,12 @@ class WavePunchOutClipper extends CustomClipper<Path> {
     // Subtract circular punch-out at wave bottom center
     // Center: (centerX, cutoutDepth) - button sits here with gap above
     // Radius: punchOutRadius (35px) - covers button + ring + small margin
-    path.addOval(Rect.fromCircle(
-      center: Offset(centerX, cutoutDepth),
-      radius: punchOutRadius,
-    ));
+    path.addOval(
+      Rect.fromCircle(
+        center: Offset(centerX, cutoutDepth),
+        radius: punchOutRadius,
+      ),
+    );
 
     // evenOdd: Subtracts the circle from the rectangle
     path.fillType = PathFillType.evenOdd;

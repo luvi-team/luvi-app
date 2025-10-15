@@ -6,7 +6,9 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/routes.dart' as features;
 
 void main() {
-  testWidgets('verify confirm button enables only after 6 digits', (tester) async {
+  testWidgets('verify confirm button enables only after 6 digits', (
+    tester,
+  ) async {
     final router = GoRouter(
       routes: features.featureRoutes,
       initialLocation: '/auth/verify',

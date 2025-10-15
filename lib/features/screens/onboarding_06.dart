@@ -55,9 +55,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: spacing.horizontalPadding,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -99,7 +97,8 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           child: Semantics(
             header: true,
             child: Text(
-              l10n?.onboarding06Question ?? 'Wie lange dauert dein Zyklus normalerweise?',
+              l10n?.onboarding06Question ??
+                  'Wie lange dauert dein Zyklus normalerweise?',
               textAlign: TextAlign.center,
               maxLines: 2,
               softWrap: true,
@@ -116,9 +115,7 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           label: stepSemantic,
           child: Text(
             stepFraction,
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -152,7 +149,8 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
   Widget _buildCallout(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context);
     return Text(
-      l10n?.onboarding06Callout ?? 'Jeder Zyklus ist einzigartig - wie du auch!',
+      l10n?.onboarding06Callout ??
+          'Jeder Zyklus ist einzigartig - wie du auch!',
       style: textTheme.bodyMedium?.copyWith(
         color: colorScheme.onSurface,
         fontSize: TypographyTokens.size16,

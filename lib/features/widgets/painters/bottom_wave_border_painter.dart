@@ -52,18 +52,24 @@ class BottomWaveBorderPainter extends CustomPainter {
     // - cp1 at (-a + α, 0) for horizontal tangent at left end
     // - cp2 at (-0.275×a, -d) for smooth transition at center
     path.cubicTo(
-      centerX - a + alpha, waveTopInset, // cp1: horizontal tangent at left endpoint
-      centerX - waveCpBeta * a, waveTopInset + d, // cp2: smooth approach to center bottom
-      centerX, waveTopInset + d, // endpoint: center bottom of wave
+      centerX - a + alpha,
+      waveTopInset, // cp1: horizontal tangent at left endpoint
+      centerX - waveCpBeta * a,
+      waveTopInset + d, // cp2: smooth approach to center bottom
+      centerX,
+      waveTopInset + d, // endpoint: center bottom of wave
     );
 
     // Segment 2: (0, -d) → (+a, 0)
     // - cp1 at (+0.275×a, -d) for smooth transition from center
     // - cp2 at (+a - α, 0) for horizontal tangent at right end
     path.cubicTo(
-      centerX + waveCpBeta * a, waveTopInset + d, // cp1: smooth departure from center bottom
-      centerX + a - alpha, waveTopInset, // cp2: horizontal tangent at right endpoint
-      centerX + a, waveTopInset, // endpoint: right side of cutout
+      centerX + waveCpBeta * a,
+      waveTopInset + d, // cp1: smooth departure from center bottom
+      centerX + a - alpha,
+      waveTopInset, // cp2: horizontal tangent at right endpoint
+      centerX + a,
+      waveTopInset, // endpoint: right side of cutout
     );
 
     // Line to right edge

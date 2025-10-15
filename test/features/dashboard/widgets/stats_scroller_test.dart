@@ -132,10 +132,16 @@ void main() {
 
       final heartValueTop = tester.getTopLeft(find.text('94'));
       final heartUnitTop = tester.getTopLeft(find.text('bpm'));
-      expect(heartUnitTop.dy, greaterThan(heartValueTop.dy),
-          reason: 'Unit should sit below the pulse value');
-      expect((heartUnitTop.dx - heartValueTop.dx).abs(), lessThan(0.5),
-          reason: 'Unit should align vertically with the pulse value');
+      expect(
+        heartUnitTop.dy,
+        greaterThan(heartValueTop.dy),
+        reason: 'Unit should sit below the pulse value',
+      );
+      expect(
+        (heartUnitTop.dx - heartValueTop.dx).abs(),
+        lessThan(0.5),
+        reason: 'Unit should align vertically with the pulse value',
+      );
 
       final energyFinder = find.byWidgetPredicate(
         (widget) =>
@@ -143,10 +149,16 @@ void main() {
       );
       final energyValueTop = tester.getTopLeft(energyFinder);
       final stepsValueTop = tester.getTopLeft(find.text('2.500'));
-      expect((heartValueTop.dy - energyValueTop.dy).abs(), lessThan(1.5),
-          reason: 'Pulse and energy values should share the same vertical band');
-      expect((heartValueTop.dy - stepsValueTop.dy).abs(), lessThan(1.5),
-          reason: 'Pulse and steps values should share the same vertical band');
+      expect(
+        (heartValueTop.dy - energyValueTop.dy).abs(),
+        lessThan(1.5),
+        reason: 'Pulse and energy values should share the same vertical band',
+      );
+      expect(
+        (heartValueTop.dy - stepsValueTop.dy).abs(),
+        lessThan(1.5),
+        reason: 'Pulse and steps values should share the same vertical band',
+      );
 
       final stepsCardFinder = find
           .ancestor(
@@ -158,10 +170,16 @@ void main() {
       final stepsValueCenter = tester.getCenter(find.text('2.500'));
       final relativeX =
           (stepsValueCenter.dx - stepsRect.left) / stepsRect.width;
-      expect(relativeX, greaterThan(0.5),
-          reason: 'Steps value should lean towards the right of centre');
-      expect(relativeX, lessThan(0.75),
-          reason: 'Steps value should not hug the right edge');
+      expect(
+        relativeX,
+        greaterThan(0.5),
+        reason: 'Steps value should lean towards the right of centre',
+      );
+      expect(
+        relativeX,
+        lessThan(0.75),
+        reason: 'Steps value should not hug the right edge',
+      );
     });
 
     testWidgets('cards have correct height and style (159dp, solid gray)', (
@@ -225,11 +243,7 @@ void main() {
         reason: 'Background should be solid gray #F1F1F1',
       );
 
-      expect(
-        decoration.border,
-        isA<Border>(),
-        reason: 'Should have border',
-      );
+      expect(decoration.border, isA<Border>(), reason: 'Should have border');
 
       final border = decoration.border as Border;
       expect(
@@ -237,11 +251,7 @@ void main() {
         equals(const Color(0x1A000000)),
         reason: 'Border color should be 10% black (0x1A000000)',
       );
-      expect(
-        border.top.width,
-        equals(1),
-        reason: 'Border width should be 1dp',
-      );
+      expect(border.top.width, equals(1), reason: 'Border width should be 1dp');
     });
 
     testWidgets('displays HR glyph only for Puls card when provided', (
@@ -318,10 +328,7 @@ void main() {
       // Verify Column has crossAxisAlignment.start
       final column = tester.widget<Column>(
         find
-            .descendant(
-              of: find.byType(Stack),
-              matching: find.byType(Column),
-            )
+            .descendant(of: find.byType(Stack), matching: find.byType(Column))
             .first,
       );
 

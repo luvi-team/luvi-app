@@ -7,16 +7,16 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
   group('CycleTipCard l10n', () {
-    testWidgets('renders localized headline and body per phase (de)', (tester) async {
+    testWidgets('renders localized headline and body per phase (de)', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('de'),
-          home: const Scaffold(
-            body: CycleTipCard(phase: Phase.luteal),
-          ),
+          home: const Scaffold(body: CycleTipCard(phase: Phase.luteal)),
         ),
       );
 

@@ -91,8 +91,10 @@ class _LoginButtonChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isLoading) {
-      return const Text(AuthStrings.loginCtaButton,
-          key: ValueKey('login_cta_label'));
+      return const Text(
+        AuthStrings.loginCtaButton,
+        key: ValueKey('login_cta_label'),
+      );
     }
 
     final theme = Theme.of(context);

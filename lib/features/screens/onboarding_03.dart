@@ -49,9 +49,7 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: spacing.horizontalPadding,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -107,9 +105,7 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
           label: stepSemantic,
           child: Text(
             stepFraction,
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -135,9 +131,7 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
         title: l10n.onboarding03GoalTrainingAlignment,
       ),
       _GoalItem(
-        icon: ExcludeSemantics(
-          child: Icon(Icons.restaurant, size: iconSize),
-        ),
+        icon: ExcludeSemantics(child: Icon(Icons.restaurant, size: iconSize)),
         title: l10n.onboarding03GoalNutrition,
       ),
       _GoalItem(

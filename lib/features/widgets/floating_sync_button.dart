@@ -20,7 +20,8 @@ class FloatingSyncButton extends StatelessWidget {
   final String iconPath;
   final double size;
   final double iconSize;
-  final bool iconTight; // whether the SVG glyph tightly fits its viewBox (no padding)
+  final bool
+  iconTight; // whether the SVG glyph tightly fits its viewBox (no padding)
   final Color? backgroundColor;
   final bool isActive;
 
@@ -29,8 +30,10 @@ class FloatingSyncButton extends StatelessWidget {
     required this.onTap,
     required this.iconPath,
     this.size = buttonDiameter, // Figma spec: 64px (from tokens)
-    this.iconSize = iconSizeTight, // Default assumes tight SVG (42px → 65% fill)
-    this.iconTight = true, // Current asset has padding → pass iconTight: false for compensation
+    this.iconSize =
+        iconSizeTight, // Default assumes tight SVG (42px → 65% fill)
+    this.iconTight =
+        true, // Current asset has padding → pass iconTight: false for compensation
     this.backgroundColor,
     this.isActive = false,
   });
@@ -40,9 +43,11 @@ class FloatingSyncButton extends StatelessWidget {
     final dsTokens = Theme.of(context).extension<DsTokens>()!;
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     // Kodex: Use colorScheme.surface (not Colors.white) for future dark-mode compatibility
-    final Color effectiveBackgroundColor = backgroundColor ?? colorScheme.surface;
+    final Color effectiveBackgroundColor =
+        backgroundColor ?? colorScheme.surface;
     final Color iconColor = isActive
-        ? colorScheme.primary // Gold #D9B18E when active
+        ? colorScheme
+              .primary // Gold #D9B18E when active
         : colorScheme.onSurface; // Black #030401 when inactive
 
     final l10n = AppLocalizations.of(context);
@@ -52,8 +57,10 @@ class FloatingSyncButton extends StatelessWidget {
       button: true,
       child: Shortcuts(
         shortcuts: <ShortcutActivator, Intent>{
-          const SingleActivator(LogicalKeyboardKey.enter): const ActivateIntent(),
-          const SingleActivator(LogicalKeyboardKey.space): const ActivateIntent(),
+          const SingleActivator(LogicalKeyboardKey.enter):
+              const ActivateIntent(),
+          const SingleActivator(LogicalKeyboardKey.space):
+              const ActivateIntent(),
         },
         child: Actions(
           actions: <Type, Action<Intent>>{
@@ -91,10 +98,7 @@ class FloatingSyncButton extends StatelessWidget {
                       // If the SVG has padding (non-tight), compensate so the visible glyph fills 65%
                       width: iconTight ? iconSize : iconSizeCompensated,
                       height: iconTight ? iconSize : iconSizeCompensated,
-                      colorFilter: ColorFilter.mode(
-                        iconColor,
-                        BlendMode.srcIn,
-                      ),
+                      colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
                     ),
                   ),
                 ),

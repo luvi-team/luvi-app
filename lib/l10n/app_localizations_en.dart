@@ -98,6 +98,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardTrainingDataTitle => 'Your Training Data';
 
   @override
+  String get dashboardTrainingWeekTitle => 'Your Training for This Week';
+
+  @override
+  String get dashboardTrainingWeekSubtitle => 'Created by your LUVI experts';
+
+  @override
+  String get dashboardRecommendationsTitle => 'More Recommendations for This Phase';
+
+  @override
+  String get dashboardNutritionTitle => 'Nutrition & Diet';
+
+  @override
+  String get dashboardRegenerationTitle => 'Recovery & Mindfulness';
+
+  @override
   String get dashboardNavToday => 'Today';
 
   @override
@@ -128,6 +143,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardViewAll => 'View all';
 
   @override
+  String get dashboardViewMore => 'View more';
+
+  @override
+  String get trainingCompleted => 'Completed';
+
+  @override
+  String get nutritionRecommendation => 'Nutrition recommendation';
+
+  @override
+  String get regenerationRecommendation => 'Recovery recommendation';
+
+  @override
   String get dashboardLuviSyncTitle => 'Luvi Sync Journal';
 
   @override
@@ -143,7 +170,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardHeroCtaMore => 'More';
 
   @override
-  String get dashboardRecommendationsEmpty => 'No recommendations available';
+  String get dashboardRecommendationsEmpty => 'No recommendations for this phase yet.';
 
   @override
   String get topRecommendation => 'Top recommendation';
@@ -166,8 +193,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get cycleInlineCalendarLabelDefault =>
-      'Cycle calendar. Switch to the cycle overview. For orientation only - not a medical prediction or diagnostic tool.';
+  String get cycleInlineCalendarLabelDefault => 'Cycle calendar. Switch to the cycle overview. For orientation only - not a medical prediction or diagnostic tool.';
 
   @override
   String get cyclePhaseMenstruation => 'Menstruation';

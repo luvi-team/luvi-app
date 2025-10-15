@@ -9,16 +9,10 @@ import 'package:luvi_app/core/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 
-enum SuccessVariant {
-  passwordSaved,
-  forgotEmailSent,
-}
+enum SuccessVariant { passwordSaved, forgotEmailSent }
 
 class SuccessScreen extends StatelessWidget {
-  const SuccessScreen({
-    super.key,
-    this.variant = SuccessVariant.passwordSaved,
-  });
+  const SuccessScreen({super.key, this.variant = SuccessVariant.passwordSaved});
 
   final SuccessVariant variant;
 
@@ -49,8 +43,9 @@ class SuccessScreen extends StatelessWidget {
       color: tokens.grayscale500,
     );
 
-    final resolvedHorizontalPadding =
-        horizontalPadding > 0 ? horizontalPadding : 0.0;
+    final resolvedHorizontalPadding = horizontalPadding > 0
+        ? horizontalPadding
+        : 0.0;
 
     late final String titleText;
     late final String subtitleText;
@@ -147,21 +142,14 @@ class _SuccessCopy extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: Spacing.xs),
-        Text(
-          subtitleText,
-          style: subtitleStyle,
-          textAlign: TextAlign.center,
-        ),
+        Text(subtitleText, style: subtitleStyle, textAlign: TextAlign.center),
       ],
     );
   }
 }
 
 class _BottomCta extends StatelessWidget {
-  const _BottomCta({
-    required this.onPressed,
-    required this.isLoading,
-  });
+  const _BottomCta({required this.onPressed, required this.isLoading});
 
   final VoidCallback onPressed;
   final bool isLoading;
@@ -198,16 +186,9 @@ class _SuccessIcon extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
       alignment: Alignment.center,
-      child: Icon(
-        Icons.check,
-        size: iconSize,
-        color: iconColor,
-      ),
+      child: Icon(Icons.check, size: iconSize, color: iconColor),
     );
   }
 }

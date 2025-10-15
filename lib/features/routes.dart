@@ -23,6 +23,7 @@ import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
+import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
@@ -157,6 +158,11 @@ final List<GoRoute> featureRoutes = [
       final id = state.pathParameters['id'] ?? 'unknown';
       return WorkoutDetailStubScreen(workoutId: id);
     },
+  ),
+  GoRoute(
+    path: TrainingsOverviewStubScreen.route,
+    name: 'trainings_overview_stub',
+    builder: (context, state) => const TrainingsOverviewStubScreen(),
   ),
 ];
 

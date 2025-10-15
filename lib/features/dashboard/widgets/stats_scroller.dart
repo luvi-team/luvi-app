@@ -8,7 +8,8 @@ import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
 
 const double _cardGap = Spacing.m; // 16px between stat cards
-const double _cardPadding = 16; // Reduced from 20 to fit content in 159px height
+const double _cardPadding =
+    16; // Reduced from 20 to fit content in 159px height
 const double _iconCircleDiameter = 29.5;
 const double _iconSize = 18;
 // HR glyph positioning (Figma node 68589:7675, anchored to bottom for overflow-free layout)
@@ -65,9 +66,7 @@ class StatsScroller extends StatelessWidget {
           padding: EdgeInsets.zero,
           physics: const BouncingScrollPhysics(),
           children: const [
-            WearableConnectCard(
-              key: Key('dashboard_wearable_connect_card'),
-            ),
+            WearableConnectCard(key: Key('dashboard_wearable_connect_card')),
           ],
         ),
       );
@@ -82,7 +81,8 @@ class StatsScroller extends StatelessWidget {
         clipBehavior: Clip.none,
         itemCount: trainingStats.length,
         separatorBuilder: (context, index) => const SizedBox(width: _cardGap),
-        itemBuilder: (context, index) => _TrainingStatCard(data: trainingStats[index]),
+        itemBuilder: (context, index) =>
+            _TrainingStatCard(data: trainingStats[index]),
       ),
     );
   }
@@ -95,10 +95,7 @@ class _TrainingStatCard extends StatelessWidget {
 
   static final NumberFormat _formatter = NumberFormat.decimalPattern('de_DE');
 
-  Widget _buildValueGroup(
-    Color valueColor,
-    Color titleColor,
-  ) {
+  Widget _buildValueGroup(Color valueColor, Color titleColor) {
     final formattedValue = _formatter.format(data.value);
     final valueStyle = TextStyle(
       fontFamily: FontFamilies.playfairDisplay,
@@ -129,12 +126,7 @@ class _TrainingStatCard extends StatelessWidget {
       return _buildCenteredValue(formattedValue, valueStyle);
     }
 
-    return _buildInlineValue(
-      formattedValue,
-      data.unit!,
-      valueStyle,
-      unitStyle,
-    );
+    return _buildInlineValue(formattedValue, data.unit!, valueStyle, unitStyle);
   }
 
   Widget _buildStackedValue(
@@ -172,13 +164,7 @@ class _TrainingStatCard extends StatelessWidget {
       return content;
     }
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        content,
-        glyph,
-      ],
-    );
+    return Stack(clipBehavior: Clip.none, children: [content, glyph]);
   }
 
   Widget _buildInlineValue(
@@ -194,21 +180,13 @@ class _TrainingStatCard extends StatelessWidget {
         text: TextSpan(
           text: value,
           style: valueStyle,
-          children: [
-            TextSpan(
-              text: ' $unit',
-              style: unitStyle,
-            ),
-          ],
+          children: [TextSpan(text: ' $unit', style: unitStyle)],
         ),
       ),
     );
   }
 
-  Widget _buildCenteredValue(
-    String value,
-    TextStyle valueStyle,
-  ) {
+  Widget _buildCenteredValue(String value, TextStyle valueStyle) {
     return Align(
       alignment: Alignment(_stepsValueAlignmentX, -1),
       child: Padding(
@@ -258,7 +236,8 @@ class _TrainingStatCard extends StatelessWidget {
         width: kStatsCardWidth,
         height: kStatsCardHeight,
         decoration: BoxDecoration(
-          color: surfaceTokens?.cardBackgroundNeutral ?? const Color(0xFFF1F1F1),
+          color:
+              surfaceTokens?.cardBackgroundNeutral ?? const Color(0xFFF1F1F1),
           borderRadius: BorderRadius.circular(kStatsCardRadius),
           border: Border.all(
             color: const Color(0x1A000000), // Figma: 1dp @ 10% black
@@ -274,7 +253,10 @@ class _TrainingStatCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  height: TypographyTokens.size14 * TypographyTokens.lineHeightRatio24on14 * 2,
+                  height:
+                      TypographyTokens.size14 *
+                      TypographyTokens.lineHeightRatio24on14 *
+                      2,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

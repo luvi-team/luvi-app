@@ -44,7 +44,7 @@ void main() {
       final testWindow = tester.binding.window;
       testWindow.viewInsetsTestValue = FakeViewPadding(bottom: keyboardHeight);
       testWindow.paddingTestValue = const FakeViewPadding(
-        top: 47,  // iPhone SafeTop
+        top: 47, // iPhone SafeTop
         bottom: 34, // iPhone SafeBottom
       );
 
@@ -61,7 +61,9 @@ void main() {
       }
 
       // Find widgets by specific finders
-      final backButtonFinder = find.byType(Container).first; // BackButtonCircle inner
+      final backButtonFinder = find
+          .byType(Container)
+          .first; // BackButtonCircle inner
       final subtitleFinder = find.text('Mach es stark.');
       final passwordFieldFinder = find.text('Neues Passwort').first;
       final confirmFieldFinder = find.text('Neues Passwort bestätigen').first;
@@ -89,29 +91,51 @@ void main() {
 
     testWidgets('K0 - Baseline', (tester) async {
       final m = await quickMeasure(tester, keyboardHeight: 0);
-      print('- K0:   gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      print(
+        '- K0:   gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
     });
 
     testWidgets('K300/F1 - Keyboard + Field 1', (tester) async {
-      final m = await quickMeasure(tester, keyboardHeight: 300, focusFieldIndex: 0);
-      print('- K300/F1: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      final m = await quickMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 0,
+      );
+      print(
+        '- K300/F1: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
     });
 
     testWidgets('K300/F2 - Keyboard + Field 2', (tester) async {
-      final m = await quickMeasure(tester, keyboardHeight: 300, focusFieldIndex: 1);
-      print('- K300/F2: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      final m = await quickMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 1,
+      );
+      print(
+        '- K300/F2: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
 
       // Ampel evaluation
       final gap = m['gap'] as double;
       final backButtonY = m['backButtonY'] as double;
       final headerTop = m['headerTop'] as double;
 
-      final gapColor = gap >= 24 ? 'green' : gap >= 16 ? 'yellow' : 'red';
-      final visibilityColor = (backButtonY >= 47 && headerTop >= 47) ? 'green' : 'red';
+      final gapColor = gap >= 24
+          ? 'green'
+          : gap >= 16
+          ? 'yellow'
+          : 'red';
+      final visibilityColor = (backButtonY >= 47 && headerTop >= 47)
+          ? 'green'
+          : 'red';
 
       print('');
       print('SUMMARY:');
-      print('- BottomOwner: double-reserve'); // includeBottomReserve=true + Footer SafeArea
+      print(
+        '- BottomOwner: double-reserve',
+      ); // includeBottomReserve=true + Footer SafeArea
       print('- Gap(K300/F1,F2): $gapColor (${gap.toStringAsFixed(0)}px)');
       print('- Header/Back visibility(K300): $visibilityColor');
     });

@@ -8,13 +8,19 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// Luvi‑Sync Preview hero section: background image, top‑right badge, bottom
-/// info card with title/teaser and CTA "Mehr".
+const double _infoCardHeight = 112;
+
+/// Luvi‑Sync Preview hero section: background image, configurable top‑right
+/// badge (defaults to 64×64), bottom info card with title/teaser and CTA "Mehr".
 class HeroSyncPreview extends StatelessWidget {
+  static const double kContainerHeight = 249.0;
+
   final String imagePath;
   final String badgeAssetPath;
   final String dateText;
   final String subtitle;
+  final Widget? overlay;
+  final double badgeSize;
 
   const HeroSyncPreview({
     super.key,
@@ -22,6 +28,8 @@ class HeroSyncPreview extends StatelessWidget {
     required this.badgeAssetPath,
     required this.dateText,
     required this.subtitle,
+    this.overlay,
+    this.badgeSize = 64.0,
   });
 
   @override
@@ -34,7 +42,7 @@ class HeroSyncPreview extends StatelessWidget {
 
     final double containerRadius = radiusTokens?.cardLarge ?? 24.0;
     const double containerWidth = double.infinity; // fill parent
-    const double containerHeight = 249.0; // from spec
+    const double containerHeight = kContainerHeight; // from spec
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(containerRadius),
@@ -45,34 +53,76 @@ class HeroSyncPreview extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Background image
-            Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-            ),
-            // Top‑right Yin‑Yang badge (32×32, offsets: top 14, right 16)
+            Image.asset(imagePath, fit: BoxFit.cover),
+            if (overlay != null)
+              Positioned.fill(
+                child: LayoutBuilder(
+                  builder: (_, constraints) {
+                    const double revealExtra = Spacing.l * 2;
+                    final double overlayHeight = (_infoCardHeight + revealExtra)
+                        .clamp(0.0, constraints.maxHeight)
+                        .toDouble();
+                    return Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        height: overlayHeight,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(containerRadius),
+                            bottomRight: Radius.circular(containerRadius),
+                          ),
+                          child: ClipRect(
+                            child: OverflowBox(
+                              alignment: Alignment.bottomCenter,
+                              maxWidth: constraints.maxWidth,
+                              maxHeight: constraints.maxHeight,
+                              child: SizedBox(
+                                width: constraints.maxWidth,
+                                height: constraints.maxHeight,
+                                child: IgnorePointer(
+                                  ignoring: true,
+                                  child: overlay!,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            // Top‑right Yin‑Yang badge (64×64, offsets: top 14, right 16)
             Positioned(
               top: 14,
               right: Spacing.m,
-              child: _Badge(assetPath: badgeAssetPath, size: 32),
+              child: _Badge(assetPath: badgeAssetPath, size: badgeSize),
             ),
             // Bottom info card (white, r=24, border 1px #696969)
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                height: 112,
+                height: _infoCardHeight,
                 decoration: BoxDecoration(
                   color: surfaceTokens?.white ?? const Color(0xFFFFFFFF),
                   borderRadius: BorderRadius.circular(containerRadius),
-                  border: Border.all(color: dsTokens?.grayscale500 ?? const Color(0xFF696969), width: 1),
+                  border: Border.all(
+                    color: dsTokens?.grayscale500 ?? const Color(0xFF696969),
+                    width: 1,
+                  ),
                   boxShadow: [
-                    shadowTokens?.heroDrop ?? const BoxShadow(
-                      color: Color(0x1F000000), // 12% black
-                      blurRadius: 12,
-                      offset: Offset(0, 4),
-                    ),
+                    shadowTokens?.heroDrop ??
+                        const BoxShadow(
+                          color: Color(0x1F000000), // 12% black
+                          blurRadius: 12,
+                          offset: Offset(0, 4),
+                        ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: Spacing.m, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Spacing.m,
+                  vertical: 14,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -112,9 +162,11 @@ class HeroSyncPreview extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     // CTA "Mehr" (67×32, r=12, BG gold #D9B18E, label bold 16, color #1C1411)
-                    _MehrButton(onTap: () {
-                      context.go(LuviSyncJournalStubScreen.route);
-                    }),
+                    _MehrButton(
+                      onTap: () {
+                        context.go(LuviSyncJournalStubScreen.route);
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -135,9 +187,19 @@ class _Badge extends StatelessWidget {
   Widget build(BuildContext context) {
     // Render SVG if path ends with .svg, otherwise fall back to PNG asset
     if (assetPath.toLowerCase().endsWith('.svg')) {
-      return SvgPicture.asset(assetPath, width: size, height: size);
+      return SvgPicture.asset(
+        assetPath,
+        width: size,
+        height: size,
+        excludeFromSemantics: true,
+      );
     }
-    return Image.asset(assetPath, width: size, height: size);
+    return Image.asset(
+      assetPath,
+      width: size,
+      height: size,
+      excludeFromSemantics: true,
+    );
   }
 }
 
@@ -154,7 +216,10 @@ class _MehrButton extends StatelessWidget {
       child: Container(
         height: 44,
         constraints: const BoxConstraints(minWidth: 67),
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.m, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.m,
+          vertical: 10,
+        ),
         decoration: BoxDecoration(
           color: colorScheme.primary,
           borderRadius: BorderRadius.circular(Sizes.radiusM),

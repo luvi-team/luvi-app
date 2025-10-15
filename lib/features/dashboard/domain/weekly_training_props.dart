@@ -1,66 +1,66 @@
 import 'package:flutter/foundation.dart';
 
 @immutable
-class TopRecommendationProps {
-  const TopRecommendationProps({
+class WeeklyTrainingProps {
+  const WeeklyTrainingProps({
     required this.id,
-    required this.tag,
     required this.title,
+    required this.subtitle,
     required this.imagePath,
-    required this.badgeAssetPath,
-    this.fromLuviSync = true,
+    this.dayLabel,
     this.duration,
+    this.isCompleted = false,
   });
 
   final String id;
-  final String tag;
   final String title;
+  final String subtitle;
   final String imagePath;
-  final String badgeAssetPath;
-  final bool fromLuviSync;
+  final String? dayLabel;
   final String? duration;
+  final bool isCompleted;
 
   static const Object _unset = Object();
 
-  TopRecommendationProps copyWith({
+  WeeklyTrainingProps copyWith({
     String? id,
-    String? tag,
     String? title,
+    String? subtitle,
     String? imagePath,
-    String? badgeAssetPath,
-    bool? fromLuviSync,
+    Object? dayLabel = _unset,
     Object? duration = _unset,
-  }) => TopRecommendationProps(
+    bool? isCompleted,
+  }) => WeeklyTrainingProps(
     id: id ?? this.id,
-    tag: tag ?? this.tag,
     title: title ?? this.title,
+    subtitle: subtitle ?? this.subtitle,
     imagePath: imagePath ?? this.imagePath,
-    badgeAssetPath: badgeAssetPath ?? this.badgeAssetPath,
-    fromLuviSync: fromLuviSync ?? this.fromLuviSync,
+    dayLabel: identical(dayLabel, _unset) ? this.dayLabel : dayLabel as String?,
     duration: identical(duration, _unset) ? this.duration : duration as String?,
+    isCompleted: isCompleted ?? this.isCompleted,
   );
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is TopRecommendationProps &&
+    return other is WeeklyTrainingProps &&
         other.id == id &&
-        other.tag == tag &&
         other.title == title &&
+        other.subtitle == subtitle &&
         other.imagePath == imagePath &&
-        other.badgeAssetPath == badgeAssetPath &&
-        other.fromLuviSync == fromLuviSync &&
-        other.duration == duration;
+        other.dayLabel == dayLabel &&
+        other.duration == duration &&
+        other.isCompleted == isCompleted;
   }
 
   @override
   int get hashCode => Object.hash(
     id,
-    tag,
     title,
+    subtitle,
     imagePath,
-    badgeAssetPath,
-    fromLuviSync,
+    dayLabel,
     duration,
+    isCompleted,
   );
 }

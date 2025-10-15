@@ -217,10 +217,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
             ),
             const SizedBox(width: Spacing.s),
             Expanded(
-              child: Text(
-                l10n.onboarding02CalloutBody,
-                style: baseTextStyle,
-              ),
+              child: Text(l10n.onboarding02CalloutBody, style: baseTextStyle),
             ),
           ],
         ),

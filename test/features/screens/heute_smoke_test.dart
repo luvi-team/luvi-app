@@ -43,18 +43,15 @@ const List<_ViewportConfig> _viewportConfigs = <_ViewportConfig>[
 ];
 
 GoRouter _createTestRouter() => GoRouter(
-      initialLocation: '/heute',
-      routes: [
-        GoRoute(
-          path: '/heute',
-          builder: (context, state) => const HeuteScreen(),
-        ),
-        GoRoute(
-          path: LuviSyncJournalStubScreen.route,
-          builder: (context, state) => const LuviSyncJournalStubScreen(),
-        ),
-      ],
-    );
+  initialLocation: '/heute',
+  routes: [
+    GoRoute(path: '/heute', builder: (context, state) => const HeuteScreen()),
+    GoRoute(
+      path: LuviSyncJournalStubScreen.route,
+      builder: (context, state) => const LuviSyncJournalStubScreen(),
+    ),
+  ],
+);
 
 Future<GoRouter> _pumpHeuteScreen(
   WidgetTester tester, {
@@ -424,11 +421,11 @@ void main() {
           view.resetDevicePixelRatio();
         });
 
-      await _pumpHeuteScreen(tester);
-      final heuteContext = tester.element(find.byType(HeuteScreen));
-      final l10n = AppLocalizations.of(heuteContext)!;
+        await _pumpHeuteScreen(tester);
+        final heuteContext = tester.element(find.byType(HeuteScreen));
+        final l10n = AppLocalizations.of(heuteContext)!;
 
-      final Finder scrollable = find.byType(CustomScrollView);
+        final Finder scrollable = find.byType(CustomScrollView);
         expect(
           scrollable,
           findsOneWidget,
@@ -508,13 +505,15 @@ void main() {
         expect(
           gapCatsBlockToTopRecoHeader,
           moreOrLessEquals(16.0, epsilon: tolerance),
-          reason: 'Kategorien block → "Deine Top-Empfehlung" header sollte 16px ±0.5 ergeben',
+          reason:
+              'Kategorien block → "Deine Top-Empfehlung" header sollte 16px ±0.5 ergeben',
         );
 
         expect(
           gapTopRecoHeaderToTile,
           moreOrLessEquals(12.0, epsilon: tolerance),
-          reason: '"Deine Top-Empfehlung" header → tile sollte 12px ±0.5 ergeben',
+          reason:
+              '"Deine Top-Empfehlung" header → tile sollte 12px ±0.5 ergeben',
         );
 
         expect(
@@ -635,54 +634,54 @@ void main() {
       );
     });
 
-    testWidgets('floating sync button exposes semantics and navigates to journal', (
-      tester,
-    ) async {
-      final goRouter = await _pumpHeuteScreen(tester);
+    testWidgets(
+      'floating sync button exposes semantics and navigates to journal',
+      (tester) async {
+        final goRouter = await _pumpHeuteScreen(tester);
 
-      final syncButtonFinder = find.byKey(const Key('floating_sync_button'));
-      expect(syncButtonFinder, findsOneWidget);
+        final syncButtonFinder = find.byKey(const Key('floating_sync_button'));
+        expect(syncButtonFinder, findsOneWidget);
 
-      final syncContext = tester.element(syncButtonFinder);
-      final l10n = AppLocalizations.of(syncContext)!;
+        final syncContext = tester.element(syncButtonFinder);
+        final l10n = AppLocalizations.of(syncContext)!;
 
-      final semanticsFinder = find.descendant(
-        of: syncButtonFinder,
-        matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is Semantics && widget.properties.button == true,
-        ),
-      );
+        final semanticsFinder = find.descendant(
+          of: syncButtonFinder,
+          matching: find.byWidgetPredicate(
+            (widget) => widget is Semantics && widget.properties.button == true,
+          ),
+        );
 
-      expect(
-        semanticsFinder,
-        findsOneWidget,
-        reason: 'Floating sync button should expose semantics entry',
-      );
+        expect(
+          semanticsFinder,
+          findsOneWidget,
+          reason: 'Floating sync button should expose semantics entry',
+        );
 
-      final Semantics semantics = tester.widget<Semantics>(semanticsFinder);
-      expect(
-        semantics.properties.label,
-        equals(l10n.dashboardNavSync),
-        reason: 'Semantics label should use localized sync label',
-      );
-      expect(
-        semantics.properties.selected,
-        isFalse,
-        reason: 'Sync button should be inactive before tap',
-      );
+        final Semantics semantics = tester.widget<Semantics>(semanticsFinder);
+        expect(
+          semantics.properties.label,
+          equals(l10n.dashboardNavSync),
+          reason: 'Semantics label should use localized sync label',
+        );
+        expect(
+          semantics.properties.selected,
+          isFalse,
+          reason: 'Sync button should be inactive before tap',
+        );
 
-      await tester.tap(syncButtonFinder);
-      await tester.pumpAndSettle();
+        await tester.tap(syncButtonFinder);
+        await tester.pumpAndSettle();
 
-      final currentUri =
-          goRouter.routerDelegate.currentConfiguration.uri.toString();
-      expect(
-        currentUri,
-        equals(LuviSyncJournalStubScreen.route),
-        reason: 'Tap on sync should navigate to Luvi Sync journal',
-      );
-    });
+        final currentUri = goRouter.routerDelegate.currentConfiguration.uri
+            .toString();
+        expect(
+          currentUri,
+          equals(LuviSyncJournalStubScreen.route),
+          reason: 'Tap on sync should navigate to Luvi Sync journal',
+        );
+      },
+    );
 
     testWidgets('bottom nav has exactly one active tab with semantics', (
       tester,

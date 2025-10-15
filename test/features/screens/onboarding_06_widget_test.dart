@@ -15,22 +15,28 @@ void main() {
     testWidgets('option tap enables CTA and navigates forward', (tester) async {
       final router = GoRouter(
         routes: [
-          GoRoute(path: Onboarding06Screen.routeName, builder: (context, state) => const Onboarding06Screen()),
+          GoRoute(
+            path: Onboarding06Screen.routeName,
+            builder: (context, state) => const Onboarding06Screen(),
+          ),
           GoRoute(
             path: Onboarding07Screen.routeName,
-            builder: (context, state) => const Scaffold(body: Text('Onboarding 07 (Stub)')),
+            builder: (context, state) =>
+                const Scaffold(body: Text('Onboarding 07 (Stub)')),
           ),
         ],
         initialLocation: Onboarding06Screen.routeName,
       );
 
-      await tester.pumpWidget(MaterialApp.router(
-        theme: AppTheme.buildAppTheme(),
-        routerConfig: router,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('de'),
-      ));
+      await tester.pumpWidget(
+        MaterialApp.router(
+          theme: AppTheme.buildAppTheme(),
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('de'),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // CTA initially disabled
@@ -52,12 +58,15 @@ void main() {
       expect(find.text('Onboarding 07 (Stub)'), findsOneWidget);
     });
 
-    testWidgets('back button navigates to 05 when canPop is false', (tester) async {
+    testWidgets('back button navigates to 05 when canPop is false', (
+      tester,
+    ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
             path: Onboarding05Screen.routeName,
-            builder: (context, state) => const Scaffold(body: Text('Onboarding 05')),
+            builder: (context, state) =>
+                const Scaffold(body: Text('Onboarding 05')),
           ),
           GoRoute(
             path: Onboarding06Screen.routeName,

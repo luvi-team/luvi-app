@@ -12,10 +12,7 @@ import 'package:luvi_app/features/auth/widgets/verify_header.dart';
 import 'package:luvi_app/features/auth/widgets/verify_otp_section.dart';
 import 'package:luvi_app/features/auth/widgets/verify_text_styles.dart';
 
-enum VerificationScreenVariant {
-  resetPassword,
-  emailConfirmation,
-}
+enum VerificationScreenVariant { resetPassword, emailConfirmation }
 
 class VerificationScreen extends StatefulWidget {
   const VerificationScreen({
@@ -113,10 +110,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 }
 
 class _VariantCopy {
-  const _VariantCopy({
-    required this.title,
-    required this.subtitle,
-  });
+  const _VariantCopy({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;

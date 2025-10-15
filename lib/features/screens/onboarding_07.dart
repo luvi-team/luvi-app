@@ -135,7 +135,11 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             child: GoalCard(
               key: Key('onb_option_$index'),
               icon: ExcludeSemantics(
-                child: Icon(options[index].icon, size: iconSize, color: iconColor),
+                child: Icon(
+                  options[index].icon,
+                  size: iconSize,
+                  color: iconColor,
+                ),
               ),
               title: options[index].label,
               selected: _selected == index,

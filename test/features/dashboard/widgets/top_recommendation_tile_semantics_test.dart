@@ -39,7 +39,8 @@ void main() {
       final buildContext = tester.element(find.byType(TopRecommendationTile));
       final l10n = AppLocalizations.of(buildContext)!;
 
-      final expectedLabel = '${l10n.topRecommendation} $title. ${l10n.category} $tag. ${l10n.fromLuviSync}.';
+      final expectedLabel =
+          '${l10n.topRecommendation} $title. ${l10n.category} $tag. ${l10n.fromLuviSync}.';
       expect(semantics.properties.label, equals(expectedLabel));
       expect(semantics.properties.hint, equals(l10n.tapToOpenWorkout));
     });

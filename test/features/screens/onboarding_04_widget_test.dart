@@ -40,10 +40,7 @@ void main() {
     // CTA initially disabled
     final cta = find.byKey(const Key('onb_cta'));
     expect(cta, findsOneWidget);
-    expect(
-      tester.widget<ElevatedButton>(cta).onPressed,
-      isNull,
-    );
+    expect(tester.widget<ElevatedButton>(cta).onPressed, isNull);
 
     final picker = find.byType(CupertinoDatePicker);
     expect(picker, findsOneWidget);
@@ -51,18 +48,17 @@ void main() {
     expect(pickerWidget.minimumDate, isNotNull);
     expect(pickerWidget.maximumDate, isNotNull);
     final currentYear = DateTime.now().year;
-    expect(pickerWidget.minimumDate!.year,
-        currentYear - kOnboardingPeriodStartMaxYearsBack);
+    expect(
+      pickerWidget.minimumDate!.year,
+      currentYear - kOnboardingPeriodStartMaxYearsBack,
+    );
     expect(pickerWidget.maximumDate!.year, currentYear);
 
     // interact to enable
     await tester.drag(picker, const Offset(0, -50));
     await tester.pumpAndSettle();
 
-    expect(
-      tester.widget<ElevatedButton>(cta).onPressed,
-      isNotNull,
-    );
+    expect(tester.widget<ElevatedButton>(cta).onPressed, isNotNull);
 
     await tester.ensureVisible(cta);
     await tester.tap(cta);

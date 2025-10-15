@@ -15,7 +15,9 @@ const double _badgeOffsetRight = 12.0;
 const BorderRadius _tileRadius = BorderRadius.all(Radius.circular(20));
 const double _durationIconSize = 14.0; // Figma: 14×14
 const double _durationIconTextGap = 4.0; // Figma: 4px gap
-const Color _duration60White = Color(0x99FFFFFF); // 60% white (0x99 = 153 / 255 ≈ 60%)
+const Color _duration60White = Color(
+  0x99FFFFFF,
+); // 60% white (0x99 = 153 / 255 ≈ 60%)
 
 /// Prominent recommendation tile that surfaces one featured workout.
 ///
@@ -128,8 +130,7 @@ class TopRecommendationTile extends StatelessWidget {
   }
 
   String _buildSemanticsLabel(AppLocalizations l10n) {
-    final buffer = StringBuffer()
-      ..write('${l10n.topRecommendation} $title. ');
+    final buffer = StringBuffer()..write('${l10n.topRecommendation} $title. ');
     if (tag.isNotEmpty) {
       buffer.write('${l10n.category} $tag.');
     }
@@ -168,8 +169,7 @@ class TopRecommendationTile extends StatelessWidget {
                     const ColoredBox(color: Colors.black12),
               ),
               _buildOverlayGradient(),
-              if (fromLuviSync)
-                _buildBadge(context),
+              if (fromLuviSync) _buildBadge(context),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 18,
@@ -188,8 +188,7 @@ class TopRecommendationTile extends StatelessWidget {
                           height: 18 / 12,
                           letterSpacing: 0.12,
                           fontWeight: FontWeight.w500,
-                          color:
-                              (textTokens?.muted ?? const Color(0xFFB9BAC1)),
+                          color: (textTokens?.muted ?? const Color(0xFFB9BAC1)),
                         ),
                       ),
                       const SizedBox(height: 6),

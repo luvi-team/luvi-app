@@ -25,5 +25,5 @@ class ResetSubmitNotifier extends StateNotifier<AsyncValue<void>> {
 
 final resetSubmitProvider =
     StateNotifierProvider<ResetSubmitNotifier, AsyncValue<void>>(
-  (ref) => ResetSubmitNotifier(),
-);
+      (ref) => ResetSubmitNotifier(),
+    );

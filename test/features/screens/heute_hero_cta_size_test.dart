@@ -24,13 +24,16 @@ void main() {
       expect(ctaTextFinder, findsWidgets);
 
       // The immediate Container ancestor of the CTA Text holds the fixed height.
-      final containerFinder = find.ancestor(
-        of: ctaTextFinder.first,
-        matching: find.byType(Container),
-      ).first;
+      final containerFinder = find
+          .ancestor(of: ctaTextFinder.first, matching: find.byType(Container))
+          .first;
 
       final Size size = tester.getSize(containerFinder);
-      expect(size.height, greaterThanOrEqualTo(44), reason: 'CTA button should be at least 44px tall');
+      expect(
+        size.height,
+        greaterThanOrEqualTo(44),
+        reason: 'CTA button should be at least 44px tall',
+      );
     });
   });
 }

@@ -4,6 +4,7 @@ import 'package:luvi_app/features/cycle/domain/cycle.dart';
 import 'package:luvi_app/features/cycle/domain/date_utils.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';
+import 'package:luvi_app/features/dashboard/domain/weekly_training_props.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
 
@@ -45,9 +46,9 @@ class HeroCardProps {
     required this.subtitle,
     this.ctaState = HeroCtaState.resumeActiveWorkout,
   }) : assert(
-          progressRatio >= 0.0 && progressRatio <= 1.0,
-          'progressRatio must be between 0.0 and 1.0',
-        );
+         progressRatio >= 0.0 && progressRatio <= 1.0,
+         'progressRatio must be between 0.0 and 1.0',
+       );
 
   final String programTitle;
   final String openCountText;
@@ -115,23 +116,42 @@ class RecommendationProps {
     required this.tag,
     required this.title,
     required this.imagePath,
+    this.subtitle,
   });
 
   final String tag;
   final String title;
   final String imagePath;
+  final String? subtitle;
 
   RecommendationProps copyWith({
     String? tag,
     String? title,
     String? imagePath,
+    String? subtitle,
   }) {
     return RecommendationProps(
       tag: tag ?? this.tag,
       title: title ?? this.title,
       imagePath: imagePath ?? this.imagePath,
+      subtitle: subtitle ?? this.subtitle,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is RecommendationProps &&
+        other.tag == tag &&
+        other.title == title &&
+        other.imagePath == imagePath &&
+        other.subtitle == subtitle;
+  }
+
+  @override
+  int get hashCode => Object.hash(tag, title, imagePath, subtitle);
 }
 
 @immutable
@@ -176,8 +196,11 @@ class HeuteFixtureState {
     required this.header,
     required this.heroCard,
     required this.topRecommendation,
+    required this.weeklyTrainings,
     required this.categories,
     required this.recommendations,
+    required this.nutritionRecommendations,
+    required this.regenerationRecommendations,
     required this.trainingStats,
     required this.wearable,
     required this.bottomNav,
@@ -188,8 +211,11 @@ class HeuteFixtureState {
   final HeaderProps header;
   final HeroCardProps heroCard;
   final TopRecommendationProps topRecommendation;
+  final List<WeeklyTrainingProps> weeklyTrainings;
   final List<CategoryProps> categories;
   final List<RecommendationProps> recommendations;
+  final List<RecommendationProps> nutritionRecommendations;
+  final List<RecommendationProps> regenerationRecommendations;
   final List<TrainingStatProps> trainingStats;
   final WearableProps wearable;
   final BottomNavProps bottomNav;
@@ -200,8 +226,11 @@ class HeuteFixtureState {
     HeaderProps? header,
     HeroCardProps? heroCard,
     TopRecommendationProps? topRecommendation,
+    List<WeeklyTrainingProps>? weeklyTrainings,
     List<CategoryProps>? categories,
     List<RecommendationProps>? recommendations,
+    List<RecommendationProps>? nutritionRecommendations,
+    List<RecommendationProps>? regenerationRecommendations,
     List<TrainingStatProps>? trainingStats,
     WearableProps? wearable,
     BottomNavProps? bottomNav,
@@ -212,8 +241,13 @@ class HeuteFixtureState {
       header: header ?? this.header,
       heroCard: heroCard ?? this.heroCard,
       topRecommendation: topRecommendation ?? this.topRecommendation,
+      weeklyTrainings: weeklyTrainings ?? this.weeklyTrainings,
       categories: categories ?? this.categories,
       recommendations: recommendations ?? this.recommendations,
+      nutritionRecommendations:
+          nutritionRecommendations ?? this.nutritionRecommendations,
+      regenerationRecommendations:
+          regenerationRecommendations ?? this.regenerationRecommendations,
       trainingStats: trainingStats ?? this.trainingStats,
       wearable: wearable ?? this.wearable,
       bottomNav: bottomNav ?? this.bottomNav,
@@ -288,6 +322,32 @@ class HeuteFixtures {
         badgeAssetPath: Assets.icons.syncBadge,
         duration: '15 Min',
       ),
+      weeklyTrainings: [
+        WeeklyTrainingProps(
+          id: 'wkly-ganzkoerper',
+          title: 'Ganzkörper\nKrafttraining',
+          subtitle: 'Baue deine Basis auf',
+          dayLabel: 'Tag 1',
+          duration: '60 min',
+          imagePath: Assets.images.recoGanzkoerper,
+        ),
+        WeeklyTrainingProps(
+          id: 'wkly-hiit-cardio',
+          title: 'HIIT\nCardio',
+          subtitle: 'Steigere deine Ausdauer',
+          dayLabel: 'Tag 2',
+          duration: '45 min',
+          imagePath: Assets.images.recoBeinePo,
+          isCompleted: true,
+        ),
+        WeeklyTrainingProps(
+          id: 'wkly-mobility',
+          title: 'Mobility',
+          subtitle: 'Beweglichkeit verbessern',
+          duration: '30 min',
+          imagePath: Assets.images.recoRueckenSchulter,
+        ),
+      ],
       categories: [
         CategoryProps(
           iconPath: Assets.icons.catTraining,
@@ -326,6 +386,48 @@ class HeuteFixtures {
           tag: 'Cardio',
           title: 'Ganzkörper',
           imagePath: Assets.images.recoGanzkoerper,
+        ),
+      ],
+      // TODO: Replace placeholder assets with Figma-specific nutrition imagery.
+      nutritionRecommendations: [
+        RecommendationProps(
+          tag: 'Supplements',
+          title: 'Vitamin C',
+          subtitle: 'Stärke dein Immunsystem',
+          imagePath: Assets.images.recoGanzkoerper,
+        ),
+        RecommendationProps(
+          tag: 'Makros',
+          title: 'Protein-Power',
+          subtitle: 'Optimale Nährstoffverteilung',
+          imagePath: Assets.images.recoBeinePo,
+        ),
+        RecommendationProps(
+          tag: 'Tagebuch',
+          title: 'Ernährungstagebuch',
+          subtitle: 'Tracke deine Mahlzeiten',
+          imagePath: Assets.images.recoRueckenSchulter,
+        ),
+      ],
+      // TODO: Replace placeholder assets with Figma-specific regeneration imagery.
+      regenerationRecommendations: [
+        RecommendationProps(
+          tag: 'Achtsamkeit',
+          title: 'Meditation',
+          subtitle: 'Finde innere Ruhe',
+          imagePath: Assets.images.recoGanzkoerper,
+        ),
+        RecommendationProps(
+          tag: 'Beweglichkeit',
+          title: 'Stretching',
+          subtitle: 'Entspanne deine Muskeln',
+          imagePath: Assets.images.recoBeinePo,
+        ),
+        RecommendationProps(
+          tag: 'Beauty',
+          title: 'Hautpflege',
+          subtitle: 'Zyklusgerechte Pflege',
+          imagePath: Assets.images.recoRueckenSchulter,
         ),
       ],
       trainingStats: [
@@ -370,6 +472,9 @@ class HeuteFixtures {
   static HeuteFixtureState withNotifications() {
     final base = defaultState();
     return base.copyWith(
+      weeklyTrainings: base.weeklyTrainings,
+      nutritionRecommendations: base.nutritionRecommendations,
+      regenerationRecommendations: base.regenerationRecommendations,
       bottomNav: base.bottomNav.copyWith(hasNotifications: true),
     );
   }
@@ -378,10 +483,11 @@ class HeuteFixtures {
   static HeuteFixtureState emptyRecommendations() {
     final base = defaultState();
     return base.copyWith(
-      heroCard: base.heroCard.copyWith(
-        ctaState: HeroCtaState.startNewWorkout,
-      ),
+      weeklyTrainings: base.weeklyTrainings,
+      heroCard: base.heroCard.copyWith(ctaState: HeroCtaState.startNewWorkout),
       recommendations: const [],
+      nutritionRecommendations: base.nutritionRecommendations,
+      regenerationRecommendations: base.regenerationRecommendations,
     );
   }
 }

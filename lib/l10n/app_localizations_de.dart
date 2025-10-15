@@ -98,6 +98,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardTrainingDataTitle => 'Deine Trainingsdaten';
 
   @override
+  String get dashboardTrainingWeekTitle => 'Dein Training für diese Woche';
+
+  @override
+  String get dashboardTrainingWeekSubtitle => 'Erstellt von deinen LUVI-Expert:innen';
+
+  @override
+  String get dashboardRecommendationsTitle => 'Weitere Empfehlungen für diese Phase';
+
+  @override
+  String get dashboardNutritionTitle => 'Ernährung & Nutrition';
+
+  @override
+  String get dashboardRegenerationTitle => 'Regeneration & Achtsamkeit';
+
+  @override
   String get dashboardNavToday => 'Heute';
 
   @override
@@ -128,6 +143,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardViewAll => 'Alle';
 
   @override
+  String get dashboardViewMore => 'Mehr sehen';
+
+  @override
+  String get trainingCompleted => 'Erledigt';
+
+  @override
+  String get nutritionRecommendation => 'Ernährungsempfehlung';
+
+  @override
+  String get regenerationRecommendation => 'Regenerationsempfehlung';
+
+  @override
   String get dashboardLuviSyncTitle => 'Luvi Sync Journal';
 
   @override
@@ -143,7 +170,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardHeroCtaMore => 'Mehr';
 
   @override
-  String get dashboardRecommendationsEmpty => 'Keine Empfehlungen verfügbar';
+  String get dashboardRecommendationsEmpty => 'Für diese Phase liegen noch keine Empfehlungen vor.';
 
   @override
   String get topRecommendation => 'Top-Empfehlung';
@@ -166,8 +193,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get cycleInlineCalendarLabelDefault =>
-      'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+  String get cycleInlineCalendarLabelDefault => 'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
 
   @override
   String get cyclePhaseMenstruation => 'Menstruation';

@@ -13,11 +13,7 @@ class AuthRepository {
     required String email,
     required String password,
     Map<String, dynamic>? data,
-  }) => _sb.auth.signUp(
-        email: email,
-        password: password,
-        data: data,
-      );
+  }) => _sb.auth.signUp(email: email, password: password, data: data);
 
   Future<void> signOut() => _sb.auth.signOut();
 

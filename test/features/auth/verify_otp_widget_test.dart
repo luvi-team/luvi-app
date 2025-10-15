@@ -9,9 +9,7 @@ void main() {
   Widget wrapWithScaffold(Widget child) {
     return MaterialApp(
       theme: buildTheme(),
-      home: Scaffold(
-        body: Center(child: child),
-      ),
+      home: Scaffold(body: Center(child: child)),
     );
   }
 
@@ -56,11 +54,7 @@ void main() {
 
     await tester.pumpWidget(
       wrapWithScaffold(
-        VerificationCodeInput(
-          length: 6,
-          autofocus: true,
-          onChanged: codes.add,
-        ),
+        VerificationCodeInput(length: 6, autofocus: true, onChanged: codes.add),
       ),
     );
 

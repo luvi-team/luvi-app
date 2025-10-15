@@ -48,13 +48,18 @@ class DsColors {
   /// Hex: #FFB9B9
   static const Color phaseMenstruation = Color(0xFFFFB9B9);
 
+  /// Dashboard wave overlay tint (30% opacity menstruation pink).
+  /// Hex: #FFB9B9 @ 0x4D alpha.
+  static const Color waveOverlayPink = Color(0x4DFFB9B9);
+
   /// Primary text color.
   /// Hex: #030401
   static const Color textPrimary = grayscaleBlack;
 
   /// Secondary text color.
   /// Hex: #6D6D6D
- static const Color textSecondary = subText2;
+  static const Color textSecondary = subText2;
+
   /// Muted text color.
   /// Hex: #C5C7C9
   static const Color textMuted = Color(0xFFC5C7C9);

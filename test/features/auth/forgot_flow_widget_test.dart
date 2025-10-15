@@ -38,8 +38,7 @@ void main() {
       final emailField = find.byKey(const ValueKey('reset_email_field'));
       final ctaButton = find.byKey(const ValueKey('reset_cta'));
 
-      ElevatedButton buttonWidget() =>
-          tester.widget<ElevatedButton>(ctaButton);
+      ElevatedButton buttonWidget() => tester.widget<ElevatedButton>(ctaButton);
 
       // Initially invalid -> disabled CTA and no spinner.
       expect(buttonWidget().onPressed, isNull);
@@ -61,7 +60,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey('auth_success_screen')), findsOneWidget);
-      expect(find.byKey(const ValueKey('success_title_forgot')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('success_title_forgot')),
+        findsOneWidget,
+      );
     });
   });
 }

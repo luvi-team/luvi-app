@@ -44,7 +44,7 @@ void main() {
       final testWindow = tester.binding.window;
       testWindow.viewInsetsTestValue = FakeViewPadding(bottom: keyboardHeight);
       testWindow.paddingTestValue = const FakeViewPadding(
-        top: 47,  // iPhone SafeTop
+        top: 47, // iPhone SafeTop
         bottom: 34, // iPhone SafeBottom
       );
 
@@ -92,36 +92,60 @@ void main() {
 
     testWidgets('Acceptance Criteria Test', (tester) async {
       print('WINDOW SNAP ACCEPTANCE TEST:');
-      print('- Target: fieldTop >= headerBottom + 16 && fieldBottom <= ctaTop - 24');
+      print(
+        '- Target: fieldTop >= headerBottom + 16 && fieldBottom <= ctaTop - 24',
+      );
       print('- Gap: CTATop - ConfirmBottom >= 16px');
-      print('- BackButton/Header: always visible (BackButton pinned via Positioned)');
-      print('- Contract: includeBottomReserve:false, resizeToAvoidBottomInset:false');
+      print(
+        '- BackButton/Header: always visible (BackButton pinned via Positioned)',
+      );
+      print(
+        '- Contract: includeBottomReserve:false, resizeToAvoidBottomInset:false',
+      );
     });
 
     testWidgets('K300/F1 - Password field focused', (tester) async {
-      final m = await snapMeasure(tester, keyboardHeight: 300, focusFieldIndex: 0);
+      final m = await snapMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 0,
+      );
 
-      final passwordInWindow = m['passwordTop'] >= m['windowTop'] && m['passwordBottom'] <= m['windowBottom'];
+      final passwordInWindow =
+          m['passwordTop'] >= m['windowTop'] &&
+          m['passwordBottom'] <= m['windowBottom'];
       final gap = m['gap'] as double;
 
-      print('- K300/F1: passwordTop=${m['passwordTop']?.toStringAsFixed(0)}, windowTop=${m['windowTop']?.toStringAsFixed(0)}, windowBottom=${m['windowBottom']?.toStringAsFixed(0)}, gap=${gap.toStringAsFixed(0)}');
+      print(
+        '- K300/F1: passwordTop=${m['passwordTop']?.toStringAsFixed(0)}, windowTop=${m['windowTop']?.toStringAsFixed(0)}, windowBottom=${m['windowBottom']?.toStringAsFixed(0)}, gap=${gap.toStringAsFixed(0)}',
+      );
       print('  Password in window: ${passwordInWindow ? "✅ YES" : "❌ NO"}');
     });
 
     testWidgets('K300/F2 - Confirm field focused', (tester) async {
-      final m = await snapMeasure(tester, keyboardHeight: 300, focusFieldIndex: 1);
+      final m = await snapMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 1,
+      );
 
-      final confirmInWindow = m['confirmTop'] >= m['windowTop'] && m['confirmBottom'] <= m['windowBottom'];
+      final confirmInWindow =
+          m['confirmTop'] >= m['windowTop'] &&
+          m['confirmBottom'] <= m['windowBottom'];
       final gap = m['gap'] as double;
       final gapOk = gap >= 16;
 
-      print('- K300/F2: confirmTop=${m['confirmTop']?.toStringAsFixed(0)}, windowTop=${m['windowTop']?.toStringAsFixed(0)}, windowBottom=${m['windowBottom']?.toStringAsFixed(0)}, gap=${gap.toStringAsFixed(0)}');
+      print(
+        '- K300/F2: confirmTop=${m['confirmTop']?.toStringAsFixed(0)}, windowTop=${m['windowTop']?.toStringAsFixed(0)}, windowBottom=${m['windowBottom']?.toStringAsFixed(0)}, gap=${gap.toStringAsFixed(0)}',
+      );
       print('  Confirm in window: ${confirmInWindow ? "✅ YES" : "❌ NO"}');
       print('  Gap >= 16px: ${gapOk ? "✅ YES" : "❌ NO"}');
 
       print('');
       print('FINAL RESULT:');
-      print('- Window snap functioning: ${confirmInWindow ? "✅ SUCCESS" : "❌ NEEDS_FIX"}');
+      print(
+        '- Window snap functioning: ${confirmInWindow ? "✅ SUCCESS" : "❌ NEEDS_FIX"}',
+      );
       print('- No CTA overlap: ${gapOk ? "✅ SUCCESS" : "❌ NEEDS_FIX"}');
     });
   });

@@ -35,8 +35,9 @@ class SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTokens = Theme.of(context).extension<TextColorTokens>();
     final Color titleColor = textTokens?.primary ?? ColorTokens.sectionTitle;
-    final Color trailingColor =
-        Theme.of(context).colorScheme.primary; // maps to primary gold in light theme
+    final Color trailingColor = Theme.of(
+      context,
+    ).colorScheme.primary; // maps to primary gold in light theme
 
     final localizedFallback = AppLocalizations.of(context)?.dashboardViewAll;
     final resolvedTrailingLabel = trailingLabel ?? localizedFallback;
@@ -66,16 +67,24 @@ class SectionHeader extends StatelessWidget {
                   onTap: onTrailingTap,
                   borderRadius: BorderRadius.circular(6),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    constraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
                           resolvedTrailingLabel ?? '',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: _baseTrailingStyle.copyWith(color: trailingColor),
+                          style: _baseTrailingStyle.copyWith(
+                            color: trailingColor,
+                          ),
                         ),
                       ),
                     ),

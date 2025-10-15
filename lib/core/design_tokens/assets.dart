@@ -17,10 +17,14 @@ class _Icons {
   final String play = 'assets/icons/dashboard/icon.play.svg';
 
   // Categories
-  final String catTraining = 'assets/icons/dashboard/icon.category.training.svg';
-  final String catNutrition = 'assets/icons/dashboard/icon.category.nutrition.svg';
-  final String catRegeneration = 'assets/icons/dashboard/icon.category.regeneration.svg';
-  final String catMindfulness = 'assets/icons/dashboard/icon.category.mindfulness.svg';
+  final String catTraining =
+      'assets/icons/dashboard/icon.category.training.svg';
+  final String catNutrition =
+      'assets/icons/dashboard/icon.category.nutrition.svg';
+  final String catRegeneration =
+      'assets/icons/dashboard/icon.category.regeneration.svg';
+  final String catMindfulness =
+      'assets/icons/dashboard/icon.category.mindfulness.svg';
 
   // Bottom nav (5-tab design)
   final String navToday = 'assets/icons/dashboard/nav.today.svg';
@@ -39,14 +43,16 @@ class _Icons {
   final String heroTraining = 'assets/icons/dashboard/icon.hero.training.svg';
 
   // Optional/extras
-  final String cycleOutline = 'assets/icons/dashboard/icon.nav.cycle-outline.svg';
+  final String cycleOutline =
+      'assets/icons/dashboard/icon.nav.cycle-outline.svg';
 }
 
 class _Images {
   const _Images();
 
   final String recoBeinePo = 'assets/images/dashboard/reco.beine_po.png';
-  final String recoRueckenSchulter = 'assets/images/dashboard/reco.ruecken_schulter.png';
+  final String recoRueckenSchulter =
+      'assets/images/dashboard/reco.ruecken_schulter.png';
   final String recoGanzkoerper = 'assets/images/dashboard/reco.ganzkoerper.png';
 
   // Hero background (Luvi‑Sync preview)

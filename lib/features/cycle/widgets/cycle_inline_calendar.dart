@@ -13,15 +13,19 @@ const double _dayWidth = 25.31;
 const double _todayWidth = 55.94;
 const double _weekdayFontSize = 14.0;
 const double _weekdayLineHeight = 1.12;
-const double _weekdaySpacing = 4.0; // Reduced from 7.0 for much more segment depth (aggressive)
+const double _weekdaySpacing =
+    4.0; // Reduced from 7.0 for much more segment depth (aggressive)
 const double _dayFontSize = 18.0;
 const double _dayLineHeight = 1.15;
-const double _topPadding = 4.0; // Unchanged to preserve header position and external spacing
-const double _bottomPadding = 0.0; // Reduced from 2.0 for much more segment depth (aggressive)
+const double _topPadding =
+    4.0; // Unchanged to preserve header position and external spacing
+const double _bottomPadding =
+    0.0; // Reduced from 2.0 for much more segment depth (aggressive)
 
 // Asymmetric overhang: segment extends ONLY above the day numbers (prevents overflow)
-const double _segmentOverhangTop = 3.0;    // Extends upward for visual depth
-const double _segmentOverhangBottom = 0.0; // No bottom overhang (prevents container overflow)
+const double _segmentOverhangTop = 3.0; // Extends upward for visual depth
+const double _segmentOverhangBottom =
+    0.0; // No bottom overhang (prevents container overflow)
 
 const double _weekdayTextHeight = _weekdayFontSize * _weekdayLineHeight;
 const double _segmentTopOffset =
@@ -45,10 +49,22 @@ String _formatDayMonthDe(DateTime date) {
     return DateFormat('d. MMM', 'de_DE').format(date);
   } catch (_) {
     const months = [
-      'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'
+      'Jan',
+      'Feb',
+      'Mär',
+      'Apr',
+      'Mai',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Dez',
     ];
-    final m = (date.month >= 1 && date.month <= 12) ? months[date.month - 1] : '';
+    final m = (date.month >= 1 && date.month <= 12)
+        ? months[date.month - 1]
+        : '';
     return '${date.day}. $m';
   }
 }
@@ -65,9 +81,7 @@ class CycleInlineCalendar extends StatelessWidget {
     final phaseTokens = theme.extension<CyclePhaseTokens>();
     final textTokens = theme.extension<TextColorTokens>();
     final radiusTokens = theme.extension<CalendarRadiusTokens>();
-    if (phaseTokens == null ||
-        textTokens == null ||
-        radiusTokens == null) {
+    if (phaseTokens == null || textTokens == null || radiusTokens == null) {
       return const SizedBox.shrink();
     }
 
@@ -85,7 +99,9 @@ class CycleInlineCalendar extends StatelessWidget {
         }
 
         final todayIndex = view.days.indexWhere((day) => day.isToday);
-        final todayGeometry = todayIndex >= 0 ? dayGeometries[todayIndex] : null;
+        final todayGeometry = todayIndex >= 0
+            ? dayGeometries[todayIndex]
+            : null;
         final todayDay = todayIndex >= 0 ? view.days[todayIndex] : null;
 
         return _CalendarContent(
@@ -195,19 +211,27 @@ class _CalendarContent extends StatelessWidget {
   static Widget _buildDayColumn(
     WeekStripDay day,
     _DayGeometry geometry,
-    TextColorTokens textTokens,
-  ) {
+    TextColorTokens textTokens, {
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
     final weekdayLabel = _formatWeekdayUpper(day.date);
     final dayNumber = day.date.day.toString();
     final isToday = day.isToday;
     final baseTextColor = isToday ? Colors.white : textTokens.primary;
     final weekdayTextColor = textTokens.secondary;
+    final padding = EdgeInsets.only(
+      top: _topPadding,
+      bottom: _bottomPadding,
+      left: isFirst ? 12 : 0,
+      right: isLast ? 12 : 0,
+    );
 
     return SizedBox(
       width: geometry.width,
       height: _trackHeight,
       child: Padding(
-        padding: const EdgeInsets.only(top: _topPadding, bottom: _bottomPadding),
+        padding: padding,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -328,8 +352,16 @@ class _DaysRow extends StatelessWidget {
     for (var i = 0; i < days.length; i++) {
       final day = days[i];
       final geometry = dayGeometries[i];
+      final bool isFirst = i == 0;
+      final bool isLast = i == days.length - 1;
       children.add(
-        _CalendarContent._buildDayColumn(day, geometry, textTokens),
+        _CalendarContent._buildDayColumn(
+          day,
+          geometry,
+          textTokens,
+          isFirst: isFirst,
+          isLast: isLast,
+        ),
       );
       if (geometry.gapAfter > 0 && i != days.length - 1) {
         children.add(SizedBox(width: geometry.gapAfter));

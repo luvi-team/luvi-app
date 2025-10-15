@@ -20,10 +20,7 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         wrap(
-          const StatsScroller(
-            trainingStats: [],
-            isWearableConnected: false,
-          ),
+          const StatsScroller(trainingStats: [], isWearableConnected: false),
         ),
       );
 

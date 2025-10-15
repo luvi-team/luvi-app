@@ -55,18 +55,21 @@ class BottomNavDock extends StatelessWidget {
         ),
       );
     }
-    final effectiveCradleColor = cradleColor ?? dsTokens?.accentPurple ?? colorScheme.primary;
+    final effectiveCradleColor =
+        cradleColor ?? dsTokens?.accentPurple ?? colorScheme.primary;
 
     return Container(
       height: height,
       decoration: const BoxDecoration(
-        color: Colors.transparent, // Outer: transparent, inner carries surface color
+        color: Colors
+            .transparent, // Outer: transparent, inner carries surface color
         // Remove outer box shadow to avoid any top-edge halo/line
         boxShadow: [],
       ),
       // Important: No ClipPath punch-out → avoids transparent hole (grey disc from content behind)
       child: Container(
-        color: effectiveBackgroundColor, // Surface color (keeps area under button solid)
+        color:
+            effectiveBackgroundColor, // Surface color (keeps area under button solid)
         child: CustomPaint(
           painter: BottomWaveBorderPainter(
             borderColor: effectiveCradleColor,
@@ -86,8 +89,12 @@ class BottomNavDock extends StatelessWidget {
                   const double rightGroupW = tabW + innerGapRightGroup + tabW;
                   // Remainder for the center gap; allow it to shrink below the wave
                   // cutout width to avoid overflow on narrow viewports.
-                  final double computedCenter = available - leftGroupW - rightGroupW;
-                  final double effectiveCenterGap = math.max(0.0, computedCenter);
+                  final double computedCenter =
+                      available - leftGroupW - rightGroupW;
+                  final double effectiveCenterGap = math.max(
+                    0.0,
+                    computedCenter,
+                  );
 
                   final row = Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -134,10 +141,16 @@ class BottomNavDock extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(DockTab tab, int index, bool isActive, BuildContext context) {
+  Widget _buildTab(
+    DockTab tab,
+    int index,
+    bool isActive,
+    BuildContext context,
+  ) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color iconColor = isActive
-        ? colorScheme.primary // Gold #D9B18E when active
+        ? colorScheme
+              .primary // Gold #D9B18E when active
         : colorScheme.onSurface; // Black #030401 when inactive
 
     return Semantics(
@@ -148,7 +161,8 @@ class BottomNavDock extends StatelessWidget {
         onTap: () => onTabTap(index),
         child: Container(
           key: tab.key,
-          width: minTapArea, // Figma spec: min 44×44 for accessibility (from tokens)
+          width:
+              minTapArea, // Figma spec: min 44×44 for accessibility (from tokens)
           height: minTapArea,
           decoration: BoxDecoration(
             color: Colors.transparent,
@@ -159,10 +173,7 @@ class BottomNavDock extends StatelessWidget {
               tab.iconPath,
               width: tabIconSize, // Figma spec: 32px (from tokens)
               height: tabIconSize,
-              colorFilter: ColorFilter.mode(
-                iconColor,
-                BlendMode.srcIn,
-              ),
+              colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
             ),
           ),
         ),
@@ -177,9 +188,5 @@ class DockTab {
   final String label;
   final Key? key;
 
-  const DockTab({
-    required this.iconPath,
-    required this.label,
-    this.key,
-  });
+  const DockTab({required this.iconPath, required this.label, this.key});
 }
