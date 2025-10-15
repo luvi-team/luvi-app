@@ -29,13 +29,21 @@ DB: PostgreSQL + pgvector (semantische Suche/Empfehlungen)
 Edge Functions: Consent-Handling, Audit-Trail, Pseudonymisierung
 RLS: owner-based; kein service_role im Client/Terminal
 
+### API-Gateway (Vercel fra1)
+- Runtime: Edge (`export const config = { runtime: 'edge' }`), ESM-Imports mit `.js`
+- CORS: dynamische Allow-List; Health bewusst offen (Smoke-Test)
+- Logging: rekursive PII-Redaction (keine `user_id`/`email`/IP/Health-Felder)
+- Health-Proof: `/api/health` liefert 200 + JSON; Runbook `docs/runbooks/vercel-health-check.md`
+- Hosting-Region: `vercel.json` minimal → `{ "regions": ["fra1"] }`
+- Security: JWT-Verifikation am Gateway; API-Keys nur serverseitig
+
 ## 4) AI-Layer
 Router: Node Gateway mit Vercel AI SDK (Cost/Failover/Policy)
 Provider: OpenAI API (EU-Project, zero retention) · Claude via Bedrock (EU) · Gemini via Vertex (EU)
 Caching: Upstash Redis · Guards: Rate-Limit + Circuit-Breaker
 
 ## 5) Services & Infrastruktur
-Analytics: PostHog Cloud EU · Push: OneSignal (EU) · Crash: Sentry · CDN/Security: Cloudflare · CI/CD: GitHub Actions
+Analytics: PostHog Cloud EU · Push: OneSignal (EU) · Crash: Sentry · CDN/Security: Cloudflare · CI/CD: GitHub Actions + Vercel Deploys (Preview pro PR, Prod nach Merge)
 Consent: Web: Cookiebot · App: In-App-Consent + Supabase-Logging {version, ts}
 Documentation: Linear
 

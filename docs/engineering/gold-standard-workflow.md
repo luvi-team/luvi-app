@@ -27,6 +27,7 @@ ADR-0003 MIWF: Happy Path zuerst; Guards nur nach Evidenz (Sentry/PostHog).
 - Flutter CI / analyze-test (pull_request) ✅
 - Flutter CI / privacy-gate (pull_request) ✅
 - CodeRabbit ✅
+- Vercel Preview Health (200 OK) ✅
 
 ## Rollen-spezifische DoD-Checks
 - UI/Frontend & DataViz: flutter analyze ✅ · flutter test (≥ 1 Unit + ≥ 1 Widget) ✅ · CodeRabbit ✅ · ADRs/DSGVO-Note ✅
@@ -57,4 +58,3 @@ CodeRabbit Lite (line-by-line)
 
 ## GitHub / Branch-Protection
 Required Checks: Siehe „Required-Checks (GitHub, exakt)" oben (Zeile 26-29).
-

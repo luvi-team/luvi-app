@@ -15,6 +15,9 @@
 - M4 Core MVP: Cycle-Input → computeCycleInfo → Workout-Card (Phasen, Kategorien, Symptom-Anpassung, Offline-Cache).
   - DoD: Offline cache hit-rate ≥95 %, Workout-Card renders in ≤200 ms on mid-tier device, PostHog `cycle_input_completed` fired.
   - Backout: Remote flag `allow_onboarding_core` disables computeCycleInfo + Workout-Card without app update.
+- M4.5 Health Baseline (neu): Health-Integrationen (Apple Health / Google Fit) – Puls/Schritte/HRV als Basis.
+  - DoD: HealthKit/Google Fit Permission Flow getestet; Daily Sync <5 s/User; DataScope minimal (HR/Steps/Sleep Summary); encrypted-at-rest; RLS aktiv.
+  - Abhängigkeit: Voraussetzung für M8 (Regeneration & Mind).
 - M5 AI Premium: Gateway (Routing, Caching, Limits), AI-Consent, 3 Workout-Prompts.
   - DoD: Gateway rate limit 5 req/min + 100 req/day pro User, 20 s timeout, retries capped auf 1.
   - Safeguards: PII-Redaction + prompt logging per SSOT v1.1 §AI, circuit breaker + safeguarding plan referenziert in ADR-0003/AI-Gateway.
@@ -42,7 +45,7 @@
 - M13+ Post-MVP: Community & Wearables.
 
 ## Sprints (2-Wochen)
-S0 Fundament • S1 Multi-Agent • S2 Modellierung • S3 Auth/Consent • S4 Core MVP • S5 AI • S6 Paywall • S7 Nutrition • S8 Mind • S9 Beta/Analytics • S10 Calendar • S11 Statistics • S12 Newsletter • S13+ Community/Wearables
+S0 Fundament • S1 Multi-Agent • S2 Modellierung • S3 Auth/Consent • S4 Core MVP • S4.5 Health • S5 AI • S6 Paywall • S7 Nutrition • S8 Mind • S9 Beta/Analytics • S10 Calendar • S11 Statistics • S12 Newsletter • S13+ Community/Wearables
 
 **Sprint Capacity & Gates**
 - Kapazität: 18 SP je Sprint (3 FTE * 6 SP) + 15 % Riskbuffer.

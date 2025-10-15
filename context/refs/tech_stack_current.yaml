@@ -7,7 +7,7 @@ flutter:
   channel: stable
   version_ci: "3.35.4"
   dart_min_ci: "3.9.0"
-  dart_min_pubspec: "3.8.0"  # repo reality; align to 3.9.0 recommended
+  dart_min_pubspec: "3.9.0"  # aligned to CI and pubspec.yaml
 
 packages:
   flutter_riverpod: "^2.6.x"
