@@ -1,7 +1,7 @@
 # Acceptance – SSOT v1.1
 
 ## Core
-- Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅
+- Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅ · Vercel Preview Health (200 OK) ✅
 - DoD (Repo): analyze/test grün · ADRs gepflegt · DSGVO-Review aktualisiert
 - Hinweis: DCM läuft CI-seitig non-blocking; Findings optional auswerten.
 

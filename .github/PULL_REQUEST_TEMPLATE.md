@@ -28,6 +28,11 @@ Siehe `docs/engineering/assistant-answer-format.md`.
 ## DSGVO-Review
 - [ ] aktualisiert: docs/privacy/reviews/<id>.md
 
+## Vercel Preview Health (200 OK)
+- [ ] Preview geprüft (200 + JSON)
+- Preview-Link (PR → View deployment → /api/health):
+- Kurznotiz: Erwartung `{ "ok": true, "timestamp": "…" }` (HTTP 200)
+
 ## Traycer Trial (non-blocking)
 - Traycer-Plan (Link/Text):
 - Traycer-Self-Check (✅/❌):

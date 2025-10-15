@@ -1,34 +1,48 @@
 # LUVI – App-Kontext
 
 ## Ziel & Haltung
-Holistische FemTech-App mit personalisierten Empfehlungen für Training, Ernährung und Regeneration/Mind; DSGVO-first.
+Holistische FemTech-App mit personalisierten Empfehlungen für Training, Ernährung und Regeneration/Mind. Datenschutz steht an erster Stelle (DSGVO-first).
 
 ## Consent & Datenschutz (vor Nutzung)
-Explizite Einwilligung (Zwecke, Datentypen, Rechte), klare Erklärung optionaler AI-Nutzung, vollständige Privacy Policy & AGB einsehbar.
+Explizite Einwilligung (Zwecke, Datentypen, Rechte), klare Erklärung optionaler KI-Nutzung (Opt-in). Privacy Policy und AGB jederzeit einsehbar.
 
-## Off-Flow → Onboarding
-Splash → Login/Signup (sichere Auth; z. B. OAuth; 2FA später) → Consent → Onboarding (Zyklusdaten: Länge, Periodendauer, LMP, Alter).
+## Onboarding Flow
+Splash → Welcome → Auth (OAuth; 2FA später) → Consent → Zyklus-Eingabe (Länge, Periodendauer, LMP, Alter).
 
-## Navigation
-- Dashboard (Übersicht) mit Sektionen: Workout, Nutrition, Regeneration & Mind.
-- Eigenständige Screens: Calendar, Community, Statistics.
+## Informationsarchitektur & Navigation
+Bottom Navigation mit fünf Hauptbereichen:
+- Home (Dashboard) – Übersicht
+- Zyklus – Kalender & Verlauf
+- LUVI Sync – tägliches/wöchentliches Briefing
+- Puls – Wearable-Daten & Trends
+- Profil – Einstellungen & Zyklus-Parameter
 
-## Dashboard-Sektionen (kurz)
-- Workout: phasenbasierte Pläne, Videos/Anleitungen, Symptomanpassung; optional AI-Q&A („leichter Tag“, Home-Training, Equipment-Alternativen).
-- Nutrition: phasenbasierte Empfehlungen, Präferenzen/Allergien, Varianten (Vegan/Veggie/Omni), Einkaufsliste (teilbar, z. B. WhatsApp), Tracking (kcal/Makros/Mikros); Potenzial: Foto-Auto-Logging; optionale AI-Q&A.
-- Regeneration & Mind: Achtsamkeit, Stress-/Schlaf-Hygiene, Journaling; kontextuelle Vorschläge; Schlaf-Tipps.
+## Dashboard
+- Header: Titel + aktuelle Zyklusphase + Notification-Icon.
+- Zyklus-Kalender-Farben: Follikel #4169E1 · Ovulation #E1B941 · Luteal #A755C2 · Periode #FFB9B9.
+- LUVI Sync Preview: wochen-/phasenbasiertes Briefing mit Top-Empfehlung; bei Wearables Schlaf/Regeneration tages- oder phasenbezogen.
+- Training der Woche: 2 Workouts (A/B) + Mobility + Cardio; horizontale Karten; „Erledigt“ = ✅.
+- Weitere Empfehlungen:
+  - Ernährung & Nutrition: Rezepte, Makros, Supplemente, ggf. KI-Q&A.
+  - Regeneration & Achtsamkeit: Meditation, Atmung, Stretching, Journaling (Vorlagen), Voice-Chat-KI optional, Sauna/Eisbaden, Schlaf-Tipps.
+- Optional: Wetter, Verkehr, Kleidung, Kalender-Sync, News.
+
+## LUVI Sync
+Journal + Empfehlung + (bei Wearables) Schlaf/Regeneration. Briefing-Logik orientiert sich an Zyklusphasen; mit Wearables auch tägliche Akzente.
+
+## Trainingsbereich
+Top-Empfehlung führt in den Workout-Screen (Übungen, Videos, Sets, Level). Ein optionaler AI-Trainer schlägt Alternativen bei Einschränkungen vor. Weitere Workouts werden horizontal je nach Phase gelistet.
 
 ## Weitere Screens
-- Calendar: Zykluskalender, Termine, Symptom-Logs (visuell).
-- Community: Austausch/Content, Beiträge/Blog/Video-Uploads.
-- Statistics: Verlauf/Trends zu Zyklus, Schlaf, Aktivität.
+- Zyklus: Kalender, Vergleich mehrerer Zyklen, Tipps je Phase.
+- Puls: Trends zu HR, HRV, Schritten, kcal; Integration Apple Health / Google Fit (Roadmap M4.5).
+- Profil: User-Einstellungen + Zyklus-Parameter.
 
-## Tracking (Roadmap/Post-MVP)
-Schlaf, Puls, HRV, Aktivität; Wearable-Integrationen vorgesehen.
-
-## AI-Personalisierung (Opt-in)
-Analysen, Trends/Prognosen, proaktive Hinweise/Interventionen; nur mit expliziter Einwilligung.
+## Betrieb & Compliance
+- EU-Only Gateway: Vercel Edge Functions (Region fra1) – transienter, verschlüsselter Proxy; keine persistente PII-Speicherung. Öffentlicher `/api/health`-Endpoint als Betriebsnachweis.
+- Supabase (EU): Postgres + Auth + Storage + Realtime mit RLS (owner-based). PII-Redaction im Logging; keine IP/Health-Logs.
+- JWT-Verifikation am Gateway; API-Keys serverseitig.
+- Interne QS: AI-Tools nur für Code-Review, nicht für personenbezogene Daten.
 
 ## Monetarisierung
-Freemium: Free (Basics T/N, Community, Newsletter, Calendar, Cycle Tracking) vs. Subscription (AI-Features, mehr Pläne/Inhalte, Statistics, Wearables); Partnerschaften optional.
-
+Freemium + 7‑Tage‑Testphase → Paywall für Premium‑Funktionen (Roadmap M6 Paywall).
