@@ -325,13 +325,13 @@
         "delta": "MATCH"
       },
       "waveOverlayBeige": {
-        "hex": "#F0E5DA",
-        "opacity": 1.0,
-        "usage": "Recommendations section wave background (user observation, not in Figma variables)",
+        "hex": "#D9B18E26",
+        "opacity": 0.15,
+        "usage": "Recommendations section wave background (15% beige tint per Figma)",
         "node": "68672:7427",
         "codebaseEquivalent": "lib/core/theme/app_theme.dart SurfaceColorTokens.waveOverlayBeige",
-        "delta": "USER_OBSERVED_COLOR",
-        "note": "Separate from frame background (#F1F1F1 implementation vs #F7F7F8 spec) for visual distinction"
+        "delta": "CORRECTED_2025-10-16_C",
+        "note": "Tint now matches Figma fill (#D9B18E @ 15% opacity). Frame background uses Grayscale/100 (#F7F7F8) for contrast."
       }
     },
     "gradients": {
@@ -624,7 +624,7 @@
         "node": "68672:7427",
         "position": {"x": 21, "y": 884, "w": 393, "h": 553},
         "bg": "#F7F7F8",
-        "implementationNote": "Wave background uses #F0E5DA (lighter beige) per user observation. Frame container renders in #F1F1F1 (implementation choice) instead of Figma #F7F7F8 for extra contrast.",
+        "implementationNote": "Wave background uses #D9B18E26 (15% beige tint, corrected 2025-10-16). Frame container uses #F7F7F8 (Figma Grayscale/100). Divider inside frame follows #DCDCDC like spec.",
         "radius": 20,
         "subsections": [
           {
@@ -678,6 +678,9 @@
         "node": "68674:7518",
         "position": {"x": 0, "y": 1437, "w": 428, "h": 121},
         "note": "DIFFERENT from baseline - baseline had 5-item pill with 'Start' label, this has icon-only nav",
+        "fillStrategy": "Two-pass painter: theme surface fill below wave line, purple stroke on top",
+        "underlayInteraction": "Mulde area (above wave line) is transparent, allowing beige underlay from Ticket 8 to show through. Nav area (below wave line) uses DsTokens.cardSurface / colorScheme.surface.",
+        "implementationFile": "lib/features/widgets/painters/bottom_wave_border_painter.dart",
         "icons": [
           {"name": "Home", "node": "68674:7523", "position": "left"},
           {"name": "Heart", "node": "multiple", "position": "center-left"},

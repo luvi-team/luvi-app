@@ -48,9 +48,9 @@ class DsColors {
   /// Hex: #FFB9B9
   static const Color phaseMenstruation = Color(0xFFFFB9B9);
 
-  /// Dashboard wave overlay tint (30% opacity menstruation pink).
-  /// Hex: #FFB9B9 @ 0x4D alpha.
-  static const Color waveOverlayPink = Color(0x4DFFB9B9);
+  /// Dashboard wave overlay tint (30% opacity blush pink from Figma).
+  /// Hex: #FADCDC @ 0x4D alpha.
+  static const Color waveOverlayPink = Color(0x4DFADCDC);
 
   /// Primary text color.
   /// Hex: #030401
@@ -69,8 +69,8 @@ class DsColors {
   static const Color infoBackground = accentPurple;
 
   /// Neutral card background.
-  /// Hex: #F1F1F1
-  static const Color cardBackgroundNeutral = Color(0xFFF1F1F1);
+  /// Hex: #F7F7F8 (Figma Grayscale/100)
+  static const Color cardBackgroundNeutral = Color(0xFFF7F7F8);
 
   /// White surface token.
   /// Hex: #FFFFFF

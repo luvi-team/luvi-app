@@ -335,7 +335,7 @@ class SurfaceColorTokens extends ThemeExtension<SurfaceColorTokens> {
   final Color cardBackgroundNeutral;
   final Color white;
   final Color waveOverlayPink;
-  // Softer beige for recommendations section wave (#F0E5DA).
+  // Beige tint for recommendations section wave (Figma spec #D9B18E @ 15%).
   final Color waveOverlayBeige;
 
   static const SurfaceColorTokens light = SurfaceColorTokens(
@@ -345,8 +345,8 @@ class SurfaceColorTokens extends ThemeExtension<SurfaceColorTokens> {
     waveOverlayPink: DsColors
         .waveOverlayPink, // TODO(theme-dark): adjust for dark theme variant.
     waveOverlayBeige: Color(
-      0xFFF0E5DA,
-    ), // Softer beige for recommendations wave (user observation, differs from Figma audit #F7F7F8)
+      0x26D9B18E,
+    ), // Beige wave tint at 15% opacity (Figma spec #D9B18E @ 15%)
   );
 
   @override
