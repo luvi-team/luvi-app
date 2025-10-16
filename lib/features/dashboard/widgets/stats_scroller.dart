@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
@@ -229,6 +230,10 @@ class _TrainingStatCard extends StatelessWidget {
         dsTokens?.color.icon.badge.goldCircle ?? const Color(0xFFD9B18E);
     final formattedLabel = _formatStatLabel(data.label);
     final labelMaxLines = formattedLabel.contains('\n') ? 2 : 1;
+    final Color cardSurface =
+        surfaceTokens?.cardBackgroundNeutral ??
+        dsTokens?.cardSurface ??
+        DsColors.cardBackgroundNeutral;
 
     return RepaintBoundary(
       child: Container(
@@ -236,8 +241,7 @@ class _TrainingStatCard extends StatelessWidget {
         width: kStatsCardWidth,
         height: kStatsCardHeight,
         decoration: BoxDecoration(
-          color:
-              surfaceTokens?.cardBackgroundNeutral ?? const Color(0xFFF1F1F1),
+          color: cardSurface,
           borderRadius: BorderRadius.circular(kStatsCardRadius),
           border: Border.all(
             color: const Color(0x1A000000), // Figma: 1dp @ 10% black

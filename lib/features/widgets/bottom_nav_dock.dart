@@ -14,7 +14,6 @@ import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 /// - Tab icons: 32px (tabIconSize from tokens)
 /// - Center gap: formula 2 × cutoutHalfWidth = 118px (centerGap from tokens)
 /// - Horizontal padding: 16px (dockPadding from tokens)
-/// - Punch-out: ClipPath removes white edge under button (WavePunchOutClipper)
 ///
 /// Kodex: Formula-based parameters (no magic numbers), dark-mode ready (surface/tokens).
 class BottomNavDock extends StatelessWidget {
@@ -68,12 +67,13 @@ class BottomNavDock extends StatelessWidget {
       ),
       // Important: No ClipPath punch-out → avoids transparent hole (grey disc from content behind)
       child: Container(
-        color:
-            effectiveBackgroundColor, // Surface color (keeps area under button solid)
+        color: Colors
+            .transparent, // Painter handles fill; keep mulde transparent for underlay
         child: CustomPaint(
           painter: BottomWaveBorderPainter(
             borderColor: effectiveCradleColor,
             borderWidth: borderWidth,
+            fillColor: effectiveBackgroundColor,
           ),
           child: SafeArea(
             top: false,

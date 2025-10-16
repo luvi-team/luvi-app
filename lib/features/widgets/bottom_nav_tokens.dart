@@ -51,18 +51,6 @@ const double waveTopInset = 1.0;
 const double syncButtonBottom =
     dockHeight - (cutoutDepth + waveTopInset) + desiredGapToWaveTop;
 
-/// Punch-out radius for ClipPath (no white line under button)
-/// Strategy: ensure the circular punch-out fully covers the wave stroke area.
-/// - Option A (button-based): (buttonDiameter/2 + ringStrokeWidth/2) + epsilon
-/// - Option B (coverage-based): cutoutDepth + 4px → extra AA headroom; guarantees coverage to y<=0
-/// Use the safer of both values to avoid a faint line at the top edge on some devices.
-const double _punchOutByButton =
-    (buttonDiameter / 2) + (ringStrokeWidth / 2) + 2.0;
-const double _punchOutByCoverage = cutoutDepth + 4.0;
-const double punchOutRadius = _punchOutByButton > _punchOutByCoverage
-    ? _punchOutByButton
-    : _punchOutByCoverage;
-
 /// Wave stroke width (Figma spec: 1.5px)
 const double waveStrokeWidth = 1.5;
 

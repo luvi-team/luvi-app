@@ -186,8 +186,11 @@ class _HeuteScreenState extends State<HeuteScreen> {
       Spacing.xs,
       heroToSectionGap - bottomReveal,
     );
+    final Color waveTint = _phaseWaveBackgroundColor(context);
+    final Color waveSurface = Color.alphaBlend(waveTint, Colors.white);
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFFFFFFF),
       bottomNavigationBar: _buildDockNavigation(l10n),
       body: SafeArea(
@@ -265,7 +268,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
               ),
             SliverToBoxAdapter(
               child: ColoredBox(
-                color: _phaseWaveBackgroundColor(context),
+                color: waveSurface,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
                   child: Column(
@@ -317,6 +320,10 @@ class _HeuteScreenState extends State<HeuteScreen> {
                   ),
                 ),
               ),
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: ColoredBox(color: waveSurface),
             ),
           ],
         ),

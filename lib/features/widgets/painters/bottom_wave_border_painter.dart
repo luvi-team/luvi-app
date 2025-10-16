@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 
 /// Painter for violet top-border wave with center cutout (concave down for sync button).
-/// Stroke only (no fill), round caps/joins.
+/// Two-pass rendering: (1) surface fill for the dock body, (2) violet stroke on top.
+/// Callers should pass their theme surface color for dark-mode parity; falls back to white.
 ///
 /// Design tokens (from Figma audit 2025-10-06, Spec-JSON):
 /// - cutoutHalfWidth: 59px (from tokens)
@@ -15,14 +16,17 @@ import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 class BottomWaveBorderPainter extends CustomPainter {
   final Color borderColor;
   final double borderWidth;
+  final Color fillColor;
 
   BottomWaveBorderPainter({
     required this.borderColor,
     required this.borderWidth,
-  });
+    Color? fillColor,
+  }) : fillColor = fillColor ?? Colors.white;
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Pass 2 (stroke) paint setup
     final paint = Paint()
       ..color = borderColor
       ..strokeWidth = borderWidth
@@ -30,7 +34,14 @@ class BottomWaveBorderPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
-    final path = Path();
+    // Pass 1: fill the navigation area below the wave with theme-provided surface color
+    final fillPaint = Paint()
+      ..color = fillColor
+      ..style = PaintingStyle.fill;
+
+    final fillPath = Path();
+    final strokePath = Path();
+    final muldePath = Path();
     final centerX = size.width / 2;
 
     // Kodex: Use tokens (no magic numbers)
@@ -42,46 +53,74 @@ class BottomWaveBorderPainter extends CustomPainter {
     final alpha = waveCpAlpha * a; // default ≈ 0.55×a → circle-like
 
     // Start from left edge (inset from top to avoid AA seam)
-    path.moveTo(0, waveTopInset);
+    fillPath.moveTo(0, waveTopInset);
+    strokePath.moveTo(0, waveTopInset);
+    muldePath.moveTo(centerX - a, waveTopInset);
 
     // Line to left side of cutout
-    path.lineTo(centerX - a, waveTopInset);
+    fillPath.lineTo(centerX - a, waveTopInset);
+    strokePath.lineTo(centerX - a, waveTopInset);
 
     // Cutout curve: Two symmetrical cubic Bezier segments
     // Segment 1: (-a, 0) → (0, -d)
-    // - cp1 at (-a + α, 0) for horizontal tangent at left end
-    // - cp2 at (-0.275×a, -d) for smooth transition at center
-    path.cubicTo(
-      centerX - a + alpha,
-      waveTopInset, // cp1: horizontal tangent at left endpoint
-      centerX - waveCpBeta * a,
-      waveTopInset + d, // cp2: smooth approach to center bottom
-      centerX,
-      waveTopInset + d, // endpoint: center bottom of wave
-    );
+    void appendWave(Path target, {bool closeToTop = false}) {
+      target
+        ..cubicTo(
+          centerX - a + alpha,
+          waveTopInset, // cp1: horizontal tangent at left endpoint
+          centerX - waveCpBeta * a,
+          waveTopInset + d, // cp2: smooth approach to center bottom
+          centerX,
+          waveTopInset + d, // endpoint: center bottom of wave
+        )
+        ..cubicTo(
+          centerX + waveCpBeta * a,
+          waveTopInset + d, // cp1: smooth departure from center bottom
+          centerX + a - alpha,
+          waveTopInset, // cp2: horizontal tangent at right endpoint
+          centerX + a,
+          waveTopInset, // endpoint: right side of cutout
+        );
 
-    // Segment 2: (0, -d) → (+a, 0)
-    // - cp1 at (+0.275×a, -d) for smooth transition from center
-    // - cp2 at (+a - α, 0) for horizontal tangent at right end
-    path.cubicTo(
-      centerX + waveCpBeta * a,
-      waveTopInset + d, // cp1: smooth departure from center bottom
-      centerX + a - alpha,
-      waveTopInset, // cp2: horizontal tangent at right endpoint
-      centerX + a,
-      waveTopInset, // endpoint: right side of cutout
-    );
+      if (closeToTop) {
+        target
+          ..lineTo(centerX + a, waveTopInset)
+          ..lineTo(centerX - a, waveTopInset);
+      }
+    }
+
+    appendWave(fillPath);
+    appendWave(muldePath, closeToTop: true);
+    appendWave(strokePath);
 
     // Line to right edge
-    path.lineTo(size.width, waveTopInset);
+    fillPath.lineTo(size.width, waveTopInset);
+    strokePath.lineTo(size.width, waveTopInset);
 
-    canvas.drawPath(path, paint);
+    // Close fill path down to bottom of canvas so only area below wave is painted
+    fillPath
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    // Close mulde path so only the concave pocket is removed
+    muldePath.close();
+
+    final dockFillWithoutMulde = Path.combine(
+      PathOperation.difference,
+      fillPath,
+      muldePath,
+    );
+
+    canvas.drawPath(dockFillWithoutMulde, fillPaint);
+    canvas.drawPath(strokePath, paint);
   }
 
   @override
   bool shouldRepaint(covariant BottomWaveBorderPainter oldDelegate) {
     // Repaint only when paint‑relevant inputs change. Token geometry is stable at runtime.
     return oldDelegate.borderColor != borderColor ||
-        oldDelegate.borderWidth != borderWidth;
+        oldDelegate.borderWidth != borderWidth ||
+        oldDelegate.fillColor != fillColor;
   }
 }
