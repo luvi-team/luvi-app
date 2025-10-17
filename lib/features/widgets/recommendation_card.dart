@@ -86,11 +86,43 @@ class RecommendationCard extends StatelessWidget {
                   padding: const EdgeInsets.all(14),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          // Phase 3 requirement: stronger title emphasis
+                          fontFamily: FontFamilies.figtree,
+                          fontSize: 18,
+                          height: 26 / 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFFFFFFF),
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: FontFamilies.figtree,
+                            fontSize: 14,
+                            height: 20 / 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFFFFFFFF),
+                          ),
+                        ),
+                      ],
                       if (showTag) ...[
+                        const SizedBox(height: 4),
                         Text(
                           tag,
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontFamily: FontFamilies.figtree,
                             fontSize: 12,
@@ -100,35 +132,7 @@ class RecommendationCard extends StatelessWidget {
                             color: Color(0xFF6d6d6d),
                           ),
                         ),
-                        const SizedBox(height: 4),
                       ],
-                      if (subtitle != null) ...[
-                        Text(
-                          subtitle!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontFamily: FontFamilies.figtree,
-                            fontSize: 14,
-                            height: 20 / 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFFFFFFFF),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                      ],
-                      Text(
-                        title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: FontFamilies.figtree,
-                          fontSize: 16,
-                          height: 24 / 16,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFFFFFFFF),
-                        ),
-                      ),
                     ],
                   ),
                 ),

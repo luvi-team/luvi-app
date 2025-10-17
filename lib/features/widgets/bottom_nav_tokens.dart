@@ -51,6 +51,14 @@ const double waveTopInset = 1.0;
 const double syncButtonBottom =
     dockHeight - (cutoutDepth + waveTopInset) + desiredGapToWaveTop;
 
+/// Minimum bottom padding for scrollable content to clear the dock.
+/// Formula: dockHeight - cutoutDepth + desiredGapToWaveTop
+/// Rationale: subtract the transparent cradle depth, then add the desired
+/// visual gap above the wave crest for content spacing.
+double calculateBottomPadding() {
+  return dockHeight - cutoutDepth + desiredGapToWaveTop;
+}
+
 /// Wave stroke width (Figma spec: 1.5px)
 const double waveStrokeWidth = 1.5;
 

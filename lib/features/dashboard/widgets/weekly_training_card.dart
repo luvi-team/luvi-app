@@ -136,6 +136,9 @@ class WeeklyTrainingCard extends StatelessWidget {
     final detailStyle = _detailStyle(context);
     final width = _resolveWidth(context);
     final overlayGradient = _overlayGradient(context);
+    final hasMetadata =
+        (dayLabel != null && dayLabel!.isNotEmpty) ||
+        (duration != null && duration!.isNotEmpty);
 
     return Semantics(
       container: true,
@@ -172,50 +175,66 @@ class WeeklyTrainingCard extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(_contentPadding),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
-                            title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: titleStyle,
-                          ),
-                          const SizedBox(height: Spacing.xs),
-                          Text(
-                            subtitle,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: subtitleStyle,
-                          ),
-                          const SizedBox(height: _metadataGap),
-                          if ((dayLabel != null && dayLabel!.isNotEmpty) ||
-                              (duration != null && duration!.isNotEmpty))
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (dayLabel != null &&
-                                    dayLabel!.isNotEmpty) ...[
-                                  Text(dayLabel!, style: detailStyle),
-                                  if (duration != null && duration!.isNotEmpty)
-                                    const SizedBox(width: _detailGap),
-                                ],
-                                if (duration != null && duration!.isNotEmpty)
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.access_time,
-                                        size: 14,
-                                        color:
-                                            detailStyle.color ??
-                                            const Color(0x99FFFFFF),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(duration!, style: detailStyle),
-                                    ],
+                          Expanded(
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: titleStyle,
+                                    textAlign: TextAlign.center,
                                   ),
-                              ],
+                                  const SizedBox(height: Spacing.xs),
+                                  Text(
+                                    subtitle,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: subtitleStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (hasMetadata)
+                            Padding(
+                              padding: const EdgeInsets.only(top: _metadataGap),
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (dayLabel != null &&
+                                        dayLabel!.isNotEmpty) ...[
+                                      Text(dayLabel!, style: detailStyle),
+                                      if (duration != null &&
+                                          duration!.isNotEmpty)
+                                        const SizedBox(width: _detailGap),
+                                    ],
+                                    if (duration != null &&
+                                        duration!.isNotEmpty)
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.access_time,
+                                            size: 14,
+                                            color: detailStyle.color ??
+                                                const Color(0x99FFFFFF),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(duration!, style: detailStyle),
+                                        ],
+                                      ),
+                                  ],
+                                ),
+                              ),
                             ),
                         ],
                       ),
