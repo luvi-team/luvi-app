@@ -28,6 +28,10 @@ class DsColors {
   /// Figma: #6d6d6d
   static const Color subText2 = Color(0xFF6d6d6d);
 
+  /// Grayscale/500 (borders, secondary UI elements).
+  /// Figma: #696969
+  static const Color grayscale500 = Color(0xFF696969);
+
   /// Cycle phase: follicular dark (Follikelphase).
   /// Hex: #4169E1
   static const Color phaseFollicularDark = Color(0xFF4169E1);

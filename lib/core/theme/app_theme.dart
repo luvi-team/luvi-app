@@ -6,6 +6,8 @@ import '../design_tokens/colors.dart';
 import '../design_tokens/typography.dart';
 import '../design_tokens/spacing.dart';
 import '../design_tokens/sizes.dart';
+import '../design_tokens/dashboard_typography_tokens.dart';
+import '../design_tokens/divider_tokens.dart';
 
 /// Minimal theme scaffold for the LUVI app.
 /// This is a placeholder for future design system implementation.
@@ -86,6 +88,8 @@ class AppTheme {
         GlassTokens.light,
         WorkoutCardTypographyTokens.light,
         WorkoutCardOverlayTokens.light,
+        DashboardTypographyTokens.light,
+        DividerTokens.light,
       ],
     );
   }
@@ -391,12 +395,15 @@ class DashboardLayoutTokens extends ThemeExtension<DashboardLayoutTokens> {
     required this.heroHorizontalMarginPx,
     required this.calendarToWaveGapPx,
     required this.heroToSectionGapPx,
+    required this.waveAmplitudePink,
   });
 
   final double waveHeightPx;
   final double heroHorizontalMarginPx;
   final double calendarToWaveGapPx;
   final double heroToSectionGapPx;
+  // Pink wave amplitude above hero card (Figma audit Phase 1)
+  final double waveAmplitudePink;
 
   static const DashboardLayoutTokens light = DashboardLayoutTokens(
     // Audit node 68672:7392 → hero frame y=216, h=249. Wave overlay height derived as 249 - 21 gap = 228 px.
@@ -407,6 +414,8 @@ class DashboardLayoutTokens extends ThemeExtension<DashboardLayoutTokens> {
     calendarToWaveGapPx: 21,
     // Audit observed main vertical gap between hero bottom and first section title.
     heroToSectionGapPx: 42,
+    // Pink wave curved lip height (Figma node 68721:7519, reduced from 24px to 22px per audit)
+    waveAmplitudePink: 22.0,
   );
 
   @override
@@ -415,12 +424,14 @@ class DashboardLayoutTokens extends ThemeExtension<DashboardLayoutTokens> {
     double? heroHorizontalMarginPx,
     double? calendarToWaveGapPx,
     double? heroToSectionGapPx,
+    double? waveAmplitudePink,
   }) => DashboardLayoutTokens(
     waveHeightPx: waveHeightPx ?? this.waveHeightPx,
     heroHorizontalMarginPx:
         heroHorizontalMarginPx ?? this.heroHorizontalMarginPx,
     calendarToWaveGapPx: calendarToWaveGapPx ?? this.calendarToWaveGapPx,
     heroToSectionGapPx: heroToSectionGapPx ?? this.heroToSectionGapPx,
+    waveAmplitudePink: waveAmplitudePink ?? this.waveAmplitudePink,
   );
 
   @override
@@ -441,6 +452,9 @@ class DashboardLayoutTokens extends ThemeExtension<DashboardLayoutTokens> {
       heroToSectionGapPx:
           lerpDouble(heroToSectionGapPx, other.heroToSectionGapPx, t) ??
           heroToSectionGapPx,
+      waveAmplitudePink:
+          lerpDouble(waveAmplitudePink, other.waveAmplitudePink, t) ??
+          waveAmplitudePink,
     );
   }
 }
@@ -575,10 +589,21 @@ class CalendarRadiusTokens extends ThemeExtension<CalendarRadiusTokens> {
 
 @immutable
 class ShadowTokens extends ThemeExtension<ShadowTokens> {
-  const ShadowTokens({required this.heroDrop, required this.tileDrop});
+  const ShadowTokens({
+    required this.heroDrop,
+    required this.tileDrop,
+    Shadow? heroCalloutTextShadow,
+  }) : heroCalloutTextShadow = heroCalloutTextShadow ??
+           const Shadow(
+             offset: Offset(0, 4),
+             blurRadius: 4,
+             color: Color(0x40000000),
+           );
 
   final BoxShadow heroDrop;
   final BoxShadow tileDrop;
+  // Text-shadow for hero card callout text (Figma audit Phase 1)
+  final Shadow heroCalloutTextShadow;
 
   static const ShadowTokens light = ShadowTokens(
     heroDrop: BoxShadow(
@@ -593,14 +618,23 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
       spreadRadius: 0,
       color: Color(0x40000000),
     ),
+    heroCalloutTextShadow: Shadow(
+      offset: Offset(0, 4),
+      blurRadius: 4,
+      color: Color(0x40000000),
+    ),
   );
 
   @override
-  ShadowTokens copyWith({BoxShadow? heroDrop, BoxShadow? tileDrop}) =>
-      ShadowTokens(
-        heroDrop: heroDrop ?? this.heroDrop,
-        tileDrop: tileDrop ?? this.tileDrop,
-      );
+  ShadowTokens copyWith({
+    BoxShadow? heroDrop,
+    BoxShadow? tileDrop,
+    Shadow? heroCalloutTextShadow,
+  }) => ShadowTokens(
+    heroDrop: heroDrop ?? this.heroDrop,
+    tileDrop: tileDrop ?? this.tileDrop,
+    heroCalloutTextShadow: heroCalloutTextShadow ?? this.heroCalloutTextShadow,
+  );
 
   @override
   ShadowTokens lerp(ThemeExtension<ShadowTokens>? other, double t) {
@@ -608,6 +642,9 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
     return ShadowTokens(
       heroDrop: BoxShadow.lerp(heroDrop, other.heroDrop, t) ?? heroDrop,
       tileDrop: BoxShadow.lerp(tileDrop, other.tileDrop, t) ?? tileDrop,
+      heroCalloutTextShadow:
+          Shadow.lerp(heroCalloutTextShadow, other.heroCalloutTextShadow, t) ??
+          heroCalloutTextShadow,
     );
   }
 }
@@ -775,3 +812,4 @@ class WorkoutCardOverlayTokens
     return t < 0.5 ? this : other;
   }
 }
+

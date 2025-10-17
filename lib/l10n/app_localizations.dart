@@ -272,7 +272,7 @@ abstract class AppLocalizations {
   /// Section header title for phase-specific recommendations on dashboard.
   ///
   /// In en, this message translates to:
-  /// **'More Recommendations for This Phase'**
+  /// **'More Recommendations for Your Phase'**
   String get dashboardRecommendationsTitle;
 
   /// Subsection title for nutrition recommendations.
