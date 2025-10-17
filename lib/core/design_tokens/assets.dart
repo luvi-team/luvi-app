@@ -57,6 +57,11 @@ class _Images {
 
   // Hero background (Luvi‑Sync preview)
   final String heroSync01 = 'assets/images/dashboard/hero_sync_01.png';
+  // Nutrition & Regeneration Cards (Phase 10)
+  final String strawberry = 'assets/images/dashboard/strawberry.png';
+  final String roteruebe = 'assets/images/dashboard/roteruebe.png';
+  final String meditation = 'assets/images/dashboard/meditation.png';
+  final String stretching = 'assets/images/dashboard/stretching.png';
 }
 
 class _DashboardStatIcons {

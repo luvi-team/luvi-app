@@ -7,3 +7,6 @@
 - ADR: docs/adr/ADR-00xx-traycer-integration.md
 - PR-Vorlage: .github/PULL_REQUEST_TEMPLATE.md (Abschnitt „Traycer Trial“)
 - Label: Nur verwenden, wenn PR mit `trial-traycer` markiert ist.
+
+## Ablage-Hinweis
+- Der Traycer-ADR liegt während des Trials unter `docs/adr/`. Nach Abschluss wird er nach `context/ADR/0005-traycer-integration.md` verschoben, um mit der bestehenden ADR-Ablagestruktur konsistent zu sein.

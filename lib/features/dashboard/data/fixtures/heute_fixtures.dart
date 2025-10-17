@@ -388,19 +388,19 @@ class HeuteFixtures {
           imagePath: Assets.images.recoGanzkoerper,
         ),
       ],
-      // TODO: Replace placeholder assets with Figma-specific nutrition imagery.
+      // TODO: Replace remaining placeholder (Ernährungstagebuch) with Figma-specific imagery.
       nutritionRecommendations: [
         RecommendationProps(
           tag: 'Supplements',
           title: 'Vitamin C',
           subtitle: 'Stärke dein Immunsystem',
-          imagePath: Assets.images.recoGanzkoerper,
+          imagePath: Assets.images.strawberry,
         ),
         RecommendationProps(
           tag: 'Makros',
           title: 'Protein-Power',
           subtitle: 'Optimale Nährstoffverteilung',
-          imagePath: Assets.images.recoBeinePo,
+          imagePath: Assets.images.roteruebe,
         ),
         RecommendationProps(
           tag: 'Tagebuch',
@@ -409,19 +409,19 @@ class HeuteFixtures {
           imagePath: Assets.images.recoRueckenSchulter,
         ),
       ],
-      // TODO: Replace placeholder assets with Figma-specific regeneration imagery.
+      // TODO: Replace remaining placeholder (Hautpflege) with Figma-specific imagery.
       regenerationRecommendations: [
         RecommendationProps(
           tag: 'Achtsamkeit',
           title: 'Meditation',
           subtitle: 'Finde innere Ruhe',
-          imagePath: Assets.images.recoGanzkoerper,
+          imagePath: Assets.images.meditation,
         ),
         RecommendationProps(
           tag: 'Beweglichkeit',
           title: 'Stretching',
           subtitle: 'Entspanne deine Muskeln',
-          imagePath: Assets.images.recoBeinePo,
+          imagePath: Assets.images.stretching,
         ),
         RecommendationProps(
           tag: 'Beauty',

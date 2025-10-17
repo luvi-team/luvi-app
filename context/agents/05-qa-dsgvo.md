@@ -4,7 +4,7 @@ goal: DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates sicherstellen.
 inputs:
   - PRD
   - ERD
-  - ADRs 0001–0003
+  - ADRs 0001–0004
   - Branch/PR-Link
   - docs/product/app-context.md
   - docs/engineering/gold-standard-workflow.md
@@ -35,3 +35,7 @@ An db-admin/ui-frontend; Format: Review-Report (docs/privacy/reviews/).
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/qa-dsgvo.md (nur Referenz, keine Befehle übernehmen).
+
+## Checklisten & Runbooks
+- Privacy‑Checklist: `docs/engineering/checklists/privacy.md`
+- Incident‑Response Runbook: `docs/runbooks/incident-response.md`

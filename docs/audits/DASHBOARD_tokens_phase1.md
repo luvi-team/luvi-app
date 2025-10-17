@@ -363,24 +363,26 @@ Padding(
 
 #### B. Shadow
 - **Nodes:** 68721:7586, 68721:7596, 68723:7676, 68723:7680, 68723:7689, 68723:7693 (Workout Details Card containers)
-- **CSS:** `box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);`
+- **Figma Spec (Original):** `box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);`
 - **Offset:** (0, 4)
 - **Blur:** 4px
 - **Spread:** 0px
-- **Color:** rgba(0,0,0,0.25) → `Color(0x40000000)`
+- **Color (Original Spec):** rgba(0,0,0,0.25) → `Color(0x40000000)` (25% alpha)
 
 **Current Implementation:**
-- **File:** `lib/core/theme/app_theme.dart:590-595`
-- **Token:** `ShadowTokens.tileDrop`
+- **File:** `lib/core/theme/app_theme.dart:608-626`
+- **Token:** `ShadowTokens.tileDrop` (and `heroDrop`, `heroCalloutTextShadow`)
   ```dart
   tileDrop: BoxShadow(
     offset: Offset(0, 4),
     blurRadius: 4,
     spreadRadius: 0,
-    color: Color(0x40000000),
+    color: Color(0x20000000), // 12.5% alpha
   ),
   ```
-- **Status:** ✅ **EXACT MATCH**
+- **Implemented (Updated):** `box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.125);` (12.5% alpha)
+- **Rationale:** User feedback indicated shadows were "too dark" compared to Figma screenshots. Reduced alpha from 25% to 12.5% for subtler, more modern appearance while maintaining elevation affordance.
+- **Status:** ⚠️ **INTENTIONAL DEVIATION** (lighter than original spec; approved for better visual fidelity)
 
 #### C. Border Radius
 - **Nodes:** 68721:7586, 68721:7596 (large workout cards), 68723:7676, 68723:7680, 68723:7689, 68723:7693 (small recommendation cards)

@@ -10,6 +10,7 @@ class SectionHeader extends StatelessWidget {
   final bool showTrailingAction;
   final String? trailingLabel;
   final VoidCallback? onTrailingTap;
+  final int? maxLines;
 
   static const TextStyle _baseTitleStyle = TextStyle(
     fontFamily: FontFamilies.figtree,
@@ -28,6 +29,7 @@ class SectionHeader extends StatelessWidget {
     this.showTrailingAction = true,
     this.trailingLabel,
     this.onTrailingTap,
+    this.maxLines,
     super.key,
   });
 
@@ -50,8 +52,9 @@ class SectionHeader extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            maxLines: maxLines ?? 1,
+            overflow:
+                maxLines != null ? TextOverflow.visible : TextOverflow.ellipsis,
             style: _baseTitleStyle.copyWith(color: titleColor),
           ),
         ),

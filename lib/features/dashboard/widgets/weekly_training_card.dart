@@ -10,7 +10,6 @@ const double _cardHeight = 280;
 const double _cardMaxWidth = 340;
 const double _horizontalMargin = 48; // 24px padding on both sides
 const double _contentPadding = 14;
-const double _detailGap = 8;
 const double _metadataGap = 12;
 const double _checkmarkPadding = 12;
 const double _checkmarkSize = 24;
@@ -52,7 +51,7 @@ class WeeklyTrainingCard extends StatelessWidget {
         const BoxShadow(
           offset: Offset(0, 4),
           blurRadius: 4,
-          color: Color(0x40000000),
+          color: Color(0x20000000), // 12.5% alpha (consistent with ShadowTokens.light)
         );
   }
 
@@ -136,9 +135,6 @@ class WeeklyTrainingCard extends StatelessWidget {
     final detailStyle = _detailStyle(context);
     final width = _resolveWidth(context);
     final overlayGradient = _overlayGradient(context);
-    final hasMetadata =
-        (dayLabel != null && dayLabel!.isNotEmpty) ||
-        (duration != null && duration!.isNotEmpty);
 
     return Semantics(
       container: true,
@@ -198,11 +194,19 @@ class WeeklyTrainingCard extends StatelessWidget {
                                     style: subtitleStyle,
                                     textAlign: TextAlign.center,
                                   ),
+                                  if (dayLabel != null && dayLabel!.isNotEmpty) ...[
+                                    const SizedBox(height: Spacing.xs),
+                                    Text(
+                                      dayLabel!,
+                                      style: detailStyle,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
                           ),
-                          if (hasMetadata)
+                          if (duration != null && duration!.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(top: _metadataGap),
                               child: Align(
@@ -210,28 +214,14 @@ class WeeklyTrainingCard extends StatelessWidget {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    if (dayLabel != null &&
-                                        dayLabel!.isNotEmpty) ...[
-                                      Text(dayLabel!, style: detailStyle),
-                                      if (duration != null &&
-                                          duration!.isNotEmpty)
-                                        const SizedBox(width: _detailGap),
-                                    ],
-                                    if (duration != null &&
-                                        duration!.isNotEmpty)
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.access_time,
-                                            size: 14,
-                                            color: detailStyle.color ??
-                                                const Color(0x99FFFFFF),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(duration!, style: detailStyle),
-                                        ],
-                                      ),
+                                    Icon(
+                                      Icons.access_time,
+                                      size: 14,
+                                      color: detailStyle.color ??
+                                          const Color(0x99FFFFFF),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(duration!, style: detailStyle),
                                   ],
                                 ),
                               ),

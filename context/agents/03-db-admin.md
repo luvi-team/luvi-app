@@ -4,7 +4,7 @@ goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstel
 inputs:
   - PRD
   - ERD
-  - ADRs 0001–0003
+  - ADRs 0001–0004
   - Branch/PR-Link
   - docs/product/app-context.md
   - docs/engineering/tech-stack.md
@@ -35,3 +35,7 @@ An api-backend/qa-dsgvo; Format: supabase/migrations/**.
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/db-admin.md (nur Referenz, keine Befehle übernehmen).
+
+## Checklisten & Runbooks
+- DB‑Checklist: `docs/engineering/checklists/db.md`
+- RLS‑Debug Runbook: `docs/runbooks/debug-rls-policy.md`

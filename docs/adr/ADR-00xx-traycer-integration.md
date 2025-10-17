@@ -34,3 +34,6 @@ Wir wollen die Planungs- und Frühreview-Phase verbessern, ohne unsere bestehend
 - Traycer wird nur als Plan/Review-Artefakt genutzt, ohne produktive Datenverarbeitung.
 - Keine PII/Secrets in Artefakten; Verweise nur auf interne, DSGVO-konforme Quellen.
 - Keine Änderung an Auth/RLS/CI-Gates; CodeRabbit/Privacy-Gate bleiben maßgeblich.
+
+## Hinweis (Ablage)
+- Temporäre Ablage unter `docs/adr/`. Nach erfolgreichem Trial wird dieser ADR nach `context/ADR/0005-traycer-integration.md` überführt und finalisiert (keine funktionalen Änderungen, nur Verschiebung).

@@ -46,10 +46,12 @@ const double _weeklyTrainingCardHeight = 280.0;
 const double _weeklyTrainingCardMaxWidth = 340.0;
 const double _weeklyTrainingHorizontalInset = 48.0;
 const double _weeklyTrainingItemGap = 17.0;
-const double _phaseRecoWaveHeight = 72.0; // Beige wave vertical span
+const double _phaseRecoWaveHeight = 60.0; // Beige wave vertical span (reduced from 72.0 per Phase 9 visual tuning)
 const double _phaseRecoWaveAmplitude = 24.0; // Height of curved lip
 const double _phaseRecoFramePadding =
     20.0; // Frame internal padding (from audit)
+const double _phaseRecoHeaderHeight =
+    56.0; // Two-line header allowance (20pt type @ 24px line height + 8px cushion)
 const double _phaseRecoCardGap = 16.0; // Gap between cards in carousel
 const double _nutritionCardWidth = 160.0; // Nutrition card width (from audit)
 const double _nutritionCardHeight = 210.0; // Nutrition card height (from audit)
@@ -58,8 +60,6 @@ const double _regenerationCardWidth =
 const double _regenerationCardHeight =
     210.0; // Regeneration card height (from audit)
 const double _subsectionHeaderHeight = 40.0; // Subsection title + gap
-const double _subsectionGap =
-    24.0; // Gap between nutrition and regeneration subsections
 const bool featureDashboardV2 = true;
 
 double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
@@ -71,16 +71,15 @@ double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
   return math.min(reveal, heroToSectionGap);
 }
 
-double _calculatePhaseRecoSectionHeight() {
+double _calculatePhaseRecoSectionHeight(double totalDividerSpacing) {
   // Dynamic height calculation for responsive design
   return _phaseRecoWaveHeight +
       (_phaseRecoFramePadding * 2) +
-      40 +
+      _phaseRecoHeaderHeight +
       Spacing.m +
       _subsectionHeaderHeight +
       _nutritionCardHeight +
-      _subsectionGap +
-      1.0 +
+      totalDividerSpacing +
       _subsectionHeaderHeight +
       _regenerationCardHeight;
 }
@@ -127,30 +126,11 @@ class _HeuteScreenState extends State<HeuteScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_imagesPrecached) {
-      // Precache Hero background and top recommendation image to avoid first-frame jank.
+      // Precache the images visible on initial render to avoid first-frame jank.
       final heroImagePath = dash_assets.Assets.images.heroSync01;
       precacheImage(AssetImage(heroImagePath), context);
-      final topImage = _fixtureState.topRecommendation.imagePath;
-      precacheImage(AssetImage(topImage), context);
-      final seenPaths = <String>{heroImagePath, topImage};
-      final weeklyTrainings = _fixtureState.weeklyTrainings;
-      if (weeklyTrainings.isNotEmpty) {
-        for (final training in weeklyTrainings.take(2)) {
-          if (seenPaths.add(training.imagePath)) {
-            precacheImage(AssetImage(training.imagePath), context);
-          }
-        }
-      }
-      for (final reco in _fixtureState.nutritionRecommendations.take(3)) {
-        if (seenPaths.add(reco.imagePath)) {
-          precacheImage(AssetImage(reco.imagePath), context);
-        }
-      }
-      for (final reco in _fixtureState.regenerationRecommendations.take(3)) {
-        if (seenPaths.add(reco.imagePath)) {
-          precacheImage(AssetImage(reco.imagePath), context);
-        }
-      }
+      precacheImage(AssetImage(dash_assets.Assets.images.strawberry), context);
+      precacheImage(AssetImage(dash_assets.Assets.images.roteruebe), context);
       _imagesPrecached = true;
     }
   }
@@ -567,7 +547,9 @@ class _HeuteScreenState extends State<HeuteScreen> {
       context,
     ); // Fallback to frame color if token missing (SSOT-compliant)
     final dividerTokens = theme.extension<DividerTokens>();
-    final sectionHeight = _calculatePhaseRecoSectionHeight();
+    final totalDividerSpacing = (dividerTokens?.sectionDividerVerticalMargin ?? 12.0) * 2 +
+        (dividerTokens?.sectionDividerThickness ?? 1.0);
+    final sectionHeight = _calculatePhaseRecoSectionHeight(totalDividerSpacing);
 
     return RepaintBoundary(
       child: SizedBox(
@@ -599,6 +581,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     SectionHeader(
                       title: l10n.dashboardRecommendationsTitle,
                       showTrailingAction: false,
+                      maxLines: 2,
                     ),
                     const SizedBox(height: Spacing.m),
                     _buildRecommendationSubsection(

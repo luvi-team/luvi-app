@@ -15,7 +15,7 @@ Code-Qualität:
 - CodeRabbit (Lite): GitHub-App + IDE/CLI, line-by-line PR-Reviews; Required Check
 
 Required Checks (exakt):
-Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit
+Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit · Vercel Preview Health (200 OK)
 
 ## 2) Frontend (Flutter)
 Flutter 3.35.4 (Dart 3.9.0, in CI gepinnt)
@@ -63,4 +63,4 @@ Mehrkosten AI/DSGVO: ~€0,49 / Premium-User / Monat
 - Interop/Legacy: .claude/*, CLAUDE.md nur Referenz
 
 ## 9) Branch-Protection (Empfehlung)
-Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit
+Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit · Vercel Preview Health (200 OK)

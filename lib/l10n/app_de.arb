@@ -139,7 +139,7 @@
   "@dashboardTrainingWeekSubtitle": {
     "description": "Subtitle below weekly training section header."
   },
-  "dashboardRecommendationsTitle": "Weitere Empfehlungen für deine Phase",
+  "dashboardRecommendationsTitle": "Weitere Empfehlungen\nfür deine Phase",
   "@dashboardRecommendationsTitle": {
     "description": "Section header title for phase-specific recommendations on dashboard."
   },

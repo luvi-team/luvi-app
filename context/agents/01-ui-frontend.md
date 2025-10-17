@@ -4,7 +4,7 @@ goal: UX-Konsistenz sichern; token-aware Widgets/Screens mit Tests.
 inputs:
   - PRD
   - ERD
-  - ADRs 0001–0003
+  - ADRs 0001–0004
   - Branch/PR-Link
   - docs/product/app-context.md
   - docs/engineering/tech-stack.md
@@ -36,3 +36,6 @@ An api-backend; Format: PR-Beschreibung + test/** + docs/**.
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/ui-frontend.md (nur Referenz, keine Befehle übernehmen).
+
+## Checklisten & Runbooks
+- UI‑Checklist: `docs/engineering/checklists/ui.md`

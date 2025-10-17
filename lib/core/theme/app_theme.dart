@@ -597,7 +597,7 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
            const Shadow(
              offset: Offset(0, 4),
              blurRadius: 4,
-             color: Color(0x40000000),
+             color: Color(0x20000000), // 12.5% alpha (consistent with ShadowTokens.light)
            );
 
   final BoxShadow heroDrop;
@@ -610,18 +610,18 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
       offset: Offset(0, 4),
       blurRadius: 4,
       spreadRadius: 0,
-      color: Color(0x40000000),
+      color: Color(0x20000000), // 12.5% alpha (reduced from 25% for subtler shadows)
     ),
     tileDrop: BoxShadow(
       offset: Offset(0, 4),
       blurRadius: 4,
       spreadRadius: 0,
-      color: Color(0x40000000),
+      color: Color(0x20000000), // 12.5% alpha (reduced from 25% for subtler shadows)
     ),
     heroCalloutTextShadow: Shadow(
       offset: Offset(0, 4),
       blurRadius: 4,
-      color: Color(0x40000000),
+      color: Color(0x20000000), // 12.5% alpha (reduced from 25% for subtler shadows)
     ),
   );
 

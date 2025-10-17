@@ -4,7 +4,7 @@ goal: Performante, verständliche Visualisierungen mit klaren Erklärtexten.
 inputs:
   - PRD
   - ERD
-  - ADRs 0001–0003
+  - ADRs 0001–0004
   - Branch/PR-Link
   - docs/product/app-context.md
   - docs/engineering/tech-stack.md
@@ -37,3 +37,9 @@ An ui-frontend/product; Format: PR-Beschreibung + docs/.
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/dataviz.md (nur Referenz, keine Befehle übernehmen).
+
+## Checklisten & Runbooks
+- DataViz‑Checklist: `docs/engineering/checklists/dataviz.md`
+- Analytics‑Taxonomie: `docs/analytics/taxonomy.md`
+- Chart‑A11y‑Checklist: `docs/analytics/chart-a11y-checklist.md`
+- Backfill Runbook: `docs/runbooks/analytics-backfill.md`

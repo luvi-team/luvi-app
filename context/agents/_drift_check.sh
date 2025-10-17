@@ -94,6 +94,26 @@ else
   fail "AGENTS.md: Auto-Role Map-Verweis fehlt"
 fi
 
+# 3d) CLAUDE.md verlinkt die Auto-Role Map (SSOT)
+if [ -f "$ROOT/CLAUDE.md" ]; then
+  if rg -n "context/agents/_auto_role_map\.md" "$ROOT/CLAUDE.md" >/dev/null 2>&1; then
+    pass "CLAUDE.md: Auto-Role Map (SSOT) verlinkt"
+  else
+    fail "CLAUDE.md: Auto-Role Map (SSOT) fehlt oder veraltet"
+  fi
+else
+  pass "CLAUDE.md: Datei nicht gefunden (Interop optional)"
+fi
+
+# 3e) CLAUDE.md referenziert Antwortformat (CLI)
+if [ -f "$ROOT/CLAUDE.md" ]; then
+  if rg -n "docs/engineering/assistant-answer-format\.md" "$ROOT/CLAUDE.md" >/dev/null 2>&1; then
+    pass "CLAUDE.md: Antwortformat-Verweis vorhanden"
+  else
+    fail "CLAUDE.md: Antwortformat-Verweis fehlt"
+  fi
+fi
+
 # 4) Soft-Gates: Operativer Modus vorhanden
 for s in reqing-ball.md ui-polisher.md; do
   if rg -n "^#+\\s*Operativer Modus" "$DIR/$s" >/dev/null 2>&1; then
