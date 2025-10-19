@@ -26,10 +26,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding02Title => 'Wann hast du\nGeburtstag?';
 
   @override
-  String get onboarding02CalloutSemantic => 'Hinweis: Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.';
+  String get onboarding02CalloutSemantic =>
+      'Hinweis: Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.';
 
   @override
-  String get onboarding02CalloutBody => 'Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.';
+  String get onboarding02CalloutBody =>
+      'Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.';
 
   @override
   String get onboarding02PickerSemantic => 'Geburtsdatum auswählen';
@@ -43,19 +45,24 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get onboarding03GoalCycleUnderstanding => 'Meinen Zyklus & Körper besser verstehen';
+  String get onboarding03GoalCycleUnderstanding =>
+      'Meinen Zyklus & Körper besser verstehen';
 
   @override
-  String get onboarding03GoalTrainingAlignment => 'Training an meinen Zyklus anpassen';
+  String get onboarding03GoalTrainingAlignment =>
+      'Training an meinen Zyklus anpassen';
 
   @override
-  String get onboarding03GoalNutrition => 'Ernährung optimieren & neue Rezepte entdecken';
+  String get onboarding03GoalNutrition =>
+      'Ernährung optimieren & neue Rezepte entdecken';
 
   @override
-  String get onboarding03GoalWeightManagement => 'Gewicht managen (Abnehmen/Halten)';
+  String get onboarding03GoalWeightManagement =>
+      'Gewicht managen (Abnehmen/Halten)';
 
   @override
-  String get onboarding03GoalMindfulness => 'Stress reduzieren & Achtsamkeit stärken';
+  String get onboarding03GoalMindfulness =>
+      'Stress reduzieren & Achtsamkeit stärken';
 
   @override
   String get onboarding04Title => 'Wann hat deine letzte Periode angefangen?';
@@ -66,7 +73,8 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get onboarding04CalloutSemantics => 'Hinweis: Mach dir keine Sorgen, wenn du den exakten Tag nicht mehr weißt. Eine ungefähre Schätzung reicht für den Start völlig aus.';
+  String get onboarding04CalloutSemantics =>
+      'Hinweis: Mach dir keine Sorgen, wenn du den exakten Tag nicht mehr weißt. Eine ungefähre Schätzung reicht für den Start völlig aus.';
 
   @override
   String get onboarding04CalloutPrefix => 'Mach dir keine Sorgen, wenn du den ';
@@ -75,7 +83,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding04CalloutHighlight => 'exakten Tag nicht mehr weißt';
 
   @override
-  String get onboarding04CalloutSuffix => '. Eine ungefähre Schätzung reicht für den Start völlig aus.';
+  String get onboarding04CalloutSuffix =>
+      '. Eine ungefähre Schätzung reicht für den Start völlig aus.';
 
   @override
   String get commonContinue => 'Weiter';
@@ -101,7 +110,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardTrainingWeekTitle => 'Dein Training für diese Woche';
 
   @override
-  String get dashboardTrainingWeekSubtitle => 'Erstellt von deinen LUVI-Expert:innen';
+  String get dashboardTrainingWeekSubtitle =>
+      'Erstellt von deinen LUVI-Expert:innen';
 
   @override
   String get dashboardRecommendationsTitle => 'Weitere Empfehlungen für Dich';
@@ -158,19 +168,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardLuviSyncTitle => 'Luvi Sync Journal';
 
   @override
-  String get dashboardLuviSyncPlaceholder => 'Luvi Sync Journal Inhalte folgen bald.';
+  String get dashboardLuviSyncPlaceholder =>
+      'Luvi Sync Journal Inhalte folgen bald.';
 
   @override
   String get workoutTitle => 'Workout';
 
   @override
-  String get dashboardWearableConnectMessage => 'Verbinde dein Wearable, um deine Trainingsdaten anzeigen zu lassen.';
+  String get dashboardWearableConnectMessage =>
+      'Verbinde dein Wearable, um deine Trainingsdaten anzeigen zu lassen.';
 
   @override
   String get dashboardHeroCtaMore => 'Mehr';
 
   @override
-  String get dashboardRecommendationsEmpty => 'Für diese Phase liegen noch keine Empfehlungen vor.';
+  String get dashboardRecommendationsEmpty =>
+      'Für diese Phase liegen noch keine Empfehlungen vor.';
 
   @override
   String get topRecommendation => 'Top-Empfehlung';
@@ -193,7 +206,8 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get cycleInlineCalendarLabelDefault => 'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+  String get cycleInlineCalendarLabelDefault =>
+      'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
 
   @override
   String get cyclePhaseMenstruation => 'Menstruation';
@@ -226,16 +240,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding06Title => 'Erzähl mir von dir 💜';
 
   @override
-  String get onboarding06Question => 'Wie lange dauert dein Zyklus normalerweise?';
+  String get onboarding06Question =>
+      'Wie lange dauert dein Zyklus normalerweise?';
 
   @override
   String get onboarding06OptionsSemantic => 'Zykluslänge auswählen';
 
   @override
-  String get onboarding06Callout => 'Jeder Zyklus ist einzigartig - wie du auch!';
+  String get onboarding06Callout =>
+      'Jeder Zyklus ist einzigartig - wie du auch!';
 
   @override
-  String get onboarding05Title => 'Wie lange dauert deine\nPeriode normalerweise?';
+  String get onboarding05Title =>
+      'Wie lange dauert deine\nPeriode normalerweise?';
 
   @override
   String get onboarding05OptionsSemantic => 'Periodendauer auswählen';
@@ -253,7 +270,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding05OptOver7 => 'Mehr als 7 Tage';
 
   @override
-  String get onboarding05Callout => 'Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.';
+  String get onboarding05Callout =>
+      'Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.';
 
   @override
   String get onboarding07Title => 'Wie ist dein Zyklus so?';
@@ -271,7 +289,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding07OptUnknown => 'Keine Ahnung';
 
   @override
-  String get onboarding07Footnote => 'Ob Uhrwerk oder Chaos - ich verstehe beides!';
+  String get onboarding07Footnote =>
+      'Ob Uhrwerk oder Chaos - ich verstehe beides!';
 
   @override
   String get onboardingComplete => 'Onboarding abgeschlossen';
@@ -280,23 +299,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cycleTipHeadlineMenstruation => 'Menstruation';
 
   @override
-  String get cycleTipBodyMenstruation => 'Sanfte Bewegung, Stretching oder ein Spaziergang sind heute ideale Begleiter - alles darf, nichts muss.';
+  String get cycleTipBodyMenstruation =>
+      'Sanfte Bewegung, Stretching oder ein Spaziergang sind heute ideale Begleiter - alles darf, nichts muss.';
 
   @override
   String get cycleTipHeadlineFollicular => 'Follikelphase';
 
   @override
-  String get cycleTipBodyFollicular => 'Du bist heute in der Follikelphase. Aufgrund des steigenden Östrogenspiegels hast du mehr Energie. Beste Zeit für ein intensiveres Training.';
+  String get cycleTipBodyFollicular =>
+      'Du bist heute in der Follikelphase. Aufgrund des steigenden Östrogenspiegels hast du mehr Energie. Beste Zeit für ein intensiveres Training.';
 
   @override
   String get cycleTipHeadlineOvulation => 'Ovulationsfenster';
 
   @override
-  String get cycleTipBodyOvulation => 'Kurze, knackige Sessions funktionieren jetzt meist am besten. Plane danach bewusst Cool-down & Hydration ein.';
+  String get cycleTipBodyOvulation =>
+      'Kurze, knackige Sessions funktionieren jetzt meist am besten. Plane danach bewusst Cool-down & Hydration ein.';
 
   @override
   String get cycleTipHeadlineLuteal => 'Lutealphase';
 
   @override
-  String get cycleTipBodyLuteal => 'Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten.';
+  String get cycleTipBodyLuteal =>
+      'Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten.';
 }

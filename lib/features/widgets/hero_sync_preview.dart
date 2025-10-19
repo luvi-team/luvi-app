@@ -230,26 +230,29 @@ class _MehrButton extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: SizedBox(
         height: 44,
-        constraints: const BoxConstraints(minWidth: 60),
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.s,
-          vertical: 10,
-        ),
-        decoration: BoxDecoration(
-          color: colorScheme.primary,
-          borderRadius: BorderRadius.circular(Sizes.radiusM),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          l10n?.dashboardHeroCtaMore ?? 'Mehr',
-          style: TextStyle(
-            fontFamily: FontFamilies.figtree,
-            fontSize: TypographyTokens.size16,
-            height: TypographyTokens.lineHeightRatio24on16,
-            fontWeight: FontWeight.w700,
-            color: colorScheme.onPrimary,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            height: 32,
+            constraints: const BoxConstraints(minWidth: 67),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
+              borderRadius: BorderRadius.circular(Sizes.radiusM),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              l10n?.dashboardHeroCtaMore ?? 'Mehr',
+              style: TextStyle(
+                fontFamily: FontFamilies.figtree,
+                fontSize: TypographyTokens.size16,
+                height: TypographyTokens.lineHeightRatio24on16,
+                fontWeight: FontWeight.w700,
+                color: colorScheme.onPrimary,
+              ),
+            ),
           ),
         ),
       ),

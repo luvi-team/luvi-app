@@ -48,7 +48,8 @@ const double _weeklyTrainingHorizontalInset = 48.0;
 const double _weeklyTrainingItemGap = 17.0;
 const double _weeklyTitleSubtitleGap =
     4.0; // Tighter title→subtitle spacing to match Figma
-const double _phaseRecoWaveHeight = 80.0; // Beige wave vertical span (reduced from 72.0 per Phase 9 visual tuning)
+const double _phaseRecoWaveHeight =
+    80.0; // Beige wave vertical span (reduced from 72.0 per Phase 9 visual tuning)
 const double _phaseRecoWaveAmplitude = 24.0; // Height of curved lip
 const double _phaseRecoHeaderHeight =
     56.0; // Two-line header allowance (20pt type @ 24px line height + 8px cushion)
@@ -306,7 +307,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                         const SizedBox(height: Spacing.m),
                         CycleTipCard(phase: currentPhase),
                       ],
-                      SizedBox(height: calculateBottomPadding()),
+                      SizedBox(height: scrollStopPadding(context)),
                     ],
                   ),
                 ),
@@ -487,10 +488,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: Spacing.l),
-          child: Text(
-            l10n.dashboardTrainingWeekTitle,
-            style: titleStyle,
-          ),
+          child: Text(l10n.dashboardTrainingWeekTitle, style: titleStyle),
         ),
         const SizedBox(height: _weeklyTitleSubtitleGap),
         Padding(
@@ -504,11 +502,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
               return const LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: [
-                  Colors.white,
-                  Colors.white,
-                  Colors.transparent,
-                ],
+                colors: [Colors.white, Colors.white, Colors.transparent],
                 stops: [0.0, 0.85, 1.0],
               ).createShader(bounds);
             },
@@ -516,10 +510,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
             child: SizedBox(
               height: _weeklyTrainingCardHeight,
               child: ListView.separated(
-                padding: EdgeInsets.only(
-                  left: Spacing.l,
-                  right: peekPadding,
-                ),
+                padding: EdgeInsets.only(left: Spacing.l, right: peekPadding),
                 scrollDirection: Axis.horizontal,
                 itemCount: trainings.length,
                 physics: const BouncingScrollPhysics(),
@@ -590,9 +581,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
             Positioned(
               left: Spacing.l,
               right: Spacing.l,
-              top: _phaseRecoWaveHeight -
-                  _phaseRecoWaveAmplitude -
-                  Spacing.l,
+              top: _phaseRecoWaveHeight - _phaseRecoWaveAmplitude - Spacing.l,
               child: Container(
                 decoration: BoxDecoration(
                   color: dsTokens?.cardSurface ?? DsTokens.light.cardSurface,

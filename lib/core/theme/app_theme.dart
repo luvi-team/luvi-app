@@ -595,11 +595,14 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
     required this.tileDrop,
     required this.heroCardDrop,
     Shadow? heroCalloutTextShadow,
-  }) : heroCalloutTextShadow = heroCalloutTextShadow ??
+  }) : heroCalloutTextShadow =
+           heroCalloutTextShadow ??
            const Shadow(
              offset: Offset(0, 4),
              blurRadius: 4,
-             color: Color(0x20000000), // 12.5% alpha (consistent with ShadowTokens.light)
+             color: Color(
+               0x20000000,
+             ), // 12.5% alpha (consistent with ShadowTokens.light)
            );
 
   final BoxShadow heroDrop;
@@ -613,7 +616,9 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
       offset: Offset(0, 4),
       blurRadius: 4,
       spreadRadius: 0,
-      color: Color(0x20000000), // 12.5% alpha (reduced from 25% for subtler shadows)
+      color: Color(
+        0x20000000,
+      ), // 12.5% alpha (reduced from 25% for subtler shadows)
     ),
     heroCardDrop: BoxShadow(
       offset: Offset(0, 4),
@@ -625,12 +630,16 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
       offset: Offset(0, 4),
       blurRadius: 4,
       spreadRadius: 0,
-      color: Color(0x20000000), // 12.5% alpha (reduced from 25% for subtler shadows)
+      color: Color(
+        0x20000000,
+      ), // 12.5% alpha (reduced from 25% for subtler shadows)
     ),
     heroCalloutTextShadow: Shadow(
       offset: Offset(0, 4),
       blurRadius: 4,
-      color: Color(0x20000000), // 12.5% alpha (reduced from 25% for subtler shadows)
+      color: Color(
+        0x20000000,
+      ), // 12.5% alpha (reduced from 25% for subtler shadows)
     ),
   );
 
@@ -860,11 +869,11 @@ class RecommendationCardOverlayTokens
     List<double>? stops,
     List<Color>? colors,
   }) => RecommendationCardOverlayTokens(
-        begin: begin ?? this.begin,
-        end: end ?? this.end,
-        stops: stops ?? this.stops,
-        colors: colors ?? this.colors,
-      );
+    begin: begin ?? this.begin,
+    end: end ?? this.end,
+    stops: stops ?? this.stops,
+    colors: colors ?? this.colors,
+  );
 
   @override
   RecommendationCardOverlayTokens lerp(

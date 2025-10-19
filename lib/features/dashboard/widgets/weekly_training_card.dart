@@ -51,7 +51,9 @@ class WeeklyTrainingCard extends StatelessWidget {
         const BoxShadow(
           offset: Offset(0, 4),
           blurRadius: 4,
-          color: Color(0x20000000), // 12.5% alpha (consistent with ShadowTokens.light)
+          color: Color(
+            0x20000000,
+          ), // 12.5% alpha (consistent with ShadowTokens.light)
         );
   }
 
@@ -85,8 +87,9 @@ class WeeklyTrainingCard extends StatelessWidget {
       fontSize: 12,
       height: 24 / 12,
     );
-    return (tokens?.durationStyle ?? fallback)
-        .copyWith(color: const Color(0xCCFFFFFF));
+    return (tokens?.durationStyle ?? fallback).copyWith(
+      color: const Color(0xCCFFFFFF),
+    );
   }
 
   LinearGradient _overlayGradient(BuildContext context) {
@@ -174,12 +177,18 @@ class WeeklyTrainingCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: titleStyle,
-                            textAlign: TextAlign.center,
+                          SizedBox(
+                            height: 64,
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              child: Text(
+                                title,
+                                maxLines: 2,
+                                overflow: TextOverflow.fade,
+                                style: titleStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
                           const SizedBox(height: Spacing.xs),
                           Text(
@@ -189,14 +198,19 @@ class WeeklyTrainingCard extends StatelessWidget {
                             style: subtitleStyle,
                             textAlign: TextAlign.center,
                           ),
-                          if (dayLabel != null && dayLabel!.isNotEmpty) ...[
-                            const SizedBox(height: Spacing.xs),
-                            Text(
-                              dayLabel!,
-                              style: detailStyle,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                          const SizedBox(height: Spacing.xs),
+                          SizedBox(
+                            height: 24,
+                            child: dayLabel != null && dayLabel!.isNotEmpty
+                                ? Center(
+                                    child: Text(
+                                      dayLabel!,
+                                      style: detailStyle,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
                           if (duration != null && duration!.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(top: _metadataGap),
@@ -208,15 +222,16 @@ class WeeklyTrainingCard extends StatelessWidget {
                                     Icon(
                                       Icons.access_time,
                                       size: 14,
-                                      color: detailStyle.color ??
+                                      color:
+                                          detailStyle.color ??
                                           const Color(0x99FFFFFF),
                                     ),
                                     const SizedBox(width: 4),
                                     Text(duration!, style: detailStyle),
                                   ],
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),

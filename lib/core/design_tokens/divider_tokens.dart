@@ -44,10 +44,18 @@ class DividerTokens extends ThemeExtension<DividerTokens> {
           Color.lerp(sectionDividerColor, other.sectionDividerColor, t) ??
           sectionDividerColor,
       sectionDividerThickness:
-          lerpDouble(sectionDividerThickness, other.sectionDividerThickness, t) ??
+          lerpDouble(
+            sectionDividerThickness,
+            other.sectionDividerThickness,
+            t,
+          ) ??
           sectionDividerThickness,
       sectionDividerVerticalMargin:
-          lerpDouble(sectionDividerVerticalMargin, other.sectionDividerVerticalMargin, t) ??
+          lerpDouble(
+            sectionDividerVerticalMargin,
+            other.sectionDividerVerticalMargin,
+            t,
+          ) ??
           sectionDividerVerticalMargin,
     );
   }

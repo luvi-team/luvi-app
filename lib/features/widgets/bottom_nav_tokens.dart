@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 // Bottom Navigation Design Tokens (Figma Audit 2025-10-06)
 // All values derived from Spec-JSON and formulas (no magic numbers).
 //
@@ -57,6 +59,14 @@ const double syncButtonBottom =
 /// visual gap above the wave crest for content spacing.
 double calculateBottomPadding() {
   return dockHeight - cutoutDepth + desiredGapToWaveTop;
+}
+
+double scrollStopPadding(BuildContext context) {
+  final safeBottom = MediaQuery.paddingOf(context).bottom;
+  return (buttonDiameter - cutoutDepth) +
+      desiredGapToWaveTop -
+      waveTopInset +
+      safeBottom;
 }
 
 /// Wave stroke width (Figma spec: 1.5px)

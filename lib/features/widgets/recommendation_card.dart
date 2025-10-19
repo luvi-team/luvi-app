@@ -40,28 +40,29 @@ class RecommendationCard extends StatelessWidget {
     );
     final theme = Theme.of(context);
     final shadowTokens = theme.extension<ShadowTokens>();
-    final typographyTokens =
-        theme.extension<WorkoutCardTypographyTokens>();
-    final recommendationOverlayTokens =
-        theme.extension<RecommendationCardOverlayTokens>();
+    final typographyTokens = theme.extension<WorkoutCardTypographyTokens>();
+    final recommendationOverlayTokens = theme
+        .extension<RecommendationCardOverlayTokens>();
     final tileShadow =
         shadowTokens?.tileDrop ??
         const BoxShadow(
-          color: Color(0x20000000), // 12.5% alpha (consistent with ShadowTokens.light)
+          color: Color(
+            0x20000000,
+          ), // 12.5% alpha (consistent with ShadowTokens.light)
           blurRadius: 4,
           offset: Offset(0, 4),
         );
-    final gradient =
-        recommendationOverlayTokens?.gradient ?? _fallbackGradient;
+    final gradient = recommendationOverlayTokens?.gradient ?? _fallbackGradient;
     final semanticsLabel = subtitle != null ? '$title, $subtitle' : title;
-    final titleStyle = (typographyTokens?.titleStyle ??
-            const TextStyle(
-              fontFamily: FontFamilies.playfairDisplay,
-              fontWeight: FontWeight.w700,
-              fontSize: 24,
-              height: 32 / 24,
-            ))
-        .copyWith(color: const Color(0xFFFFFFFF));
+    final titleStyle =
+        (typographyTokens?.titleStyle ??
+                const TextStyle(
+                  fontFamily: FontFamilies.playfairDisplay,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                  height: 32 / 24,
+                ))
+            .copyWith(color: const Color(0xFFFFFFFF));
 
     return Container(
       decoration: BoxDecoration(

@@ -341,7 +341,7 @@ class HeuteFixtures {
         ),
         WeeklyTrainingProps(
           id: 'wkly-mobility',
-          title: 'Mobility',
+          title: 'Mobility\nTraining',
           subtitle: 'Beweglichkeit verbessern',
           duration: '30 min',
           imagePath: Assets.images.recoRueckenSchulter,
