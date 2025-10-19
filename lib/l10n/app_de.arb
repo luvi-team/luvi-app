@@ -139,11 +139,11 @@
   "@dashboardTrainingWeekSubtitle": {
     "description": "Subtitle below weekly training section header."
   },
-  "dashboardRecommendationsTitle": "Weitere Empfehlungen\nfür deine Phase",
+  "dashboardRecommendationsTitle": "Weitere Empfehlungen für Dich",
   "@dashboardRecommendationsTitle": {
     "description": "Section header title for phase-specific recommendations on dashboard."
   },
-  "dashboardNutritionTitle": "Ernährung & Nutrition",
+  "dashboardNutritionTitle": "Ernährung & Biohacking",
   "@dashboardNutritionTitle": {
     "description": "Subsection title for nutrition recommendations."
   },

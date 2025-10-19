@@ -84,9 +84,9 @@ class WeeklyTrainingCard extends StatelessWidget {
       fontWeight: FontWeight.w400,
       fontSize: 12,
       height: 24 / 12,
-      color: Color(0x99FFFFFF),
     );
-    return tokens?.durationStyle ?? fallback;
+    return (tokens?.durationStyle ?? fallback)
+        .copyWith(color: const Color(0xCCFFFFFF));
   }
 
   LinearGradient _overlayGradient(BuildContext context) {
@@ -201,7 +201,7 @@ class WeeklyTrainingCard extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(top: _metadataGap),
                               child: Align(
-                                alignment: Alignment.centerRight,
+                                alignment: Alignment.centerLeft,
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -214,9 +214,9 @@ class WeeklyTrainingCard extends StatelessWidget {
                                     const SizedBox(width: 4),
                                     Text(duration!, style: detailStyle),
                                   ],
-                                ),
                               ),
                             ),
+                          ),
                         ],
                       ),
                     ),
@@ -224,11 +224,20 @@ class WeeklyTrainingCard extends StatelessWidget {
                   if (isCompleted)
                     Positioned(
                       top: _checkmarkPadding,
-                      right: _checkmarkPadding,
-                      child: Icon(
-                        Icons.check_circle,
-                        size: _checkmarkSize,
-                        color: checkmarkColor,
+                      left: _checkmarkPadding,
+                      child: Container(
+                        width: _checkmarkSize,
+                        height: _checkmarkSize,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: checkmarkColor,
+                        ),
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.check,
+                          size: 16,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                 ],

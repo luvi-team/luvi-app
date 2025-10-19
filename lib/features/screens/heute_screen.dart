@@ -46,10 +46,10 @@ const double _weeklyTrainingCardHeight = 280.0;
 const double _weeklyTrainingCardMaxWidth = 340.0;
 const double _weeklyTrainingHorizontalInset = 48.0;
 const double _weeklyTrainingItemGap = 17.0;
+const double _weeklyTitleSubtitleGap =
+    4.0; // Tighter title→subtitle spacing to match Figma
 const double _phaseRecoWaveHeight = 80.0; // Beige wave vertical span (reduced from 72.0 per Phase 9 visual tuning)
 const double _phaseRecoWaveAmplitude = 24.0; // Height of curved lip
-const double _phaseRecoFramePadding =
-    20.0; // Frame internal padding (from audit)
 const double _phaseRecoHeaderHeight =
     56.0; // Two-line header allowance (20pt type @ 24px line height + 8px cushion)
 const double _phaseRecoCardGap = 16.0; // Gap between cards in carousel
@@ -71,15 +71,24 @@ double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
   return math.min(reveal, heroToSectionGap);
 }
 
-double _calculatePhaseRecoSectionHeight(double totalDividerSpacing) {
+double _calculatePhaseRecoSectionHeight(double dividerVisualHeight) {
+  const double framePaddingTop = Spacing.xs;
+  const double framePaddingBottom = Spacing.xs;
+  const double headerToDividerGap = Spacing.xs;
+  const double dividerToFirstSectionGap = Spacing.xs;
+  const double interSectionGap = Spacing.xs;
+
   // Dynamic height calculation for responsive design
   return _phaseRecoWaveHeight +
-      (_phaseRecoFramePadding * 2) +
+      framePaddingTop +
+      framePaddingBottom +
       _phaseRecoHeaderHeight +
-      Spacing.m +
+      headerToDividerGap +
+      dividerVisualHeight +
+      dividerToFirstSectionGap +
       _subsectionHeaderHeight +
       _nutritionCardHeight +
-      totalDividerSpacing +
+      interSectionGap +
       _subsectionHeaderHeight +
       _regenerationCardHeight;
 }
@@ -483,12 +492,12 @@ class _HeuteScreenState extends State<HeuteScreen> {
             style: titleStyle,
           ),
         ),
-        const SizedBox(height: Spacing.xs),
+        const SizedBox(height: _weeklyTitleSubtitleGap),
         Padding(
           padding: const EdgeInsets.only(left: Spacing.l),
           child: Text(l10n.dashboardTrainingWeekSubtitle, style: subtitleStyle),
         ),
-        const SizedBox(height: Spacing.s),
+        const SizedBox(height: Spacing.xs),
         RepaintBoundary(
           child: ShaderMask(
             shaderCallback: (Rect bounds) {
@@ -550,13 +559,15 @@ class _HeuteScreenState extends State<HeuteScreen> {
     List<RecommendationProps> regenerationRecos,
   ) {
     final theme = Theme.of(context);
+    final dsTokens = theme.extension<DsTokens>();
     final waveColor = _phaseWaveBackgroundColor(
       context,
     ); // Fallback to frame color if token missing (SSOT-compliant)
     final dividerTokens = theme.extension<DividerTokens>();
-    final totalDividerSpacing = (dividerTokens?.sectionDividerVerticalMargin ?? 12.0) * 2 +
-        (dividerTokens?.sectionDividerThickness ?? 1.0);
-    final sectionHeight = _calculatePhaseRecoSectionHeight(totalDividerSpacing);
+    final dividerColor =
+        dividerTokens?.sectionDividerColor ?? const Color(0xFFDCDCDC);
+    final dividerThickness = dividerTokens?.sectionDividerThickness ?? 1.0;
+    final sectionHeight = _calculatePhaseRecoSectionHeight(dividerThickness);
 
     return RepaintBoundary(
       child: SizedBox(
@@ -579,54 +590,62 @@ class _HeuteScreenState extends State<HeuteScreen> {
             Positioned(
               left: Spacing.l,
               right: Spacing.l,
-              top: _phaseRecoWaveHeight - _phaseRecoWaveAmplitude,
-              child: Padding(
-                padding: const EdgeInsets.all(_phaseRecoFramePadding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.dashboardRecommendationsTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.visible,
-                      style: const TextStyle(
-                        fontFamily: FontFamilies.figtree,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                        height: 24 / 20,
-                        color: Color(0xFF030401),
+              top: _phaseRecoWaveHeight -
+                  _phaseRecoWaveAmplitude -
+                  Spacing.l,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: dsTokens?.cardSurface ?? DsTokens.light.cardSurface,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    Spacing.s,
+                    Spacing.xs,
+                    Spacing.s,
+                    Spacing.xs,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.dashboardRecommendationsTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: FontFamilies.figtree,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                          height: 24 / 20,
+                          color: Color(0xFF030401),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: Spacing.m),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: dividerTokens?.sectionDividerVerticalMargin ??
-                            12.0,
+                      const SizedBox(height: Spacing.xs),
+                      Divider(
+                        color: dividerColor,
+                        thickness: dividerThickness,
+                        height: dividerThickness,
                       ),
-                      child: Divider(
-                        color: dividerTokens?.sectionDividerColor ??
-                            const Color(0xFFDCDCDC),
-                        thickness: dividerTokens?.sectionDividerThickness ?? 1.0,
-                        height: 0,
+                      const SizedBox(height: Spacing.xs),
+                      _buildRecommendationSubsection(
+                        context,
+                        l10n.dashboardNutritionTitle,
+                        nutritionRecos,
+                        _nutritionCardWidth,
+                        _nutritionCardHeight,
+                        l10n.nutritionRecommendation,
                       ),
-                    ),
-                    _buildRecommendationSubsection(
-                      context,
-                      l10n.dashboardNutritionTitle,
-                      nutritionRecos,
-                      _nutritionCardWidth,
-                      _nutritionCardHeight,
-                      l10n.nutritionRecommendation,
-                    ),
-                    _buildRecommendationSubsection(
-                      context,
-                      l10n.dashboardRegenerationTitle,
-                      regenerationRecos,
-                      _regenerationCardWidth,
-                      _regenerationCardHeight,
-                      l10n.regenerationRecommendation,
-                    ),
-                  ],
+                      const SizedBox(height: Spacing.xs),
+                      _buildRecommendationSubsection(
+                        context,
+                        l10n.dashboardRegenerationTitle,
+                        regenerationRecos,
+                        _regenerationCardWidth,
+                        _regenerationCardHeight,
+                        l10n.regenerationRecommendation,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -648,9 +667,9 @@ class _HeuteScreenState extends State<HeuteScreen> {
     final l10n = AppLocalizations.of(context)!;
     const headerTextStyle = TextStyle(
       fontFamily: FontFamilies.figtree,
-      fontSize: 16,
-      height: 24 / 16,
-      fontWeight: FontWeight.w600,
+      fontSize: 20,
+      height: 24 / 20,
+      fontWeight: FontWeight.w400,
     );
 
     if (recommendations.isEmpty) {
@@ -661,7 +680,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: headerTextStyle),
-          const SizedBox(height: Spacing.s),
+          const SizedBox(height: Spacing.xs),
           Text(
             l10n.dashboardRecommendationsEmpty,
             style: TextStyle(
@@ -679,7 +698,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: headerTextStyle),
-        const SizedBox(height: Spacing.s),
+        const SizedBox(height: Spacing.xs),
         SizedBox(
           height: cardHeight,
           child: ListView.separated(

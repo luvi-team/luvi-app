@@ -330,6 +330,7 @@ class HeuteFixtures {
           dayLabel: 'Tag 1',
           duration: '60 min',
           imagePath: Assets.images.recoGanzkoerper,
+          isCompleted: true,
         ),
         WeeklyTrainingProps(
           id: 'wkly-hiit-cardio',
@@ -337,7 +338,6 @@ class HeuteFixtures {
           subtitle: 'Steigere deine Ausdauer',
           duration: '45 min',
           imagePath: Assets.images.recoBeinePo,
-          isCompleted: true,
         ),
         WeeklyTrainingProps(
           id: 'wkly-mobility',

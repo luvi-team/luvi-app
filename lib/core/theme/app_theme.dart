@@ -593,6 +593,7 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
   const ShadowTokens({
     required this.heroDrop,
     required this.tileDrop,
+    required this.heroCardDrop,
     Shadow? heroCalloutTextShadow,
   }) : heroCalloutTextShadow = heroCalloutTextShadow ??
            const Shadow(
@@ -603,6 +604,7 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
 
   final BoxShadow heroDrop;
   final BoxShadow tileDrop;
+  final BoxShadow heroCardDrop;
   // Text-shadow for hero card callout text (Figma audit Phase 1)
   final Shadow heroCalloutTextShadow;
 
@@ -612,6 +614,12 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
       blurRadius: 4,
       spreadRadius: 0,
       color: Color(0x20000000), // 12.5% alpha (reduced from 25% for subtler shadows)
+    ),
+    heroCardDrop: BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 4,
+      spreadRadius: 0,
+      color: Color(0x40000000), // 25% alpha to match hero card spec
     ),
     tileDrop: BoxShadow(
       offset: Offset(0, 4),
@@ -630,10 +638,12 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
   ShadowTokens copyWith({
     BoxShadow? heroDrop,
     BoxShadow? tileDrop,
+    BoxShadow? heroCardDrop,
     Shadow? heroCalloutTextShadow,
   }) => ShadowTokens(
     heroDrop: heroDrop ?? this.heroDrop,
     tileDrop: tileDrop ?? this.tileDrop,
+    heroCardDrop: heroCardDrop ?? this.heroCardDrop,
     heroCalloutTextShadow: heroCalloutTextShadow ?? this.heroCalloutTextShadow,
   );
 
@@ -643,6 +653,8 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
     return ShadowTokens(
       heroDrop: BoxShadow.lerp(heroDrop, other.heroDrop, t) ?? heroDrop,
       tileDrop: BoxShadow.lerp(tileDrop, other.tileDrop, t) ?? tileDrop,
+      heroCardDrop:
+          BoxShadow.lerp(heroCardDrop, other.heroCardDrop, t) ?? heroCardDrop,
       heroCalloutTextShadow:
           Shadow.lerp(heroCalloutTextShadow, other.heroCalloutTextShadow, t) ??
           heroCalloutTextShadow,
@@ -832,10 +844,10 @@ class RecommendationCardOverlayTokens
 
   static const RecommendationCardOverlayTokens light =
       RecommendationCardOverlayTokens(
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-        stops: [0.0, 0.33],
-        colors: [Color(0xCC1A1A1A), Color(0x001A1A1A)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: [0.4991, 0.9105],
+        colors: [Color(0x001A1A1A), Color(0xCC1A1A1A)],
       );
 
   LinearGradient get gradient =>

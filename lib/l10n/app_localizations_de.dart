@@ -104,10 +104,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardTrainingWeekSubtitle => 'Erstellt von deinen LUVI-Expert:innen';
 
   @override
-  String get dashboardRecommendationsTitle => 'Weitere Empfehlungen\nfür deine Phase';
+  String get dashboardRecommendationsTitle => 'Weitere Empfehlungen für Dich';
 
   @override
-  String get dashboardNutritionTitle => 'Ernährung & Nutrition';
+  String get dashboardNutritionTitle => 'Ernährung & Biohacking';
 
   @override
   String get dashboardRegenerationTitle => 'Regeneration & Achtsamkeit';

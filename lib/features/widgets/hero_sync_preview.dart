@@ -105,16 +105,18 @@ class HeroSyncPreview extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: surfaceTokens?.white ?? const Color(0xFFFFFFFF),
                   borderRadius: BorderRadius.circular(containerRadius),
+                  // Figma-compliant: 1px solid #696969, radius 24px ✓
                   border: Border.all(
                     color: dsTokens?.grayscale500 ?? const Color(0xFF696969),
                     width: 1,
                   ),
                   boxShadow: [
-                    shadowTokens?.heroDrop ??
+                    shadowTokens?.heroCardDrop ??
                         const BoxShadow(
-                          color: Color(0x1F000000), // 12% black
-                          blurRadius: 12,
                           offset: Offset(0, 4),
+                          blurRadius: 4,
+                          spreadRadius: 0,
+                          color: Color(0x40000000), // 25% black
                         ),
                   ],
                 ),
@@ -137,9 +139,9 @@ class HeroSyncPreview extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontFamily: FontFamilies.figtree,
-                              fontSize: TypographyTokens.size14,
-                              height: TypographyTokens.lineHeightRatio24on14,
-                              fontWeight: FontWeight.w400,
+                              fontSize: TypographyTokens.size16,
+                              height: TypographyTokens.lineHeightRatio24on16,
+                              fontWeight: FontWeight.w700,
                               color: Color(0xFF000000),
                               shadows: [
                                 shadowTokens?.heroCalloutTextShadow ??
@@ -230,9 +232,9 @@ class _MehrButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 44,
-        constraints: const BoxConstraints(minWidth: 67),
+        constraints: const BoxConstraints(minWidth: 60),
         padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.m,
+          horizontal: Spacing.s,
           vertical: 10,
         ),
         decoration: BoxDecoration(
