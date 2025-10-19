@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart' show HeuteScreen, featureDashboardV2;
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
@@ -62,7 +62,13 @@ void main() {
     // Verify dashboard content is visible
     final heuteContext = tester.element(find.byType(HeuteScreen));
     final loc = AppLocalizations.of(heuteContext)!;
-    expect(find.text(loc.dashboardCategoriesTitle), findsOneWidget);
-    expect(find.text(loc.dashboardMoreTrainingsTitle), findsOneWidget);
+    if (featureDashboardV2) {
+      // In V2, verify landing by robust keys visible without scrolling
+      expect(find.byKey(const Key('dashboard_header')), findsOneWidget);
+      expect(find.byKey(const Key('dashboard_hero_sync_preview')), findsOneWidget);
+    } else {
+      expect(find.text(loc.dashboardCategoriesTitle), findsOneWidget);
+      expect(find.text(loc.dashboardMoreTrainingsTitle), findsOneWidget);
+    }
   });
 }

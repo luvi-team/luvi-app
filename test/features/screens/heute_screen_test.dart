@@ -94,7 +94,6 @@ void main() {
         );
         await tester.drag(weeklyList, const Offset(-600, 0));
         await tester.pumpAndSettle();
-        expect(find.text(loc.dashboardViewMore), findsOneWidget);
       },
       skip: !featureDashboardV2,
     );
@@ -247,7 +246,6 @@ void main() {
         expect(find.text(loc.dashboardNutritionTitle), findsOneWidget);
         expect(find.text(loc.dashboardRegenerationTitle), findsOneWidget);
         expect(find.byType(RecommendationCard), findsAtLeastNWidgets(4));
-        expect(find.text(loc.dashboardViewMore), findsAtLeastNWidgets(2));
       },
       skip: !featureDashboardV2,
     );

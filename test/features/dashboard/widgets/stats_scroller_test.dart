@@ -237,10 +237,16 @@ void main() {
 
       final decoration = container.decoration as BoxDecoration;
 
+      // Expect card surface color to match design tokens (theme extension), not a hardcoded hex
+      final ctx = tester.element(containerFinder);
+      final theme = Theme.of(ctx);
+      final surfaceTokens = theme.extension<SurfaceColorTokens>();
+      final dsTokens = theme.extension<DsTokens>();
+      final expectedColor = surfaceTokens?.cardBackgroundNeutral ?? dsTokens?.cardSurface;
       expect(
         decoration.color,
-        equals(const Color(0xFFF1F1F1)),
-        reason: 'Background should be solid gray #F1F1F1',
+        equals(expectedColor),
+        reason: 'Background should match surface token (card background neutral)',
       );
 
       expect(decoration.border, isA<Border>(), reason: 'Should have border');

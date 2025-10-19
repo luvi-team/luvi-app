@@ -79,35 +79,58 @@ void main() {
       // Pump HeuteScreen with theme & localization
       await _pumpHeuteScreen(tester);
 
-      // Verify key widgets are present
+      // Verify header and hero are present
       expect(
         find.byKey(const Key('dashboard_header')),
         findsOneWidget,
         reason: 'Header section should be present',
       );
-
       expect(
         find.byKey(const Key('dashboard_hero_sync_preview')),
         findsOneWidget,
         reason: 'Hero Sync preview should be present',
       );
 
-      expect(
-        find.byKey(const Key('dashboard_categories_grid')),
-        findsOneWidget,
-        reason: 'Categories grid should be present',
-      );
+      if (featureDashboardV2) {
+        // V2: Weekly training + Phase recommendations; legacy sections hidden
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('dashboard_weekly_training_section')),
+          findsOneWidget,
+          reason: 'Weekly training section should be present in V2',
+        );
 
-      expect(
-        find.byKey(const Key('dashboard_recommendations_list')),
-        findsOneWidget,
-        reason: 'Recommendations list should be present',
-      );
-      expect(
-        find.byKey(const Key('dashboard_training_stats_scroller')),
-        findsOneWidget,
-        reason: 'Training stats scroller should be present',
-      );
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -1200));
+        await tester.pumpAndSettle();
+        final heuteContext = tester.element(find.byType(HeuteScreen));
+        final l10n = AppLocalizations.of(heuteContext)!;
+        expect(find.text(l10n.dashboardRecommendationsTitle), findsOneWidget);
+        expect(find.text(l10n.dashboardNutritionTitle), findsOneWidget);
+        expect(find.text(l10n.dashboardRegenerationTitle), findsOneWidget);
+
+        // Legacy V1 sections should be absent in V2
+        expect(find.byKey(const Key('dashboard_categories_grid')), findsNothing);
+        expect(find.byKey(const Key('dashboard_training_stats_scroller')), findsNothing);
+        expect(find.byKey(const Key('dashboard_recommendations_list')), findsNothing);
+      } else {
+        // V1: Legacy sections visible
+        expect(
+          find.byKey(const Key('dashboard_categories_grid')),
+          findsOneWidget,
+          reason: 'Categories grid should be present',
+        );
+        expect(
+          find.byKey(const Key('dashboard_recommendations_list')),
+          findsOneWidget,
+          reason: 'Recommendations list should be present',
+        );
+        expect(
+          find.byKey(const Key('dashboard_training_stats_scroller')),
+          findsOneWidget,
+          reason: 'Training stats scroller should be present',
+        );
+      }
 
       expect(
         find.byKey(const Key('dashboard_dock_nav')),
@@ -121,35 +144,46 @@ void main() {
       final heuteContext = tester.element(find.byType(HeuteScreen));
       final l10n = AppLocalizations.of(heuteContext)!;
 
-      // Verify section headers
-      expect(
-        find.text(l10n.dashboardCategoriesTitle),
-        findsOneWidget,
-        reason: 'Categories section header should be visible',
-      );
+      if (featureDashboardV2) {
+        // V2 headers
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.dashboardTrainingWeekTitle), findsOneWidget);
+        expect(find.text(l10n.dashboardTrainingWeekSubtitle), findsOneWidget);
 
-      expect(
-        find.text(l10n.dashboardTopRecommendationTitle),
-        findsOneWidget,
-        reason: 'Top recommendation section header should be visible',
-      );
-
-      expect(
-        find.text(l10n.dashboardMoreTrainingsTitle),
-        findsOneWidget,
-        reason: 'Recommendations section header should be visible',
-      );
-      expect(
-        find.text(l10n.dashboardTrainingDataTitle),
-        findsOneWidget,
-        reason: 'Training stats section header should be visible',
-      );
-
-      expect(
-        find.text(l10n.dashboardViewAll),
-        findsOneWidget,
-        reason: 'Recommendations header should expose trailing "Alle" CTA',
-      );
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -1200));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.dashboardRecommendationsTitle), findsOneWidget);
+        expect(find.text(l10n.dashboardNutritionTitle), findsOneWidget);
+        expect(find.text(l10n.dashboardRegenerationTitle), findsOneWidget);
+      } else {
+        // V1 headers
+        expect(
+          find.text(l10n.dashboardCategoriesTitle),
+          findsOneWidget,
+          reason: 'Categories section header should be visible',
+        );
+        expect(
+          find.text(l10n.dashboardTopRecommendationTitle),
+          findsOneWidget,
+          reason: 'Top recommendation section header should be visible',
+        );
+        expect(
+          find.text(l10n.dashboardMoreTrainingsTitle),
+          findsOneWidget,
+          reason: 'Recommendations section header should be visible',
+        );
+        expect(
+          find.text(l10n.dashboardTrainingDataTitle),
+          findsOneWidget,
+          reason: 'Training stats section header should be visible',
+        );
+        expect(
+          find.text(l10n.dashboardViewAll),
+          findsOneWidget,
+          reason: 'Recommendations header should expose trailing "Alle" CTA',
+        );
+      }
     });
 
     testWidgets('displays 4 category chips', (tester) async {
@@ -169,7 +203,7 @@ void main() {
       expect(find.text(l10n.dashboardCategoryNutrition), findsOneWidget);
       expect(find.text(l10n.dashboardCategoryRegeneration), findsOneWidget);
       expect(find.text(l10n.dashboardCategoryMindfulness), findsOneWidget);
-    });
+    }, skip: featureDashboardV2);
 
     testWidgets('displays 3 recommendation cards', (tester) async {
       await _pumpHeuteScreen(tester);
@@ -185,7 +219,7 @@ void main() {
       expect(find.text('Beine & Po'), findsOneWidget);
       expect(find.text('Rücken & Schulter'), findsOneWidget);
       expect(find.text('Ganzkörper'), findsOneWidget);
-    });
+    }, skip: featureDashboardV2);
 
     testWidgets('displays three stat cards with formatted values', (
       tester,
@@ -201,7 +235,7 @@ void main() {
       expect(find.textContaining('500'), findsOneWidget);
       expect(find.text('2.500'), findsOneWidget);
       expect(find.text('bpm'), findsOneWidget);
-    });
+    }, skip: featureDashboardV2);
 
     testWidgets('displays header greeting and cycle info', (tester) async {
       await _pumpHeuteScreen(tester);
@@ -338,7 +372,7 @@ void main() {
           reason: 'CategoryChip top edges should align innerhalb ±1px',
         );
       }
-    });
+    }, skip: featureDashboardV2);
 
     testWidgets('verifies equal horizontal spacing between 4 category chips', (
       tester,
@@ -378,7 +412,7 @@ void main() {
               'd${index + 1} (Δx between chips) should stay within ±1px at 390px viewport',
         );
       }
-    });
+    }, skip: featureDashboardV2);
 
     testWidgets('bottom nav pill sits close to screen bottom (≤4px gap)', (
       tester,
@@ -535,7 +569,7 @@ void main() {
           reason:
               'Liste → Bottom-Pill top sollte mindestens ${viewport.expectedBottomGap}px betragen',
         );
-      });
+      }, skip: featureDashboardV2);
     }
 
     testWidgets(
