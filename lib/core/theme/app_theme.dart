@@ -88,6 +88,7 @@ class AppTheme {
         GlassTokens.light,
         WorkoutCardTypographyTokens.light,
         WorkoutCardOverlayTokens.light,
+        RecommendationCardOverlayTokens.light,
         DashboardTypographyTokens.light,
         DividerTokens.light,
       ],
@@ -728,6 +729,7 @@ class WorkoutCardTypographyTokens
       fontSize: 16,
       height: 24 / 16,
       fontStyle: FontStyle.italic,
+      color: Color(0xFF696969),
     ),
   );
 
@@ -783,8 +785,8 @@ class WorkoutCardOverlayTokens
   static const WorkoutCardOverlayTokens light = WorkoutCardOverlayTokens(
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
-    stops: [0.146, 0.95],
-    colors: [Color(0xFF1A1A1A), Color(0x001A1A1A)],
+    stops: [0.0, 0.8],
+    colors: [Color(0xCC1A1A1A), Color(0x001A1A1A)],
   );
 
   LinearGradient get gradient =>
@@ -813,3 +815,51 @@ class WorkoutCardOverlayTokens
   }
 }
 
+@immutable
+class RecommendationCardOverlayTokens
+    extends ThemeExtension<RecommendationCardOverlayTokens> {
+  const RecommendationCardOverlayTokens({
+    required this.begin,
+    required this.end,
+    required this.stops,
+    required this.colors,
+  });
+
+  final Alignment begin;
+  final Alignment end;
+  final List<double> stops;
+  final List<Color> colors;
+
+  static const RecommendationCardOverlayTokens light =
+      RecommendationCardOverlayTokens(
+        begin: Alignment.bottomCenter,
+        end: Alignment.topCenter,
+        stops: [0.0, 0.33],
+        colors: [Color(0xCC1A1A1A), Color(0x001A1A1A)],
+      );
+
+  LinearGradient get gradient =>
+      LinearGradient(begin: begin, end: end, stops: stops, colors: colors);
+
+  @override
+  RecommendationCardOverlayTokens copyWith({
+    Alignment? begin,
+    Alignment? end,
+    List<double>? stops,
+    List<Color>? colors,
+  }) => RecommendationCardOverlayTokens(
+        begin: begin ?? this.begin,
+        end: end ?? this.end,
+        stops: stops ?? this.stops,
+        colors: colors ?? this.colors,
+      );
+
+  @override
+  RecommendationCardOverlayTokens lerp(
+    ThemeExtension<RecommendationCardOverlayTokens>? other,
+    double t,
+  ) {
+    if (other is! RecommendationCardOverlayTokens) return this;
+    return t < 0.5 ? this : other;
+  }
+}

@@ -46,7 +46,7 @@ const double _weeklyTrainingCardHeight = 280.0;
 const double _weeklyTrainingCardMaxWidth = 340.0;
 const double _weeklyTrainingHorizontalInset = 48.0;
 const double _weeklyTrainingItemGap = 17.0;
-const double _phaseRecoWaveHeight = 60.0; // Beige wave vertical span (reduced from 72.0 per Phase 9 visual tuning)
+const double _phaseRecoWaveHeight = 80.0; // Beige wave vertical span (reduced from 72.0 per Phase 9 visual tuning)
 const double _phaseRecoWaveAmplitude = 24.0; // Height of curved lip
 const double _phaseRecoFramePadding =
     20.0; // Frame internal padding (from audit)
@@ -453,6 +453,13 @@ class _HeuteScreenState extends State<HeuteScreen> {
   ) {
     final theme = Theme.of(context);
     final typographyTokens = theme.extension<WorkoutCardTypographyTokens>();
+    const titleStyle = TextStyle(
+      fontFamily: FontFamilies.figtree,
+      fontSize: 20,
+      fontWeight: FontWeight.w400,
+      height: 24 / 20,
+      color: Color(0xFF030401),
+    );
     final subtitleStyle =
         typographyTokens?.sectionSubtitleStyle ??
         const TextStyle(
@@ -471,9 +478,9 @@ class _HeuteScreenState extends State<HeuteScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: Spacing.l),
-          child: SectionHeader(
-            title: l10n.dashboardTrainingWeekTitle,
-            showTrailingAction: false,
+          child: Text(
+            l10n.dashboardTrainingWeekTitle,
+            style: titleStyle,
           ),
         ),
         const SizedBox(height: Spacing.xs),
@@ -578,20 +585,19 @@ class _HeuteScreenState extends State<HeuteScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SectionHeader(
-                      title: l10n.dashboardRecommendationsTitle,
-                      showTrailingAction: false,
+                    Text(
+                      l10n.dashboardRecommendationsTitle,
                       maxLines: 2,
+                      overflow: TextOverflow.visible,
+                      style: const TextStyle(
+                        fontFamily: FontFamilies.figtree,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 20,
+                        color: Color(0xFF030401),
+                      ),
                     ),
                     const SizedBox(height: Spacing.m),
-                    _buildRecommendationSubsection(
-                      context,
-                      l10n.dashboardNutritionTitle,
-                      nutritionRecos,
-                      _nutritionCardWidth,
-                      _nutritionCardHeight,
-                      l10n.nutritionRecommendation,
-                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(
                         vertical: dividerTokens?.sectionDividerVerticalMargin ??
@@ -603,6 +609,14 @@ class _HeuteScreenState extends State<HeuteScreen> {
                         thickness: dividerTokens?.sectionDividerThickness ?? 1.0,
                         height: 0,
                       ),
+                    ),
+                    _buildRecommendationSubsection(
+                      context,
+                      l10n.dashboardNutritionTitle,
+                      nutritionRecos,
+                      _nutritionCardWidth,
+                      _nutritionCardHeight,
+                      l10n.nutritionRecommendation,
                     ),
                     _buildRecommendationSubsection(
                       context,

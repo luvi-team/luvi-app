@@ -335,7 +335,6 @@ class HeuteFixtures {
           id: 'wkly-hiit-cardio',
           title: 'HIIT\nCardio',
           subtitle: 'Steigere deine Ausdauer',
-          dayLabel: 'Tag 2',
           duration: '45 min',
           imagePath: Assets.images.recoBeinePo,
           isCompleted: true,

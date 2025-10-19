@@ -171,41 +171,32 @@ class WeeklyTrainingCard extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(_contentPadding),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: titleStyle,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: Spacing.xs),
-                                  Text(
-                                    subtitle,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: subtitleStyle,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  if (dayLabel != null && dayLabel!.isNotEmpty) ...[
-                                    const SizedBox(height: Spacing.xs),
-                                    Text(
-                                      dayLabel!,
-                                      style: detailStyle,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
+                          Text(
+                            title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: titleStyle,
+                            textAlign: TextAlign.center,
                           ),
+                          const SizedBox(height: Spacing.xs),
+                          Text(
+                            subtitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: subtitleStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                          if (dayLabel != null && dayLabel!.isNotEmpty) ...[
+                            const SizedBox(height: Spacing.xs),
+                            Text(
+                              dayLabel!,
+                              style: detailStyle,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                           if (duration != null && duration!.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(top: _metadataGap),

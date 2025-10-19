@@ -8,8 +8,8 @@ class RecommendationCard extends StatelessWidget {
   static const LinearGradient _fallbackGradient = LinearGradient(
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
-    stops: [0.146, 0.95],
-    colors: [Color(0xFF1A1A1A), Color(0x001A1A1A)],
+    stops: [0.0, 0.33],
+    colors: [Color(0xCC1A1A1A), Color(0x001A1A1A)],
   );
 
   final String imagePath;
@@ -40,7 +40,10 @@ class RecommendationCard extends StatelessWidget {
     );
     final theme = Theme.of(context);
     final shadowTokens = theme.extension<ShadowTokens>();
-    final overlayTokens = theme.extension<WorkoutCardOverlayTokens>();
+    final typographyTokens =
+        theme.extension<WorkoutCardTypographyTokens>();
+    final recommendationOverlayTokens =
+        theme.extension<RecommendationCardOverlayTokens>();
     final tileShadow =
         shadowTokens?.tileDrop ??
         const BoxShadow(
@@ -48,14 +51,17 @@ class RecommendationCard extends StatelessWidget {
           blurRadius: 4,
           offset: Offset(0, 4),
         );
-    final gradient = overlayTokens?.gradient ?? _fallbackGradient;
+    final gradient =
+        recommendationOverlayTokens?.gradient ?? _fallbackGradient;
     final semanticsLabel = subtitle != null ? '$title, $subtitle' : title;
-
-    // Phase 8 (Verification): TextPainter-based fallback cascade
-    // Cascade: 16px/1 line → 14px/1 line → 2 lines@14px → ellipsis
-    // Available width: 155px (card width) - 28px (padding) = 127px
-    const maxWidth = 155.0 - 28.0;
-    final titleConfig = _TitleStyleConfig.compute(title, maxWidth);
+    final titleStyle = (typographyTokens?.titleStyle ??
+            const TextStyle(
+              fontFamily: FontFamilies.playfairDisplay,
+              fontWeight: FontWeight.w700,
+              fontSize: 24,
+              height: 32 / 24,
+            ))
+        .copyWith(color: const Color(0xFFFFFFFF));
 
     return Container(
       decoration: BoxDecoration(
@@ -96,19 +102,10 @@ class RecommendationCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        maxLines: titleConfig.maxLines,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          // Phase 8 (Verification): TextPainter-based fallback cascade
-                          // Cascade: 16px/1 line → 14px/1 line → 2 lines@14px → ellipsis
-                          // See _TitleStyleConfig.compute() for measurement logic
-                          fontFamily: FontFamilies.figtree,
-                          fontSize: titleConfig.fontSize,
-                          height: titleConfig.lineHeightRatio,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFFFFFFFF),
-                        ),
+                        style: titleStyle,
                       ),
                       if (subtitle != null) ...[
                         const SizedBox(height: 4),
@@ -119,8 +116,8 @@ class RecommendationCard extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontFamily: FontFamilies.figtree,
-                            fontSize: 14,
-                            height: 20 / 14,
+                            fontSize: 12,
+                            height: 24 / 12,
                             fontWeight: FontWeight.w400,
                             color: Color(0xFFFFFFFF),
                           ),
@@ -149,84 +146,6 @@ class RecommendationCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Helper class for computing title text style with fallback cascade.
-/// Phase 8 (Verification): Implements strict MVP spec:
-/// - Try 16px @ 1 line → if fits, use it
-/// - Else try 14px @ 1 line → if fits, use it
-/// - Else try 14px @ 2 lines → if fits, use it
-/// - Else use 14px @ 2 lines + ellipsis (final fallback)
-class _TitleStyleConfig {
-  final double fontSize;
-  final double lineHeightRatio;
-  final int maxLines;
-
-  const _TitleStyleConfig({
-    required this.fontSize,
-    required this.lineHeightRatio,
-    required this.maxLines,
-  });
-
-  /// Compute the appropriate text style for the given title and max width.
-  /// Uses TextPainter to measure text layout at each fallback step.
-  static _TitleStyleConfig compute(String text, double maxWidth) {
-    const baseStyle = TextStyle(
-      fontFamily: FontFamilies.figtree,
-      fontWeight: FontWeight.w600,
-    );
-
-    // Step 1: Try 16px @ 1 line
-    final painter16 = TextPainter(
-      text: TextSpan(
-        text: text,
-        style: baseStyle.copyWith(
-          fontSize: 16,
-          height: TypographyTokens.lineHeightRatio24on16,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-      maxLines: 1,
-    )..layout(maxWidth: maxWidth);
-
-    if (!painter16.didExceedMaxLines) {
-      return const _TitleStyleConfig(
-        fontSize: 16,
-        lineHeightRatio: TypographyTokens.lineHeightRatio24on16,
-        maxLines: 1,
-      );
-    }
-
-    // Step 2: Try 14px @ 1 line
-    final painter14_1line = TextPainter(
-      text: TextSpan(
-        text: text,
-        style: baseStyle.copyWith(
-          fontSize: 14,
-          height: TypographyTokens.lineHeightRatio24on14,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-      maxLines: 1,
-    )..layout(maxWidth: maxWidth);
-
-    if (!painter14_1line.didExceedMaxLines) {
-      return const _TitleStyleConfig(
-        fontSize: 14,
-        lineHeightRatio: TypographyTokens.lineHeightRatio24on14,
-        maxLines: 1,
-      );
-    }
-
-    // Step 3: Try 14px @ 2 lines (final fallback, ellipsis if still exceeds)
-    // Note: We don't check didExceedMaxLines here, as 2 lines is the final fallback.
-    // If text still doesn't fit, ellipsis will be applied by Text widget.
-    return const _TitleStyleConfig(
-      fontSize: 14,
-      lineHeightRatio: TypographyTokens.lineHeightRatio24on14,
-      maxLines: 2,
     );
   }
 }

@@ -38,7 +38,6 @@ class HeroSyncPreview extends StatelessWidget {
     final surfaceTokens = Theme.of(context).extension<SurfaceColorTokens>();
     final shadowTokens = Theme.of(context).extension<ShadowTokens>();
     final dsTokens = Theme.of(context).extension<DsTokens>();
-    final colorScheme = Theme.of(context).colorScheme;
 
     final double containerRadius = radiusTokens?.cardLarge ?? 24.0;
     const double containerWidth = double.infinity; // fill parent
@@ -138,10 +137,18 @@ class HeroSyncPreview extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontFamily: FontFamilies.figtree,
-                              fontSize: TypographyTokens.size16,
-                              height: TypographyTokens.lineHeightRatio24on16,
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurface,
+                              fontSize: TypographyTokens.size14,
+                              height: TypographyTokens.lineHeightRatio24on14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF000000),
+                              shadows: [
+                                shadowTokens?.heroCalloutTextShadow ??
+                                    const Shadow(
+                                      offset: Offset(0, 4),
+                                      blurRadius: 4,
+                                      color: Color(0x20000000),
+                                    ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -154,7 +161,15 @@ class HeroSyncPreview extends StatelessWidget {
                               fontSize: TypographyTokens.size14,
                               height: TypographyTokens.lineHeightRatio24on14,
                               fontWeight: FontWeight.w400,
-                              color: colorScheme.onSurface,
+                              color: Color(0xFF000000),
+                              shadows: [
+                                shadowTokens?.heroCalloutTextShadow ??
+                                    const Shadow(
+                                      offset: Offset(0, 4),
+                                      blurRadius: 4,
+                                      color: Color(0x20000000),
+                                    ),
+                              ],
                             ),
                           ),
                         ],
