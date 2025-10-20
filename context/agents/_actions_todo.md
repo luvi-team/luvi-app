@@ -9,4 +9,9 @@
 
 - [ ] CI Maint: GitHub Actions-Pinning (checkout, upload-artifact, github-script v7) quartalsweise prüfen/aktualisieren; aktueller Stand: github-script v7.1.0 → f28e40c7f34bde8b3046d885e986cb6290c5673b.
 
+- [ ] Video Fullscreen (YouTube): Beim Einführen der Trainings‑Videos
+  Vollbild‑Route verwenden, die temporär Landscape erlaubt und beim
+  Verlassen auf Portrait zurücksetzt. Hinweis/TODO im Code vorhanden
+  (`lib/main.dart:1`).
+
 Hinweis: Keine Dateien löschen/umbenennen. CI/Infra bleibt unverändert.

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
+import 'package:luvi_app/features/widgets/dashboard/stats_scroller.dart';
 
 void main() {
   group('formatStatLabelForTest', () {

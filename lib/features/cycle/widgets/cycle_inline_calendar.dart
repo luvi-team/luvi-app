@@ -160,36 +160,16 @@ class _CalendarContent extends StatelessWidget {
             child: SizedBox(
               width: availableWidth,
               height: _trackHeight,
-              child: Stack(
-                children: [
-                  _SegmentLayer(
-                    availableWidth: availableWidth,
-                    dayGeometries: dayGeometries,
-                    segments: segments,
-                    tokens: phaseTokens,
-                    radiusTokens: radiusTokens,
-                  ),
-                  _TodayPillLayer(
-                    todayGeometry: todayGeometry,
-                    todayDay: todayDay,
-                    tokens: phaseTokens,
-                    radiusTokens: radiusTokens,
-                  ),
-                  Positioned.fill(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: SizedBox(
-                        width: availableWidth,
-                        height: _trackHeight,
-                        child: _DaysRow(
-                          days: days,
-                          dayGeometries: dayGeometries,
-                          textTokens: textTokens,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              child: _CalendarStack(
+                availableWidth: availableWidth,
+                dayGeometries: dayGeometries,
+                segments: segments,
+                todayGeometry: todayGeometry,
+                todayDay: todayDay,
+                days: days,
+                phaseTokens: phaseTokens,
+                textTokens: textTokens,
+                radiusTokens: radiusTokens,
               ),
             ),
           ),
@@ -207,14 +187,125 @@ class _CalendarContent extends StatelessWidget {
     return 'Zykluskalender. Zur Zyklusübersicht wechseln. '
         'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
   }
+}
 
-  static Widget _buildDayColumn(
-    WeekStripDay day,
-    _DayGeometry geometry,
-    TextColorTokens textTokens, {
-    bool isFirst = false,
-    bool isLast = false,
-  }) {
+class _CalendarStack extends StatelessWidget {
+  const _CalendarStack({
+    required this.availableWidth,
+    required this.dayGeometries,
+    required this.segments,
+    required this.todayGeometry,
+    required this.todayDay,
+    required this.days,
+    required this.phaseTokens,
+    required this.textTokens,
+    required this.radiusTokens,
+  });
+
+  final double availableWidth;
+  final List<_DayGeometry> dayGeometries;
+  final List<WeekStripSegment> segments;
+  final _DayGeometry? todayGeometry;
+  final WeekStripDay? todayDay;
+  final List<WeekStripDay> days;
+  final CyclePhaseTokens phaseTokens;
+  final TextColorTokens textTokens;
+  final CalendarRadiusTokens radiusTokens;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _CalendarLayers(
+          availableWidth: availableWidth,
+          dayGeometries: dayGeometries,
+          segments: segments,
+          todayGeometry: todayGeometry,
+          todayDay: todayDay,
+          phaseTokens: phaseTokens,
+          radiusTokens: radiusTokens,
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: availableWidth,
+              height: _trackHeight,
+              child: _DaysRow(
+                days: days,
+                dayGeometries: dayGeometries,
+                textTokens: textTokens,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CalendarLayers extends StatelessWidget {
+  const _CalendarLayers({
+    required this.availableWidth,
+    required this.dayGeometries,
+    required this.segments,
+    required this.todayGeometry,
+    required this.todayDay,
+    required this.phaseTokens,
+    required this.radiusTokens,
+  });
+
+  final double availableWidth;
+  final List<_DayGeometry> dayGeometries;
+  final List<WeekStripSegment> segments;
+  final _DayGeometry? todayGeometry;
+  final WeekStripDay? todayDay;
+  final CyclePhaseTokens phaseTokens;
+  final CalendarRadiusTokens radiusTokens;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: availableWidth,
+      height: _trackHeight,
+      child: Stack(
+        children: [
+          _SegmentLayer(
+            availableWidth: availableWidth,
+            dayGeometries: dayGeometries,
+            segments: segments,
+            tokens: phaseTokens,
+            radiusTokens: radiusTokens,
+          ),
+          _TodayPillLayer(
+            todayGeometry: todayGeometry,
+            todayDay: todayDay,
+            tokens: phaseTokens,
+            radiusTokens: radiusTokens,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DayColumn extends StatelessWidget {
+  const _DayColumn({
+    required this.day,
+    required this.geometry,
+    required this.textTokens,
+    this.isFirst = false,
+    this.isLast = false,
+  });
+
+  final WeekStripDay day;
+  final _DayGeometry geometry;
+  final TextColorTokens textTokens;
+  final bool isFirst;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
     final weekdayLabel = _formatWeekdayUpper(day.date);
     final dayNumber = day.date.day.toString();
     final isToday = day.isToday;
@@ -355,10 +446,10 @@ class _DaysRow extends StatelessWidget {
       final bool isFirst = i == 0;
       final bool isLast = i == days.length - 1;
       children.add(
-        _CalendarContent._buildDayColumn(
-          day,
-          geometry,
-          textTokens,
+        _DayColumn(
+          day: day,
+          geometry: geometry,
+          textTokens: textTokens,
           isFirst: isFirst,
           isLast: isLast,
         ),

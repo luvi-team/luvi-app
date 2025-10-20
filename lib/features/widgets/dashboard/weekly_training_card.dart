@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -164,8 +165,7 @@ class WeeklyTrainingCard extends StatelessWidget {
                     imagePath,
                     fit: BoxFit.cover,
                     excludeFromSemantics: true,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const ColoredBox(color: Colors.black12),
+                    errorBuilder: Assets.defaultImageErrorBuilder,
                   ),
                   Container(
                     decoration: BoxDecoration(gradient: overlayGradient),

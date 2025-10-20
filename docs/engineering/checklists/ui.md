@@ -6,6 +6,9 @@ Architektur & Navigation
 - Feature‑First Ordnerstruktur pro Feature (UI/State/Model zusammenhalten).
 - GoRouter Redirects für Auth/Onboarding; Dev‑Bypässe nur per Flag.
 - Keine unguarded Navigation auf geschützte Screens; Deep Links prüfen.
+- Ausrichtung/Orientation-Policy: Global Portrait‑Only; Ausnahmen nur für
+  Vollbild‑Video (z. B. YouTube) → während des Fullscreens Landscape erlauben
+  und beim Schließen zuverlässig auf Portrait zurücksetzen.
 
 State & Theming
 - Riverpod: Immutables, passende Provider (Notifier/Future/Stream), `AsyncValue.when` nutzen.
@@ -36,4 +39,3 @@ Quick Wins
 
 Review‑Fragen (Kurz)
 - Sind Guards/Redirects korrekt? Sind Loading/Error/Empty‑Zustände präsent? Besteht A11y‑Kontrast/Labels? Gibt es unnötige Rebuild‑Hotspots?
-

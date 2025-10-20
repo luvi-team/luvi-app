@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
-import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
+import 'package:luvi_app/features/widgets/dashboard/stats_scroller.dart';
+import 'package:luvi_app/features/widgets/dashboard/wearable_connect_card.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -242,11 +242,13 @@ void main() {
       final theme = Theme.of(ctx);
       final surfaceTokens = theme.extension<SurfaceColorTokens>();
       final dsTokens = theme.extension<DsTokens>();
-      final expectedColor = surfaceTokens?.cardBackgroundNeutral ?? dsTokens?.cardSurface;
+      final expectedColor =
+          surfaceTokens?.cardBackgroundNeutral ?? dsTokens?.cardSurface;
       expect(
         decoration.color,
         equals(expectedColor),
-        reason: 'Background should match surface token (card background neutral)',
+        reason:
+            'Background should match surface token (card background neutral)',
       );
 
       expect(decoration.border, isA<Border>(), reason: 'Should have border');

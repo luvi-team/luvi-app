@@ -35,7 +35,7 @@ DIFF_FILES="$(git diff --name-only "${GREEN}"...HEAD || true)"
 FILES_RESTORE=(
   "lib/features/widgets/hero_sync_preview.dart"
   "lib/features/cycle/screens/cycle_overview_stub.dart"
-  "lib/features/dashboard/widgets/top_recommendation_tile.dart"
+  "lib/features/widgets/dashboard/top_recommendation_tile.dart"
 )
 for f in "${FILES_RESTORE[@]}"; do
   if printf '%s\n' "${DIFF_FILES}" | grep -q "^${f}$"; then
@@ -79,8 +79,8 @@ echo ">>> Starte flutter analyze"
 flutter analyze
 
 echo ">>> Starte gezielte Tests (schneller Stabilitäts-Check)"
-flutter test test/features/dashboard/widgets/stats_scroller_test.dart || true
-flutter test test/features/screens/heute_smoke_test.dart || true
+flutter test --dart-define=FEATURE_DASHBOARD_V2=true test/features/widgets/dashboard/stats_scroller_test.dart || true
+flutter test --dart-define=FEATURE_DASHBOARD_V2=true test/features/screens/heute_smoke_test.dart || true
 
 # 6) Commit (Pass 1)
 echo ">>> Committe Pass 1 (Stabilisierung)"

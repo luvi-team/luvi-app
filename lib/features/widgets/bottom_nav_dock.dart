@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/painters/bottom_wave_border_painter.dart';
-import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 
 /// Bottom navigation dock with violet wave top-border and center cutout.
 /// Layout: 2 tabs left (Heute, Zyklus), center gap, 2 tabs right (Puls, Profil).
@@ -43,17 +43,11 @@ class BottomNavDock extends StatelessWidget {
     // Kodex: Use colorScheme.surface (not Colors.white) for dark-mode compatibility
     final effectiveBackgroundColor = backgroundColor ?? colorScheme.surface;
     // Safe fallback if theme extension is not registered (visible in release builds)
-    if (dsTokens == null) {
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: FlutterError(
-            'BottomNavDock: DsTokens not found in theme. Ensure app_theme is properly configured.',
-          ),
-          library: 'widgets',
-          context: ErrorDescription('building BottomNavDock'),
-        ),
-      );
-    }
+    assert(
+      dsTokens != null,
+      'BottomNavDock: DsTokens theme extension not found. '
+      'Ensure DsTokens is registered in app_theme.dart extensions list.',
+    );
     final effectiveCradleColor =
         cradleColor ?? dsTokens?.accentPurple ?? colorScheme.primary;
 

@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 
 /// Recommendation card for Dashboard (image + gradient overlay + tag + title).
 /// from DASHBOARD_spec.json $.recommendations.card (155×180, radius 20, gradient overlay)
 class RecommendationCard extends StatelessWidget {
-  static const LinearGradient _fallbackGradient = LinearGradient(
-    begin: Alignment.bottomCenter,
-    end: Alignment.topCenter,
-    stops: [0.0, 0.33],
-    colors: [Color(0xCC1A1A1A), Color(0x001A1A1A)],
-  );
-
   final String imagePath;
   final String tag;
   final String title;
@@ -35,7 +30,7 @@ class RecommendationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const borderRadius = BorderRadius.all(
       Radius.circular(
-        20,
+        Sizes.radiusL,
       ), // from DASHBOARD_spec.json $.recommendations.card.radius.all
     );
     final theme = Theme.of(context);
@@ -52,7 +47,9 @@ class RecommendationCard extends StatelessWidget {
           blurRadius: 4,
           offset: Offset(0, 4),
         );
-    final gradient = recommendationOverlayTokens?.gradient ?? _fallbackGradient;
+    final gradient =
+        recommendationOverlayTokens?.gradient ??
+        RecommendationCardOverlayTokens.light.gradient;
     final semanticsLabel = subtitle != null ? '$title, $subtitle' : title;
     final titleStyle =
         (typographyTokens?.titleStyle ??
@@ -84,10 +81,7 @@ class RecommendationCard extends StatelessWidget {
                   imagePath,
                   fit: BoxFit
                       .cover, // from DASHBOARD_spec_deltas.json $.deltas[7]
-                  errorBuilder: (context, error, stackTrace) {
-                    // TODO(audit: dashboard image assets missing in widget test bundle)
-                    return const ColoredBox(color: Colors.black12);
-                  },
+                  errorBuilder: Assets.defaultImageErrorBuilder,
                 ),
                 Container(
                   decoration: BoxDecoration(

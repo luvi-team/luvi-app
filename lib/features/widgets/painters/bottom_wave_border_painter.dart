@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 
 /// Painter for violet top-border wave with center cutout (concave down for sync button).
 /// Two-pass rendering: (1) surface fill for the dock body, (2) violet stroke on top.

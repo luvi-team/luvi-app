@@ -5,10 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/test/test_config.dart';
 import 'package:luvi_app/features/widgets/category_chip.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
-import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
-import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/features/widgets/dashboard/top_recommendation_tile.dart';
+import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
@@ -91,7 +92,7 @@ void main() {
         reason: 'Hero Sync preview should be present',
       );
 
-      if (featureDashboardV2) {
+      if (TestConfig.featureDashboardV2) {
         // V2: Weekly training + Phase recommendations; legacy sections hidden
         await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
         await tester.pumpAndSettle();
@@ -101,7 +102,10 @@ void main() {
           reason: 'Weekly training section should be present in V2',
         );
 
-        await tester.drag(find.byType(CustomScrollView), const Offset(0, -1200));
+        await tester.drag(
+          find.byType(CustomScrollView),
+          const Offset(0, -1200),
+        );
         await tester.pumpAndSettle();
         final heuteContext = tester.element(find.byType(HeuteScreen));
         final l10n = AppLocalizations.of(heuteContext)!;
@@ -110,9 +114,18 @@ void main() {
         expect(find.text(l10n.dashboardRegenerationTitle), findsOneWidget);
 
         // Legacy V1 sections should be absent in V2
-        expect(find.byKey(const Key('dashboard_categories_grid')), findsNothing);
-        expect(find.byKey(const Key('dashboard_training_stats_scroller')), findsNothing);
-        expect(find.byKey(const Key('dashboard_recommendations_list')), findsNothing);
+        expect(
+          find.byKey(const Key('dashboard_categories_grid')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const Key('dashboard_training_stats_scroller')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const Key('dashboard_recommendations_list')),
+          findsNothing,
+        );
       } else {
         // V1: Legacy sections visible
         expect(
@@ -144,14 +157,17 @@ void main() {
       final heuteContext = tester.element(find.byType(HeuteScreen));
       final l10n = AppLocalizations.of(heuteContext)!;
 
-      if (featureDashboardV2) {
+      if (TestConfig.featureDashboardV2) {
         // V2 headers
         await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
         await tester.pumpAndSettle();
         expect(find.text(l10n.dashboardTrainingWeekTitle), findsOneWidget);
         expect(find.text(l10n.dashboardTrainingWeekSubtitle), findsOneWidget);
 
-        await tester.drag(find.byType(CustomScrollView), const Offset(0, -1200));
+        await tester.drag(
+          find.byType(CustomScrollView),
+          const Offset(0, -1200),
+        );
         await tester.pumpAndSettle();
         expect(find.text(l10n.dashboardRecommendationsTitle), findsOneWidget);
         expect(find.text(l10n.dashboardNutritionTitle), findsOneWidget);
@@ -203,7 +219,7 @@ void main() {
       expect(find.text(l10n.dashboardCategoryNutrition), findsOneWidget);
       expect(find.text(l10n.dashboardCategoryRegeneration), findsOneWidget);
       expect(find.text(l10n.dashboardCategoryMindfulness), findsOneWidget);
-    }, skip: featureDashboardV2);
+    }, skip: TestConfig.featureDashboardV2);
 
     testWidgets('displays 3 recommendation cards', (tester) async {
       await _pumpHeuteScreen(tester);
@@ -219,23 +235,25 @@ void main() {
       expect(find.text('Beine & Po'), findsOneWidget);
       expect(find.text('Rücken & Schulter'), findsOneWidget);
       expect(find.text('Ganzkörper'), findsOneWidget);
-    }, skip: featureDashboardV2);
+    }, skip: TestConfig.featureDashboardV2);
 
-    testWidgets('displays three stat cards with formatted values', (
-      tester,
-    ) async {
-      await _pumpHeuteScreen(tester);
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'displays three stat cards with formatted values',
+      (tester) async {
+        await _pumpHeuteScreen(tester);
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Puls'), findsOneWidget);
-      expect(find.text('Verbrannte\nEnergie'), findsOneWidget);
-      expect(find.text('Schritte'), findsOneWidget);
-      expect(find.text('94'), findsOneWidget);
-      expect(find.textContaining('500'), findsOneWidget);
-      expect(find.text('2.500'), findsOneWidget);
-      expect(find.text('bpm'), findsOneWidget);
-    }, skip: featureDashboardV2);
+        expect(find.text('Puls'), findsOneWidget);
+        expect(find.text('Verbrannte\nEnergie'), findsOneWidget);
+        expect(find.text('Schritte'), findsOneWidget);
+        expect(find.text('94'), findsOneWidget);
+        expect(find.textContaining('500'), findsOneWidget);
+        expect(find.text('2.500'), findsOneWidget);
+        expect(find.text('bpm'), findsOneWidget);
+      },
+      skip: TestConfig.featureDashboardV2,
+    );
 
     testWidgets('displays header greeting and cycle info', (tester) async {
       await _pumpHeuteScreen(tester);
@@ -343,76 +361,80 @@ void main() {
       );
     });
 
-    testWidgets('keeps four category chips aligned within ±1px at 390 width', (
-      tester,
-    ) async {
-      final view = tester.view;
-      view.physicalSize = const Size(390, 844);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+    testWidgets(
+      'keeps four category chips aligned within ±1px at 390 width',
+      (tester) async {
+        final view = tester.view;
+        view.physicalSize = const Size(390, 844);
+        view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          view.resetPhysicalSize();
+          view.resetDevicePixelRatio();
+        });
 
-      await _pumpHeuteScreen(tester);
+        await _pumpHeuteScreen(tester);
 
-      final chipFinder = find.byType(CategoryChip);
-      expect(chipFinder, findsNWidgets(4));
+        final chipFinder = find.byType(CategoryChip);
+        expect(chipFinder, findsNWidgets(4));
 
-      final topYs = List<double>.generate(
-        4,
-        (index) => tester.getTopLeft(chipFinder.at(index)).dy,
-      );
-
-      final baseline = topYs.first;
-      for (final dy in topYs) {
-        expect(
-          (dy - baseline).abs(),
-          lessThanOrEqualTo(1.0),
-          reason: 'CategoryChip top edges should align innerhalb ±1px',
+        final topYs = List<double>.generate(
+          4,
+          (index) => tester.getTopLeft(chipFinder.at(index)).dy,
         );
-      }
-    }, skip: featureDashboardV2);
 
-    testWidgets('verifies equal horizontal spacing between 4 category chips', (
-      tester,
-    ) async {
-      final view = tester.view;
-      view.physicalSize = const Size(390, 844);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+        final baseline = topYs.first;
+        for (final dy in topYs) {
+          expect(
+            (dy - baseline).abs(),
+            lessThanOrEqualTo(1.0),
+            reason: 'CategoryChip top edges should align innerhalb ±1px',
+          );
+        }
+      },
+      skip: TestConfig.featureDashboardV2,
+    );
 
-      await _pumpHeuteScreen(tester);
+    testWidgets(
+      'verifies equal horizontal spacing between 4 category chips',
+      (tester) async {
+        final view = tester.view;
+        view.physicalSize = const Size(390, 844);
+        view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          view.resetPhysicalSize();
+          view.resetDevicePixelRatio();
+        });
 
-      final chipFinder = find.byType(CategoryChip);
-      expect(chipFinder, findsNWidgets(4));
+        await _pumpHeuteScreen(tester);
 
-      // Measure left x-coordinates and widths
-      final rects = List<Rect>.generate(
-        4,
-        (index) => tester.getRect(chipFinder.at(index)),
-      );
+        final chipFinder = find.byType(CategoryChip);
+        expect(chipFinder, findsNWidgets(4));
 
-      // Calculate gaps: distance from right edge of chip[i] to left edge of chip[i+1]
-      final gaps = <double>[
-        rects[1].left - rects[0].right,
-        rects[2].left - rects[1].right,
-        rects[3].left - rects[2].right,
-      ];
-
-      final baselineGap = gaps.first;
-      for (var index = 0; index < gaps.length; index++) {
-        expect(
-          (gaps[index] - baselineGap).abs(),
-          lessThanOrEqualTo(1.0),
-          reason:
-              'd${index + 1} (Δx between chips) should stay within ±1px at 390px viewport',
+        // Measure left x-coordinates and widths
+        final rects = List<Rect>.generate(
+          4,
+          (index) => tester.getRect(chipFinder.at(index)),
         );
-      }
-    }, skip: featureDashboardV2);
+
+        // Calculate gaps: distance from right edge of chip[i] to left edge of chip[i+1]
+        final gaps = <double>[
+          rects[1].left - rects[0].right,
+          rects[2].left - rects[1].right,
+          rects[3].left - rects[2].right,
+        ];
+
+        final baselineGap = gaps.first;
+        for (var index = 0; index < gaps.length; index++) {
+          expect(
+            (gaps[index] - baselineGap).abs(),
+            lessThanOrEqualTo(1.0),
+            reason:
+                'd${index + 1} (Δx between chips) should stay within ±1px at 390px viewport',
+          );
+        }
+      },
+      skip: TestConfig.featureDashboardV2,
+    );
 
     testWidgets('bottom nav pill sits close to screen bottom (≤4px gap)', (
       tester,
@@ -444,132 +466,135 @@ void main() {
     });
 
     for (final _ViewportConfig viewport in _viewportConfigs) {
-      testWidgets('validates vertical rhythm at ${viewport.testLabel}', (
-        tester,
-      ) async {
-        final view = tester.view;
-        view.physicalSize = viewport.logicalSize;
-        view.devicePixelRatio = 1.0;
-        addTearDown(() {
-          view.resetPhysicalSize();
-          view.resetDevicePixelRatio();
-        });
+      testWidgets(
+        'validates vertical rhythm at ${viewport.testLabel}',
+        (tester) async {
+          final view = tester.view;
+          view.physicalSize = viewport.logicalSize;
+          view.devicePixelRatio = 1.0;
+          addTearDown(() {
+            view.resetPhysicalSize();
+            view.resetDevicePixelRatio();
+          });
 
-        await _pumpHeuteScreen(tester);
-        final heuteContext = tester.element(find.byType(HeuteScreen));
-        final l10n = AppLocalizations.of(heuteContext)!;
+          await _pumpHeuteScreen(tester);
+          final heuteContext = tester.element(find.byType(HeuteScreen));
+          final l10n = AppLocalizations.of(heuteContext)!;
 
-        final Finder scrollable = find.byType(CustomScrollView);
-        expect(
-          scrollable,
-          findsOneWidget,
-          reason:
-              'Dashboard nutzt CustomScrollView für Scroll + Fill, sollte in beiden Viewports verfügbar sein',
-        );
-        await tester.drag(scrollable, const Offset(0, -600));
-        await tester.pumpAndSettle();
+          final Finder scrollable = find.byType(CustomScrollView);
+          expect(
+            scrollable,
+            findsOneWidget,
+            reason:
+                'Dashboard nutzt CustomScrollView für Scroll + Fill, sollte in beiden Viewports verfügbar sein',
+          );
+          await tester.drag(scrollable, const Offset(0, -600));
+          await tester.pumpAndSettle();
 
-        const double tolerance = 0.5;
+          const double tolerance = 0.5;
 
-        final Rect categoriesHeaderRect = tester.getRect(
-          find.text(l10n.dashboardCategoriesTitle),
-        );
-        final Rect categoriesRect = tester.getRect(
-          find.byKey(const Key('dashboard_categories_grid')),
-        );
-        final Rect topRecoHeaderRect = tester.getRect(
-          find.text(l10n.dashboardTopRecommendationTitle),
-        );
-        final Rect topRecoRect = tester.getRect(
-          find.byType(TopRecommendationTile),
-        );
-        final Rect recsHeaderRect = tester.getRect(
-          find.text(l10n.dashboardMoreTrainingsTitle),
-        );
-        final Rect listRect = tester.getRect(
-          find.byKey(const Key('dashboard_recommendations_list')),
-        );
-        final Finder dockFinder = find.byKey(const Key('dashboard_dock_nav'));
-        expect(dockFinder, findsOneWidget);
-        final Rect dockRect = tester.getRect(dockFinder);
-        final Rect navAreaRect = dockRect; // Dock itself is the nav area
+          final Rect categoriesHeaderRect = tester.getRect(
+            find.text(l10n.dashboardCategoriesTitle),
+          );
+          final Rect categoriesRect = tester.getRect(
+            find.byKey(const Key('dashboard_categories_grid')),
+          );
+          final Rect topRecoHeaderRect = tester.getRect(
+            find.text(l10n.dashboardTopRecommendationTitle),
+          );
+          final Rect topRecoRect = tester.getRect(
+            find.byType(TopRecommendationTile),
+          );
+          final Rect recsHeaderRect = tester.getRect(
+            find.text(l10n.dashboardMoreTrainingsTitle),
+          );
+          final Rect listRect = tester.getRect(
+            find.byKey(const Key('dashboard_recommendations_list')),
+          );
+          final Finder dockFinder = find.byKey(const Key('dashboard_dock_nav'));
+          expect(dockFinder, findsOneWidget);
+          final Rect dockRect = tester.getRect(dockFinder);
+          final Rect navAreaRect = dockRect; // Dock itself is the nav area
 
-        final double gapCatsHeaderToGrid =
-            categoriesRect.top - categoriesHeaderRect.bottom;
-        final double gapCatsBlockToTopRecoHeader =
-            topRecoHeaderRect.top - categoriesRect.bottom;
-        final double gapTopRecoHeaderToTile =
-            topRecoRect.top - topRecoHeaderRect.bottom;
-        final double gapTopRecoToRecsHeader =
-            recsHeaderRect.top - topRecoRect.bottom;
-        final double gapRecsHeaderToList = listRect.top - recsHeaderRect.bottom;
-        final double gapListToBottomBarTop = dockRect.top - listRect.bottom;
+          final double gapCatsHeaderToGrid =
+              categoriesRect.top - categoriesHeaderRect.bottom;
+          final double gapCatsBlockToTopRecoHeader =
+              topRecoHeaderRect.top - categoriesRect.bottom;
+          final double gapTopRecoHeaderToTile =
+              topRecoRect.top - topRecoHeaderRect.bottom;
+          final double gapTopRecoToRecsHeader =
+              recsHeaderRect.top - topRecoRect.bottom;
+          final double gapRecsHeaderToList =
+              listRect.top - recsHeaderRect.bottom;
+          final double gapListToBottomBarTop = dockRect.top - listRect.bottom;
 
-        String fmt(double value) {
-          const double epsilon = 1e-6;
-          final double fractional = (value - value.truncateToDouble()).abs();
-          if (fractional < epsilon) {
-            return value.truncate().toString();
+          String fmt(double value) {
+            const double epsilon = 1e-6;
+            final double fractional = (value - value.truncateToDouble()).abs();
+            if (fractional < epsilon) {
+              return value.truncate().toString();
+            }
+            return value.toStringAsFixed(1);
           }
-          return value.toStringAsFixed(1);
-        }
 
-        // keep debug log for audits per viewport.
-        // ignore: avoid_print
-        print(
-          'Viewport ${viewport.logLabel} → V-GAPS: '
-          'catsHdr→grid=${fmt(gapCatsHeaderToGrid)}, '
-          'catsBlock→topRecoHdr=${fmt(gapCatsBlockToTopRecoHeader)}, '
-          'topRecoHdr→tile=${fmt(gapTopRecoHeaderToTile)}, '
-          'topReco→recsHdr=${fmt(gapTopRecoToRecsHeader)}, '
-          'recsHdr→list=${fmt(gapRecsHeaderToList)}, '
-          'list→bottom=${fmt(dockRect.top - listRect.bottom)} '
-          '(navTop→list=${fmt(gapListToBottomBarTop)} '
-          'target=${fmt(viewport.expectedBottomGap)}, '
-          'navPaddingTop=${fmt(navAreaRect.top)} '
-          'vs. listBottom=${fmt(listRect.bottom)})',
-        );
+          // keep debug log for audits per viewport.
+          // ignore: avoid_print
+          print(
+            'Viewport ${viewport.logLabel} → V-GAPS: '
+            'catsHdr→grid=${fmt(gapCatsHeaderToGrid)}, '
+            'catsBlock→topRecoHdr=${fmt(gapCatsBlockToTopRecoHeader)}, '
+            'topRecoHdr→tile=${fmt(gapTopRecoHeaderToTile)}, '
+            'topReco→recsHdr=${fmt(gapTopRecoToRecsHeader)}, '
+            'recsHdr→list=${fmt(gapRecsHeaderToList)}, '
+            'list→bottom=${fmt(dockRect.top - listRect.bottom)} '
+            '(navTop→list=${fmt(gapListToBottomBarTop)} '
+            'target=${fmt(viewport.expectedBottomGap)}, '
+            'navPaddingTop=${fmt(navAreaRect.top)} '
+            'vs. listBottom=${fmt(listRect.bottom)})',
+          );
 
-        expect(
-          gapCatsHeaderToGrid,
-          moreOrLessEquals(12.0, epsilon: tolerance),
-          reason: 'Kategorien header → grid sollte 12px ±0.5 ergeben',
-        );
+          expect(
+            gapCatsHeaderToGrid,
+            moreOrLessEquals(12.0, epsilon: tolerance),
+            reason: 'Kategorien header → grid sollte 12px ±0.5 ergeben',
+          );
 
-        expect(
-          gapCatsBlockToTopRecoHeader,
-          moreOrLessEquals(16.0, epsilon: tolerance),
-          reason:
-              'Kategorien block → "Deine Top-Empfehlung" header sollte 16px ±0.5 ergeben',
-        );
+          expect(
+            gapCatsBlockToTopRecoHeader,
+            moreOrLessEquals(16.0, epsilon: tolerance),
+            reason:
+                'Kategorien block → "Deine Top-Empfehlung" header sollte 16px ±0.5 ergeben',
+          );
 
-        expect(
-          gapTopRecoHeaderToTile,
-          moreOrLessEquals(12.0, epsilon: tolerance),
-          reason:
-              '"Deine Top-Empfehlung" header → tile sollte 12px ±0.5 ergeben',
-        );
+          expect(
+            gapTopRecoHeaderToTile,
+            moreOrLessEquals(12.0, epsilon: tolerance),
+            reason:
+                '"Deine Top-Empfehlung" header → tile sollte 12px ±0.5 ergeben',
+          );
 
-        expect(
-          gapTopRecoToRecsHeader,
-          moreOrLessEquals(20.0, epsilon: tolerance),
-          reason:
-              'Top-Empfehlung tile → "Weitere Trainings" header sollte 20px ±0.5 ergeben',
-        );
+          expect(
+            gapTopRecoToRecsHeader,
+            moreOrLessEquals(20.0, epsilon: tolerance),
+            reason:
+                'Top-Empfehlung tile → "Weitere Trainings" header sollte 20px ±0.5 ergeben',
+          );
 
-        expect(
-          gapRecsHeaderToList,
-          moreOrLessEquals(12.0, epsilon: tolerance),
-          reason: 'Weitere Trainings header → Liste sollte 12px ±0.5 ergeben',
-        );
+          expect(
+            gapRecsHeaderToList,
+            moreOrLessEquals(12.0, epsilon: tolerance),
+            reason: 'Weitere Trainings header → Liste sollte 12px ±0.5 ergeben',
+          );
 
-        expect(
-          gapListToBottomBarTop,
-          greaterThanOrEqualTo(viewport.expectedBottomGap - tolerance),
-          reason:
-              'Liste → Bottom-Pill top sollte mindestens ${viewport.expectedBottomGap}px betragen',
-        );
-      }, skip: featureDashboardV2);
+          expect(
+            gapListToBottomBarTop,
+            greaterThanOrEqualTo(viewport.expectedBottomGap - tolerance),
+            reason:
+                'Liste → Bottom-Pill top sollte mindestens ${viewport.expectedBottomGap}px betragen',
+          );
+        },
+        skip: TestConfig.featureDashboardV2,
+      );
     }
 
     testWidgets(

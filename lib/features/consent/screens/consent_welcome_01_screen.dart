@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'welcome_metrics.dart';
-import 'package:flutter/foundation.dart';
 import 'package:luvi_app/core/assets.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/welcome_shell.dart';
@@ -20,10 +19,6 @@ class ConsentWelcome01Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
-    // Optional debug signal (only in debug builds)
-    if (kDebugMode) {
-      debugPrint('headlineMedium.fontFamily = ${t.headlineMedium?.fontFamily}');
-    }
     return WelcomeShell(
       // RichTitle: normal + Accent getrennt (wie Figma)
       title: RichText(

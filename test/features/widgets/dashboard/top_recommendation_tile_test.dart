@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
+import 'package:luvi_app/features/widgets/dashboard/top_recommendation_tile.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {

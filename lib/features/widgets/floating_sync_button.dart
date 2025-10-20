@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Floating circular sync button with yin-yang icon.

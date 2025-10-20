@@ -5,6 +5,7 @@ import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../../core/design_tokens/assets.dart';
+import '../../../core/design_tokens/sizes.dart';
 import '../../../core/design_tokens/typography.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -12,7 +13,6 @@ const double _tileHeight = 150.0; // Figma: 150px
 const double _badgeSize = 32.0; // Figma: 32px
 const double _badgeOffsetTop = 7.0;
 const double _badgeOffsetRight = 12.0;
-const BorderRadius _tileRadius = BorderRadius.all(Radius.circular(20));
 const double _durationIconSize = 14.0; // Figma: 14×14
 const double _durationIconTextGap = 4.0; // Figma: 4px gap
 const Color _duration60White = Color(
@@ -63,17 +63,13 @@ class TopRecommendationTile extends StatelessWidget {
     );
   }
 
-  Widget _buildOverlayGradient() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          stops: [0.1, 0.9],
-          colors: [Color(0xFF1E1F24), Color(0x001E1F24)],
-        ),
-      ),
-    );
+  Widget _buildOverlayGradient(BuildContext context) {
+    final overlayTokens = Theme.of(
+      context,
+    ).extension<WorkoutCardOverlayTokens>();
+    final gradient =
+        overlayTokens?.gradient ?? WorkoutCardOverlayTokens.light.gradient;
+    return Container(decoration: BoxDecoration(gradient: gradient));
   }
 
   Widget _buildTitleAndDuration(
@@ -145,19 +141,20 @@ class TopRecommendationTile extends StatelessWidget {
     BoxShadow tileShadow,
     TextColorTokens? textTokens,
   ) {
+    final borderRadius = BorderRadius.circular(Sizes.radiusL);
     return InkWell(
       onTap: () => context.go('/workout/$workoutId'),
-      borderRadius: _tileRadius,
+      borderRadius: borderRadius,
       child: Container(
         constraints: const BoxConstraints.tightFor(height: _tileHeight),
         width: double
             .infinity, // Spec width ≈385px; expand to viewport width within padding.
         decoration: BoxDecoration(
-          borderRadius: _tileRadius,
+          borderRadius: borderRadius,
           boxShadow: [tileShadow],
         ),
         child: ClipRRect(
-          borderRadius: _tileRadius,
+          borderRadius: borderRadius,
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -165,10 +162,9 @@ class TopRecommendationTile extends StatelessWidget {
                 imagePath,
                 fit: BoxFit.cover,
                 excludeFromSemantics: true,
-                errorBuilder: (context, error, stackTrace) =>
-                    const ColoredBox(color: Colors.black12),
+                errorBuilder: Assets.defaultImageErrorBuilder,
               ),
-              _buildOverlayGradient(),
+              _buildOverlayGradient(context),
               if (fromLuviSync) _buildBadge(context),
               Padding(
                 padding: const EdgeInsets.symmetric(

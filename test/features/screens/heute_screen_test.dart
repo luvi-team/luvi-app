@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/dashboard/widgets/weekly_training_card.dart';
-import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
+import 'package:luvi_app/features/widgets/dashboard/weekly_training_card.dart';
+import 'package:luvi_app/features/widgets/dashboard/cycle_tip_card.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart'
-    show HeuteScreen, featureDashboardV2;
+import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/test/test_config.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
@@ -31,14 +31,14 @@ void main() {
       // Check that section titles are rendered
       final ctx = tester.element(find.byType(HeuteScreen));
       final loc = AppLocalizations.of(ctx)!;
-      if (featureDashboardV2) {
+      if (TestConfig.featureDashboardV2) {
         expect(find.text(loc.dashboardTrainingWeekTitle), findsOneWidget);
         expect(find.text(loc.dashboardCategoriesTitle), findsNothing);
       } else {
         expect(find.text(loc.dashboardCategoriesTitle), findsOneWidget);
         expect(find.text(loc.dashboardTrainingWeekTitle), findsNothing);
       }
-      if (featureDashboardV2) {
+      if (TestConfig.featureDashboardV2) {
         // V2: Legacy sections hidden (scrolled to y=600, would see if visible)
         expect(find.text(loc.dashboardMoreTrainingsTitle), findsNothing);
         expect(find.text(loc.dashboardTrainingDataTitle), findsNothing);
@@ -47,16 +47,16 @@ void main() {
         expect(find.text(loc.dashboardMoreTrainingsTitle), findsOneWidget);
         expect(find.text(loc.dashboardTrainingDataTitle), findsOneWidget);
       }
-      if (!featureDashboardV2) {
+      if (!TestConfig.featureDashboardV2) {
         await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
         await tester.pumpAndSettle();
       }
-      if (featureDashboardV2) {
+      if (TestConfig.featureDashboardV2) {
         expect(find.text(loc.dashboardTopRecommendationTitle), findsNothing);
       } else {
         expect(find.text(loc.dashboardTopRecommendationTitle), findsOneWidget);
       }
-      if (featureDashboardV2) {
+      if (TestConfig.featureDashboardV2) {
         await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));
         await tester.pumpAndSettle();
         expect(find.text(loc.dashboardRecommendationsTitle), findsOneWidget);
@@ -95,7 +95,7 @@ void main() {
         await tester.drag(weeklyList, const Offset(-600, 0));
         await tester.pumpAndSettle();
       },
-      skip: !featureDashboardV2,
+      skip: !TestConfig.featureDashboardV2,
     );
 
     testWidgets('renders 4 category labels', (tester) async {
@@ -117,7 +117,7 @@ void main() {
       expect(find.text(loc.dashboardCategoryNutrition), findsOneWidget);
       expect(find.text(loc.dashboardCategoryRegeneration), findsOneWidget);
       expect(find.text(loc.dashboardCategoryMindfulness), findsOneWidget);
-    }, skip: featureDashboardV2);
+    }, skip: TestConfig.featureDashboardV2);
 
     testWidgets('renders horizontal list with 3 recommendation cards', (
       tester,
@@ -136,7 +136,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check that the 3 recommendation titles are present
-      if (!featureDashboardV2) {
+      if (!TestConfig.featureDashboardV2) {
         // V1: Recommendations visible
         expect(find.text('Beine & Po'), findsOneWidget);
         expect(find.text('Rücken & Schulter'), findsOneWidget);
@@ -165,7 +165,7 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
       await tester.pumpAndSettle();
 
-      if (!featureDashboardV2) {
+      if (!TestConfig.featureDashboardV2) {
         // V1: Stats scroller visible
         expect(
           find.byKey(const Key('dashboard_training_stats_scroller')),
@@ -185,39 +185,41 @@ void main() {
       }
     });
 
-    testWidgets('hides legacy sections when feature flag enabled', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.buildAppTheme(),
-          home: const HeuteScreen(),
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      );
-      await tester.pumpAndSettle();
-      // Scroll far enough to reach where legacy sections would appear
-      // (prevents false positive if sections are just off-screen)
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'hides legacy sections when feature flag enabled',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.buildAppTheme(),
+            home: const HeuteScreen(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        );
+        await tester.pumpAndSettle();
+        // Scroll far enough to reach where legacy sections would appear
+        // (prevents false positive if sections are just off-screen)
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
+        await tester.pumpAndSettle();
 
-      final ctx = tester.element(find.byType(HeuteScreen));
-      final loc = AppLocalizations.of(ctx)!;
+        final ctx = tester.element(find.byType(HeuteScreen));
+        final loc = AppLocalizations.of(ctx)!;
 
-      // Verify legacy sections are hidden (not just off-screen)
-      expect(find.text(loc.dashboardMoreTrainingsTitle), findsNothing);
-      expect(find.text(loc.dashboardTrainingDataTitle), findsNothing);
-      expect(
-        find.byKey(const Key('dashboard_training_stats_scroller')),
-        findsNothing,
-      );
-      expect(find.byType(CycleTipCard), findsNothing);
+        // Verify legacy sections are hidden (not just off-screen)
+        expect(find.text(loc.dashboardMoreTrainingsTitle), findsNothing);
+        expect(find.text(loc.dashboardTrainingDataTitle), findsNothing);
+        expect(
+          find.byKey(const Key('dashboard_training_stats_scroller')),
+          findsNothing,
+        );
+        expect(find.byType(CycleTipCard), findsNothing);
 
-      // Verify top recommendation is hidden in V2
-      expect(find.text(loc.dashboardTopRecommendationTitle), findsNothing);
-    }, skip: !featureDashboardV2);
+        // Verify top recommendation is hidden in V2
+        expect(find.text(loc.dashboardTopRecommendationTitle), findsNothing);
+      },
+      skip: !TestConfig.featureDashboardV2,
+    );
 
     testWidgets(
       'renders phase recommendations section when feature flag enabled',
@@ -247,7 +249,7 @@ void main() {
         expect(find.text(loc.dashboardRegenerationTitle), findsOneWidget);
         expect(find.byType(RecommendationCard), findsAtLeastNWidgets(4));
       },
-      skip: !featureDashboardV2,
+      skip: !TestConfig.featureDashboardV2,
     );
   });
 }
