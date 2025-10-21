@@ -53,9 +53,7 @@ class SectionHeader extends StatelessWidget {
           child: Text(
             title,
             maxLines: maxLines ?? 1,
-            overflow: maxLines != null
-                ? TextOverflow.visible
-                : TextOverflow.ellipsis,
+            overflow: TextOverflow.ellipsis,
             style: _baseTitleStyle.copyWith(color: titleColor),
           ),
         ),

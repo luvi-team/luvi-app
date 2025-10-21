@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart' as dash_assets;
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
@@ -23,9 +24,10 @@ import 'package:luvi_app/features/widgets/dashboard/phase_recommendations_sectio
 import 'package:luvi_app/features/widgets/dashboard/legacy_sections.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-// Dashboard-only spacing (audit-backed)
-const bool featureDashboardV2 = true;
-
+/// Calculates the visible portion of the wave arc based on viewport scaling.
+/// The wave asset is designed at 428px width with a 40px arc height.
+/// This function scales the arc proportionally to the current viewport width,
+/// capped at [heroToSectionGap] to prevent layout overflow.
 double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
   const double waveAssetWidth = 428.0;
   const double waveArcHeight = 40.0;
@@ -103,6 +105,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
     final theme = Theme.of(context);
     final layout = theme.extension<DashboardLayoutTokens>();
     final double heroToSectionGap = layout?.heroToSectionGapPx ?? 42;
+    final bool isDashboardV2Enabled = FeatureFlags.featureDashboardV2;
     final double bottomReveal = _waveBottomRevealFor(context, heroToSectionGap);
     final double postWaveTopGap = math.max(
       Spacing.xs,
@@ -142,14 +145,22 @@ class _HeuteScreenState extends State<HeuteScreen> {
                 ),
               ),
             ),
-            SliverToBoxAdapter(child: _buildCalendar(weekView)),
-            SliverToBoxAdapter(child: _buildWaveOverlay(context, state)),
-            if (featureDashboardV2)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+                child: _buildCalendar(weekView),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: _buildWaveOverlay(context, state),
+            ),
+            if (isDashboardV2Enabled) ...[
               SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(height: postWaveTopGap),
+                    // Right-only padding: allows weekly training carousel to scroll from screen edge
                     Padding(
                       padding: const EdgeInsets.only(right: Spacing.l),
                       child: WeeklyTrainingSection(
@@ -161,8 +172,15 @@ class _HeuteScreenState extends State<HeuteScreen> {
                     const SizedBox(height: Spacing.m),
                   ],
                 ),
-              )
-            else
+              ),
+              SliverToBoxAdapter(
+                child: PhaseRecommendationsSection(
+                  nutritionRecommendations: state.nutritionRecommendations,
+                  regenerationRecommendations:
+                      state.regenerationRecommendations,
+                ),
+              ),
+            ] else ...[
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
                 sliver: SliverToBoxAdapter(
@@ -192,14 +210,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
                   ),
                 ),
               ),
-            if (featureDashboardV2)
-              SliverToBoxAdapter(
-                child: PhaseRecommendationsSection(
-                  nutritionRecommendations: state.nutritionRecommendations,
-                  regenerationRecommendations:
-                      state.regenerationRecommendations,
-                ),
-              ),
+            ],
             SliverToBoxAdapter(
               child: ColoredBox(
                 color: waveSurface,

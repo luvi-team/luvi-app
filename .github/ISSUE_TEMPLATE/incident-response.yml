@@ -1,0 +1,69 @@
+name: Incident Response (GDPR)
+description: Structured ticket for security/privacy incidents with GDPR obligations.
+title: "[Incident] <short summary>"
+labels:
+  - incident
+  - gdpr
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Roles & Contact Chain
+        - Incident Lead: `<owner>`
+        - Privacy Officer / DPO: `<privacy@luvi>`
+        - Security Engineering: `<security@luvi>`
+        - Communications: `<comms@luvi>`
+        - On-Call Escalation: `<on-call phone / Slack channel>`
+
+        Start the 72h GDPR notification timer immediately. Regulator notification deadline: **{{ date | addHours(72) }}**.
+  - type: textarea
+    id: detect
+    attributes:
+      label: Detect
+      description: When and how was the incident detected? Include alerts, reporters, first seen timestamps.
+      placeholder: "Detection summary, alert IDs, initial triage."
+  - type: textarea
+    id: contain
+    attributes:
+      label: Contain
+      description: Short-term containment actions, access revocations, temporary mitigations.
+      placeholder: "Isolation steps, credential rotations, feature flags."
+  - type: textarea
+    id: analyze
+    attributes:
+      label: Analyze
+      description: Scope, affected data categories, root-cause hypotheses, forensic notes.
+      placeholder: "Impacted services, user segments, preliminary timeline."
+  - type: textarea
+    id: notify
+    attributes:
+      label: Notify
+      description: Regulator, user, and internal comms plan. Document when the 72h GDPR notification is completed.
+      placeholder: "Authority notified on <date>, user messaging draft link, legal review status."
+  - type: textarea
+    id: remediate
+    attributes:
+      label: Remediate
+      description: Permanent fixes, follow-up tickets, monitoring and automation improvements.
+      placeholder: "Hotfix PR links, backlog issues, additional tests."
+  - type: textarea
+    id: post_mortem
+    attributes:
+      label: Post-Mortem
+      description: Lessons learned, action items, owners, due dates.
+      placeholder: "Summary of contributing factors and assigned improvements."
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence & Artifacts
+      description: Link to logs, dashboards, screenshots, and any exported data required for audits.
+      placeholder: "- Sentry timeline\n- Access logs\n- Communication transcripts"
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Final Checks
+      options:
+        - label: "Regulator notified or documented rationale for non-notification."
+        - label: "Evidence assets stored in secure incident folder."
+        - label: "72h GDPR notification timer closed."

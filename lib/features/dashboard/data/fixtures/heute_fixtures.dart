@@ -471,9 +471,6 @@ class HeuteFixtures {
   static HeuteFixtureState withNotifications() {
     final base = defaultState();
     return base.copyWith(
-      weeklyTrainings: base.weeklyTrainings,
-      nutritionRecommendations: base.nutritionRecommendations,
-      regenerationRecommendations: base.regenerationRecommendations,
       bottomNav: base.bottomNav.copyWith(hasNotifications: true),
     );
   }
@@ -482,11 +479,8 @@ class HeuteFixtures {
   static HeuteFixtureState emptyRecommendations() {
     final base = defaultState();
     return base.copyWith(
-      weeklyTrainings: base.weeklyTrainings,
       heroCard: base.heroCard.copyWith(ctaState: HeroCtaState.startNewWorkout),
       recommendations: const [],
-      nutritionRecommendations: base.nutritionRecommendations,
-      regenerationRecommendations: base.regenerationRecommendations,
     );
   }
 }

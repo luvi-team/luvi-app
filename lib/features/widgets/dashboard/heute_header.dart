@@ -67,23 +67,28 @@ class HeuteHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Stack(
-              children: [
-                _buildHeaderIcon(Assets.icons.notifications),
-                if (hasNotifications)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      width: 6.668,
-                      height: 6.668,
-                      decoration: BoxDecoration(
-                        color: notificationColor,
-                        shape: BoxShape.circle,
+            Semantics(
+              label: hasNotifications
+                  ? l10n.notificationsWithBadge
+                  : l10n.notificationsNoBadge,
+              child: Stack(
+                children: [
+                  _buildHeaderIcon(Assets.icons.notifications),
+                  if (hasNotifications)
+                    Positioned(
+                      top: _notificationBadgeOffset,
+                      right: _notificationBadgeOffset,
+                      child: Container(
+                        width: _notificationBadgeSize,
+                        height: _notificationBadgeSize,
+                        decoration: BoxDecoration(
+                          color: notificationColor,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -108,13 +113,13 @@ class HeuteHeader extends StatelessWidget {
     return Container(
       width: 40,
       height: 40,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(_headerIconPadding),
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(_headerIconRadius),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.08),
-          width: 0.769,
+          width: _headerIconBorderWidth,
         ),
       ),
       child: SvgPicture.asset(assetPath, width: 24, height: 24),
@@ -122,4 +127,8 @@ class HeuteHeader extends StatelessWidget {
   }
 }
 
+const double _headerIconPadding = 8;
 const double _headerIconRadius = 26.667;
+const double _headerIconBorderWidth = 0.769;
+const double _notificationBadgeSize = 6.668;
+const double _notificationBadgeOffset = 8;

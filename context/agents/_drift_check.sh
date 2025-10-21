@@ -112,6 +112,8 @@ if [ -f "$ROOT/CLAUDE.md" ]; then
   else
     fail "CLAUDE.md: Antwortformat-Verweis fehlt"
   fi
+else
+  pass "CLAUDE.md: Datei nicht gefunden (Interop optional)"
 fi
 
 # 4) Soft-Gates: Operativer Modus vorhanden

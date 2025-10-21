@@ -152,3 +152,16 @@ api/node_modules/
 .env
 *.log
 .DS_Store
+
+# Flutter/Dart local tool caches
+
+.dartServer/
+.flutter/
+.flutter
+.dart-tool/
+.dart-tool/**/*.json
+.dart-tool/**/*.config
+.config/*
+!.config/README.md
+.home_overrides/
+.local_flutter/

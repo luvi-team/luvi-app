@@ -87,6 +87,8 @@ class CycleTipCard extends StatelessWidget {
                             children: [
                               Text(
                                 headline,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontFamily: FontFamilies.figtree,
                                   fontSize: TypographyTokens.size16,
@@ -99,6 +101,8 @@ class CycleTipCard extends StatelessWidget {
                               const SizedBox(height: Spacing.xs),
                               Text(
                                 body,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontFamily: FontFamilies.figtree,
                                   fontSize: TypographyTokens.size14,

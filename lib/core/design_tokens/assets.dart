@@ -10,8 +10,13 @@ class Assets {
   /// Default error builder for dashboard `Image.asset` widgets.
   /// Renders a neutral placeholder so layout stays stable when assets fail.
   static ImageErrorWidgetBuilder get defaultImageErrorBuilder =>
-      (BuildContext context, Object error, StackTrace? stackTrace) =>
-          const ColoredBox(color: Colors.black12);
+      (BuildContext context, Object error, StackTrace? stackTrace) {
+        final placeholderColor = Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withValues(alpha: 0.3);
+        return ColoredBox(color: placeholderColor);
+      };
 }
 
 class _Icons {

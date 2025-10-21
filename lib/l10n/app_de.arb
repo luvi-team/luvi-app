@@ -115,6 +115,14 @@
       }
     }
   },
+  "notificationsWithBadge": "Benachrichtigungen – neue Hinweise verfügbar",
+  "@notificationsWithBadge": {
+    "description": "Semantics label for the dashboard notifications icon when unread alerts exist."
+  },
+  "notificationsNoBadge": "Benachrichtigungen",
+  "@notificationsNoBadge": {
+    "description": "Semantics label for the dashboard notifications icon when no unread alerts exist."
+  },
   "dashboardCategoriesTitle": "Kategorien",
   "@dashboardCategoriesTitle": {
     "description": "Section header title for the dashboard categories grid."

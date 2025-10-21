@@ -19,4 +19,4 @@ Evidenzen
 
 Hinweise
 - Minimalprinzip in Kommunikation; Rechtsabteilung einbinden; DSAR‑Folgen beachten.
-
+- Ticket-Vorlage: `.github/ISSUE_TEMPLATE/incident-response.yml` (nutzt Contact-Chain, Detect→Post-Mortem Checkliste, 72h-GDPR-Timer, Evidence-Platzhalter).

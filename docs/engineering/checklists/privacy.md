@@ -28,5 +28,4 @@ Anti‑Patterns
 
 Verweise
 - Review‑Vorlage: `docs/privacy/reviews/` (bestehende Dateien/Template)
-- IR‑Runbook: `docs/runbooks/incident-response.md`
-
+- IR-Runbook: `docs/runbooks/incident-response.md`

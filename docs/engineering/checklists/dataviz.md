@@ -26,4 +26,3 @@ Verweise
 - Taxonomie: `docs/analytics/taxonomy.md`
 - Chart‑A11y: `docs/analytics/chart-a11y-checklist.md`
 - Backfill Runbook: `docs/runbooks/analytics-backfill.md`
-

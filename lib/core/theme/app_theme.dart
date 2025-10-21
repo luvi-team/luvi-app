@@ -9,6 +9,34 @@ import '../design_tokens/sizes.dart';
 import '../design_tokens/dashboard_typography_tokens.dart';
 import '../design_tokens/divider_tokens.dart';
 
+List<double> _lerpDoubleList(List<double> a, List<double> b, double t) {
+  final minLength = a.length < b.length ? a.length : b.length;
+  final result = <double>[];
+  for (var i = 0; i < minLength; i++) {
+    result.add(lerpDouble(a[i], b[i], t) ?? a[i]);
+  }
+  if (a.length > minLength) {
+    result.addAll(a.sublist(minLength));
+  } else if (b.length > minLength) {
+    result.addAll(b.sublist(minLength));
+  }
+  return result;
+}
+
+List<Color> _lerpColorList(List<Color> a, List<Color> b, double t) {
+  final minLength = a.length < b.length ? a.length : b.length;
+  final result = <Color>[];
+  for (var i = 0; i < minLength; i++) {
+    result.add(Color.lerp(a[i], b[i], t) ?? a[i]);
+  }
+  if (a.length > minLength) {
+    result.addAll(a.sublist(minLength));
+  } else if (b.length > minLength) {
+    result.addAll(b.sublist(minLength));
+  }
+  return result;
+}
+
 /// Minimal theme scaffold for the LUVI app.
 /// This is a placeholder for future design system implementation.
 class AppTheme {
@@ -594,16 +622,8 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
     required this.heroDrop,
     required this.tileDrop,
     required this.heroCardDrop,
-    Shadow? heroCalloutTextShadow,
-  }) : heroCalloutTextShadow =
-           heroCalloutTextShadow ??
-           const Shadow(
-             offset: Offset(0, 4),
-             blurRadius: 4,
-             color: Color(
-               0x20000000,
-             ), // 12.5% alpha (consistent with ShadowTokens.light)
-           );
+    required this.heroCalloutTextShadow,
+  });
 
   final BoxShadow heroDrop;
   final BoxShadow tileDrop;
@@ -832,7 +852,18 @@ class WorkoutCardOverlayTokens
     double t,
   ) {
     if (other is! WorkoutCardOverlayTokens) return this;
-    return t < 0.5 ? this : other;
+    final Alignment? lerpedBegin = Alignment.lerp(begin, other.begin, t);
+    final Alignment? lerpedEnd = Alignment.lerp(end, other.end, t);
+
+    final List<double> lerpedStops = _lerpDoubleList(stops, other.stops, t);
+    final List<Color> lerpedColors = _lerpColorList(colors, other.colors, t);
+
+    return WorkoutCardOverlayTokens(
+      begin: lerpedBegin ?? begin,
+      end: lerpedEnd ?? end,
+      stops: lerpedStops,
+      colors: lerpedColors,
+    );
   }
 }
 
@@ -881,6 +912,17 @@ class RecommendationCardOverlayTokens
     double t,
   ) {
     if (other is! RecommendationCardOverlayTokens) return this;
-    return t < 0.5 ? this : other;
+    final Alignment? lerpedBegin = Alignment.lerp(begin, other.begin, t);
+    final Alignment? lerpedEnd = Alignment.lerp(end, other.end, t);
+
+    final List<double> lerpedStops = _lerpDoubleList(stops, other.stops, t);
+    final List<Color> lerpedColors = _lerpColorList(colors, other.colors, t);
+
+    return RecommendationCardOverlayTokens(
+      begin: lerpedBegin ?? begin,
+      end: lerpedEnd ?? end,
+      stops: lerpedStops,
+      colors: lerpedColors,
+    );
   }
 }

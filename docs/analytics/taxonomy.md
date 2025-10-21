@@ -8,10 +8,15 @@ PII‑Policy
 - Keine PII in Events; nur anonyme IDs/Hashes; Consent‑Gates strikt beachten.
 
 Schema‑Template (Tabellarisch)
-- Felder: Event Name · Beschreibung · Properties (Key:Typ/Einheit) · Version · Consent (Ja/Nein) · Owner
 
-Beispiel
-- `signup_flow:pricing_page_view` · „Pricing im Signup gesehen“ · `plan_tier:string`, `page_duration_sec:number` · v2 · Consent: Nein · Owner: Growth
+| Event Name | Beschreibung | Properties | Version | Consent | Owner |
+|---|---|---|---|---|---|
+| string | string | Key:Typ/Einheit | string | Ja/Nein | string |
+
+Governance
+- Änderungen via PR + Review (DataViz prüft auf Compliance, QA validiert Implementierung); Changelog führen; CI‑Hinweis im PR‑Report.
+- CI validiert Event-Schema gegen diese Richtlinie und blockiert Merges bei Verstößen.
+- Bei Fragen: [link zu ADR/Governance-Doc]; Disputes werden via [Eskalationspfad] gelöst.
 
 Governance
 - Änderungen via PR + Review (DataViz + QA); Changelog führen; CI‑Hinweis im PR‑Report.

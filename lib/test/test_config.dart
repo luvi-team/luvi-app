@@ -1,3 +1,5 @@
+import 'package:luvi_app/core/config/feature_flags.dart';
+
 /// Centralized configuration for test-specific feature flags used by tests.
 class TestConfig {
   TestConfig._();
@@ -6,8 +8,5 @@ class TestConfig {
   ///
   /// Configure via `--dart-define=FEATURE_DASHBOARD_V2=true|false` when running
   /// Flutter tests to toggle the exercised code paths.
-  static const bool featureDashboardV2 = bool.fromEnvironment(
-    'FEATURE_DASHBOARD_V2',
-    defaultValue: true,
-  );
+  static bool get featureDashboardV2 => FeatureFlags.featureDashboardV2;
 }

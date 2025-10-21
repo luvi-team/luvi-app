@@ -20,7 +20,6 @@ Rollenwahl
 - Default: Auto-Role (ankündigen). Misch-Tasks: `role: …` (Primärrolle zuerst).
 - Auto-Role Map (SSOT): `context/agents/_auto_role_map.md`
 - Traycer (optional, Features): `docs/engineering/traycer/prompt-mini.md`
- - Auto-Role Map (SSOT): `context/agents/_auto_role_map.md` (zentrales Keyword→Rollen-Mapping)
 
 Dual-Primary (Codex + Claude Code)
 - **Codex CLI:** Nutzt AGENTS.md (diese Datei). Auto-Role via `/status`.
