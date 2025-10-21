@@ -9,7 +9,8 @@ class DividerTokens extends ThemeExtension<DividerTokens> {
     required this.sectionDividerColor,
     required this.sectionDividerThickness,
     required this.sectionDividerVerticalMargin,
-  });
+  }) : assert(sectionDividerThickness >= 0, 'Thickness must be non-negative'),
+       assert(sectionDividerVerticalMargin >= 0, 'Margin must be non-negative');
 
   final Color sectionDividerColor;
   final double sectionDividerThickness;
