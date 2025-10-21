@@ -9,6 +9,24 @@ fi
 pass() { printf -- "- [OK] %s\n" "$1" >>"$REPORT"; }
 fail() { printf -- "- [DRIFT] %s\n" "$1" >>"$REPORT"; EXIT=1; }
 
+check_optional_file_contains() {
+  local file="$1"
+  local literal="$2"
+  local success_msg="$3"
+  local failure_msg="$4"
+  local missing_msg="$5"
+
+  if [ -f "$file" ]; then
+    if rg -F "$literal" "$file" >/dev/null 2>&1; then
+      pass "$success_msg"
+    else
+      fail "$failure_msg"
+    fi
+  else
+    pass "$missing_msg"
+  fi
+}
+
 EXIT=0
 
 # Dependency check (ripgrep)
@@ -81,40 +99,34 @@ else
 fi
 
 # 3b) AGENTS.md referenziert das verbindliche Antwortformat
-if rg -n "docs/engineering/assistant-answer-format\.md" "$ROOT/AGENTS.md" >/dev/null 2>&1; then
+if rg -F "docs/engineering/assistant-answer-format.md" "$ROOT/AGENTS.md" >/dev/null 2>&1; then
   pass "AGENTS.md: Antwortformat-Verweis vorhanden"
 else
   fail "AGENTS.md: Antwortformat-Verweis fehlt"
 fi
 
 # 3c) AGENTS.md verlinkt die Auto-Role Map (SSOT)
-if rg -n "context/agents/_auto_role_map\.md" "$ROOT/AGENTS.md" >/dev/null 2>&1; then
+if rg -F "context/agents/_auto_role_map.md" "$ROOT/AGENTS.md" >/dev/null 2>&1; then
   pass "AGENTS.md: Auto-Role Map verlinkt"
 else
   fail "AGENTS.md: Auto-Role Map-Verweis fehlt"
 fi
 
 # 3d) CLAUDE.md verlinkt die Auto-Role Map (SSOT)
-if [ -f "$ROOT/CLAUDE.md" ]; then
-  if rg -n "context/agents/_auto_role_map\.md" "$ROOT/CLAUDE.md" >/dev/null 2>&1; then
-    pass "CLAUDE.md: Auto-Role Map (SSOT) verlinkt"
-  else
-    fail "CLAUDE.md: Auto-Role Map (SSOT) fehlt oder veraltet"
-  fi
-else
-  pass "CLAUDE.md: Datei nicht gefunden (Interop optional)"
-fi
+check_optional_file_contains \
+  "$ROOT/CLAUDE.md" \
+  "context/agents/_auto_role_map.md" \
+  "CLAUDE.md: Auto-Role Map (SSOT) verlinkt" \
+  "CLAUDE.md: Auto-Role Map (SSOT) fehlt oder veraltet" \
+  "CLAUDE.md: Datei nicht gefunden (Interop optional)"
 
 # 3e) CLAUDE.md referenziert Antwortformat (CLI)
-if [ -f "$ROOT/CLAUDE.md" ]; then
-  if rg -n "docs/engineering/assistant-answer-format\.md" "$ROOT/CLAUDE.md" >/dev/null 2>&1; then
-    pass "CLAUDE.md: Antwortformat-Verweis vorhanden"
-  else
-    fail "CLAUDE.md: Antwortformat-Verweis fehlt"
-  fi
-else
-  pass "CLAUDE.md: Datei nicht gefunden (Interop optional)"
-fi
+check_optional_file_contains \
+  "$ROOT/CLAUDE.md" \
+  "docs/engineering/assistant-answer-format.md" \
+  "CLAUDE.md: Antwortformat-Verweis vorhanden" \
+  "CLAUDE.md: Antwortformat-Verweis fehlt" \
+  "CLAUDE.md: Datei nicht gefunden (Interop optional)"
 
 # 4) Soft-Gates: Operativer Modus vorhanden
 for s in reqing-ball.md ui-polisher.md; do

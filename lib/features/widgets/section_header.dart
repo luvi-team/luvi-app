@@ -57,11 +57,14 @@ class SectionHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: Text(
-            title,
-            maxLines: maxLines ?? 1,
-            overflow: TextOverflow.ellipsis,
-            style: _baseTitleStyle.copyWith(color: titleColor),
+          child: Semantics(
+            header: true,
+            child: Text(
+              title,
+              maxLines: maxLines ?? 1,
+              overflow: TextOverflow.ellipsis,
+              style: _baseTitleStyle.copyWith(color: titleColor),
+            ),
           ),
         ),
         if (shouldShowTrailing) ...[

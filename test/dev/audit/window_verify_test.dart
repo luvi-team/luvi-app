@@ -53,6 +53,9 @@ void main() {
         top: _safeTop,
         bottom: _safeBottom,
       );
+      addTearDown(() {
+        tester.binding.window.clearAllTestValues();
+      });
 
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();

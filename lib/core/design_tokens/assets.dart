@@ -67,6 +67,10 @@ class _Images {
   final String recoRueckenSchulter =
       'assets/images/dashboard/reco.ruecken_schulter.png';
   final String recoGanzkoerper = 'assets/images/dashboard/reco.ganzkoerper.png';
+  final String recoErnaehrungstagebuch =
+      'assets/images/dashboard/reco.ernahrungstagebuch.png';
+  final String recoHautpflege =
+      'assets/images/dashboard/reco.hautpflege.png';
 
   // Hero background (Luvi‑Sync preview)
   final String heroSync01 = 'assets/images/dashboard/hero_sync_01.png';

@@ -157,7 +157,7 @@
   "@dashboardTrainingWeekSubtitle": {
     "description": "Subtitle below weekly training section header."
   },
-  "dashboardRecommendationsTitle": "Weitere Empfehlungen für Dich",
+  "dashboardRecommendationsTitle": "Weitere Empfehlungen für dich",
   "@dashboardRecommendationsTitle": {
     "description": "Section header title for phase-specific recommendations on dashboard."
   },
@@ -232,6 +232,14 @@
   "dashboardLuviSyncPlaceholder": "Luvi Sync Journal Inhalte folgen bald.",
   "@dashboardLuviSyncPlaceholder": {
     "description": "Placeholder text for the Luvi Sync Journal stub screen."
+  },
+  "trainingsOverviewStubPlaceholder": "Trainingsübersicht folgt bald",
+  "@trainingsOverviewStubPlaceholder": {
+    "description": "Platzhaltertext solange die Trainingsübersicht noch nicht umgesetzt ist."
+  },
+  "trainingsOverviewStubSemantics": "Trainingsübersicht in Vorbereitung. Tippe auf Zurück, um zur vorherigen Ansicht zu wechseln.",
+  "@trainingsOverviewStubSemantics": {
+    "description": "Semantische Beschreibung für den Trainingsübersicht-Platzhalter inklusive Rücknavigation."
   },
   "workoutTitle": "Workout",
   "@workoutTitle": {

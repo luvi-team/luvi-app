@@ -63,4 +63,17 @@ class WeeklyTrainingProps {
     duration,
     isCompleted,
   );
+
+  @override
+  String toString() {
+    return 'WeeklyTrainingProps('
+        'id: $id, '
+        'title: $title, '
+        'subtitle: $subtitle, '
+        'imagePath: $imagePath, '
+        'dayLabel: $dayLabel, '
+        'duration: $duration, '
+        'isCompleted: $isCompleted'
+        ')';
+  }
 }

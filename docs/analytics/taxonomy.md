@@ -17,7 +17,3 @@ Governance
 - Änderungen via PR + Review (DataViz prüft auf Compliance, QA validiert Implementierung); Changelog führen; CI‑Hinweis im PR‑Report.
 - CI validiert Event-Schema gegen diese Richtlinie und blockiert Merges bei Verstößen.
 - Bei Fragen: [link zu ADR/Governance-Doc]; Disputes werden via [Eskalationspfad] gelöst.
-
-Governance
-- Änderungen via PR + Review (DataViz + QA); Changelog führen; CI‑Hinweis im PR‑Report.
-

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/dashboard_layout_constants.dart';
 import 'package:luvi_app/core/design_tokens/divider_tokens.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -42,7 +43,8 @@ class PhaseRecommendationsSection extends StatelessWidget {
               child: CustomPaint(
                 painter: WavePainter(
                   color: waveColor,
-                  amplitude: _phaseRecoWaveAmplitude,
+                  amplitude:
+                      DashboardLayoutConstants.phaseRecommendationsWaveAmplitude,
                   background: theme.scaffoldBackgroundColor,
                   flipVertical: true,
                 ),
@@ -51,7 +53,11 @@ class PhaseRecommendationsSection extends StatelessWidget {
             Positioned(
               left: Spacing.l,
               right: Spacing.l,
-              top: _phaseRecoWaveHeight - _phaseRecoWaveAmplitude - Spacing.l,
+              top:
+                  DashboardLayoutConstants.phaseRecommendationsWaveHeight -
+                      DashboardLayoutConstants
+                          .phaseRecommendationsWaveAmplitude -
+                      Spacing.l,
               child: Container(
                 decoration: BoxDecoration(
                   color: dsTokens?.cardSurface ?? DsTokens.light.cardSurface,
@@ -90,8 +96,10 @@ class PhaseRecommendationsSection extends StatelessWidget {
                         context: context,
                         title: l10n.dashboardNutritionTitle,
                         recommendations: nutritionRecommendations,
-                        cardWidth: _nutritionCardWidth,
-                        cardHeight: _nutritionCardHeight,
+                        cardWidth: DashboardLayoutConstants
+                            .phaseRecommendationsNutritionCardWidth,
+                        cardHeight: DashboardLayoutConstants
+                            .phaseRecommendationsNutritionCardHeight,
                         semanticPrefix: l10n.nutritionRecommendation,
                       ),
                       const SizedBox(height: Spacing.xs),
@@ -99,8 +107,10 @@ class PhaseRecommendationsSection extends StatelessWidget {
                         context: context,
                         title: l10n.dashboardRegenerationTitle,
                         recommendations: regenerationRecommendations,
-                        cardWidth: _regenerationCardWidth,
-                        cardHeight: _regenerationCardHeight,
+                        cardWidth: DashboardLayoutConstants
+                            .phaseRecommendationsRegenerationCardWidth,
+                        cardHeight: DashboardLayoutConstants
+                            .phaseRecommendationsRegenerationCardHeight,
                         semanticPrefix: l10n.regenerationRecommendation,
                       ),
                     ],
@@ -166,8 +176,10 @@ class PhaseRecommendationsSection extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             clipBehavior: Clip.hardEdge,
             padding: EdgeInsets.zero,
-            separatorBuilder: (context, index) =>
-                const SizedBox(width: _phaseRecoCardGap),
+            separatorBuilder: (context, index) => SizedBox(
+              width:
+                  DashboardLayoutConstants.phaseRecommendationsCardGap,
+            ),
             itemBuilder: (context, index) {
               final recommendation = recommendations[index];
               return Semantics(
@@ -197,18 +209,18 @@ class PhaseRecommendationsSection extends StatelessWidget {
     const dividerToFirstSectionGap = Spacing.xs;
     const interSectionGap = Spacing.xs;
 
-    return _phaseRecoWaveHeight +
+    return DashboardLayoutConstants.phaseRecommendationsWaveHeight +
         framePaddingTop +
         framePaddingBottom +
-        _phaseRecoHeaderHeight +
+        DashboardLayoutConstants.phaseRecommendationsHeaderHeight +
         headerToDividerGap +
         dividerVisualHeight +
         dividerToFirstSectionGap +
-        _subsectionHeaderHeight +
-        _nutritionCardHeight +
+        DashboardLayoutConstants.phaseRecommendationsSubsectionHeaderHeight +
+        DashboardLayoutConstants.phaseRecommendationsNutritionCardHeight +
         interSectionGap +
-        _subsectionHeaderHeight +
-        _regenerationCardHeight;
+        DashboardLayoutConstants.phaseRecommendationsSubsectionHeaderHeight +
+        DashboardLayoutConstants.phaseRecommendationsRegenerationCardHeight;
   }
 
   Color _phaseWaveBackgroundColor(BuildContext context) {
@@ -221,13 +233,3 @@ class PhaseRecommendationsSection extends StatelessWidget {
         SurfaceColorTokens.light.waveOverlayBeige;
   }
 }
-
-const double _phaseRecoWaveHeight = 80.0;
-const double _phaseRecoWaveAmplitude = 24.0;
-const double _phaseRecoHeaderHeight = 56.0;
-const double _phaseRecoCardGap = 16.0;
-const double _nutritionCardWidth = 160.0;
-const double _nutritionCardHeight = 210.0;
-const double _regenerationCardWidth = 165.0;
-const double _regenerationCardHeight = 210.0;
-const double _subsectionHeaderHeight = 40.0;

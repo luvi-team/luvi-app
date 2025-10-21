@@ -31,7 +31,7 @@ class BottomWaveBorderPainter extends CustomPainter {
       ..color = borderColor
       ..strokeWidth = borderWidth
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
+      ..strokeCap = StrokeCap.butt
       ..strokeJoin = StrokeJoin.round;
 
     // Pass 1: fill the navigation area below the wave with theme-provided surface color

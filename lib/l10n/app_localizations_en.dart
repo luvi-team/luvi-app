@@ -178,6 +178,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardLuviSyncPlaceholder => 'Luvi Sync Journal content coming soon.';
 
   @override
+  String get trainingsOverviewStubPlaceholder => 'Training overview coming soon';
+
+  @override
+  String get trainingsOverviewStubSemantics => 'Training overview is in progress. Use the back button to return to the previous view.';
+
+  @override
   String get workoutTitle => 'Workout';
 
   @override

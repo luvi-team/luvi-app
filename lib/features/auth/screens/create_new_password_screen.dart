@@ -23,15 +23,14 @@ class CreateNewPasswordScreen extends StatefulWidget {
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _scrollController = ScrollController();
+  final FieldAutoScroller _autoScroller =
+      FieldAutoScroller(ScrollController());
 
   final _headerKey = GlobalKey();
   final _passwordFieldKey = GlobalKey();
   final _confirmFieldKey = GlobalKey();
 
-  late final FieldAutoScroller _autoScroller = FieldAutoScroller(
-    _scrollController,
-  );
+  ScrollController get _scrollController => _autoScroller.controller;
 
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;

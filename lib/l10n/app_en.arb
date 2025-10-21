@@ -233,6 +233,14 @@
   "@dashboardLuviSyncPlaceholder": {
     "description": "Placeholder copy for the Luvi Sync Journal stub screen body."
   },
+  "trainingsOverviewStubPlaceholder": "Training overview coming soon",
+  "@trainingsOverviewStubPlaceholder": {
+    "description": "Placeholder message shown while the trainings overview screen is under construction."
+  },
+  "trainingsOverviewStubSemantics": "Training overview is in progress. Use the back button to return to the previous view.",
+  "@trainingsOverviewStubSemantics": {
+    "description": "Accessibility description for the trainings overview placeholder including navigation guidance."
+  },
   "workoutTitle": "Workout",
   "@workoutTitle": {
     "description": "App bar title for the workout detail stub screen."

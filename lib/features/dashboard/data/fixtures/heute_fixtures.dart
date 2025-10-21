@@ -387,7 +387,6 @@ class HeuteFixtures {
           imagePath: Assets.images.recoGanzkoerper,
         ),
       ],
-      // TODO: Replace remaining placeholder (Ernährungstagebuch) with Figma-specific imagery.
       nutritionRecommendations: [
         RecommendationProps(
           tag: 'Supplements',
@@ -405,10 +404,9 @@ class HeuteFixtures {
           tag: 'Tagebuch',
           title: 'Ernährungstagebuch',
           subtitle: 'Tracke deine Mahlzeiten',
-          imagePath: Assets.images.recoRueckenSchulter,
+          imagePath: Assets.images.recoErnaehrungstagebuch,
         ),
       ],
-      // TODO: Replace remaining placeholder (Hautpflege) with Figma-specific imagery.
       regenerationRecommendations: [
         RecommendationProps(
           tag: 'Achtsamkeit',
@@ -426,7 +424,7 @@ class HeuteFixtures {
           tag: 'Beauty',
           title: 'Hautpflege',
           subtitle: 'Zyklusgerechte Pflege',
-          imagePath: Assets.images.recoRueckenSchulter,
+          imagePath: Assets.images.recoHautpflege,
         ),
       ],
       trainingStats: [

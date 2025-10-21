@@ -36,6 +36,7 @@ class TrainingsOverviewStubScreen extends StatelessWidget {
           height: TypographyTokens.lineHeightRatio24on16,
         );
 
+    final semanticDescription = l10n.trainingsOverviewStubSemantics;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -45,14 +46,22 @@ class TrainingsOverviewStubScreen extends StatelessWidget {
       ),
       body: Center(
         child: Semantics(
-          label: l10n.dashboardViewMore,
+          container: true,
+          explicitChildNodes: true,
+          label: semanticDescription,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.fitness_center, size: 64, color: Colors.grey),
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.fitness_center,
+                  size: 64,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: Spacing.s),
               Text(
-                'Trainingsübersicht folgt bald',
+                l10n.trainingsOverviewStubPlaceholder,
                 textAlign: TextAlign.center,
                 style: bodyStyle,
               ),

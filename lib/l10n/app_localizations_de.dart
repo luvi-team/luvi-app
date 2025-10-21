@@ -121,7 +121,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardTrainingWeekSubtitle => 'Erstellt von deinen LUVI-Expert:innen';
 
   @override
-  String get dashboardRecommendationsTitle => 'Weitere Empfehlungen für Dich';
+  String get dashboardRecommendationsTitle => 'Weitere Empfehlungen für dich';
 
   @override
   String get dashboardNutritionTitle => 'Ernährung & Biohacking';
@@ -176,6 +176,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dashboardLuviSyncPlaceholder => 'Luvi Sync Journal Inhalte folgen bald.';
+
+  @override
+  String get trainingsOverviewStubPlaceholder => 'Trainingsübersicht folgt bald';
+
+  @override
+  String get trainingsOverviewStubSemantics => 'Trainingsübersicht in Vorbereitung. Tippe auf Zurück, um zur vorherigen Ansicht zu wechseln.';
 
   @override
   String get workoutTitle => 'Workout';

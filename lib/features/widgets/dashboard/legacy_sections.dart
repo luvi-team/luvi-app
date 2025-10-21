@@ -112,6 +112,11 @@ class LegacySections extends StatelessWidget {
           minGap: _categoriesMinGap,
           minWidth: CategoryChip.minWidth,
         );
+        assert(
+          resolvedWidths.length >= labels.length,
+          'compressFirstRowWidths returned ${resolvedWidths.length} widths '
+          'for ${labels.length} category labels.',
+        );
         final gapCount = columnCount > 1 ? columnCount - 1 : 0;
         final totalWidth = resolvedWidths
             .take(columnCount)
@@ -137,6 +142,10 @@ class LegacySections extends StatelessWidget {
     List<double> resolvedWidths,
     double gap,
   ) {
+    assert(
+      resolvedWidths.length >= labels.length,
+      'Resolved widths (${resolvedWidths.length}) are fewer than labels (${labels.length}).',
+    );
     final columnCount = math.min(categories.length, _categoriesColumns);
     return Wrap(
       key: const Key('dashboard_categories_grid'),

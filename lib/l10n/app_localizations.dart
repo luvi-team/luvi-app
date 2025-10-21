@@ -401,6 +401,18 @@ abstract class AppLocalizations {
   /// **'Luvi Sync Journal content coming soon.'**
   String get dashboardLuviSyncPlaceholder;
 
+  /// Placeholder message shown while the trainings overview screen is under construction.
+  ///
+  /// In en, this message translates to:
+  /// **'Training overview coming soon'**
+  String get trainingsOverviewStubPlaceholder;
+
+  /// Accessibility description for the trainings overview placeholder including navigation guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Training overview is in progress. Use the back button to return to the previous view.'**
+  String get trainingsOverviewStubSemantics;
+
   /// App bar title for the workout detail stub screen.
   ///
   /// In en, this message translates to:

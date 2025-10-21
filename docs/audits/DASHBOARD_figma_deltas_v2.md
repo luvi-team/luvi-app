@@ -198,7 +198,9 @@ class ShadowTokens {
 **Required:** Workout cards carousel (node `68672:7402`)
 - **Type:** `ListView.builder` or `PageView` with `scrollDirection: Axis.horizontal`
 - **Gap:** 17px between cards
-- **Card size:** 340w × 280h
+- **Responsive sizing:** On narrow screens (<600dp) stretch cards to 100% of the available width (minus horizontal safe-area padding) and maintain the ~340:280 aspect ratio via `aspectRatio` or proportional height.
+- **Large screens:** At ≥600dp width cap each card at 340px, center multiple cards in the row, and respect safe-area insets plus device pixel density.
+- **Layout guidance:** Apply `BoxConstraints` (`maxWidth`/`minWidth`) or responsive layout widgets (e.g., `Flexible`, breakpoint-driven `Grid`) to adapt portrait vs. landscape and tablet vs. mobile.
 - **Priority:** 🔴 HIGH
 
 ### ❌ No Image Card Component
@@ -238,11 +240,11 @@ class ShadowTokens {
 
 ## 🟡 Accessibility Issues
 
-| Element | Issue | Contrast Ratio | WCAG Level | Severity | Fix |
-|---------|-------|----------------|------------|----------|-----|
-| **Calendar weekday labels** | `#C5C7C9` on `#FFFFFF` | ~3.2:1 | ❌ FAIL AA (needs 4.5:1) | 🟡 MEDIUM | Darken to `#949494` or use `DsTokens.grayscale500` (`#696969`) |
-| **Time label '60 min'** | `rgba(255,255,255,0.6)` on image | Varies | ⚠️ CONDITIONAL | 🟢 LOW | Test with real images; increase to 0.7-0.8 if fails |
-| **Workout frame subtitle** | `#6d6d6d` on `#FFFFFF` | ~4.6:1 | ✅ PASS AA normal text | 🟢 LOW | Acceptable |
+| Element | Issue | Contrast Ratio | WCAG Level | Severity | Fix | Status |
+|---------|-------|----------------|------------|----------|-----|--------|
+| **Calendar weekday labels** | `#C5C7C9` on `#FFFFFF` | ~3.2:1 | ❌ FAIL AA (needs 4.5:1) | 🟡 MEDIUM | Switch to `DsTokens.grayscale500` (`#696969`) or fallback `#949494`; rollout tracked for dashboard. | Deferred – follow-up [DASH-A11Y-001](issues/dashboard_calendar_weekday_contrast.md) |
+| **Time label '60 min'** | `rgba(255,255,255,0.6)` on image | Varies | ⚠️ CONDITIONAL | 🟢 LOW | Test against production imagery; bump to 0.7–0.8 opacity if contrast fails. | Known limitation – monitor during QA sign-off |
+| **Workout frame subtitle** | `#6d6d6d` on `#FFFFFF` | ~4.6:1 | ✅ PASS AA normal text | 🟢 LOW | Acceptable; no change required. | Implemented – passes in current widgets |
 
 ---
 
@@ -267,6 +269,44 @@ class ShadowTokens {
 6. ✅ **Add spacing tokens:** 2px, 4px, 10px, 14px, 21px, 35px, 41px, 42px
 7. ✅ **Add radius tokens:** 2px, 16px, 24px, 27px
 8. ✅ **Add opacity token:** 0.6 for time labels
+
+```dart
+// Suggested location: lib/core/design_tokens/dashboard_tokens.dart
+import 'package:flutter/material.dart';
+
+class ColorTokens {
+  const ColorTokens._();
+  static const calendarSelectedBg = Color(0x80E1B941); // #E1B941 @ 0.5 alpha (gold selection)
+  static const calendarActiveIndicator = Color(0xFF4169E1); // #4169E1 active day indicator
+  static const dayText = Color(0xFF282B31); // #282B31 calendar day number
+  static const weekday = Color(0xFFC5C7C9); // #C5C7C9 weekday label text
+}
+
+class SpacingTokens {
+  const SpacingTokens._();
+  static const spacing2 = 2.0; // 2 px micro-spacing
+  static const spacing4 = 4.0; // 4 px micro-spacing
+  static const spacing10 = 10.0; // 10 px card padding inset
+  static const spacing14 = 14.0; // 14 px space between weekday/date rows
+  static const spacing21 = 21.0; // 21 px hero vertical offset
+  static const spacing35 = 35.0; // 35 px section spacing
+  static const spacing41 = 41.0; // 41 px nav alignment offset
+  static const spacing42 = 42.0; // 42 px carousel baseline gap
+}
+
+class RadiusTokens {
+  const RadiusTokens._();
+  static const radius2 = 2.0; // 2 px inner indicator radius
+  static const radius16 = 16.0; // 16 px card corners
+  static const radius24 = 24.0; // 24 px hero overlay corners
+  static const radius27 = 27.0; // 27 px bottom nav wave radius
+}
+
+class OpacityTokens {
+  const OpacityTokens._();
+  static const timeLabel = 0.6; // 60% opacity (rgba alpha 0.6) for duration labels
+}
+```
 
 ### Phase 2: Base Widgets
 1. ✅ **ImageCard** widget (with gradient overlay support)

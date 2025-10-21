@@ -57,10 +57,20 @@ const double syncButtonBottom =
 /// Formula: dockHeight - cutoutDepth + desiredGapToWaveTop
 /// Rationale: subtract the transparent cradle depth, then add the desired
 /// visual gap above the wave crest for content spacing.
+/// Exposed as both a const and helper for compile-time and runtime use.
+const double bottomPadding = dockHeight - cutoutDepth + desiredGapToWaveTop;
+
 double calculateBottomPadding() {
   return dockHeight - cutoutDepth + desiredGapToWaveTop;
 }
 
+/// Computes the scroll stop offset so content clears the bottom navigation wave.
+/// Combines buttonDiameter, cutoutDepth, desiredGapToWaveTop, waveTopInset, and
+/// the device bottom safe-area inset (via MediaQuery) into logical pixels.
+/// The provided BuildContext is only used to read the safe-area bottom inset,
+/// and all token dimensions are assumed to share the same coordinate space.
+/// Return value already contains the safe-area padding; callers MUST NOT add
+/// additional bottom inset.
 double scrollStopPadding(BuildContext context) {
   final safeBottom = MediaQuery.paddingOf(context).bottom;
   return (buttonDiameter - cutoutDepth) +
@@ -79,7 +89,7 @@ const double waveCpAlpha =
     0.58; // slightly further inward for smoother shoulders
 const double waveCpBeta = 0.36; // less pointed in the center
 
-/// Tab icon size (Figma audit 2025-10-15: 38px, was 32px)
+/// Tab icons: 38px (tabIconSize from tokens; Figma audit 2025-10-15, previously 32px)
 const double tabIconSize = 38.0;
 
 /// Minimum tap area for accessibility (unchanged: 44px)

@@ -76,14 +76,8 @@ Beispiel – API (Medium, Gateway‑Touch)
 
 Optionale JSON‑Zusammenfassung (nicht Pflicht)
 ```json
-{
-  "role": "ui-frontend",
-  "keywords": ["Widget","Screen"],
-  "acceptance_version": "1.1",
-  "steps": ["…","…","…","…"],
-  "prove": ["flutter analyze","flutter test"],
-  "privacy_note": "Low"
-}
+{"role": "ui-frontend", "keywords": ["Widget","Screen"], "acceptance_version": "1.1",
+ "steps": ["…","…","…","…"], "prove": ["flutter analyze","flutter test"], "privacy_note": "Low"}
 ```
 
 Nutzung

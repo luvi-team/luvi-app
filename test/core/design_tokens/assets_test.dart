@@ -54,6 +54,14 @@ void main() {
         Assets.images.recoGanzkoerper,
         'assets/images/dashboard/reco.ganzkoerper.png',
       );
+      expect(
+        Assets.images.recoErnaehrungstagebuch,
+        'assets/images/dashboard/reco.ernahrungstagebuch.png',
+      );
+      expect(
+        Assets.images.recoHautpflege,
+        'assets/images/dashboard/reco.hautpflege.png',
+      );
     });
   });
 }

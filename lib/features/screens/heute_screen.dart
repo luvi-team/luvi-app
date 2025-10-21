@@ -28,13 +28,21 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 /// The wave asset is designed at 428px width with a 40px arc height.
 /// This function scales the arc proportionally to the current viewport width,
 /// capped at [heroToSectionGap] to prevent layout overflow.
-double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
+@visibleForTesting
+double waveBottomRevealForWidth(
+  double viewportWidth,
+  double heroToSectionGap,
+) {
   const double waveAssetWidth = 428.0;
   const double waveArcHeight = 40.0;
-  final double viewportWidth = MediaQuery.sizeOf(context).width;
   final double scale = viewportWidth / waveAssetWidth;
   final double reveal = waveArcHeight * scale;
   return math.min(reveal, heroToSectionGap);
+}
+
+double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
+  final double viewportWidth = MediaQuery.sizeOf(context).width;
+  return waveBottomRevealForWidth(viewportWidth, heroToSectionGap);
 }
 
 // Kodex: Bottom-nav geometry now imported from bottom_nav_tokens.dart (formula-based, no duplication)

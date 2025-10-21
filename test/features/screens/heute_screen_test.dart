@@ -13,6 +13,23 @@ void main() {
   setUpAll(() async {
     await initializeDateFormatting('de_DE', null);
   });
+
+  group('waveBottomRevealForWidth', () {
+    test('scales reveal proportionally to viewport width', () {
+      expect(
+        waveBottomRevealForWidth(214, 40), // half the asset width
+        closeTo(20, 0.001),
+      );
+    });
+
+    test('clamps reveal when hero gap is smaller than scaled arc', () {
+      expect(
+        waveBottomRevealForWidth(856, 30), // double width => 80px reveal
+        30,
+      );
+    });
+  });
+
   group('HeuteScreen', () {
     testWidgets('renders key dashboard sections', (tester) async {
       await tester.pumpWidget(

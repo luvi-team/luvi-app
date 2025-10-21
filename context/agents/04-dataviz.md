@@ -27,7 +27,7 @@ acceptance_version: "1.1"
 Sichert performante, verständliche Visualisierungen und aussagekräftige Erklärtexte.
 
 ## Inputs
-PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
+PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
 Chart-Widgets, Tests, Doku (docs/), klare Achsen/Legenden.

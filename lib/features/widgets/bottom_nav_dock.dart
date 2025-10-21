@@ -11,8 +11,8 @@ import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 ///
 /// Design tokens (from Figma audit 2025-10-06, Spec-JSON):
 /// - Height: 96px (dockHeight from tokens)
-/// - Tab icons: 32px (tabIconSize from tokens)
-/// - Center gap: formula 2 × cutoutHalfWidth = 118px (centerGap from tokens)
+/// - Tab icons: 38px (tabIconSize from tokens)
+/// - Center gap: 172px (= 2 × cutoutHalfWidth; LayoutBuilder shrinks if viewport requires)
 /// - Horizontal padding: 16px (dockPadding from tokens)
 ///
 /// Kodex: Formula-based parameters (no magic numbers), dark-mode ready (surface/tokens).

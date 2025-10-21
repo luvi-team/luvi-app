@@ -56,8 +56,8 @@ class RecommendationCard extends StatelessWidget {
                 const TextStyle(
                   fontFamily: FontFamilies.playfairDisplay,
                   fontWeight: FontWeight.w700,
-                  fontSize: 24,
-                  height: 32 / 24,
+                  fontSize: 16,
+                  height: 24 / 16,
                 ))
             .copyWith(color: const Color(0xFFFFFFFF));
 

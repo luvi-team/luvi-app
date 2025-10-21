@@ -149,6 +149,8 @@ Datei: `lib/features/widgets/recommendation_card.dart`
 - Nutzt `TypographyTokens.lineHeightRatio24on16` (Quelle: `lib/core/design_tokens/typography.dart` Zeile 15)
 - Visuell: Zeilen wirken leicht luftiger (1.5 vs. 1.444), aber immer noch kompakt
 
+**Fallback behavior when tokens unavailable:** Die Widget-Implementation fällt auf `fontSize: 16`, `height: 24 / 16` (1.5) und `maxLines: 3` zurück, wenn `typographyTokens` fehlen – damit bleibt die Card konsistent zur hier dokumentierten Spezifikation.
+
 ### 4.2 Unveränderte Properties
 
 - ✅ fontWeight: FontWeight.w600 (Zeile 106, semi-bold, wie in Figma)

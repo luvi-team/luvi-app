@@ -15,6 +15,7 @@ class WavePainter extends CustomPainter {
     required this.amplitude,
     required this.background,
     this.flipVertical = false,
+    this.useBlendCutout = false,
   });
 
   final Color color;
@@ -22,6 +23,7 @@ class WavePainter extends CustomPainter {
   final Color background;
   // If true, curve bulges upward; if false, curve bulges downward.
   final bool flipVertical;
+  final bool useBlendCutout;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -37,12 +39,11 @@ class WavePainter extends CustomPainter {
       return;
     }
 
-    canvas.drawRect(Offset.zero & size, paint);
-
     // Ratios derived from consent_wave.svg control points (85.5, 214, 342.5 of width 428).
     const double c1Ratio = 85.5 / 428.0;
     const double midRatio = 214.0 / 428.0;
     const double c2Ratio = 342.5 / 428.0;
+    const double endEaseRatio = 0.95;
 
     final double baseY = flipVertical ? arc : h - arc;
     // Calculate curve offset based on flip direction.
@@ -51,7 +52,14 @@ class WavePainter extends CustomPainter {
     final Path path = Path()
       ..moveTo(0, baseY)
       ..cubicTo(0, baseY, w * c1Ratio, curveOffset, w * midRatio, curveOffset)
-      ..cubicTo(w * c2Ratio, curveOffset, w, baseY, w, baseY);
+      ..cubicTo(
+        w * c2Ratio,
+        curveOffset,
+        w * endEaseRatio,
+        baseY,
+        w,
+        baseY,
+      );
 
     if (flipVertical) {
       path
@@ -64,6 +72,16 @@ class WavePainter extends CustomPainter {
     }
     path.close();
 
+    if (useBlendCutout) {
+      canvas.saveLayer(Offset.zero & size, Paint());
+      canvas.drawRect(Offset.zero & size, paint);
+      final Paint maskPaint = Paint()..blendMode = BlendMode.dstOut;
+      canvas.drawPath(path, maskPaint);
+      canvas.restore();
+      return;
+    }
+
+    canvas.drawRect(Offset.zero & size, paint);
     final Paint cutPaint = Paint()..color = background;
     canvas.drawPath(path, cutPaint);
   }
@@ -73,6 +91,7 @@ class WavePainter extends CustomPainter {
     return oldDelegate.color != color ||
         oldDelegate.amplitude != amplitude ||
         oldDelegate.background != background ||
-        oldDelegate.flipVertical != flipVertical;
+        oldDelegate.flipVertical != flipVertical ||
+        oldDelegate.useBlendCutout != useBlendCutout;
   }
 }

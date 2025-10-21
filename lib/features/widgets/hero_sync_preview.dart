@@ -216,7 +216,7 @@ class _InfoCard extends StatelessWidget {
     final cardContent = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: Spacing.m,
-        vertical: Spacing.s14,
+        vertical: Spacing.heroInfoCardPadding,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

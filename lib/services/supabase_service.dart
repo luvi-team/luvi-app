@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseService {
   static bool _initialized = false;
+  static Future<void>? _initFuture;
 
   static bool get isInitialized => _initialized;
 
@@ -17,8 +20,20 @@ class SupabaseService {
   /// Attempt to load environment configuration and initialize Supabase.
   static Future<void> tryInitialize({
     String envFile = '.env.development',
+  }) {
+    if (_initialized) return Future.value();
+    final existing = _initFuture;
+    if (existing != null) {
+      return existing;
+    }
+    final future = _performInitialize(envFile: envFile);
+    _initFuture = future;
+    return future;
+  }
+
+  static Future<void> _performInitialize({
+    required String envFile,
   }) async {
-    if (_initialized) return;
     try {
       await dotenv.load(fileName: envFile);
       final url =
@@ -38,6 +53,10 @@ class SupabaseService {
         'Warning: Could not load environment or initialize Supabase: $e',
       );
       _initialized = false;
+    } finally {
+      if (!_initialized) {
+        _initFuture = null;
+      }
     }
   }
 

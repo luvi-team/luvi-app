@@ -58,20 +58,11 @@ class WeeklyTrainingSection extends StatelessWidget {
           child: Text(l10n.dashboardTrainingWeekSubtitle, style: subtitleStyle),
         ),
         const SizedBox(height: Spacing.xs),
-        RepaintBoundary(
-          child: ShaderMask(
-            shaderCallback: (bounds) {
-              return const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.white, Colors.white, Colors.transparent],
-                stops: [0.0, 0.85, 1.0],
-              ).createShader(bounds);
-            },
-            blendMode: BlendMode.dstIn,
-            child: SizedBox(
-              height: _weeklyTrainingCardHeight,
-              child: ListView.separated(
+        SizedBox(
+          height: _weeklyTrainingCardHeight,
+          child: Stack(
+            children: [
+              ListView.separated(
                 padding: EdgeInsets.only(left: Spacing.l, right: peekPadding),
                 scrollDirection: Axis.horizontal,
                 itemCount: trainings.length,
@@ -81,18 +72,46 @@ class WeeklyTrainingSection extends StatelessWidget {
                     const SizedBox(width: _weeklyTrainingItemGap),
                 itemBuilder: (context, index) {
                   final training = trainings[index];
-                  return WeeklyTrainingCard(
-                    title: training.title,
-                    subtitle: training.subtitle,
-                    imagePath: training.imagePath,
-                    dayLabel: training.dayLabel,
-                    duration: training.duration,
-                    isCompleted: training.isCompleted,
-                    onTap: () => onTrainingTap(training.id),
+                  return RepaintBoundary(
+                    child: WeeklyTrainingCard(
+                      title: training.title,
+                      subtitle: training.subtitle,
+                      imagePath: training.imagePath,
+                      dayLabel: training.dayLabel,
+                      duration: training.duration,
+                      isCompleted: training.isCompleted,
+                      onTap: () => onTrainingTap(training.id),
+                    ),
                   );
                 },
               ),
-            ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      width: Spacing.l + peekPadding,
+                      child: ShaderMask(
+                        shaderCallback: (bounds) {
+                          return const LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Colors.white,
+                              Colors.white,
+                              Colors.transparent
+                            ],
+                            stops: [0.0, 0.85, 1.0],
+                          ).createShader(bounds);
+                        },
+                        blendMode: BlendMode.dstIn,
+                        child: const ColoredBox(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
