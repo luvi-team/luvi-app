@@ -19,9 +19,10 @@ class DividerTokens extends ThemeExtension<DividerTokens> {
   static const DividerTokens light = DividerTokens(
     // Divider between "Ernährung & Nutrition" and "Regeneration & Achtsamkeit"
     // (Figma audit Phase 1, node 68723:7672)
-    sectionDividerColor: Color(0xFFDCDCDC), // inputBorder token
+    // Using the literal value of DsTokens.light.inputBorder to keep this const
+    sectionDividerColor: Color(0xFFDCDCDC),
     sectionDividerThickness: 1.0,
-    sectionDividerVerticalMargin: 12.0, // Visual estimate from screenshot
+    sectionDividerVerticalMargin: 12.0, // Figma spec: vertical margin 12px
   );
 
   @override

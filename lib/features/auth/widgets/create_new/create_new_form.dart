@@ -45,6 +45,7 @@ class CreateNewForm extends StatelessWidget {
           },
           child: LoginPasswordField(
             key: passwordFieldKey,
+            textFieldKey: const Key('AuthPasswordField'),
             controller: newPasswordController,
             errorText: null,
             onChanged: (_) {},
@@ -63,6 +64,7 @@ class CreateNewForm extends StatelessWidget {
           },
           child: LoginPasswordField(
             key: confirmFieldKey,
+            textFieldKey: const Key('AuthConfirmPasswordField'),
             controller: confirmPasswordController,
             errorText: null,
             onChanged: (_) {},

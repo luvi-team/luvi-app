@@ -119,6 +119,16 @@
   "@notificationsWithBadge": {
     "description": "Semantics label for the dashboard notifications icon when unread alerts exist."
   },
+  "notificationsWithBadgeCount": "{count, plural, one {Benachrichtigungen – {count} neu} other {Benachrichtigungen – {count} neu}}",
+  "@notificationsWithBadgeCount": {
+    "description": "Semantics label for the dashboard notifications icon when an unread count badge is present.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Anzahl ungelesener Benachrichtigungen für Screenreader-Ansage."
+      }
+    }
+  },
   "notificationsNoBadge": "Benachrichtigungen",
   "@notificationsNoBadge": {
     "description": "Semantics label for the dashboard notifications icon when no unread alerts exist."

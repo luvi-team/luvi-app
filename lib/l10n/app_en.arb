@@ -119,6 +119,16 @@
   "@notificationsWithBadge": {
     "description": "Semantics label for the dashboard header notifications icon when unread notifications are present."
   },
+  "notificationsWithBadgeCount": "{count, plural, one {Notifications, {count} new} other {Notifications, {count} new}}",
+  "@notificationsWithBadgeCount": {
+    "description": "Semantics label for the dashboard header notifications icon when an unread count badge is present.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Number of unread notifications announced to assistive technologies."
+      }
+    }
+  },
   "notificationsNoBadge": "Notifications",
   "@notificationsNoBadge": {
     "description": "Semantics label for the dashboard header notifications icon when no unread notifications are present."
@@ -139,7 +149,7 @@
   "@dashboardTrainingDataTitle": {
     "description": "Section header title for the dashboard training stats scroller."
   },
-  "dashboardTrainingWeekTitle": "Your Training for This Week",
+  "dashboardTrainingWeekTitle": "Your training for this week",
   "@dashboardTrainingWeekTitle": {
     "description": "Section header title for weekly training carousel on dashboard."
   },

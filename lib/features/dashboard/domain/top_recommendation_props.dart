@@ -22,6 +22,9 @@ class TopRecommendationProps {
 
   static const Object _unset = Object();
 
+  /// Uses the [_unset] sentinel so callers can keep the existing [duration],
+  /// pass `null` to clear it, or provide a new value; the `as String?` cast is
+  /// safe because `_unset` is the only non-string sentinel accepted here.
   TopRecommendationProps copyWith({
     String? id,
     String? tag,

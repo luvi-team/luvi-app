@@ -18,6 +18,7 @@ class LoginPasswordField extends StatelessWidget {
     this.hintText = 'Dein Passwort',
     this.textStyle,
     this.hintStyle,
+    this.textFieldKey,
   });
 
   final TextEditingController controller;
@@ -31,6 +32,7 @@ class LoginPasswordField extends StatelessWidget {
   final String hintText;
   final TextStyle? textStyle;
   final TextStyle? hintStyle;
+  final Key? textFieldKey;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +63,7 @@ class LoginPasswordField extends StatelessWidget {
             ),
           ),
           child: TextField(
+            key: textFieldKey,
             controller: controller,
             obscureText: obscure,
             textInputAction: textInputAction,

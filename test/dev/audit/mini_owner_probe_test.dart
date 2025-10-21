@@ -61,9 +61,9 @@ void main() {
       }
 
       // Find widgets by specific finders
-      final backButtonFinder = find
-          .byType(Container)
-          .first; // BackButtonCircle inner
+      final backButtonFinder = find.byKey(
+        const ValueKey('backButtonCircle'),
+      );
       final subtitleFinder = find.text('Mach es stark.');
       final passwordFieldFinder = find.text('Neues Passwort').first;
       final confirmFieldFinder = find.text('Neues Passwort bestätigen').first;

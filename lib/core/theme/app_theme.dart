@@ -627,6 +627,8 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
 
   final BoxShadow heroDrop;
   final BoxShadow tileDrop;
+
+  /// Desktop/web fallback that mirrors Material elevation 4 used on mobile.
   final BoxShadow heroCardDrop;
   // Text-shadow for hero card callout text (Figma audit Phase 1)
   final Shadow heroCalloutTextShadow;

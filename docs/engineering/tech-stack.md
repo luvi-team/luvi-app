@@ -2,6 +2,12 @@
 
 Projekt: FemTech Mobile (AT), DSGVO-first • Ziel: Solo-Dev-freundlich, skalierbar, EU-rechtskonform.
 
+## Required CI Checks
+- Flutter CI / analyze-test (pull_request)
+- Flutter CI / privacy-gate (pull_request)
+- CodeRabbit
+- Vercel Preview Health (200 OK)
+
 ## 1) Development Environment
 IDE: Cursor · Terminal: Warp (Workflows für Supabase/CI/API-Tests)
 
@@ -14,8 +20,7 @@ Code-Qualität:
 - Dart Code Metrics (DCM): lokal nutzbar; in CI informativ (non-blocking)
 - CodeRabbit (Lite): GitHub-App + IDE/CLI, line-by-line PR-Reviews; Required Check
 
-Required Checks (exakt):
-Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit · Vercel Preview Health (200 OK)
+Required Checks: siehe Abschnitt [Required CI Checks](#required-ci-checks).
 
 ## 2) Frontend (Flutter)
 Flutter 3.35.4 (Dart 3.9.0, in CI gepinnt)
@@ -63,4 +68,4 @@ Mehrkosten AI/DSGVO: ~€0,49 / Premium-User / Monat
 - Interop/Legacy: .claude/*, CLAUDE.md nur Referenz
 
 ## 9) Branch-Protection (Empfehlung)
-Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit · Vercel Preview Health (200 OK)
+Required Checks: siehe Abschnitt [Required CI Checks](#required-ci-checks) (Gate)

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'colors.dart';
@@ -6,7 +7,8 @@ import 'typography.dart';
 /// Dashboard-specific typography tokens (Figma audit Phase 1).
 @immutable
 class DashboardTypographyTokens
-    extends ThemeExtension<DashboardTypographyTokens> {
+    extends ThemeExtension<DashboardTypographyTokens>
+    with DiagnosticableTreeMixin {
   const DashboardTypographyTokens({
     required this.sectionTitle,
     required this.sectionSubtitle,
@@ -56,6 +58,17 @@ class DashboardTypographyTokens
       sectionSubtitle:
           TextStyle.lerp(sectionSubtitle, other.sectionSubtitle, t) ??
           sectionSubtitle,
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+      DiagnosticsProperty<TextStyle>('sectionTitle', sectionTitle),
+    );
+    properties.add(
+      DiagnosticsProperty<TextStyle>('sectionSubtitle', sectionSubtitle),
     );
   }
 }

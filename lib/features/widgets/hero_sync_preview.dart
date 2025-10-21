@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -193,52 +194,88 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final surfaceTokens = Theme.of(context).extension<SurfaceColorTokens>();
-    final shadowTokens = Theme.of(context).extension<ShadowTokens>();
-    final dsTokens = Theme.of(context).extension<DsTokens>();
+    final theme = Theme.of(context);
+    final surfaceTokens = theme.extension<SurfaceColorTokens>();
+    final shadowTokens = theme.extension<ShadowTokens>();
+    final dsTokens = theme.extension<DsTokens>();
+
+    final isMobile =
+        !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS);
+
+    final backgroundColor = surfaceTokens?.white ?? const Color(0xFFFFFFFF);
+    final borderSide = BorderSide(
+      color: dsTokens?.grayscale500 ?? const Color(0xFF696969),
+      width: 1,
+    );
+    final shadowColor =
+        shadowTokens?.heroCardDrop.color ?? const Color(0x40000000);
+    final borderRadius = BorderRadius.circular(containerRadius);
+
+    final cardContent = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.m,
+        vertical: Spacing.s14,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Texts
+          Expanded(
+            child: _InfoTexts(
+              dateText: dateText,
+              subtitle: subtitle,
+              shadowTokens: shadowTokens,
+            ),
+          ),
+          const SizedBox(width: 12),
+          // CTA "Mehr" (67×32, r=12, BG gold #D9B18E, label bold 16, color #1C1411)
+          _MehrButton(onTap: onMoreTap),
+        ],
+      ),
+    );
+
+    final Widget platformAwareCard = isMobile
+        ? Material(
+            color: backgroundColor,
+            elevation: 4, // Matches heroCardDrop blur → Material elevation 4.
+            shadowColor: shadowColor,
+            surfaceTintColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: borderRadius,
+              side: borderSide,
+            ),
+            child: cardContent,
+          )
+        : Container(
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: borderRadius,
+              // Figma-compliant: 1px solid #696969, radius 24px ✓
+              border: Border.all(
+                color: borderSide.color,
+                width: borderSide.width,
+              ),
+              boxShadow: [
+                shadowTokens?.heroCardDrop ??
+                    const BoxShadow(
+                      offset: Offset(0, 4),
+                      blurRadius: 4,
+                      spreadRadius: 0,
+                      color: Color(0x40000000), // 25% black
+                    ),
+              ],
+            ),
+            child: cardContent,
+          );
 
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Container(
+      child: SizedBox(
         height: _infoCardHeight,
-        decoration: BoxDecoration(
-          color: surfaceTokens?.white ?? const Color(0xFFFFFFFF),
-          borderRadius: BorderRadius.circular(containerRadius),
-          // Figma-compliant: 1px solid #696969, radius 24px ✓
-          border: Border.all(
-            color: dsTokens?.grayscale500 ?? const Color(0xFF696969),
-            width: 1,
-          ),
-          boxShadow: [
-            shadowTokens?.heroCardDrop ??
-                const BoxShadow(
-                  offset: Offset(0, 4),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  color: Color(0x40000000), // 25% black
-                ),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.m,
-          vertical: 14,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Texts
-            Expanded(
-              child: _InfoTexts(
-                dateText: dateText,
-                subtitle: subtitle,
-                shadowTokens: shadowTokens,
-              ),
-            ),
-            const SizedBox(width: 12),
-            // CTA "Mehr" (67×32, r=12, BG gold #D9B18E, label bold 16, color #1C1411)
-            _MehrButton(onTap: onMoreTap),
-          ],
-        ),
+        width: double.infinity,
+        child: platformAwareCard,
       ),
     );
   }
@@ -257,6 +294,8 @@ class _InfoTexts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -270,7 +309,7 @@ class _InfoTexts extends StatelessWidget {
             fontSize: TypographyTokens.size16,
             height: TypographyTokens.lineHeightRatio24on16,
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF000000),
+            color: onSurface,
             shadows: [
               shadowTokens?.heroCalloutTextShadow ??
                   const Shadow(
@@ -291,7 +330,7 @@ class _InfoTexts extends StatelessWidget {
             fontSize: TypographyTokens.size14,
             height: TypographyTokens.lineHeightRatio24on14,
             fontWeight: FontWeight.w400,
-            color: const Color(0xFF000000),
+            color: onSurface,
             shadows: [
               shadowTokens?.heroCalloutTextShadow ??
                   const Shadow(

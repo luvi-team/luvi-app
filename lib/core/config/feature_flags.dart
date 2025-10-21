@@ -15,6 +15,11 @@ class FeatureFlags {
     _dashboardV2Override = value;
   }
 
+  /// Resets runtime overrides so tests remain isolated between runs.
+  static void resetOverrides() {
+    _dashboardV2Override = null;
+  }
+
   /// Dashboard V2 flag: defaults to `true` but can be toggled via
   /// `--dart-define=FEATURE_DASHBOARD_V2=false` or runtime overrides.
   static bool get featureDashboardV2 {

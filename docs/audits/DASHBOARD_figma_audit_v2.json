@@ -698,7 +698,7 @@
         "node": "68672:7389",
         "context": "Header action",
         "size": {"container": 40, "icon": 20},
-        "assetUrl": "localhost:3845/assets/...",
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
         "implementation": "Use existing icon library or SVG asset"
       },
       {
@@ -707,7 +707,7 @@
         "context": "Header action with dot indicator",
         "size": {"container": 40, "icon": 20},
         "hasNotificationDot": true,
-        "assetUrl": "localhost:3845/assets/...",
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
         "implementation": "Custom icon with badge overlay"
       },
       {
@@ -716,7 +716,7 @@
         "context": "Workout frame overlay (top-right corner)",
         "size": {"w": 64, "h": 64},
         "position": {"top": 14, "right": 16},
-        "assetUrl": "localhost:3845/assets/...",
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
         "implementation": "Rendered via HeroSyncPreview.badgeSize (default 64px)",
         "note": "Size inferred from product requirement (~2x baseline 32px); verify in Figma if updated"
       },
@@ -726,7 +726,7 @@
         "context": "Workout card duration indicator",
         "size": 14,
         "color": "rgba(255,255,255,0.6)",
-        "assetUrl": "localhost:3845/assets/...",
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
         "implementation": "Icon with opacity"
       },
       {
@@ -734,7 +734,7 @@
         "node": "68674:7523",
         "context": "Bottom nav",
         "size": 38,
-        "assetUrl": "localhost:3845/assets/...",
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
         "implementation": "Rendered via BottomNavDock at 38px (updated 2025-10-15)"
       },
       {
@@ -757,7 +757,7 @@
         "node": "68674:7522",
         "context": "Bottom nav",
         "size": 37,
-        "assetUrl": "localhost:3845/assets/...",
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
         "implementation": "Rendered via BottomNavDock at 38px (normalized from 37px)"
       },
       {
@@ -765,7 +765,7 @@
         "node": "68674:7525",
         "context": "Bottom nav",
         "size": 37,
-        "assetUrl": "localhost:3845/assets/...",
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
         "implementation": "Rendered via BottomNavDock at 38px (normalized from 37px)"
       }
     ],
@@ -890,6 +890,7 @@
         "ratio": "~3.2:1",
         "wcagLevel": "FAIL AA (text < 4.5:1)",
         "severity": "MEDIUM",
+        "replacementToken": "DsTokens.grayscale500",
         "recommendation": "Darken to #949494 or use existing DsTokens.grayscale500 (#696969)"
       },
       {

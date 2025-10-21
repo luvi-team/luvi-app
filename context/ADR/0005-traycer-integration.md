@@ -1,4 +1,4 @@
-# ADR-00xx: Traycer-Integration (Trial)
+# ADR-0005: Traycer-Integration (Trial)
 
 Status: proposed
 Owner: Developer Productivity Team
@@ -36,4 +36,5 @@ Wir wollen die Planungs- und Frühreview-Phase verbessern, ohne unsere bestehend
 - Keine Änderung an Auth/RLS/CI-Gates; CodeRabbit/Privacy-Gate bleiben maßgeblich.
 
 ## Hinweis (Ablage)
-- Temporäre Ablage unter `docs/adr/`. Nach erfolgreichem Trial wird dieser ADR nach `context/ADR/0005-traycer-integration.md` überführt und finalisiert (keine funktionalen Änderungen, nur Verschiebung).
+- Kanonischer Speicherort: `context/ADR/0005-traycer-integration.md`.
+- Stub-Verweis für Historie: `docs/adr/ADR-0005-traycer-integration.md` verlinkt hierher.

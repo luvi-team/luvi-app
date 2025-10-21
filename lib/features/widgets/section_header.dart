@@ -5,11 +5,18 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Reusable section header for Dashboard (title on left, optional trailing label on right).
+///
+/// The optional [maxLines] parameter lets callers control how many lines the
+/// header text may occupy. It is nullable, defaults to 1 for backward
+/// compatibility, and keeps the existing ellipsis overflow trimming behavior.
 class SectionHeader extends StatelessWidget {
   final String title;
   final bool showTrailingAction;
   final String? trailingLabel;
   final VoidCallback? onTrailingTap;
+
+  /// Maximum number of lines for [title]; nullable and defaults to 1 to retain
+  /// legacy single-line truncation.
   final int? maxLines;
 
   static const TextStyle _baseTitleStyle = TextStyle(

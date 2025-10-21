@@ -11,7 +11,7 @@ SSOT (nur referenzieren, nicht kopieren)
 Grundregeln
 - Keine PII/Secrets in den Plan geben. Nur Pfade/Kommandos, keine Tokens.
 - Konditional: RLS/Privacy nur bei DSGVO‑Impact ≥ Medium; Health nur bei Gateway‑Touch.
-- Output in Markdown, klar strukturiert; optional eine 6‑zeilige JSON‑Zusammenfassung am Ende erlaubt (nicht Pflicht).
+- Output in Markdown, klar strukturiert; optional (nicht Pflicht) darf direkt danach ein JSON-Block folgen, max. 6 Zeilen, ausschließlich mit den Keys `role`, `keywords`, `acceptance_version`, `steps`, `prove`, `privacy_note`, ohne weitere Keys/Nesting und strikt ohne PII/Secrets/Tokens.
 
 Pflichtfelder (kurz, prägnant)
 - Role: <aus Auto‑Role Map> | Keywords: [k1, k2]
@@ -34,6 +34,9 @@ Inline‑Self‑Check (für Codex/Claude vor dem Run)
 - [ ] Health‑Check nötig? (nur bei Gateway‑Touch) Falls ja: im Plan erwähnt
 - [ ] Privacy‑Note gesetzt (Low/Medium/High)
 - [ ] Plan‑Schritte deterministisch (4–6), keine Platzhalter
+- [ ] Fail-fast: Wenn eine Box offen bleibt, Implementierung abbrechen und Checkliste an Autor:in zurückgeben (nicht starten)
+
+Durchsetzung: Umsetzung startet erst, wenn alle Boxes im Inline-Self-Check abgehakt sind.
 
 Beispiel – UI (Low)
 - Role: ui‑frontend | Keywords: [Widget, Screen] | DSGVO‑Impact: Low
@@ -77,9 +80,9 @@ Optionale JSON‑Zusammenfassung (nicht Pflicht)
   "role": "ui-frontend",
   "keywords": ["Widget","Screen"],
   "acceptance_version": "1.1",
-  "bmad": {"business":"…","modeling":"…","architecture":"…","dod":"…"},
-  "prp": {"steps": ["…","…"]},
-  "prove": {"lint": true, "tests": {"widget_min": 1}, "privacy_note": "Low"}
+  "steps": ["…","…","…","…"],
+  "prove": ["flutter analyze","flutter test"],
+  "privacy_note": "Low"
 }
 ```
 

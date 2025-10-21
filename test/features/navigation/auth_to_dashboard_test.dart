@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
@@ -9,9 +10,9 @@ import 'package:luvi_app/test/test_config.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('Auth SuccessScreen navigates to Dashboard on CTA tap', (
-    WidgetTester tester,
-  ) async {
+  tearDown(FeatureFlags.resetOverrides);
+
+  Future<void> runNavigationFlow(WidgetTester tester) async {
     // Track navigation
     String? navigatedPath;
 
@@ -74,5 +75,21 @@ void main() {
       expect(find.text(loc.dashboardCategoriesTitle), findsOneWidget);
       expect(find.text(loc.dashboardMoreTrainingsTitle), findsOneWidget);
     }
-  });
+  }
+
+  testWidgets(
+    'Auth SuccessScreen navigates to Dashboard on CTA tap (Dashboard V2)',
+    (tester) async {
+      FeatureFlags.setDashboardV2Override(true);
+      await runNavigationFlow(tester);
+    },
+  );
+
+  testWidgets(
+    'Auth SuccessScreen navigates to Dashboard on CTA tap (Dashboard V1)',
+    (tester) async {
+      FeatureFlags.setDashboardV2Override(false);
+      await runNavigationFlow(tester);
+    },
+  );
 }

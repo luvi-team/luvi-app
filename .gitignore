@@ -155,9 +155,7 @@ api/node_modules/
 .dartServer/
 .flutter/
 .flutter
-.dart-tool/
-.dart-tool/**/*.json
-.dart-tool/**/*.config
+.dart_tool/
 .config/*
 !.config/README.md
 .home_overrides/
