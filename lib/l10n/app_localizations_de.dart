@@ -89,6 +89,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get notificationsWithBadge => 'Benachrichtigungen – neue Hinweise verfügbar';
 
   @override
+  String notificationsWithBadgeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Benachrichtigungen – $count neu',
+      one: 'Benachrichtigungen – $count neu',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get notificationsNoBadge => 'Benachrichtigungen';
 
   @override

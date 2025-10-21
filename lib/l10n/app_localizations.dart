@@ -239,6 +239,12 @@ abstract class AppLocalizations {
   /// **'Notifications, new alerts available'**
   String get notificationsWithBadge;
 
+  /// Semantics label for the dashboard header notifications icon when an unread count badge is present.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {Notifications, {count} new} other {Notifications, {count} new}}'**
+  String notificationsWithBadgeCount(int count);
+
   /// Semantics label for the dashboard header notifications icon when no unread notifications are present.
   ///
   /// In en, this message translates to:
@@ -272,7 +278,7 @@ abstract class AppLocalizations {
   /// Section header title for weekly training carousel on dashboard.
   ///
   /// In en, this message translates to:
-  /// **'Your Training for This Week'**
+  /// **'Your training for this week'**
   String get dashboardTrainingWeekTitle;
 
   /// Subtitle below weekly training section header.

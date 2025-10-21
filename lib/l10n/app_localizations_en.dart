@@ -89,6 +89,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsWithBadge => 'Notifications, new alerts available';
 
   @override
+  String notificationsWithBadgeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Notifications, $count new',
+      one: 'Notifications, $count new',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get notificationsNoBadge => 'Notifications';
 
   @override
@@ -104,7 +115,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardTrainingDataTitle => 'Your Training Data';
 
   @override
-  String get dashboardTrainingWeekTitle => 'Your Training for This Week';
+  String get dashboardTrainingWeekTitle => 'Your training for this week';
 
   @override
   String get dashboardTrainingWeekSubtitle => 'Created by your LUVI experts';

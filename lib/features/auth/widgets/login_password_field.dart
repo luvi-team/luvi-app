@@ -32,6 +32,7 @@ class LoginPasswordField extends StatelessWidget {
   final String hintText;
   final TextStyle? textStyle;
   final TextStyle? hintStyle;
+  /// Optional key for the underlying [TextField]; reserved for scroll orchestration and test finders.
   final Key? textFieldKey;
 
   @override
