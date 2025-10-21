@@ -6,6 +6,7 @@
 class FeatureFlags {
   const FeatureFlags._();
 
+  // Note: Not thread-safe. Assumes single-threaded access or external synchronization.
   static bool? _dashboardV2Override;
 
   /// Allows runtime systems (e.g. remote config, QA toggles) to override
