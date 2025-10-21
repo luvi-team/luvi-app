@@ -49,7 +49,11 @@ class HeroSyncPreview extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Background image
-            Image.asset(imagePath, fit: BoxFit.cover),
+            Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              excludeFromSemantics: true,
+            ),
             if (overlay != null)
               _OverlayWidget(
                 overlay: overlay!,
