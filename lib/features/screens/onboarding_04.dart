@@ -117,7 +117,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
         Expanded(
           child: Semantics(
             header: true,
-          child: Text(
+            child: Text(
               l10n.onboarding04Title,
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -135,9 +135,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
           label: stepSemantic,
           child: Text(
             stepFraction,
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -225,9 +223,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                     height: TypographyTokens.lineHeightRatio24on16,
                   ),
                   children: [
-                    TextSpan(
-                      text: localizations.onboarding04CalloutPrefix,
-                    ),
+                    TextSpan(text: localizations.onboarding04CalloutPrefix),
                     TextSpan(
                       text: localizations.onboarding04CalloutHighlight,
                       style: textTheme.bodyMedium?.copyWith(
@@ -237,9 +233,7 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextSpan(
-                      text: localizations.onboarding04CalloutSuffix,
-                    ),
+                    TextSpan(text: localizations.onboarding04CalloutSuffix),
                   ],
                 ),
               ),

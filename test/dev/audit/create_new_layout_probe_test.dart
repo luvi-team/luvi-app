@@ -43,9 +43,7 @@ void main() {
 
       // Set keyboard insets using proper TestWindow API
       final testWindow = tester.binding.window;
-      testWindow.viewInsetsTestValue = FakeViewPadding(
-        bottom: keyboardHeight,
-      );
+      testWindow.viewInsetsTestValue = FakeViewPadding(bottom: keyboardHeight);
       testWindow.paddingTestValue = const FakeViewPadding(
         top: 47, // Figma SafeTop
         bottom: 34, // iPhone SafeBottom
@@ -69,7 +67,9 @@ void main() {
       );
 
       // Find key widgets and their positions
-      final backButtonFinder = find.byType(Container).first; // BackButtonCircle inner container
+      final backButtonFinder = find
+          .byType(Container)
+          .first; // BackButtonCircle inner container
       final titleFinder = find.text('Neues Passwort erstellen 💜');
       final subtitleFinder = find.text('Mach es stark.');
       final ctaFinder = find.byType(ElevatedButton);
@@ -92,8 +92,9 @@ void main() {
       final gapHeaderToField1 = field1Rect.top - headerBottomY;
       final gapField1ToField2 = field2Rect.top - field1Rect.bottom;
       final gapField2ToCta = ctaRect.top - field2Rect.bottom;
-      final whiteSpaceAboveCta = ctaRect.top < mediaQuery.size.height ?
-          mediaQuery.size.height - ctaRect.bottom : 0.0;
+      final whiteSpaceAboveCta = ctaRect.top < mediaQuery.size.height
+          ? mediaQuery.size.height - ctaRect.bottom
+          : 0.0;
 
       return {
         'mediaQuery': {
@@ -130,7 +131,7 @@ void main() {
         'overlaps': {
           'ctaOverlapsField2': ctaRect.top < field2Rect.bottom,
           'gapField2ToCta': gapField2ToCta,
-        }
+        },
       };
     }
 
@@ -141,12 +142,16 @@ void main() {
       print('MediaQuery:');
       print('  safeTop: ${measurements['mediaQuery']['safeTop']}');
       print('  safeBottom: ${measurements['mediaQuery']['safeBottom']}');
-      print('  viewInsetsBottom: ${measurements['mediaQuery']['viewInsetsBottom']}');
+      print(
+        '  viewInsetsBottom: ${measurements['mediaQuery']['viewInsetsBottom']}',
+      );
       print('  viewHeight: ${measurements['mediaQuery']['viewHeight']}');
 
       print('Y-Positionen:');
       final pos = measurements['positions'];
-      print('  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}');
+      print(
+        '  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}',
+      );
       print('  Title: ${pos['titleTop']} - ${pos['titleBottom']}');
       print('  Subtitle: ${pos['subtitleTop']} - ${pos['subtitleBottom']}');
       print('  Field1: ${pos['field1Top']} - ${pos['field1Bottom']}');
@@ -180,12 +185,16 @@ void main() {
       print('MediaQuery:');
       print('  safeTop: ${measurements['mediaQuery']['safeTop']}');
       print('  safeBottom: ${measurements['mediaQuery']['safeBottom']}');
-      print('  viewInsetsBottom: ${measurements['mediaQuery']['viewInsetsBottom']}');
+      print(
+        '  viewInsetsBottom: ${measurements['mediaQuery']['viewInsetsBottom']}',
+      );
       print('  viewHeight: ${measurements['mediaQuery']['viewHeight']}');
 
       print('Y-Positionen:');
       final pos = measurements['positions'];
-      print('  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}');
+      print(
+        '  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}',
+      );
       print('  Title: ${pos['titleTop']} - ${pos['titleBottom']}');
       print('  Subtitle: ${pos['subtitleTop']} - ${pos['subtitleBottom']}');
       print('  Field1: ${pos['field1Top']} - ${pos['field1Bottom']}');
@@ -211,13 +220,21 @@ void main() {
       print('  Gap Field2→CTA: ${overlaps['gapField2ToCta']}px');
 
       // Ampel-Bewertung
-      final gapColor = overlaps['gapField2ToCta'] >= 24 ? 'GRÜN' :
-                      overlaps['gapField2ToCta'] >= 16 ? 'GELB' : 'ROT';
-      final whiteSpaceColor = gaps['whiteSpaceAboveCta'] <= 40 ? 'GRÜN' :
-                             gaps['whiteSpaceAboveCta'] <= 80 ? 'GELB' : 'ROT';
+      final gapColor = overlaps['gapField2ToCta'] >= 24
+          ? 'GRÜN'
+          : overlaps['gapField2ToCta'] >= 16
+          ? 'GELB'
+          : 'ROT';
+      final whiteSpaceColor = gaps['whiteSpaceAboveCta'] <= 40
+          ? 'GRÜN'
+          : gaps['whiteSpaceAboveCta'] <= 80
+          ? 'GELB'
+          : 'ROT';
       print('AMPEL:');
       print('  Gap: $gapColor (${overlaps['gapField2ToCta']}px)');
-      print('  White-Space: $whiteSpaceColor (${gaps['whiteSpaceAboveCta']}px)');
+      print(
+        '  White-Space: $whiteSpaceColor (${gaps['whiteSpaceAboveCta']}px)',
+      );
       print('  Header sichtbar: ${vis['headerVisible'] ? 'GRÜN' : 'ROT'}');
       print('');
     });
@@ -232,7 +249,9 @@ void main() {
       print('=== K180 (Keyboard=180px, Fokus Feld 2) ===');
       print('Y-Positionen:');
       final pos = measurements['positions'];
-      print('  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}');
+      print(
+        '  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}',
+      );
       print('  Title: ${pos['titleTop']} - ${pos['titleBottom']}');
       print('  Subtitle: ${pos['subtitleTop']} - ${pos['subtitleBottom']}');
       print('  Field1: ${pos['field1Top']} - ${pos['field1Bottom']}');
@@ -245,8 +264,11 @@ void main() {
       print('  White-Space über CTA: ${gaps['whiteSpaceAboveCta']}');
 
       final overlaps = measurements['overlaps'];
-      final gapColor = overlaps['gapField2ToCta'] >= 24 ? 'GRÜN' :
-                      overlaps['gapField2ToCta'] >= 16 ? 'GELB' : 'ROT';
+      final gapColor = overlaps['gapField2ToCta'] >= 24
+          ? 'GRÜN'
+          : overlaps['gapField2ToCta'] >= 16
+          ? 'GELB'
+          : 'ROT';
       print('AMPEL Gap: $gapColor (${overlaps['gapField2ToCta']}px)');
       print('');
     });
@@ -267,13 +289,21 @@ void main() {
       print('White-Space über CTA: ${gaps['whiteSpaceAboveCta']}px');
       print('Header sichtbar: ${vis['headerVisible']}');
 
-      final gapColor = overlaps['gapField2ToCta'] >= 24 ? 'GRÜN' :
-                      overlaps['gapField2ToCta'] >= 16 ? 'GELB' : 'ROT';
-      final whiteSpaceColor = gaps['whiteSpaceAboveCta'] <= 40 ? 'GRÜN' :
-                             gaps['whiteSpaceAboveCta'] <= 80 ? 'GELB' : 'ROT';
+      final gapColor = overlaps['gapField2ToCta'] >= 24
+          ? 'GRÜN'
+          : overlaps['gapField2ToCta'] >= 16
+          ? 'GELB'
+          : 'ROT';
+      final whiteSpaceColor = gaps['whiteSpaceAboveCta'] <= 40
+          ? 'GRÜN'
+          : gaps['whiteSpaceAboveCta'] <= 80
+          ? 'GELB'
+          : 'ROT';
       print('AMPEL:');
       print('  Gap: $gapColor (${overlaps['gapField2ToCta']}px)');
-      print('  White-Space: $whiteSpaceColor (${gaps['whiteSpaceAboveCta']}px)');
+      print(
+        '  White-Space: $whiteSpaceColor (${gaps['whiteSpaceAboveCta']}px)',
+      );
       print('  Header sichtbar: ${vis['headerVisible'] ? 'GRÜN' : 'ROT'}');
       print('');
     });
@@ -293,8 +323,11 @@ void main() {
       print('Field2→CTA: ${gaps['field2ToCta']}px');
       print('Header sichtbar: ${vis['headerVisible']}');
 
-      final gapColor = overlaps['gapField2ToCta'] >= 24 ? 'GRÜN' :
-                      overlaps['gapField2ToCta'] >= 16 ? 'GELB' : 'ROT';
+      final gapColor = overlaps['gapField2ToCta'] >= 24
+          ? 'GRÜN'
+          : overlaps['gapField2ToCta'] >= 16
+          ? 'GELB'
+          : 'ROT';
       print('AMPEL Gap: $gapColor (${overlaps['gapField2ToCta']}px)');
       print('');
     });

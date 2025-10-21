@@ -35,8 +35,7 @@ class BackButtonCircle extends StatelessWidget {
         : const RoundedRectangleBorder(borderRadius: BorderRadius.zero);
 
     final double hitSize = size < 44 ? 44 : size;
-    final double visualCandidate =
-        innerSize ?? (isCircular ? size - 4 : size);
+    final double visualCandidate = innerSize ?? (isCircular ? size - 4 : size);
     final double visualSize = visualCandidate < 0 ? 0 : visualCandidate;
     final double renderedSize = visualSize > hitSize ? hitSize : visualSize;
 

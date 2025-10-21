@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/painters/bottom_wave_border_painter.dart';
-import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 
 /// Bottom navigation dock with violet wave top-border and center cutout.
 /// Layout: 2 tabs left (Heute, Zyklus), center gap, 2 tabs right (Puls, Profil).
@@ -11,10 +11,9 @@ import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
 ///
 /// Design tokens (from Figma audit 2025-10-06, Spec-JSON):
 /// - Height: 96px (dockHeight from tokens)
-/// - Tab icons: 32px (tabIconSize from tokens)
-/// - Center gap: formula 2 × cutoutHalfWidth = 118px (centerGap from tokens)
+/// - Tab icons: 38px (tabIconSize from tokens)
+/// - Center gap: 172px (= 2 × cutoutHalfWidth; LayoutBuilder shrinks if viewport requires)
 /// - Horizontal padding: 16px (dockPadding from tokens)
-/// - Punch-out: ClipPath removes white edge under button (WavePunchOutClipper)
 ///
 /// Kodex: Formula-based parameters (no magic numbers), dark-mode ready (surface/tokens).
 class BottomNavDock extends StatelessWidget {
@@ -44,33 +43,31 @@ class BottomNavDock extends StatelessWidget {
     // Kodex: Use colorScheme.surface (not Colors.white) for dark-mode compatibility
     final effectiveBackgroundColor = backgroundColor ?? colorScheme.surface;
     // Safe fallback if theme extension is not registered (visible in release builds)
-    if (dsTokens == null) {
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: FlutterError(
-            'BottomNavDock: DsTokens not found in theme. Ensure app_theme is properly configured.',
-          ),
-          library: 'widgets',
-          context: ErrorDescription('building BottomNavDock'),
-        ),
-      );
-    }
-    final effectiveCradleColor = cradleColor ?? dsTokens?.accentPurple ?? colorScheme.primary;
+    assert(
+      dsTokens != null,
+      'BottomNavDock: DsTokens theme extension not found. '
+      'Ensure DsTokens is registered in app_theme.dart extensions list.',
+    );
+    final effectiveCradleColor =
+        cradleColor ?? dsTokens?.accentPurple ?? colorScheme.primary;
 
     return Container(
       height: height,
       decoration: const BoxDecoration(
-        color: Colors.transparent, // Outer: transparent, inner carries surface color
+        color: Colors
+            .transparent, // Outer: transparent, inner carries surface color
         // Remove outer box shadow to avoid any top-edge halo/line
         boxShadow: [],
       ),
       // Important: No ClipPath punch-out → avoids transparent hole (grey disc from content behind)
       child: Container(
-        color: effectiveBackgroundColor, // Surface color (keeps area under button solid)
+        color: Colors
+            .transparent, // Painter handles fill; keep mulde transparent for underlay
         child: CustomPaint(
           painter: BottomWaveBorderPainter(
             borderColor: effectiveCradleColor,
             borderWidth: borderWidth,
+            fillColor: effectiveBackgroundColor,
           ),
           child: SafeArea(
             top: false,
@@ -86,8 +83,12 @@ class BottomNavDock extends StatelessWidget {
                   const double rightGroupW = tabW + innerGapRightGroup + tabW;
                   // Remainder for the center gap; allow it to shrink below the wave
                   // cutout width to avoid overflow on narrow viewports.
-                  final double computedCenter = available - leftGroupW - rightGroupW;
-                  final double effectiveCenterGap = math.max(0.0, computedCenter);
+                  final double computedCenter =
+                      available - leftGroupW - rightGroupW;
+                  final double effectiveCenterGap = math.max(
+                    0.0,
+                    computedCenter,
+                  );
 
                   final row = Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -134,10 +135,16 @@ class BottomNavDock extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(DockTab tab, int index, bool isActive, BuildContext context) {
+  Widget _buildTab(
+    DockTab tab,
+    int index,
+    bool isActive,
+    BuildContext context,
+  ) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color iconColor = isActive
-        ? colorScheme.primary // Gold #D9B18E when active
+        ? colorScheme
+              .primary // Gold #D9B18E when active
         : colorScheme.onSurface; // Black #030401 when inactive
 
     return Semantics(
@@ -148,7 +155,8 @@ class BottomNavDock extends StatelessWidget {
         onTap: () => onTabTap(index),
         child: Container(
           key: tab.key,
-          width: minTapArea, // Figma spec: min 44×44 for accessibility (from tokens)
+          width:
+              minTapArea, // Figma spec: min 44×44 for accessibility (from tokens)
           height: minTapArea,
           decoration: BoxDecoration(
             color: Colors.transparent,
@@ -159,10 +167,7 @@ class BottomNavDock extends StatelessWidget {
               tab.iconPath,
               width: tabIconSize, // Figma spec: 32px (from tokens)
               height: tabIconSize,
-              colorFilter: ColorFilter.mode(
-                iconColor,
-                BlendMode.srcIn,
-              ),
+              colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
             ),
           ),
         ),
@@ -177,9 +182,5 @@ class DockTab {
   final String label;
   final Key? key;
 
-  const DockTab({
-    required this.iconPath,
-    required this.label,
-    this.key,
-  });
+  const DockTab({required this.iconPath, required this.label, this.key});
 }

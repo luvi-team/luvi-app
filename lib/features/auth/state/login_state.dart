@@ -62,9 +62,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
   }
 
   void clearGlobalError() {
-    state = state.copyWith(
-      globalError: null,
-    );
+    state = state.copyWith(globalError: null);
   }
 
   /// Eine (1) kanonische Variante inkl. globalError – kompatibel zu Provider/Tests.

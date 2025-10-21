@@ -23,14 +23,14 @@ class CreateNewPasswordScreen extends StatefulWidget {
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _scrollController = ScrollController();
+  final FieldAutoScroller _autoScroller =
+      FieldAutoScroller(ScrollController());
 
   final _headerKey = GlobalKey();
   final _passwordFieldKey = GlobalKey();
   final _confirmFieldKey = GlobalKey();
 
-  late final FieldAutoScroller _autoScroller =
-      FieldAutoScroller(_scrollController);
+  ScrollController get _scrollController => _autoScroller.controller;
 
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
@@ -56,7 +56,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
     final headerTopGap =
-        backButtonTopSpacing + _backButtonSize + AuthLayout.gapTitleToInputs / 2;
+        backButtonTopSpacing +
+        _backButtonSize +
+        AuthLayout.gapTitleToInputs / 2;
     final confirmTextStyle = theme.textTheme.bodySmall?.copyWith(
       color: theme.colorScheme.onSurface,
     );
@@ -162,10 +164,7 @@ class _CreateNewBody extends StatelessWidget {
           includeBottomReserve: false,
           controller: scrollController,
           children: [
-            CreateNewHeader(
-              headerKey: headerKey,
-              topGap: headerTopGap,
-            ),
+            CreateNewHeader(headerKey: headerKey, topGap: headerTopGap),
             const SizedBox(height: AuthLayout.gapTitleToInputs),
             CreateNewForm(
               autoScroller: autoScroller,

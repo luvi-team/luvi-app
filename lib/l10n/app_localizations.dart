@@ -233,6 +233,24 @@ abstract class AppLocalizations {
   /// **'Hey, {name} 💜'**
   String dashboardGreeting(String name);
 
+  /// Semantics label for the dashboard header notifications icon when unread notifications are present.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications, new alerts available'**
+  String get notificationsWithBadge;
+
+  /// Semantics label for the dashboard header notifications icon when an unread count badge is present.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {Notifications, {count} new} other {Notifications, {count} new}}'**
+  String notificationsWithBadgeCount(int count);
+
+  /// Semantics label for the dashboard header notifications icon when no unread notifications are present.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsNoBadge;
+
   /// Section header title for the dashboard categories grid.
   ///
   /// In en, this message translates to:
@@ -256,6 +274,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your Training Data'**
   String get dashboardTrainingDataTitle;
+
+  /// Section header title for weekly training carousel on dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Your training for this week'**
+  String get dashboardTrainingWeekTitle;
+
+  /// Subtitle below weekly training section header.
+  ///
+  /// In en, this message translates to:
+  /// **'Created by your LUVI experts'**
+  String get dashboardTrainingWeekSubtitle;
+
+  /// Section header title for phase-specific recommendations on dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'More Recommendations\nfor Your Phase'**
+  String get dashboardRecommendationsTitle;
+
+  /// Subsection title for nutrition recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition & Diet'**
+  String get dashboardNutritionTitle;
+
+  /// Subsection title for regeneration and mindfulness recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery & Mindfulness'**
+  String get dashboardRegenerationTitle;
 
   /// Label for the Today tab in the bottom navigation dock.
   ///
@@ -317,6 +365,30 @@ abstract class AppLocalizations {
   /// **'View all'**
   String get dashboardViewAll;
 
+  /// View more action label for weekly training carousel.
+  ///
+  /// In en, this message translates to:
+  /// **'View more'**
+  String get dashboardViewMore;
+
+  /// Label indicating a training session is completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get trainingCompleted;
+
+  /// Semantic label prefix for nutrition recommendation cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition recommendation'**
+  String get nutritionRecommendation;
+
+  /// Semantic label prefix for regeneration recommendation cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery recommendation'**
+  String get regenerationRecommendation;
+
   /// App bar title for the Luvi Sync Journal stub screen.
   ///
   /// In en, this message translates to:
@@ -328,6 +400,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Luvi Sync Journal content coming soon.'**
   String get dashboardLuviSyncPlaceholder;
+
+  /// Placeholder message shown while the trainings overview screen is under construction.
+  ///
+  /// In en, this message translates to:
+  /// **'Training overview coming soon'**
+  String get trainingsOverviewStubPlaceholder;
+
+  /// Accessibility description for the trainings overview placeholder including navigation guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Training overview is in progress. Use the back button to return to the previous view.'**
+  String get trainingsOverviewStubSemantics;
 
   /// App bar title for the workout detail stub screen.
   ///
@@ -350,7 +434,7 @@ abstract class AppLocalizations {
   /// Placeholder text shown when there are no dashboard recommendations.
   ///
   /// In en, this message translates to:
-  /// **'No recommendations available'**
+  /// **'No recommendations for this phase yet.'**
   String get dashboardRecommendationsEmpty;
 
   /// Semantics prefix describing the dashboard top recommendation tile.
@@ -365,13 +449,13 @@ abstract class AppLocalizations {
   /// **'Category'**
   String get category;
 
-  /// Phrase appended when a recommendation originates from LUVI Sync.
+  /// Phrase appended to semantics when a recommendation originates from LUVI Sync.
   ///
   /// In en, this message translates to:
   /// **'From LUVI Sync'**
   String get fromLuviSync;
 
-  /// Semantics hint instructing the user to tap to open the workout.
+  /// Semantics hint telling the user they can tap to open the workout.
   ///
   /// In en, this message translates to:
   /// **'Tap to open workout.'**
@@ -383,7 +467,7 @@ abstract class AppLocalizations {
   /// **'Switch to the cycle overview.'**
   String get cycleInlineCalendarHint;
 
-  /// Semantics label for the inline cycle calendar when today's date and phase are available.
+  /// Semantics label for the inline cycle calendar when today's date and cycle phase are available.
   ///
   /// In en, this message translates to:
   /// **'Cycle calendar. Today {date} phase: {phase}. For orientation only - not a medical prediction or diagnostic tool.'**
@@ -558,27 +642,51 @@ abstract class AppLocalizations {
   String get onboardingComplete;
 
   /// Headline for the cycle tip card during menstruation.
+  ///
+  /// In en, this message translates to:
+  /// **'Menstruation'**
   String get cycleTipHeadlineMenstruation;
 
   /// Body text for the cycle tip card during menstruation.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle movement, stretching, or a walk are ideal today — everything is allowed, nothing is mandatory.'**
   String get cycleTipBodyMenstruation;
 
   /// Headline for the cycle tip card during the follicular phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Follicular phase'**
   String get cycleTipHeadlineFollicular;
 
   /// Body text for the cycle tip card during the follicular phase.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in the follicular phase today. With higher progesterone you may feel more energy. A great time for more intensive training.'**
   String get cycleTipBodyFollicular;
 
   /// Headline for the cycle tip card during the ovulation window.
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation window'**
   String get cycleTipHeadlineOvulation;
 
   /// Body text for the cycle tip card during the ovulation window.
+  ///
+  /// In en, this message translates to:
+  /// **'Short, crisp sessions often work best now. Plan a conscious cool down and hydration afterwards.'**
   String get cycleTipBodyOvulation;
 
   /// Headline for the cycle tip card during the luteal phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Luteal phase'**
   String get cycleTipHeadlineLuteal;
 
-  /// Body text for the cycle tip card during the luteal phase.
+  /// No description provided for @cycleTipBodyLuteal.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to calm strength or mobility work. Extra breaks help you maintain your energy level.'**
   String get cycleTipBodyLuteal;
 }
 

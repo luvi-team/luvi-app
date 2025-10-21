@@ -115,6 +115,24 @@
       }
     }
   },
+  "notificationsWithBadge": "Benachrichtigungen – neue Hinweise verfügbar",
+  "@notificationsWithBadge": {
+    "description": "Semantics label for the dashboard notifications icon when unread alerts exist."
+  },
+  "notificationsWithBadgeCount": "{count, plural, one {Benachrichtigungen – {count} neu} other {Benachrichtigungen – {count} neu}}",
+  "@notificationsWithBadgeCount": {
+    "description": "Semantics label for the dashboard notifications icon when an unread count badge is present.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Anzahl ungelesener Benachrichtigungen für Screenreader-Ansage."
+      }
+    }
+  },
+  "notificationsNoBadge": "Benachrichtigungen",
+  "@notificationsNoBadge": {
+    "description": "Semantics label for the dashboard notifications icon when no unread alerts exist."
+  },
   "dashboardCategoriesTitle": "Kategorien",
   "@dashboardCategoriesTitle": {
     "description": "Section header title for the dashboard categories grid."
@@ -130,6 +148,26 @@
   "dashboardTrainingDataTitle": "Deine Trainingsdaten",
   "@dashboardTrainingDataTitle": {
     "description": "Section header title for the dashboard training stats scroller."
+  },
+  "dashboardTrainingWeekTitle": "Dein Training für diese Woche",
+  "@dashboardTrainingWeekTitle": {
+    "description": "Section header title for weekly training carousel on dashboard."
+  },
+  "dashboardTrainingWeekSubtitle": "Erstellt von deinen LUVI-Expert:innen",
+  "@dashboardTrainingWeekSubtitle": {
+    "description": "Subtitle below weekly training section header."
+  },
+  "dashboardRecommendationsTitle": "Weitere Empfehlungen für dich",
+  "@dashboardRecommendationsTitle": {
+    "description": "Section header title for phase-specific recommendations on dashboard."
+  },
+  "dashboardNutritionTitle": "Ernährung & Biohacking",
+  "@dashboardNutritionTitle": {
+    "description": "Subsection title for nutrition recommendations."
+  },
+  "dashboardRegenerationTitle": "Regeneration & Achtsamkeit",
+  "@dashboardRegenerationTitle": {
+    "description": "Subsection title for regeneration and mindfulness recommendations."
   },
   "dashboardNavToday": "Heute",
   "@dashboardNavToday": {
@@ -171,6 +209,22 @@
   "@dashboardViewAll": {
     "description": "View all trailing action label in dashboard section headers."
   },
+  "dashboardViewMore": "Mehr sehen",
+  "@dashboardViewMore": {
+    "description": "View more action label for weekly training carousel."
+  },
+  "trainingCompleted": "Erledigt",
+  "@trainingCompleted": {
+    "description": "Label indicating a training session is completed."
+  },
+  "nutritionRecommendation": "Ernährungsempfehlung",
+  "@nutritionRecommendation": {
+    "description": "Semantic label prefix for nutrition recommendation cards."
+  },
+  "regenerationRecommendation": "Regenerationsempfehlung",
+  "@regenerationRecommendation": {
+    "description": "Semantic label prefix for regeneration recommendation cards."
+  },
   "dashboardLuviSyncTitle": "Luvi Sync Journal",
   "@dashboardLuviSyncTitle": {
     "description": "App bar title for the Luvi Sync Journal stub screen."
@@ -178,6 +232,14 @@
   "dashboardLuviSyncPlaceholder": "Luvi Sync Journal Inhalte folgen bald.",
   "@dashboardLuviSyncPlaceholder": {
     "description": "Placeholder text for the Luvi Sync Journal stub screen."
+  },
+  "trainingsOverviewStubPlaceholder": "Trainingsübersicht folgt bald",
+  "@trainingsOverviewStubPlaceholder": {
+    "description": "Platzhaltertext solange die Trainingsübersicht noch nicht umgesetzt ist."
+  },
+  "trainingsOverviewStubSemantics": "Trainingsübersicht in Vorbereitung. Tippe auf Zurück, um zur vorherigen Ansicht zu wechseln.",
+  "@trainingsOverviewStubSemantics": {
+    "description": "Semantische Beschreibung für den Trainingsübersicht-Platzhalter inklusive Rücknavigation."
   },
   "workoutTitle": "Workout",
   "@workoutTitle": {
@@ -191,7 +253,7 @@
   "@dashboardHeroCtaMore": {
     "description": "CTA-Label auf der Dashboard-Hero-Karte, um weitere Inhalte zu sehen."
   },
-  "dashboardRecommendationsEmpty": "Keine Empfehlungen verfügbar",
+  "dashboardRecommendationsEmpty": "Für diese Phase liegen noch keine Empfehlungen vor.",
   "@dashboardRecommendationsEmpty": {
     "description": "Placeholder text when no recommendations are available on the dashboard."
   },

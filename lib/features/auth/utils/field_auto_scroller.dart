@@ -7,6 +7,8 @@ class FieldAutoScroller {
 
   final ScrollController _controller;
 
+  ScrollController get controller => _controller;
+
   Future<void> ensureVisible(GlobalKey targetKey) async {
     final context = targetKey.currentContext;
     if (context == null) return;
@@ -22,4 +24,3 @@ class FieldAutoScroller {
     );
   }
 }
-

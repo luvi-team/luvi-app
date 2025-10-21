@@ -18,6 +18,7 @@ class LoginPasswordField extends StatelessWidget {
     this.hintText = 'Dein Passwort',
     this.textStyle,
     this.hintStyle,
+    this.textFieldKey,
   });
 
   final TextEditingController controller;
@@ -31,21 +32,22 @@ class LoginPasswordField extends StatelessWidget {
   final String hintText;
   final TextStyle? textStyle;
   final TextStyle? hintStyle;
+  /// Optional key for the underlying [TextField]; reserved for scroll orchestration and test finders.
+  final Key? textFieldKey;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
-    final resolvedTextStyle = textStyle ??
+    final resolvedTextStyle =
+        textStyle ??
         theme.textTheme.bodyMedium?.copyWith(
           fontSize: 16,
           height: 1.5,
           color: theme.colorScheme.onSurface,
         );
-    final resolvedHintStyle = hintStyle ??
-        resolvedTextStyle?.copyWith(
-          color: tokens.grayscale500,
-        );
+    final resolvedHintStyle =
+        hintStyle ?? resolvedTextStyle?.copyWith(color: tokens.grayscale500);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -62,6 +64,7 @@ class LoginPasswordField extends StatelessWidget {
             ),
           ),
           child: TextField(
+            key: textFieldKey,
             controller: controller,
             obscureText: obscure,
             textInputAction: textInputAction,

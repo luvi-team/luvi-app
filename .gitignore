@@ -42,11 +42,8 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 # Android related
-**/android/**/gradle-wrapper.jar
 .gradle/
 **/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
@@ -152,3 +149,14 @@ api/node_modules/
 .env
 *.log
 .DS_Store
+
+# Flutter/Dart local tool caches
+
+.dartServer/
+.flutter/
+.flutter
+.dart_tool/
+.config/*
+!.config/README.md
+.home_overrides/
+.local_flutter/

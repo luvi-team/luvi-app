@@ -1,48 +1,53 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/assets.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart' as dash_assets;
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
-import 'package:luvi_app/features/widgets/category_chip.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
 import 'package:luvi_app/features/widgets/floating_sync_button.dart';
-import 'package:luvi_app/features/widgets/recommendation_card.dart';
-import 'package:luvi_app/features/widgets/section_header.dart';
-import 'package:luvi_app/features/widgets/bottom_nav_tokens.dart';
+import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 import 'package:luvi_app/features/widgets/hero_sync_preview.dart';
-import 'package:luvi_app/features/screens/heute_layout_utils.dart';
+import 'package:luvi_app/features/widgets/painters/wave_painter.dart';
 import 'package:luvi_app/features/cycle/domain/week_strip.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 import 'package:luvi_app/features/widgets/dashboard_calendar.dart';
-import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
-import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
-import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
 import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
+import 'package:luvi_app/features/widgets/dashboard/heute_header.dart';
+import 'package:luvi_app/features/widgets/dashboard/weekly_training_section.dart';
+import 'package:luvi_app/features/widgets/dashboard/phase_recommendations_section.dart';
+import 'package:luvi_app/features/widgets/dashboard/legacy_sections.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-// Dashboard-only spacing (audit-backed)
-const double _gap16 = 16.0; // Spec: recommendations list gap 16px
-// from DASHBOARD_spec.json $.categories.grid.columns (4)
-const int _categoriesColumns = 4;
-// from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[4].value (8px)
-const double _categoriesMinGap = 8.0;
-// from DASHBOARD_spec_deltas.json $.deltas[6].newValue (41px)
-const double _categoriesMaxGap = 41.0;
-// TODO(audit): DASHBOARD_radii_corners.json node 68426:7254 → null; baseSpec 26.667 UNCONFIRMED (screenshot plausible)
-const double _headerIconRadius = 26.667;
-const double _kMinBottomGap = 62.0; // increased breathing room above dock
-const double _sectionGapTight =
-    20.0; // tighter spacing between stacked sections
+/// Calculates the visible portion of the wave arc based on viewport scaling.
+/// The wave asset is designed at 428px width with a 40px arc height.
+/// This function scales the arc proportionally to the current viewport width,
+/// capped at [heroToSectionGap] to prevent layout overflow.
+@visibleForTesting
+double waveBottomRevealForWidth(
+  double viewportWidth,
+  double heroToSectionGap,
+) {
+  const double waveAssetWidth = 428.0;
+  const double waveArcHeight = 40.0;
+  final double scale = viewportWidth / waveAssetWidth;
+  final double reveal = waveArcHeight * scale;
+  return math.min(reveal, heroToSectionGap);
+}
+
+double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
+  final double viewportWidth = MediaQuery.sizeOf(context).width;
+  return waveBottomRevealForWidth(viewportWidth, heroToSectionGap);
+}
 
 // Kodex: Bottom-nav geometry now imported from bottom_nav_tokens.dart (formula-based, no duplication)
-// - dockHeight, buttonDiameter, cutoutDepth, desiredGapToWaveTop, syncButtonBottom all from tokens
+// - dockHeight, buttonDiameter, cutoutDepth, desiredGapToWaveTop, syncButtonBottom,
+//   calculateBottomPadding() all from tokens
 /// Heute screen: 1:1 Figma implementation (audit-backed, static UI).
 class HeuteScreen extends StatefulWidget {
   static const String routeName = '/heute';
@@ -72,10 +77,11 @@ class _HeuteScreenState extends State<HeuteScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_imagesPrecached) {
-      // Precache Hero background and top recommendation image to avoid first-frame jank.
-      precacheImage(AssetImage(Assets.images.heroSync01), context);
-      final topImage = _fixtureState.topRecommendation.imagePath;
-      precacheImage(AssetImage(topImage), context);
+      // Precache the images visible on initial render to avoid first-frame jank.
+      final heroImagePath = dash_assets.Assets.images.heroSync01;
+      precacheImage(AssetImage(heroImagePath), context);
+      precacheImage(AssetImage(dash_assets.Assets.images.strawberry), context);
+      precacheImage(AssetImage(dash_assets.Assets.images.roteruebe), context);
       _imagesPrecached = true;
     }
   }
@@ -89,7 +95,8 @@ class _HeuteScreenState extends State<HeuteScreen> {
         delegates: AppLocalizations.localizationsDelegates,
         locale: AppLocalizations.supportedLocales.first,
         child: Builder(
-          builder: (overrideContext) => _buildLocalizedScaffold(overrideContext),
+          builder: (overrideContext) =>
+              _buildLocalizedScaffold(overrideContext),
         ),
       );
     }
@@ -101,16 +108,33 @@ class _HeuteScreenState extends State<HeuteScreen> {
     // Use default fixture state (can be parameterized later)
     final state = _fixtureState;
     final weekView = weekViewFor(state.referenceDate, state.cycleInfo);
-    final topRecommendation = state.topRecommendation;
     final currentPhase = state.cycleInfo.phaseFor(state.referenceDate);
     final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final layout = theme.extension<DashboardLayoutTokens>();
+    final double heroToSectionGap = layout?.heroToSectionGapPx ?? 42;
+    final bool isDashboardV2Enabled = FeatureFlags.featureDashboardV2;
+    final double bottomReveal = _waveBottomRevealFor(context, heroToSectionGap);
+    final double postWaveTopGap = math.max(
+      Spacing.xs,
+      heroToSectionGap - bottomReveal,
+    );
+    final surfaceTokens = theme.extension<SurfaceColorTokens>();
+    final dsTokens = theme.extension<DsTokens>();
+    final Color waveTint =
+        surfaceTokens?.waveOverlayBeige ??
+        dsTokens?.cardSurface ??
+        SurfaceColorTokens.light.waveOverlayBeige;
+    final Color waveSurface = Color.alphaBlend(waveTint, Colors.white);
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFFFFFFF),
       bottomNavigationBar: _buildDockNavigation(l10n),
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
@@ -118,330 +142,156 @@ class _HeuteScreenState extends State<HeuteScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(
-                      height: Spacing.m,
-                    ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[8].value (16px)
-                    _buildHeader(
-                      context,
-                      l10n,
-                      state.header,
-                      currentPhase,
-                      state.bottomNav.hasNotifications,
-                      weekView,
-                    ),
-                    const SizedBox(height: _sectionGapTight),
-                    // Hero Sync Preview (image + badge + info card)
-                    HeroSyncPreview(
-                      key: const Key('dashboard_hero_sync_preview'),
-                      imagePath: Assets.images.heroSync01,
-                      badgeAssetPath: Assets.icons.syncBadge,
-                      dateText: state.heroCard.dateText,
-                      subtitle: state.heroCard.subtitle,
-                    ),
-                    const SizedBox(height: _sectionGapTight),
-                    SectionHeader(
-                      title: l10n.dashboardCategoriesTitle,
-                      showTrailingAction: false,
-                    ),
-                    const SizedBox(
-                      height: Spacing.s,
-                    ), // Figma: header→content 12px (Audit V3)
-                    _buildCategories(l10n, state.categories),
                     const SizedBox(height: Spacing.m),
-                    // Section header: Deine Top-Empfehlung
-                    SectionHeader(
-                      title: l10n.dashboardTopRecommendationTitle,
-                      showTrailingAction: false,
-                    ),
-                    const SizedBox(height: Spacing.s),
-                    // Top recommendation tile
-                    TopRecommendationTile(
-                      workoutId: topRecommendation.id,
-                      tag: topRecommendation.tag,
-                      title: topRecommendation.title,
-                      imagePath: topRecommendation.imagePath,
-                      badgeAssetPath: topRecommendation.badgeAssetPath,
-                      fromLuviSync: topRecommendation.fromLuviSync,
-                      duration: topRecommendation.duration,
-                    ),
-                    const SizedBox(height: _sectionGapTight),
-                    SectionHeader(
-                      title: l10n.dashboardMoreTrainingsTitle,
-                    ),
-                    const SizedBox(
-                      height: Spacing.s,
-                    ), // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[6].value (12px)
-                    _buildRecommendations(context, l10n, state.recommendations),
-                    const SizedBox(height: _sectionGapTight),
-                    SectionHeader(
-                      title: l10n.dashboardTrainingDataTitle,
-                      showTrailingAction: false,
-                    ),
-                    const SizedBox(height: Spacing.s),
-                    StatsScroller(
-                      key: const Key('dashboard_training_stats_scroller'),
-                      trainingStats: state.trainingStats,
-                      isWearableConnected: state.wearable.connected,
+                    HeuteHeader(
+                      userName: state.header.userName,
+                      currentPhase: currentPhase,
+                      hasNotifications: state.bottomNav.hasNotifications,
                     ),
                     const SizedBox(height: Spacing.m),
-                    CycleTipCard(phase: currentPhase),
-                    const SizedBox(height: _kMinBottomGap),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(
-    BuildContext context,
-    AppLocalizations l10n,
-    HeaderProps header,
-    Phase currentPhase,
-    bool hasNotifications,
-    WeekStripView weekView,
-  ) {
-    final textTokens = Theme.of(context).extension<TextColorTokens>();
-    final primaryColor = textTokens?.primary ?? DsColors.textPrimary;
-    final secondaryColor =
-        textTokens?.secondary ?? ColorTokens.recommendationTag;
-    final greeting = l10n.dashboardGreeting(header.userName);
-    final phaseLabel = _localizedPhaseLabel(l10n, currentPhase);
-    return Column(
-      key: const Key('dashboard_header'),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // from DASHBOARD_spec.json $.header.title.typography (Playfair Display 32/40)
-                  Text(
-                    greeting,
-                    style: const TextStyle(
-                      fontFamily: FontFamilies.playfairDisplay,
-                      fontSize: 32,
-                      height: 40 / 32,
-                      fontWeight: FontWeight.w400,
-                    ).copyWith(color: primaryColor),
-                  ),
-                  const SizedBox(
-                    height: 2,
-                  ), // from DASHBOARD_spec.json $.spacingTokensObserved[1]
-                  // from DASHBOARD_spec.json $.header.subtitle.typography (Figtree 16/24)
-                  Text(
-                    phaseLabel,
-                    style: TextStyle(
-                      fontFamily: FontFamilies.figtree,
-                      fontSize: 16,
-                      height: 24 / 16,
-                      fontWeight: FontWeight.w400,
-                      color: secondaryColor,
-                    ),
-                  ),
-                ],
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+                child: _buildCalendar(weekView),
               ),
             ),
-            const SizedBox(width: 8),
-            Stack(
-              children: [
-                _buildHeaderIcon(Assets.icons.notifications),
-                if (hasNotifications)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    // from DASHBOARD_spec_deltas.json $.deltas[2].newValue (notification dot)
-                    child: Container(
-                      width: 6.668,
-                      height: 6.668,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE53935),
-                        shape: BoxShape.circle,
+            SliverToBoxAdapter(
+              child: _buildWaveOverlay(context, state),
+            ),
+            if (isDashboardV2Enabled) ...[
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: postWaveTopGap),
+                    // Right-only padding: allows weekly training carousel to scroll from screen edge
+                    Padding(
+                      padding: const EdgeInsets.only(right: Spacing.l),
+                      child: WeeklyTrainingSection(
+                        trainings: state.weeklyTrainings,
+                        onTrainingTap: (trainingId) =>
+                            context.push('/workout/$trainingId'),
                       ),
                     ),
+                    const SizedBox(height: Spacing.m),
+                  ],
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: PhaseRecommendationsSection(
+                  nutritionRecommendations: state.nutritionRecommendations,
+                  regenerationRecommendations:
+                      state.regenerationRecommendations,
+                ),
+              ),
+            ] else ...[
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: postWaveTopGap),
+                      LegacySections(
+                        categories: state.categories,
+                        selectedCategory: _selectedCategory,
+                        onCategoryTap: (category) {
+                          if (_selectedCategory == category) {
+                            return;
+                          }
+                          setState(() {
+                            _selectedCategory = category;
+                          });
+                        },
+                        topRecommendation: state.topRecommendation,
+                        recommendations: state.recommendations,
+                        trainingStats: state.trainingStats,
+                        isWearableConnected: state.wearable.connected,
+                        currentPhase: currentPhase,
+                      ),
+                      const SizedBox(height: Spacing.m),
+                    ],
                   ),
-              ],
+                ),
+              ),
+            ],
+            SliverToBoxAdapter(
+              child: ColoredBox(
+                color: waveSurface,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [SizedBox(height: scrollStopPadding(context))],
+                  ),
+                ),
+              ),
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: ColoredBox(color: waveSurface),
             ),
           ],
         ),
-        const SizedBox(height: Spacing.m),
-        DashboardCalendar(view: weekView),
-      ],
-    );
-  }
-
-  Widget _buildHeaderIcon(String assetPath) {
-    // from DASHBOARD_spec.json $.header.actions[0].container (40×40, radius 26.667)
-    return Container(
-      width: 40,
-      height: 40,
-      // Container 40x40, padding 10→8: eff 24x24 (H1 audit)
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(_headerIconRadius),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
-          width:
-              0.769, // from DASHBOARD_spec.json $.header.actions[0].container.border.width
-        ),
-      ),
-      child: SvgPicture.asset(
-        assetPath,
-        width: 24, // Spec 20px → +4px tuning (Figma parity)
-        height: 24, // Spec 20px → +4px tuning (Figma parity)
       ),
     );
   }
 
+  Widget _buildCalendar(WeekStripView weekView) {
+    return DashboardCalendar(view: weekView);
+  }
 
-  Widget _buildCategories(
-    AppLocalizations l10n,
-    List<CategoryProps> categories,
-  ) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final contentWidth =
-            constraints.maxWidth; // from layout: content width nach Padding
-        if (categories.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        final textDirection = Directionality.of(context);
-        final labels = [
-          for (final category in categories)
-            _categoryLabel(l10n, category.category),
-        ];
-        final measuredWidths = _measureChipWidths(labels, textDirection);
-        final columnCount = math.min(categories.length, _categoriesColumns);
-        final resolvedWidths = compressFirstRowWidths(
-          measured: measuredWidths,
-          contentWidth: contentWidth,
-          columnCount: columnCount,
-          minGap: _categoriesMinGap,
-          minWidth: CategoryChip.minWidth,
-        );
-        final gapCount = columnCount > 1 ? columnCount - 1 : 0;
-        final totalWidth = resolvedWidths
-            .take(columnCount)
-            .fold<double>(0, (sum, width) => sum + width);
-        final rawGap = gapCount > 0
-            ? (contentWidth - totalWidth) / gapCount
-            : _categoriesMinGap;
-        final gap = rawGap
-            .clamp(_categoriesMinGap, _categoriesMaxGap)
-            .toDouble();
-
-        return _buildCategoryWrap(
-          categories,
-          labels,
-          resolvedWidths,
-          gap,
-        );
-      },
+  Widget _buildWaveOverlay(BuildContext context, HeuteFixtureState state) {
+    final surface = Theme.of(context).extension<SurfaceColorTokens>();
+    final layout = Theme.of(context).extension<DashboardLayoutTokens>();
+    final Color waveColor =
+        surface?.waveOverlayPink ?? DsColors.waveOverlayPink;
+    final double waveHeight = layout?.waveHeightPx ?? 220;
+    final double heroMargin = layout?.heroHorizontalMarginPx ?? Spacing.l;
+    final double calendarGap = layout?.calendarToWaveGapPx ?? Spacing.xs;
+    assert(calendarGap >= 0);
+    final double heroToSectionGap = layout?.heroToSectionGapPx ?? 42;
+    final double heroHeight = HeroSyncPreview.kContainerHeight;
+    final double bottomReveal = _waveBottomRevealFor(context, heroToSectionGap);
+    final Color backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final double effectiveWaveHeight = math.max(
+      waveHeight,
+      heroHeight + calendarGap + bottomReveal,
     );
-  }
 
-  List<double> _measureChipWidths(
-    List<String> labels,
-    TextDirection dir,
-  ) {
-    return [
-      for (final label in labels) CategoryChip.measuredWidth(label, dir),
-    ];
-  }
-
-
-  Widget _buildCategoryWrap(
-    List<CategoryProps> categories,
-    List<String> labels,
-    List<double> resolvedWidths,
-    double gap,
-  ) {
-    final columnCount = math.min(categories.length, _categoriesColumns);
-    return Wrap(
-      key: const Key('dashboard_categories_grid'),
-      spacing: columnCount > 1 ? gap : 0,
-      runSpacing:
-          8, // from DASHBOARD_spec.json $.spacingTokensObserved.valuesPx[4].value (8px rows)
-      children: [
-        for (var i = 0; i < categories.length; i++)
-          CategoryChip(
-            key: ValueKey(categories[i].category),
-            iconPath: categories[i].iconPath,
-            label: labels[i],
-            isSelected: categories[i].category == _selectedCategory,
-            width: resolvedWidths[i],
-            onTap: () => _onCategoryTap(categories[i]),
-          ),
-      ],
-    );
-  }
-
-  void _onCategoryTap(CategoryProps category) {
-    if (_selectedCategory == category.category) {
-      return;
-    }
-    setState(() {
-      _selectedCategory = category.category;
-    });
-    // TODO(reco-filter): hook selection into recommendations filter once feature lands.
-  }
-
-  Widget _buildRecommendations(
-    BuildContext context,
-    AppLocalizations l10n,
-    List<RecommendationProps> recommendations,
-  ) {
-    final textTokens = Theme.of(context).extension<TextColorTokens>();
-    if (recommendations.isEmpty) {
-      // Placeholder for empty state
-      final Color emptyTextColor =
-          textTokens?.secondary ?? ColorTokens.recommendationTag;
-      return SizedBox(
-        height:
-            180, // from DASHBOARD_spec.json $.recommendations.list.itemSize.h (placeholder uses same height)
-        child: Center(
-          child: Text(
-            l10n.dashboardRecommendationsEmpty,
-            style: TextStyle(
-              fontFamily: FontFamilies.figtree,
-              fontSize: 16,
-              color: emptyTextColor,
+    return RepaintBoundary(
+      child: SizedBox(
+        height: effectiveWaveHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: WavePainter(
+                  color: waveColor,
+                  amplitude: bottomReveal,
+                  background: backgroundColor,
+                ),
+              ),
             ),
-          ),
+            Positioned(
+              left: heroMargin,
+              right: heroMargin,
+              bottom: bottomReveal,
+              child: HeroSyncPreview(
+                key: const Key('dashboard_hero_sync_preview'),
+                imagePath: dash_assets.Assets.images.heroSync01,
+                badgeAssetPath: dash_assets.Assets.icons.syncBadge,
+                dateText: state.heroCard.dateText,
+                subtitle: state.heroCard.subtitle,
+              ),
+            ),
+          ],
         ),
-      );
-    }
-
-    // from DASHBOARD_spec_deltas.json $.deltas[9] (gap 15px)
-    return SizedBox(
-      key: const Key('dashboard_recommendations_list'),
-      // from DASHBOARD_spec.json $.recommendations.list.itemSize.h (180px)
-      height: 180,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: recommendations.length,
-        clipBehavior: Clip.hardEdge,
-        physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.zero,
-        separatorBuilder: (context, index) => const SizedBox(width: _gap16),
-        itemBuilder: (context, index) {
-          final rec = recommendations[index];
-          return RecommendationCard(
-            imagePath: rec.imagePath,
-            tag: rec.tag,
-            title: rec.title,
-            showTag: false,
-          );
-        },
       ),
     );
   }
@@ -449,22 +299,22 @@ class _HeuteScreenState extends State<HeuteScreen> {
   Widget _buildDockNavigation(AppLocalizations l10n) {
     final tabs = [
       DockTab(
-        iconPath: Assets.icons.navToday,
+        iconPath: dash_assets.Assets.icons.navToday,
         label: l10n.dashboardNavToday,
         key: const Key('nav_today'),
       ),
       DockTab(
-        iconPath: Assets.icons.navCycle,
+        iconPath: dash_assets.Assets.icons.navCycle,
         label: l10n.dashboardNavCycle,
         key: const Key('nav_cycle'),
       ),
       DockTab(
-        iconPath: Assets.icons.navPulse,
+        iconPath: dash_assets.Assets.icons.navPulse,
         label: l10n.dashboardNavPulse,
         key: const Key('nav_pulse'),
       ),
       DockTab(
-        iconPath: Assets.icons.navProfile,
+        iconPath: dash_assets.Assets.icons.navProfile,
         label: l10n.dashboardNavProfile,
         key: const Key('nav_profile'),
       ),
@@ -496,7 +346,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
           child: Center(
             child: FloatingSyncButton(
               key: const Key('floating_sync_button'),
-              iconPath: Assets.icons.navSync,
+              iconPath: dash_assets.Assets.icons.navSync,
               // Kodex: size and iconSize from tokens (64px, 42px)
               // Current SVG has 3px padding (26/32 glyph). Compensate to keep 65% fill.
               iconTight: false,
@@ -513,31 +363,4 @@ class _HeuteScreenState extends State<HeuteScreen> {
       ],
     );
   }
-
-  String _categoryLabel(AppLocalizations l10n, Category category) {
-    switch (category) {
-      case Category.training:
-        return l10n.dashboardCategoryTraining;
-      case Category.nutrition:
-        return l10n.dashboardCategoryNutrition;
-      case Category.regeneration:
-        return l10n.dashboardCategoryRegeneration;
-      case Category.mindfulness:
-        return l10n.dashboardCategoryMindfulness;
-    }
-  }
-
-  String _localizedPhaseLabel(AppLocalizations l10n, Phase phase) {
-    switch (phase) {
-      case Phase.menstruation:
-        return l10n.cyclePhaseMenstruation;
-      case Phase.follicular:
-        return l10n.cyclePhaseFollicular;
-      case Phase.ovulation:
-        return l10n.cyclePhaseOvulation;
-      case Phase.luteal:
-        return l10n.cyclePhaseLuteal;
-    }
-  }
-
 }

@@ -62,7 +62,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = submitState.isLoading;
     final hasValidationError = emailError != null || passwordError != null;
 
-    void submit() => ref.read(loginSubmitProvider.notifier).submit(
+    void submit() => ref
+        .read(loginSubmitProvider.notifier)
+        .submit(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
@@ -101,12 +103,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(
-                Spacing.l,
-                0,
-                Spacing.l,
-                safeBottom,
-              ),
+              padding: EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, safeBottom),
               child: LoginCtaSection(
                 onSubmit: submit,
                 onSignup: () => context.goNamed('signup'),
@@ -195,5 +192,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _toggleObscurePassword() {
     setState(() => _obscurePassword = !_obscurePassword);
   }
-
 }

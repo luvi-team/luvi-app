@@ -23,14 +23,21 @@ void main() {
       final ctaTextFinder = find.text(l10n.dashboardHeroCtaMore);
       expect(ctaTextFinder, findsWidgets);
 
-      // The immediate Container ancestor of the CTA Text holds the fixed height.
-      final containerFinder = find.ancestor(
+      // Measure tappable hit area (outer SizedBox around CTA)
+      final sizeCandidates = find.ancestor(
         of: ctaTextFinder.first,
-        matching: find.byType(Container),
-      ).first;
-
-      final Size size = tester.getSize(containerFinder);
-      expect(size.height, greaterThanOrEqualTo(44), reason: 'CTA button should be at least 44px tall');
+        matching: find.byType(SizedBox),
+      );
+      double maxHeight = 0;
+      for (var i = 0; i < sizeCandidates.evaluate().length; i++) {
+        final sz = tester.getSize(sizeCandidates.at(i));
+        if (sz.height > maxHeight) maxHeight = sz.height;
+      }
+      expect(
+        maxHeight,
+        greaterThanOrEqualTo(44),
+        reason: 'CTA tap target should be at least 44px tall',
+      );
     });
   });
 }

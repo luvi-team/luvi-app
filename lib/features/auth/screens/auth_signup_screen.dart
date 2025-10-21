@@ -70,10 +70,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       );
 
       if (!mounted) return;
-      context.goNamed(
-        'verify',
-        queryParameters: const {'variant': 'email'},
-      );
+      context.goNamed('verify', queryParameters: const {'variant': 'email'});
     } on AuthException catch (error, stackTrace) {
       debugPrint('Signup failed (auth): ${error.message}\n$stackTrace');
       if (!mounted) return;
@@ -154,8 +151,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                 _errorMessage!,
                 key: const ValueKey('signup_error_message'),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
             ),
           ],
@@ -229,10 +226,7 @@ class _SignupFields extends StatelessWidget {
           scrollPadding: scrollPadding,
         ),
         const SizedBox(height: _signupInputGap),
-        _PhoneField(
-          controller: phoneController,
-          scrollPadding: scrollPadding,
-        ),
+        _PhoneField(controller: phoneController, scrollPadding: scrollPadding),
         const SizedBox(height: _signupInputGap),
         _EmailPasswordFields(
           emailController: emailController,
@@ -297,9 +291,7 @@ class _SignupCtaSection extends StatelessWidget {
                 ),
                 TextSpan(
                   text: AuthStrings.signupLinkAction,
-                  style: linkBaseStyle?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: linkBaseStyle?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -379,10 +371,7 @@ class _NameFieldsRow extends StatelessWidget {
 }
 
 class _PhoneField extends StatelessWidget {
-  const _PhoneField({
-    required this.controller,
-    required this.scrollPadding,
-  });
+  const _PhoneField({required this.controller, required this.scrollPadding});
 
   final TextEditingController controller;
   final EdgeInsets scrollPadding;

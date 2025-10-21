@@ -22,9 +22,11 @@ class VerificationCodeInput extends StatefulWidget {
     this.filled = true,
     this.fillColor,
     this.scrollPadding = EdgeInsets.zero,
-  })  : assert(length > 0, 'length must be positive.'),
-        assert(controllers == null || controllers.length == length,
-            'controllers length must match the configured length.');
+  }) : assert(length > 0, 'length must be positive.'),
+       assert(
+         controllers == null || controllers.length == length,
+         'controllers length must match the configured length.',
+       );
 
   final int length;
   final ValueChanged<String> onChanged;
@@ -58,8 +60,10 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
       _controllers = provided;
       _ownsControllers = false;
     } else {
-      _controllers =
-          List.generate(widget.length, (_) => TextEditingController());
+      _controllers = List.generate(
+        widget.length,
+        (_) => TextEditingController(),
+      );
       _ownsControllers = true;
     }
     _focusNodes = List.generate(widget.length, (_) => FocusNode());
@@ -82,9 +86,11 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
-    final inactiveBorderColor = widget.inactiveBorderColor ??
+    final inactiveBorderColor =
+        widget.inactiveBorderColor ??
         theme.colorScheme.primary.withValues(alpha: 0.75);
-    final activeBorderColor = widget.focusedBorderColor ?? theme.colorScheme.primary;
+    final activeBorderColor =
+        widget.focusedBorderColor ?? theme.colorScheme.primary;
     final fillColor = widget.fillColor ?? tokens.cardSurface;
     final baseBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(AuthLayout.otpBorderRadius),
@@ -106,8 +112,12 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
         final gap = widget.gap;
         final available = constraints.maxWidth;
         final gapsWidth = gap * (length - 1);
-        final usableWidth = available.isFinite ? available - gapsWidth : double.infinity;
-        var desired = usableWidth.isFinite ? usableWidth / length : widget.fieldSize;
+        final usableWidth = available.isFinite
+            ? available - gapsWidth
+            : double.infinity;
+        var desired = usableWidth.isFinite
+            ? usableWidth / length
+            : widget.fieldSize;
         if (!desired.isFinite) {
           desired = widget.fieldSize;
         }
@@ -141,8 +151,9 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
                       textInputAction: i == length - 1
                           ? TextInputAction.done
                           : TextInputAction.next,
-                      autofillHints:
-                          i == 0 ? const [AutofillHints.oneTimeCode] : null,
+                      autofillHints: i == 0
+                          ? const [AutofillHints.oneTimeCode]
+                          : null,
                       inputFormatters: [
                         if (i == 0)
                           _OtpPasteFormatter(
@@ -158,8 +169,9 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
                         fillColor: fillColor,
                         border: baseBorder,
                         enabledBorder: baseBorder,
-                        focusedBorder:
-                            widget.error ? errorBorder : focusedBorder,
+                        focusedBorder: widget.error
+                            ? errorBorder
+                            : focusedBorder,
                         errorBorder: errorBorder,
                         focusedErrorBorder: errorBorder,
                       ),
@@ -279,10 +291,8 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
 }
 
 class _OtpPasteFormatter extends TextInputFormatter {
-  _OtpPasteFormatter({
-    required this.length,
-    required this.onPaste,
-  }) : assert(length > 0);
+  _OtpPasteFormatter({required this.length, required this.onPaste})
+    : assert(length > 0);
 
   final int length;
   final ValueChanged<String> onPaste;

@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 /// - Outer circle: 24×24 px
 /// - Inner fill: 14×14 px (when selected)
 class CustomRadioCheck extends StatelessWidget {
-  const CustomRadioCheck({
-    super.key,
-    required this.selected,
-  });
+  const CustomRadioCheck({super.key, required this.selected});
 
   final bool selected;
 
@@ -26,8 +23,11 @@ class CustomRadioCheck extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(
           color: selected
-              ? colorScheme.primary // #D9B18E (gold) when selected
-              : colorScheme.onSurface.withValues(alpha: 0.3), // lighter when unselected
+              ? colorScheme
+                    .primary // #D9B18E (gold) when selected
+              : colorScheme.onSurface.withValues(
+                  alpha: 0.3,
+                ), // lighter when unselected
           width: 2,
         ),
       ),

@@ -67,15 +67,17 @@ class AuthTextField extends StatelessWidget {
             style: inputStyle,
             scrollPadding: scrollPadding,
             textAlign: textAlign,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              isCollapsed: true,
-            ).copyWith(
-              hintText: hintText.isEmpty ? null : hintText,
-              hintStyle: resolvedHintStyle,
-            ),
+            decoration:
+                const InputDecoration(
+                  border: InputBorder.none,
+                  isCollapsed: true,
+                ).copyWith(
+                  hintText: hintText.isEmpty ? null : hintText,
+                  hintStyle: resolvedHintStyle,
+                ),
             onChanged: onChanged,
-            onSubmitted: onSubmitted ?? (_) => FocusScope.of(context).nextFocus(),
+            onSubmitted:
+                onSubmitted ?? (_) => FocusScope.of(context).nextFocus(),
           ),
           if (errorText != null) FieldErrorText(errorText!),
         ],
@@ -91,8 +93,9 @@ class AuthTextField extends StatelessWidget {
             color: tokens.cardSurface,
             borderRadius: BorderRadius.circular(Sizes.radiusM),
             border: Border.all(
-              color:
-                  errorText != null ? theme.colorScheme.error : tokens.inputBorder,
+              color: errorText != null
+                  ? theme.colorScheme.error
+                  : tokens.inputBorder,
               width: 1,
             ),
           ),

@@ -4,12 +4,7 @@ import '../../../core/theme/app_theme.dart';
 import 'cycle.dart';
 
 /// Enumerates the distinct phases within the menstrual cycle.
-enum Phase {
-  menstruation,
-  follicular,
-  ovulation,
-  luteal,
-}
+enum Phase { menstruation, follicular, ovulation, luteal }
 
 extension PhaseLabel on Phase {
   /// Localized label used across dashboard surfaces.

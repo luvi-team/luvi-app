@@ -86,6 +86,23 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationsWithBadge => 'Benachrichtigungen – neue Hinweise verfügbar';
+
+  @override
+  String notificationsWithBadgeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Benachrichtigungen – $count neu',
+      one: 'Benachrichtigungen – $count neu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationsNoBadge => 'Benachrichtigungen';
+
+  @override
   String get dashboardCategoriesTitle => 'Kategorien';
 
   @override
@@ -96,6 +113,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dashboardTrainingDataTitle => 'Deine Trainingsdaten';
+
+  @override
+  String get dashboardTrainingWeekTitle => 'Dein Training für diese Woche';
+
+  @override
+  String get dashboardTrainingWeekSubtitle => 'Erstellt von deinen LUVI-Expert:innen';
+
+  @override
+  String get dashboardRecommendationsTitle => 'Weitere Empfehlungen für dich';
+
+  @override
+  String get dashboardNutritionTitle => 'Ernährung & Biohacking';
+
+  @override
+  String get dashboardRegenerationTitle => 'Regeneration & Achtsamkeit';
 
   @override
   String get dashboardNavToday => 'Heute';
@@ -128,10 +160,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardViewAll => 'Alle';
 
   @override
+  String get dashboardViewMore => 'Mehr sehen';
+
+  @override
+  String get trainingCompleted => 'Erledigt';
+
+  @override
+  String get nutritionRecommendation => 'Ernährungsempfehlung';
+
+  @override
+  String get regenerationRecommendation => 'Regenerationsempfehlung';
+
+  @override
   String get dashboardLuviSyncTitle => 'Luvi Sync Journal';
 
   @override
   String get dashboardLuviSyncPlaceholder => 'Luvi Sync Journal Inhalte folgen bald.';
+
+  @override
+  String get trainingsOverviewStubPlaceholder => 'Trainingsübersicht folgt bald';
+
+  @override
+  String get trainingsOverviewStubSemantics => 'Trainingsübersicht in Vorbereitung. Tippe auf Zurück, um zur vorherigen Ansicht zu wechseln.';
 
   @override
   String get workoutTitle => 'Workout';
@@ -143,7 +193,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardHeroCtaMore => 'Mehr';
 
   @override
-  String get dashboardRecommendationsEmpty => 'Keine Empfehlungen verfügbar';
+  String get dashboardRecommendationsEmpty => 'Für diese Phase liegen noch keine Empfehlungen vor.';
 
   @override
   String get topRecommendation => 'Top-Empfehlung';
@@ -166,8 +216,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get cycleInlineCalendarLabelDefault =>
-      'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+  String get cycleInlineCalendarLabelDefault => 'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
 
   @override
   String get cyclePhaseMenstruation => 'Menstruation';

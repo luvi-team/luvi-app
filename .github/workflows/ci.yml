@@ -33,6 +33,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Block service_role usage in client code (RLS safety)
+        run: |
+          if grep -R -nI -E '\bservice_role\b' lib/ >/dev/null 2>&1; then
+            echo "::error::Gefährlicher Fund: 'service_role' im Client-Code (lib/). RLS würde umgangen. Bitte entfernen (ADR-0002)."
+            echo "Treffer:" && grep -R -nI -E '\bservice_role\b' lib/ || true
+            exit 1
+          else
+            echo "Kein 'service_role' im Client (lib/) gefunden."
+          fi
       - name: Detect changed paths
         id: changes
         uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3

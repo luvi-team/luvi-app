@@ -23,12 +23,11 @@ class DashboardVM {
     double? cycleProgressRatio,
     HeroCtaState? heroCta,
     Category? selectedCategory,
-  }) =>
-      DashboardVM(
-        cycleProgressRatio: cycleProgressRatio ?? this.cycleProgressRatio,
-        heroCta: heroCta ?? this.heroCta,
-        selectedCategory: selectedCategory ?? this.selectedCategory,
-      );
+  }) => DashboardVM(
+    cycleProgressRatio: cycleProgressRatio ?? this.cycleProgressRatio,
+    heroCta: heroCta ?? this.heroCta,
+    selectedCategory: selectedCategory ?? this.selectedCategory,
+  );
 
   @override
   bool operator ==(Object other) {
@@ -45,15 +44,7 @@ class DashboardVM {
 }
 
 /// Hero CTA state: resumes a running program or starts a fresh one.
-enum HeroCtaState {
-  resumeActiveWorkout,
-  startNewWorkout,
-}
+enum HeroCtaState { resumeActiveWorkout, startNewWorkout }
 
 /// Dashboard category chips used for recommendations and filtering.
-enum Category {
-  training,
-  nutrition,
-  regeneration,
-  mindfulness,
-}
+enum Category { training, nutrition, regeneration, mindfulness }

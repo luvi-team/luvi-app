@@ -1,23 +1,33 @@
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:luvi_app/services/supabase_service.dart';
+import 'core/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
-import 'services/supabase_service.dart';
 import 'features/routes.dart' as routes;
 import 'features/auth/screens/auth_entry_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Portrait-only as default app orientation during development and MVP.
+  // TODO(video-orientation): Register fullscreen routes in [RouteOrientationController.routeOverrides] when landscape is required.
+  final orientationController = RouteOrientationController(
+    defaultOrientations: const [DeviceOrientation.portraitUp],
+  );
+  await orientationController.applyDefault();
   await SupabaseService.tryInitialize(envFile: '.env.development');
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(child: MyApp(orientationController: orientationController)));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({required this.orientationController, super.key});
+
+  final RouteOrientationController orientationController;
 
   // This widget is the root of your application.
   @override
@@ -35,6 +45,7 @@ class MyApp extends StatelessWidget {
       routes: routes.featureRoutes,
       initialLocation: initialLocation,
       redirect: routes.supabaseRedirect,
+      observers: [orientationController.navigatorObserver],
     );
     return MaterialApp.router(
       title: 'LUVI',

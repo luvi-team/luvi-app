@@ -16,7 +16,8 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  ConsumerState<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
@@ -125,15 +126,13 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   ? () async {
                       await ref
                           .read(resetSubmitProvider.notifier)
-                          .submit(state.email, onSuccess: () async {
-                        if (!mounted) {
-                          return;
-                        }
-                        if (!context.mounted) {
-                          return;
-                        }
-                        context.goNamed('forgot_sent');
-                      });
+                          .submit(
+                            state.email,
+                            onSuccess: () async {
+                              if (!context.mounted) return;
+                              context.goNamed('forgot_sent');
+                            },
+                          );
                     }
                   : null,
               child: submitState.isLoading

@@ -26,8 +26,10 @@ class CategoryChip extends StatelessWidget {
 
   static const double _iconContainerSize = 60;
   static const double _minChipWidth = 60;
-  static const double _maxChipWidth = 88; // from DASHBOARD_spec.json $.categories.chips.widthRange (≈60–88px)
-  static const double _labelGuardPadding = 4; // audit delta: min padding while keeping 4 chips inside 390px viewport
+  static const double _maxChipWidth =
+      88; // from DASHBOARD_spec.json $.categories.chips.widthRange (≈60–88px)
+  static const double _labelGuardPadding =
+      4; // audit delta: min padding while keeping 4 chips inside 390px viewport
 
   static const TextStyle _baseLabelStyle = TextStyle(
     fontFamily: FontFamilies.figtree,
@@ -108,17 +110,16 @@ class CategoryChip extends StatelessWidget {
                             width: 32,
                             height: 32,
                             child: Center(
-                              child: Icon(
-                                Icons.broken_image,
-                                size: 20,
-                              ),
+                              child: Icon(Icons.broken_image, size: 20),
                             ),
                           );
                         },
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8), // from DASHBOARD_spec.json $.spacingTokensObserved[4] (gap 8px)
+                  const SizedBox(
+                    height: 8,
+                  ), // from DASHBOARD_spec.json $.spacingTokensObserved[4] (gap 8px)
                   // Label
                   // from DASHBOARD_spec.json $.categories.chips[0].labelTypography (Figtree 14/24)
                   Text(

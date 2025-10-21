@@ -26,6 +26,7 @@ class CreateNewBackButtonOverlay extends StatelessWidget {
       top: safeTop + AuthLayout.backButtonTopInset,
       left: AuthLayout.horizontalPadding,
       child: BackButtonCircle(
+        key: const ValueKey('backButtonCircle'),
         onPressed: onPressed,
         size: size,
         innerSize: size,
@@ -36,4 +37,3 @@ class CreateNewBackButtonOverlay extends StatelessWidget {
     );
   }
 }
-
