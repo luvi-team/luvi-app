@@ -16,7 +16,7 @@ body:
         - Communications: `<comms@luvi>`
         - On-Call Escalation: `<on-call phone / Slack channel>`
 
-        Start the 72h GDPR notification timer immediately. Regulator notification deadline: **{{ date | addHours(72) }}**.
+        Start the 72h GDPR notification timer immediately. Calculate and document the regulator notification deadline (current time + 72 hours).
   - type: textarea
     id: detect
     attributes:
