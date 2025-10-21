@@ -600,7 +600,7 @@
             "size": {"w": 340, "h": 280},
             "image": "imgWorkoutDetailsCard",
             "overlay": "gradient",
-            "title": "GanzkörperKraftraining",
+            "title": "Ganzkörper Krafttraining",
             "subtitle": "Baue deine Basis auf\nTag 1",
             "duration": "60 min",
             "radius": 20,
