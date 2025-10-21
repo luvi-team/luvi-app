@@ -129,12 +129,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                           .submit(
                             state.email,
                             onSuccess: () async {
-                              if (!mounted) {
-                                return;
-                              }
-                              if (!context.mounted) {
-                                return;
-                              }
+                              if (!context.mounted) return;
                               context.goNamed('forgot_sent');
                             },
                           );
