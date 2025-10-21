@@ -127,10 +127,11 @@ void main() {
           : gap >= 16
           ? 'yellow'
           : 'red';
-      final visibilityColor = (backButtonY >= 47 && headerTop >= 47)
+      const safeTop = 47;
+      const backInset = 12;
+      final visibilityColor = (backButtonY >= (safeTop + backInset) && headerTop >= safeTop)
           ? 'green'
           : 'red';
-
       print('');
       print('SUMMARY:');
       print(
