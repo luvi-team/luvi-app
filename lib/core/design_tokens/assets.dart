@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class Assets {
   static const icons = _Icons();
   static const images = _Images();
+  static const animations = _Animations();
 
   /// Default error builder for dashboard `Image.asset` widgets.
   /// Renders a neutral placeholder so layout stays stable when assets fail.
@@ -84,6 +85,14 @@ class _Images {
   // PNG format for pixel-perfect rendering of complex illustration
   final String onboardingSuccessTrophy =
       'assets/images/onboarding/onboarding_success_trophy.png';
+}
+
+class _Animations {
+  const _Animations();
+
+  /// Confetti overlay for the Onboarding Success screen (Lottie JSON, 120f @60fps).
+  final String onboardingSuccessConfetti =
+      'assets/animations/onboarding_success_confetti.json';
 }
 
 class _DashboardStatIcons {

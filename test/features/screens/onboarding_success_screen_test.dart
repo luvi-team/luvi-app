@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/core/design_tokens/onboarding_success_tokens.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:lottie/lottie.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +39,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(Image), findsOneWidget);
+        expect(find.byType(LottieBuilder), findsOneWidget);
         expect(find.text('Du bist startklar!'), findsOneWidget);
         expect(find.byKey(const Key('onboarding_success_cta')), findsOneWidget);
         expect(find.text("Los geht's!"), findsOneWidget);
@@ -108,6 +111,39 @@ void main() {
       expect(find.text("Let's go!"), findsOneWidget);
     });
 
+    testWidgets('confetti animation respects disableAnimations flags',
+        (tester) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: OnboardingSuccessScreen.routeName,
+            builder: (context, state) => const OnboardingSuccessScreen(),
+          ),
+        ],
+        initialLocation: OnboardingSuccessScreen.routeName,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          theme: AppTheme.buildAppTheme(),
+          routerConfig: router,
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          builder: (context, child) {
+            final data = MediaQuery.of(context);
+            return MediaQuery(
+              data: data.copyWith(disableAnimations: true),
+              child: child!,
+            );
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(LottieBuilder), findsNothing);
+    });
+
     testWidgets('uses correct spacing tokens from Figma audit', (tester) async {
       final router = GoRouter(
         routes: [
@@ -173,8 +209,8 @@ void main() {
 
       final trophy = tester.widget<Image>(trophyFinder);
       // From Figma audit: Trophy bounding box 308×300px
-      expect(trophy.width, 308.0);
-      expect(trophy.height, 300.0);
+      expect(trophy.width, OnboardingSuccessTokens.trophyWidth);
+      expect(trophy.height, OnboardingSuccessTokens.trophyHeight);
     });
 
     testWidgets('spacing scales with view height and text scale', (tester) async {
@@ -242,6 +278,45 @@ void main() {
       expect(spacing2.titleToButton, greaterThan(66.0));
 
       addTearDown(tester.view.reset);
+    });
+
+    testWidgets('confetti animation uses expected configuration', (tester) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: OnboardingSuccessScreen.routeName,
+            builder: (context, state) => const OnboardingSuccessScreen(),
+          ),
+        ],
+        initialLocation: OnboardingSuccessScreen.routeName,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          theme: AppTheme.buildAppTheme(),
+          routerConfig: router,
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final lottieFinder = find.byType(LottieBuilder);
+      expect(lottieFinder, findsOneWidget);
+
+      final lottie = tester.widget<LottieBuilder>(lottieFinder);
+      expect(lottie.repeat, isFalse);
+      expect(lottie.frameRate, FrameRate.composition);
+      expect(lottie.fit, BoxFit.contain);
+      expect(lottie.alignment, Alignment.topCenter);
+      expect(lottie.filterQuality, FilterQuality.medium);
+
+      final positionedFinder = find.byType(Positioned);
+      expect(positionedFinder, findsOneWidget);
+
+      final positioned = tester.widget<Positioned>(positionedFinder);
+      expect(positioned.top, OnboardingSuccessTokens.confettiVerticalOffset);
     });
   });
 }
