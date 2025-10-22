@@ -7,6 +7,7 @@ import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 
 /// Onboarding06: Cycle length single-select screen
 /// Figma: 06_Onboarding (Zyklusdauer)
@@ -77,9 +78,16 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context);
-    final stepSemantic =
-        l10n?.onboardingStepSemantic(6, 7) ?? 'Schritt 6 von 7';
-    final stepFraction = l10n?.onboardingStepFraction(6, 7) ?? '6/7';
+    final stepSemantic = l10n?.onboardingStepSemantic(
+          6,
+          kOnboardingTotalSteps,
+        ) ??
+        'Schritt 6 von 8';
+    final stepFraction = l10n?.onboardingStepFraction(
+          6,
+          kOnboardingTotalSteps,
+        ) ??
+        '6/8';
     return Row(
       children: [
         BackButtonCircle(

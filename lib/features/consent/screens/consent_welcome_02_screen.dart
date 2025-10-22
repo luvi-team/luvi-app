@@ -4,6 +4,7 @@ import 'package:luvi_app/core/assets.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/welcome_shell.dart';
 import 'consent_welcome_03_screen.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 
 class ConsentWelcome02Screen extends StatelessWidget {
   const ConsentWelcome02Screen({super.key});
@@ -14,26 +15,32 @@ class ConsentWelcome02Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
+    final titleStyle = t.headlineMedium?.copyWith(
+      fontSize: TypographyTokens.size28,
+      height: TypographyTokens.lineHeightRatio36on28,
+    );
 
     return WelcomeShell(
       title: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          style: t.headlineMedium,
+          style: titleStyle,
           children: [
-            const TextSpan(text: 'Dein Körper spricht zu dir – lerne seine '),
+            const TextSpan(text: 'Von Expert:innen für dich\n'),
             TextSpan(
-              text: 'Sprache.',
-              style: t.headlineMedium?.copyWith(color: c.primary),
+              text: 'jeden Monat neu',
+              style: titleStyle?.copyWith(color: c.primary),
             ),
           ],
         ),
       ),
-      subtitle: 'LUVI übersetzt, was dein Zyklus dir sagen möchte.',
+      subtitle:
+          'Echte Personalisierung statt Standard-Pläne. Automatisch angepasst an deine Fortschritte, Zyklusphase und individuelle Ziele.',
       onNext: () => context.go(ConsentWelcome03Screen.routeName),
-      hero: Image.asset(Assets.consentWelcome02, fit: BoxFit.cover),
+      hero: Image.asset(Assets.welcomeHero02, fit: BoxFit.cover),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,
+      headerSpacing: 0,
       activeIndex: 1,
     );
   }

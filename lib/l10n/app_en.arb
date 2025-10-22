@@ -419,5 +419,56 @@
 
   "cycleTipHeadlineLuteal": "Luteal phase",
   "@cycleTipHeadlineLuteal": {"description": "Headline for the cycle tip card during the luteal phase."},
-  "cycleTipBodyLuteal": "Switch to calm strength or mobility work. Extra breaks help you maintain your energy level."
+  "cycleTipBodyLuteal": "Switch to calm strength or mobility work. Extra breaks help you maintain your energy level.",
+  "@cycleTipBodyLuteal": {"description": "Body text for the cycle tip card during the luteal phase."},
+
+  "onboarding08Title": "How fit do you feel?",
+  "@onboarding08Title": {
+    "description": "Header title for onboarding step 8 (fitness level)."
+  },
+  "onboarding08OptionsSemantic": "Select fitness level",
+  "@onboarding08OptionsSemantic": {
+    "description": "Semantics label announcing the fitness level options list on step 8."
+  },
+  "onboarding08OptBeginner": "I'm just getting started",
+  "@onboarding08OptBeginner": {
+    "description": "Option label for beginner fitness level on step 8."
+  },
+  "onboarding08OptOccasional": "I train occasionally",
+  "@onboarding08OptOccasional": {
+    "description": "Option label for occasional training on step 8."
+  },
+  "onboarding08OptFit": "I feel pretty fit",
+  "@onboarding08OptFit": {
+    "description": "Option label for feeling fit on step 8."
+  },
+  "onboarding08OptUnknown": "I don't know",
+  "@onboarding08OptUnknown": {
+    "description": "Option label when user is unsure about fitness level on step 8."
+  },
+  "onboarding08Footnote": "No stress - we'll find your perfect starting point!",
+  "@onboarding08Footnote": {
+    "description": "Footnote reassuring the user regardless of fitness level on step 8."
+  },
+
+  "onboardingSuccessTitle": "You're ready to go!",
+  "@onboardingSuccessTitle": {
+    "description": "Title shown on the onboarding success screen."
+  },
+  "onboardingSuccessButton": "Let\u0027s go!",
+  "@onboardingSuccessButton": {
+    "description": "Button label on the onboarding success screen to navigate to dashboard."
+  },
+  "welcome01Subtitle": "Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.",
+  "@welcome01Subtitle": {
+    "description": "Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings."
+  },
+  "welcome02Subtitle": "Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.",
+  "@welcome02Subtitle": {
+    "description": "Subtitle copy for consent welcome screen 2 (below the title). Prepared for future migration away from hardcoded strings."
+  },
+  "welcome03Subtitle": "LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.",
+  "@welcome03Subtitle": {
+    "description": "Subtitle copy for consent welcome screen 3 (below the title). Prepared for future migration away from hardcoded strings."
+  }
 }

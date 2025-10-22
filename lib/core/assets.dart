@@ -1,6 +1,6 @@
 abstract class Assets {
-  static const consentWelcome01 = 'assets/images/consent/welcome_01.png';
-  static const consentWelcome02 = 'assets/images/consent/welcome_02.png';
-  static const consentWelcome03 = 'assets/images/consent/welcome_03.png';
-  static const consentWave = 'assets/images/consent/welcome_wave.svg';
+  static const welcomeHero01 = 'assets/images/welcome/welcome_01.png';
+  static const welcomeHero02 = 'assets/images/welcome/welcome_02.png';
+  static const welcomeHero03 = 'assets/images/welcome/welcome_03.png';
+  static const welcomeWave = 'assets/images/welcome/welcome_wave.svg';
 }

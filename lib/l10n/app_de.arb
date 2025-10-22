@@ -233,6 +233,18 @@
   "@dashboardLuviSyncPlaceholder": {
     "description": "Placeholder text for the Luvi Sync Journal stub screen."
   },
+  "welcome01Subtitle": "Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.",
+  "@welcome01Subtitle": {
+    "description": "Untertitel für Consent Welcome Screen 1 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
+  },
+  "welcome02Subtitle": "Echte Personalisierung statt Standard‑Pläne. Automatisch angepasst an deine Fortschritte, Zyklusphase und individuellen Ziele.",
+  "@welcome02Subtitle": {
+    "description": "Untertitel für Consent Welcome Screen 2 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
+  },
+  "welcome03Subtitle": "LUVI Sync: Dein täglicher Game‑Changer. Verstehe das 'Warum' hinter deinen Hormonen. Wissenschaftlich fundiert.",
+  "@welcome03Subtitle": {
+    "description": "Untertitel für Consent Welcome Screen 3 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
+  },
   "trainingsOverviewStubPlaceholder": "Trainingsübersicht folgt bald",
   "@trainingsOverviewStubPlaceholder": {
     "description": "Platzhaltertext solange die Trainingsübersicht noch nicht umgesetzt ist."
@@ -419,5 +431,44 @@
 
   "cycleTipHeadlineLuteal": "Lutealphase",
   "@cycleTipHeadlineLuteal": {"description": "Headline for the cycle tip card during the luteal phase."},
-  "cycleTipBodyLuteal": "Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten."
+  "cycleTipBodyLuteal": "Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten.",
+  "@cycleTipBodyLuteal": {"description": "Body text for the cycle tip card during the luteal phase."},
+
+  "onboarding08Title": "Wie fit fühlst du dich?",
+  "@onboarding08Title": {
+    "description": "Header title for onboarding step 8 (fitness level)."
+  },
+  "onboarding08OptionsSemantic": "Fitnesslevel auswählen",
+  "@onboarding08OptionsSemantic": {
+    "description": "Semantics label announcing the fitness level options list on step 8."
+  },
+  "onboarding08OptBeginner": "Ich fange gerade erst an",
+  "@onboarding08OptBeginner": {
+    "description": "Option label for beginner fitness level on step 8."
+  },
+  "onboarding08OptOccasional": "Trainiere ab und zu",
+  "@onboarding08OptOccasional": {
+    "description": "Option label for occasional training on step 8."
+  },
+  "onboarding08OptFit": "Fühle mich ziemlich fit",
+  "@onboarding08OptFit": {
+    "description": "Option label for feeling fit on step 8."
+  },
+  "onboarding08OptUnknown": "Weiß ich nicht",
+  "@onboarding08OptUnknown": {
+    "description": "Option label when user is unsure about fitness level on step 8."
+  },
+  "onboarding08Footnote": "Kein Stress - wir finden deinen perfekten Einstieg!",
+  "@onboarding08Footnote": {
+    "description": "Footnote reassuring the user regardless of fitness level on step 8."
+  },
+
+  "onboardingSuccessTitle": "Du bist startklar!",
+  "@onboardingSuccessTitle": {
+    "description": "Title shown on the onboarding success screen."
+  },
+  "onboardingSuccessButton": "Los geht\u0027s!",
+  "@onboardingSuccessButton": {
+    "description": "Button label on the onboarding success screen to navigate to dashboard."
+  }
 }

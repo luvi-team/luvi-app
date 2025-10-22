@@ -6,6 +6,7 @@ import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding05: Period duration single-select screen
@@ -68,8 +69,8 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
     final l10n = AppLocalizations.of(context)!;
     final title = l10n.onboarding05Title;
     const step = 5;
-    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
-    final stepFraction = l10n.onboardingStepFraction(step, 7);
+    final stepSemantic = l10n.onboardingStepSemantic(step, kOnboardingTotalSteps);
+    final stepFraction = l10n.onboardingStepFraction(step, kOnboardingTotalSteps);
 
     return Row(
       children: [

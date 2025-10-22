@@ -5,6 +5,7 @@ import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// First onboarding screen: name input.
@@ -83,8 +84,8 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     final l10n = AppLocalizations.of(context)!;
     final headerTitle = l10n.onboarding01Title;
     const step = 1;
-    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
-    final stepFraction = l10n.onboardingStepFraction(step, 7);
+    final stepSemantic = l10n.onboardingStepSemantic(step, kOnboardingTotalSteps);
+    final stepFraction = l10n.onboardingStepFraction(step, kOnboardingTotalSteps);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

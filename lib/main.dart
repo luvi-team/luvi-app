@@ -19,7 +19,12 @@ void main() async {
     defaultOrientations: const [DeviceOrientation.portraitUp],
   );
   await orientationController.applyDefault();
-  await SupabaseService.tryInitialize(envFile: '.env.development');
+  // Try to initialize Supabase but don't crash if it fails
+  try {
+    await SupabaseService.tryInitialize(envFile: '.env.development');
+  } catch (e) {
+    debugPrint('Supabase initialization failed: $e');
+  }
 
   runApp(ProviderScope(child: MyApp(orientationController: orientationController)));
 }

@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/features/screens/onboarding_06.dart';
-import 'package:luvi_app/features/screens/onboarding_08.dart';
-import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/features/screens/onboarding_07.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// Onboarding07: Cycle regularity single-select screen
-/// Figma: 07_Onboarding (Zyklusregelmäßigkeit)
-/// nodeId: 68479-6935
-class Onboarding07Screen extends StatefulWidget {
-  const Onboarding07Screen({super.key});
+/// Onboarding08: Fitness level single-select screen
+/// Figma: 08_Onboarding (Fitness-Level)
+/// nodeId: 68479-6936
+class Onboarding08Screen extends StatefulWidget {
+  const Onboarding08Screen({super.key});
 
-  static const routeName = '/onboarding/07';
+  static const routeName = '/onboarding/08';
 
   @override
-  State<Onboarding07Screen> createState() => _Onboarding07ScreenState();
+  State<Onboarding08Screen> createState() => _Onboarding08ScreenState();
 }
 
-class _Onboarding07ScreenState extends State<Onboarding07Screen> {
+class _Onboarding08ScreenState extends State<Onboarding08Screen> {
   int? _selected;
 
   void _selectOption(int index) {
@@ -31,8 +30,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   void _handleContinue() {
-    // Navigate to next onboarding step (08)
-    context.push(Onboarding08Screen.routeName);
+    context.go('/onboarding/success');
   }
 
   @override
@@ -52,13 +50,13 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             children: [
               SizedBox(height: spacing.topPadding),
               _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToFirstOption07),
+              SizedBox(height: spacing.headerToQuestion08),
               _buildOptionList(spacing),
-              SizedBox(height: spacing.lastOptionToFootnote07),
+              SizedBox(height: spacing.lastOptionToFootnote08),
               _buildFootnote(textTheme, colorScheme),
-              SizedBox(height: spacing.footnoteToCta07),
+              SizedBox(height: spacing.footnoteToCta08),
               _buildCta(),
-              SizedBox(height: spacing.ctaToHome07),
+              SizedBox(height: spacing.ctaToHome08),
             ],
           ),
         ),
@@ -68,12 +66,16 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
 
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context)!;
-    final title = l10n.onboarding07Title;
-    const step = 7;
-    final stepSemantic =
-        l10n.onboardingStepSemantic(step, kOnboardingTotalSteps);
-    final stepFraction =
-        l10n.onboardingStepFraction(step, kOnboardingTotalSteps);
+    final title = l10n.onboarding08Title;
+    const step = 8;
+    final stepSemantic = l10n.onboardingStepSemantic(
+      step,
+      kOnboardingTotalSteps,
+    );
+    final stepFraction = l10n.onboardingStepFraction(
+      step,
+      kOnboardingTotalSteps,
+    );
 
     return Row(
       children: [
@@ -83,7 +85,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             final didPop = await navigator.maybePop();
             if (!mounted) return;
             if (!didPop) {
-              context.go(Onboarding06Screen.routeName);
+              context.go(Onboarding07Screen.routeName);
             }
           },
           iconColor: colorScheme.onSurface,
@@ -114,37 +116,26 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   Widget _buildOptionList(OnboardingSpacing spacing) {
-    // Icons: clock (⏰), energy/lightning (⚡), help (❓)
-    // Using Material Icons.access_time, Icons.flash_on, Icons.help_outline as fallback
-    final theme = Theme.of(context);
-    final iconColor = theme.colorScheme.onSurface;
-    final iconSize = theme.iconTheme.size ?? TypographyTokens.size20;
     final l10n = AppLocalizations.of(context)!;
     final options = [
-      (icon: Icons.access_time, label: l10n.onboarding07OptRegular),
-      (icon: Icons.flash_on, label: l10n.onboarding07OptUnpredictable),
-      (icon: Icons.help_outline, label: l10n.onboarding07OptUnknown),
+      l10n.onboarding08OptBeginner,
+      l10n.onboarding08OptOccasional,
+      l10n.onboarding08OptFit,
+      l10n.onboarding08OptUnknown,
     ];
 
     return Semantics(
-      label: l10n.onboarding07OptionsSemantic,
+      label: l10n.onboarding08OptionsSemantic,
       child: Column(
         children: List.generate(
           options.length,
           (index) => Padding(
             padding: EdgeInsets.only(
-              bottom: index < options.length - 1 ? spacing.optionGap07 : 0,
+              bottom: index < options.length - 1 ? spacing.optionGap08 : 0,
             ),
             child: GoalCard(
               key: Key('onb_option_$index'),
-              icon: ExcludeSemantics(
-                child: Icon(
-                  options[index].icon,
-                  size: iconSize,
-                  color: iconColor,
-                ),
-              ),
-              title: options[index].label,
+              title: options[index],
               selected: _selected == index,
               onTap: () => _selectOption(index),
             ),
@@ -158,7 +149,7 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
     final l10n = AppLocalizations.of(context)!;
     return ExcludeSemantics(
       child: Text(
-        l10n.onboarding07Footnote,
+        l10n.onboarding08Footnote,
         style: textTheme.bodyMedium?.copyWith(
           fontSize: TypographyTokens.size16,
           height: TypographyTokens.lineHeightRatio24on16,
@@ -170,8 +161,8 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   Widget _buildCta() {
-    final isEnabled = _selected != null;
     final l10n = AppLocalizations.of(context)!;
+    final isEnabled = _selected != null;
 
     return Semantics(
       label: l10n.commonContinue,

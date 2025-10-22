@@ -20,6 +20,8 @@ import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
+import 'package:luvi_app/features/screens/onboarding_08.dart';
+import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
@@ -87,6 +89,16 @@ final List<GoRoute> featureRoutes = [
     path: Onboarding07Screen.routeName,
     name: 'onboarding_07',
     builder: (ctx, st) => const Onboarding07Screen(),
+  ),
+  GoRoute(
+    path: Onboarding08Screen.routeName,
+    name: 'onboarding_08',
+    builder: (ctx, st) => const Onboarding08Screen(),
+  ),
+  GoRoute(
+    path: OnboardingSuccessScreen.routeName,
+    name: 'onboarding_success',
+    builder: (ctx, st) => const OnboardingSuccessScreen(),
   ),
   GoRoute(
     path: '/onboarding/done',
@@ -185,10 +197,21 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     AuthEntryScreen.routeName,
   );
   final isOnboarding = state.matchedLocation.startsWith('/onboarding/');
+  final isWelcome = state.matchedLocation.startsWith('/onboarding/w');
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final session = isInitialized
       ? SupabaseService.client.auth.currentSession
       : null;
+
+  // Allow welcome screens in dev mode
+  if (!kReleaseMode && isWelcome) {
+    return null;
+  }
+
+  // Allow all onboarding screens in dev mode
+  if (!kReleaseMode && isOnboarding) {
+    return null;
+  }
 
   if (allowOnboardingDev && !kReleaseMode && isOnboarding) {
     return null; // allow onboarding routes in dev without auth

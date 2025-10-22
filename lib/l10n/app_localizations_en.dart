@@ -322,4 +322,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cycleTipBodyLuteal => 'Switch to calm strength or mobility work. Extra breaks help you maintain your energy level.';
+
+  @override
+  String get onboarding08Title => 'How fit do you feel?';
+
+  @override
+  String get onboarding08OptionsSemantic => 'Select fitness level';
+
+  @override
+  String get onboarding08OptBeginner => 'I\'m just getting started';
+
+  @override
+  String get onboarding08OptOccasional => 'I train occasionally';
+
+  @override
+  String get onboarding08OptFit => 'I feel pretty fit';
+
+  @override
+  String get onboarding08OptUnknown => 'I don\'t know';
+
+  @override
+  String get onboarding08Footnote => 'No stress - we\'ll find your perfect starting point!';
+
+  @override
+  String get onboardingSuccessTitle => 'You\'re ready to go!';
+
+  @override
+  String get onboardingSuccessButton => 'Let\'s go!';
 }

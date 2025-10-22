@@ -18,7 +18,7 @@ void main() {
           onNext: () {},
           heroAspect: 438 / 619,
           waveHeightPx: 413,
-          waveAsset: 'assets/images/consent/welcome_wave.svg',
+          waveAsset: Assets.welcomeWave,
           activeIndex: 0,
         ),
       ),
@@ -66,7 +66,7 @@ void main() {
       }
     })();
 
-    expect(assetName, contains(Assets.consentWave));
+    expect(assetName, contains(Assets.welcomeWave));
 
     // Semantics header present
     final handle = tester.ensureSemantics();

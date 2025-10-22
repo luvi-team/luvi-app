@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding03: Goals multi-select screen
@@ -70,8 +71,10 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
   Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context)!;
     final title = l10n.onboarding03Title;
-    final stepSemantic = l10n.onboardingStepSemantic(3, 7);
-    final stepFraction = l10n.onboardingStepFraction(3, 7);
+    final stepSemantic =
+        l10n.onboardingStepSemantic(3, kOnboardingTotalSteps);
+    final stepFraction =
+        l10n.onboardingStepFraction(3, kOnboardingTotalSteps);
 
     return Row(
       children: [

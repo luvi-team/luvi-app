@@ -79,6 +79,11 @@ class _Images {
   final String roteruebe = 'assets/images/dashboard/roteruebe.png';
   final String meditation = 'assets/images/dashboard/meditation.png';
   final String stretching = 'assets/images/dashboard/stretching.png';
+
+  // Onboarding Success Screen (Trophy + 47 confetti elements from Figma node 68597:8084)
+  // PNG format for pixel-perfect rendering of complex illustration
+  final String onboardingSuccessTrophy =
+      'assets/images/onboarding/onboarding_success_trophy.png';
 }
 
 class _DashboardStatIcons {

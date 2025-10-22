@@ -103,8 +103,8 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     final l10n = AppLocalizations.of(context)!;
     final title = l10n.onboarding02Title;
     const step = 2;
-    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
-    final stepFraction = l10n.onboardingStepFraction(step, 7);
+    final stepSemantic = l10n.onboardingStepSemantic(step, kOnboardingTotalSteps);
+    final stepFraction = l10n.onboardingStepFraction(step, kOnboardingTotalSteps);
 
     return Row(
       children: [

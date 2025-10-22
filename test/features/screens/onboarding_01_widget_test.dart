@@ -43,6 +43,7 @@ void main() {
       await tester.pumpWidget(createTestApp());
       await tester.pumpAndSettle();
 
+      expect(find.text('1/8'), findsOneWidget);
       expect(find.textContaining('Erzähl mir von dir'), findsOneWidget);
 
       final nameField = find.byType(TextField);

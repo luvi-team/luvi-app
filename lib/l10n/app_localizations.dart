@@ -683,11 +683,65 @@ abstract class AppLocalizations {
   /// **'Luteal phase'**
   String get cycleTipHeadlineLuteal;
 
-  /// No description provided for @cycleTipBodyLuteal.
+  /// Body text for the cycle tip card during the luteal phase.
   ///
   /// In en, this message translates to:
   /// **'Switch to calm strength or mobility work. Extra breaks help you maintain your energy level.'**
   String get cycleTipBodyLuteal;
+
+  /// Header title for onboarding step 8 (fitness level).
+  ///
+  /// In en, this message translates to:
+  /// **'How fit do you feel?'**
+  String get onboarding08Title;
+
+  /// Semantics label announcing the fitness level options list on step 8.
+  ///
+  /// In en, this message translates to:
+  /// **'Select fitness level'**
+  String get onboarding08OptionsSemantic;
+
+  /// Option label for beginner fitness level on step 8.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m just getting started'**
+  String get onboarding08OptBeginner;
+
+  /// Option label for occasional training on step 8.
+  ///
+  /// In en, this message translates to:
+  /// **'I train occasionally'**
+  String get onboarding08OptOccasional;
+
+  /// Option label for feeling fit on step 8.
+  ///
+  /// In en, this message translates to:
+  /// **'I feel pretty fit'**
+  String get onboarding08OptFit;
+
+  /// Option label when user is unsure about fitness level on step 8.
+  ///
+  /// In en, this message translates to:
+  /// **'I don\'t know'**
+  String get onboarding08OptUnknown;
+
+  /// Footnote reassuring the user regardless of fitness level on step 8.
+  ///
+  /// In en, this message translates to:
+  /// **'No stress - we\'ll find your perfect starting point!'**
+  String get onboarding08Footnote;
+
+  /// Title shown on the onboarding success screen.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re ready to go!'**
+  String get onboardingSuccessTitle;
+
+  /// Button label on the onboarding success screen to navigate to dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go!'**
+  String get onboardingSuccessButton;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

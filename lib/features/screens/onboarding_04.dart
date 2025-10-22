@@ -98,8 +98,10 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
-    final stepSemantic = l10n.onboardingStepSemantic(4, 7);
-    final stepFraction = l10n.onboardingStepFraction(4, 7);
+    final stepSemantic =
+        l10n.onboardingStepSemantic(4, kOnboardingTotalSteps);
+    final stepFraction =
+        l10n.onboardingStepFraction(4, kOnboardingTotalSteps);
 
     return Row(
       children: [

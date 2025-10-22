@@ -15,7 +15,10 @@ class WelcomeShell extends StatelessWidget {
     this.subtitle,
     this.onNext,
     this.activeIndex,
-    this.waveAsset = Assets.consentWave,
+    this.waveAsset = Assets.welcomeWave,
+    this.headerSpacing = 0,
+    this.primaryButtonLabel = 'Weiter',
+    this.subtitleMaxWidth = double.infinity,
     this.bottomContent,
   }) : assert(
          bottomContent != null ||
@@ -34,6 +37,9 @@ class WelcomeShell extends StatelessWidget {
   final VoidCallback? onNext;
   final int? activeIndex;
   final String waveAsset;
+  final double headerSpacing;
+  final String primaryButtonLabel;
+  final double subtitleMaxWidth;
   final Widget? bottomContent;
 
   @override
@@ -82,6 +88,14 @@ class WelcomeShell extends StatelessWidget {
   Widget _buildDefaultContent(ThemeData theme) {
     final children = <Widget>[];
 
+    if ((title != null ||
+            subtitle != null ||
+            activeIndex != null ||
+            onNext != null) &&
+        headerSpacing > 0) {
+      children.add(SizedBox(height: headerSpacing));
+    }
+
     if (title != null) {
       children.add(Semantics(header: true, child: title!));
     }
@@ -90,10 +104,16 @@ class WelcomeShell extends StatelessWidget {
     }
     if (subtitle != null) {
       children.add(
-        Text(
-          subtitle!,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium,
+        Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: subtitleMaxWidth),
+            child: Text(
+              subtitle!,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
         ),
       );
     }
@@ -110,7 +130,10 @@ class WelcomeShell extends StatelessWidget {
     }
     if (onNext != null) {
       children.add(
-        ElevatedButton(onPressed: onNext!, child: const Text('Weiter')),
+        ElevatedButton(
+          onPressed: onNext!,
+          child: Text(primaryButtonLabel),
+        ),
       );
       children.add(const SizedBox(height: Spacing.m));
     }

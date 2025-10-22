@@ -41,6 +41,13 @@ class OnboardingSpacing {
     required this.lastOptionToFootnote07,
     required this.footnoteToCta07,
     required this.ctaToHome07,
+    // ONB_08 specific spacing (analog zu Screen 7: 90px Rhythmus)
+    required this.headerToQuestion08,
+    required this.questionToFirstOption08,
+    required this.optionGap08,
+    required this.lastOptionToFootnote08,
+    required this.footnoteToCta08,
+    required this.ctaToHome08,
     // New tokens for header migration (question becomes header)
     required this.headerToDate,
     required this.headerToFirstCard,
@@ -48,6 +55,9 @@ class OnboardingSpacing {
     required this.headerToFirstOption05,
     required this.headerToFirstOption06,
     required this.headerToFirstOption07,
+    // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
+    required this.trophyToTitle,
+    required this.titleToButton,
   });
 
   final double horizontalPadding;
@@ -100,6 +110,14 @@ class OnboardingSpacing {
   final double footnoteToCta07;
   final double ctaToHome07;
 
+  // ONB_08 specific spacing (analog zu Screen 7: 90px Rhythmus)
+  final double headerToQuestion08;
+  final double questionToFirstOption08;
+  final double optionGap08;
+  final double lastOptionToFootnote08;
+  final double footnoteToCta08;
+  final double ctaToHome08;
+
   // New tokens for header migration (question becomes header)
   final double headerToDate;
   final double headerToFirstCard;
@@ -107,6 +125,10 @@ class OnboardingSpacing {
   final double headerToFirstOption05;
   final double headerToFirstOption06;
   final double headerToFirstOption07;
+
+  // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
+  final double trophyToTitle;
+  final double titleToButton;
 
   static const double _designHeight = 926.0;
   static OnboardingSpacing of(BuildContext context) {
@@ -166,6 +188,13 @@ class OnboardingSpacing {
       lastOptionToFootnote07: _lastOptionToFootnote07 * effectiveHeightScale,
       footnoteToCta07: _footnoteToCta07 * effectiveHeightScale,
       ctaToHome07: _ctaToHome07 * effectiveHeightScale,
+      // ONB_08 specific spacing
+      headerToQuestion08: _headerToQuestion08 * effectiveHeightScale,
+      questionToFirstOption08: _questionToFirstOption08 * effectiveHeightScale,
+      optionGap08: _optionGap08,
+      lastOptionToFootnote08: _lastOptionToFootnote08 * effectiveHeightScale,
+      footnoteToCta08: _footnoteToCta08 * effectiveHeightScale,
+      ctaToHome08: _ctaToHome08 * effectiveHeightScale,
       // New tokens for header migration
       headerToDate: _headerToDate * effectiveHeightScale,
       headerToFirstCard: _headerToFirstCard * effectiveHeightScale,
@@ -173,6 +202,9 @@ class OnboardingSpacing {
       headerToFirstOption05: _headerToFirstOption05 * effectiveHeightScale,
       headerToFirstOption06: _headerToFirstOption06 * effectiveHeightScale,
       headerToFirstOption07: _headerToFirstOption07 * effectiveHeightScale,
+      // Success Screen specific spacing
+      trophyToTitle: _trophyToTitle * effectiveHeightScale,
+      titleToButton: _titleToButton * effectiveHeightScale,
     );
   }
 
@@ -260,6 +292,15 @@ class OnboardingSpacing {
   static const double _footnoteToCta07 = 90.0;
   static const double _ctaToHome07 = 90.0;
 
+  // ONB_08 specific spacing (90px Rhythmus analog zu Screen 7)
+  // Konsistenter 90px-Rhythmus für visuelles Gleichgewicht
+  static const double _headerToQuestion08 = 90.0;
+  static const double _questionToFirstOption08 = 90.0;
+  static const double _optionGap08 = 24.0; // konsistent mit anderen Screens
+  static const double _lastOptionToFootnote08 = 90.0;
+  static const double _footnoteToCta08 = 90.0;
+  static const double _ctaToHome08 = 90.0;
+
   // New tokens for header migration (question becomes header)
   // Conservative 60% of sum (headerToInstruction + instructionToDate/Content)
   static const double _headerToDate = 76.0; // ONB_02: (75+52)*0.6
@@ -268,4 +309,9 @@ class OnboardingSpacing {
   static const double _headerToFirstOption05 = 50.0; // ONB_05: (42+42)*0.6
   static const double _headerToFirstOption06 = 58.0; // ONB_06: (48+48)*0.6
   static const double _headerToFirstOption07 = 108.0; // ONB_07: (90+90)*0.6
+
+  // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
+  // Custom values (not aligned with existing rhythm tokens)
+  static const double _trophyToTitle = 28.0; // Trophy end → Title start
+  static const double _titleToButton = 66.0; // Title end → Button start
 }
