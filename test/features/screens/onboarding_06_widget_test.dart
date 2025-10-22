@@ -7,6 +7,7 @@ import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -89,7 +90,12 @@ void main() {
 
       // Verify 06 rendered
       expect(find.textContaining('Wie lange dauert dein'), findsOneWidget);
-      expect(find.text('6/7'), findsOneWidget);
+      final screenContext = tester.element(find.byType(Onboarding06Screen));
+      final l10n = AppLocalizations.of(screenContext)!;
+      expect(
+        find.text(l10n.onboardingStepFraction(6, kOnboardingTotalSteps)),
+        findsOneWidget,
+      );
 
       // Tap back button
       final backButton = find.byType(BackButtonCircle);

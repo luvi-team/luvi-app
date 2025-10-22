@@ -12,8 +12,8 @@ void main() {
       ),
     );
     final headlineFinder = find.byWidgetPredicate((w) {
-      if (w is RichText) return w.text.toPlainText().contains('Dein Zyklus');
-      if (w is Text) return (w.data?.contains('Dein Zyklus') ?? false);
+      if (w is RichText) return w.text.toPlainText().contains('Im Einklang');
+      if (w is Text) return (w.data?.contains('Im Einklang') ?? false);
       return false;
     });
     expect(headlineFinder, findsOneWidget);

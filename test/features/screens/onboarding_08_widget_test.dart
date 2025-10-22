@@ -6,6 +6,7 @@ import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_08.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -87,7 +88,12 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Wie fit fühlst du dich?'), findsOneWidget);
-      expect(find.text('8/8'), findsOneWidget);
+      final screenContext = tester.element(find.byType(Onboarding08Screen));
+      final l10n = AppLocalizations.of(screenContext)!;
+      expect(
+        find.text(l10n.onboardingStepFraction(8, kOnboardingTotalSteps)),
+        findsOneWidget,
+      );
 
       final backButton = find.byType(BackButtonCircle);
       expect(backButton, findsOneWidget);
@@ -119,19 +125,19 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      final context = tester.element(find.byType(Onboarding08Screen));
+      final l10n = AppLocalizations.of(context)!;
+
       expect(find.byKey(const Key('onb_option_0')), findsOneWidget);
       expect(find.byKey(const Key('onb_option_1')), findsOneWidget);
       expect(find.byKey(const Key('onb_option_2')), findsOneWidget);
       expect(find.byKey(const Key('onb_option_3')), findsOneWidget);
 
-      expect(find.text('Ich fange gerade erst an'), findsOneWidget);
-      expect(find.text('Trainiere ab und zu'), findsOneWidget);
-      expect(find.text('Fühle mich ziemlich fit'), findsOneWidget);
-      expect(find.text('Weiß ich nicht'), findsOneWidget);
-      expect(
-        find.text('Egal wo du startest - ich bin für dich da!'),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.onboarding08OptBeginner), findsOneWidget);
+      expect(find.text(l10n.onboarding08OptOccasional), findsOneWidget);
+      expect(find.text(l10n.onboarding08OptFit), findsOneWidget);
+      expect(find.text(l10n.onboarding08OptUnknown), findsOneWidget);
+      expect(find.text(l10n.onboarding08Footnote), findsOneWidget);
     });
   });
 }
