@@ -3,18 +3,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
+import 'package:luvi_app/features/consent/routes.dart';
 
 void main() {
   testWidgets('Consent01 → push Consent02 and pop back', (tester) async {
     final router = GoRouter(
-      initialLocation: '/consent/01',
+      initialLocation: ConsentRoutes.consent01,
       routes: [
         GoRoute(
-          path: '/consent/01',
+          path: Consent01Screen.routeName,
           builder: (context, state) => const Consent01Screen(),
         ),
         GoRoute(
-          path: '/consent/02',
+          path: ConsentRoutes.consent02,
           builder: (context, state) => Scaffold(
             body: Center(
               child: Column(

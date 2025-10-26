@@ -12,7 +12,7 @@ void main() {
   testWidgets('tapping signup link navigates to signup screen', (tester) async {
     final router = GoRouter(
       routes: features.featureRoutes,
-      initialLocation: '/auth/login',
+      initialLocation: LoginScreen.routeName,
     );
     addTearDown(router.dispose);
 

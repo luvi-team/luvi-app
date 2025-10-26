@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:luvi_app/services/user_state_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 
 void main() {
   setUp(() {

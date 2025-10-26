@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'welcome_metrics.dart';
-import 'package:luvi_app/core/assets.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:go_router/go_router.dart';
 // no routing target yet for W3 → keep clean TODO

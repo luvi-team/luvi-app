@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/design_tokens/sizes.dart';
+import '../routes.dart';
 import 'consent_welcome_03_screen.dart';
 
 class Consent01Screen extends StatelessWidget {
   const Consent01Screen({super.key});
 
-  static const String routeName = '/consent/01';
+  static const String routeName = ConsentRoutes.consent01;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +68,7 @@ class Consent01Screen extends StatelessWidget {
             bottom: 44,
             height: Sizes.buttonHeight,
             child: ElevatedButton(
-              onPressed: () => context.push('/consent/02'),
+              onPressed: () => context.push(ConsentRoutes.consent02),
               child: const Text('Weiter'),
             ),
           ),

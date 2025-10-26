@@ -493,6 +493,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.2"
+  luvi_services:
+    dependency: "direct main"
+    description:
+      path: services
+      relative: true
+    source: path
+    version: "0.0.0"
   matcher:
     dependency: transitive
     description:

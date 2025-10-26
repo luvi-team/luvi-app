@@ -10,11 +10,15 @@ import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
-import 'package:luvi_app/services/user_state_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../routes.dart';
 
 class Consent02Screen extends ConsumerWidget {
   const Consent02Screen({super.key});
+
+  static const String routeName = ConsentRoutes.consent02;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,7 +50,7 @@ class Consent02Screen extends ConsumerWidget {
                       if (r.canPop()) {
                         context.pop();
                       } else {
-                        context.go('/consent/01');
+                        context.go(ConsentRoutes.consent01);
                       }
                     },
                   ),

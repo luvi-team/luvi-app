@@ -3,10 +3,21 @@
 import 'package:flutter/material.dart';
 
 /// Centralized asset paths for Dashboard (typo-safe, single source of truth).
+const String _kWelcomeHero01 = 'assets/images/welcome/welcome_01.png';
+const String _kWelcomeHero02 = 'assets/images/welcome/welcome_02.png';
+const String _kWelcomeHero03 = 'assets/images/welcome/welcome_03.png';
+const String _kWelcomeWave = 'assets/images/welcome/welcome_wave.svg';
+
 class Assets {
   static const icons = _Icons();
   static const images = _Images();
   static const animations = _Animations();
+
+  // Backwards-compatible constants for legacy call sites.
+  static const String welcomeWave = _kWelcomeWave;
+  static const String welcomeHero01 = _kWelcomeHero01;
+  static const String welcomeHero02 = _kWelcomeHero02;
+  static const String welcomeHero03 = _kWelcomeHero03;
 
   /// Default error builder for dashboard `Image.asset` widgets.
   /// Renders a neutral placeholder so layout stays stable when assets fail.
@@ -85,6 +96,12 @@ class _Images {
   // PNG format keeps static illustration crisp when animation is disabled
   final String onboardingSuccessTrophy =
       'assets/images/onboarding/onboarding_success_trophy.png';
+
+  // Welcome/Consent hero assets
+  final String welcomeHero01 = _kWelcomeHero01;
+  final String welcomeHero02 = _kWelcomeHero02;
+  final String welcomeHero03 = _kWelcomeHero03;
+  final String welcomeWave = _kWelcomeWave;
 }
 
 class _Animations {

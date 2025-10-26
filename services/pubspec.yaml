@@ -1,0 +1,19 @@
+name: luvi_services
+description: Local services package for LUVI app shared logic.
+publish_to: 'none'
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+  flutter: ">=3.35.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_dotenv: ^5.1.0
+  riverpod_annotation: ^2.6.1
+  shared_preferences: ^2.3.3
+  supabase_flutter: ^2.8.0
+
+dev_dependencies:
+  build_runner: 2.4.13
+  riverpod_generator: ^2.4.0

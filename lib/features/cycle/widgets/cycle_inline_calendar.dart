@@ -7,6 +7,7 @@ import '../../../core/design_tokens/typography.dart';
 import '../../../core/theme/app_theme.dart';
 import '../domain/phase.dart';
 import '../domain/week_strip.dart';
+import '../screens/cycle_overview_stub.dart';
 
 const double _trackHeight = 50.0;
 const double _dayWidth = 25.31;
@@ -155,7 +156,7 @@ class _CalendarContent extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => context.go('/zyklus'),
+            onTap: () => context.go(CycleOverviewStubScreen.routeName),
             borderRadius: BorderRadius.zero,
             child: SizedBox(
               width: availableWidth,

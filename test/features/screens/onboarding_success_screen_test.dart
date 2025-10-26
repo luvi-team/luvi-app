@@ -13,7 +13,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:luvi_app/services/user_state_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

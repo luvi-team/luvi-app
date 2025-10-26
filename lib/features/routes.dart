@@ -28,7 +28,7 @@ import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/services/supabase_service.dart';
+import 'package:luvi_services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
   GoRoute(
@@ -57,7 +57,7 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const Consent01Screen(),
   ),
   GoRoute(
-    path: '/consent/02',
+    path: Consent02Screen.routeName,
     name: 'consent02',
     builder: (context, state) => const Consent02Screen(),
   ),
@@ -118,7 +118,7 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const AuthEntryScreen(),
   ),
   GoRoute(
-    path: '/auth/login',
+    path: LoginScreen.routeName,
     name: 'login',
     builder: (context, state) => const LoginScreen(),
   ),
@@ -155,7 +155,7 @@ final List<GoRoute> featureRoutes = [
     },
   ),
   GoRoute(
-    path: '/auth/signup',
+    path: AuthSignupScreen.routeName,
     name: 'signup',
     builder: (context, state) => const AuthSignupScreen(),
   ),
@@ -198,7 +198,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   );
 
   final isInitialized = SupabaseService.isInitialized;
-  final isLoggingIn = state.matchedLocation.startsWith('/auth/login');
+  final isLoggingIn = state.matchedLocation.startsWith(LoginScreen.routeName);
   final isAuthEntry = state.matchedLocation.startsWith(
     AuthEntryScreen.routeName,
   );

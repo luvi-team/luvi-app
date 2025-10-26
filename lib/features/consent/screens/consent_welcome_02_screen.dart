@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'welcome_metrics.dart';
-import 'package:luvi_app/core/assets.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/welcome_shell.dart';
 import 'consent_welcome_03_screen.dart';

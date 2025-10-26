@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:luvi_app/core/assets.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import '../../../core/design_tokens/sizes.dart';
 import '../../../core/design_tokens/spacing.dart';
 import 'dots_indicator.dart';

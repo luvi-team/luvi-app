@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
+import 'package:luvi_app/features/auth/screens/login_screen.dart';
 
 Widget _buildRouterHarness() {
   final router = GoRouter(
@@ -13,12 +15,12 @@ Widget _buildRouterHarness() {
         builder: (context, state) => const AuthEntryScreen(),
       ),
       GoRoute(
-        path: '/auth/login',
+        path: LoginScreen.routeName,
         builder: (context, state) =>
             const Scaffold(body: Center(child: Text('LOGIN'))),
       ),
       GoRoute(
-        path: '/auth/signup',
+        path: AuthSignupScreen.routeName,
         builder: (context, state) =>
             const Scaffold(body: Center(child: Text('SIGNUP'))),
       ),

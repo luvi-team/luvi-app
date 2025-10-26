@@ -10,7 +10,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/services/user_state_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 
 /// Final screen after onboarding completes.
 /// Shows a trophy celebration (combined Lottie with trophy + confetti, or PNG

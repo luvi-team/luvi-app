@@ -6,6 +6,8 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/layout/auth_entry_layout.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
+import 'package:luvi_app/features/auth/screens/login_screen.dart';
 
 /// Entry screen shown after consent flow but before sign up/login.
 class AuthEntryScreen extends ConsumerWidget {
@@ -101,7 +103,7 @@ class _EntryPrimaryCta extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       key: const ValueKey('auth_entry_register_cta'),
-      onPressed: () => context.push('/auth/signup'),
+      onPressed: () => context.push(AuthSignupScreen.routeName),
       style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
       child: const Text('Registrieren'),
     );
@@ -115,7 +117,7 @@ class _EntrySecondaryCta extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       key: const ValueKey('auth_entry_login_cta'),
-      onPressed: () => context.push('/auth/login'),
+      onPressed: () => context.push(LoginScreen.routeName),
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
         minimumSize: const Size.fromHeight(24),

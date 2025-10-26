@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/consent/routes.dart';
 
 void main() {
   group('Consent01Screen', () {
@@ -19,7 +20,7 @@ void main() {
             builder: (context, state) => const Consent01Screen(),
           ),
           GoRoute(
-            path: '/consent/02',
+            path: ConsentRoutes.consent02,
             builder: (context, state) =>
                 const Scaffold(body: Text('Consent 02')),
           ),

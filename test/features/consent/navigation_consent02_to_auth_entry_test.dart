@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
+import 'package:luvi_app/features/consent/routes.dart';
 import 'package:luvi_app/features/routes.dart';
-import 'package:luvi_app/services/user_state_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _PreselectedConsent02Notifier extends Consent02Notifier {
@@ -32,7 +33,7 @@ void main() {
 
     final router = GoRouter(
       routes: featureRoutes,
-      initialLocation: '/consent/02',
+      initialLocation: ConsentRoutes.consent02,
     );
 
     SharedPreferences.setMockInitialValues({});

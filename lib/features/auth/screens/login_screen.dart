@@ -14,6 +14,8 @@ import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
+  static const String routeName = '/auth/login';
+
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
