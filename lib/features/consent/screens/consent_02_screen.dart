@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/gestures.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -19,166 +18,9 @@ class Consent02Screen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
-    final ds = Theme.of(context).extension<DsTokens>();
-
     final state = ref.watch(consent02NotifierProvider);
     final notifier = ref.read(consent02NotifierProvider.notifier);
-
-    Widget indicator(bool selected) {
-      return Semantics(
-        label: selected ? 'Ausgewählt' : 'Nicht ausgewählt',
-        selected: selected,
-        child: Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: c.outline, width: 2),
-            color: Colors.transparent,
-          ),
-          alignment: Alignment.center,
-          child: selected
-              ? Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: c.primary,
-                  ),
-                )
-              : null,
-        ),
-      );
-    }
-
-    Widget scopeCard({
-      required String body,
-      required ConsentScope scope,
-      InlineSpan? trailingLinks,
-      Key? cardKey,
-    }) {
-      final selected = state.choices[scope] == true;
-      final borderRadius = BorderRadius.circular(Sizes.radiusL);
-      return Semantics(
-        button: true,
-        toggled: selected,
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: borderRadius,
-          child: InkWell(
-            key: cardKey,
-            borderRadius: borderRadius,
-            onTap: () {
-              HapticFeedback.selectionClick();
-              notifier.toggle(scope);
-            },
-            child: Ink(
-              decoration: BoxDecoration(
-                color: (ds?.cardSurface) ?? c.surfaceContainer,
-                borderRadius: borderRadius,
-                border: selected
-                    ? Border.all(
-                        color: (ds?.cardBorderSelected) ?? c.onSurface,
-                        width: 1,
-                      )
-                    : null,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 35,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: trailingLinks == null
-                          ? Text(
-                              body,
-                              style: t.bodyMedium?.copyWith(
-                                color: c.onSurface,
-                                fontSize: 16,
-                                height: 1.5,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: FontFamilies.figtree,
-                              ),
-                            )
-                          : RichText(
-                              text: TextSpan(
-                                style: t.bodyMedium?.copyWith(
-                                  color: c.onSurface,
-                                  fontSize: 16,
-                                  height: 1.5,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: FontFamilies.figtree,
-                                ),
-                                children: [
-                                  TextSpan(text: body),
-                                  trailingLinks,
-                                ],
-                              ),
-                            ),
-                    ),
-                    const SizedBox(width: 20),
-                    indicator(selected),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    InlineSpan buildLinks() {
-      final privacyUri = Uri.parse(
-        'https://DEINE-DOMAIN.tld/datenschutzerklaerung',
-      ); // TODO: replace with real URL
-      final termsUri = Uri.parse(
-        'https://DEINE-DOMAIN.tld/nutzungsbedingungen',
-      ); // TODO: replace with real URL
-
-      Future<void> open(Uri uri) async {
-        final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-        if (!ok && context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Link konnte nicht geöffnet werden')),
-          );
-        }
-      }
-
-      return TextSpan(
-        children: [
-          const TextSpan(text: ' '),
-          TextSpan(
-            text: 'Datenschutzerklärung',
-            style: t.bodyMedium?.copyWith(
-              color: c.primary,
-              fontWeight: FontWeight.w700,
-              decoration: TextDecoration.none,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                open(privacyUri);
-              },
-          ),
-          const TextSpan(text: ' sowie den '),
-          TextSpan(
-            text: 'Nutzungsbedingungen',
-            style: t.bodyMedium?.copyWith(
-              color: c.primary,
-              fontWeight: FontWeight.w700,
-              decoration: TextDecoration.none,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                open(termsUri);
-              },
-          ),
-          const TextSpan(text: ' einverstanden.'),
-        ],
-      );
-    }
+    bool isSelected(ConsentScope scope) => state.choices[scope] == true;
 
     return Scaffold(
       body: Column(
@@ -232,43 +74,73 @@ class Consent02Screen extends ConsumerWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
               children: [
-                scopeCard(
+                _ConsentChoiceCard(
+                  key: const Key('consent02_card_required_health'),
+                  title: 'health_processing',
                   body:
                       'Ich bin damit einverstanden, dass LUVI meine persönlichen Gesundheitsdaten verarbeitet, damit LUVI ihre Funktionen bereitstellen kann.',
-                  scope: ConsentScope.health_processing,
-                  cardKey: const Key('consent02_card_required_health'),
+                  selected: isSelected(ConsentScope.health_processing),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    notifier.toggle(ConsentScope.health_processing);
+                  },
                 ),
                 const SizedBox(height: 20),
-                scopeCard(
+                _ConsentChoiceCard(
+                  key: const Key('consent02_card_required_terms'),
+                  title: 'terms',
                   body: 'Ich erkläre mich mit der',
-                  scope: ConsentScope.terms,
-                  trailingLinks: buildLinks(),
-                  cardKey: const Key('consent02_card_required_terms'),
+                  selected: isSelected(ConsentScope.terms),
+                  trailing: _buildLinkTrailing(context),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    notifier.toggle(ConsentScope.terms);
+                  },
                 ),
                 const SizedBox(height: 20),
-                scopeCard(
+                _ConsentChoiceCard(
+                  key: const Key('consent02_card_required_ai_journal'),
+                  title: 'ai_journal',
                   body:
                       'Ich bin damit einverstanden, dass LUVI künstliche Intelligenz nutzt, um meine Trainings-, Ernährungs- und Regenerationsempfehlungen in einem personalisierten Journal für mich zusammenzufassen.',
-                  scope: ConsentScope.ai_journal,
-                  cardKey: const Key('consent02_card_required_ai_journal'),
+                  selected: isSelected(ConsentScope.ai_journal),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    notifier.toggle(ConsentScope.ai_journal);
+                  },
                 ),
                 const SizedBox(height: 20),
-                scopeCard(
+                _ConsentChoiceCard(
+                  title: 'analytics',
                   body:
                       'Ich bin damit einverstanden, dass pseudonymisierte Nutzungs- und Gerätedaten zu Analysezwecken verarbeitet werden, damit LUVI Stabilität und Benutzerfreundlichkeit verbessern kann.*',
-                  scope: ConsentScope.analytics,
+                  selected: isSelected(ConsentScope.analytics),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    notifier.toggle(ConsentScope.analytics);
+                  },
                 ),
                 const SizedBox(height: 20),
-                scopeCard(
+                _ConsentChoiceCard(
+                  title: 'marketing',
                   body:
                       'Ich stimme zu, dass LUVI meine persönlichen Daten und Nutzungsdaten verarbeitet, um mir personalisierte Empfehlungen zu relevanten LUVI-Inhalten und Informationen zu Angeboten per In-App-Hinweisen, E-Mail und/oder Push-Mitteilungen zuzusenden.*',
-                  scope: ConsentScope.marketing,
+                  selected: isSelected(ConsentScope.marketing),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    notifier.toggle(ConsentScope.marketing);
+                  },
                 ),
                 const SizedBox(height: 20),
-                scopeCard(
+                _ConsentChoiceCard(
+                  title: 'model_training',
                   body:
                       'Ich willige ein, dass pseudonymisierte Nutzungs- und Gesundheitsdaten zur Qualitätssicherung und Verbesserung von Empfehlungen verwendet werden (z. B. Überprüfung der Genauigkeit von Zyklusvorhersagen).*',
-                  scope: ConsentScope.model_training,
+                  selected: isSelected(ConsentScope.model_training),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    notifier.toggle(ConsentScope.model_training);
+                  },
                 ),
               ],
             ),
@@ -282,59 +154,319 @@ class Consent02Screen extends ConsumerWidget {
               top: false,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Deine Zustimmung kannst du jederzeit in der App oder unter hello@getluvi.com widerrufen.',
-                      textAlign: TextAlign.center,
-                      style: t.bodySmall?.copyWith(
-                        color: c.onSurface,
-                        fontSize: 14,
-                        height: 1.28,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: state.allOptionalSelected
-                            ? null
-                            : notifier.selectAllOptional,
-                        child: const Text('Alle akzeptieren'),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        key: const Key('consent02_btn_next'),
-                        onPressed: state.requiredAccepted
-                            ? () async {
-                                final userState = await tryOrNullAsync(
-                                  () => ref.read(
-                                    userStateServiceProvider.future,
-                                  ),
-                                  tag: 'userState',
-                                );
-                                await userState?.markWelcomeSeen();
-                                if (context.mounted) {
-                                  context.go('/auth/entry');
-                                }
-                              }
-                            : null,
-                        child: const Text('Weiter'),
-                      ),
-                    ),
-                  ],
+                child: _ConsentFooter(
+                  key: const Key('consent02_footer'),
+                  onAcceptAll: notifier.selectAllOptional,
+                  isAcceptAllDisabled: state.allOptionalSelected,
+                  onNext: () async {
+                    final userState = await tryOrNullAsync(
+                      () => ref.read(userStateServiceProvider.future),
+                      tag: 'userState',
+                    );
+                    await userState?.markWelcomeSeen();
+                    if (context.mounted) {
+                      context.go('/auth/entry');
+                    }
+                  },
+                  nextEnabled: state.requiredAccepted,
                 ),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  InlineSpan _buildLinkTrailing(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    final baseStyle = textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurface,
+          fontSize: 16,
+          height: 1.5,
+          fontWeight: FontWeight.w400,
+          fontFamily: FontFamilies.figtree,
+        ) ??
+        TextStyle(
+          color: colorScheme.onSurface,
+          fontSize: 16,
+          height: 1.5,
+          fontWeight: FontWeight.w400,
+          fontFamily: FontFamilies.figtree,
+        );
+    final privacyUri = Uri.parse(
+      'https://DEINE-DOMAIN.tld/datenschutzerklaerung',
+    ); // TODO: replace with real URL
+    final termsUri = Uri.parse(
+      'https://DEINE-DOMAIN.tld/nutzungsbedingungen',
+    ); // TODO: replace with real URL
+
+    Future<void> open(Uri uri) async {
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Link konnte nicht geöffnet werden')),
+        );
+      }
+    }
+
+    return WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
+      child: _LinkText(
+        key: const ValueKey('consent02_terms_links'),
+        style: baseStyle,
+        parts: [
+          const LinkTextPart(' '),
+          LinkTextPart(
+            'Datenschutzerklärung',
+            onTap: () => open(privacyUri),
+            bold: true,
+            color: colorScheme.primary,
+          ),
+          const LinkTextPart(' sowie den '),
+          LinkTextPart(
+            'Nutzungsbedingungen',
+            onTap: () => open(termsUri),
+            bold: true,
+            color: colorScheme.primary,
+          ),
+          const LinkTextPart(' einverstanden.'),
+        ],
+      ),
+    );
+  }
+}
+
+class LinkTextPart {
+  final String text;
+  final VoidCallback? onTap;
+  final bool bold;
+  final Color? color;
+
+  const LinkTextPart(
+    this.text, {
+    this.onTap,
+    this.bold = false,
+    this.color,
+  });
+}
+
+class _LinkText extends StatelessWidget {
+  final TextStyle style;
+  final List<LinkTextPart> parts;
+
+  const _LinkText({
+    super.key,
+    required this.style,
+    required this.parts,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      TextSpan(
+        children: parts.map((part) {
+          final weightStyle = part.bold
+              ? style.copyWith(fontWeight: FontWeight.w700)
+              : style;
+          if (part.onTap == null) {
+            return TextSpan(
+              text: part.text,
+              style: weightStyle,
+            );
+          }
+          return WidgetSpan(
+            alignment: PlaceholderAlignment.baseline,
+            baseline: TextBaseline.alphabetic,
+            child: InkWell(
+              onTap: part.onTap,
+              child: Semantics(
+                link: true,
+                button: true,
+                child: Text(
+                  part.text,
+                  style: weightStyle.copyWith(color: part.color),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _ConsentChoiceCard extends StatelessWidget {
+  final String title;
+  final String body;
+  final bool selected;
+  final VoidCallback onTap;
+  final InlineSpan? trailing;
+
+  const _ConsentChoiceCard({
+    super.key,
+    required this.title,
+    required this.body,
+    required this.selected,
+    required this.onTap,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final ds = theme.extension<DsTokens>();
+    final borderRadius = BorderRadius.circular(Sizes.radiusL);
+    final textStyle = theme.textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurface,
+          fontSize: 16,
+          height: 1.5,
+          fontWeight: FontWeight.w400,
+          fontFamily: FontFamilies.figtree,
+        ) ??
+        TextStyle(
+          color: colorScheme.onSurface,
+          fontSize: 16,
+          height: 1.5,
+          fontWeight: FontWeight.w400,
+          fontFamily: FontFamilies.figtree,
+        );
+
+    return Semantics(
+      button: true,
+      toggled: selected,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: borderRadius,
+        child: InkWell(
+          borderRadius: borderRadius,
+          onTap: onTap,
+          child: Ink(
+            decoration: BoxDecoration(
+              color: (ds?.cardSurface) ?? colorScheme.surfaceContainer,
+              borderRadius: borderRadius,
+              border: selected
+                  ? Border.all(
+                      color: (ds?.cardBorderSelected) ?? colorScheme.onSurface,
+                      width: 1,
+                    )
+                  : null,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 35,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: trailing == null
+                        ? Text(body, style: textStyle)
+                        : RichText(
+                            text: TextSpan(
+                              style: textStyle,
+                              children: [
+                                TextSpan(text: body),
+                                trailing!,
+                              ],
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 20),
+                  Semantics(
+                    label: selected ? 'Ausgewählt' : 'Nicht ausgewählt',
+                    selected: selected,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colorScheme.outline,
+                          width: 2,
+                        ),
+                        color: Colors.transparent,
+                      ),
+                      alignment: Alignment.center,
+                      child: selected
+                          ? Container(
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: colorScheme.primary,
+                              ),
+                            )
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ConsentFooter extends StatelessWidget {
+  final VoidCallback onAcceptAll;
+  final bool isAcceptAllDisabled;
+  final VoidCallback? onNext;
+  final bool nextEnabled;
+
+  const _ConsentFooter({
+    super.key,
+    required this.onAcceptAll,
+    required this.isAcceptAllDisabled,
+    required this.onNext,
+    required this.nextEnabled,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'Deine Zustimmung kannst du jederzeit in der App oder unter hello@getluvi.com widerrufen.',
+          textAlign: TextAlign.center,
+          style: textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurface,
+            fontSize: 14,
+            height: 1.28,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: isAcceptAllDisabled ? null : onAcceptAll,
+            child: const Text('Alle akzeptieren'),
+          ),
+        ),
+        const SizedBox(height: 15),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            key: const Key('consent02_btn_next'),
+            onPressed: nextEnabled ? onNext : null,
+            child: const Text('Weiter'),
+          ),
+        ),
+      ],
     );
   }
 }
