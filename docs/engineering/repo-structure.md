@@ -1,5 +1,7 @@
 # Repository-Struktur (Referenz)
 
+> Siehe zusätzlich `docs/engineering/flutter-structure.md` für verbindliche Flutter-spezifische Best Practices (Routen, Assets, Services, Tests).
+
 ## Verzeichnisbaum (Soll)
 - lib/
 - core/
@@ -15,8 +17,9 @@
   - data/            (API/repo/data sources)
   - domain/          (entities/models)
   - widgets/         (PhaseBadge)
-- services/
-  - supabase_service.dart
+- services/ (lokales Package `luvi_services`)
+  - lib/user_state_service.dart
+  - lib/supabase_service.dart
 - test/
   - features/
     - consent/       (tests mirror the feature)
@@ -27,4 +30,3 @@
 ## Notizen
 - Optional-Legacy-Folder aufräumen, wenn obsolet
 - Dev-only Samples z. B. unter lib/dev/samples/ und via kDebugMode schützen
-
