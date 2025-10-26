@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
+import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
@@ -30,7 +31,7 @@ class _Onboarding08ScreenState extends State<Onboarding08Screen> {
   }
 
   void _handleContinue() {
-    context.go('/onboarding/success');
+    context.go(OnboardingSuccessScreen.routeName);
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_success_tokens.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/services/user_state_service.dart';
@@ -103,25 +104,28 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                       offset: Offset(0, celebrationConfig.baselineOffset),
                       child: Transform.scale(
                         scale: celebrationConfig.scale,
-                        child: Lottie.asset(
-                          Assets.animations.onboardingSuccessCelebration,
-                          repeat: false,
-                          frameRate: FrameRate.composition,
-                          fit: BoxFit.contain,
-                          alignment: Alignment.center,
-                          filterQuality: FilterQuality.medium,
-                          errorBuilder: (context, error, stackTrace) {
-                            debugPrint(
-                              'Lottie celebration failed to load: $error',
-                            );
-                            return Image.asset(
-                              Assets.images.onboardingSuccessTrophy,
-                              width: OnboardingSuccessTokens.trophyWidth,
-                              height: OnboardingSuccessTokens.trophyHeight,
-                              fit: BoxFit.contain,
-                              errorBuilder: Assets.defaultImageErrorBuilder,
-                            );
-                          },
+                        child: RepaintBoundary(
+                          key: const Key('onboarding_success_lottie_boundary'),
+                          child: Lottie.asset(
+                            Assets.animations.onboardingSuccessCelebration,
+                            repeat: false,
+                            frameRate: FrameRate.composition,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.center,
+                            filterQuality: FilterQuality.medium,
+                            errorBuilder: (context, error, stackTrace) {
+                              debugPrint(
+                                'Lottie celebration failed to load: $error',
+                              );
+                              return Image.asset(
+                                Assets.images.onboardingSuccessTrophy,
+                                width: OnboardingSuccessTokens.trophyWidth,
+                                height: OnboardingSuccessTokens.trophyHeight,
+                                fit: BoxFit.contain,
+                                errorBuilder: Assets.defaultImageErrorBuilder,
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -162,12 +166,10 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     return ElevatedButton(
       key: const Key('onboarding_success_cta'),
       onPressed: () async {
-        UserStateService? userState;
-        try {
-          userState = await ref.read(userStateServiceProvider.future);
-        } catch (_) {
-          userState = null;
-        }
+        final userState = await tryOrNullAsync(
+          () => ref.read(userStateServiceProvider.future),
+          tag: 'userState',
+        );
         await userState?.markOnboardingComplete();
         if (context.mounted) {
           context.go(HeuteScreen.routeName);

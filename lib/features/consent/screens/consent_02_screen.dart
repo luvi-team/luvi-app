@@ -3,13 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/gestures.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/services/user_state_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Consent02Screen extends ConsumerWidget {
   const Consent02Screen({super.key});
@@ -312,13 +313,12 @@ class Consent02Screen extends ConsumerWidget {
                         key: const Key('consent02_btn_next'),
                         onPressed: state.requiredAccepted
                             ? () async {
-                                UserStateService? userState;
-                                try {
-                                  userState = await ref
-                                      .read(userStateServiceProvider.future);
-                                } catch (_) {
-                                  userState = null;
-                                }
+                                final userState = await tryOrNullAsync(
+                                  () => ref.read(
+                                    userStateServiceProvider.future,
+                                  ),
+                                  tag: 'userState',
+                                );
                                 await userState?.markWelcomeSeen();
                                 if (context.mounted) {
                                   context.go('/auth/entry');

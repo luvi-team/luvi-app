@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_08.dart';
+import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
@@ -22,7 +23,7 @@ void main() {
             builder: (context, state) => const Onboarding08Screen(),
           ),
           GoRoute(
-            path: '/onboarding/success',
+            path: OnboardingSuccessScreen.routeName,
             builder: (context, state) =>
                 const Scaffold(body: Text('Success Screen')),
           ),

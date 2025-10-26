@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
+import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/services/supabase_service.dart';
@@ -65,12 +66,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigateAfterAnimation() async {
-    UserStateService? userState;
-    try {
-      userState = await ref.read(userStateServiceProvider.future);
-    } catch (_) {
-      userState = null;
-    }
+    final userState = await tryOrNullAsync(
+      () => ref.read(userStateServiceProvider.future),
+      tag: 'userState',
+    );
     if (!mounted) return;
     final isAuth = SupabaseService.isAuthenticated;
     final hasSeenWelcome = userState?.hasSeenWelcome ?? false;
