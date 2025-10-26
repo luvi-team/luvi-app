@@ -50,6 +50,7 @@ class BackButtonCircle extends StatelessWidget {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
+              splashFactory: NoSplash.splashFactory,
               onTap: onPressed,
               customBorder: shape,
               child: Center(

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -48,10 +48,15 @@ class _Onboarding08ScreenState extends State<Onboarding08Screen> {
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: spacing.topPadding),
-              _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToQuestion08),
+              children: [
+                SizedBox(height: spacing.topPadding),
+                OnboardingHeader(
+                  title: AppLocalizations.of(context)!.onboarding08Title,
+                  step: 8,
+                  totalSteps: kOnboardingTotalSteps,
+                  onBack: _handleBack,
+                ),
+                SizedBox(height: spacing.headerToQuestion08),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToFootnote08),
               _buildFootnote(textTheme, colorScheme),
@@ -65,55 +70,14 @@ class _Onboarding08ScreenState extends State<Onboarding08Screen> {
     );
   }
 
-  Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context)!;
-    final title = l10n.onboarding08Title;
-    const step = 8;
-    final stepSemantic = l10n.onboardingStepSemantic(
-      step,
-      kOnboardingTotalSteps,
-    );
-    final stepFraction = l10n.onboardingStepFraction(
-      step,
-      kOnboardingTotalSteps,
-    );
-
-    return Row(
-      children: [
-        BackButtonCircle(
-          onPressed: () async {
-            final navigator = Navigator.of(context);
-            final didPop = await navigator.maybePop();
-            if (!mounted) return;
-            if (!didPop) {
-              context.go(Onboarding07Screen.routeName);
-            }
-          },
-          iconColor: colorScheme.onSurface,
-        ),
-        Expanded(
-          child: Semantics(
-            header: true,
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: textTheme.headlineMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: TypographyTokens.size24,
-                height: TypographyTokens.lineHeightRatio32on24,
-              ),
-            ),
-          ),
-        ),
-        Semantics(
-          label: stepSemantic,
-          child: Text(
-            stepFraction,
-            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
-          ),
-        ),
-      ],
-    );
+  void _handleBack() {
+    final navigator = Navigator.of(context);
+    navigator.maybePop().then((didPop) {
+      if (!mounted) return;
+      if (!didPop) {
+        context.go(Onboarding07Screen.routeName);
+      }
+    });
   }
 
   Widget _buildOptionList(OnboardingSpacing spacing) {

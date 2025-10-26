@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
+import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
@@ -43,7 +43,6 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
     final spacing = OnboardingSpacing.of(context);
 
     return Scaffold(
@@ -53,10 +52,16 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: spacing.topPadding),
-              _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToFirstCard),
+              children: [
+                SizedBox(height: spacing.topPadding),
+                OnboardingHeader(
+                  title: AppLocalizations.of(context)!.onboarding03Title,
+                  semanticsLabel: AppLocalizations.of(context)!.onboarding03Title,
+                  step: 3,
+                  totalSteps: kOnboardingTotalSteps,
+                  onBack: _handleBack,
+                ),
+                SizedBox(height: spacing.headerToFirstCard),
               _buildGoalList(spacing),
               SizedBox(height: spacing.lastCardToCta),
               _buildCta(),
@@ -68,51 +73,13 @@ class _Onboarding03ScreenState extends State<Onboarding03Screen> {
     );
   }
 
-  Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context)!;
-    final title = l10n.onboarding03Title;
-    final stepSemantic =
-        l10n.onboardingStepSemantic(3, kOnboardingTotalSteps);
-    final stepFraction =
-        l10n.onboardingStepFraction(3, kOnboardingTotalSteps);
-
-    return Row(
-      children: [
-        BackButtonCircle(
-          onPressed: () {
-            final router = GoRouter.of(context);
-            if (router.canPop()) {
-              context.pop();
-            } else {
-              context.go(Onboarding02Screen.routeName);
-            }
-          },
-          iconColor: colorScheme.onSurface,
-        ),
-        Expanded(
-          child: Semantics(
-            header: true,
-            label: title,
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: textTheme.headlineMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: TypographyTokens.size24,
-                height: TypographyTokens.lineHeightRatio32on24,
-              ),
-            ),
-          ),
-        ),
-        Semantics(
-          label: stepSemantic,
-          child: Text(
-            stepFraction,
-            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
-          ),
-        ),
-      ],
-    );
+  void _handleBack() {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      context.pop();
+    } else {
+      context.go(Onboarding02Screen.routeName);
+    }
   }
 
   Widget _buildGoalList(OnboardingSpacing spacing) {

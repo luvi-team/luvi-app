@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
+import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/services/user_state_service.dart';
@@ -165,7 +167,7 @@ class Consent02Screen extends ConsumerWidget {
                     );
                     await userState?.markWelcomeSeen();
                     if (context.mounted) {
-                      context.go('/auth/entry');
+                      context.go(AuthEntryScreen.routeName);
                     }
                   },
                   nextEnabled: state.requiredAccepted,
@@ -196,12 +198,8 @@ class Consent02Screen extends ConsumerWidget {
           fontWeight: FontWeight.w400,
           fontFamily: FontFamilies.figtree,
         );
-    final privacyUri = Uri.parse(
-      'https://DEINE-DOMAIN.tld/datenschutzerklaerung',
-    ); // TODO: replace with real URL
-    final termsUri = Uri.parse(
-      'https://DEINE-DOMAIN.tld/nutzungsbedingungen',
-    ); // TODO: replace with real URL
+    final privacyUri = AppLinks.privacyPolicy;
+    final termsUri = AppLinks.termsOfService;
 
     Future<void> open(Uri uri) async {
       final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -283,6 +281,10 @@ class _LinkText extends StatelessWidget {
             baseline: TextBaseline.alphabetic,
             child: InkWell(
               onTap: part.onTap,
+              splashFactory: NoSplash.splashFactory,
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.transparent,
               child: Semantics(
                 link: true,
                 button: true,

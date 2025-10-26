@@ -4,6 +4,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -63,11 +64,21 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: Spacing.m),
-              _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToInstruction01),
-              _buildInstruction(textTheme, colorScheme),
+              children: [
+                const SizedBox(height: Spacing.m),
+                OnboardingHeader(
+                  title: AppLocalizations.of(context)!.onboarding01Title,
+                  semanticsLabel:
+                      AppLocalizations.of(context)!.onboarding01Title,
+                  step: 1,
+                  totalSteps: kOnboardingTotalSteps,
+                  onBack: () {
+                    final navigator = Navigator.of(context);
+                    navigator.maybePop();
+                  },
+                ),
+                SizedBox(height: spacing.headerToInstruction01),
+                _buildInstruction(textTheme, colorScheme),
               SizedBox(height: spacing.instructionToInput01),
               _buildNameInput(textTheme, colorScheme, spacing),
               SizedBox(height: spacing.inputToCta01),
@@ -77,40 +88,6 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context)!;
-    final headerTitle = l10n.onboarding01Title;
-    const step = 1;
-    final stepSemantic = l10n.onboardingStepSemantic(step, kOnboardingTotalSteps);
-    final stepFraction = l10n.onboardingStepFraction(step, kOnboardingTotalSteps);
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Semantics(
-            header: true,
-            label: headerTitle,
-            child: Text(
-              headerTitle,
-              style: textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        const SizedBox(width: Spacing.s),
-        Semantics(
-          label: stepSemantic,
-          child: Text(
-            stepFraction,
-            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
-          ),
-        ),
-      ],
     );
   }
 
