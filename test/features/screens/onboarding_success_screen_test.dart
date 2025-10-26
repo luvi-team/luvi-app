@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_success_tokens.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -9,9 +11,35 @@ import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:luvi_app/services/user_state_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  Future<Widget> buildApp(
+    GoRouter router, {
+    Locale locale = const Locale('de'),
+    Widget Function(BuildContext, Widget?)? builder,
+  }) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final service = UserStateService(prefs);
+    return ProviderScope(
+      overrides: [
+        userStateServiceProvider.overrideWith((ref) async => service),
+      ],
+      child: MaterialApp.router(
+        theme: AppTheme.buildAppTheme(),
+        routerConfig: router,
+        locale: locale,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        builder: builder,
+      ),
+    );
+  }
 
   group('OnboardingSuccessScreen', () {
     testWidgets(
@@ -27,18 +55,10 @@ void main() {
           initialLocation: OnboardingSuccessScreen.routeName,
         );
 
-        await tester.pumpWidget(
-          MaterialApp.router(
-            theme: AppTheme.buildAppTheme(),
-            routerConfig: router,
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-          ),
-        );
+        await tester.pumpWidget(await buildApp(router));
         await tester.pumpAndSettle();
 
-        expect(find.byType(Image), findsOneWidget);
+        expect(find.byType(Image), findsNothing);
         expect(find.byType(LottieBuilder), findsOneWidget);
         expect(find.text('Du bist startklar!'), findsOneWidget);
         expect(find.byKey(const Key('onboarding_success_cta')), findsOneWidget);
@@ -64,15 +84,7 @@ void main() {
         initialLocation: OnboardingSuccessScreen.routeName,
       );
 
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: AppTheme.buildAppTheme(),
-          routerConfig: router,
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      );
+      await tester.pumpWidget(await buildApp(router));
       await tester.pumpAndSettle();
 
       expect(find.text('Du bist startklar!'), findsOneWidget);
@@ -96,22 +108,14 @@ void main() {
         initialLocation: OnboardingSuccessScreen.routeName,
       );
 
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: AppTheme.buildAppTheme(),
-          routerConfig: router,
-          locale: const Locale('en'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      );
+      await tester.pumpWidget(await buildApp(router, locale: const Locale('en')));
       await tester.pumpAndSettle();
 
       expect(find.text("You're ready to go!"), findsOneWidget);
       expect(find.text("Let's go!"), findsOneWidget);
     });
 
-    testWidgets('confetti animation respects disableAnimations flags',
+    testWidgets('celebration animation respects disableAnimations flags',
         (tester) async {
       final router = GoRouter(
         routes: [
@@ -123,24 +127,19 @@ void main() {
         initialLocation: OnboardingSuccessScreen.routeName,
       );
 
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: AppTheme.buildAppTheme(),
-          routerConfig: router,
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          builder: (context, child) {
-            final data = MediaQuery.of(context);
-            return MediaQuery(
-              data: data.copyWith(disableAnimations: true),
-              child: child!,
-            );
-          },
-        ),
-      );
+      await tester.pumpWidget(await buildApp(
+        router,
+        builder: (context, child) {
+          final data = MediaQuery.of(context);
+          return MediaQuery(
+            data: data.copyWith(disableAnimations: true),
+            child: child!,
+          );
+        },
+      ));
       await tester.pumpAndSettle();
 
+      expect(find.byType(Image), findsOneWidget);
       expect(find.byType(LottieBuilder), findsNothing);
     });
 
@@ -159,23 +158,14 @@ void main() {
       tester.view.physicalSize = const Size(428, 926);
       tester.view.devicePixelRatio = 1.0;
 
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: AppTheme.buildAppTheme(),
-          routerConfig: router,
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      );
+      await tester.pumpWidget(await buildApp(router));
       await tester.pumpAndSettle();
 
       final context = tester.element(find.byType(OnboardingSuccessScreen));
       final spacing = OnboardingSpacing.of(context);
 
-      // From Figma audit ONB_SUCCESS_measures.json:
-      // trophyToTitle = 28px, titleToButton = 66px
-      expect(spacing.trophyToTitle, 28.0);
+      // From updated spec: trophyToTitle = 24px, titleToButton = 66px
+      expect(spacing.trophyToTitle, OnboardingSuccessTokens.gapToTitle);
       expect(spacing.titleToButton, 66.0);
 
       // Reset view size
@@ -193,24 +183,24 @@ void main() {
         initialLocation: OnboardingSuccessScreen.routeName,
       );
 
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: AppTheme.buildAppTheme(),
-          routerConfig: router,
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      );
+      await tester.pumpWidget(await buildApp(router));
       await tester.pumpAndSettle();
 
-      final trophyFinder = find.byType(Image);
-      expect(trophyFinder, findsOneWidget);
-
-      final trophy = tester.widget<Image>(trophyFinder);
+      final trophyBoxFinder = find.descendant(
+        of: find.byType(ExcludeSemantics),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is SizedBox &&
+              widget.width == OnboardingSuccessTokens.trophyWidth &&
+              widget.height == OnboardingSuccessTokens.trophyHeight,
+        ),
+      );
       // From Figma audit: Trophy bounding box 308×300px
-      expect(trophy.width, OnboardingSuccessTokens.trophyWidth);
-      expect(trophy.height, OnboardingSuccessTokens.trophyHeight);
+      expect(trophyBoxFinder, findsOneWidget);
+
+      final sizedBox = tester.widget<SizedBox>(trophyBoxFinder);
+      expect(sizedBox.width, OnboardingSuccessTokens.trophyWidth);
+      expect(sizedBox.height, OnboardingSuccessTokens.trophyHeight);
     });
 
     testWidgets('spacing scales with view height and text scale', (tester) async {
@@ -228,22 +218,17 @@ void main() {
       tester.view.physicalSize = const Size(428, 1200);
       tester.view.devicePixelRatio = 1.0;
 
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: AppTheme.buildAppTheme(),
-          routerConfig: router,
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      );
+      await tester.pumpWidget(await buildApp(router));
       await tester.pumpAndSettle();
 
       final context1 = tester.element(find.byType(OnboardingSuccessScreen));
       final spacing1 = OnboardingSpacing.of(context1);
 
       // Spacing should be scaled UP (taller view)
-      expect(spacing1.trophyToTitle, greaterThan(28.0));
+      expect(
+        spacing1.trophyToTitle,
+        greaterThan(OnboardingSuccessTokens.gapToTitle),
+      );
       expect(spacing1.titleToButton, greaterThan(66.0));
 
       tester.view.reset();
@@ -252,35 +237,31 @@ void main() {
       tester.view.physicalSize = const Size(428, 926);
       tester.view.devicePixelRatio = 1.0;
 
-      await tester.pumpWidget(
-        Builder(
-          builder: (context) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: const TextScaler.linear(1.5),
-            ),
-            child: MaterialApp.router(
-              theme: AppTheme.buildAppTheme(),
-              routerConfig: router,
-              locale: const Locale('de'),
-              supportedLocales: AppLocalizations.supportedLocales,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-            ),
+      await tester.pumpWidget(await buildApp(
+        router,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: const TextScaler.linear(1.5),
           ),
+          child: child!,
         ),
-      );
+      ));
       await tester.pumpAndSettle();
 
       final context2 = tester.element(find.byType(OnboardingSuccessScreen));
       final spacing2 = OnboardingSpacing.of(context2);
 
       // Spacing should be scaled UP (text scale > 1.0)
-      expect(spacing2.trophyToTitle, greaterThan(28.0));
+      expect(
+        spacing2.trophyToTitle,
+        greaterThan(OnboardingSuccessTokens.gapToTitle),
+      );
       expect(spacing2.titleToButton, greaterThan(66.0));
 
       addTearDown(tester.view.reset);
     });
 
-    testWidgets('confetti animation uses expected configuration', (tester) async {
+    testWidgets('celebration animation uses expected configuration', (tester) async {
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -291,15 +272,7 @@ void main() {
         initialLocation: OnboardingSuccessScreen.routeName,
       );
 
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: AppTheme.buildAppTheme(),
-          routerConfig: router,
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      );
+      await tester.pumpWidget(await buildApp(router));
       await tester.pumpAndSettle();
 
       final lottieFinder = find.byType(LottieBuilder);
@@ -309,14 +282,88 @@ void main() {
       expect(lottie.repeat, isFalse);
       expect(lottie.frameRate, FrameRate.composition);
       expect(lottie.fit, BoxFit.contain);
-      expect(lottie.alignment, Alignment.topCenter);
+      expect(lottie.alignment, Alignment.center);
       expect(lottie.filterQuality, FilterQuality.medium);
+    });
 
-      final positionedFinder = find.byType(Positioned);
-      expect(positionedFinder, findsOneWidget);
+    testWidgets('celebration animation accounts for safe-area padding', (tester) async {
+      tester.view.physicalSize = const Size(428, 1000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
-      final positioned = tester.widget<Positioned>(positionedFinder);
-      expect(positioned.top, OnboardingSuccessTokens.confettiVerticalOffset);
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: OnboardingSuccessScreen.routeName,
+            builder: (context, state) => const OnboardingSuccessScreen(),
+          ),
+        ],
+        initialLocation: OnboardingSuccessScreen.routeName,
+      );
+
+      await tester.pumpWidget(await buildApp(router));
+      await tester.pumpAndSettle();
+
+      final transformNoPadding = tester.widget<Transform>(
+        find.byKey(const Key('onboarding_success_trophy_transform')),
+      );
+      final noPaddingOffset = transformNoPadding.transform.storage[13];
+
+      await tester.pumpWidget(await buildApp(
+        router,
+        builder: (context, child) {
+          final data = MediaQuery.of(context);
+          return MediaQuery(
+            data: data.copyWith(
+              padding: const EdgeInsets.only(top: 44, bottom: 34),
+            ),
+            child: child!,
+          );
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      final transformWithPadding = tester.widget<Transform>(
+        find.byKey(const Key('onboarding_success_trophy_transform')),
+      );
+      final paddingOffset = transformWithPadding.transform.storage[13];
+
+      expect(paddingOffset, lessThan(noPaddingOffset));
+    });
+
+    testWidgets('a11y fallback shows PNG with correct dimensions', (tester) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: OnboardingSuccessScreen.routeName,
+            builder: (context, state) => const OnboardingSuccessScreen(),
+          ),
+        ],
+        initialLocation: OnboardingSuccessScreen.routeName,
+      );
+
+      await tester.pumpWidget(await buildApp(
+        router,
+        builder: (context, child) {
+          final data = MediaQuery.of(context);
+          return MediaQuery(
+            data: data.copyWith(disableAnimations: true),
+            child: child!,
+          );
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      final imageFinder = find.byType(Image);
+      expect(imageFinder, findsOneWidget);
+
+      final image = tester.widget<Image>(imageFinder);
+      expect(image.width, OnboardingSuccessTokens.trophyWidth);
+      expect(image.height, OnboardingSuccessTokens.trophyHeight);
+      expect(image.fit, BoxFit.contain);
+
+      final assetImage = image.image as AssetImage;
+      expect(assetImage.assetName, Assets.images.onboardingSuccessTrophy);
     });
   });
 }

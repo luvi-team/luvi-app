@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
@@ -8,17 +9,18 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/services/user_state_service.dart';
 
 /// Final screen after onboarding completes.
-/// Shows a trophy visual, celebratory title, CTA, and (when motion is allowed)
-/// a Lottie-based confetti animation as lightweight micro-celebration.
-class OnboardingSuccessScreen extends StatelessWidget {
+/// Shows a trophy celebration (combined Lottie with trophy + confetti, or PNG
+/// fallback when motion is disabled), celebratory title, and CTA.
+class OnboardingSuccessScreen extends ConsumerWidget {
   const OnboardingSuccessScreen({super.key});
 
   static const routeName = '/onboarding/success';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final mediaQuery = MediaQuery.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -43,11 +45,11 @@ class OnboardingSuccessScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildTrophy(reduceMotion),
-                    SizedBox(height: spacing.trophyToTitle),
+                    _buildTrophy(context, reduceMotion),
+                    SizedBox(height: OnboardingSuccessTokens.gapToTitle),
                     _buildTitle(textTheme, colorScheme, l10n),
                     SizedBox(height: spacing.titleToButton),
-                    _buildButton(context, l10n),
+                    _buildButton(context, ref, l10n),
                   ],
                 ),
               ),
@@ -58,47 +60,72 @@ class OnboardingSuccessScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTrophy(bool reduceMotion) {
-    // Trophy is decorative (title already communicates success)
-    // From Figma audit: Trophy bounding box 308×300px
-    // PNG format ensures pixel-perfect match with complex Figma illustration
+  Widget _buildTrophy(BuildContext context, bool reduceMotion) {
+    // Trophy celebrates success via a combined Lottie (50% -> 100% scale, 2s @50fps)
+    // Falls back to the static PNG when reduceMotion is enabled for accessibility
+    // Illustration zone stays fixed at 308×300 logical pixels from Figma audit
+    final mediaQuery = MediaQuery.of(context);
+    final usableHeight =
+        mediaQuery.size.height - mediaQuery.padding.vertical;
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final celebrationConfig = OnboardingSuccessTokens.celebrationConfig(
+      viewHeight: usableHeight,
+      textScaleFactor: textScale,
+    );
     return ExcludeSemantics(
       child: Center(
         child: SizedBox(
           width: OnboardingSuccessTokens.trophyWidth,
           height: OnboardingSuccessTokens.trophyHeight,
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.topCenter,
-            children: [
-              Image.asset(
-                Assets.images.onboardingSuccessTrophy,
-                width: OnboardingSuccessTokens.trophyWidth,
-                height: OnboardingSuccessTokens.trophyHeight,
-                errorBuilder: Assets.defaultImageErrorBuilder,
-                fit: BoxFit.contain,
-              ),
-              if (!reduceMotion)
-                Positioned(
-                  top: OnboardingSuccessTokens.confettiVerticalOffset,
-                  left: 0,
-                  right: 0,
-                  child: IgnorePointer(
-                    child: SizedBox(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: reduceMotion
+                ? Transform.translate(
+                    key: const Key('onboarding_success_trophy_transform_png'),
+                    offset: Offset(0, celebrationConfig.baselineOffset),
+                    child: Image.asset(
+                      Assets.images.onboardingSuccessTrophy,
                       width: OnboardingSuccessTokens.trophyWidth,
                       height: OnboardingSuccessTokens.trophyHeight,
-                      child: Lottie.asset(
-                        Assets.animations.onboardingSuccessConfetti,
-                        repeat: false,
-                        frameRate: FrameRate.composition,
-                        fit: BoxFit.contain,
-                        filterQuality: FilterQuality.medium,
-                        alignment: Alignment.topCenter,
+                      errorBuilder: Assets.defaultImageErrorBuilder,
+                      fit: BoxFit.contain,
+                    ),
+                  )
+                : OverflowBox(
+                    minWidth: OnboardingSuccessTokens.trophyWidth,
+                    maxWidth: OnboardingSuccessTokens.trophyWidth,
+                    minHeight: OnboardingSuccessTokens.trophyHeight,
+                    maxHeight: OnboardingSuccessTokens.trophyHeight +
+                        OnboardingSuccessTokens.celebrationBleedTop,
+                    alignment: Alignment.bottomCenter,
+                    child: Transform.translate(
+                      key: const Key('onboarding_success_trophy_transform'),
+                      offset: Offset(0, celebrationConfig.baselineOffset),
+                      child: Transform.scale(
+                        scale: celebrationConfig.scale,
+                        child: Lottie.asset(
+                          Assets.animations.onboardingSuccessCelebration,
+                          repeat: false,
+                          frameRate: FrameRate.composition,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.center,
+                          filterQuality: FilterQuality.medium,
+                          errorBuilder: (context, error, stackTrace) {
+                            debugPrint(
+                              'Lottie celebration failed to load: $error',
+                            );
+                            return Image.asset(
+                              Assets.images.onboardingSuccessTrophy,
+                              width: OnboardingSuccessTokens.trophyWidth,
+                              height: OnboardingSuccessTokens.trophyHeight,
+                              fit: BoxFit.contain,
+                              errorBuilder: Assets.defaultImageErrorBuilder,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
           ),
         ),
       ),
@@ -126,11 +153,26 @@ class OnboardingSuccessScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildButton(BuildContext context, AppLocalizations l10n) {
+  Widget _buildButton(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
     // ElevatedButton already provides accessible label from visible text
     return ElevatedButton(
       key: const Key('onboarding_success_cta'),
-      onPressed: () => context.go(HeuteScreen.routeName),
+      onPressed: () async {
+        UserStateService? userState;
+        try {
+          userState = await ref.read(userStateServiceProvider.future);
+        } catch (_) {
+          userState = null;
+        }
+        await userState?.markOnboardingComplete();
+        if (context.mounted) {
+          context.go(HeuteScreen.routeName);
+        }
+      },
       child: Text(l10n.onboardingSuccessButton),
     );
   }

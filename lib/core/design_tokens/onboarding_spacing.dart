@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
 
+/// Base gap (px) between the success trophy and the title, shared with tokens.
+const double kOnboardingSuccessTrophyToTitleGap = 24.0;
+
 /// Discrete spacing tokens for onboarding screens with gentle scaling.
 class OnboardingSpacing {
   const OnboardingSpacing._({
@@ -312,6 +315,7 @@ class OnboardingSpacing {
 
   // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
   // Custom values (not aligned with existing rhythm tokens)
-  static const double _trophyToTitle = 28.0; // Trophy end → Title start
+  static const double _trophyToTitle =
+      kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px)
   static const double _titleToButton = 66.0; // Title end → Button start
 }

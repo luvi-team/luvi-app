@@ -81,8 +81,8 @@ class _Images {
   final String meditation = 'assets/images/dashboard/meditation.png';
   final String stretching = 'assets/images/dashboard/stretching.png';
 
-  // Onboarding Success Screen (Trophy + 47 confetti elements from Figma node 68597:8084)
-  // PNG format for pixel-perfect rendering of complex illustration
+  // Onboarding Success Screen trophy (A11y fallback when reduceMotion is true)
+  // PNG format keeps static illustration crisp when animation is disabled
   final String onboardingSuccessTrophy =
       'assets/images/onboarding/onboarding_success_trophy.png';
 }
@@ -90,9 +90,12 @@ class _Images {
 class _Animations {
   const _Animations();
 
-  /// Confetti overlay for the Onboarding Success screen (Lottie JSON, 120f @60fps).
-  final String onboardingSuccessConfetti =
-      'assets/animations/onboarding_success_confetti.json';
+  /// Trophy + celebration combined animation (Lottie JSON, 100f @50fps, 2s).
+  final String onboardingSuccessCelebration =
+      'assets/animations/onboarding_success_celebration.json';
+
+  /// Splash screen animation for app launch (Lottie JSON, 250f @100fps, 2.5s).
+  final String splashScreen = 'assets/animations/splash_screen.json';
 }
 
 class _DashboardStatIcons {

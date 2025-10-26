@@ -25,7 +25,7 @@ void main() {
     });
 
     test(
-      'requiredAccepted only true when terms & health_processing are true',
+      'requiredAccepted only true when all required scopes are true',
       () {
         final container = ProviderContainer();
         addTearDown(container.dispose);
@@ -44,8 +44,15 @@ void main() {
           isFalse,
         );
 
-        // Both required -> true
+        // Terms + health -> still false
         notifier.toggle(ConsentScope.health_processing);
+        expect(
+          container.read(consent02NotifierProvider).requiredAccepted,
+          isFalse,
+        );
+
+        // All required scopes true -> true
+        notifier.toggle(ConsentScope.ai_journal);
         expect(
           container.read(consent02NotifierProvider).requiredAccepted,
           isTrue,
@@ -73,6 +80,7 @@ void main() {
       // Required unchanged
       expect(state.choices[ConsentScope.terms], isFalse);
       expect(state.choices[ConsentScope.health_processing], isFalse);
+      expect(state.choices[ConsentScope.ai_journal], isFalse);
     });
   });
 }

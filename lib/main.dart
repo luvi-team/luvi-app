@@ -9,7 +9,7 @@ import 'package:luvi_app/services/supabase_service.dart';
 import 'core/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'features/routes.dart' as routes;
-import 'features/auth/screens/auth_entry_screen.dart';
+import 'features/screens/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,10 +40,10 @@ class MyApp extends StatelessWidget {
     // Allow overriding the initial route in development via --dart-define
     // Example: flutter run --dart-define=INITIAL_LOCATION=/onboarding/01
     final initialLocation = kReleaseMode
-        ? AuthEntryScreen.routeName
+        ? SplashScreen.routeName
         : const String.fromEnvironment(
             'INITIAL_LOCATION',
-            defaultValue: AuthEntryScreen.routeName,
+            defaultValue: SplashScreen.routeName,
           );
 
     final router = GoRouter(

@@ -27,6 +27,8 @@ void main() {
       // Tap required cards via deterministic keys
       final health = find.byKey(const Key('consent02_card_required_health'));
       final terms = find.byKey(const Key('consent02_card_required_terms'));
+      final aiJournal =
+          find.byKey(const Key('consent02_card_required_ai_journal'));
       final list = find.byType(Scrollable);
       expect(health, findsOneWidget);
       expect(terms, findsOneWidget);
@@ -37,6 +39,12 @@ void main() {
       await tester.drag(list, const Offset(0, 120));
       await tester.pumpAndSettle();
       await tester.tap(terms);
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(aiJournal, 200, scrollable: list);
+      await tester.drag(list, const Offset(0, 120));
+      await tester.pumpAndSettle();
+      expect(aiJournal, findsOneWidget);
+      await tester.tap(aiJournal);
       await tester.pumpAndSettle();
 
       // Weiter should now be enabled

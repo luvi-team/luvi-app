@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/services/user_state_service.dart';
 
 class Consent02Screen extends ConsumerWidget {
   const Consent02Screen({super.key});
@@ -232,7 +233,7 @@ class Consent02Screen extends ConsumerWidget {
               children: [
                 scopeCard(
                   body:
-                      'Ich willige in die Verarbeitung meiner personenbezogenen Daten einschließlich meiner Gesundheitsdaten zur Bereitstellung personalisierter LUVI-Services ein.',
+                      'Ich bin damit einverstanden, dass LUVI meine persönlichen Gesundheitsdaten verarbeitet, damit LUVI ihre Funktionen bereitstellen kann.',
                   scope: ConsentScope.health_processing,
                   cardKey: const Key('consent02_card_required_health'),
                 ),
@@ -246,19 +247,26 @@ class Consent02Screen extends ConsumerWidget {
                 const SizedBox(height: 20),
                 scopeCard(
                   body:
-                      'Ich bin damit einverstanden, dass pseudonymisierte Nutzungs- und Gerätedaten zu Analysezwecken verarbeitet werden, damit LUVI Stabilität und Benutzerfreundlichkeit verbessern kann.',
+                      'Ich bin damit einverstanden, dass LUVI künstliche Intelligenz nutzt, um meine Trainings-, Ernährungs- und Regenerationsempfehlungen in einem personalisierten Journal für mich zusammenzufassen.',
+                  scope: ConsentScope.ai_journal,
+                  cardKey: const Key('consent02_card_required_ai_journal'),
+                ),
+                const SizedBox(height: 20),
+                scopeCard(
+                  body:
+                      'Ich bin damit einverstanden, dass pseudonymisierte Nutzungs- und Gerätedaten zu Analysezwecken verarbeitet werden, damit LUVI Stabilität und Benutzerfreundlichkeit verbessern kann.*',
                   scope: ConsentScope.analytics,
                 ),
                 const SizedBox(height: 20),
                 scopeCard(
                   body:
-                      'Ich bin damit einverstanden, dass LUVI meine Kontakt- und Nutzungsdaten – und nur wenn notwendig auch bestimmte Gesundheitsdaten – verarbeitet, um mir personalisierte Empfehlungen zu relevanten LUVI-Inhalten und Informationen zu Angeboten per In-App-Hinweisen, E-Mail und/oder Push-Mitteilungen zu senden.',
+                      'Ich stimme zu, dass LUVI meine persönlichen Daten und Nutzungsdaten verarbeitet, um mir personalisierte Empfehlungen zu relevanten LUVI-Inhalten und Informationen zu Angeboten per In-App-Hinweisen, E-Mail und/oder Push-Mitteilungen zuzusenden.*',
                   scope: ConsentScope.marketing,
                 ),
                 const SizedBox(height: 20),
                 scopeCard(
                   body:
-                      'Ich willige ein, dass pseudonymisierte Nutzungs- und Gesundheitsdaten zusätzlich zur Verbesserung der LUVI-Modelle/Algorithmen verwendet werden (z. B. zur Qualitätssicherung von Vorhersagen und Empfehlungen).',
+                      'Ich willige ein, dass pseudonymisierte Nutzungs- und Gesundheitsdaten zur Qualitätssicherung und Verbesserung von Empfehlungen verwendet werden (z. B. Überprüfung der Genauigkeit von Zyklusvorhersagen).*',
                   scope: ConsentScope.model_training,
                 ),
               ],
@@ -303,7 +311,19 @@ class Consent02Screen extends ConsumerWidget {
                       child: ElevatedButton(
                         key: const Key('consent02_btn_next'),
                         onPressed: state.requiredAccepted
-                            ? () => context.go('/auth/entry')
+                            ? () async {
+                                UserStateService? userState;
+                                try {
+                                  userState = await ref
+                                      .read(userStateServiceProvider.future);
+                                } catch (_) {
+                                  userState = null;
+                                }
+                                await userState?.markWelcomeSeen();
+                                if (context.mounted) {
+                                  context.go('/auth/entry');
+                                }
+                              }
                             : null,
                         child: const Text('Weiter'),
                       ),

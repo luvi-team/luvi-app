@@ -13,6 +13,7 @@ import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_03_screen.dart';
+import 'package:luvi_app/features/screens/splash/splash_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
@@ -30,6 +31,11 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/services/supabase_service.dart';
 
 final List<GoRoute> featureRoutes = [
+  GoRoute(
+    path: SplashScreen.routeName,
+    name: 'splash',
+    builder: (context, state) => const SplashScreen(),
+  ),
   GoRoute(
     path: ConsentWelcome01Screen.routeName,
     name: 'welcome1',
@@ -198,13 +204,14 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   );
   final isOnboarding = state.matchedLocation.startsWith('/onboarding/');
   final isWelcome = state.matchedLocation.startsWith('/onboarding/w');
+  final isConsent = state.matchedLocation.startsWith('/consent/');
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
+  final isSplash = state.matchedLocation == SplashScreen.routeName;
   final session = isInitialized
       ? SupabaseService.client.auth.currentSession
       : null;
 
-  // Allow welcome screens in dev mode
-  if (!kReleaseMode && isWelcome) {
+  if (isWelcome || isConsent) {
     return null;
   }
 
@@ -219,6 +226,10 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
 
   if (allowDashboardDev && !kReleaseMode && isDashboard) {
     return null; // allow dashboard route in dev without auth
+  }
+
+  if (isSplash) {
+    return null;
   }
 
   if (session == null) {
