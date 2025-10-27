@@ -20,16 +20,7 @@ class DateFormatters {
     'Dezember',
   ];
 
-  /// Formats a [DateTime] as `5 Mai 2002` (German locale, no leading zero).
   static String germanDayMonthYear(DateTime date) {
-    final month = date.month;
-    if (month < 1 || month > _germanMonths.length) {
-      throw ArgumentError.value(
-        month,
-        'date.month',
-        'Month must be between 1 and ${_germanMonths.length}.',
-      );
-    }
-    return '${date.day} ${_germanMonths[month - 1]} ${date.year}';
+    return '${date.day} ${_germanMonths[date.month - 1]} ${date.year}';
   }
 }

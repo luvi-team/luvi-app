@@ -1,132 +1,421 @@
-// ignore_for_file: use_key_in_widget_constructors
-
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// ignore: unused_import
-import '../../support/test_config.dart';
+import 'package:mocktail/mocktail.dart';
 
-void main() {
-    group('Daily Plan RLS Widget Tests', () {
-    testWidgets('Should show only user-owned daily plans', (
-      WidgetTester tester,
-    ) async {
-      // Mock widget that simulates daily plan list with RLS
-      await tester.pumpWidget(
-        ProviderScope(child: MaterialApp(home: DailyPlanTestWidget())),
-      );
+class DailyPlan {
+  const DailyPlan({
+    required this.id,
+    required this.ownerId,
+    required this.title,
+  });
 
-      // Verify initial state
-      expect(find.text('Daily Plans'), findsOneWidget);
-      expect(find.text('Loading...'), findsOneWidget);
+  final String id;
+  final String ownerId;
+  final String title;
+}
 
-      // Allow async operations to complete
-      await tester.pump();
+class AuthorizationException implements Exception {
+  const AuthorizationException(this.message);
 
-      // Verify RLS message is shown
-      expect(
-        find.text('Only your plans are visible (RLS active)'),
-        findsOneWidget,
-      );
-    });
+  final String message;
 
-    testWidgets('Should prevent unauthorized data access', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Builder(
-              builder: (context) {
-                return Column(
-                  children: [
-                    Text('RLS Protection Test'),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Simulates attempt to access other user's data
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Access denied: RLS policy enforced'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      },
-                      child: Text('Try Access Other User Data'),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-      );
+  @override
+  String toString() => 'AuthorizationException($message)';
+}
 
-      // Tap the button
-      await tester.tap(find.byType(ElevatedButton));
-      await tester.pump();
+abstract class DailyPlanRepository {
+  Future<List<DailyPlan>> fetchDailyPlans();
 
-      // Verify RLS enforcement message
-      expect(find.text('Access denied: RLS policy enforced'), findsOneWidget);
-    });
+  Future<List<DailyPlan>> fetchDailyPlansForOwner(
+    String ownerId, {
+    required String actingUserId,
+  });
 
-    testWidgets('Should auto-populate user_id from auth', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Column(
-              children: [
-                Text('User ID Auto-Population'),
-                Card(
-                  child: ListTile(
-                    title: Text('New Daily Plan'),
-                    subtitle: Text('user_id: auto-set from auth.uid()'),
-                    leading: Icon(Icons.security, color: Colors.green),
-                  ),
-                ),
-                Text(
-                  'Trigger ensures user_id matches auth',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-
-      // Verify UI elements showing RLS behavior
-      expect(find.text('User ID Auto-Population'), findsOneWidget);
-      expect(find.text('user_id: auto-set from auth.uid()'), findsOneWidget);
-      expect(find.text('Trigger ensures user_id matches auth'), findsOneWidget);
-      expect(find.byIcon(Icons.security), findsOneWidget);
-    });
+  Future<DailyPlan> createDailyPlan({
+    required String title,
+    required String ownerId,
   });
 }
 
-// Test widget to demonstrate RLS impact
-class DailyPlanTestWidget extends StatelessWidget {
+final currentUserIdProvider = Provider<String>((ref) {
+  throw UnimplementedError('currentUserIdProvider must be overridden in tests.');
+});
+
+final dailyPlanRepositoryProvider = Provider<DailyPlanRepository>((ref) {
+  throw UnimplementedError('dailyPlanRepositoryProvider must be overridden in tests.');
+});
+
+final unauthorizedErrorProvider = StateProvider<String?>((ref) => null);
+final creationStatusProvider = StateProvider<String?>((ref) => null);
+
+final userScopedDailyPlansProvider = FutureProvider<List<DailyPlan>>((ref) async {
+  final repository = ref.watch(dailyPlanRepositoryProvider);
+  final userId = ref.watch(currentUserIdProvider);
+  final plans = await repository.fetchDailyPlans();
+  return plans.where((plan) => plan.ownerId == userId).toList();
+});
+
+class DailyPlanCreationController {
+  DailyPlanCreationController({
+    required DailyPlanRepository repository,
+    required String currentUserId,
+  })  : _repository = repository,
+        _currentUserId = currentUserId;
+
+  final DailyPlanRepository _repository;
+  final String _currentUserId;
+
+  Future<DailyPlan> createPlan({
+    required String title,
+    String? overrideOwnerId,
+  }) async {
+    if (overrideOwnerId != null && overrideOwnerId != _currentUserId) {
+      throw const AuthorizationException('user_id is enforced by RLS');
+    }
+
+    return _repository.createDailyPlan(
+      title: title,
+      ownerId: _currentUserId,
+    );
+  }
+}
+
+final dailyPlanCreationControllerProvider = Provider<DailyPlanCreationController>((ref) {
+  final repository = ref.watch(dailyPlanRepositoryProvider);
+  final currentUserId = ref.watch(currentUserIdProvider);
+  return DailyPlanCreationController(
+    repository: repository,
+    currentUserId: currentUserId,
+  );
+});
+
+class DailyPlanRlsHarness extends ConsumerWidget {
+  const DailyPlanRlsHarness({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Daily Plans')),
-      body: Column(
-        children: [
-          Text('Loading...'),
-          SizedBox(height: 20),
-          Container(
-            padding: EdgeInsets.all(16),
-            color: Colors.blue.shade50,
-            child: Row(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final plansAsync = ref.watch(userScopedDailyPlansProvider);
+    final errorMessage = ref.watch(unauthorizedErrorProvider);
+    final creationStatus = ref.watch(creationStatusProvider);
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Daily Plans')),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  errorMessage,
+                  key: const Key('error_message'),
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            if (creationStatus != null)
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  creationStatus,
+                  key: const Key('creation_status'),
+                ),
+              ),
+            Expanded(
+              child: plansAsync.when(
+                data: (plans) {
+                  if (plans.isEmpty) {
+                    return const Center(child: Text('No plans available'));
+                  }
+
+                  return ListView(
+                    children: [
+                      for (final plan in plans)
+                        ListTile(
+                          title: Text(plan.title),
+                          subtitle: Text('owner: ${plan.ownerId}'),
+                        ),
+                    ],
+                  );
+                },
+                loading: () => const Center(child: Text('Loading...')),
+                error: (error, _) => Center(child: Text('Error: $error')),
+              ),
+            ),
+            OverflowBar(
+              alignment: MainAxisAlignment.start,
+              spacing: 8,
+              overflowSpacing: 8,
               children: [
-                Icon(Icons.lock, color: Colors.blue),
-                SizedBox(width: 8),
-                Text('Only your plans are visible (RLS active)'),
+                ElevatedButton(
+                  key: const Key('unauthorized_button'),
+                  onPressed: () async {
+                    final repository = ref.read(dailyPlanRepositoryProvider);
+                    final userId = ref.read(currentUserIdProvider);
+
+                    try {
+                      await repository.fetchDailyPlansForOwner(
+                        'other-user',
+                        actingUserId: userId,
+                      );
+                      ref.read(unauthorizedErrorProvider.notifier).state = null;
+                    } on AuthorizationException catch (e) {
+                      ref.read(unauthorizedErrorProvider.notifier).state =
+                          'Access denied: ${e.message}';
+                    }
+                  },
+                  child: const Text('Try Access Other User Data'),
+                ),
+                ElevatedButton(
+                  key: const Key('create_plan_button'),
+                  onPressed: () async {
+                    final controller = ref.read(dailyPlanCreationControllerProvider);
+
+                    try {
+                      final plan = await controller.createPlan(title: 'Morning Routine');
+                      ref.read(creationStatusProvider.notifier).state =
+                          'Created plan for ${plan.ownerId}';
+                    } on AuthorizationException catch (e) {
+                      ref.read(creationStatusProvider.notifier).state =
+                          'Creation blocked: ${e.message}';
+                    }
+                  },
+                  child: const Text('Create Plan'),
+                ),
+                ElevatedButton(
+                  key: const Key('create_override_button'),
+                  onPressed: () async {
+                    final controller = ref.read(dailyPlanCreationControllerProvider);
+
+                    try {
+                      final plan = await controller.createPlan(
+                        title: 'Override Attempt',
+                        overrideOwnerId: 'malicious-user',
+                      );
+                      ref.read(creationStatusProvider.notifier).state =
+                          'Created plan for ${plan.ownerId}';
+                    } on AuthorizationException catch (e) {
+                      ref.read(creationStatusProvider.notifier).state =
+                          'Creation blocked: ${e.message}';
+                    }
+                  },
+                  child: const Text('Create Plan With Override'),
+                ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+}
+
+class MockDailyPlanRepository extends Mock implements DailyPlanRepository {}
+
+Future<void> pumpHarness(
+  WidgetTester tester, {
+  required DailyPlanRepository repository,
+  required String userId,
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        currentUserIdProvider.overrideWithValue(userId),
+        dailyPlanRepositoryProvider.overrideWithValue(repository),
+      ],
+      child: const DailyPlanRlsHarness(),
+    ),
+  );
+}
+
+void main() {
+  const userId = 'user-123';
+
+  group('Daily Plan RLS Widget Tests', () {
+    late MockDailyPlanRepository repository;
+
+    setUp(() {
+      repository = MockDailyPlanRepository();
+    });
+
+    testWidgets('shows only items owned by the authenticated user', (tester) async {
+      when(() => repository.fetchDailyPlans()).thenAnswer(
+        (invocation) async => [
+          const DailyPlan(id: 'plan-1', ownerId: userId, title: 'Morning Meditation'),
+          const DailyPlan(id: 'plan-2', ownerId: 'someone-else', title: 'Other User Plan'),
+        ],
+      );
+
+      when(
+        () => repository.fetchDailyPlansForOwner(
+          any(),
+          actingUserId: any(named: 'actingUserId'),
+        ),
+      ).thenThrow(const AuthorizationException('RLS policy enforced'));
+
+      when(
+        () => repository.createDailyPlan(
+          title: any(named: 'title'),
+          ownerId: any(named: 'ownerId'),
+        ),
+      ).thenAnswer((invocation) async {
+        final title = invocation.namedArguments[#title] as String;
+        final owner = invocation.namedArguments[#ownerId] as String;
+        return DailyPlan(id: 'created-$title', ownerId: owner, title: title);
+      });
+
+      await pumpHarness(tester, repository: repository, userId: userId);
+
+      expect(find.text('Loading...'), findsOneWidget);
+
+      await tester.pump();
+
+      expect(find.text('Morning Meditation'), findsOneWidget);
+      expect(find.text('owner: $userId'), findsOneWidget);
+      expect(find.text('Other User Plan'), findsNothing);
+      expect(find.text('No plans available'), findsNothing);
+
+      verify(() => repository.fetchDailyPlans()).called(1);
+    });
+
+    testWidgets(
+      'does not render plans when repository only returns other owners',
+      (tester) async {
+        when(() => repository.fetchDailyPlans()).thenAnswer(
+          (invocation) async => [
+            const DailyPlan(id: 'plan-3', ownerId: 'other-1', title: 'Other User Plan'),
+          ],
+        );
+
+        when(
+          () => repository.fetchDailyPlansForOwner(
+            any(),
+            actingUserId: any(named: 'actingUserId'),
+          ),
+        ).thenThrow(const AuthorizationException('RLS policy enforced'));
+
+        when(
+          () => repository.createDailyPlan(
+            title: any(named: 'title'),
+            ownerId: any(named: 'ownerId'),
+          ),
+        ).thenAnswer((invocation) async {
+          final title = invocation.namedArguments[#title] as String;
+          final owner = invocation.namedArguments[#ownerId] as String;
+          return DailyPlan(id: 'created-$title', ownerId: owner, title: title);
+        });
+
+        await pumpHarness(tester, repository: repository, userId: userId);
+
+        expect(find.text('Loading...'), findsOneWidget);
+
+        await tester.pump();
+
+        expect(find.text('No plans available'), findsOneWidget);
+        expect(find.text('Other User Plan'), findsNothing);
+
+        verify(() => repository.fetchDailyPlans()).called(1);
+      },
+    );
+
+    testWidgets('surfaces authorization errors on cross-user access', (tester) async {
+      when(() => repository.fetchDailyPlans()).thenAnswer(
+        (invocation) async => [
+          const DailyPlan(id: 'plan-1', ownerId: userId, title: 'Morning Meditation'),
+        ],
+      );
+
+      when(
+        () => repository.fetchDailyPlansForOwner(
+          'other-user',
+          actingUserId: userId,
+        ),
+      ).thenThrow(const AuthorizationException('RLS policy enforced'));
+
+      when(
+        () => repository.createDailyPlan(
+          title: any(named: 'title'),
+          ownerId: any(named: 'ownerId'),
+        ),
+      ).thenAnswer((invocation) async {
+        final title = invocation.namedArguments[#title] as String;
+        final owner = invocation.namedArguments[#ownerId] as String;
+        return DailyPlan(id: 'created-$title', ownerId: owner, title: title);
+      });
+
+      await pumpHarness(tester, repository: repository, userId: userId);
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('unauthorized_button')));
+      await tester.pump();
+
+      expect(find.byKey(const Key('error_message')), findsOneWidget);
+      expect(find.text('Access denied: RLS policy enforced'), findsOneWidget);
+      expect(find.text('Morning Meditation'), findsOneWidget);
+      expect(find.text('Other User Plan'), findsNothing);
+
+      verify(() => repository.fetchDailyPlans()).called(1);
+      verify(
+        () => repository.fetchDailyPlansForOwner(
+          'other-user',
+          actingUserId: userId,
+        ),
+      ).called(1);
+    });
+
+    testWidgets('auto-populates user_id and rejects manual overrides', (tester) async {
+      when(() => repository.fetchDailyPlans()).thenAnswer(
+        (invocation) async => const <DailyPlan>[],
+      );
+
+      when(
+        () => repository.fetchDailyPlansForOwner(
+          any(),
+          actingUserId: any(named: 'actingUserId'),
+        ),
+      ).thenThrow(const AuthorizationException('RLS policy enforced'));
+
+      when(
+        () => repository.createDailyPlan(
+          title: any(named: 'title'),
+          ownerId: any(named: 'ownerId'),
+        ),
+      ).thenAnswer((invocation) async {
+        final title = invocation.namedArguments[#title] as String;
+        final owner = invocation.namedArguments[#ownerId] as String;
+        return DailyPlan(id: 'created-$title', ownerId: owner, title: title);
+      });
+
+      await pumpHarness(tester, repository: repository, userId: userId);
+
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('create_plan_button')));
+      await tester.pump();
+
+      expect(find.text('Created plan for $userId'), findsOneWidget);
+      verify(
+        () => repository.createDailyPlan(
+          title: 'Morning Routine',
+          ownerId: userId,
+        ),
+      ).called(1);
+
+      await tester.tap(find.byKey(const Key('create_override_button')));
+      await tester.pump();
+
+      expect(
+        find.text('Creation blocked: user_id is enforced by RLS'),
+        findsOneWidget,
+      );
+
+      verifyNever(
+        () => repository.createDailyPlan(
+          title: 'Override Attempt',
+          ownerId: any(named: 'ownerId'),
+        ),
+      );
+    });
+  });
 }

@@ -48,7 +48,7 @@ void main() {
             _PreselectedConsent02Notifier.new,
           ),
           userStateServiceProvider.overrideWith(
-            (ref) async => UserStateService(prefs),
+            (ref) async => UserStateService(prefs: prefs),
           ),
         ],
         child: MaterialApp.router(

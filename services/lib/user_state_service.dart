@@ -7,10 +7,7 @@ const _keyHasSeenWelcome = 'has_seen_welcome';
 const _keyHasCompletedOnboarding = 'has_completed_onboarding';
 
 class UserStateService {
-  UserStateService._({required this.prefs});
-
-  factory UserStateService(SharedPreferences prefs) =>
-      UserStateService._(prefs: prefs);
+  UserStateService({required this.prefs});
 
   final SharedPreferences prefs;
 
@@ -28,13 +25,15 @@ class UserStateService {
   }
 
   Future<void> reset() async {
-    await prefs.remove(_keyHasSeenWelcome);
-    await prefs.remove(_keyHasCompletedOnboarding);
+    await Future.wait([
+      prefs.remove(_keyHasSeenWelcome),
+      prefs.remove(_keyHasCompletedOnboarding),
+    ]);
   }
 }
 
 @riverpod
 Future<UserStateService> userStateService(UserStateServiceRef ref) async {
   final prefs = await SharedPreferences.getInstance();
-  return UserStateService(prefs);
+  return UserStateService(prefs: prefs);
 }

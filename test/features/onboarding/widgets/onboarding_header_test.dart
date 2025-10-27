@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 // ignore: unused_import
 import '../../../support/test_config.dart';
 
@@ -16,6 +17,9 @@ Future<void> _pumpHeader(
 }) async {
   await tester.pumpWidget(
     MaterialApp(
+      locale: const Locale('de'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: Scaffold(
         body: OnboardingHeader(
           title: 'Ready for LUVI?',

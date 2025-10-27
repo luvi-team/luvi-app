@@ -1,8 +1,5 @@
 import 'dart:ui' show lerpDouble;
 
-import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart'
-    show kOnboardingSuccessTrophyToTitleGap;
-
 /// Design tokens for the Onboarding Success screen.
 /// All values sourced from the Figma audit (`ONB_SUCCESS_measures.json`).
 class OnboardingSuccessTokens {
@@ -24,7 +21,8 @@ class OnboardingSuccessTokens {
   static const double celebrationBaselineOffset = 64.0;
 
   /// Target gap (in px) between the trophy illustration and the title.
-  static const double gapToTitle = kOnboardingSuccessTrophyToTitleGap;
+  /// Keep in sync with `OnboardingSpacing._kOnboardingSuccessTrophyToTitleGap`.
+  static const double gapToTitle = 24.0;
 
   /// Responsive config for the celebration animation based on viewport height.
   static OnboardingSuccessIllustrationConfig celebrationConfig({

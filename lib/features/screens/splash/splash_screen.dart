@@ -27,10 +27,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2500),
-    )..addStatusListener(_handleAnimationStatus);
+    _controller = AnimationController(vsync: this)
+      ..addStatusListener(_handleAnimationStatus);
   }
 
   @override

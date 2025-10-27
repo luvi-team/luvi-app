@@ -27,7 +27,7 @@ void main() {
   }) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
-    final service = UserStateService(prefs);
+    final service = UserStateService(prefs: prefs);
     return ProviderScope(
       overrides: [
         userStateServiceProvider.overrideWith((ref) async => service),

@@ -7,6 +7,7 @@ double topOffsetFromSafeArea(
   double figmaY, {
   required double figmaSafeTop,
 }) {
+  assert(debugCheckHasMediaQuery(context));
   final gap = figmaY - figmaSafeTop;
   return gap < 0 ? 0 : gap;
 }

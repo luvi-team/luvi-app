@@ -13,7 +13,6 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 class _ViewportConfig {

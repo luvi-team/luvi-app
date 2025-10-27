@@ -29,7 +29,7 @@ class OnboardingHeader extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
     final stepSemantic = l10n?.onboardingStepSemantic(step, totalSteps) ??
-        'Schritt $step von $totalSteps';
+        'Step $step of $totalSteps';
     final stepFraction = l10n?.onboardingStepFraction(step, totalSteps) ??
         '$step/$totalSteps';
 

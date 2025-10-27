@@ -360,7 +360,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome02Subtitle => 'Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.';
 
   @override
-  String get welcome03Subtitle => 'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.';
+  String get welcome03Subtitle => 'LUVI Sync: Your daily game-changer. Understand the "why" behind your hormones. Scientifically grounded.';
 
   @override
   String get consent02Title => 'Your health,\nyour decision!';

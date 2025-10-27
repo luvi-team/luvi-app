@@ -58,7 +58,7 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
 
     # Pattern: var(--fill-N, COLOR) where COLOR can be #HEX or named color (white, black, etc.)
     # Capture group 1: the fallback color
-    pattern = r'var\(--fill-\d+,\s*([^)]+)\)'
+    pattern = r'var\(--fill-\d+,\s*((?:[^()]|\([^)]*\))+?)\)'
 
     # Count matches before replacement
     variables_found = len(re.findall(pattern, content))
@@ -77,8 +77,18 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
     variables_remaining = len(re.findall(pattern, fixed_content))
     variables_replaced = variables_found - variables_remaining
 
-    # Write fixed content back to file
-    svg_file.write_text(fixed_content, encoding='utf-8')
+    temp_path = svg_file.with_suffix('.svg.tmp')
+
+    try:
+        if temp_path.exists():
+            temp_path.unlink()
+
+        temp_path.write_text(fixed_content, encoding='utf-8')
+        temp_path.replace(svg_file)
+    except Exception:
+        if temp_path.exists():
+            temp_path.unlink()
+        raise
 
     return (variables_found, variables_replaced)
 

@@ -10,7 +10,7 @@ import 'package:luvi_app/features/consent/routes.dart';
 import '../../../support/test_config.dart';
 
 void main() {
-    group('Consent01Screen', () {
+  group('Consent01Screen', () {
     late GoRouter router;
 
     setUp(() {

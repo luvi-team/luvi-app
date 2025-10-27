@@ -9,7 +9,7 @@ import 'package:luvi_app/features/consent/routes.dart';
 import '../../support/test_config.dart';
 
 void main() {
-    testWidgets('W3 → Consent01 (asset-free)', (tester) async {
+  testWidgets('W3 → Consent01 (asset-free)', (tester) async {
     final router = GoRouter(
       initialLocation: '/onboarding/w3',
       routes: [

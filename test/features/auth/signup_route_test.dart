@@ -5,8 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/routes.dart' as features;
-// ignore: unused_import
-import '../../support/test_config.dart';
 
 void main() {
     test('featureRoutes contains signup route path', () {

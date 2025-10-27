@@ -8,7 +8,6 @@ import 'package:luvi_app/features/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 void main() {

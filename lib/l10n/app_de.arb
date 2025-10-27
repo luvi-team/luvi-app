@@ -471,7 +471,7 @@
   "@onboardingSuccessTitle": {
     "description": "Title shown on the onboarding success screen."
   },
-  "onboardingSuccessButton": "Los geht\u0027s!",
+  "onboardingSuccessButton": "Los geht's!",
   "@onboardingSuccessButton": {
     "description": "Button label on the onboarding success screen to navigate to dashboard."
   },

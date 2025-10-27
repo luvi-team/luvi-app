@@ -15,8 +15,8 @@ class AppLinks {
     ),
   );
 
-  static bool get hasValidPrivacy => privacyPolicy.host != 'example.com';
-  static bool get hasValidTerms => termsOfService.host != 'example.com';
+  static bool get hasValidPrivacy => _isConfiguredUrl(privacyPolicy);
+  static bool get hasValidTerms => _isConfiguredUrl(termsOfService);
 
   static bool _bypassValidationForTests = false;
 
@@ -26,5 +26,14 @@ class AppLinks {
   @visibleForTesting
   static set bypassValidationForTests(bool value) {
     _bypassValidationForTests = value;
+  }
+
+  static bool _isConfiguredUrl(Uri uri) {
+    final scheme = uri.scheme.toLowerCase();
+    final host = uri.host.toLowerCase();
+    final isHttpScheme = scheme == 'http' || scheme == 'https';
+    if (!isHttpScheme) return false;
+    if (host.isEmpty || host == 'example.com') return false;
+    return true;
   }
 }

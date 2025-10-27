@@ -31,6 +31,8 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
 
 const String _onboardingRootPath = '/onboarding/';
+// Short "/onboarding/w" prefix covers welcome screens (w1–w3) and keeps URLs
+// aligned with existing deep links and analytics dashboards.
 const String _welcomeRootPath = '/onboarding/w';
 const String _consentRootPath = '/consent/';
 
@@ -189,12 +191,6 @@ final List<GoRoute> featureRoutes = [
 ];
 
 String? supabaseRedirect(BuildContext context, GoRouterState state) {
-  // Dev-only bypass to allow opening onboarding without auth during development
-  const allowOnboardingDev = bool.fromEnvironment(
-    'ALLOW_ONBOARDING_DEV',
-    defaultValue: false,
-  );
-
   // Dev-only bypass to allow opening the dashboard without auth during development
   const allowDashboardDev = bool.fromEnvironment(
     'ALLOW_DASHBOARD_DEV',
@@ -219,13 +215,9 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     return null;
   }
 
-  // Allow all onboarding screens in dev mode
+  // Dev-only bypass to allow opening onboarding without auth
   if (!kReleaseMode && isOnboarding) {
     return null;
-  }
-
-  if (allowOnboardingDev && !kReleaseMode && isOnboarding) {
-    return null; // allow onboarding routes in dev without auth
   }
 
   if (allowDashboardDev && !kReleaseMode && isDashboard) {

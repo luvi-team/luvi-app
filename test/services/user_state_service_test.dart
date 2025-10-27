@@ -12,7 +12,7 @@ void main() {
   group('UserStateService', () {
     test('initial state returns false for both flags', () async {
       final prefs = await SharedPreferences.getInstance();
-      final service = UserStateService(prefs);
+      final service = UserStateService(prefs: prefs);
 
       expect(service.hasSeenWelcome, isFalse);
       expect(service.hasCompletedOnboarding, isFalse);
@@ -20,7 +20,7 @@ void main() {
 
     test('markWelcomeSeen sets flag to true', () async {
       final prefs = await SharedPreferences.getInstance();
-      final service = UserStateService(prefs);
+      final service = UserStateService(prefs: prefs);
 
       await service.markWelcomeSeen();
 
@@ -30,7 +30,7 @@ void main() {
 
     test('markOnboardingComplete sets flag to true', () async {
       final prefs = await SharedPreferences.getInstance();
-      final service = UserStateService(prefs);
+      final service = UserStateService(prefs: prefs);
 
       await service.markOnboardingComplete();
 
@@ -44,7 +44,7 @@ void main() {
         'has_completed_onboarding': true,
       });
       final prefs = await SharedPreferences.getInstance();
-      final service = UserStateService(prefs);
+      final service = UserStateService(prefs: prefs);
 
       expect(service.hasSeenWelcome, isTrue);
       expect(service.hasCompletedOnboarding, isTrue);
@@ -57,10 +57,10 @@ void main() {
 
     test('flags persist across service instances', () async {
       final prefs = await SharedPreferences.getInstance();
-      final first = UserStateService(prefs);
+      final first = UserStateService(prefs: prefs);
       await first.markWelcomeSeen();
 
-      final second = UserStateService(prefs);
+      final second = UserStateService(prefs: prefs);
       expect(second.hasSeenWelcome, isTrue);
       expect(second.hasCompletedOnboarding, isFalse);
     });

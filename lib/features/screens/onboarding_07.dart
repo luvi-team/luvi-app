@@ -49,15 +49,15 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: spacing.topPadding),
-                OnboardingHeader(
-                  title: AppLocalizations.of(context)!.onboarding07Title,
-                  step: 7,
-                  totalSteps: kOnboardingTotalSteps,
-                  onBack: _handleBack,
-                ),
-                SizedBox(height: spacing.headerToFirstOption07),
+            children: [
+              SizedBox(height: spacing.topPadding),
+              OnboardingHeader(
+                title: AppLocalizations.of(context)!.onboarding07Title,
+                step: 7,
+                totalSteps: kOnboardingTotalSteps,
+                onBack: _handleBack,
+              ),
+              SizedBox(height: spacing.headerToFirstOption07),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToFootnote07),
               _buildFootnote(textTheme, colorScheme),

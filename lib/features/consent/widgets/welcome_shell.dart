@@ -6,7 +6,7 @@ import '../../../core/design_tokens/spacing.dart';
 import 'dots_indicator.dart';
 
 class WelcomeShell extends StatelessWidget {
-  const WelcomeShell({
+  WelcomeShell({
     super.key,
     required this.hero,
     required this.heroAspect, // z.B. 438/619
@@ -15,12 +15,13 @@ class WelcomeShell extends StatelessWidget {
     this.subtitle,
     this.onNext,
     this.activeIndex,
-    this.waveAsset = Assets.welcomeWave,
+    String? waveAsset,
     this.headerSpacing = 0,
     this.primaryButtonLabel = 'Weiter',
     this.subtitleMaxWidth = double.infinity,
     this.bottomContent,
-  }) : assert(
+  })  : waveAsset = waveAsset ?? Assets.images.welcomeWave,
+        assert(
          bottomContent != null ||
              (title != null &&
                  subtitle != null &&
@@ -88,11 +89,8 @@ class WelcomeShell extends StatelessWidget {
   Widget _buildDefaultContent(ThemeData theme) {
     final children = <Widget>[];
 
-    if ((title != null ||
-            subtitle != null ||
-            activeIndex != null ||
-            onNext != null) &&
-        headerSpacing > 0) {
+    final hasContent = title != null || subtitle != null || activeIndex != null || onNext != null;
+    if (hasContent && headerSpacing > 0) {
       children.add(SizedBox(height: headerSpacing));
     }
 

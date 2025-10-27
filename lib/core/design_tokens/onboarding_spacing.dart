@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 /// Base gap (px) between the success trophy and the title, shared with tokens.
-const double kOnboardingSuccessTrophyToTitleGap = 24.0;
+const double _kOnboardingSuccessTrophyToTitleGap = 24.0;
 
 /// Discrete spacing tokens for onboarding screens with gentle scaling.
 class OnboardingSpacing {
@@ -281,6 +281,9 @@ class OnboardingSpacing {
   static const double _calloutToCta06 = 48.0;
   static const double _ctaToHome06 = 48.0;
 
+  // Shared 90 px rhythm used across late-onboarding screens.
+  static const double _onbSharedRhythm90 = 90.0;
+
   // ONB_07 specific spacing (from Figma audit ONB_07_measures.json)
   // Header baseline (79) → Question (202) = 90 px (header-to-question rhythm)
   // Question → First Option (316 - 202 - 24) = 90 px
@@ -297,12 +300,12 @@ class OnboardingSpacing {
 
   // ONB_08 specific spacing (90px Rhythmus analog zu Screen 7)
   // Konsistenter 90px-Rhythmus für visuelles Gleichgewicht
-  static const double _headerToQuestion08 = 90.0;
-  static const double _questionToFirstOption08 = 90.0;
+  static const double _headerToQuestion08 = _onbSharedRhythm90;
+  static const double _questionToFirstOption08 = _onbSharedRhythm90;
   static const double _optionGap08 = 24.0; // konsistent mit anderen Screens
-  static const double _lastOptionToFootnote08 = 90.0;
-  static const double _footnoteToCta08 = 90.0;
-  static const double _ctaToHome08 = 90.0;
+  static const double _lastOptionToFootnote08 = _onbSharedRhythm90;
+  static const double _footnoteToCta08 = _onbSharedRhythm90;
+  static const double _ctaToHome08 = _onbSharedRhythm90;
 
   // New tokens for header migration (question becomes header)
   // Conservative 60% of sum (headerToInstruction + instructionToDate/Content)
@@ -316,6 +319,6 @@ class OnboardingSpacing {
   // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
   // Custom values (not aligned with existing rhythm tokens)
   static const double _trophyToTitle =
-      kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px)
+      _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px)
   static const double _titleToButton = 66.0; // Title end → Button start
 }

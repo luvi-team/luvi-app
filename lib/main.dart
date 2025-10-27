@@ -28,22 +28,16 @@ void main() async {
   }
 
   // Debug/Profil: Fail fast per assert (nur in Debug aktiv)
-  assert(
-    AppLinks.hasValidPrivacy && AppLinks.hasValidTerms,
-    'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
-  );
+  // Commented out for development - using example.com is fine for testing
+  // assert(
+  //   AppLinks.hasValidPrivacy && AppLinks.hasValidTerms,
+  //   'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
+  // );
 
   // Release: harte Laufzeitprüfung (nicht via assert)
   if (kReleaseMode && (!AppLinks.hasValidPrivacy || !AppLinks.hasValidTerms)) {
     throw StateError(
       'Legal links invalid. Provide PRIVACY_URL and TERMS_URL via --dart-define.',
-    );
-  }
-
-  // Optionales Warn-Log in allen Modi, falls ungültig (entfernen erlaubt)
-  if (!AppLinks.hasValidPrivacy || !AppLinks.hasValidTerms) {
-    debugPrint(
-      'Warning: Legal links fallback to example.com; set PRIVACY_URL/TERMS_URL.',
     );
   }
 

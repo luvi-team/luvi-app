@@ -52,7 +52,9 @@ python3 scripts/fix_svg_css_variables.py assets/images/onboarding/onboarding_suc
 Das Script:
 - Findet alle `var(--fill-N, FARBE)` Patterns
 - Ersetzt sie durch die Fallback-Farbe (`FARBE`)
-- Überschreibt die Original-Datei (Backup empfohlen bei großen Assets)
+- Legt beim Start eine temporäre Sicherung `<datei>.svg.bak` an
+- Überschreibt die Originaldatei und löscht die `.svg.bak`, sobald der Lauf erfolgreich war
+- Manuelles Backup ist nur nötig, wenn du zusätzlich eine separate Kopie behalten möchtest
 - Gibt Statistik aus (gefundene/ersetzte CSS-Variablen)
 
 ### Schritt 3: Verifizieren

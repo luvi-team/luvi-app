@@ -20,7 +20,7 @@ void main() {
           onNext: () {},
           heroAspect: 438 / 619,
           waveHeightPx: 413,
-          waveAsset: Assets.welcomeWave,
+          waveAsset: Assets.images.welcomeWave,
           activeIndex: 0,
         ),
       ),
@@ -68,7 +68,7 @@ void main() {
       }
     })();
 
-    expect(assetName, contains(Assets.welcomeWave));
+    expect(assetName, contains(Assets.images.welcomeWave));
 
     // Semantics header present
     final handle = tester.ensureSemantics();

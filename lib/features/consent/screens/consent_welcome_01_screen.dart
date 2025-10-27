@@ -46,10 +46,10 @@ class ConsentWelcome01Screen extends StatelessWidget {
       ),
       subtitle: l10n.welcome01Subtitle,
       onNext: () => context.go(ConsentWelcome02Screen.routeName),
-      hero: Image.asset(Assets.welcomeHero01, fit: BoxFit.cover),
+      hero: Image.asset(Assets.images.welcomeHero01, fit: BoxFit.cover),
       heroAspect: _kHeroAspect,
       waveHeightPx: _kWaveHeight,
-      waveAsset: Assets.welcomeWave,
+      waveAsset: Assets.images.welcomeWave,
       headerSpacing: 0,
       activeIndex: 0,
     );

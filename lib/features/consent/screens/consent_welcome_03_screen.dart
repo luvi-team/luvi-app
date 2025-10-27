@@ -41,7 +41,7 @@ class ConsentWelcome03Screen extends StatelessWidget {
       ),
       subtitle: l10n.welcome03Subtitle,
       onNext: () => context.push(Consent01Screen.routeName),
-      hero: Image.asset(Assets.welcomeHero03, fit: BoxFit.cover),
+      hero: Image.asset(Assets.images.welcomeHero03, fit: BoxFit.cover),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,
       headerSpacing: Spacing.s,
