@@ -4,11 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
-// ignore: unused_import
 import '../../../support/test_config.dart';
 
 void main() {
-    testWidgets('WelcomeShell shows title semantics and wave', (tester) async {
+  setUpAll(TestConfig.ensureInitialized);
+
+  testWidgets('WelcomeShell shows title semantics and wave', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildAppTheme(),

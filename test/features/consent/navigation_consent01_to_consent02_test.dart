@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
 import 'package:luvi_app/features/consent/routes.dart';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 void main() {
-    testWidgets('Consent01 → push Consent02 and pop back', (tester) async {
+  TestConfig.ensureInitialized();
+  testWidgets('Consent01 → push Consent02 and pop back', (tester) async {
     final router = GoRouter(
       initialLocation: ConsentRoutes.consent01,
       routes: [

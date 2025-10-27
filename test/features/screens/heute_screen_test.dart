@@ -11,7 +11,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
 void main() {
-    setUpAll(() async {
+  setUpAll(() async {
     await initializeDateFormatting('de_DE', null);
   });
 

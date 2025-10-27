@@ -538,5 +538,185 @@
   "consent02SemanticUnselected": "Not selected",
   "@consent02SemanticUnselected": {
     "description": "Semantics label announcing a consent card is not selected."
+  },
+  "authLoginHeadline": "Welcome back 💜",
+  "@authLoginHeadline": {
+    "description": "Headline shown on the login screen."
+  },
+  "authLoginSubhead": "We're glad you're here.",
+  "@authLoginSubhead": {
+    "description": "Subheadline displayed under the login headline."
+  },
+  "authLoginCta": "Sign in",
+  "@authLoginCta": {
+    "description": "Primary call-to-action label on the login screen."
+  },
+  "authLoginCtaLoadingSemantic": "Signing in",
+  "@authLoginCtaLoadingSemantic": {
+    "description": "Semantic description announced while the login request is running."
+  },
+  "authLoginCtaLinkPrefix": "New to LUVI? ",
+  "@authLoginCtaLinkPrefix": {
+    "description": "Prefix text for the sign-up link on the login screen. Keep trailing space."
+  },
+  "authLoginCtaLinkAction": "Start here",
+  "@authLoginCtaLinkAction": {
+    "description": "Action link copy directing new users to the sign-up screen."
+  },
+  "authLoginForgot": "Forgot password?",
+  "@authLoginForgot": {
+    "description": "Link label that navigates to the forgot-password flow."
+  },
+  "authLoginSocialDivider": "Or continue with",
+  "@authLoginSocialDivider": {
+    "description": "Divider text shown above social auth buttons."
+  },
+  "authErrEmailInvalid": "Please double-check your email.",
+  "@authErrEmailInvalid": {
+    "description": "Validation error shown when the email is malformed."
+  },
+  "authErrPasswordInvalid": "Please double-check your password.",
+  "@authErrPasswordInvalid": {
+    "description": "Validation error shown when the password is malformed."
+  },
+  "authErrConfirmEmail": "Please verify your email (resend the link?).",
+  "@authErrConfirmEmail": {
+    "description": "Error displayed when the user's email has not been confirmed."
+  },
+  "authInvalidCredentials": "Email or password is incorrect.",
+  "@authInvalidCredentials": {
+    "description": "Error shown when Supabase reports invalid credentials."
+  },
+  "authErrLoginUnavailable": "Login is currently unavailable.",
+  "@authErrLoginUnavailable": {
+    "description": "Generic error message for temporarily unavailable login service."
+  },
+  "authEmailHint": "Your email",
+  "@authEmailHint": {
+    "description": "Hint text for the email input field."
+  },
+  "authPasswordHint": "Your password",
+  "@authPasswordHint": {
+    "description": "Hint text for the password input field."
+  },
+  "authSignupTitle": "Your journey starts here 💜",
+  "@authSignupTitle": {
+    "description": "Headline shown on the sign-up screen."
+  },
+  "authSignupSubtitle": "Quick signup and you're ready to go.",
+  "@authSignupSubtitle": {
+    "description": "Subtitle encouraging users to complete sign-up."
+  },
+  "authSignupCta": "Sign up",
+  "@authSignupCta": {
+    "description": "Primary call-to-action label on the sign-up screen."
+  },
+  "authSignupCtaLoadingSemantic": "Signing up",
+  "@authSignupCtaLoadingSemantic": {
+    "description": "Semantic description announced while the sign-up request is running."
+  },
+  "authSignupLinkPrefix": "Already have an account? ",
+  "@authSignupLinkPrefix": {
+    "description": "Prefix text for the sign-in link on the sign-up screen. Keep trailing space."
+  },
+  "authSignupLinkAction": "Sign in",
+  "@authSignupLinkAction": {
+    "description": "Link encouraging users to return to the sign-in screen."
+  },
+  "authSignupHintFirstName": "Your first name",
+  "@authSignupHintFirstName": {
+    "description": "Hint text for the first-name input."
+  },
+  "authSignupHintLastName": "Your last name",
+  "@authSignupHintLastName": {
+    "description": "Hint text for the last-name input."
+  },
+  "authSignupHintPhone": "Your phone number",
+  "@authSignupHintPhone": {
+    "description": "Hint text for the phone-number input."
+  },
+  "authSignupMissingFields": "Please enter your email and password.",
+  "@authSignupMissingFields": {
+    "description": "Error shown when required fields are missing during sign-up."
+  },
+  "authSignupGenericError": "Sign up is unavailable right now. Please try again later.",
+  "@authSignupGenericError": {
+    "description": "Generic error shown when the sign-up request fails."
+  },
+  "authForgotTitle": "Forgot your password? 💜",
+  "@authForgotTitle": {
+    "description": "Headline for the forgot-password screen."
+  },
+  "authForgotSubtitle": "Enter your email to receive the reset link.",
+  "@authForgotSubtitle": {
+    "description": "Subtitle explaining the forgot-password process."
+  },
+  "authForgotCta": "Continue",
+  "@authForgotCta": {
+    "description": "Primary CTA label on the forgot-password screen."
+  },
+  "authBackSemantic": "Back",
+  "@authBackSemantic": {
+    "description": "Semantic label for back buttons used in auth flows."
+  },
+  "authSuccessPwdTitle": "All done!",
+  "@authSuccessPwdTitle": {
+    "description": "Title shown when the new password was created successfully."
+  },
+  "authSuccessPwdSubtitle": "Your new password has been saved.",
+  "@authSuccessPwdSubtitle": {
+    "description": "Subtitle shown after successfully storing the new password."
+  },
+  "authSuccessForgotTitle": "Email sent!",
+  "@authSuccessForgotTitle": {
+    "description": "Title shown after a password reset email was sent."
+  },
+  "authSuccessForgotSubtitle": "Please check your inbox.",
+  "@authSuccessForgotSubtitle": {
+    "description": "Subtitle reminding the user to check their inbox after a reset email is sent."
+  },
+  "authSuccessCta": "Done",
+  "@authSuccessCta": {
+    "description": "Button label closing the success screen."
+  },
+  "authCreateNewHint1": "New password",
+  "@authCreateNewHint1": {
+    "description": "Hint text for the new password input."
+  },
+  "authCreateNewHint2": "Confirm new password",
+  "@authCreateNewHint2": {
+    "description": "Hint text for the confirm password input."
+  },
+  "authCreateNewCta": "Save",
+  "@authCreateNewCta": {
+    "description": "Primary CTA label when creating a new password."
+  },
+  "authVerifyResetTitle": "Enter the code 💜",
+  "@authVerifyResetTitle": {
+    "description": "Headline for the password reset verification screen."
+  },
+  "authVerifyResetSubtitle": "We just sent it to your email.",
+  "@authVerifyResetSubtitle": {
+    "description": "Subtitle explaining that the verification code was emailed."
+  },
+  "authVerifyEmailTitle": "Confirm your email 💜",
+  "@authVerifyEmailTitle": {
+    "description": "Headline for the email verification screen."
+  },
+  "authVerifyEmailSubtitle": "Enter the code",
+  "@authVerifyEmailSubtitle": {
+    "description": "Subtitle prompting users to enter the verification code."
+  },
+  "authVerifyCta": "Confirm",
+  "@authVerifyCta": {
+    "description": "Primary CTA label on the verification screen."
+  },
+  "authVerifyHelper": "Didn't receive anything?",
+  "@authVerifyHelper": {
+    "description": "Helper text prompting the user to request another verification code."
+  },
+  "authVerifyResend": "Resend",
+  "@authVerifyResend": {
+    "description": "Link label to resend the verification code."
   }
 }

@@ -48,17 +48,40 @@ String _shortStackTrace(StackTrace stackTrace) =>
 String? _sanitizeError(Object error) {
   final raw = error.toString();
 
-  final emailRedacted = RegExp(
+  final emailPattern = RegExp(
     r'([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})',
     caseSensitive: false,
   );
-  final phoneRedacted = RegExp(r'\b\+?\d[\d\s.-]{7,}\d\b');
-  final idRedacted = RegExp(r'\b[A-F0-9]{8,}\b', caseSensitive: false);
+  final phoneCandidate = RegExp(r'\b\+?[\d()\s.-]{7,}\b');
+  final digitCounter = RegExp(r'\d');
+  final uuidPattern = RegExp(
+    r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b',
+  );
+  // Extend the prefix list cautiously if new identifier types require masking.
+  final prefixedTokenPattern = RegExp(
+    r'\b(?:id|token|session|trace|request|user|auth|ref)[-_:= ]*([A-F0-9]{16,})\b',
+    caseSensitive: false,
+  );
 
-  final sanitized = raw
-      .replaceAll(emailRedacted, '[redacted-email]')
-      .replaceAll(phoneRedacted, '[redacted-phone]')
-      .replaceAll(idRedacted, '[redacted-id]');
+  String sanitized = raw.replaceAll(emailPattern, '[redacted-email]');
+
+  sanitized = sanitized.replaceAll(uuidPattern, '[redacted-uuid]');
+
+  sanitized = sanitized.replaceAllMapped(phoneCandidate, (match) {
+    final candidate = match.group(0)!;
+    final digitCount = digitCounter.allMatches(candidate).length;
+    if (digitCount >= 10) {
+      return '[redacted-phone]';
+    }
+    return candidate;
+  });
+
+  sanitized = sanitized.replaceAllMapped(prefixedTokenPattern, (match) {
+    final fullMatch = match.group(0)!;
+    final identifier = match.group(1)!;
+    // Keep the descriptive prefix while masking the sensitive identifier.
+    return fullMatch.replaceFirst(identifier, '[redacted-id]');
+  });
 
   if (sanitized == raw || sanitized.trim().isEmpty) {
     return null;
@@ -66,3 +89,6 @@ String? _sanitizeError(Object error) {
 
   return sanitized;
 }
+
+@visibleForTesting
+String? debugSanitizeError(Object error) => _sanitizeError(error);

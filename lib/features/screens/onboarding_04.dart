@@ -12,7 +12,6 @@ import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
-import 'package:intl/intl.dart';
 
 /// Onboarding04: Last period start date input screen
 /// Figma: 04_Onboarding (Wann hat deine letzte Periode angefangen?)
@@ -31,16 +30,11 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
   bool _hasInteracted = false;
 
   String _formattedDate(BuildContext context) {
-    final locale = Localizations.maybeLocaleOf(context);
-    final languageCode = locale?.languageCode;
-
-    if (languageCode == 'de') {
-      return DateFormatters.germanDayMonthYear(_date);
-    }
-
-    final localeName = locale?.toLanguageTag() ?? Intl.getCurrentLocale();
-    final formatter = DateFormat.yMMMMd(localeName);
-    return formatter.format(_date);
+    final localeTag = Localizations.maybeLocaleOf(context)?.toLanguageTag();
+    return DateFormatters.localizedDayMonthYear(
+      _date,
+      localeName: localeTag,
+    );
   }
 
   @override

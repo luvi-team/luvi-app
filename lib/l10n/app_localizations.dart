@@ -862,6 +862,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not selected'**
   String get consent02SemanticUnselected;
+
+  /// Headline shown on the login screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back 💜'**
+  String get authLoginHeadline;
+
+  /// Subheadline displayed under the login headline.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re glad you\'re here.'**
+  String get authLoginSubhead;
+
+  /// Primary call-to-action label on the login screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authLoginCta;
+
+  /// Semantic description announced while the login request is running.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in'**
+  String get authLoginCtaLoadingSemantic;
+
+  /// Prefix text for the sign-up link on the login screen. Keep trailing space.
+  ///
+  /// In en, this message translates to:
+  /// **'New to LUVI? '**
+  String get authLoginCtaLinkPrefix;
+
+  /// Action link copy directing new users to the sign-up screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Start here'**
+  String get authLoginCtaLinkAction;
+
+  /// Link label that navigates to the forgot-password flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authLoginForgot;
+
+  /// Divider text shown above social auth buttons.
+  ///
+  /// In en, this message translates to:
+  /// **'Or continue with'**
+  String get authLoginSocialDivider;
+
+  /// Validation error shown when the email is malformed.
+  ///
+  /// In en, this message translates to:
+  /// **'Please double-check your email.'**
+  String get authErrEmailInvalid;
+
+  /// Validation error shown when the password is malformed.
+  ///
+  /// In en, this message translates to:
+  /// **'Please double-check your password.'**
+  String get authErrPasswordInvalid;
+
+  /// Error displayed when the user's email has not been confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Please verify your email (resend the link?).'**
+  String get authErrConfirmEmail;
+
+  /// Error shown when Supabase reports invalid credentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or password is incorrect.'**
+  String get authInvalidCredentials;
+
+  /// Generic error message for temporarily unavailable login service.
+  ///
+  /// In en, this message translates to:
+  /// **'Login is currently unavailable.'**
+  String get authErrLoginUnavailable;
+
+  /// Hint text for the email input field.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email'**
+  String get authEmailHint;
+
+  /// Hint text for the password input field.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password'**
+  String get authPasswordHint;
+
+  /// Headline shown on the sign-up screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Your journey starts here 💜'**
+  String get authSignupTitle;
+
+  /// Subtitle encouraging users to complete sign-up.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick signup and you\'re ready to go.'**
+  String get authSignupSubtitle;
+
+  /// Primary call-to-action label on the sign-up screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get authSignupCta;
+
+  /// Semantic description announced while the sign-up request is running.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing up'**
+  String get authSignupCtaLoadingSemantic;
+
+  /// Prefix text for the sign-in link on the sign-up screen. Keep trailing space.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? '**
+  String get authSignupLinkPrefix;
+
+  /// Link encouraging users to return to the sign-in screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authSignupLinkAction;
+
+  /// Hint text for the first-name input.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first name'**
+  String get authSignupHintFirstName;
+
+  /// Hint text for the last-name input.
+  ///
+  /// In en, this message translates to:
+  /// **'Your last name'**
+  String get authSignupHintLastName;
+
+  /// Hint text for the phone-number input.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone number'**
+  String get authSignupHintPhone;
+
+  /// Error shown when required fields are missing during sign-up.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email and password.'**
+  String get authSignupMissingFields;
+
+  /// Generic error shown when the sign-up request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up is unavailable right now. Please try again later.'**
+  String get authSignupGenericError;
+
+  /// Headline for the forgot-password screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password? 💜'**
+  String get authForgotTitle;
+
+  /// Subtitle explaining the forgot-password process.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to receive the reset link.'**
+  String get authForgotSubtitle;
+
+  /// Primary CTA label on the forgot-password screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get authForgotCta;
+
+  /// Semantic label for back buttons used in auth flows.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get authBackSemantic;
+
+  /// Title shown when the new password was created successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'All done!'**
+  String get authSuccessPwdTitle;
+
+  /// Subtitle shown after successfully storing the new password.
+  ///
+  /// In en, this message translates to:
+  /// **'Your new password has been saved.'**
+  String get authSuccessPwdSubtitle;
+
+  /// Title shown after a password reset email was sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Email sent!'**
+  String get authSuccessForgotTitle;
+
+  /// Subtitle reminding the user to check their inbox after a reset email is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your inbox.'**
+  String get authSuccessForgotSubtitle;
+
+  /// Button label closing the success screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get authSuccessCta;
+
+  /// Hint text for the new password input.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get authCreateNewHint1;
+
+  /// Hint text for the confirm password input.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get authCreateNewHint2;
+
+  /// Primary CTA label when creating a new password.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get authCreateNewCta;
+
+  /// Headline for the password reset verification screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code 💜'**
+  String get authVerifyResetTitle;
+
+  /// Subtitle explaining that the verification code was emailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We just sent it to your email.'**
+  String get authVerifyResetSubtitle;
+
+  /// Headline for the email verification screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your email 💜'**
+  String get authVerifyEmailTitle;
+
+  /// Subtitle prompting users to enter the verification code.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code'**
+  String get authVerifyEmailSubtitle;
+
+  /// Primary CTA label on the verification screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get authVerifyCta;
+
+  /// Helper text prompting the user to request another verification code.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive anything?'**
+  String get authVerifyHelper;
+
+  /// Link label to resend the verification code.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get authVerifyResend;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

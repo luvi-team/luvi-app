@@ -26,9 +26,18 @@ Exit codes:
     3: No changes needed (no CSS variables found)
 """
 
+import logging
 import re
 import sys
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
+CSS_VAR_PATTERN = re.compile(
+    r'var\(--[a-zA-Z0-9_-]+,\s*('
+    r'(?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*?'
+    r')\)'
+)
 
 
 def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
@@ -56,12 +65,8 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
     # Read SVG content
     content = svg_file.read_text(encoding='utf-8')
 
-    # Pattern: var(--fill-N, COLOR) where COLOR can be #HEX or named color (white, black, etc.)
-    # Capture group 1: the fallback color
-    pattern = r'var\(--fill-\d+,\s*((?:[^()]|\([^)]*\))+?)\)'
-
     # Count matches before replacement
-    variables_found = len(re.findall(pattern, content))
+    variables_found = len(CSS_VAR_PATTERN.findall(content))
 
     if variables_found == 0:
         return (0, 0)
@@ -69,12 +74,15 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
     # Replace: keep only the fallback color
     def replace_css_var(match):
         fallback_color = match.group(1).strip()
+        # Skip replacement if fallback fails to parse cleanly to avoid corrupting content.
+        if not fallback_color or fallback_color.startswith('var('):
+            return match.group(0)
         return fallback_color
 
-    fixed_content = re.sub(pattern, replace_css_var, content)
+    fixed_content = CSS_VAR_PATTERN.sub(replace_css_var, content)
 
     # Count matches after replacement (should be 0)
-    variables_remaining = len(re.findall(pattern, fixed_content))
+    variables_remaining = len(CSS_VAR_PATTERN.findall(fixed_content))
     variables_replaced = variables_found - variables_remaining
 
     temp_path = svg_file.with_suffix('.svg.tmp')
@@ -85,10 +93,15 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
 
         temp_path.write_text(fixed_content, encoding='utf-8')
         temp_path.replace(svg_file)
-    except Exception:
+    except Exception as exc:  # pragma: no cover - defensive logging
+        logger.exception(
+            "Failed to atomically update SVG '%s' using temp file '%s'",
+            svg_file,
+            temp_path,
+        )
         if temp_path.exists():
             temp_path.unlink()
-        raise
+        raise exc
 
     return (variables_found, variables_replaced)
 
@@ -124,7 +137,7 @@ def main():
             print(f"   Remaining CSS variables: {found - replaced}")
             print("\n⚠️  Some CSS variables could not be replaced.")
             print("   Please check the file manually or report this edge case.")
-            sys.exit(0)
+            sys.exit(4)
 
     except FileNotFoundError as e:
         print(f"❌ Error: {e}")

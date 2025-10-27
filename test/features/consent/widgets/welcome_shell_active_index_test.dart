@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/features/consent/widgets/dots_indicator.dart';
-// ignore: unused_import
 import '../../../support/test_config.dart';
 
 void main() {
-    testWidgets('WelcomeShell forwards activeIndex to DotsIndicator', (
+  TestConfig.ensureInitialized();
+  testWidgets('WelcomeShell forwards activeIndex to DotsIndicator', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(

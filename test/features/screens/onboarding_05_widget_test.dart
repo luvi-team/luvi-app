@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 void main() {
-    TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('option tap enables CTA and navigates', (tester) async {
     final router = GoRouter(

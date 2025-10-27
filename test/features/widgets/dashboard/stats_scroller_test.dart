@@ -6,11 +6,11 @@ import 'package:luvi_app/features/widgets/dashboard/stats_scroller.dart';
 import 'package:luvi_app/features/widgets/dashboard/wearable_connect_card.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-// ignore: unused_import
 import '../../../support/test_config.dart';
 
 void main() {
-    group('StatsScroller', () {
+  TestConfig.ensureInitialized();
+  group('StatsScroller', () {
     testWidgets('shows wearable connect fallback when disconnected', (
       tester,
     ) async {

@@ -1,39 +1,48 @@
-import 'package:flutter/foundation.dart';
-
 class AppLinks {
-  static final Uri privacyPolicy = Uri.parse(
-    const String.fromEnvironment(
-      'PRIVACY_URL',
-      defaultValue: 'https://example.com/privacy',
-    ),
+  /// Sentinel placeholder to guard against missing --dart-define overrides.
+  static const _sentinelUrl = 'about:blank';
+  static const _rawPrivacyUrl = String.fromEnvironment('PRIVACY_URL');
+  static const _rawTermsUrl = String.fromEnvironment('TERMS_URL');
+
+  /// Sentinel value signals that `PRIVACY_URL` is missing and must be provided for production builds.
+  static final Uri privacyPolicy = _parseConfiguredUri(
+    rawValue: _rawPrivacyUrl,
+    defaultValue: _sentinelUrl,
   );
 
-  static final Uri termsOfService = Uri.parse(
-    const String.fromEnvironment(
-      'TERMS_URL',
-      defaultValue: 'https://example.com/terms',
-    ),
+  /// Sentinel value signals that `TERMS_URL` is missing and must be provided for production builds.
+  static final Uri termsOfService = _parseConfiguredUri(
+    rawValue: _rawTermsUrl,
+    defaultValue: _sentinelUrl,
   );
 
   static bool get hasValidPrivacy => _isConfiguredUrl(privacyPolicy);
   static bool get hasValidTerms => _isConfiguredUrl(termsOfService);
 
-  static bool _bypassValidationForTests = false;
+  static bool _isConfiguredUrl(Uri? uri) {
+    if (uri == null) return false;
+    if (uri.toString() == _sentinelUrl) return false;
 
-  @visibleForTesting
-  static bool get bypassValidationForTests => _bypassValidationForTests;
+    final scheme = uri.scheme.trim().toLowerCase();
+    final host = uri.host.trim().toLowerCase();
+    if (scheme.isEmpty || host.isEmpty) return false;
 
-  @visibleForTesting
-  static set bypassValidationForTests(bool value) {
-    _bypassValidationForTests = value;
-  }
-
-  static bool _isConfiguredUrl(Uri uri) {
-    final scheme = uri.scheme.toLowerCase();
-    final host = uri.host.toLowerCase();
     final isHttpScheme = scheme == 'http' || scheme == 'https';
     if (!isHttpScheme) return false;
     if (host.isEmpty || host == 'example.com') return false;
     return true;
+  }
+
+  static Uri _parseConfiguredUri({
+    required String rawValue,
+    required String defaultValue,
+  }) {
+    final effectiveValue = rawValue.isEmpty ? defaultValue : rawValue;
+    final trimmed = effectiveValue.trim();
+    final parsed = Uri.tryParse(trimmed);
+    if (parsed == null) {
+      return Uri.parse(defaultValue);
+    }
+    return parsed;
   }
 }

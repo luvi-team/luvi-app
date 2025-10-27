@@ -7,7 +7,7 @@ import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/routes.dart' as features;
 
 void main() {
-    test('featureRoutes contains signup route path', () {
+  test('featureRoutes contains signup route path', () {
     final route = features.featureRoutes.firstWhere(
       (route) => route.path == AuthSignupScreen.routeName,
     );

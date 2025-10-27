@@ -29,7 +29,13 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   late DateTime _date;
   bool _hasInteracted = false;
 
-  String get _formattedDate => DateFormatters.germanDayMonthYear(_date);
+  String get _formattedDate {
+    final localeName = AppLocalizations.of(context)?.localeName;
+    return DateFormatters.localizedDayMonthYear(
+      _date,
+      localeName: localeName,
+    );
+  }
 
   @override
   void initState() {

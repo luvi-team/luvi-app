@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:mocktail/mocktail.dart';
+import '../../support/test_config.dart';
 
 class DailyPlan {
   const DailyPlan({
@@ -39,56 +41,66 @@ abstract class DailyPlanRepository {
 }
 
 final currentUserIdProvider = Provider<String>((ref) {
-  throw UnimplementedError('currentUserIdProvider must be overridden in tests.');
+  throw UnimplementedError(
+    'currentUserIdProvider must be overridden in tests.',
+  );
 });
 
 final dailyPlanRepositoryProvider = Provider<DailyPlanRepository>((ref) {
-  throw UnimplementedError('dailyPlanRepositoryProvider must be overridden in tests.');
+  throw UnimplementedError(
+    'dailyPlanRepositoryProvider must be overridden in tests.',
+  );
 });
 
 final unauthorizedErrorProvider = StateProvider<String?>((ref) => null);
 final creationStatusProvider = StateProvider<String?>((ref) => null);
 
-final userScopedDailyPlansProvider = FutureProvider<List<DailyPlan>>((ref) async {
+final userScopedDailyPlansProvider = FutureProvider<List<DailyPlan>>((
+  ref,
+) async {
   final repository = ref.watch(dailyPlanRepositoryProvider);
   final userId = ref.watch(currentUserIdProvider);
-  final plans = await repository.fetchDailyPlans();
-  return plans.where((plan) => plan.ownerId == userId).toList();
+  final plans = await repository.fetchDailyPlansForOwner(
+    userId,
+    actingUserId: userId,
+  );
+  return plans;
 });
 
 class DailyPlanCreationController {
   DailyPlanCreationController({
     required DailyPlanRepository repository,
     required String currentUserId,
-  })  : _repository = repository,
-        _currentUserId = currentUserId;
+  }) : _repository = repository,
+       _currentUserId = currentUserId;
 
   final DailyPlanRepository _repository;
   final String _currentUserId;
 
   Future<DailyPlan> createPlan({
     required String title,
-    String? overrideOwnerId,
+
+    /// If populated, represents a potential tamper attempt; used to assert RLS enforcement.
+    String? suspectedOwnerIdOverride,
   }) async {
-    if (overrideOwnerId != null && overrideOwnerId != _currentUserId) {
+    if (suspectedOwnerIdOverride != null &&
+        suspectedOwnerIdOverride != _currentUserId) {
       throw const AuthorizationException('user_id is enforced by RLS');
     }
 
-    return _repository.createDailyPlan(
-      title: title,
-      ownerId: _currentUserId,
-    );
+    return _repository.createDailyPlan(title: title, ownerId: _currentUserId);
   }
 }
 
-final dailyPlanCreationControllerProvider = Provider<DailyPlanCreationController>((ref) {
-  final repository = ref.watch(dailyPlanRepositoryProvider);
-  final currentUserId = ref.watch(currentUserIdProvider);
-  return DailyPlanCreationController(
-    repository: repository,
-    currentUserId: currentUserId,
-  );
-});
+final dailyPlanCreationControllerProvider =
+    Provider<DailyPlanCreationController>((ref) {
+      final repository = ref.watch(dailyPlanRepositoryProvider);
+      final currentUserId = ref.watch(currentUserIdProvider);
+      return DailyPlanCreationController(
+        repository: repository,
+        currentUserId: currentUserId,
+      );
+    });
 
 class DailyPlanRlsHarness extends ConsumerWidget {
   const DailyPlanRlsHarness({super.key});
@@ -117,10 +129,7 @@ class DailyPlanRlsHarness extends ConsumerWidget {
             if (creationStatus != null)
               Padding(
                 padding: const EdgeInsets.all(8),
-                child: Text(
-                  creationStatus,
-                  key: const Key('creation_status'),
-                ),
+                child: Text(creationStatus, key: const Key('creation_status')),
               ),
             Expanded(
               child: plansAsync.when(
@@ -170,10 +179,14 @@ class DailyPlanRlsHarness extends ConsumerWidget {
                 ElevatedButton(
                   key: const Key('create_plan_button'),
                   onPressed: () async {
-                    final controller = ref.read(dailyPlanCreationControllerProvider);
+                    final controller = ref.read(
+                      dailyPlanCreationControllerProvider,
+                    );
 
                     try {
-                      final plan = await controller.createPlan(title: 'Morning Routine');
+                      final plan = await controller.createPlan(
+                        title: 'Morning Routine',
+                      );
                       ref.read(creationStatusProvider.notifier).state =
                           'Created plan for ${plan.ownerId}';
                     } on AuthorizationException catch (e) {
@@ -186,12 +199,14 @@ class DailyPlanRlsHarness extends ConsumerWidget {
                 ElevatedButton(
                   key: const Key('create_override_button'),
                   onPressed: () async {
-                    final controller = ref.read(dailyPlanCreationControllerProvider);
+                    final controller = ref.read(
+                      dailyPlanCreationControllerProvider,
+                    );
 
                     try {
                       final plan = await controller.createPlan(
                         title: 'Override Attempt',
-                        overrideOwnerId: 'malicious-user',
+                        suspectedOwnerIdOverride: 'malicious-user',
                       );
                       ref.read(creationStatusProvider.notifier).state =
                           'Created plan for ${plan.ownerId}';
@@ -232,6 +247,8 @@ Future<void> pumpHarness(
 void main() {
   const userId = 'user-123';
 
+  setUpAll(TestConfig.ensureInitialized);
+
   group('Daily Plan RLS Widget Tests', () {
     late MockDailyPlanRepository repository;
 
@@ -239,18 +256,25 @@ void main() {
       repository = MockDailyPlanRepository();
     });
 
-    testWidgets('shows only items owned by the authenticated user', (tester) async {
-      when(() => repository.fetchDailyPlans()).thenAnswer(
+    testWidgets('renders plans scoped to the authenticated user', (
+      tester,
+    ) async {
+      when(
+        () => repository.fetchDailyPlansForOwner(userId, actingUserId: userId),
+      ).thenAnswer(
         (invocation) async => [
-          const DailyPlan(id: 'plan-1', ownerId: userId, title: 'Morning Meditation'),
-          const DailyPlan(id: 'plan-2', ownerId: 'someone-else', title: 'Other User Plan'),
+          const DailyPlan(
+            id: 'plan-1',
+            ownerId: userId,
+            title: 'Morning Meditation',
+          ),
         ],
       );
 
       when(
         () => repository.fetchDailyPlansForOwner(
-          any(),
-          actingUserId: any(named: 'actingUserId'),
+          'other-user',
+          actingUserId: userId,
         ),
       ).thenThrow(const AuthorizationException('RLS policy enforced'));
 
@@ -273,56 +297,56 @@ void main() {
 
       expect(find.text('Morning Meditation'), findsOneWidget);
       expect(find.text('owner: $userId'), findsOneWidget);
-      expect(find.text('Other User Plan'), findsNothing);
       expect(find.text('No plans available'), findsNothing);
 
-      verify(() => repository.fetchDailyPlans()).called(1);
+      verify(
+        () => repository.fetchDailyPlansForOwner(userId, actingUserId: userId),
+      ).called(1);
     });
 
-    testWidgets(
-      'does not render plans when repository only returns other owners',
-      (tester) async {
-        when(() => repository.fetchDailyPlans()).thenAnswer(
-          (invocation) async => [
-            const DailyPlan(id: 'plan-3', ownerId: 'other-1', title: 'Other User Plan'),
-          ],
-        );
+    testWidgets('renders empty state when repository returns no plans', (
+      tester,
+    ) async {
+      when(
+        () => repository.fetchDailyPlansForOwner(userId, actingUserId: userId),
+      ).thenAnswer((invocation) async => const <DailyPlan>[]);
 
-        when(
-          () => repository.fetchDailyPlansForOwner(
-            any(),
-            actingUserId: any(named: 'actingUserId'),
-          ),
-        ).thenThrow(const AuthorizationException('RLS policy enforced'));
+      when(
+        () => repository.createDailyPlan(
+          title: any(named: 'title'),
+          ownerId: any(named: 'ownerId'),
+        ),
+      ).thenAnswer((invocation) async {
+        final title = invocation.namedArguments[#title] as String;
+        final owner = invocation.namedArguments[#ownerId] as String;
+        return DailyPlan(id: 'created-$title', ownerId: owner, title: title);
+      });
 
-        when(
-          () => repository.createDailyPlan(
-            title: any(named: 'title'),
-            ownerId: any(named: 'ownerId'),
-          ),
-        ).thenAnswer((invocation) async {
-          final title = invocation.namedArguments[#title] as String;
-          final owner = invocation.namedArguments[#ownerId] as String;
-          return DailyPlan(id: 'created-$title', ownerId: owner, title: title);
-        });
+      await pumpHarness(tester, repository: repository, userId: userId);
 
-        await pumpHarness(tester, repository: repository, userId: userId);
+      expect(find.text('Loading...'), findsOneWidget);
 
-        expect(find.text('Loading...'), findsOneWidget);
+      await tester.pump();
 
-        await tester.pump();
+      expect(find.text('No plans available'), findsOneWidget);
 
-        expect(find.text('No plans available'), findsOneWidget);
-        expect(find.text('Other User Plan'), findsNothing);
+      verify(
+        () => repository.fetchDailyPlansForOwner(userId, actingUserId: userId),
+      ).called(1);
+    });
 
-        verify(() => repository.fetchDailyPlans()).called(1);
-      },
-    );
-
-    testWidgets('surfaces authorization errors on cross-user access', (tester) async {
-      when(() => repository.fetchDailyPlans()).thenAnswer(
+    testWidgets('surfaces authorization errors on cross-user access', (
+      tester,
+    ) async {
+      when(
+        () => repository.fetchDailyPlansForOwner(userId, actingUserId: userId),
+      ).thenAnswer(
         (invocation) async => [
-          const DailyPlan(id: 'plan-1', ownerId: userId, title: 'Morning Meditation'),
+          const DailyPlan(
+            id: 'plan-1',
+            ownerId: userId,
+            title: 'Morning Meditation',
+          ),
         ],
       );
 
@@ -353,9 +377,10 @@ void main() {
       expect(find.byKey(const Key('error_message')), findsOneWidget);
       expect(find.text('Access denied: RLS policy enforced'), findsOneWidget);
       expect(find.text('Morning Meditation'), findsOneWidget);
-      expect(find.text('Other User Plan'), findsNothing);
 
-      verify(() => repository.fetchDailyPlans()).called(1);
+      verify(
+        () => repository.fetchDailyPlansForOwner(userId, actingUserId: userId),
+      ).called(1);
       verify(
         () => repository.fetchDailyPlansForOwner(
           'other-user',
@@ -364,15 +389,17 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('auto-populates user_id and rejects manual overrides', (tester) async {
-      when(() => repository.fetchDailyPlans()).thenAnswer(
-        (invocation) async => const <DailyPlan>[],
-      );
+    testWidgets('auto-populates user_id and rejects manual overrides', (
+      tester,
+    ) async {
+      when(
+        () => repository.fetchDailyPlansForOwner(userId, actingUserId: userId),
+      ).thenAnswer((invocation) async => const <DailyPlan>[]);
 
       when(
         () => repository.fetchDailyPlansForOwner(
-          any(),
-          actingUserId: any(named: 'actingUserId'),
+          'malicious-user',
+          actingUserId: userId,
         ),
       ).thenThrow(const AuthorizationException('RLS policy enforced'));
 

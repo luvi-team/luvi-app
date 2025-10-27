@@ -25,8 +25,8 @@ class Consent02Screen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
-    final state = ref.watch(consent02NotifierProvider);
-    final notifier = ref.read(consent02NotifierProvider.notifier);
+    final state = ref.watch(consent02Provider);
+    final notifier = ref.read(consent02Provider.notifier);
     final l10n = AppLocalizations.of(context)!;
     final selectedLabel = l10n.consent02SemanticSelected;
     final unselectedLabel = l10n.consent02SemanticUnselected;

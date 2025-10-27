@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../core/design_tokens/sizes.dart';
 import '../../../core/design_tokens/spacing.dart';
 import 'dots_indicator.dart';
@@ -17,7 +18,7 @@ class WelcomeShell extends StatelessWidget {
     this.activeIndex,
     String? waveAsset,
     this.headerSpacing = 0,
-    this.primaryButtonLabel = 'Weiter',
+    this.primaryButtonLabel,
     this.subtitleMaxWidth = double.infinity,
     this.bottomContent,
   })  : waveAsset = waveAsset ?? Assets.images.welcomeWave,
@@ -39,13 +40,12 @@ class WelcomeShell extends StatelessWidget {
   final int? activeIndex;
   final String waveAsset;
   final double headerSpacing;
-  final String primaryButtonLabel;
+  final String? primaryButtonLabel;
   final double subtitleMaxWidth;
   final Widget? bottomContent;
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context);
     // Inner Scaffold deliberately does not reuse the widget key to avoid GlobalKey clashes.
     return Scaffold(
       body: SafeArea(
@@ -77,7 +77,7 @@ class WelcomeShell extends StatelessWidget {
                   Spacing.l,
                   Spacing.l,
                 ),
-                child: bottomContent ?? _buildDefaultContent(t),
+                child: bottomContent ?? _buildDefaultContent(context),
               ),
             ),
           ],
@@ -86,7 +86,11 @@ class WelcomeShell extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultContent(ThemeData theme) {
+  Widget _buildDefaultContent(BuildContext context) {
+    final theme = Theme.of(context);
+    final buttonLabel = primaryButtonLabel ??
+        AppLocalizations.of(context)?.commonContinue ??
+        'Weiter';
     final children = <Widget>[];
 
     final hasContent = title != null || subtitle != null || activeIndex != null || onNext != null;
@@ -130,7 +134,7 @@ class WelcomeShell extends StatelessWidget {
       children.add(
         ElevatedButton(
           onPressed: onNext!,
-          child: Text(primaryButtonLabel),
+          child: Text(buttonLabel),
         ),
       );
       children.add(const SizedBox(height: Spacing.m));

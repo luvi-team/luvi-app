@@ -1,9 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class FakeViewPadding implements ViewPadding {
   const FakeViewPadding({
@@ -35,6 +37,14 @@ void main() {
     setUp(() {
       testWidget = MaterialApp(
         theme: AppTheme.buildAppTheme(),
+        locale: const Locale('de'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         home: const CreateNewPasswordScreen(),
       );
     });
@@ -74,8 +84,10 @@ void main() {
       // Find widgets
       final backButtonFinder = find.byType(BackButtonCircle);
       final headerFinder = find.text('Mach es stark.');
-      final confirmFieldFinder = find.text('Neues Passwort bestätigen').first;
-      final ctaFinder = find.byType(ElevatedButton);
+      final confirmFieldFinder = find.byKey(
+        const Key('AuthConfirmPasswordField'),
+      );
+      final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 
       // Get positions
       final backButtonRect = tester.getRect(backButtonFinder);

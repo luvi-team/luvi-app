@@ -12,13 +12,13 @@ import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 import 'package:luvi_services/user_state_service.dart';
 
 void main() {
-    TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   Future<Widget> buildApp(
     GoRouter router, {
@@ -110,15 +110,18 @@ void main() {
         initialLocation: OnboardingSuccessScreen.routeName,
       );
 
-      await tester.pumpWidget(await buildApp(router, locale: const Locale('en')));
+      await tester.pumpWidget(
+        await buildApp(router, locale: const Locale('en')),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text("You're ready to go!"), findsOneWidget);
       expect(find.text("Let's go!"), findsOneWidget);
     });
 
-    testWidgets('celebration animation respects disableAnimations flags',
-        (tester) async {
+    testWidgets('celebration animation respects disableAnimations flags', (
+      tester,
+    ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -129,16 +132,18 @@ void main() {
         initialLocation: OnboardingSuccessScreen.routeName,
       );
 
-      await tester.pumpWidget(await buildApp(
-        router,
-        builder: (context, child) {
-          final data = MediaQuery.of(context);
-          return MediaQuery(
-            data: data.copyWith(disableAnimations: true),
-            child: child!,
-          );
-        },
-      ));
+      await tester.pumpWidget(
+        await buildApp(
+          router,
+          builder: (context, child) {
+            final data = MediaQuery.of(context);
+            return MediaQuery(
+              data: data.copyWith(disableAnimations: true),
+              child: child!,
+            );
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(Image), findsOneWidget);
@@ -174,7 +179,9 @@ void main() {
       addTearDown(tester.view.reset);
     });
 
-    testWidgets('trophy-to-title gap matches responsive spacing', (tester) async {
+    testWidgets('trophy-to-title gap matches responsive spacing', (
+      tester,
+    ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -203,10 +210,7 @@ void main() {
       final trophyBottomDy = tester.getBottomLeft(trophyFinder).dy;
       final titleTopDy = tester.getTopLeft(titleFinder).dy;
 
-      expect(
-        titleTopDy - trophyBottomDy,
-        closeTo(spacing.trophyToTitle, 0.01),
-      );
+      expect(titleTopDy - trophyBottomDy, closeTo(spacing.trophyToTitle, 0.01));
     });
 
     testWidgets('trophy has correct size from Figma audit', (tester) async {
@@ -240,7 +244,9 @@ void main() {
       expect(sizedBox.height, OnboardingSuccessTokens.trophyHeight);
     });
 
-    testWidgets('spacing scales with view height and text scale', (tester) async {
+    testWidgets('spacing scales with view height and text scale', (
+      tester,
+    ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -274,15 +280,17 @@ void main() {
       tester.view.physicalSize = const Size(428, 926);
       tester.view.devicePixelRatio = 1.0;
 
-      await tester.pumpWidget(await buildApp(
-        router,
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: const TextScaler.linear(1.5),
+      await tester.pumpWidget(
+        await buildApp(
+          router,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(1.5)),
+            child: child!,
           ),
-          child: child!,
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       final context2 = tester.element(find.byType(OnboardingSuccessScreen));
@@ -298,7 +306,9 @@ void main() {
       addTearDown(tester.view.reset);
     });
 
-    testWidgets('celebration animation uses expected configuration', (tester) async {
+    testWidgets('celebration animation uses expected configuration', (
+      tester,
+    ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -323,7 +333,9 @@ void main() {
       expect(lottie.filterQuality, FilterQuality.medium);
     });
 
-    testWidgets('celebration animation accounts for safe-area padding', (tester) async {
+    testWidgets('celebration animation accounts for safe-area padding', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(428, 1000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.reset);
@@ -346,18 +358,20 @@ void main() {
       );
       final noPaddingOffset = transformNoPadding.transform.storage[13];
 
-      await tester.pumpWidget(await buildApp(
-        router,
-        builder: (context, child) {
-          final data = MediaQuery.of(context);
-          return MediaQuery(
-            data: data.copyWith(
-              padding: const EdgeInsets.only(top: 44, bottom: 34),
-            ),
-            child: child!,
-          );
-        },
-      ));
+      await tester.pumpWidget(
+        await buildApp(
+          router,
+          builder: (context, child) {
+            final data = MediaQuery.of(context);
+            return MediaQuery(
+              data: data.copyWith(
+                padding: const EdgeInsets.only(top: 44, bottom: 34),
+              ),
+              child: child!,
+            );
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       final transformWithPadding = tester.widget<Transform>(
@@ -368,7 +382,9 @@ void main() {
       expect(paddingOffset, lessThan(noPaddingOffset));
     });
 
-    testWidgets('a11y fallback shows PNG with correct dimensions', (tester) async {
+    testWidgets('a11y fallback shows PNG with correct dimensions', (
+      tester,
+    ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -379,16 +395,18 @@ void main() {
         initialLocation: OnboardingSuccessScreen.routeName,
       );
 
-      await tester.pumpWidget(await buildApp(
-        router,
-        builder: (context, child) {
-          final data = MediaQuery.of(context);
-          return MediaQuery(
-            data: data.copyWith(disableAnimations: true),
-            child: child!,
-          );
-        },
-      ));
+      await tester.pumpWidget(
+        await buildApp(
+          router,
+          builder: (context, child) {
+            final data = MediaQuery.of(context);
+            return MediaQuery(
+              data: data.copyWith(disableAnimations: true),
+              child: child!,
+            );
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       final imageFinder = find.byType(Image);

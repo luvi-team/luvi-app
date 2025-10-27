@@ -7,7 +7,7 @@ void main() {
     test('initial state: all false', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
-      final state = container.read(consent02NotifierProvider);
+      final state = container.read(consent02Provider);
       for (final s in ConsentScope.values) {
         expect(state.choices[s], isFalse);
       }
@@ -18,61 +18,46 @@ void main() {
     test('toggle(terms) flips value', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
-      final notifier = container.read(consent02NotifierProvider.notifier);
+      final notifier = container.read(consent02Provider.notifier);
       notifier.toggle(ConsentScope.terms);
-      final state = container.read(consent02NotifierProvider);
+      final state = container.read(consent02Provider);
       expect(state.choices[ConsentScope.terms], isTrue);
     });
 
-    test(
-      'requiredAccepted only true when all required scopes are true',
-      () {
-        final container = ProviderContainer();
-        addTearDown(container.dispose);
-        final notifier = container.read(consent02NotifierProvider.notifier);
+    test('requiredAccepted only true when all required scopes are true', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(consent02Provider.notifier);
 
-        // Initially false
-        expect(
-          container.read(consent02NotifierProvider).requiredAccepted,
-          isFalse,
-        );
+      // Initially false
+      expect(container.read(consent02Provider).requiredAccepted, isFalse);
 
-        // Only terms -> still false
-        notifier.toggle(ConsentScope.terms);
-        expect(
-          container.read(consent02NotifierProvider).requiredAccepted,
-          isFalse,
-        );
+      // Only terms -> still false
+      notifier.toggle(ConsentScope.terms);
+      expect(container.read(consent02Provider).requiredAccepted, isFalse);
 
-        // Terms + health -> still false
-        notifier.toggle(ConsentScope.health_processing);
-        expect(
-          container.read(consent02NotifierProvider).requiredAccepted,
-          isFalse,
-        );
+      // Terms + health -> still false
+      notifier.toggle(ConsentScope.health_processing);
+      expect(container.read(consent02Provider).requiredAccepted, isFalse);
 
-        // All required scopes true -> true
-        notifier.toggle(ConsentScope.ai_journal);
-        expect(
-          container.read(consent02NotifierProvider).requiredAccepted,
-          isTrue,
-        );
-      },
-    );
+      // All required scopes true -> true
+      notifier.toggle(ConsentScope.ai_journal);
+      expect(container.read(consent02Provider).requiredAccepted, isTrue);
+    });
 
     test('selectAllOptional sets optional true, required unchanged', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
-      final notifier = container.read(consent02NotifierProvider.notifier);
+      final notifier = container.read(consent02Provider.notifier);
 
       // Ensure required are false to start
-      final before = container.read(consent02NotifierProvider);
+      final before = container.read(consent02Provider);
       expect(before.choices[ConsentScope.terms], isFalse);
       expect(before.choices[ConsentScope.health_processing], isFalse);
 
       notifier.selectAllOptional();
 
-      final state = container.read(consent02NotifierProvider);
+      final state = container.read(consent02Provider);
       expect(state.choices[ConsentScope.analytics], isTrue);
       expect(state.choices[ConsentScope.marketing], isTrue);
       expect(state.choices[ConsentScope.model_training], isTrue);

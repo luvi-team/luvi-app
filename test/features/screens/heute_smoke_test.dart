@@ -74,7 +74,7 @@ Future<GoRouter> _pumpHeuteScreen(
 }
 
 void main() {
-    group('HeuteScreen smoke tests', () {
+  group('HeuteScreen smoke tests', () {
     testWidgets('renders without crash and displays all key sections', (
       tester,
     ) async {

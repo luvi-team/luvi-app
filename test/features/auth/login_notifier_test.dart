@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import '../../support/test_config.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   test('validateAndSubmit sets errors for bad inputs', () {
     final n = LoginNotifier();
     n.setEmail('badmail');

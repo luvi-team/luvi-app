@@ -3,11 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-// ignore: unused_import
 import '../../../support/test_config.dart';
 
 void main() {
-    testWidgets('Consent02Screen renders localized copy and actions', (tester) async {
+  TestConfig.ensureInitialized();
+  testWidgets('Consent02Screen renders localized copy and actions', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(

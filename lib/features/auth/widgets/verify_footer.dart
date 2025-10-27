@@ -34,7 +34,7 @@ class VerifyFooter extends StatelessWidget {
           child: ElevatedButton(
             key: const ValueKey('verify_confirm_button'),
             onPressed: ctaEnabled ? onConfirm : null,
-            child: const Text(AuthStrings.verifyCta),
+            child: Text(AuthStrings.verifyCta),
           ),
         ),
         const SizedBox(height: AuthLayout.gapSection),

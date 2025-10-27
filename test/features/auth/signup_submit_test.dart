@@ -1,5 +1,4 @@
 import 'dart:async';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 import 'package:flutter/material.dart';
@@ -18,7 +17,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
-    setUpAll(() {
+  TestConfig.ensureInitialized();
+  setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
   });
 

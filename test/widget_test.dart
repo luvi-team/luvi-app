@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-// ignore: unused_import
 import 'support/test_config.dart';
 
 void main() {
-    testWidgets('App boots and shows Consent Welcome title', (tester) async {
+  TestConfig.ensureInitialized();
+  testWidgets('App boots and shows Consent Welcome title', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildAppTheme(),

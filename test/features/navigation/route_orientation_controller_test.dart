@@ -12,8 +12,7 @@ class _FakeOrientationSetter {
 }
 
 class _TestPageRoute extends PageRoute<void> {
-  _TestPageRoute(String? name)
-      : super(settings: RouteSettings(name: name));
+  _TestPageRoute(String? name) : super(settings: RouteSettings(name: name));
 
   @override
   Color? get barrierColor => null;
@@ -32,8 +31,7 @@ class _TestPageRoute extends PageRoute<void> {
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
-  ) =>
-      const SizedBox.shrink();
+  ) => const SizedBox.shrink();
 
   @override
   bool get fullscreenDialog => false;
@@ -49,12 +47,9 @@ void main() {
 
     await controller.applyDefault();
 
-    expect(
-      fakeSetter.calls,
-      [
-        [DeviceOrientation.portraitUp],
-      ],
-    );
+    expect(fakeSetter.calls, [
+      [DeviceOrientation.portraitUp],
+    ]);
   });
 
   testWidgets('navigator observer applies overrides per route', (tester) async {
@@ -80,16 +75,10 @@ void main() {
 
     await tester.pump(); // flush microtasks
 
-    expect(
-      fakeSetter.calls,
-      [
-        [DeviceOrientation.portraitUp],
-        [
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ],
-        [DeviceOrientation.portraitUp],
-      ],
-    );
+    expect(fakeSetter.calls, [
+      [DeviceOrientation.portraitUp],
+      [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
+      [DeviceOrientation.portraitUp],
+    ]);
   });
 }

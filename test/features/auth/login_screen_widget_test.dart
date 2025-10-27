@@ -1,5 +1,4 @@
 import 'dart:async';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 import 'package:flutter/material.dart';
@@ -19,7 +18,8 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
-    setUpAll(() {
+  TestConfig.ensureInitialized();
+  setUpAll(() {
     // Register fallback values if needed in the future
   });
 

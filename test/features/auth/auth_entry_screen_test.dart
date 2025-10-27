@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 void main() {
-    testWidgets('AuthEntryScreen shows both CTAs', (tester) async {
+  TestConfig.ensureInitialized();
+  testWidgets('AuthEntryScreen shows both CTAs', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(

@@ -5,7 +5,6 @@ import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 Widget _buildRouterHarness() {
@@ -32,7 +31,8 @@ Widget _buildRouterHarness() {
 }
 
 void main() {
-    testWidgets(
+  TestConfig.ensureInitialized();
+  testWidgets(
     'Primary minHeight == 50 and Secondary is text-only (padding zero)',
     (tester) async {
       await tester.pumpWidget(_buildRouterHarness());

@@ -409,4 +409,139 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consent02SemanticUnselected => 'Nicht ausgewählt';
+
+  @override
+  String get authLoginHeadline => 'Willkommen zurück 💜';
+
+  @override
+  String get authLoginSubhead => 'Schön, dass du da bist.';
+
+  @override
+  String get authLoginCta => 'Anmelden';
+
+  @override
+  String get authLoginCtaLoadingSemantic => 'Anmeldung läuft';
+
+  @override
+  String get authLoginCtaLinkPrefix => 'Neu bei LUVI? ';
+
+  @override
+  String get authLoginCtaLinkAction => 'Starte hier';
+
+  @override
+  String get authLoginForgot => 'Passwort vergessen?';
+
+  @override
+  String get authLoginSocialDivider => 'Oder melde dich an mit';
+
+  @override
+  String get authErrEmailInvalid => 'Ups, bitte E-Mail überprüfen';
+
+  @override
+  String get authErrPasswordInvalid => 'Ups, bitte Passwort überprüfen';
+
+  @override
+  String get authErrConfirmEmail => 'Bitte E-Mail bestätigen (Link erneut senden?)';
+
+  @override
+  String get authInvalidCredentials => 'E-Mail oder Passwort ist falsch.';
+
+  @override
+  String get authErrLoginUnavailable => 'Login derzeit nicht möglich.';
+
+  @override
+  String get authEmailHint => 'Deine E-Mail';
+
+  @override
+  String get authPasswordHint => 'Dein Passwort';
+
+  @override
+  String get authSignupTitle => 'Deine Reise beginnt hier 💜';
+
+  @override
+  String get authSignupSubtitle => 'Schnell registrieren - dann geht\'s los.';
+
+  @override
+  String get authSignupCta => 'Registrieren';
+
+  @override
+  String get authSignupCtaLoadingSemantic => 'Registrierung läuft';
+
+  @override
+  String get authSignupLinkPrefix => 'Schon dabei? ';
+
+  @override
+  String get authSignupLinkAction => 'Anmelden';
+
+  @override
+  String get authSignupHintFirstName => 'Dein Vorname';
+
+  @override
+  String get authSignupHintLastName => 'Dein Nachname';
+
+  @override
+  String get authSignupHintPhone => 'Deine Telefonnummer';
+
+  @override
+  String get authSignupMissingFields => 'Bitte E-Mail und Passwort eingeben.';
+
+  @override
+  String get authSignupGenericError => 'Registrierung gerade nicht möglich. Bitte später erneut versuchen.';
+
+  @override
+  String get authForgotTitle => 'Passwort vergessen? 💜';
+
+  @override
+  String get authForgotSubtitle => 'E-Mail eingeben für Link.';
+
+  @override
+  String get authForgotCta => 'Weiter';
+
+  @override
+  String get authBackSemantic => 'Zurück';
+
+  @override
+  String get authSuccessPwdTitle => 'Geschafft!';
+
+  @override
+  String get authSuccessPwdSubtitle => 'Neues Passwort gespeichert.';
+
+  @override
+  String get authSuccessForgotTitle => 'E-Mail gesendet!';
+
+  @override
+  String get authSuccessForgotSubtitle => 'Bitte Postfach prüfen.';
+
+  @override
+  String get authSuccessCta => 'Fertig';
+
+  @override
+  String get authCreateNewHint1 => 'Neues Passwort';
+
+  @override
+  String get authCreateNewHint2 => 'Neues Passwort bestätigen';
+
+  @override
+  String get authCreateNewCta => 'Speichern';
+
+  @override
+  String get authVerifyResetTitle => 'Code eingeben 💜';
+
+  @override
+  String get authVerifyResetSubtitle => 'Gerade an deine E-Mail gesendet.';
+
+  @override
+  String get authVerifyEmailTitle => 'E-Mail bestätigen 💜';
+
+  @override
+  String get authVerifyEmailSubtitle => 'Code eingeben';
+
+  @override
+  String get authVerifyCta => 'Bestätigen';
+
+  @override
+  String get authVerifyHelper => 'Nichts angekommen?';
+
+  @override
+  String get authVerifyResend => 'Erneut senden';
 }

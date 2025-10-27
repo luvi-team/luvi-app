@@ -85,7 +85,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           child: ElevatedButton(
             key: const ValueKey('create_new_cta_button'),
             onPressed: () {},
-            child: const Text(AuthStrings.createNewCta),
+            child: Text(AuthStrings.createNewCta),
           ),
         ),
       ),

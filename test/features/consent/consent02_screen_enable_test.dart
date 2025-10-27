@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 void main() {
-    testWidgets(
+  TestConfig.ensureInitialized();
+  testWidgets(
     'Consent02Screen enables Weiter after required, and disables Alle akzeptieren after selection',
     (tester) async {
       await tester.pumpWidget(
@@ -29,8 +29,9 @@ void main() {
       // Tap required cards via deterministic keys
       final health = find.byKey(const Key('consent02_card_required_health'));
       final terms = find.byKey(const Key('consent02_card_required_terms'));
-      final aiJournal =
-          find.byKey(const Key('consent02_card_required_ai_journal'));
+      final aiJournal = find.byKey(
+        const Key('consent02_card_required_ai_journal'),
+      );
       final list = find.byType(Scrollable);
       expect(health, findsOneWidget);
       expect(terms, findsOneWidget);

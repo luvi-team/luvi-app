@@ -7,11 +7,11 @@ import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_08.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 void main() {
-    TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding07Screen', () {
     testWidgets('option tap enables CTA and navigates to screen 08', (

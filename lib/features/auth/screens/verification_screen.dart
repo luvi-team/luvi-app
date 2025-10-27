@@ -123,12 +123,12 @@ class _VariantCopy {
   factory _VariantCopy.fromVariant(VerificationScreenVariant variant) {
     switch (variant) {
       case VerificationScreenVariant.emailConfirmation:
-        return const _VariantCopy(
+        return _VariantCopy(
           title: AuthStrings.verifyEmailTitle,
           subtitle: AuthStrings.verifyEmailSubtitle,
         );
       case VerificationScreenVariant.resetPassword:
-        return const _VariantCopy(
+        return _VariantCopy(
           title: AuthStrings.verifyResetTitle,
           subtitle: AuthStrings.verifyResetSubtitle,
         );

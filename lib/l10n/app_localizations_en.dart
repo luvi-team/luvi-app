@@ -360,7 +360,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome02Subtitle => 'Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.';
 
   @override
-  String get welcome03Subtitle => 'LUVI Sync: Your daily game-changer. Understand the "why" behind your hormones. Scientifically grounded.';
+  String get welcome03Subtitle => 'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.';
 
   @override
   String get consent02Title => 'Your health,\nyour decision!';
@@ -409,4 +409,139 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consent02SemanticUnselected => 'Not selected';
+
+  @override
+  String get authLoginHeadline => 'Welcome back 💜';
+
+  @override
+  String get authLoginSubhead => 'We\'re glad you\'re here.';
+
+  @override
+  String get authLoginCta => 'Sign in';
+
+  @override
+  String get authLoginCtaLoadingSemantic => 'Signing in';
+
+  @override
+  String get authLoginCtaLinkPrefix => 'New to LUVI? ';
+
+  @override
+  String get authLoginCtaLinkAction => 'Start here';
+
+  @override
+  String get authLoginForgot => 'Forgot password?';
+
+  @override
+  String get authLoginSocialDivider => 'Or continue with';
+
+  @override
+  String get authErrEmailInvalid => 'Please double-check your email.';
+
+  @override
+  String get authErrPasswordInvalid => 'Please double-check your password.';
+
+  @override
+  String get authErrConfirmEmail => 'Please verify your email (resend the link?).';
+
+  @override
+  String get authInvalidCredentials => 'Email or password is incorrect.';
+
+  @override
+  String get authErrLoginUnavailable => 'Login is currently unavailable.';
+
+  @override
+  String get authEmailHint => 'Your email';
+
+  @override
+  String get authPasswordHint => 'Your password';
+
+  @override
+  String get authSignupTitle => 'Your journey starts here 💜';
+
+  @override
+  String get authSignupSubtitle => 'Quick signup and you\'re ready to go.';
+
+  @override
+  String get authSignupCta => 'Sign up';
+
+  @override
+  String get authSignupCtaLoadingSemantic => 'Signing up';
+
+  @override
+  String get authSignupLinkPrefix => 'Already have an account? ';
+
+  @override
+  String get authSignupLinkAction => 'Sign in';
+
+  @override
+  String get authSignupHintFirstName => 'Your first name';
+
+  @override
+  String get authSignupHintLastName => 'Your last name';
+
+  @override
+  String get authSignupHintPhone => 'Your phone number';
+
+  @override
+  String get authSignupMissingFields => 'Please enter your email and password.';
+
+  @override
+  String get authSignupGenericError => 'Sign up is unavailable right now. Please try again later.';
+
+  @override
+  String get authForgotTitle => 'Forgot your password? 💜';
+
+  @override
+  String get authForgotSubtitle => 'Enter your email to receive the reset link.';
+
+  @override
+  String get authForgotCta => 'Continue';
+
+  @override
+  String get authBackSemantic => 'Back';
+
+  @override
+  String get authSuccessPwdTitle => 'All done!';
+
+  @override
+  String get authSuccessPwdSubtitle => 'Your new password has been saved.';
+
+  @override
+  String get authSuccessForgotTitle => 'Email sent!';
+
+  @override
+  String get authSuccessForgotSubtitle => 'Please check your inbox.';
+
+  @override
+  String get authSuccessCta => 'Done';
+
+  @override
+  String get authCreateNewHint1 => 'New password';
+
+  @override
+  String get authCreateNewHint2 => 'Confirm new password';
+
+  @override
+  String get authCreateNewCta => 'Save';
+
+  @override
+  String get authVerifyResetTitle => 'Enter the code 💜';
+
+  @override
+  String get authVerifyResetSubtitle => 'We just sent it to your email.';
+
+  @override
+  String get authVerifyEmailTitle => 'Confirm your email 💜';
+
+  @override
+  String get authVerifyEmailSubtitle => 'Enter the code';
+
+  @override
+  String get authVerifyCta => 'Confirm';
+
+  @override
+  String get authVerifyHelper => 'Didn\'t receive anything?';
+
+  @override
+  String get authVerifyResend => 'Resend';
 }

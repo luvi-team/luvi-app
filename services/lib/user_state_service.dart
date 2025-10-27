@@ -33,7 +33,7 @@ class UserStateService {
 }
 
 @riverpod
-Future<UserStateService> userStateService(UserStateServiceRef ref) async {
+Future<UserStateService> userStateService(Ref ref) async {
   final prefs = await SharedPreferences.getInstance();
   return UserStateService(prefs: prefs);
 }

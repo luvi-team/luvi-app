@@ -6,21 +6,44 @@ part of 'user_state_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userStateServiceHash() => r'5afaeacf9f835d548b01133189a567d990b894e1';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [userStateService].
 @ProviderFor(userStateService)
-final userStateServiceProvider =
-    AutoDisposeFutureProvider<UserStateService>.internal(
-  userStateService,
-  name: r'userStateServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$userStateServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+const userStateServiceProvider = UserStateServiceProvider._();
 
-typedef UserStateServiceRef = AutoDisposeFutureProviderRef<UserStateService>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+final class UserStateServiceProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<UserStateService>,
+          UserStateService,
+          FutureOr<UserStateService>
+        >
+    with $FutureModifier<UserStateService>, $FutureProvider<UserStateService> {
+  const UserStateServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'userStateServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$userStateServiceHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<UserStateService> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<UserStateService> create(Ref ref) {
+    return userStateService(ref);
+  }
+}
+
+String _$userStateServiceHash() => r'29460d76b3f195a73efe8bef14fb1c1e77c2353c';

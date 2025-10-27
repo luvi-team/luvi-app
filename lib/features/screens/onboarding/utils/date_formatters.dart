@@ -1,26 +1,19 @@
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 
 /// Collection of lightweight date formatter helpers used across onboarding.
 @immutable
 class DateFormatters {
   const DateFormatters._();
 
-  static const List<String> _germanMonths = <String>[
-    'Januar',
-    'Februar',
-    'März',
-    'April',
-    'Mai',
-    'Juni',
-    'Juli',
-    'August',
-    'September',
-    'Oktober',
-    'November',
-    'Dezember',
-  ];
-
-  static String germanDayMonthYear(DateTime date) {
-    return '${date.day} ${_germanMonths[date.month - 1]} ${date.year}';
+  /// Formats a `date` using the provided `localeName` (or falls back to Intl's default locale).
+  static String localizedDayMonthYear(
+    DateTime date, {
+    String? localeName,
+  }) {
+    final trimmedLocale = localeName?.trim();
+    final effectiveLocale = (trimmedLocale == null || trimmedLocale.isEmpty) ? null : trimmedLocale;
+    final formatter = DateFormat.yMMMMd(effectiveLocale);
+    return formatter.format(date);
   }
 }

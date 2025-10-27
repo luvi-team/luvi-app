@@ -312,9 +312,9 @@ class _SignupButtonChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isLoading) {
-      return const Text(
+      return Text(
         AuthStrings.signupCta,
-        key: ValueKey('signup_cta_label'),
+        key: const ValueKey('signup_cta_label'),
       );
     }
 

@@ -9,7 +9,6 @@ import 'package:luvi_app/features/consent/routes.dart';
 import 'package:luvi_app/features/routes.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// ignore: unused_import
 import '../../support/test_config.dart';
 
 class _PreselectedConsent02Notifier extends Consent02Notifier {
@@ -23,7 +22,8 @@ class _PreselectedConsent02Notifier extends Consent02Notifier {
 }
 
 void main() {
-    testWidgets('Consent02 forwards to /auth/entry (AuthEntry screen)', (
+  TestConfig.ensureInitialized();
+  testWidgets('Consent02 forwards to /auth/entry (AuthEntry screen)', (
     tester,
   ) async {
     final view = tester.view;
@@ -44,9 +44,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          consent02NotifierProvider.overrideWith(
-            _PreselectedConsent02Notifier.new,
-          ),
+          consent02Provider.overrideWith(_PreselectedConsent02Notifier.new),
           userStateServiceProvider.overrideWith(
             (ref) async => UserStateService(prefs: prefs),
           ),

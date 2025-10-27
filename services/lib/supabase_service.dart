@@ -87,8 +87,8 @@ class SupabaseService {
   static Future<Map<String, dynamic>?> upsertEmailPreferences({
     bool? newsletter,
   }) async {
-    _ensureAuthenticated();
-    final data = <String, dynamic>{'user_id': currentUser!.id};
+    final user = _ensureAuthenticated();
+    final data = <String, dynamic>{'user_id': user.id};
     if (newsletter != null) data['newsletter'] = newsletter;
     final row = await client
         .from('email_preferences')
@@ -100,8 +100,8 @@ class SupabaseService {
 
   /// Get email preferences for the current user
   static Future<Map<String, dynamic>?> getEmailPreferences() async {
-    _ensureAuthenticated();
-    final userId = currentUser!.id;
+    final user = _ensureAuthenticated();
+    final userId = user.id;
     return await client
         .from('email_preferences')
         .select()
@@ -116,7 +116,7 @@ class SupabaseService {
     required DateTime lastPeriod,
     required int age,
   }) async {
-    _ensureAuthenticated();
+    final user = _ensureAuthenticated();
     if (cycleLength <= 0) {
       throw ArgumentError.value(cycleLength, 'cycleLength', 'must be positive');
     }
@@ -140,7 +140,7 @@ class SupabaseService {
       );
     }
     final payload = <String, dynamic>{
-      'user_id': currentUser!.id,
+      'user_id': user.id,
       'cycle_length': cycleLength,
       'period_duration': periodDuration,
       'last_period': _formatIsoDate(normalizedLastPeriod),
@@ -156,8 +156,8 @@ class SupabaseService {
 
   /// Get cycle data for the current user
   static Future<Map<String, dynamic>?> getCycleData() async {
-    _ensureAuthenticated();
-    final userId = currentUser!.id;
+    final user = _ensureAuthenticated();
+    final userId = user.id;
     return await client
         .from('cycle_data')
         .select()
@@ -215,10 +215,19 @@ class SupabaseService {
     }
   }
 
-  static void _ensureAuthenticated() {
-    if (!isAuthenticated) {
-      throw StateError('User must be authenticated');
+  static User _ensureAuthenticated() {
+    if (!_initialized) {
+      throw StateError(
+        'SupabaseService has not been initialized. Call tryInitialize() before performing authenticated operations.',
+      );
     }
+    final user = client.auth.currentUser;
+    if (user == null) {
+      throw StateError(
+        'SupabaseService requires an authenticated user for this operation.',
+      );
+    }
+    return user;
   }
 
   static String _formatIsoDate(DateTime date) {

@@ -142,7 +142,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       dimension: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text(AuthStrings.forgotCta),
+                  : Text(AuthStrings.forgotCta),
             ),
           ),
         ],

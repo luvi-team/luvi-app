@@ -7,11 +7,11 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
 import 'package:luvi_app/features/cycle/domain/week_strip.dart';
 import 'package:luvi_app/features/cycle/widgets/cycle_inline_calendar.dart';
-// ignore: unused_import
 import '../../../support/test_config.dart';
 
 void main() {
-    TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
     Intl.defaultLocale = 'de_DE';

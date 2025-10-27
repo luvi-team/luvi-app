@@ -6,7 +6,7 @@ import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginSubmitNotifier extends AutoDisposeAsyncNotifier<void> {
+class LoginSubmitNotifier extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
@@ -90,6 +90,6 @@ class LoginSubmitNotifier extends AutoDisposeAsyncNotifier<void> {
 }
 
 final loginSubmitProvider =
-    AutoDisposeAsyncNotifierProvider<LoginSubmitNotifier, void>(
+    AsyncNotifierProvider.autoDispose<LoginSubmitNotifier, void>(
       LoginSubmitNotifier.new,
     );

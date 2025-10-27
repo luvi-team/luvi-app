@@ -1,11 +1,20 @@
 ## Test Support Guidelines
 
-- Import `test/support/test_config.dart` in every test that boots a `MaterialApp`, `GoRouter`, or other app entrypoint. The file sets up AppLinks bypasses and shared feature-flag config for tests.
-- Never import this file (or anything else under `test/support/`) from `lib/` code. It is intended strictly for tests.
+- Call `TestConfig.ensureInitialized();` in each test suite that boots a `MaterialApp`, `GoRouter`, or any widget relying on legal link bypasses or shared feature flags.
+- Import `test/support/test_config.dart` at the top of your test and invoke the initializer in `main()` before registering tests.
+- Tests needing feature-flag helpers can keep the normal import; no analyzer ignore is required when the initializer is used.
+- Never import anything under `test/support/` from `lib/` code; it is strictly for tests.
 
 Example:
 
 ```dart
-// ignore: unused_import
 import '../support/test_config.dart';
+
+void main() {
+  TestConfig.ensureInitialized();
+
+  testWidgets('renders dashboard', (tester) async {
+    // ...
+  });
+}
 ```

@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
-// ignore: unused_import
 import '../../../support/test_config.dart';
 
 void main() {
-    testWidgets('W3 content renders headline and Weiter button (asset-free)', (
+  TestConfig.ensureInitialized();
+  testWidgets('W3 content renders headline and Weiter button (asset-free)', (
     tester,
   ) async {
     final theme = AppTheme.buildAppTheme();

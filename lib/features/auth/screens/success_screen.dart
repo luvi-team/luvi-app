@@ -166,7 +166,7 @@ class _BottomCta extends StatelessWidget {
       child: ElevatedButton(
         key: const ValueKey('success_cta_button'),
         onPressed: onPressed,
-        child: const Text(AuthStrings.successCta),
+        child: Text(AuthStrings.successCta),
       ),
     );
   }

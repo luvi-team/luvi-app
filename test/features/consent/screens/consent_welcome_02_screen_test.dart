@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-// ignore: unused_import
 import '../../../support/test_config.dart';
 
 void main() {
-    testWidgets(
+  TestConfig.ensureInitialized();
+  testWidgets(
     'WelcomeShell with W2 content renders headline and Weiter button',
     (WidgetTester tester) async {
       final theme = AppTheme.buildAppTheme();
