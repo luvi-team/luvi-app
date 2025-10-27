@@ -7,9 +7,11 @@ import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_08.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 void main() {
-  testWidgets('Onboarding07 navigates to Dashboard on CTA tap', (
+    testWidgets('Onboarding07 navigates to Dashboard on CTA tap', (
     WidgetTester tester,
   ) async {
     // Track navigation

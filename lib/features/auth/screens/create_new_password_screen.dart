@@ -4,7 +4,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
+import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart';
@@ -13,6 +13,8 @@ import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.da
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {
+  static const String routeName = '/auth/password/new';
+
   const CreateNewPasswordScreen({super.key});
 
   @override

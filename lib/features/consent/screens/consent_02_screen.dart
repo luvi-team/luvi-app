@@ -6,7 +6,8 @@ import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/core/utils/run_catching.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
@@ -26,6 +27,9 @@ class Consent02Screen extends ConsumerWidget {
     final c = Theme.of(context).colorScheme;
     final state = ref.watch(consent02NotifierProvider);
     final notifier = ref.read(consent02NotifierProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
+    final selectedLabel = l10n.consent02SemanticSelected;
+    final unselectedLabel = l10n.consent02SemanticUnselected;
     bool isSelected(ConsentScope scope) => state.choices[scope] == true;
 
     return Scaffold(
@@ -61,7 +65,7 @@ class Consent02Screen extends ConsumerWidget {
                 Semantics(
                   header: true,
                   child: Text(
-                    'Deine Gesundheit,\ndeine Entscheidung!',
+                    l10n.consent02Title,
                     textAlign: TextAlign.center,
                     style: t.displaySmall?.copyWith(
                       color: c.onSurface,
@@ -83,9 +87,10 @@ class Consent02Screen extends ConsumerWidget {
                 _ConsentChoiceCard(
                   key: const Key('consent02_card_required_health'),
                   title: 'health_processing',
-                  body:
-                      'Ich bin damit einverstanden, dass LUVI meine persönlichen Gesundheitsdaten verarbeitet, damit LUVI ihre Funktionen bereitstellen kann.',
+                  body: l10n.consent02CardHealth,
                   selected: isSelected(ConsentScope.health_processing),
+                  semanticSelectedLabel: selectedLabel,
+                  semanticUnselectedLabel: unselectedLabel,
                   onTap: () {
                     HapticFeedback.selectionClick();
                     notifier.toggle(ConsentScope.health_processing);
@@ -95,9 +100,11 @@ class Consent02Screen extends ConsumerWidget {
                 _ConsentChoiceCard(
                   key: const Key('consent02_card_required_terms'),
                   title: 'terms',
-                  body: 'Ich erkläre mich mit der',
+                  body: l10n.consent02CardTermsPrefix,
                   selected: isSelected(ConsentScope.terms),
-                  trailing: _buildLinkTrailing(context),
+                  trailing: _buildLinkTrailing(context, l10n),
+                  semanticSelectedLabel: selectedLabel,
+                  semanticUnselectedLabel: unselectedLabel,
                   onTap: () {
                     HapticFeedback.selectionClick();
                     notifier.toggle(ConsentScope.terms);
@@ -107,9 +114,10 @@ class Consent02Screen extends ConsumerWidget {
                 _ConsentChoiceCard(
                   key: const Key('consent02_card_required_ai_journal'),
                   title: 'ai_journal',
-                  body:
-                      'Ich bin damit einverstanden, dass LUVI künstliche Intelligenz nutzt, um meine Trainings-, Ernährungs- und Regenerationsempfehlungen in einem personalisierten Journal für mich zusammenzufassen.',
+                  body: l10n.consent02CardAiJournal,
                   selected: isSelected(ConsentScope.ai_journal),
+                  semanticSelectedLabel: selectedLabel,
+                  semanticUnselectedLabel: unselectedLabel,
                   onTap: () {
                     HapticFeedback.selectionClick();
                     notifier.toggle(ConsentScope.ai_journal);
@@ -118,9 +126,10 @@ class Consent02Screen extends ConsumerWidget {
                 const SizedBox(height: 20),
                 _ConsentChoiceCard(
                   title: 'analytics',
-                  body:
-                      'Ich bin damit einverstanden, dass pseudonymisierte Nutzungs- und Gerätedaten zu Analysezwecken verarbeitet werden, damit LUVI Stabilität und Benutzerfreundlichkeit verbessern kann.*',
+                  body: l10n.consent02CardAnalytics,
                   selected: isSelected(ConsentScope.analytics),
+                  semanticSelectedLabel: selectedLabel,
+                  semanticUnselectedLabel: unselectedLabel,
                   onTap: () {
                     HapticFeedback.selectionClick();
                     notifier.toggle(ConsentScope.analytics);
@@ -129,9 +138,10 @@ class Consent02Screen extends ConsumerWidget {
                 const SizedBox(height: 20),
                 _ConsentChoiceCard(
                   title: 'marketing',
-                  body:
-                      'Ich stimme zu, dass LUVI meine persönlichen Daten und Nutzungsdaten verarbeitet, um mir personalisierte Empfehlungen zu relevanten LUVI-Inhalten und Informationen zu Angeboten per In-App-Hinweisen, E-Mail und/oder Push-Mitteilungen zuzusenden.*',
+                  body: l10n.consent02CardMarketing,
                   selected: isSelected(ConsentScope.marketing),
+                  semanticSelectedLabel: selectedLabel,
+                  semanticUnselectedLabel: unselectedLabel,
                   onTap: () {
                     HapticFeedback.selectionClick();
                     notifier.toggle(ConsentScope.marketing);
@@ -140,9 +150,10 @@ class Consent02Screen extends ConsumerWidget {
                 const SizedBox(height: 20),
                 _ConsentChoiceCard(
                   title: 'model_training',
-                  body:
-                      'Ich willige ein, dass pseudonymisierte Nutzungs- und Gesundheitsdaten zur Qualitätssicherung und Verbesserung von Empfehlungen verwendet werden (z. B. Überprüfung der Genauigkeit von Zyklusvorhersagen).*',
+                  body: l10n.consent02CardModelTraining,
                   selected: isSelected(ConsentScope.model_training),
+                  semanticSelectedLabel: selectedLabel,
+                  semanticUnselectedLabel: unselectedLabel,
                   onTap: () {
                     HapticFeedback.selectionClick();
                     notifier.toggle(ConsentScope.model_training);
@@ -162,6 +173,7 @@ class Consent02Screen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
                 child: _ConsentFooter(
                   key: const Key('consent02_footer'),
+                  l10n: l10n,
                   onAcceptAll: notifier.selectAllOptional,
                   isAcceptAllDisabled: state.allOptionalSelected,
                   onNext: () async {
@@ -184,7 +196,10 @@ class Consent02Screen extends ConsumerWidget {
     );
   }
 
-  InlineSpan _buildLinkTrailing(BuildContext context) {
+  InlineSpan _buildLinkTrailing(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
@@ -209,7 +224,7 @@ class Consent02Screen extends ConsumerWidget {
       final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!ok && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Link konnte nicht geöffnet werden')),
+          SnackBar(content: Text(l10n.consent02LinkError)),
         );
       }
     }
@@ -221,21 +236,20 @@ class Consent02Screen extends ConsumerWidget {
         key: const ValueKey('consent02_terms_links'),
         style: baseStyle,
         parts: [
-          const LinkTextPart(' '),
           LinkTextPart(
-            'Datenschutzerklärung',
+            l10n.consent02LinkPrivacyLabel,
             onTap: () => open(privacyUri),
             bold: true,
             color: colorScheme.primary,
           ),
-          const LinkTextPart(' sowie den '),
+          LinkTextPart(l10n.consent02LinkConjunction),
           LinkTextPart(
-            'Nutzungsbedingungen',
+            l10n.consent02LinkTermsLabel,
             onTap: () => open(termsUri),
             bold: true,
             color: colorScheme.primary,
           ),
-          const LinkTextPart(' einverstanden.'),
+          LinkTextPart(l10n.consent02LinkSuffix),
         ],
       ),
     );
@@ -311,6 +325,8 @@ class _ConsentChoiceCard extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final InlineSpan? trailing;
+  final String semanticSelectedLabel;
+  final String semanticUnselectedLabel;
 
   const _ConsentChoiceCard({
     super.key,
@@ -318,6 +334,8 @@ class _ConsentChoiceCard extends StatelessWidget {
     required this.body,
     required this.selected,
     required this.onTap,
+    required this.semanticSelectedLabel,
+    required this.semanticUnselectedLabel,
     this.trailing,
   });
 
@@ -385,7 +403,9 @@ class _ConsentChoiceCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 20),
                   Semantics(
-                    label: selected ? 'Ausgewählt' : 'Nicht ausgewählt',
+                    label: selected
+                        ? semanticSelectedLabel
+                        : semanticUnselectedLabel,
                     selected: selected,
                     child: Container(
                       width: 24,
@@ -422,6 +442,7 @@ class _ConsentChoiceCard extends StatelessWidget {
 }
 
 class _ConsentFooter extends StatelessWidget {
+  final AppLocalizations l10n;
   final VoidCallback onAcceptAll;
   final bool isAcceptAllDisabled;
   final VoidCallback? onNext;
@@ -429,6 +450,7 @@ class _ConsentFooter extends StatelessWidget {
 
   const _ConsentFooter({
     super.key,
+    required this.l10n,
     required this.onAcceptAll,
     required this.isAcceptAllDisabled,
     required this.onNext,
@@ -445,7 +467,7 @@ class _ConsentFooter extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Deine Zustimmung kannst du jederzeit in der App oder unter hello@getluvi.com widerrufen.',
+          l10n.consent02RevokeHint,
           textAlign: TextAlign.center,
           style: textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurface,
@@ -459,7 +481,7 @@ class _ConsentFooter extends StatelessWidget {
           height: 50,
           child: ElevatedButton(
             onPressed: isAcceptAllDisabled ? null : onAcceptAll,
-            child: const Text('Alle akzeptieren'),
+            child: Text(l10n.consent02AcceptAll),
           ),
         ),
         const SizedBox(height: 15),
@@ -469,7 +491,7 @@ class _ConsentFooter extends StatelessWidget {
           child: ElevatedButton(
             key: const Key('consent02_btn_next'),
             onPressed: nextEnabled ? onNext : null,
-            child: const Text('Weiter'),
+            child: Text(l10n.commonContinue),
           ),
         ),
       ],

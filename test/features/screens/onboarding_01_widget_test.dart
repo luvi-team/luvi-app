@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+    TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding01Screen', () {
     late GoRouter router;

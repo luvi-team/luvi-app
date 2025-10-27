@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/navigation/route_orientation_controller.dart';
 import 'package:luvi_app/main.dart';
+// ignore: unused_import
+import 'support/test_config.dart';
 
 void main() {
-  testWidgets('smoke test: LUVI app builds without crashing', (tester) async {
+    testWidgets('smoke test: LUVI app builds without crashing', (tester) async {
     final controller = RouteOrientationController(
       defaultOrientations: const [DeviceOrientation.portraitUp],
       setter: (orientations) async {},

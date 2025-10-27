@@ -106,6 +106,10 @@
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
   },
+  "commonStartNow": "Starte jetzt",
+  "@commonStartNow": {
+    "description": "Primärer CTA-Text, der zum sofortigen Start auffordert."
+  },
   "dashboardGreeting": "Hey, {name} 💜",
   "@dashboardGreeting": {
     "description": "Dashboard header greeting with the user's preferred name.",
@@ -470,5 +474,69 @@
   "onboardingSuccessButton": "Los geht\u0027s!",
   "@onboardingSuccessButton": {
     "description": "Button label on the onboarding success screen to navigate to dashboard."
+  },
+  "consent02Title": "Deine Gesundheit,\ndeine Entscheidung!",
+  "@consent02Title": {
+    "description": "Headline shown on the consent 02 screen."
+  },
+  "consent02CardHealth": "Ich bin damit einverstanden, dass LUVI meine persönlichen Gesundheitsdaten verarbeitet, damit LUVI ihre Funktionen bereitstellen kann.",
+  "@consent02CardHealth": {
+    "description": "Body copy for the required health-processing consent card."
+  },
+  "consent02CardTermsPrefix": "Ich erkläre mich mit der ",
+  "@consent02CardTermsPrefix": {
+    "description": "Prefix shown before the privacy/terms links on the required terms consent card. Keep trailing space."
+  },
+  "consent02LinkPrivacyLabel": "Datenschutzerklärung",
+  "@consent02LinkPrivacyLabel": {
+    "description": "Label for the privacy policy deep link on the consent 02 screen."
+  },
+  "consent02LinkConjunction": " sowie den ",
+  "@consent02LinkConjunction": {
+    "description": "Connector text placed between the privacy and terms links on the consent 02 screen. Surround with spaces as needed."
+  },
+  "consent02LinkTermsLabel": "Nutzungsbedingungen",
+  "@consent02LinkTermsLabel": {
+    "description": "Label for the terms of service deep link on the consent 02 screen."
+  },
+  "consent02LinkSuffix": " einverstanden.",
+  "@consent02LinkSuffix": {
+    "description": "Suffix appended after the terms links sentence."
+  },
+  "consent02CardAiJournal": "Ich bin damit einverstanden, dass LUVI künstliche Intelligenz nutzt, um meine Trainings-, Ernährungs- und Regenerationsempfehlungen in einem personalisierten Journal für mich zusammenzufassen.",
+  "@consent02CardAiJournal": {
+    "description": "Body copy for the required AI journal consent card."
+  },
+  "consent02CardAnalytics": "Ich bin damit einverstanden, dass pseudonymisierte Nutzungs- und Gerätedaten zu Analysezwecken verarbeitet werden, damit LUVI Stabilität und Benutzerfreundlichkeit verbessern kann.*",
+  "@consent02CardAnalytics": {
+    "description": "Body copy for the optional analytics consent card."
+  },
+  "consent02CardMarketing": "Ich stimme zu, dass LUVI meine persönlichen Daten und Nutzungsdaten verarbeitet, um mir personalisierte Empfehlungen zu relevanten LUVI-Inhalten und Informationen zu Angeboten per In-App-Hinweisen, E-Mail und/oder Push-Mitteilungen zuzusenden.*",
+  "@consent02CardMarketing": {
+    "description": "Body copy for the optional marketing consent card."
+  },
+  "consent02CardModelTraining": "Ich willige ein, dass pseudonymisierte Nutzungs- und Gesundheitsdaten zur Qualitätssicherung und Verbesserung von Empfehlungen verwendet werden (z. B. Überprüfung der Genauigkeit von Zyklusvorhersagen).*",
+  "@consent02CardModelTraining": {
+    "description": "Body copy for the optional model-training consent card."
+  },
+  "consent02LinkError": "Link konnte nicht geöffnet werden",
+  "@consent02LinkError": {
+    "description": "Snackbar error shown when an external legal link cannot be opened."
+  },
+  "consent02RevokeHint": "Deine Zustimmung kannst du jederzeit in der App oder unter hello@getluvi.com widerrufen.",
+  "@consent02RevokeHint": {
+    "description": "Small print hint explaining how to revoke consent."
+  },
+  "consent02AcceptAll": "Alle akzeptieren",
+  "@consent02AcceptAll": {
+    "description": "Primary CTA label that selects all optional consent scopes."
+  },
+  "consent02SemanticSelected": "Ausgewählt",
+  "@consent02SemanticSelected": {
+    "description": "Semantics label announcing a consent card is selected."
+  },
+  "consent02SemanticUnselected": "Nicht ausgewählt",
+  "@consent02SemanticUnselected": {
+    "description": "Semantics label announcing a consent card is not selected."
   }
 }

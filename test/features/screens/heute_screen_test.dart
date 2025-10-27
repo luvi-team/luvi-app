@@ -6,11 +6,13 @@ import 'package:luvi_app/features/widgets/dashboard/weekly_training_card.dart';
 import 'package:luvi_app/features/widgets/dashboard/cycle_tip_card.dart';
 import 'package:luvi_app/features/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
-import 'package:luvi_app/test/test_config.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
+// ignore: unused_import
+import '../../support/test_config.dart';
+
 void main() {
-  setUpAll(() async {
+    setUpAll(() async {
     await initializeDateFormatting('de_DE', null);
   });
 

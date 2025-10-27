@@ -106,6 +106,10 @@
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
   },
+  "commonStartNow": "Start now",
+  "@commonStartNow": {
+    "description": "Primary CTA label encouraging the user to begin immediately."
+  },
   "dashboardGreeting": "Hey, {name} 💜",
   "@dashboardGreeting": {
     "description": "Greeting shown in the dashboard header.",
@@ -470,5 +474,69 @@
   "welcome03Subtitle": "LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.",
   "@welcome03Subtitle": {
     "description": "Subtitle copy for consent welcome screen 3 (below the title). Prepared for future migration away from hardcoded strings."
+  },
+  "consent02Title": "Your health,\nyour decision!",
+  "@consent02Title": {
+    "description": "Headline shown on the consent 02 screen."
+  },
+  "consent02CardHealth": "I agree that LUVI processes my personal health data so LUVI can deliver its features.",
+  "@consent02CardHealth": {
+    "description": "Body copy for the required health-processing consent card."
+  },
+  "consent02CardTermsPrefix": "I agree to the ",
+  "@consent02CardTermsPrefix": {
+    "description": "Prefix shown before the privacy/terms links on the required terms consent card. Keep trailing space."
+  },
+  "consent02LinkPrivacyLabel": "Privacy Policy",
+  "@consent02LinkPrivacyLabel": {
+    "description": "Label for the privacy policy deep link on the consent 02 screen."
+  },
+  "consent02LinkConjunction": " as well as the ",
+  "@consent02LinkConjunction": {
+    "description": "Connector text placed between the privacy and terms links on the consent 02 screen. Surround with spaces as needed."
+  },
+  "consent02LinkTermsLabel": "Terms of Service",
+  "@consent02LinkTermsLabel": {
+    "description": "Label for the terms of service deep link on the consent 02 screen."
+  },
+  "consent02LinkSuffix": ".",
+  "@consent02LinkSuffix": {
+    "description": "Suffix appended after the terms links sentence."
+  },
+  "consent02CardAiJournal": "I agree that LUVI uses artificial intelligence to summarize my training, nutrition, and recovery recommendations in a personalized journal.",
+  "@consent02CardAiJournal": {
+    "description": "Body copy for the required AI journal consent card."
+  },
+  "consent02CardAnalytics": "I agree that pseudonymized usage and device data are processed for analytics so LUVI can improve stability and usability.*",
+  "@consent02CardAnalytics": {
+    "description": "Body copy for the optional analytics consent card."
+  },
+  "consent02CardMarketing": "I agree that LUVI processes my personal data and usage data to send me personalized recommendations for relevant LUVI content as well as offers via in-app notices, email, and/or push notifications.*",
+  "@consent02CardMarketing": {
+    "description": "Body copy for the optional marketing consent card."
+  },
+  "consent02CardModelTraining": "I consent to pseudonymized usage and health data being used for quality assurance and to improve recommendations (e.g., verifying cycle prediction accuracy).*",
+  "@consent02CardModelTraining": {
+    "description": "Body copy for the optional model-training consent card."
+  },
+  "consent02LinkError": "Link could not be opened",
+  "@consent02LinkError": {
+    "description": "Snackbar error shown when an external legal link cannot be opened."
+  },
+  "consent02RevokeHint": "You can withdraw your consent at any time in the app or by emailing hello@getluvi.com.",
+  "@consent02RevokeHint": {
+    "description": "Small print hint explaining how to revoke consent."
+  },
+  "consent02AcceptAll": "Accept all",
+  "@consent02AcceptAll": {
+    "description": "Primary CTA label that selects all optional consent scopes."
+  },
+  "consent02SemanticSelected": "Selected",
+  "@consent02SemanticSelected": {
+    "description": "Semantics label announcing a consent card is selected."
+  },
+  "consent02SemanticUnselected": "Not selected",
+  "@consent02SemanticUnselected": {
+    "description": "Semantics label announcing a consent card is not selected."
   }
 }

@@ -4,7 +4,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
+import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/verify_footer.dart';
@@ -15,6 +15,8 @@ import 'package:luvi_app/features/auth/widgets/verify_text_styles.dart';
 enum VerificationScreenVariant { resetPassword, emailConfirmation }
 
 class VerificationScreen extends StatefulWidget {
+  static const String routeName = '/auth/verify';
+
   const VerificationScreen({
     super.key,
     this.variant = VerificationScreenVariant.resetPassword,

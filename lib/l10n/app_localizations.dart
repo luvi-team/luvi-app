@@ -227,6 +227,12 @@ abstract class AppLocalizations {
   /// **'Continue'**
   String get commonContinue;
 
+  /// Primary CTA label encouraging the user to begin immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Start now'**
+  String get commonStartNow;
+
   /// Greeting shown in the dashboard header.
   ///
   /// In en, this message translates to:
@@ -742,6 +748,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Let\'s go!'**
   String get onboardingSuccessButton;
+
+  /// Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings.
+  ///
+  /// In en, this message translates to:
+  /// **'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.'**
+  String get welcome01Subtitle;
+
+  /// Subtitle copy for consent welcome screen 2 (below the title). Prepared for future migration away from hardcoded strings.
+  ///
+  /// In en, this message translates to:
+  /// **'Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.'**
+  String get welcome02Subtitle;
+
+  /// Subtitle copy for consent welcome screen 3 (below the title). Prepared for future migration away from hardcoded strings.
+  ///
+  /// In en, this message translates to:
+  /// **'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.'**
+  String get welcome03Subtitle;
+
+  /// Headline shown on the consent 02 screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Your health,\nyour decision!'**
+  String get consent02Title;
+
+  /// Body copy for the required health-processing consent card.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree that LUVI processes my personal health data so LUVI can deliver its features.'**
+  String get consent02CardHealth;
+
+  /// Prefix shown before the privacy/terms links on the required terms consent card. Keep trailing space.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the '**
+  String get consent02CardTermsPrefix;
+
+  /// Label for the privacy policy deep link on the consent 02 screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get consent02LinkPrivacyLabel;
+
+  /// Connector text placed between the privacy and terms links on the consent 02 screen. Surround with spaces as needed.
+  ///
+  /// In en, this message translates to:
+  /// **' as well as the '**
+  String get consent02LinkConjunction;
+
+  /// Label for the terms of service deep link on the consent 02 screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get consent02LinkTermsLabel;
+
+  /// Suffix appended after the terms links sentence.
+  ///
+  /// In en, this message translates to:
+  /// **'.'**
+  String get consent02LinkSuffix;
+
+  /// Body copy for the required AI journal consent card.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree that LUVI uses artificial intelligence to summarize my training, nutrition, and recovery recommendations in a personalized journal.'**
+  String get consent02CardAiJournal;
+
+  /// Body copy for the optional analytics consent card.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree that pseudonymized usage and device data are processed for analytics so LUVI can improve stability and usability.*'**
+  String get consent02CardAnalytics;
+
+  /// Body copy for the optional marketing consent card.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree that LUVI processes my personal data and usage data to send me personalized recommendations for relevant LUVI content as well as offers via in-app notices, email, and/or push notifications.*'**
+  String get consent02CardMarketing;
+
+  /// Body copy for the optional model-training consent card.
+  ///
+  /// In en, this message translates to:
+  /// **'I consent to pseudonymized usage and health data being used for quality assurance and to improve recommendations (e.g., verifying cycle prediction accuracy).*'**
+  String get consent02CardModelTraining;
+
+  /// Snackbar error shown when an external legal link cannot be opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Link could not be opened'**
+  String get consent02LinkError;
+
+  /// Small print hint explaining how to revoke consent.
+  ///
+  /// In en, this message translates to:
+  /// **'You can withdraw your consent at any time in the app or by emailing hello@getluvi.com.'**
+  String get consent02RevokeHint;
+
+  /// Primary CTA label that selects all optional consent scopes.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept all'**
+  String get consent02AcceptAll;
+
+  /// Semantics label announcing a consent card is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get consent02SemanticSelected;
+
+  /// Semantics label announcing a consent card is not selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not selected'**
+  String get consent02SemanticUnselected;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -12,11 +12,13 @@ import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 import 'package:luvi_services/user_state_service.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+    TestWidgetsFlutterBinding.ensureInitialized();
 
   Future<Widget> buildApp(
     GoRouter router, {
@@ -170,6 +172,41 @@ void main() {
 
       // Reset view size
       addTearDown(tester.view.reset);
+    });
+
+    testWidgets('trophy-to-title gap matches responsive spacing', (tester) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: OnboardingSuccessScreen.routeName,
+            builder: (context, state) => const OnboardingSuccessScreen(),
+          ),
+        ],
+        initialLocation: OnboardingSuccessScreen.routeName,
+      );
+
+      tester.view.physicalSize = const Size(428, 926);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(await buildApp(router));
+      await tester.pumpAndSettle();
+
+      final trophyFinder = find.byKey(const Key('onboarding_success_trophy'));
+      final titleFinder = find.byKey(const Key('onboarding_success_title'));
+      expect(trophyFinder, findsOneWidget);
+      expect(titleFinder, findsOneWidget);
+
+      final context = tester.element(find.byType(OnboardingSuccessScreen));
+      final spacing = OnboardingSpacing.of(context);
+
+      final trophyBottomDy = tester.getBottomLeft(trophyFinder).dy;
+      final titleTopDy = tester.getTopLeft(titleFinder).dy;
+
+      expect(
+        titleTopDy - trophyBottomDy,
+        closeTo(spacing.trophyToTitle, 0.01),
+      );
     });
 
     testWidgets('trophy has correct size from Figma audit', (tester) async {

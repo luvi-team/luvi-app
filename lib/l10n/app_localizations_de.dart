@@ -81,6 +81,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonContinue => 'Weiter';
 
   @override
+  String get commonStartNow => 'Starte jetzt';
+
+  @override
   String dashboardGreeting(String name) {
     return 'Hey, $name 💜';
   }
@@ -349,4 +352,61 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboardingSuccessButton => 'Los geht\'s!';
+
+  @override
+  String get welcome01Subtitle => 'Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.';
+
+  @override
+  String get welcome02Subtitle => 'Echte Personalisierung statt Standard‑Pläne. Automatisch angepasst an deine Fortschritte, Zyklusphase und individuellen Ziele.';
+
+  @override
+  String get welcome03Subtitle => 'LUVI Sync: Dein täglicher Game‑Changer. Verstehe das \'Warum\' hinter deinen Hormonen. Wissenschaftlich fundiert.';
+
+  @override
+  String get consent02Title => 'Deine Gesundheit,\ndeine Entscheidung!';
+
+  @override
+  String get consent02CardHealth => 'Ich bin damit einverstanden, dass LUVI meine persönlichen Gesundheitsdaten verarbeitet, damit LUVI ihre Funktionen bereitstellen kann.';
+
+  @override
+  String get consent02CardTermsPrefix => 'Ich erkläre mich mit der ';
+
+  @override
+  String get consent02LinkPrivacyLabel => 'Datenschutzerklärung';
+
+  @override
+  String get consent02LinkConjunction => ' sowie den ';
+
+  @override
+  String get consent02LinkTermsLabel => 'Nutzungsbedingungen';
+
+  @override
+  String get consent02LinkSuffix => ' einverstanden.';
+
+  @override
+  String get consent02CardAiJournal => 'Ich bin damit einverstanden, dass LUVI künstliche Intelligenz nutzt, um meine Trainings-, Ernährungs- und Regenerationsempfehlungen in einem personalisierten Journal für mich zusammenzufassen.';
+
+  @override
+  String get consent02CardAnalytics => 'Ich bin damit einverstanden, dass pseudonymisierte Nutzungs- und Gerätedaten zu Analysezwecken verarbeitet werden, damit LUVI Stabilität und Benutzerfreundlichkeit verbessern kann.*';
+
+  @override
+  String get consent02CardMarketing => 'Ich stimme zu, dass LUVI meine persönlichen Daten und Nutzungsdaten verarbeitet, um mir personalisierte Empfehlungen zu relevanten LUVI-Inhalten und Informationen zu Angeboten per In-App-Hinweisen, E-Mail und/oder Push-Mitteilungen zuzusenden.*';
+
+  @override
+  String get consent02CardModelTraining => 'Ich willige ein, dass pseudonymisierte Nutzungs- und Gesundheitsdaten zur Qualitätssicherung und Verbesserung von Empfehlungen verwendet werden (z. B. Überprüfung der Genauigkeit von Zyklusvorhersagen).*';
+
+  @override
+  String get consent02LinkError => 'Link konnte nicht geöffnet werden';
+
+  @override
+  String get consent02RevokeHint => 'Deine Zustimmung kannst du jederzeit in der App oder unter hello@getluvi.com widerrufen.';
+
+  @override
+  String get consent02AcceptAll => 'Alle akzeptieren';
+
+  @override
+  String get consent02SemanticSelected => 'Ausgewählt';
+
+  @override
+  String get consent02SemanticUnselected => 'Nicht ausgewählt';
 }

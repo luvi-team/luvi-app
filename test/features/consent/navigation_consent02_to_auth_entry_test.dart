@@ -3,11 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/routes.dart';
 import 'package:luvi_app/features/routes.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 class _PreselectedConsent02Notifier extends Consent02Notifier {
   @override
@@ -20,7 +23,7 @@ class _PreselectedConsent02Notifier extends Consent02Notifier {
 }
 
 void main() {
-  testWidgets('Consent02 forwards to /auth/entry (AuthEntry screen)', (
+    testWidgets('Consent02 forwards to /auth/entry (AuthEntry screen)', (
     tester,
   ) async {
     final view = tester.view;
@@ -50,6 +53,9 @@ void main() {
         ],
         child: MaterialApp.router(
           theme: AppTheme.buildAppTheme(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           routerConfig: router,
         ),
       ),

@@ -4,9 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
 import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 void main() {
-  group('BottomNavDock', () {
+    group('BottomNavDock', () {
     // Kodex: Geometry constants from tokens (Figma audit 2025-10-06)
     const double expectedDockHeight = dockHeight; // 96px (from tokens)
     const double expectedTapAreaSize = minTapArea; // 44px (from tokens)

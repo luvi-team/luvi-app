@@ -4,9 +4,11 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 import 'package:luvi_app/features/widgets/dashboard/cycle_tip_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+// ignore: unused_import
+import '../../../support/test_config.dart';
 
 void main() {
-  group('CycleTipCard l10n', () {
+    group('CycleTipCard l10n', () {
     testWidgets('renders localized headline and body per phase (de)', (
       tester,
     ) async {

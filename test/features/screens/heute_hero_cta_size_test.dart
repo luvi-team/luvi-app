@@ -3,9 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 void main() {
-  group('HeuteScreen Hero CTA', () {
+    group('HeuteScreen Hero CTA', () {
     testWidgets('CTA has a minimum 44px touch target (de)', (tester) async {
       await tester.pumpWidget(
         MaterialApp(

@@ -3,9 +3,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 void main() {
-  group('Daily Plan RLS Widget Tests', () {
+    group('Daily Plan RLS Widget Tests', () {
     testWidgets('Should show only user-owned daily plans', (
       WidgetTester tester,
     ) async {

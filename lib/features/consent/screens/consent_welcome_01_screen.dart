@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'welcome_metrics.dart';
 import '../widgets/welcome_shell.dart';
 import 'consent_welcome_02_screen.dart';
@@ -20,6 +21,7 @@ class ConsentWelcome01Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final titleStyle = t.headlineMedium?.copyWith(
       fontSize: TypographyTokens.size28,
       height: TypographyTokens.lineHeightRatio36on28,
@@ -42,8 +44,7 @@ class ConsentWelcome01Screen extends StatelessWidget {
           ],
         ),
       ),
-      subtitle:
-          'Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.',
+      subtitle: l10n.welcome01Subtitle,
       onNext: () => context.go(ConsentWelcome02Screen.routeName),
       hero: Image.asset(Assets.welcomeHero01, fit: BoxFit.cover),
       heroAspect: _kHeroAspect,

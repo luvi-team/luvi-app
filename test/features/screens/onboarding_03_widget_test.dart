@@ -5,9 +5,11 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+    TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('selects a goal and navigates', (tester) async {
     final router = GoRouter(

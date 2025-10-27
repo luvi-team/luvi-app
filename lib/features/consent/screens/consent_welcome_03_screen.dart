@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../widgets/welcome_shell.dart';
 import 'consent_01_screen.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class ConsentWelcome03Screen extends StatelessWidget {
   const ConsentWelcome03Screen({super.key});
@@ -18,6 +19,7 @@ class ConsentWelcome03Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final titleStyle = t.headlineMedium?.copyWith(
       fontSize: TypographyTokens.size28,
       height: TypographyTokens.lineHeightRatio36on28,
@@ -37,14 +39,13 @@ class ConsentWelcome03Screen extends StatelessWidget {
           ],
         ),
       ),
-      subtitle:
-          "LUVI Sync: Dein täglicher Game-Changer. Verstehe das 'Warum' hinter deinen Hormonen. Wissenschaftlich fundiert.",
+      subtitle: l10n.welcome03Subtitle,
       onNext: () => context.push(Consent01Screen.routeName),
       hero: Image.asset(Assets.welcomeHero03, fit: BoxFit.cover),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,
       headerSpacing: Spacing.s,
-      primaryButtonLabel: 'Starte jetzt',
+      primaryButtonLabel: l10n.commonStartNow,
       activeIndex: 2,
     );
   }

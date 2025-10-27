@@ -6,6 +6,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_services/supabase_service.dart';
+import 'core/config/app_links.dart';
 import 'features/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'features/routes.dart' as routes;
@@ -24,6 +25,26 @@ void main() async {
     await SupabaseService.tryInitialize(envFile: '.env.development');
   } catch (e) {
     debugPrint('Supabase initialization failed: $e');
+  }
+
+  // Debug/Profil: Fail fast per assert (nur in Debug aktiv)
+  assert(
+    AppLinks.hasValidPrivacy && AppLinks.hasValidTerms,
+    'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
+  );
+
+  // Release: harte Laufzeitprüfung (nicht via assert)
+  if (kReleaseMode && (!AppLinks.hasValidPrivacy || !AppLinks.hasValidTerms)) {
+    throw StateError(
+      'Legal links invalid. Provide PRIVACY_URL and TERMS_URL via --dart-define.',
+    );
+  }
+
+  // Optionales Warn-Log in allen Modi, falls ungültig (entfernen erlaubt)
+  if (!AppLinks.hasValidPrivacy || !AppLinks.hasValidTerms) {
+    debugPrint(
+      'Warning: Legal links fallback to example.com; set PRIVACY_URL/TERMS_URL.',
+    );
   }
 
   runApp(ProviderScope(child: MyApp(orientationController: orientationController)));

@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+// ignore: unused_import
+import '../../../support/test_config.dart';
 
 Future<void> _pumpHeader(
   WidgetTester tester, {
@@ -29,7 +31,7 @@ Future<void> _pumpHeader(
 }
 
 void main() {
-  testWidgets('renders header text, semantics, and step fraction', (
+    testWidgets('renders header text, semantics, and step fraction', (
     tester,
   ) async {
     await _pumpHeader(

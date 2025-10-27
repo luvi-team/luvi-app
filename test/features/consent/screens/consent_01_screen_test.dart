@@ -6,9 +6,11 @@ import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/consent/routes.dart';
+// ignore: unused_import
+import '../../../support/test_config.dart';
 
 void main() {
-  group('Consent01Screen', () {
+    group('Consent01Screen', () {
     late GoRouter router;
 
     setUp(() {

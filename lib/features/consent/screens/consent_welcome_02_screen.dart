@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../widgets/welcome_shell.dart';
 import 'consent_welcome_03_screen.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class ConsentWelcome02Screen extends StatelessWidget {
   const ConsentWelcome02Screen({super.key});
@@ -15,6 +16,7 @@ class ConsentWelcome02Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final titleStyle = t.headlineMedium?.copyWith(
       fontSize: TypographyTokens.size28,
       height: TypographyTokens.lineHeightRatio36on28,
@@ -34,8 +36,7 @@ class ConsentWelcome02Screen extends StatelessWidget {
           ],
         ),
       ),
-      subtitle:
-          'Echte Personalisierung statt Standard-Pläne. Automatisch angepasst an deine Fortschritte, Zyklusphase und individuelle Ziele.',
+      subtitle: l10n.welcome02Subtitle,
       onNext: () => context.go(ConsentWelcome03Screen.routeName),
       hero: Image.asset(Assets.welcomeHero02, fit: BoxFit.cover),
       heroAspect: kWelcomeHeroAspect,

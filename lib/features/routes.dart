@@ -13,7 +13,6 @@ import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_03_screen.dart';
-import 'package:luvi_app/features/screens/splash/splash_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
@@ -27,8 +26,13 @@ import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';
+import 'package:luvi_app/features/screens/splash/splash_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
+
+const String _onboardingRootPath = '/onboarding/';
+const String _welcomeRootPath = '/onboarding/w';
+const String _consentRootPath = '/consent/';
 
 final List<GoRoute> featureRoutes = [
   GoRoute(
@@ -123,28 +127,28 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const LoginScreen(),
   ),
   GoRoute(
-    path: '/auth/forgot',
+    path: ResetPasswordScreen.routeName,
     name: 'forgot',
     builder: (context, state) => const ResetPasswordScreen(),
   ),
   GoRoute(
-    path: '/auth/forgot/sent',
+    path: SuccessScreen.forgotEmailSentRouteName,
     name: 'forgot_sent',
     builder: (context, state) =>
         const SuccessScreen(variant: SuccessVariant.forgotEmailSent),
   ),
   GoRoute(
-    path: '/auth/password/new',
+    path: CreateNewPasswordScreen.routeName,
     name: 'password_new',
     builder: (context, state) => const CreateNewPasswordScreen(),
   ),
   GoRoute(
-    path: '/auth/password/success',
+    path: SuccessScreen.passwordSuccessRouteName,
     name: 'password_success',
     builder: (context, state) => const SuccessScreen(),
   ),
   GoRoute(
-    path: '/auth/verify',
+    path: VerificationScreen.routeName,
     name: 'verify',
     builder: (context, state) {
       final variantParam = state.uri.queryParameters['variant'];
@@ -170,7 +174,7 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const CycleOverviewStubScreen(),
   ),
   GoRoute(
-    path: '/workout/:id',
+    path: WorkoutDetailStubScreen.route,
     name: 'workout_detail_stub',
     builder: (context, state) {
       final id = state.pathParameters['id'] ?? 'unknown';
@@ -202,9 +206,9 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   final isAuthEntry = state.matchedLocation.startsWith(
     AuthEntryScreen.routeName,
   );
-  final isOnboarding = state.matchedLocation.startsWith('/onboarding/');
-  final isWelcome = state.matchedLocation.startsWith('/onboarding/w');
-  final isConsent = state.matchedLocation.startsWith('/consent/');
+  final isOnboarding = state.matchedLocation.startsWith(_onboardingRootPath);
+  final isWelcome = state.matchedLocation.startsWith(_welcomeRootPath);
+  final isConsent = state.matchedLocation.startsWith(_consentRootPath);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
   final session = isInitialized

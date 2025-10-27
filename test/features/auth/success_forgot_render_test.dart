@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/routes.dart' as features;
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 void main() {
-  testWidgets('navigating to /auth/forgot/sent renders forgot success copy', (
+    testWidgets('navigating to /auth/forgot/sent renders forgot success copy', (
     tester,
   ) async {
     final router = GoRouter(

@@ -1,4 +1,6 @@
 import 'dart:async';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +18,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
-  setUpAll(() {
+    setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
   });
 

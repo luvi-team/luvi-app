@@ -6,11 +6,13 @@ import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
-import 'package:luvi_app/test/test_config.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
+// ignore: unused_import
+import '../../support/test_config.dart';
+
 void main() {
-  tearDown(FeatureFlags.resetOverrides);
+    tearDown(FeatureFlags.resetOverrides);
 
   Future<void> runNavigationFlow(WidgetTester tester) async {
     // Track navigation

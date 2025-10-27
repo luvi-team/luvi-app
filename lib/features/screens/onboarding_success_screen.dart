@@ -7,7 +7,7 @@ import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_success_tokens.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/core/utils/run_catching.dart';
+import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
@@ -47,7 +47,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildTrophy(context, reduceMotion),
-                    SizedBox(height: OnboardingSuccessTokens.gapToTitle),
+                    SizedBox(height: spacing.trophyToTitle),
                     _buildTitle(textTheme, colorScheme, l10n),
                     SizedBox(height: spacing.titleToButton),
                     _buildButton(context, ref, l10n),
@@ -76,6 +76,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     return ExcludeSemantics(
       child: Center(
         child: SizedBox(
+          key: const Key('onboarding_success_trophy'),
           width: OnboardingSuccessTokens.trophyWidth,
           height: OnboardingSuccessTokens.trophyHeight,
           child: Align(
@@ -145,6 +146,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     return Semantics(
       header: true,
       child: Text(
+        key: const Key('onboarding_success_title'),
         l10n.onboardingSuccessTitle,
         textAlign: TextAlign.center,
         style: textTheme.headlineMedium?.copyWith(

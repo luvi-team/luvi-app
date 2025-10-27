@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/widgets/verification_code_input.dart';
+// ignore: unused_import
+import '../../support/test_config.dart';
 
 void main() {
-  ThemeData buildTheme() => AppTheme.buildAppTheme();
+    ThemeData buildTheme() => AppTheme.buildAppTheme();
 
   Widget wrapWithScaffold(Widget child) {
     return MaterialApp(
