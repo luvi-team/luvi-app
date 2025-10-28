@@ -215,8 +215,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     'ALLOW_ONBOARDING_DEV',
     defaultValue: false,
   );
-  final allowOnboardingBypass =
-      allowOnboardingDev && (kDebugMode || allowOnboardingDev);
+  final allowOnboardingBypass = allowOnboardingDev;
   // Enable via --dart-define=ALLOW_ONBOARDING_DEV=true (false by default).
 
   final isInitialized = SupabaseService.isInitialized;

@@ -19,9 +19,33 @@ class ConsentWelcome01Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final c = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) {
+      return Localizations.override(
+        context: context,
+        delegates: AppLocalizations.localizationsDelegates,
+        locale: AppLocalizations.supportedLocales.first,
+        child: Builder(
+          builder: (overrideContext) {
+            final fallbackL10n = AppLocalizations.of(overrideContext);
+            if (fallbackL10n == null) {
+              return const SizedBox.shrink();
+            }
+            return _buildLocalizedContent(overrideContext, fallbackL10n);
+          },
+        ),
+      );
+    }
+    return _buildLocalizedContent(context, l10n);
+  }
+
+  Widget _buildLocalizedContent(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    final theme = Theme.of(context);
+    final t = theme.textTheme;
+    final c = theme.colorScheme;
     final titleStyle = t.headlineMedium?.copyWith(
       fontSize: TypographyTokens.size28,
       height: TypographyTokens.lineHeightRatio36on28,

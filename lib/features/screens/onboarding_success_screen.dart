@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
@@ -13,7 +12,17 @@ import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 
-final _successBtnBusyProvider = StateProvider.autoDispose<bool>((ref) => false);
+class _SuccessBtnBusyNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void setBusy(bool value) => state = value;
+}
+
+final _successBtnBusyProvider =
+    NotifierProvider.autoDispose<_SuccessBtnBusyNotifier, bool>(
+      _SuccessBtnBusyNotifier.new,
+    );
 
 /// Final screen after onboarding completes.
 /// Shows a trophy celebration (combined Lottie with trophy + confetti, or PNG
@@ -72,10 +81,17 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     final mediaQuery = MediaQuery.of(context);
     final usableHeight = mediaQuery.size.height - mediaQuery.padding.vertical;
     final textScale = MediaQuery.textScalerOf(context).scale(1.0);
-    final celebrationConfig = OnboardingSuccessTokens.celebrationConfig(
-      viewHeight: usableHeight,
-      textScaleFactor: textScale,
-    );
+    final celebrationConfig = reduceMotion
+        ? null
+        : OnboardingSuccessTokens.celebrationConfig(
+            viewHeight: usableHeight,
+            textScaleFactor: textScale,
+          );
+    final baselineOffset =
+        celebrationConfig?.baselineOffset ??
+        OnboardingSuccessTokens.minBaselineOffset;
+    final animationScale = celebrationConfig?.scale ?? 1.0;
+    final shouldAnimate = !reduceMotion && celebrationConfig != null;
     return ExcludeSemantics(
       child: Center(
         child: SizedBox(
@@ -84,19 +100,8 @@ class OnboardingSuccessScreen extends ConsumerWidget {
           height: OnboardingSuccessTokens.trophyHeight,
           child: Align(
             alignment: Alignment.bottomCenter,
-            child: reduceMotion
-                ? Transform.translate(
-                    key: const Key('onboarding_success_trophy_transform_png'),
-                    offset: Offset(0, celebrationConfig.baselineOffset),
-                    child: Image.asset(
-                      Assets.images.onboardingSuccessTrophy,
-                      width: OnboardingSuccessTokens.trophyWidth,
-                      height: OnboardingSuccessTokens.trophyHeight,
-                      errorBuilder: Assets.defaultImageErrorBuilder,
-                      fit: BoxFit.contain,
-                    ),
-                  )
-                : OverflowBox(
+            child: shouldAnimate
+                ? OverflowBox(
                     minWidth: OnboardingSuccessTokens.trophyWidth,
                     maxWidth: OnboardingSuccessTokens.trophyWidth,
                     minHeight: OnboardingSuccessTokens.trophyHeight,
@@ -106,9 +111,9 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                     alignment: Alignment.bottomCenter,
                     child: Transform.translate(
                       key: const Key('onboarding_success_trophy_transform'),
-                      offset: Offset(0, celebrationConfig.baselineOffset),
+                      offset: Offset(0, baselineOffset),
                       child: Transform.scale(
-                        scale: celebrationConfig.scale,
+                        scale: animationScale,
                         child: RepaintBoundary(
                           key: const Key('onboarding_success_lottie_boundary'),
                           child: Lottie.asset(
@@ -133,6 +138,17 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
+                    ),
+                  )
+                : Transform.translate(
+                    key: const Key('onboarding_success_trophy_transform_png'),
+                    offset: Offset(0, baselineOffset),
+                    child: Image.asset(
+                      Assets.images.onboardingSuccessTrophy,
+                      width: OnboardingSuccessTokens.trophyWidth,
+                      height: OnboardingSuccessTokens.trophyHeight,
+                      errorBuilder: Assets.defaultImageErrorBuilder,
+                      fit: BoxFit.contain,
                     ),
                   ),
           ),
@@ -180,7 +196,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                 return;
               }
               final busyNotifier = ref.read(_successBtnBusyProvider.notifier);
-              busyNotifier.state = true;
+              busyNotifier.setBusy(true);
               try {
                 final userState = await tryOrNullAsync(
                   () => ref.read(userStateServiceProvider.future),
@@ -199,7 +215,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                   context.go(HeuteScreen.routeName);
                 }
               } finally {
-                busyNotifier.state = false;
+                busyNotifier.setBusy(false);
               }
             },
       child: Text(l10n.commonStartNow),

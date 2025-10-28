@@ -19,8 +19,6 @@ class OnboardingHeader extends StatelessWidget {
          title.trim().isNotEmpty,
          'title must not be empty or whitespace.',
        ),
-       // ignore: unnecessary_null_comparison
-       assert(onBack != null, 'onBack callback must be provided.'),
        assert(
          totalSteps >= 1,
          'totalSteps must be at least 1, but received $totalSteps.',
@@ -67,6 +65,22 @@ class OnboardingHeader extends StatelessWidget {
         ? EdgeInsets.symmetric(horizontal: centeredPadding)
         : EdgeInsets.only(left: reservedLeft, right: reservedRight);
 
+    final titleWidget = Padding(
+      padding: titlePadding,
+      child: Text(
+        title,
+        textAlign: centerTitle ? TextAlign.center : TextAlign.start,
+        maxLines: 2,
+        softWrap: true,
+        overflow: TextOverflow.ellipsis,
+        style: textTheme.headlineMedium?.copyWith(
+          color: colorScheme.onSurface,
+          fontSize: TypographyTokens.size24,
+          height: TypographyTokens.lineHeightRatio32on24,
+        ),
+      ),
+    );
+
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -91,27 +105,16 @@ class OnboardingHeader extends StatelessWidget {
         ),
         Align(
           alignment: centerTitle ? Alignment.center : Alignment.centerLeft,
-          child: Semantics(
-            header: true,
-            label: semanticsLabel,
-            child: ExcludeSemantics(
-              child: Padding(
-                padding: titlePadding,
-                child: Text(
-                  title,
-                  textAlign: centerTitle ? TextAlign.center : TextAlign.start,
-                  maxLines: 2,
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.headlineMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontSize: TypographyTokens.size24,
-                    height: TypographyTokens.lineHeightRatio32on24,
-                  ),
+          child: semanticsLabel != null
+              ? Semantics(
+                  header: true,
+                  label: semanticsLabel,
+                  child: ExcludeSemantics(child: titleWidget),
+                )
+              : Semantics(
+                  header: true,
+                  child: titleWidget,
                 ),
-              ),
-            ),
-          ),
         ),
         Align(
           alignment: Alignment.centerRight,
