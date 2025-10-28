@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
+import 'package:luvi_app/features/widgets/back_button.dart';
 import '../../../core/design_tokens/sizes.dart';
-import '../routes.dart';
+import 'consent_02_screen.dart';
 import 'consent_welcome_03_screen.dart';
 
 class Consent01Screen extends StatelessWidget {
   const Consent01Screen({super.key});
 
-  static const String routeName = ConsentRoutes.consent01;
+  static const String routeName = '/consent/01';
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +24,8 @@ class Consent01Screen extends StatelessWidget {
         children: [
           // Back button (44pt hitbox, 40px visual circle)
           Positioned(
-            left: 20,
-            top: y(59), // 59 from top, equals safeAreaTop(47) + 12
+            left: ConsentSpacing.pageHorizontal,
+            top: y(47 + ConsentSpacing.topBarSafeAreaOffset),
             child: BackButtonCircle(
               onPressed: () => context.go(ConsentWelcome03Screen.routeName),
             ),
@@ -63,12 +64,12 @@ class Consent01Screen extends StatelessWidget {
 
           // CTA button (height 50, bottom 44, horizontal 20)
           Positioned(
-            left: 20,
-            right: 20,
-            bottom: 44,
+            left: ConsentSpacing.pageHorizontal,
+            right: ConsentSpacing.pageHorizontal,
+            bottom: ConsentSpacing.ctaBottomInset,
             height: Sizes.buttonHeight,
             child: ElevatedButton(
-              onPressed: () => context.push(ConsentRoutes.consent02),
+              onPressed: () => context.push(Consent02Screen.routeName),
               child: const Text('Weiter'),
             ),
           ),

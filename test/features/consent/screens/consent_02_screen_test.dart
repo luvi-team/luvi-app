@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
@@ -16,6 +17,7 @@ void main() {
           locale: const Locale('de'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
+          theme: AppTheme.buildAppTheme(),
           home: const Consent02Screen(),
         ),
       ),
@@ -42,5 +44,35 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(l10n.consent02LinkPrivacyLabel), findsOneWidget);
+  });
+
+  testWidgets('Consent footer button height matches elevated button theme', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          locale: const Locale('de'),
+          theme: AppTheme.buildAppTheme(),
+          home: const Consent02Screen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final buttonFinder = find.byKey(const Key('consent02_btn_next'));
+    expect(buttonFinder, findsOneWidget);
+
+    final buttonContext = tester.element(buttonFinder);
+    final theme = Theme.of(buttonContext);
+    final minHeight = theme.elevatedButtonTheme.style?.minimumSize
+        ?.resolve({})
+        ?.height;
+
+    expect(minHeight, isNotNull);
+    final buttonSize = tester.getSize(buttonFinder);
+    expect(buttonSize.height, equals(minHeight));
   });
 }
