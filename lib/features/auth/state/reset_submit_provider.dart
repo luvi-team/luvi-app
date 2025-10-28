@@ -24,6 +24,7 @@ class ResetSubmitNotifier extends AsyncNotifier<void> {
   }
 }
 
-final resetSubmitProvider = AsyncNotifierProvider<ResetSubmitNotifier, void>(
+final resetSubmitProvider =
+    AsyncNotifierProvider.autoDispose<ResetSubmitNotifier, void>(
   ResetSubmitNotifier.new,
 );
