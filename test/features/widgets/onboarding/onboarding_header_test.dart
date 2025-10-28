@@ -13,10 +13,11 @@ Future<void> _pumpHeader(
   VoidCallback? onBack,
   String? semanticsLabel,
   bool centerTitle = true,
+  Locale locale = const Locale('de'),
 }) async {
   await tester.pumpWidget(
     MaterialApp(
-      locale: const Locale('de'),
+      locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: Scaffold(
@@ -74,5 +75,21 @@ void main() {
     );
     // Two spacing boxes wrap the title on both sides.
     expect(spacingBoxes, findsNWidgets(2));
+  });
+
+  testWidgets('emits English semantics when locale is en', (tester) async {
+    await _pumpHeader(
+      tester,
+      step: 1,
+      totalSteps: 5,
+      semanticsLabel: 'Custom header label',
+      locale: const Locale('en'),
+    );
+
+    final stepSemanticsFinder = find.byWidgetPredicate(
+      (widget) =>
+          widget is Semantics && widget.properties.label == 'Step 1 of 5',
+    );
+    expect(stepSemanticsFinder, findsOneWidget);
   });
 }

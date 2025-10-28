@@ -5,8 +5,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
 
 void main() {
-  TestConfig.ensureInitialized();
-  TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.setup();
 
   TopRecommendationTile buildTile({required bool fromLuviSync}) {
     return TopRecommendationTile(
