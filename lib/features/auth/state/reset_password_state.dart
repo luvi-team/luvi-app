@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 
 @immutable
@@ -13,10 +13,13 @@ class ResetPasswordState {
   final String email;
   final String? errorText;
   final bool isValid;
+
+  factory ResetPasswordState.initial() => const ResetPasswordState();
 }
 
-class ResetPasswordNotifier extends StateNotifier<ResetPasswordState> {
-  ResetPasswordNotifier() : super(const ResetPasswordState());
+class ResetPasswordNotifier extends Notifier<ResetPasswordState> {
+  @override
+  ResetPasswordState build() => ResetPasswordState.initial();
 
   static final RegExp _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
 
@@ -48,7 +51,6 @@ class ResetPasswordNotifier extends StateNotifier<ResetPasswordState> {
 }
 
 final resetPasswordProvider =
-    StateNotifierProvider.autoDispose<
-      ResetPasswordNotifier,
-      ResetPasswordState
-    >((ref) => ResetPasswordNotifier());
+    NotifierProvider.autoDispose<ResetPasswordNotifier, ResetPasswordState>(
+      ResetPasswordNotifier.new,
+    );

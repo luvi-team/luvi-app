@@ -1,4 +1,6 @@
-import 'package:flutter_riverpod/legacy.dart';
+import 'dart:async';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 
 class LoginState {
@@ -15,6 +17,8 @@ class LoginState {
     this.passwordError,
     this.globalError,
   });
+
+  factory LoginState.initial() => const LoginState();
 
   bool get isValid =>
       email.isNotEmpty &&
@@ -40,29 +44,39 @@ class LoginState {
   }
 }
 
-class LoginNotifier extends StateNotifier<LoginState> {
-  LoginNotifier() : super(const LoginState());
+class LoginNotifier extends AsyncNotifier<LoginState> {
+  @override
+  FutureOr<LoginState> build() => LoginState.initial();
+
+  LoginState _current() => state.value ?? LoginState.initial();
 
   void setEmail(String value) {
-    state = state.copyWith(
-      email: value,
-      emailError: state.emailError,
-      passwordError: state.passwordError,
-      globalError: state.globalError,
+    final current = _current();
+    state = AsyncData(
+      current.copyWith(
+        email: value,
+        emailError: current.emailError,
+        passwordError: current.passwordError,
+        globalError: current.globalError,
+      ),
     );
   }
 
   void setPassword(String value) {
-    state = state.copyWith(
-      password: value,
-      emailError: state.emailError,
-      passwordError: state.passwordError,
-      globalError: state.globalError,
+    final current = _current();
+    state = AsyncData(
+      current.copyWith(
+        password: value,
+        emailError: current.emailError,
+        passwordError: current.passwordError,
+        globalError: current.globalError,
+      ),
     );
   }
 
   void clearGlobalError() {
-    state = state.copyWith(globalError: null);
+    final current = _current();
+    state = AsyncData(current.copyWith(globalError: null));
   }
 
   /// Eine (1) kanonische Variante inkl. globalError – kompatibel zu Provider/Tests.
@@ -73,35 +87,45 @@ class LoginNotifier extends StateNotifier<LoginState> {
     String? passwordError,
     String? globalError,
   }) {
-    state = state.copyWith(
-      email: email ?? state.email,
-      password: password ?? state.password,
-      emailError: emailError,
-      passwordError: passwordError,
-      globalError: globalError,
+    final current = _current();
+    state = AsyncData(
+      current.copyWith(
+        email: email ?? current.email,
+        password: password ?? current.password,
+        emailError: emailError,
+        passwordError: passwordError,
+        globalError: globalError,
+      ),
     );
   }
 
   /// MIWF: einfache Client-Validierung; Server-Submit passiert im Submit-Provider.
-  void validateAndSubmit() {
-    String? eErr;
-    String? pErr;
+  Future<void> validateAndSubmit() async {
+    state = await AsyncValue.guard(() async {
+      final current = _current();
 
-    if (!state.email.contains('@')) {
-      eErr = AuthStrings.errEmailInvalid;
-    }
-    if (state.password.length < 6) {
-      pErr = AuthStrings.errPasswordInvalid;
-    }
+      String? eErr;
+      String? pErr;
 
-    state = state.copyWith(
-      emailError: eErr,
-      passwordError: pErr,
-      globalError: null,
-    );
+      if (!current.email.contains('@')) {
+        eErr = AuthStrings.errEmailInvalid;
+      }
+      if (current.password.length < 6) {
+        pErr = AuthStrings.errPasswordInvalid;
+      }
+
+      return current.copyWith(
+        emailError: eErr,
+        passwordError: pErr,
+        globalError: null,
+      );
+    });
   }
+
+  /// Hilfsmethode für Tests, um synchronen Zugriff zu vereinfachen.
+  LoginState debugState() => _current();
 }
 
-final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>(
-  (ref) => LoginNotifier(),
+final loginProvider = AsyncNotifierProvider<LoginNotifier, LoginState>(
+  LoginNotifier.new,
 );

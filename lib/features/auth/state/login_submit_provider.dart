@@ -16,9 +16,9 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     }
 
     final loginNotifier = ref.read(loginProvider.notifier);
-    loginNotifier.validateAndSubmit();
+    await loginNotifier.validateAndSubmit();
 
-    final loginState = ref.read(loginProvider);
+    final loginState = ref.read(loginProvider).value ?? LoginState.initial();
     final hasLocalErrors =
         loginState.emailError != null || loginState.passwordError != null;
 

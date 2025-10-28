@@ -47,6 +47,8 @@ class SupabaseService {
     _initializationError = null;
     _initializationStackTrace = null;
     _validationConfig = const SupabaseValidationConfig();
+    // NOTE: Supabase.instance does not expose a public reset. Tests should mock or
+    // inject a fake Supabase client instead of reinitializing the singleton.
   }
 
   static Future<void> _performInitializeAndCache(String envFile) async {
@@ -79,13 +81,12 @@ class SupabaseService {
   }
 
   /// Check if user is authenticated
-  static bool get isAuthenticated {
-    if (!_initialized) return false;
-    return Supabase.instance.client.auth.currentUser != null;
-  }
+  static bool get isAuthenticated =>
+      _initialized && Supabase.instance.client.auth.currentUser != null;
 
   /// Get current user
-  static User? get currentUser => _initialized ? client.auth.currentUser : null;
+  static User? get currentUser =>
+      _initialized ? Supabase.instance.client.auth.currentUser : null;
 
   /// Initialize Supabase from environment variables
   static Future<void> initializeFromEnv({

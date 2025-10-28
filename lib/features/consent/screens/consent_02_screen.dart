@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
@@ -19,12 +18,23 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'consent_01_screen.dart';
 
-final _consentBtnBusyProvider = StateProvider.autoDispose<bool>((ref) => false);
+class _ConsentBtnBusyNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void setBusy(bool value) => state = value;
+}
+
+final _consentBtnBusyProvider =
+    NotifierProvider.autoDispose<_ConsentBtnBusyNotifier, bool>(
+      _ConsentBtnBusyNotifier.new,
+    );
 
 class Consent02Screen extends ConsumerWidget {
-  const Consent02Screen({super.key});
+  const Consent02Screen({super.key, this.appLinks = const ProdAppLinks()});
 
   static const String routeName = '/consent/02';
+  final AppLinksApi appLinks;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -103,7 +113,7 @@ class Consent02Screen extends ConsumerWidget {
                     final busyNotifier = ref.read(
                       _consentBtnBusyProvider.notifier,
                     );
-                    busyNotifier.state = true;
+                    busyNotifier.setBusy(true);
                     try {
                       final userState = await tryOrNullAsync(
                         () => ref.read(userStateServiceProvider.future),
@@ -120,7 +130,7 @@ class Consent02Screen extends ConsumerWidget {
                         context.go(AuthEntryScreen.routeName);
                       }
                     } finally {
-                      busyNotifier.state = false;
+                      busyNotifier.setBusy(false);
                     }
                   },
                   nextEnabled: state.requiredAccepted && !isNextBusy,
@@ -137,8 +147,8 @@ class Consent02Screen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final baseStyle = _consentBodyTextStyle(theme);
-    final privacyUri = AppLinks.privacyPolicy;
-    final termsUri = AppLinks.termsOfService;
+    final privacyUri = appLinks.privacyPolicy;
+    final termsUri = appLinks.termsOfService;
 
     Future<void> open(Uri uri) async {
       final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
