@@ -1,29 +1,56 @@
-class AppLinks {
-  /// Sentinel placeholder to guard against missing --dart-define overrides.
+/// Defines the API for retrieving legal link configuration (privacy/terms) and
+/// validating whether configured URLs meet production requirements.
+abstract class AppLinksApi {
+  const AppLinksApi();
+
+  /// Configured privacy policy URL.
+  Uri get privacyPolicy;
+
+  /// Configured terms of service URL.
+  Uri get termsOfService;
+
+  /// Validates a given URL against production requirements.
+  bool isConfiguredUrl(Uri? uri);
+
+  /// True when [privacyPolicy] passes [isConfiguredUrl].
+  bool get hasValidPrivacy => isConfiguredUrl(privacyPolicy);
+
+  /// True when [termsOfService] passes [isConfiguredUrl].
+  bool get hasValidTerms => isConfiguredUrl(termsOfService);
+}
+
+/// Production implementation that reads URLs from --dart-define values and
+/// enforces validation without any test-specific bypasses.
+class ProdAppLinks implements AppLinksApi {
+  const ProdAppLinks();
+
   static const _sentinelUrl = 'about:blank';
   static const _rawPrivacyUrl = String.fromEnvironment('PRIVACY_URL');
   static const _rawTermsUrl = String.fromEnvironment('TERMS_URL');
-  static bool bypassValidationForTests = false;
 
-  /// Sentinel value signals that `PRIVACY_URL` is missing and must be provided for production builds.
-  // Sentinel (about:blank) → in Produktion per --dart-define überschreiben.
-  static final Uri privacyPolicy = _parseConfiguredUri(
+  static final Uri _privacyPolicy = _parseConfiguredUri(
     rawValue: _rawPrivacyUrl,
     defaultValue: _sentinelUrl,
   );
-
-  /// Sentinel value signals that `TERMS_URL` is missing and must be provided for production builds.
-  // Sentinel (about:blank) → in Produktion per --dart-define überschreiben.
-  static final Uri termsOfService = _parseConfiguredUri(
+  static final Uri _termsOfService = _parseConfiguredUri(
     rawValue: _rawTermsUrl,
     defaultValue: _sentinelUrl,
   );
 
-  static bool get hasValidPrivacy => _isConfiguredUrl(privacyPolicy);
-  static bool get hasValidTerms => _isConfiguredUrl(termsOfService);
+  @override
+  Uri get privacyPolicy => _privacyPolicy;
 
-  static bool _isConfiguredUrl(Uri? uri) {
-    if (bypassValidationForTests) return true;
+  @override
+  Uri get termsOfService => _termsOfService;
+
+  @override
+  bool get hasValidPrivacy => isConfiguredUrl(privacyPolicy);
+
+  @override
+  bool get hasValidTerms => isConfiguredUrl(termsOfService);
+
+  @override
+  bool isConfiguredUrl(Uri? uri) {
     if (uri == null) return false;
     if (uri.toString() == _sentinelUrl) return false;
 

@@ -30,15 +30,17 @@ void main() async {
     debugPrint('Supabase initialization failed for $supabaseEnvFile: $error');
   }
 
+  const appLinks = ProdAppLinks();
+
   // Debug/Profil: Fail fast per assert (nur in Debug aktiv)
   // Commented out for development - using example.com is fine for testing
   // assert(
-  //   AppLinks.hasValidPrivacy && AppLinks.hasValidTerms,
+  //   appLinks.hasValidPrivacy && appLinks.hasValidTerms,
   //   'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
   // );
 
   // Release: harte Laufzeitprüfung (nicht via assert)
-  if (kReleaseMode && (!AppLinks.hasValidPrivacy || !AppLinks.hasValidTerms)) {
+  if (kReleaseMode && (!appLinks.hasValidPrivacy || !appLinks.hasValidTerms)) {
     throw StateError(
       'Legal links invalid. Provide PRIVACY_URL and TERMS_URL via --dart-define.',
     );
