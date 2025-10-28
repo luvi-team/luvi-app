@@ -58,7 +58,7 @@ class DailyPlanCreationController {
 }
 
 final dailyPlanCreationControllerProvider =
-    Provider<DailyPlanCreationController>((ref) {
+    Provider.autoDispose<DailyPlanCreationController>((ref) {
       final repository = ref.watch(dailyPlanRepositoryProvider);
       return DailyPlanCreationController(repository: repository);
     });
