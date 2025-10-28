@@ -417,8 +417,8 @@ Trophy besteht ausschließlich aus Vektor-Shapes (Body mit Gradient, Henkel, Ste
 ### Text-Korrekturen
 1. **Button-Text in Figma:** "Los gehts!" (fehlt Apostroph)
 2. **Korrekte deutsche Schreibweise:** "Los geht's!" (mit Apostroph)
-3. **L10n-String:** `l10n.onboardingSuccessButton` sollte korrekten String "Los geht's!" enthalten
-4. **Action Required:** Prüfe `lib/l10n/app_de.arb` und korrigiere falls nötig
+3. **L10n-String:** `l10n.commonStartNow` sollte korrekten String "Los geht's!" enthalten
+4. **Action Required:** Prüfe `lib/l10n/app_de.arb` und verwende für UI denselben Token
 
 ### Accessibility Summary
 1. **Button contrast (4.5:1) passes WCAG AA**

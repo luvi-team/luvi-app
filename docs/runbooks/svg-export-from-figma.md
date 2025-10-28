@@ -53,8 +53,7 @@ Das Script:
 - Findet alle `var(--fill-N, FARBE)` Patterns
 - Ersetzt sie durch die Fallback-Farbe (`FARBE`)
 - Verwendet eine temporäre Datei `<datei>.svg.tmp` für atomare Ersetzung
-- Überschreibt die Originaldatei sicher und löscht die Temp-Datei
-- Manuelles Backup vor dem Ausführen empfohlen, falls du die Originaldatei behalten möchtest
+- Überschreibt die Originaldatei ohne automatisches Backup – lege vor dem Lauf manuell eine Kopie an, wenn du die Figma-Version behalten möchtest
 - Gibt Statistik aus (gefundene/ersetzte CSS-Variablen)
 
 ### Schritt 3: Verifizieren
@@ -113,7 +112,10 @@ Das Script:
 
 ### ❌ "SVG hat immer noch CSS-Variablen nach Script"
 **Symptom:** `grep "var(--"` zeigt noch Treffer
-**Lösung:** Script-Output prüfen; bei Regex-Edge-Case manuell ersetzen
+**Lösung:** Script-Output prüfen; bei Regex-Edge-Case manuell ersetzen:
+- Häufige Fälle: verschachtelte `var(--token, var(--fallback))`, vendor-prefixed Fallbacks (`-webkit-`, `-moz-`), oder Tokens mit Kommentaren am Zeilenende.
+- Öffne das SVG im Editor oder nutze `rg "var\\(--" <datei>.svg`, finde z. B. `fill="var(--fill-4, #FBC343)"` und ersetze den gesamten Ausdruck durch `fill="#FBC343"`.
+- Für mehrere Vorkommen helfen Befehle wie `sed -E 's/var\\(--fill-4, ([^)]*)\)/\1/g' asset.svg`; kompakte Regex-Referenz: https://www.regular-expressions.info/quickstart.html
 
 ## Checkliste (Asset-Integration)
 

@@ -38,4 +38,4 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 4. Services geändert? → `luvi_services` Package (Pubspec & Imports) updaten.
 5. Tests aktualisiert? → Spiegelpfad & gezielter Widget-Test vorhanden.
 
-> **Hinweis:** Bei Abweichungen (z. B. bewusstes Legacy-Verzeichnis) muss im PR / Agent-Log kurz dokumentiert werden, warum die Regel ausnahmsweise nicht greift.
+> **Hinweis:** Bei Abweichungen (z. B. bewusstes Legacy-Verzeichnis) muss im PR / Agent-Log kurz dokumentiert werden, warum die Regel ausnahmsweise nicht greift. Beispiel: Legacy-Navigationstests mit hart codierten Routen in `lib/services` werden unter ADR-0002 (RLS-Refactor) schrittweise migriert. Siehe ADR-0002.
