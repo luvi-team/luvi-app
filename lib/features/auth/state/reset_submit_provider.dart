@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ResetSubmitNotifier extends AsyncNotifier<void> {
   @override
-  FutureOr<void> build() async {}
+  void build() {}
 
   Future<void> submit(
     String email, {
