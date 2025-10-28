@@ -23,10 +23,9 @@ class OnboardingSuccessTokens {
   }) {
     assert(viewHeight > 0, 'viewHeight must be > 0');
     assert(textScaleFactor > 0, 'textScaleFactor must be > 0');
-    final effectiveHeight = (viewHeight / textScaleFactor).clamp(
-      _minViewportHeight,
-      _maxViewportHeight,
-    );
+    final effectiveHeight = (viewHeight / textScaleFactor)
+        .clamp(_minViewportHeight, _maxViewportHeight)
+        .toDouble();
     final t =
         (effectiveHeight - _minViewportHeight) /
         (_maxViewportHeight - _minViewportHeight);
