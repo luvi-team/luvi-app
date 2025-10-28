@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/state/reset_password_state.dart';
 import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
@@ -13,6 +13,8 @@ import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
+  static const String routeName = '/auth/forgot';
+
   const ResetPasswordScreen({super.key});
 
   @override
@@ -46,6 +48,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final theme = Theme.of(context);
     final state = ref.watch(resetPasswordProvider);
     final submitState = ref.watch(resetSubmitProvider);
+    final errorText = state.error == null
+        ? null
+        : AuthStrings.errEmailInvalid;
     if (_emailController.text != state.email) {
       _emailController.value = _emailController.value.copyWith(
         text: state.email,
@@ -53,7 +58,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       );
     }
     final backButtonTopSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.backButtonTop,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
@@ -85,8 +89,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           SizedBox(height: backButtonTopSpacing),
           BackButtonCircle(
             onPressed: () {
-              if (Navigator.of(context).canPop()) {
-                Navigator.of(context).pop();
+              final router = GoRouter.of(context);
+              if (router.canPop()) {
+                router.pop();
               } else {
                 context.goNamed('login');
               }
@@ -108,7 +113,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           LoginEmailField(
             key: const ValueKey('reset_email_field'),
             controller: _emailController,
-            errorText: state.errorText,
+            errorText: errorText,
             autofocus: false,
             onChanged: (value) =>
                 ref.read(resetPasswordProvider.notifier).setEmail(value),
@@ -140,7 +145,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       dimension: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text(AuthStrings.forgotCta),
+                  : Text(AuthStrings.forgotCta),
             ),
           ),
         ],

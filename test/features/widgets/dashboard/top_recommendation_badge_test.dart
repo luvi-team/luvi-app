@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/widgets/dashboard/top_recommendation_tile.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../../support/test_config.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.setup();
 
   TopRecommendationTile buildTile({required bool fromLuviSync}) {
     return TopRecommendationTile(

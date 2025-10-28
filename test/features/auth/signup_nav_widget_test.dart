@@ -5,14 +5,16 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/routes.dart' as features;
+import '../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('tapping signup link navigates to signup screen', (tester) async {
     final router = GoRouter(
       routes: features.featureRoutes,
-      initialLocation: '/auth/login',
+      initialLocation: LoginScreen.routeName,
     );
     addTearDown(router.dispose);
 

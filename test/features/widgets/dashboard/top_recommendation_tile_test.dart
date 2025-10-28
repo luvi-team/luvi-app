@@ -4,8 +4,10 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/dashboard/top_recommendation_tile.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   group('TopRecommendationTile', () {
     testWidgets('displays duration with time icon when duration is provided', (
       tester,

@@ -6,13 +6,12 @@ import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/core/utils/date_formatters.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/date_formatters.dart';
+import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/features/widgets/onboarding/onboarding_header.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
-import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:intl/intl.dart';
 
 /// Onboarding04: Last period start date input screen
 /// Figma: 04_Onboarding (Wann hat deine letzte Periode angefangen?)
@@ -31,16 +30,11 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
   bool _hasInteracted = false;
 
   String _formattedDate(BuildContext context) {
-    final locale = Localizations.maybeLocaleOf(context);
-    final languageCode = locale?.languageCode;
-
-    if (languageCode == 'de') {
-      return DateFormatters.germanDayMonthYear(_date);
-    }
-
-    final localeName = locale?.toLanguageTag() ?? Intl.getCurrentLocale();
-    final formatter = DateFormat.yMMMMd(localeName);
-    return formatter.format(_date);
+    final localeTag = Localizations.maybeLocaleOf(context)?.toLanguageTag();
+    return DateFormatters.localizedDayMonthYear(
+      _date,
+      localeName: localeTag,
+    );
   }
 
   @override
@@ -78,7 +72,12 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildHeader(),
+          OnboardingHeader(
+            title: AppLocalizations.of(context)!.onboarding04Title,
+            step: 4,
+            totalSteps: kOnboardingTotalSteps,
+            onBack: _handleBack,
+          ),
           SizedBox(height: spacing.headerToDate04),
           _buildDateDisplay(),
           SizedBox(height: spacing.dateToUnderline04),
@@ -93,53 +92,13 @@ class _Onboarding04ScreenState extends State<Onboarding04Screen> {
     );
   }
 
-  Widget _buildHeader() {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-    final stepSemantic = l10n.onboardingStepSemantic(4, 7);
-    final stepFraction = l10n.onboardingStepFraction(4, 7);
-
-    return Row(
-      children: [
-        BackButtonCircle(
-          onPressed: () {
-            final router = GoRouter.of(context);
-            if (router.canPop()) {
-              context.pop();
-            } else {
-              context.go(Onboarding03Screen.routeName);
-            }
-          },
-          iconColor: colorScheme.onSurface,
-        ),
-        Expanded(
-          child: Semantics(
-            header: true,
-            child: Text(
-              l10n.onboarding04Title,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              softWrap: true,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.headlineMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: TypographyTokens.size24,
-                height: TypographyTokens.lineHeightRatio32on24,
-              ),
-            ),
-          ),
-        ),
-        Semantics(
-          label: stepSemantic,
-          child: Text(
-            stepFraction,
-            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
-          ),
-        ),
-      ],
-    );
+  void _handleBack() {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      context.pop();
+    } else {
+      context.go(Onboarding03Screen.routeName);
+    }
   }
 
   Widget _buildDateDisplay() {

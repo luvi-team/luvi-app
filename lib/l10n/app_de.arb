@@ -106,6 +106,14 @@
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
   },
+  "commonSkip": "Überspringen",
+  "@commonSkip": {
+    "description": "Label für sekundäre \"Überspringen\"-Aktionen in Onboarding- und Consent-Flows."
+  },
+  "commonStartNow": "Starte jetzt",
+  "@commonStartNow": {
+    "description": "Primärer CTA-Text, der zum sofortigen Start auffordert."
+  },
   "dashboardGreeting": "Hey, {name} 💜",
   "@dashboardGreeting": {
     "description": "Dashboard header greeting with the user's preferred name.",
@@ -232,6 +240,54 @@
   "dashboardLuviSyncPlaceholder": "Luvi Sync Journal Inhalte folgen bald.",
   "@dashboardLuviSyncPlaceholder": {
     "description": "Placeholder text for the Luvi Sync Journal stub screen."
+  },
+  "welcome01Subtitle": "Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.",
+  "@welcome01Subtitle": {
+    "description": "Untertitel für Consent Welcome Screen 1 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
+  },
+  "welcome01TitlePrefix": "Im ",
+  "@welcome01TitlePrefix": {
+    "description": "Einstiegstext für den Titel von Consent Welcome Screen 1 (vor dem Akzent-Wort). Einschließlich nachfolgendem Leerzeichen falls nötig."
+  },
+  "welcome01TitleAccent": "Einklang",
+  "@welcome01TitleAccent": {
+    "description": "Akzentuiertes Wort im Titel von Consent Welcome Screen 1. Wird visuell hervorgehoben."
+  },
+  "welcome01TitleSuffixLine1": " mit deinem\n",
+  "@welcome01TitleSuffixLine1": {
+    "description": "Mittlerer Abschnitt des Titels von Consent Welcome Screen 1, endet mit einem Zeilenumbruch. Führendes Leerzeichen beibehalten."
+  },
+  "welcome01TitleSuffixLine2": "Körper",
+  "@welcome01TitleSuffixLine2": {
+    "description": "Letzte Zeile des Titels von Consent Welcome Screen 1."
+  },
+  "welcome01PrimaryCta": "Weiter",
+  "@welcome01PrimaryCta": {
+    "description": "Primärer Button-Text für Consent Welcome Screen 1."
+  },
+  "welcome02TitleLine1": "Von Expert:innen für dich\n",
+  "@welcome02TitleLine1": {
+    "description": "Erste Zeile des Titels für Consent Welcome Screen 2 inklusive Zeilenumbruch."
+  },
+  "welcome02TitleLine2": "jeden Monat neu",
+  "@welcome02TitleLine2": {
+    "description": "Zweite Zeile des Titels für Consent Welcome Screen 2."
+  },
+  "welcome02Subtitle": "Echte Personalisierung statt Standard‑Pläne. Automatisch angepasst an deine Fortschritte, Zyklusphase und individuellen Ziele.",
+  "@welcome02Subtitle": {
+    "description": "Untertitel für Consent Welcome Screen 2 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
+  },
+  "welcome03TitleLine1": "Dein perfekter Tag\n",
+  "@welcome03TitleLine1": {
+    "description": "Erste Zeile des Titels für Consent Welcome Screen 3 inklusive Zeilenumbruch."
+  },
+  "welcome03TitleLine2": "beginnt hier",
+  "@welcome03TitleLine2": {
+    "description": "Zweite Zeile des Titels für Consent Welcome Screen 3."
+  },
+  "welcome03Subtitle": "LUVI Sync: Dein täglicher Game‑Changer. Verstehe das 'Warum' hinter deinen Hormonen. Wissenschaftlich fundiert.",
+  "@welcome03Subtitle": {
+    "description": "Untertitel für Consent Welcome Screen 3 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
   },
   "trainingsOverviewStubPlaceholder": "Trainingsübersicht folgt bald",
   "@trainingsOverviewStubPlaceholder": {
@@ -419,5 +475,288 @@
 
   "cycleTipHeadlineLuteal": "Lutealphase",
   "@cycleTipHeadlineLuteal": {"description": "Headline for the cycle tip card during the luteal phase."},
-  "cycleTipBodyLuteal": "Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten."
+  "cycleTipBodyLuteal": "Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten.",
+  "@cycleTipBodyLuteal": {"description": "Body text for the cycle tip card during the luteal phase."},
+
+  "onboarding08Title": "Wie fit fühlst du dich?",
+  "@onboarding08Title": {
+    "description": "Header title for onboarding step 8 (fitness level)."
+  },
+  "onboarding08OptionsSemantic": "Fitnesslevel auswählen",
+  "@onboarding08OptionsSemantic": {
+    "description": "Semantics label announcing the fitness level options list on step 8."
+  },
+  "onboarding08OptBeginner": "Ich fange gerade erst an",
+  "@onboarding08OptBeginner": {
+    "description": "Option label for beginner fitness level on step 8."
+  },
+  "onboarding08OptOccasional": "Trainiere ab und zu",
+  "@onboarding08OptOccasional": {
+    "description": "Option label for occasional training on step 8."
+  },
+  "onboarding08OptFit": "Fühle mich ziemlich fit",
+  "@onboarding08OptFit": {
+    "description": "Option label for feeling fit on step 8."
+  },
+  "onboarding08OptUnknown": "Weiß ich nicht",
+  "@onboarding08OptUnknown": {
+    "description": "Option label when user is unsure about fitness level on step 8."
+  },
+  "onboarding08Footnote": "Kein Stress - wir finden deinen perfekten Einstieg!",
+  "@onboarding08Footnote": {
+    "description": "Footnote reassuring the user regardless of fitness level on step 8."
+  },
+
+  "onboardingSuccessTitle": "Du bist startklar!",
+  "@onboardingSuccessTitle": {
+    "description": "Title shown on the onboarding success screen."
+  },
+  "consent02Title": "Deine Gesundheit,\ndeine Entscheidung!",
+  "@consent02Title": {
+    "description": "Headline shown on the consent 02 screen. Translator note: keep the newline escape '\\n' between the two lines."
+  },
+  "consent02CardHealth": "Ich bin damit einverstanden, dass LUVI meine persönlichen Gesundheitsdaten verarbeitet, damit LUVI ihre Funktionen bereitstellen kann.",
+  "@consent02CardHealth": {
+    "description": "Body copy for the required health-processing consent card."
+  },
+  "consent02CardTermsPrefix": "Ich erkläre mich mit der ",
+  "@consent02CardTermsPrefix": {
+    "description": "Prefix shown before the privacy/terms links on the required terms consent card. Keep trailing space."
+  },
+  "consent02LinkPrivacyLabel": "Datenschutzerklärung",
+  "@consent02LinkPrivacyLabel": {
+    "description": "Label for the privacy policy deep link on the consent 02 screen."
+  },
+  "consent02LinkConjunction": " sowie den ",
+  "@consent02LinkConjunction": {
+    "description": "Connector text placed between the privacy and terms links on the consent 02 screen. Surround with spaces as needed."
+  },
+  "consent02LinkTermsLabel": "Nutzungsbedingungen",
+  "@consent02LinkTermsLabel": {
+    "description": "Label for the terms of service deep link on the consent 02 screen."
+  },
+  "consent02LinkSuffix": " einverstanden.",
+  "@consent02LinkSuffix": {
+    "description": "Suffix appended after the terms links sentence."
+  },
+  "consent02CardAiJournal": "Ich bin damit einverstanden, dass LUVI künstliche Intelligenz nutzt, um meine Trainings-, Ernährungs- und Regenerationsempfehlungen in einem personalisierten Journal für mich zusammenzufassen.",
+  "@consent02CardAiJournal": {
+    "description": "Body copy for the required AI journal consent card."
+  },
+  "consent02CardAnalytics": "Ich bin damit einverstanden, dass pseudonymisierte Nutzungs- und Gerätedaten zu Analysezwecken verarbeitet werden, damit LUVI Stabilität und Benutzerfreundlichkeit verbessern kann.*",
+  "@consent02CardAnalytics": {
+    "description": "Body copy for the optional analytics consent card."
+  },
+  "consent02CardMarketing": "Ich stimme zu, dass LUVI meine persönlichen Daten und Nutzungsdaten verarbeitet, um mir personalisierte Empfehlungen zu relevanten LUVI-Inhalten und Informationen zu Angeboten per In-App-Hinweisen, E-Mail und/oder Push-Mitteilungen zuzusenden.*",
+  "@consent02CardMarketing": {
+    "description": "Body copy for the optional marketing consent card."
+  },
+  "consent02CardModelTraining": "Ich willige ein, dass pseudonymisierte Nutzungs- und Gesundheitsdaten zur Qualitätssicherung und Verbesserung von Empfehlungen verwendet werden (z. B. Überprüfung der Genauigkeit von Zyklusvorhersagen).*",
+  "@consent02CardModelTraining": {
+    "description": "Body copy for the optional model-training consent card."
+  },
+  "consent02LinkError": "Link konnte nicht geöffnet werden",
+  "@consent02LinkError": {
+    "description": "Snackbar error shown when an external legal link cannot be opened."
+  },
+  "consent02RevokeHint": "Deine Zustimmung kannst du jederzeit in der App oder unter hello@getluvi.com widerrufen.",
+  "@consent02RevokeHint": {
+    "description": "Small print hint explaining how to revoke consent."
+  },
+  "consent02AcceptAll": "Alle akzeptieren",
+  "@consent02AcceptAll": {
+    "description": "Primary CTA label that selects all optional consent scopes."
+  },
+  "consent02DeselectAll": "Alle abwählen",
+  "@consent02DeselectAll": {
+    "description": "Primary CTA label that deselects all optional consent scopes."
+  },
+  "consent02SemanticSelected": "Ausgewählt",
+  "@consent02SemanticSelected": {
+    "description": "Semantics label announcing a consent card is selected."
+  },
+  "consent02SemanticUnselected": "Nicht ausgewählt",
+  "@consent02SemanticUnselected": {
+    "description": "Semantics label announcing a consent card is not selected."
+  },
+  "authLoginHeadline": "Willkommen zurück 💜",
+  "@authLoginHeadline": {
+    "description": "Überschrift auf dem Login-Screen."
+  },
+  "authLoginSubhead": "Schön, dass du da bist.",
+  "@authLoginSubhead": {
+    "description": "Unterzeile unter der Login-Überschrift."
+  },
+  "authLoginCta": "Anmelden",
+  "@authLoginCta": {
+    "description": "Primärer Call-to-Action auf dem Login-Screen."
+  },
+  "authLoginCtaLoadingSemantic": "Anmeldung läuft",
+  "@authLoginCtaLoadingSemantic": {
+    "description": "Semantischer Status, solange die Anmeldung ausgeführt wird."
+  },
+  "authLoginCtaLinkPrefix": "Neu bei LUVI? ",
+  "@authLoginCtaLinkPrefix": {
+    "description": "Vortext für den Sign-up-Link auf dem Login-Screen. Nachgestelltes Leerzeichen beibehalten."
+  },
+  "authLoginCtaLinkAction": "Starte hier",
+  "@authLoginCtaLinkAction": {
+    "description": "Link-Text für neue Nutzer:innen zum Sign-up."
+  },
+  "authLoginForgot": "Passwort vergessen?",
+  "@authLoginForgot": {
+    "description": "Link zum Passwort-vergessen-Flow."
+  },
+  "authLoginSocialDivider": "Oder melde dich an mit",
+  "@authLoginSocialDivider": {
+    "description": "Divider-Text oberhalb der Social-Login-Buttons."
+  },
+  "authErrEmailInvalid": "Ups, bitte E-Mail überprüfen",
+  "@authErrEmailInvalid": {
+    "description": "Validierungsfehler, wenn die E-Mail ungültig ist."
+  },
+  "authErrPasswordInvalid": "Ups, bitte Passwort überprüfen",
+  "@authErrPasswordInvalid": {
+    "description": "Validierungsfehler, wenn das Passwort ungültig ist."
+  },
+  "authErrConfirmEmail": "Bitte E-Mail bestätigen (Link erneut senden?)",
+  "@authErrConfirmEmail": {
+    "description": "Fehlermeldung, wenn die E-Mail Adresse noch nicht bestätigt wurde."
+  },
+  "authInvalidCredentials": "E-Mail oder Passwort ist falsch.",
+  "@authInvalidCredentials": {
+    "description": "Fehlermeldung bei falschen Zugangsdaten."
+  },
+  "authErrLoginUnavailable": "Login derzeit nicht möglich.",
+  "@authErrLoginUnavailable": {
+    "description": "Allgemeine Fehlermeldung, wenn Login vorübergehend nicht möglich ist."
+  },
+  "authEmailHint": "Deine E-Mail",
+  "@authEmailHint": {
+    "description": "Hint-Text für das E-Mail-Feld."
+  },
+  "authPasswordHint": "Dein Passwort",
+  "@authPasswordHint": {
+    "description": "Hint-Text für das Passwort-Feld."
+  },
+  "authSignupTitle": "Deine Reise beginnt hier 💜",
+  "@authSignupTitle": {
+    "description": "Überschrift auf dem Sign-up-Screen."
+  },
+  "authSignupSubtitle": "Schnell registrieren - dann geht's los.",
+  "@authSignupSubtitle": {
+    "description": "Unterzeile, die zur Registrierung motiviert."
+  },
+  "authSignupCta": "Registrieren",
+  "@authSignupCta": {
+    "description": "Primärer Call-to-Action auf dem Sign-up-Screen."
+  },
+  "authSignupCtaLoadingSemantic": "Registrierung läuft",
+  "@authSignupCtaLoadingSemantic": {
+    "description": "Semantischer Status, solange die Registrierung ausgeführt wird."
+  },
+  "authSignupLinkPrefix": "Schon dabei? ",
+  "@authSignupLinkPrefix": {
+    "description": "Vortext für den Sign-in-Link auf dem Sign-up-Screen. Nachgestelltes Leerzeichen beibehalten."
+  },
+  "authSignupLinkAction": "Anmelden",
+  "@authSignupLinkAction": {
+    "description": "Link zurück zum Login für bestehende Nutzer:innen."
+  },
+  "authSignupHintFirstName": "Dein Vorname",
+  "@authSignupHintFirstName": {
+    "description": "Hint-Text für das Vornamen-Feld."
+  },
+  "authSignupHintLastName": "Dein Nachname",
+  "@authSignupHintLastName": {
+    "description": "Hint-Text für das Nachnamen-Feld."
+  },
+  "authSignupHintPhone": "Deine Telefonnummer",
+  "@authSignupHintPhone": {
+    "description": "Hint-Text für das Telefonnummer-Feld."
+  },
+  "authSignupMissingFields": "Bitte E-Mail und Passwort eingeben.",
+  "@authSignupMissingFields": {
+    "description": "Fehlermeldung, wenn Pflichtfelder fehlen."
+  },
+  "authSignupGenericError": "Registrierung gerade nicht möglich. Bitte später erneut versuchen.",
+  "@authSignupGenericError": {
+    "description": "Allgemeine Fehlermeldung bei fehlgeschlagener Registrierung."
+  },
+  "authForgotTitle": "Passwort vergessen? 💜",
+  "@authForgotTitle": {
+    "description": "Überschrift für den Passwort-vergessen-Screen."
+  },
+  "authForgotSubtitle": "E-Mail eingeben für Link.",
+  "@authForgotSubtitle": {
+    "description": "Unterzeile zum Ablauf des Passwort-vergessen-Flows."
+  },
+  "authForgotCta": "Weiter",
+  "@authForgotCta": {
+    "description": "Primärer CTA auf dem Passwort-vergessen-Screen."
+  },
+  "authBackSemantic": "Zurück",
+  "@authBackSemantic": {
+    "description": "Semantisches Label für Zurück-Schaltflächen."
+  },
+  "authSuccessPwdTitle": "Geschafft!",
+  "@authSuccessPwdTitle": {
+    "description": "Titel nach erfolgreichem Setzen eines neuen Passworts."
+  },
+  "authSuccessPwdSubtitle": "Neues Passwort gespeichert.",
+  "@authSuccessPwdSubtitle": {
+    "description": "Unterzeile nach erfolgreichem Setzen eines neuen Passworts."
+  },
+  "authSuccessForgotTitle": "E-Mail gesendet!",
+  "@authSuccessForgotTitle": {
+    "description": "Titel nach Versand der Passwort-Zurücksetzen-E-Mail."
+  },
+  "authSuccessForgotSubtitle": "Bitte Postfach prüfen.",
+  "@authSuccessForgotSubtitle": {
+    "description": "Unterzeile, die auf das E-Mail-Postfach hinweist."
+  },
+  "authSuccessCta": "Fertig",
+  "@authSuccessCta": {
+    "description": "Button-Text zum Schließen des Erfolgsbildschirms."
+  },
+  "authCreateNewHint1": "Neues Passwort",
+  "@authCreateNewHint1": {
+    "description": "Hint-Text für das Feld \"Neues Passwort\"."
+  },
+  "authCreateNewHint2": "Neues Passwort bestätigen",
+  "@authCreateNewHint2": {
+    "description": "Hint-Text für das Feld zur Passwort-Bestätigung."
+  },
+  "authCreateNewCta": "Speichern",
+  "@authCreateNewCta": {
+    "description": "Primärer CTA beim Setzen eines neuen Passworts."
+  },
+  "authVerifyResetTitle": "Code eingeben 💜",
+  "@authVerifyResetTitle": {
+    "description": "Überschrift für den Passwort-Reset-Verifizierungsscreen."
+  },
+  "authVerifyResetSubtitle": "Gerade an deine E-Mail gesendet.",
+  "@authVerifyResetSubtitle": {
+    "description": "Unterzeile, die auf die versandte Verifizierungs-E-Mail verweist."
+  },
+  "authVerifyEmailTitle": "E-Mail bestätigen 💜",
+  "@authVerifyEmailTitle": {
+    "description": "Überschrift für den E-Mail-Verifizierungsscreen."
+  },
+  "authVerifyEmailSubtitle": "Code eingeben",
+  "@authVerifyEmailSubtitle": {
+    "description": "Unterzeile, die zur Eingabe des Codes auffordert."
+  },
+  "authVerifyCta": "Bestätigen",
+  "@authVerifyCta": {
+    "description": "Primärer CTA auf dem Verifizierungsscreen."
+  },
+  "authVerifyHelper": "Nichts angekommen?",
+  "@authVerifyHelper": {
+    "description": "Hinweis, falls kein Code angekommen ist."
+  },
+  "authVerifyResend": "Erneut senden",
+  "@authVerifyResend": {
+    "description": "Link-Text zum erneuten Senden des Codes."
+  }
 }

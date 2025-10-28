@@ -111,8 +111,9 @@ void main() {
       final sanitizedSource = _stripCommentsAndStrings(
         entity.readAsStringSync(),
       );
-      final matchesPattern =
-          patterns.any((pattern) => pattern.hasMatch(sanitizedSource));
+      final matchesPattern = patterns.any(
+        (pattern) => pattern.hasMatch(sanitizedSource),
+      );
       if (matchesPattern) {
         suspectFiles.add(normalizedPath);
       }

@@ -3,15 +3,19 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
+import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
 
 enum SuccessVariant { passwordSaved, forgotEmailSent }
 
 class SuccessScreen extends StatelessWidget {
+  static const String passwordSuccessRouteName = '/auth/password/success';
+  static const String forgotEmailSentRouteName = '/auth/forgot/sent';
+
   const SuccessScreen({super.key, this.variant = SuccessVariant.passwordSaved});
 
   final SuccessVariant variant;
@@ -24,7 +28,6 @@ class SuccessScreen extends StatelessWidget {
         AuthLayout.hPadding40 - AuthLayout.horizontalPadding;
 
     final topSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.iconTopSuccess,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
@@ -90,7 +93,7 @@ class SuccessScreen extends StatelessWidget {
       ),
       bottomNavigationBar: AuthBottomCta(
         child: _BottomCta(
-          onPressed: () => context.go('/heute'),
+          onPressed: () => context.go(HeuteScreen.routeName),
           isLoading: false,
         ),
       ),
@@ -162,7 +165,7 @@ class _BottomCta extends StatelessWidget {
       child: ElevatedButton(
         key: const ValueKey('success_cta_button'),
         onPressed: onPressed,
-        child: const Text(AuthStrings.successCta),
+        child: Text(AuthStrings.successCta),
       ),
     );
   }

@@ -3,8 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/widgets/dashboard/top_recommendation_tile.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   group('TopRecommendationTile semantics', () {
     testWidgets('uses localized label and hint (de)', (tester) async {
       const title = 'Foo';

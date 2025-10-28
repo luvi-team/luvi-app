@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/core/validators/name_validator.dart';
+import 'package:luvi_app/features/auth/utils/name_validator.dart';
 
 void main() {
   test('nonEmptyNameValidator returns false for empty input', () {

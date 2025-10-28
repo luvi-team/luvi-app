@@ -81,6 +81,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonContinue => 'Continue';
 
   @override
+  String get commonSkip => 'Skip';
+
+  @override
+  String get commonStartNow => 'Start now';
+
+  @override
   String dashboardGreeting(String name) {
     return 'Hey, $name 💜';
   }
@@ -322,4 +328,250 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cycleTipBodyLuteal => 'Switch to calm strength or mobility work. Extra breaks help you maintain your energy level.';
+
+  @override
+  String get onboarding08Title => 'How fit do you feel?';
+
+  @override
+  String get onboarding08OptionsSemantic => 'Select fitness level';
+
+  @override
+  String get onboarding08OptBeginner => 'I\'m just getting started';
+
+  @override
+  String get onboarding08OptOccasional => 'I train occasionally';
+
+  @override
+  String get onboarding08OptFit => 'I feel pretty fit';
+
+  @override
+  String get onboarding08OptUnknown => 'I don\'t know';
+
+  @override
+  String get onboarding08Footnote => 'No stress - we\'ll find your perfect starting point!';
+
+  @override
+  String get onboardingSuccessTitle => 'You\'re ready to go!';
+
+  @override
+  String get welcome01Subtitle => 'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.';
+
+  @override
+  String get welcome01TitlePrefix => 'In ';
+
+  @override
+  String get welcome01TitleAccent => 'harmony';
+
+  @override
+  String get welcome01TitleSuffixLine1 => ' with your\n';
+
+  @override
+  String get welcome01TitleSuffixLine2 => 'body';
+
+  @override
+  String get welcome01PrimaryCta => 'Continue';
+
+  @override
+  String get welcome02TitleLine1 => 'Curated by experts for you\n';
+
+  @override
+  String get welcome02TitleLine2 => 'refreshed every month';
+
+  @override
+  String get welcome02Subtitle => 'Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.';
+
+  @override
+  String get welcome03TitleLine1 => 'Your perfect day\n';
+
+  @override
+  String get welcome03TitleLine2 => 'starts here';
+
+  @override
+  String get welcome03Subtitle => 'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.';
+
+  @override
+  String get consent02Title => 'Your health,\nyour decision!';
+
+  @override
+  String get consent02CardHealth => 'I agree that LUVI processes my personal health data so LUVI can deliver its features.';
+
+  @override
+  String get consent02CardTermsPrefix => 'I agree to the ';
+
+  @override
+  String get consent02LinkPrivacyLabel => 'Privacy Policy';
+
+  @override
+  String get consent02LinkConjunction => ' as well as the ';
+
+  @override
+  String get consent02LinkTermsLabel => 'Terms of Service';
+
+  @override
+  String get consent02LinkSuffix => '.';
+
+  @override
+  String get consent02CardAiJournal => 'I agree that LUVI uses artificial intelligence to summarize my training, nutrition, and recovery recommendations in a personalized journal.';
+
+  @override
+  String get consent02CardAnalytics => 'I agree that pseudonymized usage and device data are processed for analytics so LUVI can improve stability and usability.*';
+
+  @override
+  String get consent02CardMarketing => 'I agree that LUVI processes my personal data and usage data to send me personalized recommendations for relevant LUVI content as well as offers via in-app notices, email, and/or push notifications.*';
+
+  @override
+  String get consent02CardModelTraining => 'I consent to pseudonymized usage and health data being used for quality assurance and to improve recommendations (e.g., verifying cycle prediction accuracy).*';
+
+  @override
+  String get consent02LinkError => 'Link could not be opened';
+
+  @override
+  String get consent02RevokeHint => 'You can withdraw your consent at any time in the app or by emailing hello@getluvi.com.';
+
+  @override
+  String get consent02AcceptAll => 'Accept all';
+
+  @override
+  String get consent02DeselectAll => 'Deselect all';
+
+  @override
+  String get consent02SemanticSelected => 'Selected';
+
+  @override
+  String get consent02SemanticUnselected => 'Not selected';
+
+  @override
+  String get authLoginHeadline => 'Welcome back 💜';
+
+  @override
+  String get authLoginSubhead => 'We\'re glad you\'re here.';
+
+  @override
+  String get authLoginCta => 'Sign in';
+
+  @override
+  String get authLoginCtaLoadingSemantic => 'Signing in';
+
+  @override
+  String get authLoginCtaLinkPrefix => 'New to LUVI? ';
+
+  @override
+  String get authLoginCtaLinkAction => 'Start here';
+
+  @override
+  String get authLoginForgot => 'Forgot password?';
+
+  @override
+  String get authLoginSocialDivider => 'Or continue with';
+
+  @override
+  String get authErrEmailInvalid => 'Please double-check your email.';
+
+  @override
+  String get authErrPasswordInvalid => 'Please double-check your password.';
+
+  @override
+  String get authErrConfirmEmail => 'Please verify your email (resend the link?).';
+
+  @override
+  String get authInvalidCredentials => 'Email or password is incorrect.';
+
+  @override
+  String get authErrLoginUnavailable => 'Login is currently unavailable.';
+
+  @override
+  String get authEmailHint => 'Your email';
+
+  @override
+  String get authPasswordHint => 'Your password';
+
+  @override
+  String get authSignupTitle => 'Your journey starts here 💜';
+
+  @override
+  String get authSignupSubtitle => 'Quick signup and you\'re ready to go.';
+
+  @override
+  String get authSignupCta => 'Sign up';
+
+  @override
+  String get authSignupCtaLoadingSemantic => 'Signing up';
+
+  @override
+  String get authSignupLinkPrefix => 'Already have an account? ';
+
+  @override
+  String get authSignupLinkAction => 'Sign in';
+
+  @override
+  String get authSignupHintFirstName => 'Your first name';
+
+  @override
+  String get authSignupHintLastName => 'Your last name';
+
+  @override
+  String get authSignupHintPhone => 'Your phone number';
+
+  @override
+  String get authSignupMissingFields => 'Please enter your email and password.';
+
+  @override
+  String get authSignupGenericError => 'Sign up is unavailable right now. Please try again later.';
+
+  @override
+  String get authForgotTitle => 'Forgot your password? 💜';
+
+  @override
+  String get authForgotSubtitle => 'Enter your email to receive the reset link.';
+
+  @override
+  String get authForgotCta => 'Continue';
+
+  @override
+  String get authBackSemantic => 'Back';
+
+  @override
+  String get authSuccessPwdTitle => 'All done!';
+
+  @override
+  String get authSuccessPwdSubtitle => 'Your new password has been saved.';
+
+  @override
+  String get authSuccessForgotTitle => 'Email sent!';
+
+  @override
+  String get authSuccessForgotSubtitle => 'Please check your inbox.';
+
+  @override
+  String get authSuccessCta => 'Done';
+
+  @override
+  String get authCreateNewHint1 => 'New password';
+
+  @override
+  String get authCreateNewHint2 => 'Confirm new password';
+
+  @override
+  String get authCreateNewCta => 'Save';
+
+  @override
+  String get authVerifyResetTitle => 'Enter the code 💜';
+
+  @override
+  String get authVerifyResetSubtitle => 'We just sent it to your email.';
+
+  @override
+  String get authVerifyEmailTitle => 'Confirm your email 💜';
+
+  @override
+  String get authVerifyEmailSubtitle => 'Enter the code';
+
+  @override
+  String get authVerifyCta => 'Confirm';
+
+  @override
+  String get authVerifyHelper => 'Didn\'t receive anything?';
+
+  @override
+  String get authVerifyResend => 'Resend';
 }

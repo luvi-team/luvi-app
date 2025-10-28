@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/features/widgets/onboarding/onboarding_header.dart';
 import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
-import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 
 /// Onboarding06: Cycle length single-select screen
 /// Figma: 06_Onboarding (Zyklusdauer)
@@ -58,10 +59,16 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: spacing.topPadding),
-              _buildHeader(textTheme, colorScheme),
-              SizedBox(height: spacing.headerToFirstOption06),
+              children: [
+                SizedBox(height: spacing.topPadding),
+                OnboardingHeader(
+                  title: AppLocalizations.of(context)?.onboarding06Question ??
+                      'Wie lange dauert dein Zyklus normalerweise?',
+                  step: 6,
+                  totalSteps: kOnboardingTotalSteps,
+                  onBack: _handleBack,
+                ),
+                SizedBox(height: spacing.headerToFirstOption06),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToCallout06),
               _buildCallout(textTheme, colorScheme),
@@ -75,51 +82,13 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     );
   }
 
-  Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context);
-    final stepSemantic =
-        l10n?.onboardingStepSemantic(6, 7) ?? 'Schritt 6 von 7';
-    final stepFraction = l10n?.onboardingStepFraction(6, 7) ?? '6/7';
-    return Row(
-      children: [
-        BackButtonCircle(
-          onPressed: () async {
-            final navigator = Navigator.of(context);
-            final didPop = await navigator.maybePop();
-            if (!mounted) return;
-            if (!didPop) {
-              context.go(Onboarding05Screen.routeName);
-            }
-          },
-          iconColor: colorScheme.onSurface,
-        ),
-        Expanded(
-          child: Semantics(
-            header: true,
-            child: Text(
-              l10n?.onboarding06Question ??
-                  'Wie lange dauert dein Zyklus normalerweise?',
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              softWrap: true,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.headlineMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: TypographyTokens.size24,
-                height: TypographyTokens.lineHeightRatio32on24,
-              ),
-            ),
-          ),
-        ),
-        Semantics(
-          label: stepSemantic,
-          child: Text(
-            stepFraction,
-            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
-          ),
-        ),
-      ],
-    );
+  void _handleBack() {
+    final r = GoRouter.of(context);
+    if (r.canPop()) {
+      context.pop();
+    } else {
+      context.go(Onboarding05Screen.routeName);
+    }
   }
 
   Widget _buildOptionList(OnboardingSpacing spacing) {

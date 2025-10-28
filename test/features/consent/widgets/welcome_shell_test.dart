@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:luvi_app/core/assets.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
+import '../../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
+
   testWidgets('WelcomeShell shows title semantics and wave', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -18,7 +21,7 @@ void main() {
           onNext: () {},
           heroAspect: 438 / 619,
           waveHeightPx: 413,
-          waveAsset: 'assets/images/consent/welcome_wave.svg',
+          waveAsset: Assets.images.welcomeWave,
           activeIndex: 0,
         ),
       ),
@@ -66,7 +69,7 @@ void main() {
       }
     })();
 
-    expect(assetName, contains(Assets.consentWave));
+    expect(assetName, contains(Assets.images.welcomeWave));
 
     // Semantics header present
     final handle = tester.ensureSemantics();

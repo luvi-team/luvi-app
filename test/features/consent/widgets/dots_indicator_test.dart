@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/widgets/dots_indicator.dart';
+import '../../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   testWidgets('DotsIndicator renders correct count and active dot', (
     tester,
   ) async {

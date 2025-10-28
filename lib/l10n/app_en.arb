@@ -106,6 +106,14 @@
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
   },
+  "commonSkip": "Skip",
+  "@commonSkip": {
+    "description": "Label for secondary skip actions in onboarding and consent flows."
+  },
+  "commonStartNow": "Start now",
+  "@commonStartNow": {
+    "description": "Primary CTA label encouraging the user to begin immediately."
+  },
   "dashboardGreeting": "Hey, {name} 💜",
   "@dashboardGreeting": {
     "description": "Greeting shown in the dashboard header.",
@@ -419,5 +427,336 @@
 
   "cycleTipHeadlineLuteal": "Luteal phase",
   "@cycleTipHeadlineLuteal": {"description": "Headline for the cycle tip card during the luteal phase."},
-  "cycleTipBodyLuteal": "Switch to calm strength or mobility work. Extra breaks help you maintain your energy level."
+  "cycleTipBodyLuteal": "Switch to calm strength or mobility work. Extra breaks help you maintain your energy level.",
+  "@cycleTipBodyLuteal": {"description": "Body text for the cycle tip card during the luteal phase."},
+
+  "onboarding08Title": "How fit do you feel?",
+  "@onboarding08Title": {
+    "description": "Header title for onboarding step 8 (fitness level)."
+  },
+  "onboarding08OptionsSemantic": "Select fitness level",
+  "@onboarding08OptionsSemantic": {
+    "description": "Semantics label announcing the fitness level options list on step 8."
+  },
+  "onboarding08OptBeginner": "I'm just getting started",
+  "@onboarding08OptBeginner": {
+    "description": "Option label for beginner fitness level on step 8."
+  },
+  "onboarding08OptOccasional": "I train occasionally",
+  "@onboarding08OptOccasional": {
+    "description": "Option label for occasional training on step 8."
+  },
+  "onboarding08OptFit": "I feel pretty fit",
+  "@onboarding08OptFit": {
+    "description": "Option label for feeling fit on step 8."
+  },
+  "onboarding08OptUnknown": "I don't know",
+  "@onboarding08OptUnknown": {
+    "description": "Option label when user is unsure about fitness level on step 8."
+  },
+  "onboarding08Footnote": "No stress - we'll find your perfect starting point!",
+  "@onboarding08Footnote": {
+    "description": "Footnote reassuring the user regardless of fitness level on step 8."
+  },
+
+  "onboardingSuccessTitle": "You're ready to go!",
+  "@onboardingSuccessTitle": {
+    "description": "Title shown on the onboarding success screen."
+  },
+  "welcome01Subtitle": "Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.",
+  "@welcome01Subtitle": {
+    "description": "Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings."
+  },
+  "welcome01TitlePrefix": "In ",
+  "@welcome01TitlePrefix": {
+    "description": "Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed."
+  },
+  "welcome01TitleAccent": "harmony",
+  "@welcome01TitleAccent": {
+    "description": "Accented word for the consent welcome screen 1 title. Will be styled with the accent color."
+  },
+  "welcome01TitleSuffixLine1": " with your\n",
+  "@welcome01TitleSuffixLine1": {
+    "description": "Middle portion of the consent welcome screen 1 title, ends with a newline. Include preceding/trailing spaces as required."
+  },
+  "welcome01TitleSuffixLine2": "body",
+  "@welcome01TitleSuffixLine2": {
+    "description": "Final line of the consent welcome screen 1 title."
+  },
+  "welcome01PrimaryCta": "Continue",
+  "@welcome01PrimaryCta": {
+    "description": "Primary button label for consent welcome screen 1."
+  },
+  "welcome02TitleLine1": "Curated by experts for you\n",
+  "@welcome02TitleLine1": {
+    "description": "First line of the consent welcome step 2 title, includes trailing newline."
+  },
+  "welcome02TitleLine2": "refreshed every month",
+  "@welcome02TitleLine2": {
+    "description": "Second line of the consent welcome step 2 title."
+  },
+  "welcome02Subtitle": "Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.",
+  "@welcome02Subtitle": {
+    "description": "Subtitle copy for consent welcome screen 2 (below the title). Prepared for future migration away from hardcoded strings."
+  },
+  "welcome03TitleLine1": "Your perfect day\n",
+  "@welcome03TitleLine1": {
+    "description": "First line of the consent welcome step 3 title, includes trailing newline to force a line break."
+  },
+  "welcome03TitleLine2": "starts here",
+  "@welcome03TitleLine2": {
+    "description": "Second line of the consent welcome step 3 title."
+  },
+  "welcome03Subtitle": "LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.",
+  "@welcome03Subtitle": {
+    "description": "Subtitle copy for consent welcome screen 3 (below the title). Prepared for future migration away from hardcoded strings."
+  },
+  "consent02Title": "Your health,\nyour decision!",
+  "@consent02Title": {
+    "description": "Headline shown on the consent 02 screen. Contains an explicit \"\\n\" line break that must be preserved in every translation."
+  },
+  "consent02CardHealth": "I agree that LUVI processes my personal health data so LUVI can deliver its features.",
+  "@consent02CardHealth": {
+    "description": "Body copy for the required health-processing consent card."
+  },
+  "consent02CardTermsPrefix": "I agree to the ",
+  "@consent02CardTermsPrefix": {
+    "description": "Prefix shown before the privacy/terms links on the required terms consent card. Keep trailing space."
+  },
+  "consent02LinkPrivacyLabel": "Privacy Policy",
+  "@consent02LinkPrivacyLabel": {
+    "description": "Label for the privacy policy deep link on the consent 02 screen."
+  },
+  "consent02LinkConjunction": " as well as the ",
+  "@consent02LinkConjunction": {
+    "description": "Connector text placed between the privacy and terms links on the consent 02 screen. Surround with spaces as needed."
+  },
+  "consent02LinkTermsLabel": "Terms of Service",
+  "@consent02LinkTermsLabel": {
+    "description": "Label for the terms of service deep link on the consent 02 screen."
+  },
+  "consent02LinkSuffix": ".",
+  "@consent02LinkSuffix": {
+    "description": "Suffix appended after the terms links sentence."
+  },
+  "consent02CardAiJournal": "I agree that LUVI uses artificial intelligence to summarize my training, nutrition, and recovery recommendations in a personalized journal.",
+  "@consent02CardAiJournal": {
+    "description": "Body copy for the required AI journal consent card."
+  },
+  "consent02CardAnalytics": "I agree that pseudonymized usage and device data are processed for analytics so LUVI can improve stability and usability.*",
+  "@consent02CardAnalytics": {
+    "description": "Body copy for the optional analytics consent card."
+  },
+  "consent02CardMarketing": "I agree that LUVI processes my personal data and usage data to send me personalized recommendations for relevant LUVI content as well as offers via in-app notices, email, and/or push notifications.*",
+  "@consent02CardMarketing": {
+    "description": "Body copy for the optional marketing consent card."
+  },
+  "consent02CardModelTraining": "I consent to pseudonymized usage and health data being used for quality assurance and to improve recommendations (e.g., verifying cycle prediction accuracy).*",
+  "@consent02CardModelTraining": {
+    "description": "Body copy for the optional model-training consent card."
+  },
+  "consent02LinkError": "Link could not be opened",
+  "@consent02LinkError": {
+    "description": "Snackbar error shown when an external legal link cannot be opened."
+  },
+  "consent02RevokeHint": "You can withdraw your consent at any time in the app or by emailing hello@getluvi.com.",
+  "@consent02RevokeHint": {
+    "description": "Small print hint explaining how to revoke consent."
+  },
+  "consent02AcceptAll": "Accept all",
+  "@consent02AcceptAll": {
+    "description": "Primary CTA label that selects all optional consent scopes."
+  },
+  "consent02DeselectAll": "Deselect all",
+  "@consent02DeselectAll": {
+    "description": "Primary CTA label shown when all optional consent scopes are already selected so the user can clear them."
+  },
+  "consent02SemanticSelected": "Selected",
+  "@consent02SemanticSelected": {
+    "description": "Semantics label announcing a consent card is selected."
+  },
+  "consent02SemanticUnselected": "Not selected",
+  "@consent02SemanticUnselected": {
+    "description": "Semantics label announcing a consent card is not selected."
+  },
+  "authLoginHeadline": "Welcome back 💜",
+  "@authLoginHeadline": {
+    "description": "Headline shown on the login screen."
+  },
+  "authLoginSubhead": "We're glad you're here.",
+  "@authLoginSubhead": {
+    "description": "Subheadline displayed under the login headline."
+  },
+  "authLoginCta": "Sign in",
+  "@authLoginCta": {
+    "description": "Primary call-to-action label on the login screen."
+  },
+  "authLoginCtaLoadingSemantic": "Signing in",
+  "@authLoginCtaLoadingSemantic": {
+    "description": "Semantic description announced while the login request is running."
+  },
+  "authLoginCtaLinkPrefix": "New to LUVI? ",
+  "@authLoginCtaLinkPrefix": {
+    "description": "Prefix text for the sign-up link on the login screen. Keep trailing space."
+  },
+  "authLoginCtaLinkAction": "Start here",
+  "@authLoginCtaLinkAction": {
+    "description": "Action link copy directing new users to the sign-up screen."
+  },
+  "authLoginForgot": "Forgot password?",
+  "@authLoginForgot": {
+    "description": "Link label that navigates to the forgot-password flow."
+  },
+  "authLoginSocialDivider": "Or continue with",
+  "@authLoginSocialDivider": {
+    "description": "Divider text shown above social auth buttons."
+  },
+  "authErrEmailInvalid": "Please double-check your email.",
+  "@authErrEmailInvalid": {
+    "description": "Validation error shown when the email is malformed."
+  },
+  "authErrPasswordInvalid": "Please double-check your password.",
+  "@authErrPasswordInvalid": {
+    "description": "Validation error shown when the password is malformed."
+  },
+  "authErrConfirmEmail": "Please verify your email (resend the link?).",
+  "@authErrConfirmEmail": {
+    "description": "Error displayed when the user's email has not been confirmed."
+  },
+  "authInvalidCredentials": "Email or password is incorrect.",
+  "@authInvalidCredentials": {
+    "description": "Error shown when Supabase reports invalid credentials."
+  },
+  "authErrLoginUnavailable": "Login is currently unavailable.",
+  "@authErrLoginUnavailable": {
+    "description": "Generic error message for temporarily unavailable login service."
+  },
+  "authEmailHint": "Your email",
+  "@authEmailHint": {
+    "description": "Hint text for the email input field."
+  },
+  "authPasswordHint": "Your password",
+  "@authPasswordHint": {
+    "description": "Hint text for the password input field."
+  },
+  "authSignupTitle": "Your journey starts here 💜",
+  "@authSignupTitle": {
+    "description": "Headline shown on the sign-up screen."
+  },
+  "authSignupSubtitle": "Quick signup and you're ready to go.",
+  "@authSignupSubtitle": {
+    "description": "Subtitle encouraging users to complete sign-up."
+  },
+  "authSignupCta": "Sign up",
+  "@authSignupCta": {
+    "description": "Primary call-to-action label on the sign-up screen."
+  },
+  "authSignupCtaLoadingSemantic": "Signing up",
+  "@authSignupCtaLoadingSemantic": {
+    "description": "Semantic description announced while the sign-up request is running."
+  },
+  "authSignupLinkPrefix": "Already have an account? ",
+  "@authSignupLinkPrefix": {
+    "description": "Prefix text for the sign-in link on the sign-up screen. Keep trailing space."
+  },
+  "authSignupLinkAction": "Sign in",
+  "@authSignupLinkAction": {
+    "description": "Link encouraging users to return to the sign-in screen."
+  },
+  "authSignupHintFirstName": "Your first name",
+  "@authSignupHintFirstName": {
+    "description": "Hint text for the first-name input."
+  },
+  "authSignupHintLastName": "Your last name",
+  "@authSignupHintLastName": {
+    "description": "Hint text for the last-name input."
+  },
+  "authSignupHintPhone": "Your phone number",
+  "@authSignupHintPhone": {
+    "description": "Hint text for the phone-number input."
+  },
+  "authSignupMissingFields": "Please enter your email and password.",
+  "@authSignupMissingFields": {
+    "description": "Error shown when required fields are missing during sign-up."
+  },
+  "authSignupGenericError": "Sign up is unavailable right now. Please try again later.",
+  "@authSignupGenericError": {
+    "description": "Generic error shown when the sign-up request fails."
+  },
+  "authForgotTitle": "Forgot your password? 💜",
+  "@authForgotTitle": {
+    "description": "Headline for the forgot-password screen."
+  },
+  "authForgotSubtitle": "Enter your email to receive the reset link.",
+  "@authForgotSubtitle": {
+    "description": "Subtitle explaining the forgot-password process."
+  },
+  "authForgotCta": "Continue",
+  "@authForgotCta": {
+    "description": "Primary CTA label on the forgot-password screen."
+  },
+  "authBackSemantic": "Back",
+  "@authBackSemantic": {
+    "description": "Semantic label for back buttons used in auth flows."
+  },
+  "authSuccessPwdTitle": "All done!",
+  "@authSuccessPwdTitle": {
+    "description": "Title shown when the new password was created successfully."
+  },
+  "authSuccessPwdSubtitle": "Your new password has been saved.",
+  "@authSuccessPwdSubtitle": {
+    "description": "Subtitle shown after successfully storing the new password."
+  },
+  "authSuccessForgotTitle": "Email sent!",
+  "@authSuccessForgotTitle": {
+    "description": "Title shown after a password reset email was sent."
+  },
+  "authSuccessForgotSubtitle": "Please check your inbox.",
+  "@authSuccessForgotSubtitle": {
+    "description": "Subtitle reminding the user to check their inbox after a reset email is sent."
+  },
+  "authSuccessCta": "Done",
+  "@authSuccessCta": {
+    "description": "Button label closing the success screen."
+  },
+  "authCreateNewHint1": "New password",
+  "@authCreateNewHint1": {
+    "description": "Hint text for the new password input."
+  },
+  "authCreateNewHint2": "Confirm new password",
+  "@authCreateNewHint2": {
+    "description": "Hint text for the confirm password input."
+  },
+  "authCreateNewCta": "Save",
+  "@authCreateNewCta": {
+    "description": "Primary CTA label when creating a new password."
+  },
+  "authVerifyResetTitle": "Enter the code 💜",
+  "@authVerifyResetTitle": {
+    "description": "Headline for the password reset verification screen."
+  },
+  "authVerifyResetSubtitle": "We just sent it to your email.",
+  "@authVerifyResetSubtitle": {
+    "description": "Subtitle explaining that the verification code was emailed."
+  },
+  "authVerifyEmailTitle": "Confirm your email 💜",
+  "@authVerifyEmailTitle": {
+    "description": "Headline for the email verification screen."
+  },
+  "authVerifyEmailSubtitle": "Enter the code",
+  "@authVerifyEmailSubtitle": {
+    "description": "Subtitle prompting users to enter the verification code."
+  },
+  "authVerifyCta": "Confirm",
+  "@authVerifyCta": {
+    "description": "Primary CTA label on the verification screen."
+  },
+  "authVerifyHelper": "Didn't receive anything?",
+  "@authVerifyHelper": {
+    "description": "Helper text prompting the user to request another verification code."
+  },
+  "authVerifyResend": "Resend",
+  "@authVerifyResend": {
+    "description": "Link label to resend the verification code."
+  }
 }

@@ -2,19 +2,24 @@
 
 import 'package:flutter/material.dart';
 
-/// Centralized asset paths for Dashboard (typo-safe, single source of truth).
+/// Centralized asset paths for the app (typo-safe, single source of truth).
+const String _kWelcomeHero01 = 'assets/images/welcome/welcome_01.png';
+const String _kWelcomeHero02 = 'assets/images/welcome/welcome_02.png';
+const String _kWelcomeHero03 = 'assets/images/welcome/welcome_03.png';
+const String _kWelcomeWave = 'assets/images/welcome/welcome_wave.svg';
+
 class Assets {
   static const icons = _Icons();
   static const images = _Images();
+  static const animations = _Animations();
 
   /// Default error builder for dashboard `Image.asset` widgets.
   /// Renders a neutral placeholder so layout stays stable when assets fail.
   static ImageErrorWidgetBuilder get defaultImageErrorBuilder =>
       (BuildContext context, Object error, StackTrace? stackTrace) {
-        final placeholderColor = Theme.of(context)
-            .colorScheme
-            .surfaceContainerHighest
-            .withValues(alpha: 0.3);
+        final placeholderColor = Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3);
         return ColoredBox(color: placeholderColor);
       };
 }
@@ -69,8 +74,7 @@ class _Images {
   final String recoGanzkoerper = 'assets/images/dashboard/reco.ganzkoerper.png';
   final String recoErnaehrungstagebuch =
       'assets/images/dashboard/reco.ernahrungstagebuch.png';
-  final String recoHautpflege =
-      'assets/images/dashboard/reco.hautpflege.png';
+  final String recoHautpflege = 'assets/images/dashboard/reco.hautpflege.png';
 
   // Hero background (Luvi‑Sync preview)
   final String heroSync01 = 'assets/images/dashboard/hero_sync_01.png';
@@ -79,6 +83,28 @@ class _Images {
   final String roteruebe = 'assets/images/dashboard/roteruebe.png';
   final String meditation = 'assets/images/dashboard/meditation.png';
   final String stretching = 'assets/images/dashboard/stretching.png';
+
+  // Onboarding Success Screen trophy (A11y fallback when reduceMotion is true)
+  // PNG format keeps static illustration crisp when animation is disabled
+  final String onboardingSuccessTrophy =
+      'assets/images/onboarding/onboarding_success_trophy.png';
+
+  // Welcome/Consent hero assets
+  final String welcomeHero01 = _kWelcomeHero01;
+  final String welcomeHero02 = _kWelcomeHero02;
+  final String welcomeHero03 = _kWelcomeHero03;
+  final String welcomeWave = _kWelcomeWave;
+}
+
+class _Animations {
+  const _Animations();
+
+  /// Trophy + celebration combined animation (Lottie JSON, 100f @50fps, 2s).
+  final String onboardingSuccessCelebration =
+      'assets/animations/onboarding_success_celebration.json';
+
+  /// Splash screen animation for app launch (Lottie JSON, 250f @100fps, 2.5s).
+  final String splashScreen = 'assets/animations/splash_screen.json';
 }
 
 class _DashboardStatIcons {

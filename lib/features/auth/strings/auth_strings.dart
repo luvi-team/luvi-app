@@ -1,0 +1,97 @@
+import 'dart:ui' as ui;
+
+import 'package:flutter/widgets.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+
+/// Provides localized auth strings while keeping the existing static API surface
+/// for legacy callers. Strings resolve against [AppLocalizations] and can be
+/// overridden in tests via [debugOverrideLocalizations].
+class AuthStrings {
+  AuthStrings._();
+
+  static AppLocalizations? _debugOverride;
+  static ui.Locale? Function()? _resolver;
+
+  @visibleForTesting
+  static void debugOverrideLocalizations(AppLocalizations? override) {
+    _debugOverride = override;
+  }
+
+  @visibleForTesting
+  static void overrideResolver(ui.Locale? Function()? resolver) {
+    _resolver = resolver;
+  }
+
+  static AppLocalizations _l10n() {
+    if (_debugOverride != null) {
+      return _debugOverride!;
+    }
+
+    final resolvedLocale =
+        _resolver?.call() ?? ui.PlatformDispatcher.instance.locale;
+    const fallbackLocale = ui.Locale.fromSubtags(languageCode: 'de');
+
+    for (final candidate in <ui.Locale>[
+      resolvedLocale,
+      ui.Locale.fromSubtags(languageCode: resolvedLocale.languageCode),
+      fallbackLocale,
+    ]) {
+      try {
+        return lookupAppLocalizations(candidate);
+      } on FlutterError {
+        continue;
+      }
+    }
+
+    return lookupAppLocalizations(fallbackLocale);
+  }
+
+  static String get loginHeadline => _l10n().authLoginHeadline;
+  static String get loginSubhead => _l10n().authLoginSubhead;
+  static String get loginCta => _l10n().authLoginCta;
+  static String get loginCtaButton => loginCta;
+  static String get loginCtaLinkPrefix => _l10n().authLoginCtaLinkPrefix;
+  static String get loginCtaLinkAction => _l10n().authLoginCtaLinkAction;
+  static String get loginCtaLoadingSemantic =>
+      _l10n().authLoginCtaLoadingSemantic;
+  static String get loginForgot => _l10n().authLoginForgot;
+  static String get loginSocialDivider => _l10n().authLoginSocialDivider;
+  static String get errEmailInvalid => _l10n().authErrEmailInvalid;
+  static String get errPasswordInvalid => _l10n().authErrPasswordInvalid;
+  static String get errConfirmEmail => _l10n().authErrConfirmEmail;
+  static String get invalidCredentials => _l10n().authInvalidCredentials;
+  static String get errLoginUnavailable => _l10n().authErrLoginUnavailable;
+  static String get emailHint => _l10n().authEmailHint;
+  static String get passwordHint => _l10n().authPasswordHint;
+  static String get signupTitle => _l10n().authSignupTitle;
+  static String get signupSubtitle => _l10n().authSignupSubtitle;
+  static String get signupCta => _l10n().authSignupCta;
+  static String get signupCtaLoadingSemantic =>
+      _l10n().authSignupCtaLoadingSemantic;
+  static String get signupLinkPrefix => _l10n().authSignupLinkPrefix;
+  static String get signupLinkAction => _l10n().authSignupLinkAction;
+  static String get signupHintFirstName => _l10n().authSignupHintFirstName;
+  static String get signupHintLastName => _l10n().authSignupHintLastName;
+  static String get signupHintPhone => _l10n().authSignupHintPhone;
+  static String get signupMissingFields => _l10n().authSignupMissingFields;
+  static String get signupGenericError => _l10n().authSignupGenericError;
+  static String get forgotTitle => _l10n().authForgotTitle;
+  static String get forgotSubtitle => _l10n().authForgotSubtitle;
+  static String get forgotCta => _l10n().authForgotCta;
+  static String get backSemantic => _l10n().authBackSemantic;
+  static String get successPwdTitle => _l10n().authSuccessPwdTitle;
+  static String get successPwdSubtitle => _l10n().authSuccessPwdSubtitle;
+  static String get successForgotTitle => _l10n().authSuccessForgotTitle;
+  static String get successForgotSubtitle => _l10n().authSuccessForgotSubtitle;
+  static String get successCta => _l10n().authSuccessCta;
+  static String get createNewHint1 => _l10n().authCreateNewHint1;
+  static String get createNewHint2 => _l10n().authCreateNewHint2;
+  static String get createNewCta => _l10n().authCreateNewCta;
+  static String get verifyResetTitle => _l10n().authVerifyResetTitle;
+  static String get verifyResetSubtitle => _l10n().authVerifyResetSubtitle;
+  static String get verifyEmailTitle => _l10n().authVerifyEmailTitle;
+  static String get verifyEmailSubtitle => _l10n().authVerifyEmailSubtitle;
+  static String get verifyCta => _l10n().authVerifyCta;
+  static String get verifyHelper => _l10n().authVerifyHelper;
+  static String get verifyResend => _l10n().authVerifyResend;
+}

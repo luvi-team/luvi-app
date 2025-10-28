@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 
 class BackButtonCircle extends StatelessWidget {
   const BackButtonCircle({
@@ -50,6 +50,7 @@ class BackButtonCircle extends StatelessWidget {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
+              splashFactory: NoSplash.splashFactory,
               onTap: onPressed,
               customBorder: shape,
               child: Center(

@@ -4,12 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
+import 'package:luvi_app/features/screens/onboarding_08.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
-import 'package:luvi_app/test/test_config.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../support/test_config.dart';
 
 void main() {
-  testWidgets('Onboarding07 navigates to Dashboard on CTA tap', (
+  TestConfig.ensureInitialized();
+  testWidgets('Onboarding07 navigates to Onboarding08 on CTA tap', (
     WidgetTester tester,
   ) async {
     // Track navigation
@@ -22,6 +24,13 @@ void main() {
         GoRoute(
           path: Onboarding07Screen.routeName,
           builder: (context, state) => const Onboarding07Screen(),
+        ),
+        GoRoute(
+          path: Onboarding08Screen.routeName,
+          builder: (context, state) {
+            navigatedPath = Onboarding08Screen.routeName;
+            return const Scaffold(body: Text('Onboarding 08 (Stub)'));
+          },
         ),
         GoRoute(
           path: HeuteScreen.routeName,
@@ -65,22 +74,10 @@ void main() {
     await tester.tap(ctaButton);
     await tester.pumpAndSettle();
 
-    // Verify navigation to dashboard
-    expect(navigatedPath, HeuteScreen.routeName);
+    // Verify navigation advanced to step 08
+    expect(navigatedPath, Onboarding08Screen.routeName);
 
-    // Verify dashboard content is visible
-    final heuteContext = tester.element(find.byType(HeuteScreen));
-    final loc = AppLocalizations.of(heuteContext)!;
-    if (TestConfig.featureDashboardV2) {
-      // In V2, verify landing by robust keys visible without scrolling
-      expect(find.byKey(const Key('dashboard_header')), findsOneWidget);
-      expect(
-        find.byKey(const Key('dashboard_hero_sync_preview')),
-        findsOneWidget,
-      );
-    } else {
-      expect(find.text(loc.dashboardCategoriesTitle), findsOneWidget);
-      expect(find.text(loc.dashboardMoreTrainingsTitle), findsOneWidget);
-    }
+    // Verify stub screen rendered
+    expect(find.text('Onboarding 08 (Stub)'), findsOneWidget);
   });
 }

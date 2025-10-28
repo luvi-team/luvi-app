@@ -7,12 +7,17 @@ part 'consent02_state.g.dart';
 enum ConsentScope {
   terms,
   health_processing,
+  ai_journal,
   analytics,
   marketing,
   model_training,
 }
 
-const requiredScopes = {ConsentScope.terms, ConsentScope.health_processing};
+const requiredScopes = {
+  ConsentScope.terms,
+  ConsentScope.health_processing,
+  ConsentScope.ai_journal,
+};
 
 @immutable
 class Consent02State {

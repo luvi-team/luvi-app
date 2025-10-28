@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
-import 'package:luvi_app/test/test_config.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
+import 'package:luvi_app/features/screens/onboarding_08.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../support/test_config.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.ensureInitialized();
 
   group('Onboarding07Screen', () {
-    testWidgets('option tap enables CTA and navigates to heute screen', (
+    testWidgets('option tap enables CTA and navigates to screen 08', (
       tester,
     ) async {
       final router = GoRouter(
@@ -23,8 +24,9 @@ void main() {
             builder: (context, state) => const Onboarding07Screen(),
           ),
           GoRoute(
-            path: HeuteScreen.routeName,
-            builder: (context, state) => const HeuteScreen(),
+            path: Onboarding08Screen.routeName,
+            builder: (context, state) =>
+                const Scaffold(body: Text('Onboarding 08')),
           ),
         ],
         initialLocation: Onboarding07Screen.routeName,
@@ -52,25 +54,13 @@ void main() {
       await tester.tap(firstOption);
       await tester.pumpAndSettle();
 
-      // enabled & navigates to Heute screen
+      // enabled & navigates to Screen 08
       expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNotNull);
       await tester.ensureVisible(cta);
       await tester.tap(cta);
       await tester.pumpAndSettle();
-      // Verify Heute screen content is visible
-      final heuteContext = tester.element(find.byType(HeuteScreen));
-      final loc = AppLocalizations.of(heuteContext)!;
-      if (TestConfig.featureDashboardV2) {
-        // In V2, verify landing by robust keys visible without scrolling
-        expect(find.byKey(const Key('dashboard_header')), findsOneWidget);
-        expect(
-          find.byKey(const Key('dashboard_hero_sync_preview')),
-          findsOneWidget,
-        );
-      } else {
-        expect(find.text(loc.dashboardCategoriesTitle), findsOneWidget);
-        expect(find.text(loc.dashboardMoreTrainingsTitle), findsOneWidget);
-      }
+      // Verify Screen 08 stub content is visible
+      expect(find.text('Onboarding 08'), findsOneWidget);
     });
 
     testWidgets('back button navigates to 06 when canPop is false', (
@@ -104,7 +94,10 @@ void main() {
 
       // Verify 07 rendered
       expect(find.textContaining('Wie ist dein Zyklus so?'), findsOneWidget);
-      expect(find.text('7/7'), findsOneWidget);
+      final screenContext = tester.element(find.byType(Onboarding07Screen));
+      final l10n = AppLocalizations.of(screenContext)!;
+      final stepText = l10n.onboardingStepFraction(7, kOnboardingTotalSteps);
+      expect(find.text(stepText), findsOneWidget);
 
       // Tap back button
       final backButton = find.byType(BackButtonCircle);

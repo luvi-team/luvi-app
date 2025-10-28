@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/widgets/verification_code_input.dart';
+import '../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   ThemeData buildTheme() => AppTheme.buildAppTheme();
 
   Widget wrapWithScaffold(Widget child) {

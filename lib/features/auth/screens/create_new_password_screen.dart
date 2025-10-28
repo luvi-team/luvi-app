@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
+import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart';
@@ -13,6 +13,8 @@ import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.da
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {
+  static const String routeName = '/auth/password/new';
+
   const CreateNewPasswordScreen({super.key});
 
   @override
@@ -51,7 +53,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     final mediaQuery = MediaQuery.of(context);
 
     final backButtonTopSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.backButtonTop,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
@@ -83,7 +84,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           child: ElevatedButton(
             key: const ValueKey('create_new_cta_button'),
             onPressed: () {},
-            child: const Text(AuthStrings.createNewCta),
+            child: Text(AuthStrings.createNewCta),
           ),
         ),
       ),
@@ -183,10 +184,10 @@ class _CreateNewBody extends StatelessWidget {
           ],
         ),
         CreateNewBackButtonOverlay(
-          safeTop: safeTop,
           onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              router.pop();
             } else {
               context.goNamed('login');
             }
