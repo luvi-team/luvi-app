@@ -38,7 +38,8 @@ final dailyPlanRepositoryProvider = Provider<DailyPlanRepository>((ref) {
   );
 });
 
-final creationStatusProvider = StateProvider<String?>((ref) => null);
+final creationStatusProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
 
 final userScopedDailyPlansProvider = FutureProvider<List<DailyPlan>>((
   ref,
@@ -276,7 +277,7 @@ void main() {
       });
 
       await pumpHarness(tester, repository: repository);
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('create_plan_button')));
       await tester.pumpAndSettle();
@@ -305,7 +306,7 @@ void main() {
       ).thenThrow(const AuthorizationException('RLS policy enforced'));
 
       await pumpHarness(tester, repository: repository);
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('create_plan_button')));
       await tester.pumpAndSettle();

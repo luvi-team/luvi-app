@@ -15,10 +15,7 @@ class TestConfig {
     TestWidgetsFlutterBinding.ensureInitialized();
     AuthStrings.debugOverrideLocalizations(AppLocalizationsDe());
     AuthStrings.overrideResolver(() => ui.PlatformDispatcher.instance.locale);
-    tearDown(() {
-      AuthStrings.debugOverrideLocalizations(null);
-      AuthStrings.overrideResolver(null);
-    });
+    _registerCleanup();
   }
 
   /// Preferred test bootstrap to configure shared bindings and test-only overrides.
@@ -26,12 +23,30 @@ class TestConfig {
     ensureInitialized();
   }
 
-  static const TestAppLinks defaultAppLinks =
-      TestAppLinks(bypassValidation: true);
+  static const TestAppLinks defaultAppLinks = TestAppLinks(
+    bypassValidation: true,
+  );
 
   /// Controls whether tests verify Dashboard V2 (new) or V1 (legacy) behavior.
   ///
   /// Configure via `--dart-define=FEATURE_DASHBOARD_V2=true|false` when running
   /// Flutter tests to toggle the exercised code paths.
   static bool get featureDashboardV2 => FeatureFlags.featureDashboardV2;
+
+  static bool _cleanupRegistered = false;
+
+  static void _registerCleanup() {
+    if (_cleanupRegistered) {
+      return;
+    }
+    _cleanupRegistered = true;
+    setUp(() {
+      AuthStrings.debugOverrideLocalizations(AppLocalizationsDe());
+      AuthStrings.overrideResolver(() => ui.PlatformDispatcher.instance.locale);
+      addTearDown(() {
+        AuthStrings.debugOverrideLocalizations(null);
+        AuthStrings.overrideResolver(null);
+      });
+    });
+  }
 }
