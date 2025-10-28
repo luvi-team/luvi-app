@@ -408,12 +408,11 @@ Trophy besteht ausschließlich aus Vektor-Shapes (Body mit Gradient, Henkel, Ste
    - **Entspricht bestehendem Token:** ❌ Keine Übereinstimmung
    - **Empfehlung:** Nicht als Token definieren (Button in centered column, kein fixer bottom spacing)
 
-**Action Required:** Neue Tokens `trophyToTitle` (28px) und `titleToButton` (66px) in `onboarding_spacing.dart` hinzufügen.
+**Status:** Tokens `trophyToTitle` (28px) und `titleToButton` (66px) sind implementiert und werden im Screen verwendet.
 
 ### Layout-Strategie
 1. **Screen verwendet vertikales Centering:** ❌ No (Figma verwendet absolute Positioning)
 2. **Empfehlung:** Flutter-Implementierung sollte `Column` mit `MainAxisAlignment.center` verwenden statt absolute Positioning (bessere Responsive-Unterstützung)
-
 ### Text-Korrekturen
 1. **Button-Text in Figma:** "Los gehts!" (fehlt Apostroph)
 2. **Korrekte deutsche Schreibweise:** "Los geht's!" (mit Apostroph)
