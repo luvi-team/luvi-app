@@ -48,6 +48,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final theme = Theme.of(context);
     final state = ref.watch(resetPasswordProvider);
     final submitState = ref.watch(resetSubmitProvider);
+    final errorText = state.error == null
+        ? null
+        : AuthStrings.errEmailInvalid;
     if (_emailController.text != state.email) {
       _emailController.value = _emailController.value.copyWith(
         text: state.email,
@@ -110,7 +113,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           LoginEmailField(
             key: const ValueKey('reset_email_field'),
             controller: _emailController,
-            errorText: state.errorText,
+            errorText: errorText,
             autofocus: false,
             onChanged: (value) =>
                 ref.read(resetPasswordProvider.notifier).setEmail(value),

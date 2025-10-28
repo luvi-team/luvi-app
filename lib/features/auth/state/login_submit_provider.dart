@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';

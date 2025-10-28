@@ -28,7 +28,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    final initialState = ref.read(loginProvider).value ?? LoginState.initial();
+    final loginNotifier = ref.read(loginProvider.notifier);
+    final initialState = loginNotifier.currentState;
     if (_emailController.text != initialState.email) {
       _emailController.value = _emailController.value.copyWith(
         text: initialState.email,

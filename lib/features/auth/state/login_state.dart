@@ -45,10 +45,14 @@ class LoginState {
 }
 
 class LoginNotifier extends AsyncNotifier<LoginState> {
+  static final RegExp _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+
   @override
   FutureOr<LoginState> build() => LoginState.initial();
 
   LoginState _current() => state.value ?? LoginState.initial();
+
+  LoginState get currentState => _current();
 
   void setEmail(String value) {
     final current = _current();
@@ -107,7 +111,7 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
       String? eErr;
       String? pErr;
 
-      if (!current.email.contains('@')) {
+      if (!_emailRegex.hasMatch(current.email)) {
         eErr = AuthStrings.errEmailInvalid;
       }
       if (current.password.length < 6) {
