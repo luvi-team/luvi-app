@@ -184,7 +184,6 @@ class _CreateNewBody extends StatelessWidget {
           ],
         ),
         CreateNewBackButtonOverlay(
-          safeTop: safeTop,
           onPressed: () {
             final router = GoRouter.of(context);
             if (router.canPop()) {
