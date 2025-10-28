@@ -13,7 +13,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: const Consent02Screen(),
+            home: const Consent02Screen(
+              appLinks: TestConfig.defaultAppLinks,
+            ),
             locale: const Locale('de'),
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,

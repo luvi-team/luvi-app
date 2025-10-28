@@ -9,13 +9,16 @@ Widget buildLocalizedApp({
   ThemeData? theme,
 }) {
   final appTheme = theme ?? AppTheme.buildAppTheme();
+  final locale = const Locale('de');
+  final supportedLocales = AppLocalizations.supportedLocales;
+  final delegates = AppLocalizations.localizationsDelegates;
   if (router != null) {
     return MaterialApp.router(
       theme: appTheme,
       routerConfig: router,
-      locale: const Locale('de'),
-      supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      locale: locale,
+      supportedLocales: supportedLocales,
+      localizationsDelegates: delegates,
     );
   }
   assert(
@@ -25,8 +28,8 @@ Widget buildLocalizedApp({
   return MaterialApp(
     theme: appTheme,
     home: home!,
-    locale: const Locale('de'),
-    supportedLocales: AppLocalizations.supportedLocales,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    locale: locale,
+    supportedLocales: supportedLocales,
+    localizationsDelegates: delegates,
   );
 }

@@ -199,7 +199,7 @@ void main() {
 
       expect(find.text('Loading...'), findsOneWidget);
 
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Morning Meditation'), findsOneWidget);
       expect(find.text('owner: $userId'), findsOneWidget);
@@ -248,12 +248,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final texts = tester
-          .widgetList<Text>(find.byType(Text))
-          .map((widget) => widget.data)
-          .whereType<String>()
-          .toList();
-      expect(texts, contains('Error: AuthorizationException(RLS policy enforced)'));
+      final finder = find.byKey(const Key('error_message'));
+      expect(finder, findsOneWidget);
+
+      final txt = tester.widget<Text>(finder);
+      expect(
+        txt.data,
+        contains('Error: AuthorizationException(RLS policy enforced)'),
+      );
     });
 
     testWidgets('create plan button calls repository without owner override', (
@@ -276,7 +278,7 @@ void main() {
       await tester.pump();
 
       await tester.tap(find.byKey(const Key('create_plan_button')));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.text('Created plan for $userId'),
@@ -305,7 +307,7 @@ void main() {
       await tester.pump();
 
       await tester.tap(find.byKey(const Key('create_plan_button')));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.text('Creation blocked: RLS policy enforced'),
