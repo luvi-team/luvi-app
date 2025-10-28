@@ -7,7 +7,9 @@ import 'support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  testWidgets('App boots and shows Consent Welcome title', (tester) async {
+  testWidgets('Consent welcome title renders spacing for de locale', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildAppTheme(),
@@ -17,11 +19,51 @@ void main() {
         home: const ConsentWelcome01Screen(),
       ),
     );
-    final headlineFinder = find.byWidgetPredicate((w) {
-      if (w is RichText) return w.text.toPlainText().contains('Im Einklang');
-      if (w is Text) return (w.data?.contains('Im Einklang') ?? false);
-      return false;
-    });
-    expect(headlineFinder, findsOneWidget);
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(ConsentWelcome01Screen)),
+    )!;
+    final richTextFinder = find.byWidgetPredicate(
+      (widget) =>
+          widget is RichText &&
+          widget.text.toPlainText().contains(l10n.welcome01TitleAccent.trim()),
+    );
+    expect(richTextFinder, findsOneWidget);
+    final richText = tester.widget<RichText>(richTextFinder);
+    final content = richText.text.toPlainText();
+    final lines = content.split('\n');
+    expect(lines.length, 2);
+    expect(content.contains(l10n.welcome01TitleAccent.trim()), isTrue);
+    expect(lines.first.contains(l10n.welcome01TitleSuffixLine1.trim()), isTrue);
+    expect(lines.last.trim(), l10n.welcome01TitleSuffixLine2.trim());
+  });
+
+  testWidgets('Consent welcome title renders spacing for en locale', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.buildAppTheme(),
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: const ConsentWelcome01Screen(),
+      ),
+    );
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(ConsentWelcome01Screen)),
+    )!;
+    final richTextFinder = find.byWidgetPredicate(
+      (widget) =>
+          widget is RichText &&
+          widget.text.toPlainText().contains(l10n.welcome01TitleAccent.trim()),
+    );
+    expect(richTextFinder, findsOneWidget);
+    final richText = tester.widget<RichText>(richTextFinder);
+    final content = richText.text.toPlainText();
+    final lines = content.split('\n');
+    expect(lines.length, 2);
+    expect(content.contains(l10n.welcome01TitleAccent.trim()), isTrue);
+    expect(lines.first.contains(l10n.welcome01TitleSuffixLine1.trim()), isTrue);
+    expect(lines.last.trim(), l10n.welcome01TitleSuffixLine2.trim());
   });
 }
