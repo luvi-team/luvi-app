@@ -106,6 +106,10 @@
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
   },
+  "commonSkip": "Skip",
+  "@commonSkip": {
+    "description": "Label for secondary skip actions in onboarding and consent flows."
+  },
   "commonStartNow": "Start now",
   "@commonStartNow": {
     "description": "Primary CTA label encouraging the user to begin immediately."

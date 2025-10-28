@@ -81,6 +81,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonContinue => 'Weiter';
 
   @override
+  String get commonSkip => 'Überspringen';
+
+  @override
   String get commonStartNow => 'Starte jetzt';
 
   @override

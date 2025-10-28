@@ -106,6 +106,10 @@
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
   },
+  "commonSkip": "Überspringen",
+  "@commonSkip": {
+    "description": "Label für sekundäre \"Überspringen\"-Aktionen in Onboarding- und Consent-Flows."
+  },
   "commonStartNow": "Starte jetzt",
   "@commonStartNow": {
     "description": "Primärer CTA-Text, der zum sofortigen Start auffordert."

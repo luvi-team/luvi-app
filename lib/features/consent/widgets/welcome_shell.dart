@@ -91,6 +91,7 @@ class WelcomeShell extends StatelessWidget {
     final buttonLabel = primaryButtonLabel ??
         AppLocalizations.of(context)?.commonContinue ??
         'Weiter';
+    final skipLabel = AppLocalizations.of(context)?.commonSkip ?? 'Skip';
     final children = <Widget>[];
 
     final hasContent = title != null || subtitle != null || activeIndex != null || onNext != null;
@@ -145,7 +146,7 @@ class WelcomeShell extends StatelessWidget {
         onPressed: () {
           /* später: skip */
         },
-        child: const Text('Überspringen'),
+        child: Text(skipLabel),
       ),
     );
 

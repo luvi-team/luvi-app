@@ -227,6 +227,12 @@ abstract class AppLocalizations {
   /// **'Continue'**
   String get commonContinue;
 
+  /// Label for secondary skip actions in onboarding and consent flows.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get commonSkip;
+
   /// Primary CTA label encouraging the user to begin immediately.
   ///
   /// In en, this message translates to:
