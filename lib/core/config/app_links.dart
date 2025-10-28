@@ -3,6 +3,7 @@ class AppLinks {
   static const _sentinelUrl = 'about:blank';
   static const _rawPrivacyUrl = String.fromEnvironment('PRIVACY_URL');
   static const _rawTermsUrl = String.fromEnvironment('TERMS_URL');
+  static bool bypassValidationForTests = false;
 
   /// Sentinel value signals that `PRIVACY_URL` is missing and must be provided for production builds.
   // Sentinel (about:blank) → in Produktion per --dart-define überschreiben.
@@ -22,6 +23,7 @@ class AppLinks {
   static bool get hasValidTerms => _isConfiguredUrl(termsOfService);
 
   static bool _isConfiguredUrl(Uri? uri) {
+    if (bypassValidationForTests) return true;
     if (uri == null) return false;
     if (uri.toString() == _sentinelUrl) return false;
 
@@ -29,9 +31,9 @@ class AppLinks {
     final host = uri.host.trim().toLowerCase();
     if (scheme.isEmpty || host.isEmpty) return false;
 
-    final isHttpScheme = scheme == 'http' || scheme == 'https';
-    if (!isHttpScheme) return false;
-    if (host.isEmpty || host == 'example.com') return false;
+    if (scheme != 'https') return false;
+    const disallowedHosts = {'example.com', 'localhost', '127.0.0.1'};
+    if (disallowedHosts.contains(host)) return false;
     return true;
   }
 

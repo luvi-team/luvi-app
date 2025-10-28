@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
@@ -6,32 +9,76 @@ import 'package:luvi_app/features/widgets/onboarding/onboarding_header.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/features/shared/analytics/analytics_recorder.dart';
+import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/user_state_service.dart';
 
 /// Onboarding08: Fitness level single-select screen
 /// Figma: 08_Onboarding (Fitness-Level)
 /// nodeId: 68479-6936
-class Onboarding08Screen extends StatefulWidget {
+class Onboarding08Screen extends ConsumerStatefulWidget {
   const Onboarding08Screen({super.key});
 
   static const routeName = '/onboarding/08';
 
   @override
-  State<Onboarding08Screen> createState() => _Onboarding08ScreenState();
+  ConsumerState<Onboarding08Screen> createState() => _Onboarding08ScreenState();
 }
 
-class _Onboarding08ScreenState extends State<Onboarding08Screen> {
+class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
   int? _selected;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadInitialSelection());
+  }
 
   void _selectOption(int index) {
     setState(() {
       _selected = index;
     });
+    final level = FitnessLevel.fromSelectionIndex(index);
+    unawaited(_persistSelection(level));
   }
 
-  void _handleContinue() {
-    context.go(OnboardingSuccessScreen.routeName);
+  Future<void> _handleContinue() async {
+    final selected = _selected;
+    if (selected == null || _isSaving) {
+      return;
+    }
+    final level = FitnessLevel.fromSelectionIndex(selected);
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      await _persistSelection(level);
+      ref
+          .read(analyticsRecorderProvider)
+          .recordEvent(
+            'onboarding_fitness_level_selected',
+            properties: <String, Object?>{
+              'level': level.name,
+              'selection_index': selected,
+            },
+          );
+      if (mounted) {
+        context.go(OnboardingSuccessScreen.routeName, extra: level);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      } else {
+        _isSaving = false;
+      }
+    }
   }
 
   @override
@@ -48,15 +95,15 @@ class _Onboarding08ScreenState extends State<Onboarding08Screen> {
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: spacing.topPadding),
-                OnboardingHeader(
-                  title: AppLocalizations.of(context)!.onboarding08Title,
-                  step: 8,
-                  totalSteps: kOnboardingTotalSteps,
-                  onBack: _handleBack,
-                ),
-                SizedBox(height: spacing.headerToQuestion08),
+            children: [
+              SizedBox(height: spacing.topPadding),
+              OnboardingHeader(
+                title: AppLocalizations.of(context)!.onboarding08Title,
+                step: 8,
+                totalSteps: kOnboardingTotalSteps,
+                onBack: _handleBack,
+              ),
+              SizedBox(height: spacing.headerToQuestion08),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToFootnote08),
               _buildFootnote(textTheme, colorScheme),
@@ -126,16 +173,41 @@ class _Onboarding08ScreenState extends State<Onboarding08Screen> {
 
   Widget _buildCta() {
     final l10n = AppLocalizations.of(context)!;
-    final isEnabled = _selected != null;
+    final isEnabled = _selected != null && !_isSaving;
 
     return Semantics(
       label: l10n.commonContinue,
       button: true,
       child: ElevatedButton(
         key: const Key('onb_cta'),
-        onPressed: isEnabled ? _handleContinue : null,
+        onPressed: isEnabled ? () => _handleContinue() : null,
         child: Text(l10n.commonContinue),
       ),
+    );
+  }
+
+  Future<void> _loadInitialSelection() async {
+    final userState = await tryOrNullAsync(
+      () => ref.read(userStateServiceProvider.future),
+      tag: 'userState',
+    );
+    final savedSelection = userState?.fitnessLevel;
+    final index = FitnessLevel.selectionIndexFor(savedSelection);
+    if (!mounted || index == null) return;
+    setState(() {
+      _selected = index;
+    });
+  }
+
+  Future<void> _persistSelection(FitnessLevel level) async {
+    final userState = await tryOrNullAsync(
+      () => ref.read(userStateServiceProvider.future),
+      tag: 'userState',
+    );
+    if (userState == null) return;
+    await tryOrNullAsync(
+      () => userState.setFitnessLevel(level),
+      tag: 'userState.setFitnessLevel',
     );
   }
 }
