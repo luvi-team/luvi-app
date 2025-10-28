@@ -36,7 +36,8 @@ const String _onboardingRootPath = '/onboarding';
 // Short "/onboarding/w" prefix covers welcome screens (w1–w3) and keeps URLs
 // aligned with existing deep links and analytics dashboards.
 const String _welcomeRootPath = '/onboarding/w';
-const String _consentRootPath = '/consent/';
+const String _consentRootPath = '/consent';
+const String _consentPathPrefix = '$_consentRootPath/';
 
 class OnboardingRoutes {
   static const done = '/onboarding/done';
@@ -227,7 +228,9 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
       state.matchedLocation == _onboardingRootPath ||
       state.matchedLocation.startsWith('$_onboardingRootPath/');
   final isWelcome = state.matchedLocation.startsWith(_welcomeRootPath);
-  final isConsent = state.matchedLocation.startsWith(_consentRootPath);
+  final isConsent =
+      state.matchedLocation == _consentRootPath ||
+      state.matchedLocation.startsWith(_consentPathPrefix);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
   final session = isInitialized
