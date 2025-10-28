@@ -228,7 +228,7 @@ void main() {
 
       expect(find.text('Loading...'), findsOneWidget);
 
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('No plans available'), findsOneWidget);
 
