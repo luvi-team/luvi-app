@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
@@ -18,6 +19,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'consent_01_screen.dart';
 
+final _consentBtnBusyProvider = StateProvider.autoDispose<bool>((ref) => false);
+
 class Consent02Screen extends ConsumerWidget {
   const Consent02Screen({super.key});
 
@@ -32,6 +35,7 @@ class Consent02Screen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final selectedLabel = l10n.consent02SemanticSelected;
     final unselectedLabel = l10n.consent02SemanticUnselected;
+    final isNextBusy = ref.watch(_consentBtnBusyProvider);
     final items = [
       ConsentChoiceListItem(
         key: const Key('consent02_card_required_health'),
@@ -89,19 +93,37 @@ class Consent02Screen extends ConsumerWidget {
                 child: _ConsentFooter(
                   key: const Key('consent02_footer'),
                   l10n: l10n,
-                  onAcceptAll: notifier.selectAllOptional,
-                  isAcceptAllDisabled: state.allOptionalSelected,
+                  onSelectAll: notifier.selectAllOptional,
+                  onClearAll: notifier.clearAllOptional,
+                  allOptionalSelected: state.allOptionalSelected,
                   onNext: () async {
-                    final userState = await tryOrNullAsync(
-                      () => ref.read(userStateServiceProvider.future),
-                      tag: 'userState',
+                    if (ref.read(_consentBtnBusyProvider)) {
+                      return;
+                    }
+                    final busyNotifier = ref.read(
+                      _consentBtnBusyProvider.notifier,
                     );
-                    await userState?.markWelcomeSeen();
-                    if (context.mounted) {
-                      context.go(AuthEntryScreen.routeName);
+                    busyNotifier.state = true;
+                    try {
+                      final userState = await tryOrNullAsync(
+                        () => ref.read(userStateServiceProvider.future),
+                        tag: 'userState',
+                      );
+                      try {
+                        await userState?.markWelcomeSeen();
+                      } catch (error, stackTrace) {
+                        debugPrint(
+                          'markWelcomeSeen failed: $error\n$stackTrace',
+                        );
+                      }
+                      if (context.mounted) {
+                        context.go(AuthEntryScreen.routeName);
+                      }
+                    } finally {
+                      busyNotifier.state = false;
                     }
                   },
-                  nextEnabled: state.requiredAccepted,
+                  nextEnabled: state.requiredAccepted && !isNextBusy,
                 ),
               ),
             ),
@@ -389,16 +411,18 @@ class _ConsentChoiceCard extends StatelessWidget {
 
 class _ConsentFooter extends StatelessWidget {
   final AppLocalizations l10n;
-  final VoidCallback onAcceptAll;
-  final bool isAcceptAllDisabled;
+  final VoidCallback onSelectAll;
+  final VoidCallback onClearAll;
+  final bool allOptionalSelected;
   final VoidCallback? onNext;
   final bool nextEnabled;
 
   const _ConsentFooter({
     super.key,
     required this.l10n,
-    required this.onAcceptAll,
-    required this.isAcceptAllDisabled,
+    required this.onSelectAll,
+    required this.onClearAll,
+    required this.allOptionalSelected,
     required this.onNext,
     required this.nextEnabled,
   });
@@ -425,8 +449,13 @@ class _ConsentFooter extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: isAcceptAllDisabled ? null : onAcceptAll,
-            child: Text(l10n.consent02AcceptAll),
+            key: const Key('consent02_btn_toggle_optional'),
+            onPressed: allOptionalSelected ? onClearAll : onSelectAll,
+            child: Text(
+              allOptionalSelected
+                  ? l10n.consent02DeselectAll
+                  : l10n.consent02AcceptAll,
+            ),
           ),
         ),
         const SizedBox(height: ConsentSpacing.footerPrimaryToSecondaryCta),

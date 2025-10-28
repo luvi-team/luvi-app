@@ -54,20 +54,22 @@ void main() {
       expect(tester.widget<ElevatedButton>(weiter).onPressed, isNotNull);
 
       // Tap "Alle akzeptieren" to select all optional scopes
-      final allAcceptFinder = find.widgetWithText(
-        ElevatedButton,
-        'Alle akzeptieren',
-      );
+      final allAcceptFinder =
+          find.byKey(const Key('consent02_btn_toggle_optional'));
       expect(allAcceptFinder, findsOneWidget);
-      expect(
-        tester.widget<ElevatedButton>(allAcceptFinder).onPressed,
-        isNotNull,
-      );
+      expect(find.text('Alle akzeptieren'), findsOneWidget);
+      final toggleButtonBefore =
+          tester.widget<ElevatedButton>(allAcceptFinder);
+      expect(toggleButtonBefore.onPressed, isNotNull);
+      expect(find.text('Alle akzeptieren'), findsOneWidget);
       await tester.tap(allAcceptFinder);
       await tester.pumpAndSettle();
 
-      // Button becomes disabled once all optionals are selected
-      expect(tester.widget<ElevatedButton>(allAcceptFinder).onPressed, isNull);
+      // Button switches to "Alle abwählen" with active handler for clearing selections
+      final toggleButtonAfter =
+          tester.widget<ElevatedButton>(allAcceptFinder);
+      expect(toggleButtonAfter.onPressed, isNotNull);
+      expect(find.text('Alle abwählen'), findsOneWidget);
 
       // Ensure no explicit card titles are present
       expect(find.text('Gesundheitsdaten'), findsNothing);
