@@ -5,12 +5,14 @@ class AppLinks {
   static const _rawTermsUrl = String.fromEnvironment('TERMS_URL');
 
   /// Sentinel value signals that `PRIVACY_URL` is missing and must be provided for production builds.
+  // Sentinel (about:blank) → in Produktion per --dart-define überschreiben.
   static final Uri privacyPolicy = _parseConfiguredUri(
     rawValue: _rawPrivacyUrl,
     defaultValue: _sentinelUrl,
   );
 
   /// Sentinel value signals that `TERMS_URL` is missing and must be provided for production builds.
+  // Sentinel (about:blank) → in Produktion per --dart-define überschreiben.
   static final Uri termsOfService = _parseConfiguredUri(
     rawValue: _rawTermsUrl,
     defaultValue: _sentinelUrl,
