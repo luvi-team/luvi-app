@@ -111,8 +111,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 }
 
-class _VariantCopy {
-  const _VariantCopy({required this.title, required this.subtitle});
+final class _VariantCopy {
+  const _VariantCopy({
+    required this.title,
+    required this.subtitle,
+  });
 
   final String title;
   final String subtitle;
@@ -121,6 +124,7 @@ class _VariantCopy {
   String get resend => AuthStrings.verifyResend;
 
   factory _VariantCopy.fromVariant(VerificationScreenVariant variant) {
+    // Achtung: Rückgaben absichtlich NICHT const, da AuthStrings runtime-lokalisiert sind.
     switch (variant) {
       case VerificationScreenVariant.emailConfirmation:
         return _VariantCopy(
