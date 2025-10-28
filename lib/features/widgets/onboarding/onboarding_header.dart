@@ -7,7 +7,7 @@ import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class OnboardingHeader extends StatelessWidget {
-  OnboardingHeader({
+  const OnboardingHeader({
     super.key,
     required this.title,
     required this.step,
