@@ -30,7 +30,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   bool _hasInteracted = false;
 
   String get _formattedDate {
-    final localeName = AppLocalizations.of(context)?.localeName;
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     return DateFormatters.localizedDayMonthYear(
       _date,
       localeName: localeName,

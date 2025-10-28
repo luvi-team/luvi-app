@@ -3,12 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding01Screen', () {
     late GoRouter router;
@@ -45,7 +45,10 @@ void main() {
       await tester.pumpWidget(createTestApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('1/8'), findsOneWidget);
+      final screenContext = tester.element(find.byType(Onboarding01Screen));
+      final l10n = AppLocalizations.of(screenContext)!;
+      final stepText = l10n.onboardingStepFraction(1, kOnboardingTotalSteps);
+      expect(find.text(stepText), findsOneWidget);
       expect(find.textContaining('Erzähl mir von dir'), findsOneWidget);
 
       final nameField = find.byType(TextField);

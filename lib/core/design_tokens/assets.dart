@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-/// Centralized asset paths for Dashboard (typo-safe, single source of truth).
+/// Centralized asset paths for the app (typo-safe, single source of truth).
 const String _kWelcomeHero01 = 'assets/images/welcome/welcome_01.png';
 const String _kWelcomeHero02 = 'assets/images/welcome/welcome_02.png';
 const String _kWelcomeHero03 = 'assets/images/welcome/welcome_03.png';
@@ -13,35 +13,13 @@ class Assets {
   static const images = _Images();
   static const animations = _Animations();
 
-  // Legacy constants kept for migration from `Assets.<name>`.
-  // Deprecated: prefer `Assets.images.<name>` in new code. Planned removal in
-  // v3.6 (2026-03); when updating affected widgets, replace
-  // `Assets.<name>` → `Assets.images.<name>` and drop the legacy import.
-  @Deprecated(
-    'Use Assets.images.welcomeWave instead; update call sites to Assets.images.welcomeWave. Removal in v3.6 (2026-03).',
-  )
-  static const String welcomeWave = _kWelcomeWave;
-  @Deprecated(
-    'Use Assets.images.welcomeHero01 instead; update call sites to Assets.images.welcomeHero01. Removal in v3.6 (2026-03).',
-  )
-  static const String welcomeHero01 = _kWelcomeHero01;
-  @Deprecated(
-    'Use Assets.images.welcomeHero02 instead; update call sites to Assets.images.welcomeHero02. Removal in v3.6 (2026-03).',
-  )
-  static const String welcomeHero02 = _kWelcomeHero02;
-  @Deprecated(
-    'Use Assets.images.welcomeHero03 instead; update call sites to Assets.images.welcomeHero03. Removal in v3.6 (2026-03).',
-  )
-  static const String welcomeHero03 = _kWelcomeHero03;
-
   /// Default error builder for dashboard `Image.asset` widgets.
   /// Renders a neutral placeholder so layout stays stable when assets fail.
   static ImageErrorWidgetBuilder get defaultImageErrorBuilder =>
       (BuildContext context, Object error, StackTrace? stackTrace) {
-        final placeholderColor = Theme.of(context)
-            .colorScheme
-            .surfaceContainerHighest
-            .withValues(alpha: 0.3);
+        final placeholderColor = Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3);
         return ColoredBox(color: placeholderColor);
       };
 }
@@ -96,8 +74,7 @@ class _Images {
   final String recoGanzkoerper = 'assets/images/dashboard/reco.ganzkoerper.png';
   final String recoErnaehrungstagebuch =
       'assets/images/dashboard/reco.ernahrungstagebuch.png';
-  final String recoHautpflege =
-      'assets/images/dashboard/reco.hautpflege.png';
+  final String recoHautpflege = 'assets/images/dashboard/reco.hautpflege.png';
 
   // Hero background (Luvi‑Sync preview)
   final String heroSync01 = 'assets/images/dashboard/hero_sync_01.png';

@@ -55,7 +55,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       );
     }
     final backButtonTopSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.backButtonTop,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
@@ -87,8 +86,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           SizedBox(height: backButtonTopSpacing),
           BackButtonCircle(
             onPressed: () {
-              if (Navigator.of(context).canPop()) {
-                Navigator.of(context).pop();
+              final router = GoRouter.of(context);
+              if (router.canPop()) {
+                router.pop();
               } else {
                 context.goNamed('login');
               }

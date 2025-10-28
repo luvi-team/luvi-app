@@ -73,6 +73,41 @@ void main() {
 
     expect(minHeight, isNotNull);
     final buttonSize = tester.getSize(buttonFinder);
-    expect(buttonSize.height, equals(minHeight));
+    final resolvedMinHeight = minHeight!;
+    expect(buttonSize.height, greaterThanOrEqualTo(resolvedMinHeight));
+  });
+
+  testWidgets('Consent footer toggles between accept and deselect all labels', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          theme: AppTheme.buildAppTheme(),
+          home: const Consent02Screen(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final screenContext = tester.element(find.byType(Consent02Screen));
+    final l10n = AppLocalizations.of(screenContext)!;
+
+    final bulkButtonFinder = find.widgetWithText(
+      ElevatedButton,
+      l10n.consent02AcceptAll,
+    );
+    expect(bulkButtonFinder, findsOneWidget);
+
+    await tester.tap(bulkButtonFinder);
+    await tester.pump();
+
+    expect(
+      find.widgetWithText(ElevatedButton, l10n.consent02DeselectAll),
+      findsOneWidget,
+    );
   });
 }

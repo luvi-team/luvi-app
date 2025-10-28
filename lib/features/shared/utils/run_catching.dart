@@ -1,5 +1,20 @@
 import 'package:flutter/foundation.dart';
 
+final RegExp _emailPattern = RegExp(
+  r'([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})',
+  caseSensitive: false,
+);
+final RegExp _phoneCandidatePattern = RegExp(r'\b\+?[\d()\s.-]{7,}\b');
+final RegExp _digitCounterPattern = RegExp(r'\d');
+final RegExp _uuidPattern = RegExp(
+  r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b',
+);
+// Extend the prefix list cautiously if new identifier types require masking.
+final RegExp _prefixedTokenPattern = RegExp(
+  r'\b(?:id|token|session|trace|request|user|auth|ref)[-_:= ]*([A-F0-9]{16,})\b',
+  caseSensitive: false,
+);
+
 /// Lightweight wrappers for non-critical work where errors may be safely ignored
 /// once observed. Prefer normal try/catch for critical paths or when callers must
 /// surface failures to the user. These helpers are best kept for background tasks,
@@ -14,11 +29,13 @@ T? tryOrNull<T>(
 }) {
   try {
     return fn();
-  } catch (error, stackTrace) {
-    onError?.call(error, stackTrace);
-    final sanitized = _sanitizeError(error);
-    final suffix = sanitized == null ? '' : ': $sanitized';
-    debugPrint('[$tag] ${error.runtimeType}$suffix\n${_shortStackTrace(stackTrace)}');
+  } on Exception catch (error, stackTrace) {
+    _reportHandledError(
+      error: error,
+      stackTrace: stackTrace,
+      tag: tag,
+      onError: onError,
+    );
     return null;
   }
 }
@@ -33,11 +50,13 @@ Future<T?> tryOrNullAsync<T>(
 }) async {
   try {
     return await fn();
-  } catch (error, stackTrace) {
-    onError?.call(error, stackTrace);
-    final sanitized = _sanitizeError(error);
-    final suffix = sanitized == null ? '' : ': $sanitized';
-    debugPrint('[$tag] ${error.runtimeType}$suffix\n${_shortStackTrace(stackTrace)}');
+  } on Exception catch (error, stackTrace) {
+    _reportHandledError(
+      error: error,
+      stackTrace: stackTrace,
+      tag: tag,
+      onError: onError,
+    );
     return null;
   }
 }
@@ -45,38 +64,46 @@ Future<T?> tryOrNullAsync<T>(
 String _shortStackTrace(StackTrace stackTrace) =>
     stackTrace.toString().split('\n').take(3).join('\n');
 
+void _reportHandledError({
+  required Exception error,
+  required StackTrace stackTrace,
+  required String tag,
+  void Function(Object error, StackTrace stackTrace)? onError,
+}) {
+  if (onError != null) {
+    try {
+      onError(error, stackTrace);
+    } catch (_) {
+      // Swallow secondary failures from the error handler to keep null-contract.
+    }
+  }
+
+  if (kDebugMode) {
+    final sanitized = _sanitizeError(error);
+    final suffix = sanitized == null ? '' : ': $sanitized';
+    debugPrint(
+      '[$tag] ${error.runtimeType}$suffix\n${_shortStackTrace(stackTrace)}',
+    );
+  }
+}
+
 String? _sanitizeError(Object error) {
   final raw = error.toString();
 
-  final emailPattern = RegExp(
-    r'([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})',
-    caseSensitive: false,
-  );
-  final phoneCandidate = RegExp(r'\b\+?[\d()\s.-]{7,}\b');
-  final digitCounter = RegExp(r'\d');
-  final uuidPattern = RegExp(
-    r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b',
-  );
-  // Extend the prefix list cautiously if new identifier types require masking.
-  final prefixedTokenPattern = RegExp(
-    r'\b(?:id|token|session|trace|request|user|auth|ref)[-_:= ]*([A-F0-9]{16,})\b',
-    caseSensitive: false,
-  );
+  String sanitized = raw.replaceAll(_emailPattern, '[redacted-email]');
 
-  String sanitized = raw.replaceAll(emailPattern, '[redacted-email]');
+  sanitized = sanitized.replaceAll(_uuidPattern, '[redacted-uuid]');
 
-  sanitized = sanitized.replaceAll(uuidPattern, '[redacted-uuid]');
-
-  sanitized = sanitized.replaceAllMapped(phoneCandidate, (match) {
+  sanitized = sanitized.replaceAllMapped(_phoneCandidatePattern, (match) {
     final candidate = match.group(0)!;
-    final digitCount = digitCounter.allMatches(candidate).length;
+    final digitCount = _digitCounterPattern.allMatches(candidate).length;
     if (digitCount >= 10) {
       return '[redacted-phone]';
     }
     return candidate;
   });
 
-  sanitized = sanitized.replaceAllMapped(prefixedTokenPattern, (match) {
+  sanitized = sanitized.replaceAllMapped(_prefixedTokenPattern, (match) {
     final fullMatch = match.group(0)!;
     final identifier = match.group(1)!;
     // Keep the descriptive prefix while masking the sensitive identifier.

@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
-class ResetSubmitNotifier extends StateNotifier<AsyncValue<void>> {
-  ResetSubmitNotifier() : super(const AsyncData(null));
+class ResetSubmitNotifier extends AsyncNotifier<void> {
+  @override
+  FutureOr<void> build() async {}
 
   Future<void> submit(
     String email, {
@@ -24,7 +24,6 @@ class ResetSubmitNotifier extends StateNotifier<AsyncValue<void>> {
   }
 }
 
-final resetSubmitProvider =
-    StateNotifierProvider<ResetSubmitNotifier, AsyncValue<void>>(
-      (ref) => ResetSubmitNotifier(),
-    );
+final resetSubmitProvider = AsyncNotifierProvider<ResetSubmitNotifier, void>(
+  ResetSubmitNotifier.new,
+);

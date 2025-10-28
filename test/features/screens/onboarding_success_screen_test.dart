@@ -51,7 +51,9 @@ void main() {
           routes: [
             GoRoute(
               path: OnboardingSuccessScreen.routeName,
-              builder: (context, state) => const OnboardingSuccessScreen(),
+              builder: (context, state) => const OnboardingSuccessScreen(
+                fitnessLevel: FitnessLevel.unknown,
+              ),
             ),
           ],
           initialLocation: OnboardingSuccessScreen.routeName,
@@ -62,9 +64,14 @@ void main() {
 
         expect(find.byType(Image), findsNothing);
         expect(find.byType(LottieBuilder), findsOneWidget);
-        expect(find.text('Du bist startklar!'), findsOneWidget);
+        final screenContext = tester.element(
+          find.byType(OnboardingSuccessScreen),
+        );
+        final l10n = AppLocalizations.of(screenContext)!;
+
+        expect(find.text(l10n.onboardingSuccessTitle), findsOneWidget);
         expect(find.byKey(const Key('onboarding_success_cta')), findsOneWidget);
-        expect(find.text("Los geht's!"), findsOneWidget);
+        expect(find.text(l10n.commonStartNow), findsOneWidget);
         expect(find.byType(BackButtonCircle), findsNothing);
         expect(find.textContaining('/8'), findsNothing);
       },
@@ -75,7 +82,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
           GoRoute(
             path: HeuteScreen.routeName,
@@ -97,6 +106,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Dashboard'), findsOneWidget);
+      final currentUri =
+          router.routeInformationProvider.value.uri.toString();
+      expect(currentUri, HeuteScreen.routeName);
     });
 
     testWidgets('displays correct English strings', (tester) async {
@@ -104,7 +116,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,
@@ -115,8 +129,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text("You're ready to go!"), findsOneWidget);
-      expect(find.text("Let's go!"), findsOneWidget);
+      final screenContext = tester.element(
+        find.byType(OnboardingSuccessScreen),
+      );
+      final l10n = AppLocalizations.of(screenContext)!;
+
+      expect(find.text(l10n.onboardingSuccessTitle), findsOneWidget);
+      expect(find.text(l10n.commonStartNow), findsOneWidget);
     });
 
     testWidgets('celebration animation respects disableAnimations flags', (
@@ -126,7 +145,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,
@@ -150,12 +171,47 @@ void main() {
       expect(find.byType(LottieBuilder), findsNothing);
     });
 
+    testWidgets('celebration animation respects accessibleNavigation flag', (
+      tester,
+    ) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: OnboardingSuccessScreen.routeName,
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
+          ),
+        ],
+        initialLocation: OnboardingSuccessScreen.routeName,
+      );
+
+      await tester.pumpWidget(
+        await buildApp(
+          router,
+          builder: (context, child) {
+            final data = MediaQuery.of(context);
+            return MediaQuery(
+              data: data.copyWith(accessibleNavigation: true),
+              child: child!,
+            );
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Image), findsOneWidget);
+      expect(find.byType(LottieBuilder), findsNothing);
+    });
+
     testWidgets('uses correct spacing tokens from Figma audit', (tester) async {
       final router = GoRouter(
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,
@@ -186,7 +242,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,
@@ -218,7 +276,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,
@@ -251,7 +311,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,
@@ -313,7 +375,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,
@@ -344,7 +408,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,
@@ -389,7 +455,9 @@ void main() {
         routes: [
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(),
+            builder: (context, state) => const OnboardingSuccessScreen(
+              fitnessLevel: FitnessLevel.unknown,
+            ),
           ),
         ],
         initialLocation: OnboardingSuccessScreen.routeName,

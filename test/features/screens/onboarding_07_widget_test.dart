@@ -5,13 +5,13 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_08.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding07Screen', () {
     testWidgets('option tap enables CTA and navigates to screen 08', (
@@ -94,7 +94,10 @@ void main() {
 
       // Verify 07 rendered
       expect(find.textContaining('Wie ist dein Zyklus so?'), findsOneWidget);
-      expect(find.text('7/8'), findsOneWidget);
+      final screenContext = tester.element(find.byType(Onboarding07Screen));
+      final l10n = AppLocalizations.of(screenContext)!;
+      final stepText = l10n.onboardingStepFraction(7, kOnboardingTotalSteps);
+      expect(find.text(stepText), findsOneWidget);
 
       // Tap back button
       final backButton = find.byType(BackButtonCircle);

@@ -9,11 +9,14 @@ class SupabaseService {
   static Future<void>? _initFuture;
   static Object? _initializationError;
   static StackTrace? _initializationStackTrace;
+  static SupabaseValidationConfig _validationConfig =
+      const SupabaseValidationConfig();
 
   static bool get isInitialized => _initialized;
   static Object? get lastInitializationError => _initializationError;
   static StackTrace? get lastInitializationStackTrace =>
       _initializationStackTrace;
+  static SupabaseValidationConfig get validationConfig => _validationConfig;
 
   static SupabaseClient get client {
     if (!_initialized) {
@@ -29,6 +32,21 @@ class SupabaseService {
     if (existing != null) return existing;
     _initFuture = _performInitializeAndCache(envFile);
     return _initFuture!;
+  }
+
+  static void configure({SupabaseValidationConfig? validationConfig}) {
+    if (validationConfig != null) {
+      _validationConfig = validationConfig;
+    }
+  }
+
+  @visibleForTesting
+  static void resetForTest() {
+    _initialized = false;
+    _initFuture = null;
+    _initializationError = null;
+    _initializationStackTrace = null;
+    _validationConfig = const SupabaseValidationConfig();
   }
 
   static Future<void> _performInitializeAndCache(String envFile) async {
@@ -54,9 +72,7 @@ class SupabaseService {
     }
   }
 
-  static Future<void> _performInitialize({
-    required String envFile,
-  }) async {
+  static Future<void> _performInitialize({required String envFile}) async {
     await _loadEnvironment(envFile);
     final credentials = _resolveCredentials(envFile);
     await _initializeSupabase(credentials);
@@ -127,8 +143,13 @@ class SupabaseService {
         'must be positive',
       );
     }
-    if (age < 10 || age > 100) {
-      throw ArgumentError.value(age, 'age', 'must be between 10 and 100');
+    final ageConfig = _validationConfig;
+    if (age < ageConfig.minAge || age > ageConfig.maxAge) {
+      throw ArgumentError.value(
+        age,
+        'age',
+        'must be between ${ageConfig.minAge} and ${ageConfig.maxAge}',
+      );
     }
     final normalizedLastPeriod = lastPeriod.toUtc();
     final nowUtc = DateTime.now().toUtc();
@@ -231,10 +252,10 @@ class SupabaseService {
   }
 
   static String _formatIsoDate(DateTime date) {
-    final normalized = date.toUtc();
-    final year = normalized.year.toString().padLeft(4, '0');
-    final month = normalized.month.toString().padLeft(2, '0');
-    final day = normalized.day.toString().padLeft(2, '0');
+    final utc = date.toUtc();
+    final year = utc.year.toString().padLeft(4, '0');
+    final month = utc.month.toString().padLeft(2, '0');
+    final day = utc.day.toString().padLeft(2, '0');
     return '$year-$month-$day';
   }
 }
@@ -244,4 +265,14 @@ class _SupabaseCredentials {
 
   final String url;
   final String anonKey;
+}
+
+@immutable
+class SupabaseValidationConfig {
+  const SupabaseValidationConfig({this.minAge = 10, this.maxAge = 100})
+    : assert(minAge > 0, 'minAge must be positive.'),
+      assert(maxAge >= minAge, 'maxAge must be >= minAge.');
+
+  final int minAge;
+  final int maxAge;
 }

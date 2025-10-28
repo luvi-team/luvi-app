@@ -11,7 +11,7 @@ import '../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  testWidgets('Onboarding07 navigates to Dashboard on CTA tap', (
+  testWidgets('Onboarding07 navigates to Onboarding08 on CTA tap', (
     WidgetTester tester,
   ) async {
     // Track navigation

@@ -19,10 +19,11 @@ class WelcomeShell extends StatelessWidget {
     String? waveAsset,
     this.headerSpacing = 0,
     this.primaryButtonLabel,
+    this.secondaryButtonLabel,
     this.subtitleMaxWidth = double.infinity,
     this.bottomContent,
-  })  : waveAsset = waveAsset ?? Assets.images.welcomeWave,
-        assert(
+  }) : waveAsset = waveAsset ?? Assets.images.welcomeWave,
+       assert(
          bottomContent != null ||
              (title != null &&
                  subtitle != null &&
@@ -41,6 +42,7 @@ class WelcomeShell extends StatelessWidget {
   final String waveAsset;
   final double headerSpacing;
   final String? primaryButtonLabel;
+  final String? secondaryButtonLabel;
   final double subtitleMaxWidth;
   final Widget? bottomContent;
 
@@ -77,7 +79,13 @@ class WelcomeShell extends StatelessWidget {
                   Spacing.l,
                   Spacing.l,
                 ),
-                child: bottomContent ?? _buildDefaultContent(context),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (headerSpacing > 0) SizedBox(height: headerSpacing),
+                    bottomContent ?? _buildDefaultContent(context),
+                  ],
+                ),
               ),
             ),
           ],
@@ -88,16 +96,15 @@ class WelcomeShell extends StatelessWidget {
 
   Widget _buildDefaultContent(BuildContext context) {
     final theme = Theme.of(context);
-    final buttonLabel = primaryButtonLabel ??
+    final buttonLabel =
+        primaryButtonLabel ??
         AppLocalizations.of(context)?.commonContinue ??
-        'Weiter';
-    final skipLabel = AppLocalizations.of(context)?.commonSkip ?? 'Skip';
+        'Continue';
+    final skipLabel =
+        secondaryButtonLabel ??
+        AppLocalizations.of(context)?.commonSkip ??
+        'Skip';
     final children = <Widget>[];
-
-    final hasContent = title != null || subtitle != null || activeIndex != null || onNext != null;
-    if (hasContent && headerSpacing > 0) {
-      children.add(SizedBox(height: headerSpacing));
-    }
 
     if (title != null) {
       children.add(Semantics(header: true, child: title!));
@@ -133,10 +140,7 @@ class WelcomeShell extends StatelessWidget {
     }
     if (onNext != null) {
       children.add(
-        ElevatedButton(
-          onPressed: onNext!,
-          child: Text(buttonLabel),
-        ),
+        ElevatedButton(onPressed: onNext!, child: Text(buttonLabel)),
       );
       children.add(const SizedBox(height: Spacing.m));
     }

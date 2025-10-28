@@ -9,6 +9,16 @@ void main() {
       expect(sanitized, isNot(contains('170 123 4567')));
     });
 
+    test('redacts email addresses', () {
+      const email = 'user+alerts@example.com';
+      final sanitized = debugSanitizeError(
+        'Reach out to $email if anything breaks.',
+      );
+      expect(sanitized, contains('[redacted-email]'));
+      expect(sanitized, isNot(contains(email)));
+      expect(sanitized, isNot(contains('example.com')));
+    });
+
     test('ignores date-like strings', () {
       final sanitized = debugSanitizeError('Event on 2023-10-27 at noon');
       expect(sanitized, isNull);

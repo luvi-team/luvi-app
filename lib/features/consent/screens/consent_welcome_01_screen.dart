@@ -34,17 +34,18 @@ class ConsentWelcome01Screen extends StatelessWidget {
           // use theme-provided H1 (Playfair Display via Theme)
           style: titleStyle,
           children: [
-            const TextSpan(text: 'Im '),
+            TextSpan(text: l10n.welcome01TitlePrefix),
             TextSpan(
-              text: 'Einklang',
+              text: l10n.welcome01TitleAccent,
               style: titleStyle?.copyWith(color: c.secondary),
             ),
-            const TextSpan(text: ' mit deinem\n'),
-            const TextSpan(text: 'Körper'),
+            TextSpan(text: l10n.welcome01TitleSuffixLine1),
+            TextSpan(text: l10n.welcome01TitleSuffixLine2),
           ],
         ),
       ),
       subtitle: l10n.welcome01Subtitle,
+      primaryButtonLabel: l10n.welcome01PrimaryCta,
       onNext: () => context.go(ConsentWelcome02Screen.routeName),
       hero: Image.asset(Assets.images.welcomeHero01, fit: BoxFit.cover),
       heroAspect: _kHeroAspect,

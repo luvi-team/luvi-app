@@ -24,6 +24,7 @@ Exit codes:
     1: File not found
     2: Invalid file format (not SVG)
     3: No changes needed (no CSS variables found)
+    4: Partial fixes applied
 """
 
 import logging

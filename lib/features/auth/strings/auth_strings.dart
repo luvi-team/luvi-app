@@ -1,6 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/widgets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/l10n/app_localizations_de.dart';
 
 /// Provides localized auth strings while keeping the existing static API surface
 /// for legacy callers. Strings resolve against [AppLocalizations] and can be
@@ -9,10 +10,16 @@ class AuthStrings {
   AuthStrings._();
 
   static AppLocalizations? _debugOverride;
+  static ui.Locale? Function()? _resolver;
 
   @visibleForTesting
   static void debugOverrideLocalizations(AppLocalizations? override) {
     _debugOverride = override;
+  }
+
+  @visibleForTesting
+  static void overrideResolver(ui.Locale? Function()? resolver) {
+    _resolver = resolver;
   }
 
   static AppLocalizations _l10n() {
@@ -20,16 +27,23 @@ class AuthStrings {
       return _debugOverride!;
     }
 
-    final binding = WidgetsBinding.instance;
-    final locale = binding.platformDispatcher.locale;
+    final resolvedLocale =
+        _resolver?.call() ?? ui.PlatformDispatcher.instance.locale;
+    const fallbackLocale = ui.Locale.fromSubtags(languageCode: 'de');
 
-    try {
-      return lookupAppLocalizations(locale);
-    } on FlutterError {
-      return lookupAppLocalizations(Locale(locale.languageCode));
-    } catch (_) {
-      return AppLocalizationsDe();
+    for (final candidate in <ui.Locale>[
+      resolvedLocale,
+      ui.Locale.fromSubtags(languageCode: resolvedLocale.languageCode),
+      fallbackLocale,
+    ]) {
+      try {
+        return lookupAppLocalizations(candidate);
+      } on FlutterError {
+        continue;
+      }
     }
+
+    return lookupAppLocalizations(fallbackLocale);
   }
 
   static String get loginHeadline => _l10n().authLoginHeadline;
@@ -38,7 +52,8 @@ class AuthStrings {
   static String get loginCtaButton => loginCta;
   static String get loginCtaLinkPrefix => _l10n().authLoginCtaLinkPrefix;
   static String get loginCtaLinkAction => _l10n().authLoginCtaLinkAction;
-  static String get loginCtaLoadingSemantic => _l10n().authLoginCtaLoadingSemantic;
+  static String get loginCtaLoadingSemantic =>
+      _l10n().authLoginCtaLoadingSemantic;
   static String get loginForgot => _l10n().authLoginForgot;
   static String get loginSocialDivider => _l10n().authLoginSocialDivider;
   static String get errEmailInvalid => _l10n().authErrEmailInvalid;
@@ -51,7 +66,8 @@ class AuthStrings {
   static String get signupTitle => _l10n().authSignupTitle;
   static String get signupSubtitle => _l10n().authSignupSubtitle;
   static String get signupCta => _l10n().authSignupCta;
-  static String get signupCtaLoadingSemantic => _l10n().authSignupCtaLoadingSemantic;
+  static String get signupCtaLoadingSemantic =>
+      _l10n().authSignupCtaLoadingSemantic;
   static String get signupLinkPrefix => _l10n().authSignupLinkPrefix;
   static String get signupLinkAction => _l10n().authSignupLinkAction;
   static String get signupHintFirstName => _l10n().authSignupHintFirstName;

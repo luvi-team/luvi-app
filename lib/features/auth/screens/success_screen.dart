@@ -28,7 +28,6 @@ class SuccessScreen extends StatelessWidget {
         AuthLayout.hPadding40 - AuthLayout.horizontalPadding;
 
     final topSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.iconTopSuccess,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );

@@ -20,11 +20,14 @@ void main() async {
     defaultOrientations: const [DeviceOrientation.portraitUp],
   );
   await orientationController.applyDefault();
-  // Try to initialize Supabase but don't crash if it fails
+  final supabaseEnvFile = kReleaseMode ? '.env.production' : '.env.development';
   try {
-    await SupabaseService.tryInitialize(envFile: '.env.development');
-  } catch (e) {
-    debugPrint('Supabase initialization failed: $e');
+    await SupabaseService.tryInitialize(envFile: supabaseEnvFile);
+  } catch (error, stackTrace) {
+    if (kReleaseMode) {
+      Error.throwWithStackTrace(error, stackTrace);
+    }
+    debugPrint('Supabase initialization failed for $supabaseEnvFile: $error');
   }
 
   // Debug/Profil: Fail fast per assert (nur in Debug aktiv)
@@ -41,7 +44,9 @@ void main() async {
     );
   }
 
-  runApp(ProviderScope(child: MyApp(orientationController: orientationController)));
+  runApp(
+    ProviderScope(child: MyApp(orientationController: orientationController)),
+  );
 }
 
 class MyApp extends StatelessWidget {

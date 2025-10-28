@@ -9,19 +9,11 @@ class OnboardingSuccessTokens {
   static const double trophyWidth = 308.0;
   static const double trophyHeight = 300.0;
 
-  /// Scale factor for the celebration Lottie inside the 308×300 zone.
-  /// Ranges roughly from iPhone SE (≈2.6) to Plus/Max (≈2.9).
-  static const double celebrationScale = 2.7;
-
   /// Allowed bleed (px) above the 308×300 zone for confetti/handles.
   static const double celebrationBleedTop = 72.0;
 
-  /// Downward offset (px) to align the Lottie baseline with the title gap.
-  /// Tuned between 58–72 px so smaller devices sit closer to the title.
-  static const double celebrationBaselineOffset = 64.0;
-
   /// Target gap (in px) between the trophy illustration and the title.
-  /// Keep in sync with `OnboardingSpacing._kOnboardingSuccessTrophyToTitleGap`.
+  /// Canonical: `OnboardingSpacing._kOnboardingSuccessTrophyToTitleGap`.
   static const double gapToTitle = 24.0;
 
   /// Responsive config for the celebration animation based on viewport height.
@@ -29,9 +21,14 @@ class OnboardingSuccessTokens {
     required double viewHeight,
     required double textScaleFactor,
   }) {
-    final effectiveHeight = (viewHeight / textScaleFactor)
-        .clamp(_minViewportHeight, _maxViewportHeight);
-    final t = (effectiveHeight - _minViewportHeight) /
+    assert(viewHeight > 0, 'viewHeight must be > 0');
+    assert(textScaleFactor > 0, 'textScaleFactor must be > 0');
+    final effectiveHeight = (viewHeight / textScaleFactor).clamp(
+      _minViewportHeight,
+      _maxViewportHeight,
+    );
+    final t =
+        (effectiveHeight - _minViewportHeight) /
         (_maxViewportHeight - _minViewportHeight);
     final scale = lerpDouble(_minScaleValue, _maxScaleValue, t)!;
     final baselineOffset = lerpDouble(

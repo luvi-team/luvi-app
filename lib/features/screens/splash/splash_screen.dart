@@ -23,6 +23,7 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  bool _hasNavigated = false;
 
   @override
   void initState() {
@@ -64,16 +65,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigateAfterAnimation() async {
+    if (_hasNavigated) return;
     final userState = await tryOrNullAsync(
       () => ref.read(userStateServiceProvider.future),
       tag: 'userState',
     );
     if (!mounted) return;
+    if (_hasNavigated) return;
     final isAuth = SupabaseService.isAuthenticated;
     final hasSeenWelcome = userState?.hasSeenWelcome ?? false;
     final nextRoute = !hasSeenWelcome
         ? ConsentWelcome01Screen.routeName
         : (isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName);
+    _hasNavigated = true;
     context.go(nextRoute);
   }
 }

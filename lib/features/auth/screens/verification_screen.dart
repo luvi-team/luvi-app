@@ -41,7 +41,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
     final copy = _VariantCopy.fromVariant(widget.variant);
     final topSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.figmaHeaderTop,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
@@ -103,8 +102,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 
   void _onBackPressed(BuildContext context) {
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      router.pop();
     } else {
       context.goNamed('login');
     }

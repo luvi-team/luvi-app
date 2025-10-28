@@ -29,8 +29,10 @@ import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart
 import 'package:luvi_app/features/screens/splash/splash_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 
-const String _onboardingRootPath = '/onboarding/';
+// Root onboarding path without trailing slash to allow exact match checks.
+const String _onboardingRootPath = '/onboarding';
 // Short "/onboarding/w" prefix covers welcome screens (w1–w3) and keeps URLs
 // aligned with existing deep links and analytics dashboards.
 const String _welcomeRootPath = '/onboarding/w';
@@ -114,7 +116,16 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: OnboardingSuccessScreen.routeName,
     name: 'onboarding_success',
-    builder: (ctx, st) => const OnboardingSuccessScreen(),
+    builder: (ctx, st) {
+      final extra = st.extra;
+      if (extra is! FitnessLevel) {
+        throw ArgumentError(
+          'OnboardingSuccessScreen requires a FitnessLevel extra. '
+          'Received ${extra.runtimeType}.',
+        );
+      }
+      return OnboardingSuccessScreen(fitnessLevel: extra);
+    },
   ),
   GoRoute(
     path: OnboardingRoutes.done,
@@ -200,13 +211,22 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     'ALLOW_DASHBOARD_DEV',
     defaultValue: false,
   );
+  const allowOnboardingDev = bool.fromEnvironment(
+    'ALLOW_ONBOARDING_DEV',
+    defaultValue: false,
+  );
+  final allowOnboardingBypass =
+      allowOnboardingDev && (kDebugMode || allowOnboardingDev);
+  // Enable via --dart-define=ALLOW_ONBOARDING_DEV=true (false by default).
 
   final isInitialized = SupabaseService.isInitialized;
   final isLoggingIn = state.matchedLocation.startsWith(LoginScreen.routeName);
   final isAuthEntry = state.matchedLocation.startsWith(
     AuthEntryScreen.routeName,
   );
-  final isOnboarding = state.matchedLocation.startsWith(_onboardingRootPath);
+  final isOnboarding =
+      state.matchedLocation == _onboardingRootPath ||
+      state.matchedLocation.startsWith('$_onboardingRootPath/');
   final isWelcome = state.matchedLocation.startsWith(_welcomeRootPath);
   final isConsent = state.matchedLocation.startsWith(_consentRootPath);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
@@ -220,7 +240,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   }
 
   // Dev-only bypass to allow opening onboarding without auth
-  if (!kReleaseMode && isOnboarding) {
+  if (allowOnboardingBypass && isOnboarding) {
     return null;
   }
 

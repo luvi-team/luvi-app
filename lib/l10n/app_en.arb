@@ -463,17 +463,49 @@
   "@onboardingSuccessTitle": {
     "description": "Title shown on the onboarding success screen."
   },
-  "onboardingSuccessButton": "Let\u0027s go!",
-  "@onboardingSuccessButton": {
-    "description": "Button label on the onboarding success screen to navigate to dashboard."
-  },
   "welcome01Subtitle": "Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.",
   "@welcome01Subtitle": {
     "description": "Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings."
   },
+  "welcome01TitlePrefix": "In ",
+  "@welcome01TitlePrefix": {
+    "description": "Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed."
+  },
+  "welcome01TitleAccent": "harmony",
+  "@welcome01TitleAccent": {
+    "description": "Accented word for the consent welcome screen 1 title. Will be styled with the accent color."
+  },
+  "welcome01TitleSuffixLine1": " with your\n",
+  "@welcome01TitleSuffixLine1": {
+    "description": "Middle portion of the consent welcome screen 1 title, ends with a newline. Include preceding/trailing spaces as required."
+  },
+  "welcome01TitleSuffixLine2": "body",
+  "@welcome01TitleSuffixLine2": {
+    "description": "Final line of the consent welcome screen 1 title."
+  },
+  "welcome01PrimaryCta": "Continue",
+  "@welcome01PrimaryCta": {
+    "description": "Primary button label for consent welcome screen 1."
+  },
+  "welcome02TitleLine1": "Curated by experts for you\n",
+  "@welcome02TitleLine1": {
+    "description": "First line of the consent welcome step 2 title, includes trailing newline."
+  },
+  "welcome02TitleLine2": "refreshed every month",
+  "@welcome02TitleLine2": {
+    "description": "Second line of the consent welcome step 2 title."
+  },
   "welcome02Subtitle": "Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.",
   "@welcome02Subtitle": {
     "description": "Subtitle copy for consent welcome screen 2 (below the title). Prepared for future migration away from hardcoded strings."
+  },
+  "welcome03TitleLine1": "Your perfect day\n",
+  "@welcome03TitleLine1": {
+    "description": "First line of the consent welcome step 3 title, includes trailing newline to force a line break."
+  },
+  "welcome03TitleLine2": "starts here",
+  "@welcome03TitleLine2": {
+    "description": "Second line of the consent welcome step 3 title."
   },
   "welcome03Subtitle": "LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.",
   "@welcome03Subtitle": {
@@ -481,7 +513,7 @@
   },
   "consent02Title": "Your health,\nyour decision!",
   "@consent02Title": {
-    "description": "Headline shown on the consent 02 screen."
+    "description": "Headline shown on the consent 02 screen. Contains an explicit \"\\n\" line break that must be preserved in every translation."
   },
   "consent02CardHealth": "I agree that LUVI processes my personal health data so LUVI can deliver its features.",
   "@consent02CardHealth": {
@@ -534,6 +566,10 @@
   "consent02AcceptAll": "Accept all",
   "@consent02AcceptAll": {
     "description": "Primary CTA label that selects all optional consent scopes."
+  },
+  "consent02DeselectAll": "Deselect all",
+  "@consent02DeselectAll": {
+    "description": "Primary CTA label shown when all optional consent scopes are already selected so the user can clear them."
   },
   "consent02SemanticSelected": "Selected",
   "@consent02SemanticSelected": {

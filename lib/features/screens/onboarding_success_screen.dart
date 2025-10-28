@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
@@ -12,13 +13,17 @@ import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 
+final _successBtnBusyProvider = StateProvider.autoDispose<bool>((ref) => false);
+
 /// Final screen after onboarding completes.
 /// Shows a trophy celebration (combined Lottie with trophy + confetti, or PNG
 /// fallback when motion is disabled), celebratory title, and CTA.
 class OnboardingSuccessScreen extends ConsumerWidget {
-  const OnboardingSuccessScreen({super.key});
+  const OnboardingSuccessScreen({super.key, required this.fitnessLevel});
 
   static const routeName = '/onboarding/success';
+
+  final FitnessLevel fitnessLevel;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +33,8 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     final textTheme = theme.textTheme;
     final l10n = AppLocalizations.of(context)!;
     final spacing = OnboardingSpacing.of(context);
-    final reduceMotion = mediaQuery.disableAnimations;
+    final reduceMotion =
+        mediaQuery.disableAnimations || mediaQuery.accessibleNavigation;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -39,9 +45,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(vertical: Spacing.l),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minWidth: double.infinity,
-                ),
+                constraints: const BoxConstraints(minWidth: double.infinity),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -50,7 +54,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                     SizedBox(height: spacing.trophyToTitle),
                     _buildTitle(textTheme, colorScheme, l10n),
                     SizedBox(height: spacing.titleToButton),
-                    _buildButton(context, ref, l10n),
+                    _buildButton(context, ref, l10n, fitnessLevel),
                   ],
                 ),
               ),
@@ -66,8 +70,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     // Falls back to the static PNG when reduceMotion is enabled for accessibility
     // Illustration zone stays fixed at 308×300 logical pixels from Figma audit
     final mediaQuery = MediaQuery.of(context);
-    final usableHeight =
-        mediaQuery.size.height - mediaQuery.padding.vertical;
+    final usableHeight = mediaQuery.size.height - mediaQuery.padding.vertical;
     final textScale = MediaQuery.textScalerOf(context).scale(1.0);
     final celebrationConfig = OnboardingSuccessTokens.celebrationConfig(
       viewHeight: usableHeight,
@@ -97,7 +100,8 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                     minWidth: OnboardingSuccessTokens.trophyWidth,
                     maxWidth: OnboardingSuccessTokens.trophyWidth,
                     minHeight: OnboardingSuccessTokens.trophyHeight,
-                    maxHeight: OnboardingSuccessTokens.trophyHeight +
+                    maxHeight:
+                        OnboardingSuccessTokens.trophyHeight +
                         OnboardingSuccessTokens.celebrationBleedTop,
                     alignment: Alignment.bottomCenter,
                     child: Transform.translate(
@@ -163,21 +167,42 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
+    FitnessLevel fitnessLevel,
   ) {
     // ElevatedButton already provides accessible label from visible text
+    final isBusy = ref.watch(_successBtnBusyProvider);
     return ElevatedButton(
       key: const Key('onboarding_success_cta'),
-      onPressed: () async {
-        final userState = await tryOrNullAsync(
-          () => ref.read(userStateServiceProvider.future),
-          tag: 'userState',
-        );
-        await userState?.markOnboardingComplete();
-        if (context.mounted) {
-          context.go(HeuteScreen.routeName);
-        }
-      },
-      child: Text(l10n.onboardingSuccessButton),
+      onPressed: isBusy
+          ? null
+          : () async {
+              if (ref.read(_successBtnBusyProvider)) {
+                return;
+              }
+              final busyNotifier = ref.read(_successBtnBusyProvider.notifier);
+              busyNotifier.state = true;
+              try {
+                final userState = await tryOrNullAsync(
+                  () => ref.read(userStateServiceProvider.future),
+                  tag: 'userState',
+                );
+                try {
+                  await userState?.markOnboardingComplete(
+                    fitnessLevel: fitnessLevel,
+                  );
+                } catch (error, stackTrace) {
+                  debugPrint(
+                    'markOnboardingComplete failed: $error\n$stackTrace',
+                  );
+                }
+                if (context.mounted) {
+                  context.go(HeuteScreen.routeName);
+                }
+              } finally {
+                busyNotifier.state = false;
+              }
+            },
+      child: Text(l10n.commonStartNow),
     );
   }
 }

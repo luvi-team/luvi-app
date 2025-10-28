@@ -14,6 +14,20 @@ class ConsentWelcome02Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final maybeL10n = AppLocalizations.of(context);
+    if (maybeL10n == null) {
+      return Localizations.override(
+        context: context,
+        delegates: AppLocalizations.localizationsDelegates,
+        locale: AppLocalizations.supportedLocales.first,
+        child: Builder(builder: _buildLocalizedContent),
+      );
+    }
+
+    return _buildLocalizedContent(context);
+  }
+
+  Widget _buildLocalizedContent(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
@@ -28,9 +42,9 @@ class ConsentWelcome02Screen extends StatelessWidget {
         text: TextSpan(
           style: titleStyle,
           children: [
-            const TextSpan(text: 'Von Expert:innen für dich\n'),
+            TextSpan(text: l10n.welcome02TitleLine1),
             TextSpan(
-              text: 'jeden Monat neu',
+              text: l10n.welcome02TitleLine2,
               style: titleStyle?.copyWith(color: c.primary),
             ),
           ],

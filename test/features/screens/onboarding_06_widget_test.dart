@@ -12,7 +12,6 @@ import '../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding06Screen', () {
     testWidgets('option tap enables CTA and navigates forward', (tester) async {

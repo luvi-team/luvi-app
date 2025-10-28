@@ -245,9 +245,45 @@
   "@welcome01Subtitle": {
     "description": "Untertitel für Consent Welcome Screen 1 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
   },
+  "welcome01TitlePrefix": "Im ",
+  "@welcome01TitlePrefix": {
+    "description": "Einstiegstext für den Titel von Consent Welcome Screen 1 (vor dem Akzent-Wort). Einschließlich nachfolgendem Leerzeichen falls nötig."
+  },
+  "welcome01TitleAccent": "Einklang",
+  "@welcome01TitleAccent": {
+    "description": "Akzentuiertes Wort im Titel von Consent Welcome Screen 1. Wird visuell hervorgehoben."
+  },
+  "welcome01TitleSuffixLine1": " mit deinem\n",
+  "@welcome01TitleSuffixLine1": {
+    "description": "Mittlerer Abschnitt des Titels von Consent Welcome Screen 1, endet mit einem Zeilenumbruch. Führendes Leerzeichen beibehalten."
+  },
+  "welcome01TitleSuffixLine2": "Körper",
+  "@welcome01TitleSuffixLine2": {
+    "description": "Letzte Zeile des Titels von Consent Welcome Screen 1."
+  },
+  "welcome01PrimaryCta": "Weiter",
+  "@welcome01PrimaryCta": {
+    "description": "Primärer Button-Text für Consent Welcome Screen 1."
+  },
+  "welcome02TitleLine1": "Von Expert:innen für dich\n",
+  "@welcome02TitleLine1": {
+    "description": "Erste Zeile des Titels für Consent Welcome Screen 2 inklusive Zeilenumbruch."
+  },
+  "welcome02TitleLine2": "jeden Monat neu",
+  "@welcome02TitleLine2": {
+    "description": "Zweite Zeile des Titels für Consent Welcome Screen 2."
+  },
   "welcome02Subtitle": "Echte Personalisierung statt Standard‑Pläne. Automatisch angepasst an deine Fortschritte, Zyklusphase und individuellen Ziele.",
   "@welcome02Subtitle": {
     "description": "Untertitel für Consent Welcome Screen 2 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
+  },
+  "welcome03TitleLine1": "Dein perfekter Tag\n",
+  "@welcome03TitleLine1": {
+    "description": "Erste Zeile des Titels für Consent Welcome Screen 3 inklusive Zeilenumbruch."
+  },
+  "welcome03TitleLine2": "beginnt hier",
+  "@welcome03TitleLine2": {
+    "description": "Zweite Zeile des Titels für Consent Welcome Screen 3."
   },
   "welcome03Subtitle": "LUVI Sync: Dein täglicher Game‑Changer. Verstehe das 'Warum' hinter deinen Hormonen. Wissenschaftlich fundiert.",
   "@welcome03Subtitle": {
@@ -475,13 +511,9 @@
   "@onboardingSuccessTitle": {
     "description": "Title shown on the onboarding success screen."
   },
-  "onboardingSuccessButton": "Los geht's!",
-  "@onboardingSuccessButton": {
-    "description": "Button label on the onboarding success screen to navigate to dashboard."
-  },
   "consent02Title": "Deine Gesundheit,\ndeine Entscheidung!",
   "@consent02Title": {
-    "description": "Headline shown on the consent 02 screen."
+    "description": "Headline shown on the consent 02 screen. Translator note: keep the newline escape '\\n' between the two lines."
   },
   "consent02CardHealth": "Ich bin damit einverstanden, dass LUVI meine persönlichen Gesundheitsdaten verarbeitet, damit LUVI ihre Funktionen bereitstellen kann.",
   "@consent02CardHealth": {
@@ -534,6 +566,10 @@
   "consent02AcceptAll": "Alle akzeptieren",
   "@consent02AcceptAll": {
     "description": "Primary CTA label that selects all optional consent scopes."
+  },
+  "consent02DeselectAll": "Alle abwählen",
+  "@consent02DeselectAll": {
+    "description": "Primary CTA label that deselects all optional consent scopes."
   },
   "consent02SemanticSelected": "Ausgewählt",
   "@consent02SemanticSelected": {

@@ -53,7 +53,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     final mediaQuery = MediaQuery.of(context);
 
     final backButtonTopSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.backButtonTop,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
@@ -187,8 +186,9 @@ class _CreateNewBody extends StatelessWidget {
         CreateNewBackButtonOverlay(
           safeTop: safeTop,
           onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              router.pop();
             } else {
               context.goNamed('login');
             }

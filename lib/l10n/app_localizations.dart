@@ -749,17 +749,53 @@ abstract class AppLocalizations {
   /// **'You\'re ready to go!'**
   String get onboardingSuccessTitle;
 
-  /// Button label on the onboarding success screen to navigate to dashboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Let\'s go!'**
-  String get onboardingSuccessButton;
-
   /// Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings.
   ///
   /// In en, this message translates to:
   /// **'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.'**
   String get welcome01Subtitle;
+
+  /// Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed.
+  ///
+  /// In en, this message translates to:
+  /// **'In '**
+  String get welcome01TitlePrefix;
+
+  /// Accented word for the consent welcome screen 1 title. Will be styled with the accent color.
+  ///
+  /// In en, this message translates to:
+  /// **'harmony'**
+  String get welcome01TitleAccent;
+
+  /// Middle portion of the consent welcome screen 1 title, ends with a newline. Include preceding/trailing spaces as required.
+  ///
+  /// In en, this message translates to:
+  /// **' with your\n'**
+  String get welcome01TitleSuffixLine1;
+
+  /// Final line of the consent welcome screen 1 title.
+  ///
+  /// In en, this message translates to:
+  /// **'body'**
+  String get welcome01TitleSuffixLine2;
+
+  /// Primary button label for consent welcome screen 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get welcome01PrimaryCta;
+
+  /// First line of the consent welcome step 2 title, includes trailing newline.
+  ///
+  /// In en, this message translates to:
+  /// **'Curated by experts for you\n'**
+  String get welcome02TitleLine1;
+
+  /// Second line of the consent welcome step 2 title.
+  ///
+  /// In en, this message translates to:
+  /// **'refreshed every month'**
+  String get welcome02TitleLine2;
 
   /// Subtitle copy for consent welcome screen 2 (below the title). Prepared for future migration away from hardcoded strings.
   ///
@@ -767,13 +803,25 @@ abstract class AppLocalizations {
   /// **'Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.'**
   String get welcome02Subtitle;
 
+  /// First line of the consent welcome step 3 title, includes trailing newline to force a line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Your perfect day\n'**
+  String get welcome03TitleLine1;
+
+  /// Second line of the consent welcome step 3 title.
+  ///
+  /// In en, this message translates to:
+  /// **'starts here'**
+  String get welcome03TitleLine2;
+
   /// Subtitle copy for consent welcome screen 3 (below the title). Prepared for future migration away from hardcoded strings.
   ///
   /// In en, this message translates to:
   /// **'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.'**
   String get welcome03Subtitle;
 
-  /// Headline shown on the consent 02 screen.
+  /// Headline shown on the consent 02 screen. Contains an explicit "\n" line break that must be preserved in every translation.
   ///
   /// In en, this message translates to:
   /// **'Your health,\nyour decision!'**
@@ -856,6 +904,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accept all'**
   String get consent02AcceptAll;
+
+  /// Primary CTA label shown when all optional consent scopes are already selected so the user can clear them.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect all'**
+  String get consent02DeselectAll;
 
   /// Semantics label announcing a consent card is selected.
   ///

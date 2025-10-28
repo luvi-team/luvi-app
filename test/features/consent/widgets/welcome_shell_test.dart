@@ -7,7 +7,7 @@ import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import '../../../support/test_config.dart';
 
 void main() {
-  setUpAll(TestConfig.ensureInitialized);
+  TestConfig.ensureInitialized();
 
   testWidgets('WelcomeShell shows title semantics and wave', (tester) async {
     await tester.pumpWidget(

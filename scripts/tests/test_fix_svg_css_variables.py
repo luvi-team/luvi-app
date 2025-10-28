@@ -22,18 +22,20 @@ class FixSvgCssVariablesTests(unittest.TestCase):
         <rect fill="var(--fill-1, rgb(255, 0, 0))" />
         <circle stroke="var(--fill-2, rgba(0, 0, 0, 0.5))" />
         <path fill="var(--fill-3, hsl(200, 100%, 50%))" />
+        <ellipse fill="var(--fill-4, #FBC343)" />
       </svg>
       """
     )
 
     found, replaced = fix_svg_css_variables(str(svg_path))
-    self.assertEqual(found, 3)
-    self.assertEqual(replaced, 3)
+    self.assertEqual(found, 4)
+    self.assertEqual(replaced, 4)
 
     rewritten = svg_path.read_text(encoding="utf-8")
     self.assertIn('fill="rgb(255, 0, 0)"', rewritten)
     self.assertIn('stroke="rgba(0, 0, 0, 0.5)"', rewritten)
     self.assertIn('fill="hsl(200, 100%, 50%)"', rewritten)
+    self.assertIn('fill="#FBC343"', rewritten)
 
   def test_skips_when_fallback_missing(self):
     svg_path = self._write_svg(

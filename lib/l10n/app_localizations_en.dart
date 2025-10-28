@@ -354,13 +354,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingSuccessTitle => 'You\'re ready to go!';
 
   @override
-  String get onboardingSuccessButton => 'Let\'s go!';
-
-  @override
   String get welcome01Subtitle => 'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.';
 
   @override
+  String get welcome01TitlePrefix => 'In ';
+
+  @override
+  String get welcome01TitleAccent => 'harmony';
+
+  @override
+  String get welcome01TitleSuffixLine1 => ' with your\n';
+
+  @override
+  String get welcome01TitleSuffixLine2 => 'body';
+
+  @override
+  String get welcome01PrimaryCta => 'Continue';
+
+  @override
+  String get welcome02TitleLine1 => 'Curated by experts for you\n';
+
+  @override
+  String get welcome02TitleLine2 => 'refreshed every month';
+
+  @override
   String get welcome02Subtitle => 'Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.';
+
+  @override
+  String get welcome03TitleLine1 => 'Your perfect day\n';
+
+  @override
+  String get welcome03TitleLine2 => 'starts here';
 
   @override
   String get welcome03Subtitle => 'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.';
@@ -406,6 +430,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consent02AcceptAll => 'Accept all';
+
+  @override
+  String get consent02DeselectAll => 'Deselect all';
 
   @override
   String get consent02SemanticSelected => 'Selected';
