@@ -36,6 +36,10 @@ const String _onboardingRootPath = '/onboarding/';
 const String _welcomeRootPath = '/onboarding/w';
 const String _consentRootPath = '/consent/';
 
+class OnboardingRoutes {
+  static const done = '/onboarding/done';
+}
+
 final List<GoRoute> featureRoutes = [
   GoRoute(
     path: SplashScreen.routeName,
@@ -113,7 +117,7 @@ final List<GoRoute> featureRoutes = [
     builder: (ctx, st) => const OnboardingSuccessScreen(),
   ),
   GoRoute(
-    path: '/onboarding/done',
+    path: OnboardingRoutes.done,
     name: 'onboarding_done',
     builder: (ctx, st) =>
         Center(child: Text(AppLocalizations.of(ctx)!.onboardingComplete)),
