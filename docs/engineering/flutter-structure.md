@@ -8,6 +8,7 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
   - Keine Feature-spezifischen Widgets, Strings oder Services im Core.
 - **lib/features/** beherbergt jede Domäne (auth, consent, onboarding …) inklusive `data/`, `domain/`, `state/`, `widgets/`, `screens/`.
 - Shared Widgets (z. B. `features/widgets/`) müssen plattformweit genutzt werden; sonst Feature-lokal halten.
+- Onboarding-weite Bausteine (z. B. `features/widgets/onboarding/onboarding_header.dart`) liegen im globalen Widgets-Pfad; screenspezifische Varianten bleiben weiterhin unter `features/onboarding/`.
 
 ## 2. Services
 - Produktive Services leben in der lokalen Package-Workspace `services/` (aktuelles Package: `luvi_services`).
@@ -27,7 +28,7 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 
 ## 5. Tests
 - Spiegelung: `test/features/<feature>/…` entspricht `lib/features/<feature>/…`.
-- Neue Widgets erhalten gezielte Tests (z. B. `test/features/onboarding/widgets/onboarding_header_test.dart`) statt Sammel-Widgettests.
+- Neue Widgets erhalten gezielte Tests (z. B. `test/features/widgets/onboarding/onboarding_header_test.dart`) statt Sammel-Widgettests.
 - Dev-/Audit-Tests bleiben unter `test/dev/**` und sind per Analyzer ausgeschlossen.
 
 ## 6. Review-Checkliste (jede Änderung)
