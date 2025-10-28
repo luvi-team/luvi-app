@@ -79,8 +79,10 @@ class SupabaseService {
   }
 
   /// Check if user is authenticated
-  static bool get isAuthenticated =>
-      _initialized && client.auth.currentUser != null;
+  static bool get isAuthenticated {
+    if (!_initialized) return false;
+    return Supabase.instance.client.auth.currentUser != null;
+  }
 
   /// Get current user
   static User? get currentUser => _initialized ? client.auth.currentUser : null;
