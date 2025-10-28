@@ -6,6 +6,7 @@ import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
 import 'package:luvi_app/features/consent/routes.dart';
 import '../../support/test_config.dart';
+import '../../support/test_app.dart';
 
 void main() {
   TestConfig.ensureInitialized();
@@ -37,7 +38,10 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp.router(theme: AppTheme.buildAppTheme(), routerConfig: router),
+      buildLocalizedApp(
+        theme: AppTheme.buildAppTheme(),
+        router: router,
+      ),
     );
 
     expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);

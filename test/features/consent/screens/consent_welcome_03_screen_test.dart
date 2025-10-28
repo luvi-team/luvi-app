@@ -4,6 +4,7 @@ import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
 import '../../../support/test_config.dart';
+import '../../../support/test_app.dart';
 
 void main() {
   TestConfig.ensureInitialized();
@@ -12,7 +13,7 @@ void main() {
   ) async {
     final theme = AppTheme.buildAppTheme();
     await tester.pumpWidget(
-      MaterialApp(
+      buildLocalizedApp(
         theme: theme,
         home: WelcomeShell(
           hero: const SizedBox(), // << no real image
