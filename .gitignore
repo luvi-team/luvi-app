@@ -160,3 +160,8 @@ api/node_modules/
 !.config/README.md
 .home_overrides/
 .local_flutter/
+
+# OAuth/Apple secrets
+*.p8
+apple_client_secret.txt
+apple-siware/
