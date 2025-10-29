@@ -2,6 +2,14 @@
 
 A new Flutter project.
 
+## App-Kontext (SSOT)
+
+Der aktuelle, bereinigte App‑Kontext ist hier abgelegt:
+- context/refs/app_context_v3.2.md:1
+
+Archiv (älter):
+- context/refs/archive/app_context_napkin_v3.1.txt:1
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
