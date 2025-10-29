@@ -51,6 +51,7 @@ dependencies:
   go_router: ^16.2.1
   riverpod_annotation: ^3.0.3
   url_launcher: ^6.3.0
+  flutter_markdown: ^0.7.3
   intl: ^0.20.2
   lottie: ^3.3.2
   shared_preferences: ^2.5.3
@@ -86,6 +87,7 @@ flutter:
       # requires: assets/icons/google_g.svg (official multicolor Google 'G')
     - assets/icons/dashboard/
     - assets/animations/
+    - docs/privacy/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

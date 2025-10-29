@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:luvi_app/features/legal/legal_viewer.dart';
+
 /// Defines the API for retrieving legal link configuration (privacy/terms) and
 /// validating whether configured URLs meet production requirements.
 abstract class AppLinksApi {
@@ -94,4 +98,51 @@ class ProdAppLinks implements AppLinksApi {
     }
     return parsed;
   }
+}
+
+/// Opens a legal link externally when valid, otherwise falls back to
+/// an in-app Markdown viewer bundled with the app.
+Future<void> openPrivacy(BuildContext context,
+    {AppLinksApi appLinks = const ProdAppLinks()}) async {
+  await _openLegal(
+    context,
+    uri: appLinks.privacyPolicy,
+    isValid: appLinks.hasValidPrivacy,
+    fallbackAsset: 'docs/privacy/privacy.md',
+    title: 'Datenschutzerklärung',
+  );
+}
+
+/// Opens a legal link externally when valid, otherwise falls back to
+/// an in-app Markdown viewer bundled with the app.
+Future<void> openTerms(BuildContext context,
+    {AppLinksApi appLinks = const ProdAppLinks()}) async {
+  await _openLegal(
+    context,
+    uri: appLinks.termsOfService,
+    isValid: appLinks.hasValidTerms,
+    fallbackAsset: 'docs/privacy/terms.md',
+    title: 'Nutzungsbedingungen',
+  );
+}
+
+Future<void> _openLegal(
+  BuildContext context, {
+  required Uri uri,
+  required bool isValid,
+  required String fallbackAsset,
+  required String title,
+}) async {
+  // Try external if valid
+  if (isValid) {
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (ok) return;
+  }
+  if (!context.mounted) return;
+  // Fallback to in-app Markdown viewer
+  await Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => LegalViewer.asset(fallbackAsset, title: title),
+    ),
+  );
 }

@@ -32,4 +32,16 @@ class FeatureFlags {
       defaultValue: true,
     );
   }
+
+  /// Consent v1 flag: defaults to `true` but can be toggled via
+  /// `--dart-define=enable_consent_v1=false`.
+  static bool get enableConsentV1 =>
+      const String.fromEnvironment('enable_consent_v1', defaultValue: 'true') ==
+      'true';
+
+  /// FTUE backend allow flag (S0 backout): defaults to `true` but can be
+  /// toggled via `--dart-define=allow_ftue_backend=false`.
+  static bool get allowFtueBackend =>
+      const String.fromEnvironment('allow_ftue_backend', defaultValue: 'true') ==
+      'true';
 }

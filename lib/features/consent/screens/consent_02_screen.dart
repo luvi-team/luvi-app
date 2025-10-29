@@ -14,7 +14,6 @@ import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/link_text.dart';
 import 'package:luvi_services/user_state_service.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'consent_01_screen.dart';
 
@@ -147,17 +146,8 @@ class Consent02Screen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final baseStyle = _consentBodyTextStyle(theme);
-    final privacyUri = appLinks.privacyPolicy;
-    final termsUri = appLinks.termsOfService;
-
-    Future<void> open(Uri uri) async {
-      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!ok && context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.consent02LinkError)));
-      }
-    }
+    // Use helper functions in app_links.dart to open externally when valid
+    // and fall back to the in-app Markdown viewer when not available.
 
     return WidgetSpan(
       alignment: PlaceholderAlignment.baseline,
@@ -168,14 +158,14 @@ class Consent02Screen extends ConsumerWidget {
         parts: [
           LinkTextPart(
             l10n.consent02LinkPrivacyLabel,
-            onTap: () => open(privacyUri),
+            onTap: () => openPrivacy(context, appLinks: appLinks),
             bold: true,
             color: colorScheme.primary,
           ),
           LinkTextPart(l10n.consent02LinkConjunction),
           LinkTextPart(
             l10n.consent02LinkTermsLabel,
-            onTap: () => open(termsUri),
+            onTap: () => openTerms(context, appLinks: appLinks),
             bold: true,
             color: colorScheme.primary,
           ),

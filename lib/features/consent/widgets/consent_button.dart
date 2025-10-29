@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
 
-class ConsentButton extends StatefulWidget {
+class ConsentButton extends ConsumerStatefulWidget {
   const ConsentButton({super.key});
 
   @override
-  State<ConsentButton> createState() => _ConsentButtonState();
+  ConsumerState<ConsentButton> createState() => _ConsentButtonState();
 }
 
-class _ConsentButtonState extends State<ConsentButton> {
+class _ConsentButtonState extends ConsumerState<ConsentButton> {
   final _consentService = ConsentService();
   bool _isLoading = false;
 
@@ -21,6 +22,7 @@ class _ConsentButtonState extends State<ConsentButton> {
       await _consentService.accept(
         version: 'v1.0',
         scopes: ['terms', 'privacy'],
+        ref: ref,
       );
 
       if (mounted) {
