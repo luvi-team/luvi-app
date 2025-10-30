@@ -165,3 +165,9 @@ api/node_modules/
 *.p8
 apple_client_secret.txt
 apple-siware/
+
+# OAuth/Google secrets
+client_secret_*.json
+google_oauth_*
+*_client_secret.json
+*.secrets.json
