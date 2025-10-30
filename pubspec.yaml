@@ -57,6 +57,8 @@ dependencies:
   shared_preferences: ^2.5.3
   luvi_services:
     path: services
+  sign_in_with_apple: ^6.1.0
+  sign_in_button: ^4.0.1
 
 dev_dependencies:
   flutter_test:

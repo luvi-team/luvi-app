@@ -44,4 +44,14 @@ class FeatureFlags {
   static bool get allowFtueBackend =>
       const String.fromEnvironment('allow_ftue_backend', defaultValue: 'true') ==
       'true';
+
+  /// Google Sign-In enable flag: toggle via `--dart-define=enable_google_sign_in=false`.
+  static bool get enableGoogleSignIn =>
+      const String.fromEnvironment('enable_google_sign_in', defaultValue: 'true') ==
+      'true';
+
+  /// Apple Sign-In enable flag: toggle via `--dart-define=enable_apple_sign_in=false`.
+  static bool get enableAppleSignIn =>
+      const String.fromEnvironment('enable_apple_sign_in', defaultValue: 'true') ==
+      'true';
 }
