@@ -611,6 +611,10 @@
   "@authLoginSocialDivider": {
     "description": "Divider text shown above social auth buttons."
   },
+  "authLoginSocialGoogle": "Sign in with Google",
+  "@authLoginSocialGoogle": {
+    "description": "Button text for Google sign-in (social auth button)."
+  },
   "authErrEmailInvalid": "Please double-check your email.",
   "@authErrEmailInvalid": {
     "description": "Validation error shown when the email is malformed."

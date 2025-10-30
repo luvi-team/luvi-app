@@ -56,6 +56,7 @@ class AuthStrings {
       _l10n().authLoginCtaLoadingSemantic;
   static String get loginForgot => _l10n().authLoginForgot;
   static String get loginSocialDivider => _l10n().authLoginSocialDivider;
+  static String get loginSocialGoogle => _l10n().authLoginSocialGoogle;
   static String get errEmailInvalid => _l10n().authErrEmailInvalid;
   static String get errPasswordInvalid => _l10n().authErrPasswordInvalid;
   static String get errConfirmEmail => _l10n().authErrConfirmEmail;

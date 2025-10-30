@@ -611,6 +611,10 @@
   "@authLoginSocialDivider": {
     "description": "Divider-Text oberhalb der Social-Login-Buttons."
   },
+  "authLoginSocialGoogle": "Mit Google anmelden",
+  "@authLoginSocialGoogle": {
+    "description": "Button-Text für Google-Login (Social-Auth-Button)."
+  },
   "authErrEmailInvalid": "Ups, bitte E-Mail überprüfen",
   "@authErrEmailInvalid": {
     "description": "Validierungsfehler, wenn die E-Mail ungültig ist."

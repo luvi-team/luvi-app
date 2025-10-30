@@ -971,6 +971,12 @@ abstract class AppLocalizations {
   /// **'Or continue with'**
   String get authLoginSocialDivider;
 
+  /// Button text for Google sign-in (social auth button).
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get authLoginSocialGoogle;
+
   /// Validation error shown when the email is malformed.
   ///
   /// In en, this message translates to:

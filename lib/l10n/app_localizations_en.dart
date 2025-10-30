@@ -465,6 +465,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLoginSocialDivider => 'Or continue with';
 
   @override
+  String get authLoginSocialGoogle => 'Sign in with Google';
+
+  @override
   String get authErrEmailInvalid => 'Please double-check your email.';
 
   @override

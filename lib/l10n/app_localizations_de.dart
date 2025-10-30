@@ -465,6 +465,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authLoginSocialDivider => 'Oder melde dich an mit';
 
   @override
+  String get authLoginSocialGoogle => 'Mit Google anmelden';
+
+  @override
   String get authErrEmailInvalid => 'Ups, bitte E-Mail überprüfen';
 
   @override
