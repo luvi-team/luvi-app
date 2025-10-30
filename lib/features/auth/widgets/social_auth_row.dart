@@ -36,20 +36,8 @@ class SocialAuthRow extends StatelessWidget {
     ];
 
     final buttons = <Widget>[];
-    if (FeatureFlags.enableGoogleSignIn) {
-      buttons.add(
-        SizedBox(
-          width: double.infinity,
-          child: SignInButton(
-            Buttons.google,
-            text: 'Mit Google anmelden',
-            onPressed: onGoogle,
-          ),
-        ),
-      );
-    }
+    // Apple-first ordering per Apple HIG
     if (FeatureFlags.enableAppleSignIn) {
-      if (buttons.isNotEmpty) buttons.add(const SizedBox(width: Spacing.s + Spacing.xs));
       buttons.add(
         SizedBox(
           width: double.infinity,
@@ -60,22 +48,31 @@ class SocialAuthRow extends StatelessWidget {
         ),
       );
     }
-
-    if (buttons.isEmpty) {
-      return Column(children: children);
-    }
-
-    // Keep original row layout when both are enabled; otherwise single full-width button
-    if (FeatureFlags.enableGoogleSignIn && FeatureFlags.enableAppleSignIn) {
-      children.add(
-        Row(
-          children: [
-            Expanded(child: buttons.first),
-            const SizedBox(width: Spacing.s + Spacing.xs),
-            Expanded(child: buttons.last),
-          ],
+    if (FeatureFlags.enableGoogleSignIn) {
+      buttons.add(
+        SizedBox(
+          width: double.infinity,
+          child: SignInButton(
+            Buttons.google,
+            text: AuthStrings.loginSocialGoogle,
+            onPressed: onGoogle,
+          ),
         ),
       );
+    }
+
+    if (buttons.isEmpty) {
+      // No providers enabled: render nothing (avoid orphaned divider)
+      return const SizedBox.shrink();
+    }
+
+    // Vertical layout: Apple first, optional gap, then Google
+    if (buttons.length == 2) {
+      children.addAll([
+        buttons.first,
+        const SizedBox(height: Spacing.m), // 16dp gap between buttons
+        buttons.last,
+      ]);
     } else {
       children.addAll(buttons);
     }
