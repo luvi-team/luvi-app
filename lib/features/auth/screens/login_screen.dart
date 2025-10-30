@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -9,6 +10,9 @@ import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
 import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_form_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
+import 'package:luvi_app/core/config/app_links.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
+// LaunchMode kommt über supabase_flutter (kein url_launcher nötig)
 
 /// LoginScreen with pixel-perfect Figma implementation.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -155,8 +159,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             LoginFormSection(
               gapBelowForgot: gapBelowForgot,
               socialGap: socialGap,
-              onGoogle: () {},
-              onApple: () {},
+              onGoogle: () {
+                final redirect = AppLinks.oauthRedirectUri;
+                supa.Supabase.instance.client.auth.signInWithOAuth(
+                  supa.OAuthProvider.google,
+                  redirectTo: kIsWeb ? null : redirect,
+                  authScreenLaunchMode: supa.LaunchMode.externalApplication,
+                );
+              },
+              onApple: () {
+                final redirect = AppLinks.oauthRedirectUri;
+                supa.Supabase.instance.client.auth.signInWithOAuth(
+                  supa.OAuthProvider.apple,
+                  redirectTo: kIsWeb ? null : redirect,
+                  authScreenLaunchMode: supa.LaunchMode.externalApplication,
+                );
+              },
             ),
             if (globalError != null) ...[
               const SizedBox(height: Spacing.m),
