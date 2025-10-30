@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -83,7 +84,32 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           width: double.infinity,
           child: ElevatedButton(
             key: const ValueKey('create_new_cta_button'),
-            onPressed: () {},
+            onPressed: () async {
+              final newPw = _newPasswordController.text.trim();
+              final confirmPw = _confirmPasswordController.text.trim();
+              if (newPw.isEmpty || confirmPw.isEmpty) return;
+              if (newPw != confirmPw) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Passwörter stimmen nicht überein'),
+                  ),
+                );
+                return;
+              }
+              try {
+                await supa.Supabase.instance.client.auth
+                    .updateUser(supa.UserAttributes(password: newPw));
+                if (!context.mounted) return;
+                context.goNamed('password_success');
+              } catch (_) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Passwort konnte nicht aktualisiert werden'),
+                  ),
+                );
+              }
+            },
             child: Text(AuthStrings.createNewCta),
           ),
         ),
