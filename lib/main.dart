@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'features/navigation/go_router_refresh_stream.dart' as luvi_refresh;
 import 'package:luvi_services/supabase_service.dart';
 import 'core/config/app_links.dart';
 import 'features/navigation/route_orientation_controller.dart';
@@ -68,10 +69,16 @@ class MyApp extends StatelessWidget {
             defaultValue: SplashScreen.routeName,
           );
 
+    final refresh = SupabaseService.isInitialized
+        ? luvi_refresh.GoRouterRefreshStream(
+            SupabaseService.client.auth.onAuthStateChange,
+          )
+        : null;
     final router = GoRouter(
       routes: routes.featureRoutes,
       initialLocation: initialLocation,
       redirect: routes.supabaseRedirect,
+      refreshListenable: refresh,
       observers: [orientationController.navigatorObserver],
     );
     return MaterialApp.router(

@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:luvi_app/features/legal/legal_viewer.dart';
 
+/// Shared app link constants (non-instance based)
+class AppLinks {
+  // OAuth redirect URI used for mobile deep linking. Configurable via --dart-define.
+  static const String oauthRedirectUri = String.fromEnvironment(
+    'OAUTH_REDIRECT_URI',
+    defaultValue: 'luvi://auth-callback',
+  );
+}
+
 /// Defines the API for retrieving legal link configuration (privacy/terms) and
 /// validating whether configured URLs meet production requirements.
 abstract class AppLinksApi {
