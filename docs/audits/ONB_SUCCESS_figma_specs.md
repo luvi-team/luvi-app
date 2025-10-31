@@ -408,7 +408,7 @@ Trophy besteht ausschließlich aus Vektor-Shapes (Body mit Gradient, Henkel, Ste
    - **Entspricht bestehendem Token:** ❌ Keine Übereinstimmung
    - **Empfehlung:** Nicht als Token definieren (Button in centered column, kein fixer bottom spacing)
 
-**Status:** Tokens `trophyToTitle` (24px) und `titleToButton` (66px) sind implementiert und werden im Screen verwendet. Hinweis: Der Wert wurde von 28px (Figma) auf 24px (Implementierung) angepasst - siehe Begründung in [ggf. ADR oder Issue-Referenz].
+**Status:** Tokens `trophyToTitle` (24px) und `titleToButton` (66px) sind implementiert und werden im Screen verwendet. Hinweis: Der Wert wurde von 28px (Figma) auf 24px (Implementierung) angepasst - siehe Begründung in [ADR-0006](../../context/ADR/0006-onboarding-success-spacing.md).
 
 ### Layout-Strategie
 1. **Screen verwendet vertikales Centering:** ✅ Yes (Flutter-Implementierung verwendet `Column` mit `MainAxisAlignment.center`)
