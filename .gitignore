@@ -171,3 +171,6 @@ client_secret_*.json
 google_oauth_*
 *_client_secret.json
 *.secrets.json
+
+# Local tooling (Flutter SDK cache)
+.tooling/
