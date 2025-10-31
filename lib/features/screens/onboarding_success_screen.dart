@@ -202,18 +202,22 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                   () => ref.read(userStateServiceProvider.future),
                   tag: 'userState',
                 );
-                try {
-                  await userState?.markOnboardingComplete(
-                    fitnessLevel: fitnessLevel,
-                  );
-                } catch (error, stackTrace) {
+                if (userState == null) {
                   debugPrint(
-                    'markOnboardingComplete failed: $error\n$stackTrace',
+                    'Cannot complete onboarding: user state service unavailable',
                   );
+                  return;
                 }
+                await userState.markOnboardingComplete(
+                  fitnessLevel: fitnessLevel,
+                );
                 if (context.mounted) {
                   context.go(HeuteScreen.routeName);
                 }
+              } catch (error, stackTrace) {
+                debugPrint(
+                  'markOnboardingComplete failed: $error\n$stackTrace',
+                );
               } finally {
                 busyNotifier.setBusy(false);
               }

@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
+const VALID_SCOPES = ['health', 'analytics', 'marketing', 'ai_journal', 'terms'] as const
 
 interface ConsentRequestPayload {
   policy_version?: unknown
@@ -51,7 +52,7 @@ serve(async (req) => {
     typeof body.policy_version === 'string'
       ? body.policy_version
       : (typeof body.version === 'string' ? (body.version as string) : undefined)
-  const scopes = Array.isArray(body.scopes) ? body.scopes : undefined
+  const rawScopes = Array.isArray(body.scopes) ? body.scopes : undefined
   if (!policyVersion) {
     return new Response(
       JSON.stringify({ error: 'policy_version is required' }),
@@ -62,9 +63,34 @@ serve(async (req) => {
     )
   }
 
-  if (!scopes || scopes.length === 0) {
+  if (!rawScopes || rawScopes.length === 0) {
     return new Response(
       JSON.stringify({ error: 'scopes must be a non-empty array' }),
+      { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+  }
+
+  const invalidScopes: unknown[] = []
+  const validatedScopes: string[] = []
+
+  for (const scope of rawScopes) {
+    if (typeof scope !== 'string') {
+      invalidScopes.push(scope)
+      continue
+    }
+    if (!VALID_SCOPES.includes(scope)) {
+      invalidScopes.push(scope)
+      continue
+    }
+    validatedScopes.push(scope)
+  }
+
+  if (invalidScopes.length > 0) {
+    return new Response(
+      JSON.stringify({ error: 'Invalid scopes provided', invalidScopes }),
       { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -94,7 +120,7 @@ serve(async (req) => {
   const payload = {
     user_id: userResult.user.id,
     version: policyVersion,
-    scopes
+    scopes: validatedScopes
   }
 
   const { error } = await supabase

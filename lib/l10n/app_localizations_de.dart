@@ -84,7 +84,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonSkip => 'Überspringen';
 
   @override
-  String get commonStartNow => 'Starte jetzt';
+  String get commonStartNow => 'Los geht\'s!';
 
   @override
   String dashboardGreeting(String name) {
@@ -408,6 +408,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consent02LinkTermsLabel => 'Nutzungsbedingungen';
 
   @override
+  String get privacyPolicyTitle => 'Datenschutzerklärung';
+
+  @override
+  String get termsOfServiceTitle => 'Nutzungsbedingungen';
+
+  @override
   String get consent02LinkSuffix => ' einverstanden.';
 
   @override
@@ -481,6 +487,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authErrLoginUnavailable => 'Login derzeit nicht möglich.';
+
+  @override
+  String get authPasswordMismatchError => 'Passwörter stimmen nicht überein.';
+
+  @override
+  String get authPasswordUpdateError => 'Passwort konnte nicht aktualisiert werden.';
 
   @override
   String get authEmailHint => 'Deine E-Mail';

@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../../support/test_app.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import '../../../support/test_config.dart';
 
@@ -11,24 +13,62 @@ void main() {
 
   testWidgets('WelcomeShell shows title semantics and wave', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      buildLocalizedApp(
         theme: AppTheme.buildAppTheme(),
-        home: WelcomeShell(
-          hero: const SizedBox(), // asset-free for test stability
-          title: const Text('Dein Zyklus ist deine\nSuperkraft.'),
-          subtitle:
-              'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
-          onNext: () {},
-          heroAspect: 438 / 619,
-          waveHeightPx: 413,
-          waveAsset: Assets.images.welcomeWave,
-          activeIndex: 0,
+        home: Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            final theme = Theme.of(context);
+            final headline = theme.textTheme.headlineMedium;
+            final accentStyle =
+                headline?.copyWith(color: theme.colorScheme.secondary);
+            return WelcomeShell(
+              hero: const SizedBox(), // asset-free for test stability
+              title: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: headline,
+                  children: [
+                    TextSpan(text: l10n.welcome01TitlePrefix.trim()),
+                    const TextSpan(text: ' '),
+                    TextSpan(
+                      text: l10n.welcome01TitleAccent.trim(),
+                      style: accentStyle,
+                    ),
+                    const TextSpan(text: ' '),
+                    TextSpan(text: l10n.welcome01TitleSuffixLine1.trim()),
+                    const TextSpan(text: '\n'),
+                    TextSpan(text: l10n.welcome01TitleSuffixLine2.trim()),
+                  ],
+                ),
+              ),
+              subtitle: l10n.welcome01Subtitle,
+              primaryButtonLabel: l10n.welcome01PrimaryCta,
+              onNext: () {},
+              heroAspect: 438 / 619,
+              waveHeightPx: 413,
+              activeIndex: 0,
+            );
+          },
         ),
       ),
     );
 
-    // Title present
-    expect(find.textContaining('Dein Zyklus'), findsOneWidget);
+    await tester.pumpAndSettle();
+
+    final shellContext = tester.element(find.byType(WelcomeShell));
+    final l10n = AppLocalizations.of(shellContext)!;
+    final richTitle = tester.widget<RichText>(
+      find.descendant(
+        of: find.byType(WelcomeShell),
+        matching: find.byType(RichText),
+      ).first,
+    );
+    final plainText = richTitle.text.toPlainText();
+    expect(plainText, contains(l10n.welcome01TitlePrefix.trim()));
+    expect(plainText, contains(l10n.welcome01TitleAccent.trim()));
+    expect(plainText, contains(l10n.welcome01TitleSuffixLine1.trim()));
+    expect(plainText, contains(l10n.welcome01TitleSuffixLine2.trim()));
 
     // Wave SVG present and asset path verified
     final svgFinder = find.byType(SvgPicture);

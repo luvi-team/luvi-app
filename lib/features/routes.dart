@@ -150,19 +150,21 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const ResetPasswordScreen(),
   ),
   GoRoute(
-    path: SuccessScreen.forgotEmailSentRouteName,
-    name: 'forgot_sent',
+    path: SuccessScreen.forgotEmailSentRoutePath,
+    name: SuccessScreen.forgotEmailSentRouteName,
     builder: (context, state) =>
         const SuccessScreen(variant: SuccessVariant.forgotEmailSent),
   ),
   GoRoute(
     path: CreateNewPasswordScreen.routeName,
     name: 'password_new',
-    builder: (context, state) => const CreateNewPasswordScreen(),
+    builder: (context, state) => const CreateNewPasswordScreen(
+      key: ValueKey('auth_create_new_screen'),
+    ),
   ),
   GoRoute(
-    path: SuccessScreen.passwordSuccessRouteName,
-    name: 'password_success',
+    path: SuccessScreen.passwordSuccessRoutePath,
+    name: SuccessScreen.passwordSuccessRouteName,
     builder: (context, state) => const SuccessScreen(),
   ),
   GoRoute(
@@ -216,7 +218,6 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     'ALLOW_ONBOARDING_DEV',
     defaultValue: false,
   );
-  final allowOnboardingBypass = allowOnboardingDev;
   // Enable via --dart-define=ALLOW_ONBOARDING_DEV=true (false by default).
 
   final isInitialized = SupabaseService.isInitialized;
@@ -242,7 +243,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   }
 
   // Dev-only bypass to allow opening onboarding without auth
-  if (allowOnboardingBypass && isOnboarding) {
+  if (allowOnboardingDev && isOnboarding) {
     return null;
   }
 

@@ -62,6 +62,8 @@ class AuthStrings {
   static String get errConfirmEmail => _l10n().authErrConfirmEmail;
   static String get invalidCredentials => _l10n().authInvalidCredentials;
   static String get errLoginUnavailable => _l10n().authErrLoginUnavailable;
+  static String get passwordMismatchError => _l10n().authPasswordMismatchError;
+  static String get passwordUpdateError => _l10n().authPasswordUpdateError;
   static String get emailHint => _l10n().authEmailHint;
   static String get passwordHint => _l10n().authPasswordHint;
   static String get signupTitle => _l10n().authSignupTitle;

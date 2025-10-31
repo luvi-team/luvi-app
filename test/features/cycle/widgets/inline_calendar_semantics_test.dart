@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
 import 'package:luvi_app/features/cycle/domain/week_strip.dart';
 import 'package:luvi_app/features/cycle/widgets/cycle_inline_calendar.dart';
@@ -34,8 +35,13 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           locale: const Locale('de', 'DE'),
-          supportedLocales: const [Locale('de', 'DE')],
-          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           home: Scaffold(
             body: Center(
               child: Theme(
@@ -87,8 +93,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('de', 'DE'),
-        supportedLocales: const [Locale('de', 'DE')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         home: Scaffold(
           body: SizedBox(
             width: screenWidth,
@@ -133,7 +144,14 @@ void main() {
     expect(inkWellFinder, findsOneWidget);
 
     final inkWell = tester.widget<InkWell>(inkWellFinder);
-    final sizedBox = inkWell.child as SizedBox;
+    final inkWellChild = inkWell.child;
+    expect(inkWellChild, isNotNull, reason: 'InkWell sollte eine SizedBox als Kind liefern');
+    expect(
+      inkWellChild,
+      isA<SizedBox>(),
+      reason: 'Inline-Calendar erwartet SizedBox als Container für Breitenprüfung',
+    );
+    final sizedBox = inkWellChild! as SizedBox;
 
     expect(
       sizedBox.width,
@@ -156,8 +174,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('de', 'DE'),
-        supportedLocales: const [Locale('de', 'DE')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         home: Scaffold(
           body: Theme(
             data: AppTheme.buildAppTheme(),
@@ -179,11 +202,19 @@ void main() {
 
     // Get the first positioned Container (today pill)
     final todayPill = tester.widget<Container>(todayPillFinder.first);
-    final decoration = todayPill.decoration as BoxDecoration;
+    final decoration = todayPill.decoration;
+    expect(decoration, isNotNull, reason: 'Heute-Pill sollte eine Decoration besitzen');
+    expect(
+      decoration,
+      isA<BoxDecoration>(),
+      reason: 'Heute-Pill erwartet BoxDecoration zur Farbprüfung',
+    );
+    final boxDecoration = decoration! as BoxDecoration;
+    expect(boxDecoration.color, isNotNull, reason: 'Heute-Pill benötigt eine Farbe');
 
     // Verify color is follicularDark (#4169E1) with 100% opacity for follicular phase today
     expect(
-      decoration.color,
+      boxDecoration.color,
       equals(const Color(0xFF4169E1)),
       reason:
           'Today pill should use full follicularDark color for follicular phase',
@@ -191,14 +222,14 @@ void main() {
 
     // Verify opacity is 100% (a = 1.0)
     expect(
-      decoration.color!.a,
+      boxDecoration.color!.a,
       equals(1.0),
       reason: 'Today pill should have 100% opacity (vibrant color)',
     );
 
     // Verify borderRadius is 40 (pill shape)
     expect(
-      decoration.borderRadius,
+      boxDecoration.borderRadius,
       equals(BorderRadius.circular(40.0)),
       reason: 'Today pill should have 40px border radius',
     );
@@ -223,8 +254,13 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           locale: const Locale('de', 'DE'),
-          supportedLocales: const [Locale('de', 'DE')],
-          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           home: Scaffold(
             body: Theme(
               data: AppTheme.buildAppTheme(),
@@ -245,28 +281,38 @@ void main() {
       expect(todayPillFinder, findsWidgets);
 
       final todayPill = tester.widget<Container>(todayPillFinder.first);
-      final decoration = todayPill.decoration as BoxDecoration;
+      final decoration = todayPill.decoration;
+      expect(decoration, isNotNull, reason: 'Heute-Pill sollte eine Decoration besitzen');
+      expect(
+        decoration,
+        isA<BoxDecoration>(),
+        reason: 'Heute-Pill erwartet BoxDecoration zur Farbprüfung',
+      );
+      final boxDecoration = decoration! as BoxDecoration;
+      expect(boxDecoration.color, isNotNull, reason: 'Heute-Pill benötigt eine Farbe');
 
       // Verify color is ovulation gold (#E1B941) with 100% opacity
       expect(
-        decoration.color,
+        boxDecoration.color,
         equals(const Color(0xFFE1B941)),
         reason: 'Today pill should use full ovulation gold color',
       );
 
       // Verify opacity is 100% (a = 1.0)
       expect(
-        decoration.color!.a,
+        boxDecoration.color!.a,
         equals(1.0),
         reason: 'Today pill should have 100% opacity for ovulation phase',
       );
     },
   );
 
-  testWidgets('CycleInlineCalendar segment colors match medical phase tokens', (
+  testWidgets(
+    'CycleInlineCalendar renders segment painter for medical phase tokens',
+    (
     tester,
   ) async {
-    // Test with a date during ovulation phase to verify color mapping
+    // Ensures CustomPaint attaches for segment rendering while ovulation phase is active.
     final today = DateTime(2025, 10, 2); // Ovulation phase
     final cycleInfo = CycleInfo(
       lastPeriod: DateTime(2025, 9, 19),
@@ -278,8 +324,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('de', 'DE'),
-        supportedLocales: const [Locale('de', 'DE')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         home: Scaffold(
           body: Theme(
             data: AppTheme.buildAppTheme(),
@@ -299,11 +350,8 @@ void main() {
     expect(customPaintFinder, findsOneWidget);
 
     // Property test: Verify that the widget builds without errors
-    // and uses token-based colors (implementation verified via DsColors)
-    // Expected colors (token-based, medical accuracy):
-    // - Follicular: #4169E1 (dark) / #334169E1 (light 20% alpha)
-    // - Ovulation: #E1B941
-    // - Luteal: #A755C2
-    // - Menstruation: #FFB9B9
+    // and attaches the painter responsible for drawing segment colors.
+    // TODO(cycle-inline-calendar-colors): Add painter color verification by exposing a
+    // debug getter from CycleInlineCalendar or pixel-matching the rendered CustomPaint.
   });
 }

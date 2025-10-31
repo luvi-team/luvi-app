@@ -28,6 +28,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final GlobalKey _socialAuthKey = GlobalKey(debugLabel: 'login_social_auth');
+  double _socialBlockHeight = AuthLayout.socialBlockReserveFallback;
+  MediaQueryData? _lastMediaQuery;
+  Locale? _lastLocale;
+  bool _pendingSocialMeasurement = false;
 
   @override
   void initState() {
@@ -58,6 +63,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final mediaQuery = MediaQuery.of(context);
+    final locale = Localizations.maybeLocaleOf(context);
+    if (_shouldReMeasure(mediaQuery, locale)) {
+      _lastMediaQuery = mediaQuery;
+      _lastLocale = locale;
+      _scheduleSocialBlockMeasurement();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final loginAsync = ref.watch(loginProvider);
     final loginState = loginAsync.value ?? LoginState.initial();
@@ -68,6 +85,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = submitState.isLoading;
     final hasValidationError = emailError != null || passwordError != null;
 
+    _scheduleSocialBlockMeasurement();
+
     void submit() => ref
         .read(loginSubmitProvider.notifier)
         .submit(
@@ -77,9 +96,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final mediaQuery = MediaQuery.of(context);
     final safeBottom = mediaQuery.padding.bottom;
+    final inlineReserve = AuthLayout.inlineCtaReserveLogin(_socialBlockHeight);
     final fieldScrollPadding = EdgeInsets.only(
       // Reserve unterhalb der Felder: CTA + Social-Block + Footer + safeBottom
-      bottom: AuthLayout.inlineCtaReserveLoginApprox + safeBottom,
+      bottom: inlineReserve + safeBottom,
     );
     const gapBelowForgot = Spacing.m;
     const socialGap = Spacing.m;
@@ -123,6 +143,52 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
+  bool _shouldReMeasure(MediaQueryData mediaQuery, Locale? locale) {
+    final mediaChanged =
+        _lastMediaQuery == null ||
+        _mediaQueryChanged(_lastMediaQuery!, mediaQuery);
+    final localeChanged = locale != _lastLocale;
+    return mediaChanged || localeChanged;
+  }
+
+  bool _mediaQueryChanged(MediaQueryData previous, MediaQueryData next) {
+    final previousScale = previous.textScaler.scale(1.0);
+    final nextScale = next.textScaler.scale(1.0);
+    return previous.size != next.size ||
+        previous.padding != next.padding ||
+        previous.viewInsets != next.viewInsets ||
+        previous.devicePixelRatio != next.devicePixelRatio ||
+        previousScale != nextScale;
+  }
+
+  void _scheduleSocialBlockMeasurement() {
+    if (_pendingSocialMeasurement) {
+      return;
+    }
+    _pendingSocialMeasurement = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pendingSocialMeasurement = false;
+      _measureSocialBlock();
+    });
+  }
+
+  void _measureSocialBlock() {
+    final element = _socialAuthKey.currentContext;
+    if (element == null) {
+      return;
+    }
+    final size = element.size;
+    if (size == null) {
+      return;
+    }
+    final measuredHeight = size.height;
+    if ((measuredHeight - _socialBlockHeight).abs() > 0.5) {
+      setState(() {
+        _socialBlockHeight = measuredHeight;
+      });
+    }
+  }
+
   Widget _buildScrollableBody({
     required BuildContext context,
     required BoxConstraints constraints,
@@ -159,6 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             LoginFormSection(
               gapBelowForgot: gapBelowForgot,
               socialGap: socialGap,
+              socialBlockKey: _socialAuthKey,
               onGoogle: () {
                 final redirect = AppLinks.oauthRedirectUri;
                 supa.Supabase.instance.client.auth.signInWithOAuth(

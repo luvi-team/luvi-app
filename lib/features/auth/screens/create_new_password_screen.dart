@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/shared/utils/layout_utils.dart';
@@ -12,6 +13,7 @@ import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart
 import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {
   static const String routeName = '/auth/password/new';
@@ -26,8 +28,7 @@ class CreateNewPasswordScreen extends StatefulWidget {
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final FieldAutoScroller _autoScroller =
-      FieldAutoScroller(ScrollController());
+  final FieldAutoScroller _autoScroller = FieldAutoScroller(ScrollController());
 
   final _headerKey = GlobalKey();
   final _passwordFieldKey = GlobalKey();
@@ -50,8 +51,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final tokens = theme.extension<DsTokens>()!;
+    final tokens = theme.extension<DsTokens>();
     final mediaQuery = MediaQuery.of(context);
+    final l10n = AppLocalizations.of(context) ??
+        lookupAppLocalizations(AppLocalizations.supportedLocales.first);
 
     final backButtonTopSpacing = topOffsetFromSafeArea(
       AuthLayout.backButtonTop,
@@ -64,8 +67,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     final confirmTextStyle = theme.textTheme.bodySmall?.copyWith(
       color: theme.colorScheme.onSurface,
     );
+    final confirmHintColor =
+        tokens?.grayscale500 ??
+        theme.colorScheme.onSurface.withValues(alpha: 0.6);
     final confirmHintStyle = theme.textTheme.bodySmall?.copyWith(
-      color: tokens.grayscale500,
+      color: confirmHintColor,
     );
 
     final safeBottom = mediaQuery.padding.bottom;
@@ -74,7 +80,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     );
 
     return Scaffold(
-      key: const ValueKey('auth_create_new_screen'),
       resizeToAvoidBottomInset: true,
       backgroundColor: theme.colorScheme.surface,
       bottomNavigationBar: AuthBottomCta(
@@ -90,23 +95,20 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
               if (newPw.isEmpty || confirmPw.isEmpty) return;
               if (newPw != confirmPw) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Passwörter stimmen nicht überein'),
-                  ),
+                  SnackBar(content: Text(l10n.authPasswordMismatchError)),
                 );
                 return;
               }
               try {
-                await supa.Supabase.instance.client.auth
-                    .updateUser(supa.UserAttributes(password: newPw));
+                await supa.Supabase.instance.client.auth.updateUser(
+                  supa.UserAttributes(password: newPw),
+                );
                 if (!context.mounted) return;
-                context.goNamed('password_success');
+                context.goNamed(SuccessScreen.passwordSuccessRouteName);
               } catch (_) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Passwort konnte nicht aktualisiert werden'),
-                  ),
+                  SnackBar(content: Text(l10n.authPasswordUpdateError)),
                 );
               }
             },

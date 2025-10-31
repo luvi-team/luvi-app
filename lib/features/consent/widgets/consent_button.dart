@@ -22,7 +22,7 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       await _consentService.accept(
         version: 'v1.0',
         scopes: ['terms', 'privacy'],
-        ref: ref,
+        ref: ref as Ref,
       );
 
       if (mounted) {

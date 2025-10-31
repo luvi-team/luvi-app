@@ -17,7 +17,6 @@ enum FitnessLevel {
     FitnessLevel.beginner,
     FitnessLevel.occasional,
     FitnessLevel.fit,
-    FitnessLevel.unknown,
   ];
 
   static FitnessLevel fromSelectionIndex(int index) {
@@ -43,12 +42,11 @@ enum FitnessLevel {
     if (raw == null || raw.isEmpty) {
       return null;
     }
-    for (final level in FitnessLevel.values) {
-      if (level.name == raw) {
-        return level;
-      }
+    try {
+      return FitnessLevel.values.byName(raw);
+    } on ArgumentError {
+      return null;
     }
-    return null;
   }
 }
 

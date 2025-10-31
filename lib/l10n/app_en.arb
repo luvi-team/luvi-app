@@ -535,6 +535,14 @@
   "@consent02LinkTermsLabel": {
     "description": "Label for the terms of service deep link on the consent 02 screen."
   },
+  "privacyPolicyTitle": "Privacy Policy",
+  "@privacyPolicyTitle": {
+    "description": "Title shown in the in-app viewer when opening the privacy policy."
+  },
+  "termsOfServiceTitle": "Terms of Service",
+  "@termsOfServiceTitle": {
+    "description": "Title shown in the in-app viewer when opening the terms of service."
+  },
   "consent02LinkSuffix": ".",
   "@consent02LinkSuffix": {
     "description": "Suffix appended after the terms links sentence."
@@ -634,6 +642,14 @@
   "authErrLoginUnavailable": "Login is currently unavailable.",
   "@authErrLoginUnavailable": {
     "description": "Generic error message for temporarily unavailable login service."
+  },
+  "authPasswordMismatchError": "Passwords do not match.",
+  "@authPasswordMismatchError": {
+    "description": "Error shown when the entered passwords differ."
+  },
+  "authPasswordUpdateError": "We couldn't update your password.",
+  "@authPasswordUpdateError": {
+    "description": "Error shown when the password update request fails."
   },
   "authEmailHint": "Your email",
   "@authEmailHint": {

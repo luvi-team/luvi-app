@@ -33,14 +33,14 @@ void main() async {
 
   const appLinks = ProdAppLinks();
 
-  // Debug/Profil: Fail fast per assert (nur in Debug aktiv)
+  // Debug/Profile: Fail fast via assert (only active in debug builds)
   // Commented out for development - using example.com is fine for testing
   // assert(
   //   appLinks.hasValidPrivacy && appLinks.hasValidTerms,
   //   'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
   // );
 
-  // Release: harte Laufzeitprüfung (nicht via assert)
+  // Release: hard runtime check (not via assert)
   if (kReleaseMode && (!appLinks.hasValidPrivacy || !appLinks.hasValidTerms)) {
     throw StateError(
       'Legal links invalid. Provide PRIVACY_URL and TERMS_URL via --dart-define.',

@@ -255,11 +255,7 @@ class SupabaseService {
   }
 
   static String _formatIsoDate(DateTime date) {
-    final utc = date.toUtc();
-    final year = utc.year.toString().padLeft(4, '0');
-    final month = utc.month.toString().padLeft(2, '0');
-    final day = utc.day.toString().padLeft(2, '0');
-    return '$year-$month-$day';
+    return date.toUtc().toIso8601String().split('T').first;
   }
 }
 

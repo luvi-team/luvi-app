@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:luvi_app/features/legal/legal_viewer.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Shared app link constants (non-instance based)
 class AppLinks {
@@ -41,8 +42,9 @@ class ProdAppLinks implements AppLinksApi {
   static const _rawPrivacyUrl = String.fromEnvironment('PRIVACY_URL');
   static const _rawTermsUrl = String.fromEnvironment('TERMS_URL');
   static final Uri _sentinelUri = Uri.parse(_sentinelUrl);
-  static final String _sentinelScheme =
-      _sentinelUri.scheme.trim().toLowerCase();
+  static final String _sentinelScheme = _sentinelUri.scheme
+      .trim()
+      .toLowerCase();
   static final String _sentinelHost = _sentinelUri.host.trim().toLowerCase();
   static final String _sentinelPath = _sentinelUri.path.trim().toLowerCase();
 
@@ -76,17 +78,14 @@ class ProdAppLinks implements AppLinksApi {
     final host = uri.host.trim().toLowerCase();
     final path = uri.path.trim().toLowerCase();
     final isSentinelMatch =
-        scheme == _sentinelScheme && host == _sentinelHost && path == _sentinelPath;
+        scheme == _sentinelScheme &&
+        host == _sentinelHost &&
+        path == _sentinelPath;
     if (isSentinelMatch) return false;
     if (scheme.isEmpty || host.isEmpty) return false;
 
     if (scheme != 'https') return false;
-    const prohibitedExactHosts = {
-      'example.com',
-      'localhost',
-      '::1',
-      '0.0.0.0',
-    };
+    const prohibitedExactHosts = {'example.com', 'localhost', '::1', '0.0.0.0'};
     if (prohibitedExactHosts.contains(host)) {
       return false;
     }
@@ -111,27 +110,39 @@ class ProdAppLinks implements AppLinksApi {
 
 /// Opens a legal link externally when valid, otherwise falls back to
 /// an in-app Markdown viewer bundled with the app.
-Future<void> openPrivacy(BuildContext context,
-    {AppLinksApi appLinks = const ProdAppLinks()}) async {
+Future<void> openPrivacy(
+  BuildContext context, {
+  AppLinksApi appLinks = const ProdAppLinks(),
+  String? title,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final resolvedTitle =
+      title ?? l10n?.privacyPolicyTitle ?? 'Datenschutzerklärung';
   await _openLegal(
     context,
     uri: appLinks.privacyPolicy,
     isValid: appLinks.hasValidPrivacy,
     fallbackAsset: 'docs/privacy/privacy.md',
-    title: 'Datenschutzerklärung',
+    title: resolvedTitle,
   );
 }
 
 /// Opens a legal link externally when valid, otherwise falls back to
 /// an in-app Markdown viewer bundled with the app.
-Future<void> openTerms(BuildContext context,
-    {AppLinksApi appLinks = const ProdAppLinks()}) async {
+Future<void> openTerms(
+  BuildContext context, {
+  AppLinksApi appLinks = const ProdAppLinks(),
+  String? title,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final resolvedTitle =
+      title ?? l10n?.termsOfServiceTitle ?? 'Nutzungsbedingungen';
   await _openLegal(
     context,
     uri: appLinks.termsOfService,
     isValid: appLinks.hasValidTerms,
     fallbackAsset: 'docs/privacy/terms.md',
-    title: 'Nutzungsbedingungen',
+    title: resolvedTitle,
   );
 }
 

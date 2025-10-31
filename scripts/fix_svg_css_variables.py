@@ -77,6 +77,13 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
         fallback_color = match.group(1).strip()
         # Skip replacement if fallback fails to parse cleanly to avoid corrupting content.
         if not fallback_color or fallback_color.startswith('var('):
+            logger.warning(
+                "Skipping CSS var replacement in '%s' at offset %d: fallback='%s', raw='%s'",
+                svg_file,
+                match.start(),
+                fallback_color or '<empty>',
+                match.group(0),
+            )
             return match.group(0)
         return fallback_color
 
@@ -94,15 +101,41 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
 
         temp_path.write_text(fixed_content, encoding='utf-8')
         temp_path.replace(svg_file)
-    except Exception as exc:  # pragma: no cover - defensive logging
+    except PermissionError as error:  # pragma: no cover - defensive logging
+        logger.error(
+            "Permission denied while updating SVG '%s' using temp file '%s': %s",
+            svg_file,
+            temp_path,
+            error,
+            exc_info=True,
+        )
+        raise
+    except OSError as error:  # pragma: no cover - defensive logging
+        logger.error(
+            "OS error while updating SVG '%s' using temp file '%s': %s",
+            svg_file,
+            temp_path,
+            error,
+            exc_info=True,
+        )
+        raise
+    except Exception:  # pragma: no cover - defensive logging
         logger.exception(
-            "Failed to atomically update SVG '%s' using temp file '%s'",
+            "Unexpected failure while atomically updating SVG '%s' via temp file '%s'",
             svg_file,
             temp_path,
         )
+        raise
+    finally:
         if temp_path.exists():
-            temp_path.unlink()
-        raise exc
+            try:
+                temp_path.unlink()
+            except OSError as cleanup_error:  # pragma: no cover - defensive logging
+                logger.warning(
+                    "Failed to remove temporary SVG '%s' during cleanup: %s",
+                    temp_path,
+                    cleanup_error,
+                )
 
     return (variables_found, variables_replaced)
 

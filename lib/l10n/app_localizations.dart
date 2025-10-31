@@ -857,6 +857,18 @@ abstract class AppLocalizations {
   /// **'Terms of Service'**
   String get consent02LinkTermsLabel;
 
+  /// Title shown in the in-app viewer when opening the privacy policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyTitle;
+
+  /// Title shown in the in-app viewer when opening the terms of service.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfServiceTitle;
+
   /// Suffix appended after the terms links sentence.
   ///
   /// In en, this message translates to:
@@ -1006,6 +1018,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login is currently unavailable.'**
   String get authErrLoginUnavailable;
+
+  /// Error shown when the entered passwords differ.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get authPasswordMismatchError;
+
+  /// Error shown when the password update request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t update your password.'**
+  String get authPasswordUpdateError;
 
   /// Hint text for the email input field.
   ///

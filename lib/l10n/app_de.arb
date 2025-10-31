@@ -110,7 +110,7 @@
   "@commonSkip": {
     "description": "Label für sekundäre \"Überspringen\"-Aktionen in Onboarding- und Consent-Flows."
   },
-  "commonStartNow": "Starte jetzt",
+  "commonStartNow": "Los geht's!",
   "@commonStartNow": {
     "description": "Primärer CTA-Text, der zum sofortigen Start auffordert."
   },
@@ -535,6 +535,14 @@
   "@consent02LinkTermsLabel": {
     "description": "Label for the terms of service deep link on the consent 02 screen."
   },
+  "privacyPolicyTitle": "Datenschutzerklärung",
+  "@privacyPolicyTitle": {
+    "description": "Titel für die Datenschutzerklärung im In-App-Viewer."
+  },
+  "termsOfServiceTitle": "Nutzungsbedingungen",
+  "@termsOfServiceTitle": {
+    "description": "Titel für die Nutzungsbedingungen im In-App-Viewer."
+  },
   "consent02LinkSuffix": " einverstanden.",
   "@consent02LinkSuffix": {
     "description": "Suffix appended after the terms links sentence."
@@ -634,6 +642,14 @@
   "authErrLoginUnavailable": "Login derzeit nicht möglich.",
   "@authErrLoginUnavailable": {
     "description": "Allgemeine Fehlermeldung, wenn Login vorübergehend nicht möglich ist."
+  },
+  "authPasswordMismatchError": "Passwörter stimmen nicht überein.",
+  "@authPasswordMismatchError": {
+    "description": "Fehlermeldung, wenn die eingegebenen Passwörter nicht identisch sind."
+  },
+  "authPasswordUpdateError": "Passwort konnte nicht aktualisiert werden.",
+  "@authPasswordUpdateError": {
+    "description": "Fehlermeldung, wenn das Aktualisieren des Passworts fehlschlägt."
   },
   "authEmailHint": "Deine E-Mail",
   "@authEmailHint": {

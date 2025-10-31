@@ -8,12 +8,14 @@ class LoginFormSection extends StatelessWidget {
     required this.socialGap,
     required this.onGoogle,
     required this.onApple,
+    this.socialBlockKey,
   });
 
   final double gapBelowForgot;
   final double socialGap;
   final VoidCallback onGoogle;
   final VoidCallback onApple;
+  final Key? socialBlockKey;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class LoginFormSection extends StatelessWidget {
       children: [
         SizedBox(height: gapBelowForgot),
         SocialAuthRow(
+          key: socialBlockKey,
           onGoogle: onGoogle,
           onApple: onApple,
           dividerToButtonsGap: socialGap,

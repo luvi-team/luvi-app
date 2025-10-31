@@ -29,14 +29,12 @@ class AuthLayout {
   static const double ctaLinkGapError =
       29; // Link gap when validation error shown
   /// Reserve below form when keyboard shows:
-  /// button (50) + double vertical spacing (2×24) + social block (~180) +
-  /// signup link gap (≈31). safeBottom gets added at the call site.
-  // TODO(ui): Replace magic number with dynamic measurement (GlobalKey + RenderBox).
-  // Current value (180dp) has ~7dp buffer for vertical layout (173dp actual).
-  // Risk: Breaks with textScaleFactor > 1.04, long translations, or package updates.
-  static const double socialBlockReserveApprox = 180;
-  static const double inlineCtaReserveLoginApprox =
-      Sizes.buttonHeight + Spacing.l * 2 + socialBlockReserveApprox + Spacing.m;
+  /// button (50) + double vertical spacing (2×24) + dynamically measured
+  /// social block height + signup link gap (≈31). `safeBottom` gets added at
+  /// the call site.
+  static const double socialBlockReserveFallback = 180;
+  static double inlineCtaReserveLogin(double socialBlockHeight) =>
+      Sizes.buttonHeight + Spacing.l * 2 + socialBlockHeight + Spacing.m;
   static const double backButtonSize = 40;
   static const double backIconSize = 20.0;
   static const double otpFieldSize = 51;

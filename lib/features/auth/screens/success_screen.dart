@@ -13,8 +13,10 @@ import 'package:luvi_app/features/screens/heute_screen.dart';
 enum SuccessVariant { passwordSaved, forgotEmailSent }
 
 class SuccessScreen extends StatelessWidget {
-  static const String passwordSuccessRouteName = '/auth/password/success';
-  static const String forgotEmailSentRouteName = '/auth/forgot/sent';
+  static const String passwordSuccessRoutePath = '/auth/password/success';
+  static const String passwordSuccessRouteName = 'password_success';
+  static const String forgotEmailSentRoutePath = '/auth/forgot/sent';
+  static const String forgotEmailSentRouteName = 'forgot_sent';
 
   const SuccessScreen({super.key, this.variant = SuccessVariant.passwordSaved});
 

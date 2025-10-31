@@ -75,8 +75,6 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
         setState(() {
           _isSaving = false;
         });
-      } else {
-        _isSaving = false;
       }
     }
   }
@@ -205,9 +203,6 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
       tag: 'userState',
     );
     if (userState == null) return;
-    await tryOrNullAsync(
-      () => userState.setFitnessLevel(level),
-      tag: 'userState.setFitnessLevel',
-    );
+    await userState.setFitnessLevel(level);
   }
 }

@@ -1,12 +1,18 @@
 import 'dart:async';
 
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginSubmitNotifier extends AsyncNotifier<void> {
+typedef AutoDisposeAsyncNotifier<T> = AsyncNotifier<T>;
+typedef AutoDisposeAsyncNotifierProvider<
+  TNotifier extends AutoDisposeAsyncNotifier<T>,
+  T
+> = AsyncNotifierProvider<TNotifier, T>;
+
+class LoginSubmitNotifier extends AutoDisposeAsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
@@ -90,6 +96,6 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
 }
 
 final loginSubmitProvider =
-    AsyncNotifierProvider.autoDispose<LoginSubmitNotifier, void>(
+    AutoDisposeAsyncNotifierProvider<LoginSubmitNotifier, void>(
       LoginSubmitNotifier.new,
     );

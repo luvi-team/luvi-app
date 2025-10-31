@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
+import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
@@ -13,9 +14,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: const Consent02Screen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const Consent02Screen(appLinks: TestConfig.defaultAppLinks),
             locale: const Locale('de'),
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -56,22 +55,38 @@ void main() {
       expect(tester.widget<ElevatedButton>(weiter).onPressed, isNotNull);
 
       // Tap "Alle akzeptieren" to select all optional scopes
-      final allAcceptFinder =
-          find.byKey(const Key('consent02_btn_toggle_optional'));
+      final allAcceptFinder = find.byKey(
+        const Key('consent02_btn_toggle_optional'),
+      );
       expect(allAcceptFinder, findsOneWidget);
       expect(find.text('Alle akzeptieren'), findsOneWidget);
-      final toggleButtonBefore =
-          tester.widget<ElevatedButton>(allAcceptFinder);
+      final toggleButtonBefore = tester.widget<ElevatedButton>(allAcceptFinder);
       expect(toggleButtonBefore.onPressed, isNotNull);
-      expect(find.text('Alle akzeptieren'), findsOneWidget);
       await tester.tap(allAcceptFinder);
       await tester.pumpAndSettle();
 
       // Button switches to "Alle abwählen" with active handler for clearing selections
-      final toggleButtonAfter =
-          tester.widget<ElevatedButton>(allAcceptFinder);
+      final toggleButtonAfter = tester.widget<ElevatedButton>(allAcceptFinder);
       expect(toggleButtonAfter.onPressed, isNotNull);
       expect(find.text('Alle abwählen'), findsOneWidget);
+
+      final screenContext = tester.element(find.byType(Consent02Screen));
+      final container = ProviderScope.containerOf(screenContext, listen: false);
+      final stateAfterSelect = container.read(consent02Provider);
+      expect(stateAfterSelect.allOptionalSelected, isTrue);
+      expect(stateAfterSelect.choices[ConsentScope.analytics], isTrue);
+      expect(stateAfterSelect.choices[ConsentScope.marketing], isTrue);
+      expect(stateAfterSelect.choices[ConsentScope.model_training], isTrue);
+
+      await tester.tap(allAcceptFinder);
+      await tester.pumpAndSettle();
+
+      final stateAfterClear = container.read(consent02Provider);
+      expect(stateAfterClear.allOptionalSelected, isFalse);
+      expect(stateAfterClear.choices[ConsentScope.analytics], isFalse);
+      expect(stateAfterClear.choices[ConsentScope.marketing], isFalse);
+      expect(stateAfterClear.choices[ConsentScope.model_training], isFalse);
+      expect(find.text('Alle akzeptieren'), findsOneWidget);
 
       // Ensure no explicit card titles are present
       expect(find.text('Gesundheitsdaten'), findsNothing);

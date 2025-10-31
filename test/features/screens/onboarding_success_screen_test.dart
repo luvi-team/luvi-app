@@ -98,7 +98,12 @@ void main() {
       await tester.pumpWidget(await buildApp(router));
       await tester.pumpAndSettle();
 
-      expect(find.text('Du bist startklar!'), findsOneWidget);
+      final screenContext = tester.element(
+        find.byType(OnboardingSuccessScreen),
+      );
+      final l10n = AppLocalizations.of(screenContext)!;
+
+      expect(find.text(l10n.onboardingSuccessTitle), findsOneWidget);
 
       final cta = find.byKey(const Key('onboarding_success_cta'));
       expect(cta, findsOneWidget);
@@ -106,8 +111,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Dashboard'), findsOneWidget);
-      final currentUri =
-          router.routeInformationProvider.value.uri.toString();
+      final currentUri = router.routeInformationProvider.value.uri.toString();
       expect(currentUri, HeuteScreen.routeName);
     });
 
@@ -227,7 +231,7 @@ void main() {
       final context = tester.element(find.byType(OnboardingSuccessScreen));
       final spacing = OnboardingSpacing.of(context);
 
-      // From updated spec: trophyToTitle = 24px, titleToButton = 66px
+      // From updated spec: trophyToTitle = 28px, titleToButton = 66px
       expect(spacing.trophyToTitle, OnboardingSuccessTokens.gapToTitle);
       expect(spacing.titleToButton, 66.0);
 

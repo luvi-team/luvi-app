@@ -14,6 +14,11 @@ class LegalViewer extends StatelessWidget {
       body: FutureBuilder<String>(
         future: rootBundle.loadString(assetPath),
         builder: (context, snap) {
+          if (snap.hasError) {
+            return Center(
+              child: Text('Error loading document: ${snap.error}'),
+            );
+          }
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
           }

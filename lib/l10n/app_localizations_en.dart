@@ -408,6 +408,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consent02LinkTermsLabel => 'Terms of Service';
 
   @override
+  String get privacyPolicyTitle => 'Privacy Policy';
+
+  @override
+  String get termsOfServiceTitle => 'Terms of Service';
+
+  @override
   String get consent02LinkSuffix => '.';
 
   @override
@@ -481,6 +487,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authErrLoginUnavailable => 'Login is currently unavailable.';
+
+  @override
+  String get authPasswordMismatchError => 'Passwords do not match.';
+
+  @override
+  String get authPasswordUpdateError => 'We couldn\'t update your password.';
 
   @override
   String get authEmailHint => 'Your email';

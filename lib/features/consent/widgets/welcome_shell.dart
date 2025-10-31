@@ -96,14 +96,14 @@ class WelcomeShell extends StatelessWidget {
 
   Widget _buildDefaultContent(BuildContext context) {
     final theme = Theme.of(context);
-    final buttonLabel =
-        primaryButtonLabel ??
-        AppLocalizations.of(context)?.commonContinue ??
-        'Continue';
-    final skipLabel =
-        secondaryButtonLabel ??
-        AppLocalizations.of(context)?.commonSkip ??
-        'Skip';
+    final localizations = AppLocalizations.of(context);
+    assert(
+      localizations != null,
+      'AppLocalizations must be provided above WelcomeShell.',
+    ); // Widget enforces localization; fail fast during development.
+    final l10n = localizations!;
+    final buttonLabel = primaryButtonLabel ?? l10n.commonContinue;
+    final skipLabel = secondaryButtonLabel ?? l10n.commonSkip;
     final children = <Widget>[];
 
     if (title != null) {

@@ -4,7 +4,15 @@ final RegExp _emailPattern = RegExp(
   r'([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})',
   caseSensitive: false,
 );
+// Intentionally broad to capture varied phone formatting. Downstream logic removes
+// extension markers (ext, extension, x) and requires at least ten digits before
+// treating a match as PII, which filters out most version-like sequences while
+// still catching loosely formatted phone numbers.
 final RegExp _phoneCandidatePattern = RegExp(r'\b\+?[\d()\s.-]{7,}\b');
+final RegExp _extensionTokenPattern = RegExp(
+  r'\b(?:ext(?:ension)?|x)\s*[:.]?\s*\d*',
+  caseSensitive: false,
+);
 final RegExp _digitCounterPattern = RegExp(r'\d');
 final RegExp _uuidPattern = RegExp(
   r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b',
@@ -96,7 +104,12 @@ String? _sanitizeError(Object error) {
 
   sanitized = sanitized.replaceAllMapped(_phoneCandidatePattern, (match) {
     final candidate = match.group(0)!;
-    final digitCount = _digitCounterPattern.allMatches(candidate).length;
+    // Remove extension markers (e.g., "ext. 123") before counting digits so the
+    // minimum length check focuses on the core phone number.
+    final withoutExtensions =
+        candidate.replaceAll(_extensionTokenPattern, '');
+    final digitCount =
+        _digitCounterPattern.allMatches(withoutExtensions).length;
     if (digitCount >= 10) {
       return '[redacted-phone]';
     }

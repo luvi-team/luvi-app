@@ -19,6 +19,8 @@ void main() {
       expect(sanitized, isNot(contains('example.com')));
     });
 
+    // A null result signals that no sanitization was necessary because the input
+    // was deemed safe (no redactions performed).
     test('ignores date-like strings', () {
       final sanitized = debugSanitizeError('Event on 2023-10-27 at noon');
       expect(sanitized, isNull);

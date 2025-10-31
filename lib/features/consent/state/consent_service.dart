@@ -6,7 +6,7 @@ class ConsentService {
   Future<void> accept({
     required String version,
     required List<String> scopes,
-    required WidgetRef ref,
+    required Ref ref,
   }) async {
     final response = await Supabase.instance.client.functions.invoke(
       'log_consent',

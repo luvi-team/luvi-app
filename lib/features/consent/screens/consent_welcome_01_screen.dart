@@ -6,6 +6,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'welcome_metrics.dart';
 import '../widgets/welcome_shell.dart';
 import 'consent_welcome_02_screen.dart';
+import '../widgets/localized_builder.dart';
 
 class ConsentWelcome01Screen extends StatelessWidget {
   const ConsentWelcome01Screen({super.key});
@@ -19,35 +20,7 @@ class ConsentWelcome01Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    if (l10n == null) {
-      final supportedLocales = AppLocalizations.supportedLocales;
-      final fallbackLocale = supportedLocales.first;
-      final currentLocale = Localizations.maybeLocaleOf(context);
-      final effectiveLocale = currentLocale == null
-          ? fallbackLocale
-          : supportedLocales.firstWhere(
-              (supported) =>
-                  supported == currentLocale ||
-                  supported.languageCode == currentLocale.languageCode,
-              orElse: () => fallbackLocale,
-            );
-      return Localizations.override(
-        context: context,
-        delegates: AppLocalizations.localizationsDelegates,
-        locale: effectiveLocale,
-        child: Builder(
-          builder: (overrideContext) {
-            final fallbackL10n = AppLocalizations.of(overrideContext);
-            if (fallbackL10n == null) {
-              return const SizedBox.shrink();
-            }
-            return _buildLocalizedContent(overrideContext, fallbackL10n);
-          },
-        ),
-      );
-    }
-    return _buildLocalizedContent(context, l10n);
+    return LocalizedBuilder(builder: _buildLocalizedContent);
   }
 
   Widget _buildLocalizedContent(BuildContext context, AppLocalizations l10n) {

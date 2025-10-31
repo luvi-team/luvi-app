@@ -45,7 +45,11 @@ class LoginState {
 }
 
 class LoginNotifier extends AsyncNotifier<LoginState> {
-  static final RegExp _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+  // Client-side sanity guard; server-side validation stays authoritative.
+  static final RegExp _emailRegex =
+      RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,63}$');
+  static const int _kMinPasswordLength = 6;
+  static const Object _noChange = Object();
 
   @override
   FutureOr<LoginState> build() => LoginState.initial();
@@ -54,51 +58,34 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
 
   LoginState get currentState => _current();
 
-  void setEmail(String value) {
-    final current = _current();
-    state = AsyncData(
-      current.copyWith(
-        email: value,
-        emailError: current.emailError,
-        passwordError: current.passwordError,
-        globalError: current.globalError,
-      ),
-    );
-  }
+  void setEmail(String value) => updateState(email: value);
 
-  void setPassword(String value) {
-    final current = _current();
-    state = AsyncData(
-      current.copyWith(
-        password: value,
-        emailError: current.emailError,
-        passwordError: current.passwordError,
-        globalError: current.globalError,
-      ),
-    );
-  }
+  void setPassword(String value) => updateState(password: value);
 
-  void clearGlobalError() {
-    final current = _current();
-    state = AsyncData(current.copyWith(globalError: null));
-  }
+  void clearGlobalError() => updateState(globalError: null);
 
   /// Eine (1) kanonische Variante inkl. globalError – kompatibel zu Provider/Tests.
   void updateState({
     String? email,
     String? password,
-    String? emailError,
-    String? passwordError,
-    String? globalError,
+    Object? emailError = _noChange,
+    Object? passwordError = _noChange,
+    Object? globalError = _noChange,
   }) {
     final current = _current();
     state = AsyncData(
       current.copyWith(
         email: email ?? current.email,
         password: password ?? current.password,
-        emailError: emailError,
-        passwordError: passwordError,
-        globalError: globalError,
+        emailError: identical(emailError, _noChange)
+            ? current.emailError
+            : emailError as String?,
+        passwordError: identical(passwordError, _noChange)
+            ? current.passwordError
+            : passwordError as String?,
+        globalError: identical(globalError, _noChange)
+            ? current.globalError
+            : globalError as String?,
       ),
     );
   }
@@ -114,7 +101,7 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
       if (!_emailRegex.hasMatch(current.email)) {
         eErr = AuthStrings.errEmailInvalid;
       }
-      if (current.password.length < 6) {
+      if (current.password.length < _kMinPasswordLength) {
         pErr = AuthStrings.errPasswordInvalid;
       }
 

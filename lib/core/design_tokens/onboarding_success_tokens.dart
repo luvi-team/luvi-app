@@ -14,7 +14,7 @@ class OnboardingSuccessTokens {
 
   /// Target gap (in px) between the trophy illustration and the title.
   /// Canonical: `OnboardingSpacing._kOnboardingSuccessTrophyToTitleGap`.
-  static const double gapToTitle = 24.0;
+  static const double gapToTitle = 28.0;
 
   /// Responsive config for the celebration animation based on viewport height.
   static OnboardingSuccessIllustrationConfig celebrationConfig({

@@ -14,16 +14,6 @@ class ConsentWelcome02Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maybeL10n = AppLocalizations.of(context);
-    if (maybeL10n == null) {
-      return Localizations.override(
-        context: context,
-        delegates: AppLocalizations.localizationsDelegates,
-        locale: AppLocalizations.supportedLocales.first,
-        child: Builder(builder: _buildLocalizedContent),
-      );
-    }
-
     return _buildLocalizedContent(context);
   }
 

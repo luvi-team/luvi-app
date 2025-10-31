@@ -13,20 +13,10 @@ class ConsentWelcome03Screen extends StatelessWidget {
   const ConsentWelcome03Screen({super.key});
 
   static const routeName = '/onboarding/w3';
-  // Keine spezielle Subtitle-Spaltenbreite notwendig – W1/W2 nutzen volle Breite.
+  // No special subtitle column width needed – W1/W2 use full width.
 
   @override
   Widget build(BuildContext context) {
-    final maybeL10n = AppLocalizations.of(context);
-    if (maybeL10n == null) {
-      return Localizations.override(
-        context: context,
-        delegates: AppLocalizations.localizationsDelegates,
-        locale: AppLocalizations.supportedLocales.first,
-        child: Builder(builder: _buildLocalizedContent),
-      );
-    }
-
     return _buildLocalizedContent(context);
   }
 

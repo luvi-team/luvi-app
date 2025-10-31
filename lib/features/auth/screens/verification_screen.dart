@@ -124,7 +124,7 @@ final class _VariantCopy {
   String get resend => AuthStrings.verifyResend;
 
   factory _VariantCopy.fromVariant(VerificationScreenVariant variant) {
-    // Achtung: Rückgaben absichtlich NICHT const, da AuthStrings runtime-lokalisiert sind.
+    // Note: Returns intentionally NOT const, since AuthStrings are runtime-localized.
     switch (variant) {
       case VerificationScreenVariant.emailConfirmation:
         return _VariantCopy(
