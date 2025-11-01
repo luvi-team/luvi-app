@@ -25,6 +25,22 @@ samples, guidance on mobile development, and a full API reference.
 
 Note: Dieses Projekt verwendet `flutter_dotenv`; lokale Entwicklung nutzt `.env.development` (siehe `.env.example` als Vorlage).
 
+## Flutter Tooling (Codex CLI)
+
+- Standardisierte Aufrufe über Wrapper: `scripts/flutter_codex.sh`
+  - Analyze: `scripts/flutter_codex.sh analyze`
+  - Tests: `scripts/flutter_codex.sh test -j 1` (Loopback‑Socket kann in Sandbox Approval erfordern)
+  - Version: `scripts/flutter_codex.sh --version`
+- Optional für Builds/Signing/Performance:
+  - `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh <cmd>` nutzt das echte `$HOME`/Standard‑Caches (z. B. `~/.gradle`, `~/.cocoapods`).
+- Make‑Shortcuts:
+  - `make analyze`
+  - `make test`
+  - `make flutter-version`
+  - `make format` (Check only)
+  - `make format-apply`
+  - `make fix`
+
 ## Vercel Backend (Hybrid)
 
 1. **Hybrid-Architektur:** Supabase übernimmt Auth, CRUD und Realtime (mit RLS), während Vercel die KI-Endpunkte, Webhooks und Cron-Jobs ausführt.
