@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
+import 'package:luvi_app/core/analytics/analytics.dart';
 
 class ConsentButton extends ConsumerStatefulWidget {
   const ConsentButton({super.key});
@@ -19,11 +20,21 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
     });
 
     try {
+      const version = 'v1.0';
+      final scopes = ['terms', 'privacy'];
       await _consentService.accept(
-        version: 'v1.0',
-        scopes: ['terms', 'privacy'],
-        ref: ref as Ref,
+        version: version,
+        scopes: scopes,
       );
+
+      // Fire analytics event only after successful server persistence
+      final a = ref.read(analyticsProvider);
+      a.track('consent_accepted', {
+        'policy_version': version,
+        'required_ok': true,
+        'scopes_count': scopes.length,
+        'scopes': scopes,
+      });
 
       if (mounted) {
         ScaffoldMessenger.of(
