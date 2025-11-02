@@ -97,11 +97,13 @@ class WelcomeShell extends StatelessWidget {
   Widget _buildDefaultContent(BuildContext context) {
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context);
-    assert(
-      localizations != null,
-      'AppLocalizations must be provided above WelcomeShell.',
-    ); // Widget enforces localization; fail fast during development.
-    final l10n = localizations!;
+    if (localizations == null) {
+      throw FlutterError(
+        'AppLocalizations must be provided above WelcomeShell. '
+        'Ensure MaterialApp includes localizationsDelegates and supportedLocales.',
+      );
+    }
+    final AppLocalizations l10n = localizations;
     final buttonLabel = primaryButtonLabel ?? l10n.commonContinue;
     final skipLabel = secondaryButtonLabel ?? l10n.commonSkip;
     final children = <Widget>[];

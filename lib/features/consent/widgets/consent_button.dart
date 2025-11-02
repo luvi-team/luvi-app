@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
+import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/core/analytics/analytics.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class ConsentButton extends ConsumerStatefulWidget {
   const ConsentButton({super.key});
@@ -11,17 +13,17 @@ class ConsentButton extends ConsumerStatefulWidget {
 }
 
 class _ConsentButtonState extends ConsumerState<ConsentButton> {
-  static const String _consentVersion = 'v1.0';
-  static const List<String> _consentScopes = ['terms', 'privacy'];
 
   bool _isLoading = false;
 
   Future<void> _handleAccept() async {
     setState(() => _isLoading = true);
+    // Keep version/scopes in outer scope so both success and failure paths
+    // can include them in analytics.
+      const version = ConsentConfig.currentVersion;
+      const scopes = ConsentConfig.requiredScopes;
     try {
       final consentService = ref.read(consentServiceProvider);
-      const version = _consentVersion;
-      const scopes = _consentScopes;
 
       await consentService.accept(version: version, scopes: scopes);
 
@@ -35,14 +37,25 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       });
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Consent accepted')),
+          SnackBar(content: Text(l10n.consentSnackbarAccepted)),
         );
       }
     } catch (e) {
+      // Track consent failure with error and context; still show user-facing
+      // feedback via SnackBar if the widget is mounted.
+      final a = ref.read(analyticsProvider);
+      a.track('consent_failed', {
+        'error': e.toString(),
+        'policy_version': version,
+        'scopes_count': scopes.length,
+        'scopes': scopes,
+      });
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(l10n.consentSnackbarError(e.toString()))),
         );
       }
     } finally {
