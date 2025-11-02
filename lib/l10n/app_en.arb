@@ -778,5 +778,16 @@
   "authVerifyResend": "Resend",
   "@authVerifyResend": {
     "description": "Link label to resend the verification code."
+  },
+  "consentSnackbarAccepted": "Consent accepted",
+  "@consentSnackbarAccepted": {
+    "description": "Snackbar text shown when consent was successfully recorded."
+  },
+  "consentSnackbarError": "Consent failed: {error}",
+  "@consentSnackbarError": {
+    "description": "Snackbar error template when consent logging fails. Include the error message.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
   }
 }

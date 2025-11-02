@@ -778,5 +778,16 @@
   "authVerifyResend": "Erneut senden",
   "@authVerifyResend": {
     "description": "Link-Text zum erneuten Senden des Codes."
+  },
+  "consentSnackbarAccepted": "Einwilligung akzeptiert",
+  "@consentSnackbarAccepted": {
+    "description": "Snackbar-Text nach erfolgreichem Speichern der Einwilligung."
+  },
+  "consentSnackbarError": "Einwilligung fehlgeschlagen: {error}",
+  "@consentSnackbarError": {
+    "description": "Snackbar-Fehlervorlage bei gescheiterter Einwilligungsprotokollierung. Fehlernachricht einfügen.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
   }
 }

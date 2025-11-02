@@ -447,6 +447,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consent02SemanticUnselected => 'Not selected';
 
   @override
+  String get consentSnackbarAccepted => 'Consent accepted';
+
+  @override
+  String consentSnackbarError(String error) {
+    return 'Consent failed: $error';
+  }
+
+  @override
   String get authLoginHeadline => 'Welcome back 💜';
 
   @override

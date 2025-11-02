@@ -935,6 +935,18 @@ abstract class AppLocalizations {
   /// **'Not selected'**
   String get consent02SemanticUnselected;
 
+  /// Snackbar text shown when consent was successfully recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent accepted'**
+  String get consentSnackbarAccepted;
+
+  /// Snackbar error template when consent logging fails. Include the error message.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent failed: {error}'**
+  String consentSnackbarError(String error);
+
   /// Headline shown on the login screen.
   ///
   /// In en, this message translates to:
