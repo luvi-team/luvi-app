@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'init_mode.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -70,7 +71,9 @@ class SupabaseService {
   static Future<void> _performInitializeAndCache(String envFile) async {
     try {
       await _performInitialize(envFile: envFile);
-      _initialized = true;
+      // In tests, treat initialization as skipped/offline.
+      final isTest = InitModeBridge.resolve() == InitMode.test;
+      _initialized = !isTest;
       _initializationError = null;
       _initializationStackTrace = null;
     } catch (error, stackTrace) {
@@ -78,19 +81,28 @@ class SupabaseService {
       _initializationError = error;
       _initializationStackTrace = stackTrace;
       // Do not keep a failed future; allow retry via clearing the gate in tryInitialize's catch handler
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: error,
-          stack: stackTrace,
-          library: 'supabase_service',
-          context: ErrorDescription('initializing Supabase'),
-        ),
-      );
-      rethrow;
+      final isTest = InitModeBridge.resolve() == InitMode.test;
+      if (!isTest) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stackTrace,
+            library: 'supabase_service',
+            context: ErrorDescription('initializing Supabase'),
+          ),
+        );
+      }
+      if (!isTest) {
+        rethrow;
+      }
     }
   }
 
   static Future<void> _performInitialize({required String envFile}) async {
+    // In tests, skip environment loading and network initialization entirely.
+    if (InitModeBridge.resolve() == InitMode.test) {
+      return;
+    }
     await _loadEnvironment(envFile);
     final credentials = _resolveCredentials(envFile);
     await _initializeSupabase(credentials);
@@ -208,13 +220,16 @@ class SupabaseService {
   static Future<void> _loadEnvironment(String envFile) async {
     try {
       await dotenv.load(fileName: envFile);
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(
-        StateError(
+    } catch (error, stackTrace) {
+      debugPrint('Failed to load Supabase environment from '
+          '"$envFile": $error\n$stackTrace');
+      // In tests, don't crash app initialization; proceed with offline UI.
+      final isTest = InitModeBridge.resolve() == InitMode.test;
+      if (!isTest) {
+        throw StateError(
           'Failed to load Supabase environment from "$envFile": $error',
-        ),
-        stackTrace,
-      );
+        );
+      }
     }
   }
 

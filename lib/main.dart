@@ -12,6 +12,9 @@ import 'features/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'features/routes.dart' as routes;
 import 'features/screens/splash/splash_screen.dart';
+import 'core/init/supabase_init_controller.dart';
+import 'core/init/init_mode.dart';
+import 'package:luvi_services/init_mode.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,15 +24,9 @@ void main() async {
     defaultOrientations: const [DeviceOrientation.portraitUp],
   );
   await orientationController.applyDefault();
-  final supabaseEnvFile = kReleaseMode ? '.env.production' : '.env.development';
-  try {
-    await SupabaseService.tryInitialize(envFile: supabaseEnvFile);
-  } catch (error, stackTrace) {
-    if (kReleaseMode) {
-      Error.throwWithStackTrace(error, stackTrace);
-    }
-    debugPrint('Supabase initialization failed for $supabaseEnvFile: $error');
-  }
+  // Resilient Supabase init: do not block startup and never crash in release.
+  // Initialization runs via SupabaseInitController in the background with
+  // classification (config vs transient) and backoff retries.
 
   const appLinks = ProdAppLinks();
   // Optional: Enforce legal links in debug via --dart-define=ENFORCE_LINKS_IN_DEBUG=true
@@ -42,6 +39,20 @@ void main() async {
     'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
   );
 
+  // Explicit runtime validation in debug/profile when enforcement is enabled.
+  // Asserts run only in debug and can be disabled; this ensures developers see
+  // a clear failure early when local configuration is invalid.
+  if (!kReleaseMode && kEnforceLinksInDebug) {
+    final hasValid = appLinks.hasValidPrivacy && appLinks.hasValidTerms;
+    if (!hasValid) {
+      const msg =
+          'Legal links invalid in debug/profile. Provide PRIVACY_URL and TERMS_URL via --dart-define.\n'
+          'Example: flutter run --dart-define=PRIVACY_URL=https://… --dart-define=TERMS_URL=https://…';
+      debugPrint(msg);
+      throw StateError(msg);
+    }
+  }
+
   // Release: hard runtime check (not via assert)
   if (kReleaseMode && (!appLinks.hasValidPrivacy || !appLinks.hasValidTerms)) {
     throw StateError(
@@ -50,18 +61,29 @@ void main() async {
   }
 
   runApp(
-    ProviderScope(child: MyApp(orientationController: orientationController)),
+    ProviderScope(
+      child: MyAppWrapper(orientationController: orientationController),
+    ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({required this.orientationController, super.key});
-
+class MyAppWrapper extends ConsumerWidget {
+  const MyAppWrapper({required this.orientationController, super.key});
   final RouteOrientationController orientationController;
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Bind the InitMode bridge so lower layers can resolve the current mode
+    // even without Riverpod context (e.g., in services). If tests have already
+    // forced test mode before app bootstrap, respect that and do not override.
+    if (InitModeBridge.resolve() != InitMode.test) {
+      InitModeBridge.resolve = () => ref.read(initModeProvider);
+    }
+    // Ensure initialization controller is created and running.
+    final envFile = kReleaseMode ? '.env.production' : '.env.development';
+    supabaseInitController.ensureInitialized(envFile: envFile);
+
     // Allow overriding the initial route in development via --dart-define
     // Example: flutter run --dart-define=INITIAL_LOCATION=/onboarding/01
     final initialLocation = kReleaseMode
@@ -83,9 +105,9 @@ class MyApp extends StatelessWidget {
       refreshListenable: refresh,
       observers: [orientationController.navigatorObserver],
     );
-    return MaterialApp.router(
+    final app = MaterialApp.router(
       title: 'LUVI',
-      theme: AppTheme.buildAppTheme(), // <— WICHTIG
+      theme: AppTheme.buildAppTheme(),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -95,5 +117,99 @@ class MyApp extends StatelessWidget {
       ],
       routerConfig: router,
     );
+
+    // In test mode, skip the offline/initializing overlay for stability.
+    // The app should build its root widget tree without network or timers.
+    if (InitModeBridge.resolve() == InitMode.test) {
+      return app;
+    }
+
+    // Lightweight offline/fallback UI overlay: visible until initialized.
+    return AnimatedBuilder(
+      animation: supabaseInitController,
+      builder: (context, _) {
+        if (SupabaseService.isInitialized) return app;
+        return Stack(
+          alignment: Alignment.topLeft,
+          children: [
+            app,
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                minimum: const EdgeInsets.all(12),
+                child: _InitBanner(initState: supabaseInitController.state),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _InitBanner extends ConsumerWidget {
+  const _InitBanner({required this.initState});
+  final InitState initState;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final bg = colorScheme.surface.withValues(alpha: 0.95);
+    final text = colorScheme.onSurface;
+    final border = colorScheme.outline.withValues(alpha: 0.4);
+    final attempts = initState.attempts;
+    final maxAttempts = initState.maxAttempts;
+    final isConfig = initState.configError;
+    final message = isConfig
+        ? 'Configuration error: Supabase credentials invalid. App is running offline.'
+        : 'Connecting to server… (attempt $attempts/$maxAttempts)';
+
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: border),
+          boxShadow: const [
+            BoxShadow(blurRadius: 8, spreadRadius: 0, color: Colors.black26),
+          ],
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(isConfig ? Icons.error_outline : Icons.wifi_off, color: text),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                message,
+                style: TextStyle(color: text),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 12),
+            if (initState.canRetry)
+              TextButton(
+                onPressed: () {
+                  supabaseInitController.retryNow();
+                },
+                child: const Text('Retry'),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Backward compatibility for tests referencing MyApp directly.
+class MyApp extends ConsumerWidget {
+  const MyApp({required this.orientationController, super.key});
+  final RouteOrientationController orientationController;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MyAppWrapper(orientationController: orientationController);
   }
 }
