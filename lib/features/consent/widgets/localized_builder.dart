@@ -37,6 +37,10 @@ class LocalizedBuilder extends StatelessWidget {
         builder: (overrideContext) {
           final resolved = AppLocalizations.of(overrideContext);
           if (resolved == null) {
+            assert(() {
+              debugPrint('LocalizedBuilder: Failed to resolve AppLocalizations');
+              return true;
+            }());
             return const SizedBox.shrink();
           }
           return builder(overrideContext, resolved);

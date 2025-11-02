@@ -78,6 +78,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         ? ConsentWelcome01Screen.routeName
         : (isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName);
     _hasNavigated = true;
+    if (!mounted) return;
     context.go(nextRoute);
   }
 }

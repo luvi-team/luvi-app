@@ -11,6 +11,8 @@ class AuthStrings {
 
   static AppLocalizations? _debugOverride;
   static ui.Locale? Function()? _resolver;
+  static AppLocalizations? _cachedL10n;
+  static String? _cachedTag;
 
   @visibleForTesting
   static void debugOverrideLocalizations(AppLocalizations? override) {
@@ -22,6 +24,12 @@ class AuthStrings {
     _resolver = resolver;
   }
 
+  @visibleForTesting
+  static void debugResetCache() {
+    _cachedL10n = null;
+    _cachedTag = null;
+  }
+
   static AppLocalizations _l10n() {
     if (_debugOverride != null) {
       return _debugOverride!;
@@ -29,6 +37,11 @@ class AuthStrings {
 
     final resolvedLocale =
         _resolver?.call() ?? ui.PlatformDispatcher.instance.locale;
+    final currentTag = resolvedLocale.toLanguageTag();
+    final cached = _cachedL10n;
+    if (cached != null && _cachedTag == currentTag) {
+      return cached;
+    }
     const fallbackLocale = ui.Locale.fromSubtags(languageCode: 'de');
 
     for (final candidate in <ui.Locale>[
@@ -37,13 +50,19 @@ class AuthStrings {
       fallbackLocale,
     ]) {
       try {
-        return lookupAppLocalizations(candidate);
+        final l10n = lookupAppLocalizations(candidate);
+        _cachedL10n = l10n;
+        _cachedTag = candidate.toLanguageTag();
+        return l10n;
       } on FlutterError {
         continue;
       }
     }
 
-    return lookupAppLocalizations(fallbackLocale);
+    final l10n = lookupAppLocalizations(fallbackLocale);
+    _cachedL10n = l10n;
+    _cachedTag = fallbackLocale.toLanguageTag();
+    return l10n;
   }
 
   static String get loginHeadline => _l10n().authLoginHeadline;

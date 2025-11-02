@@ -34,7 +34,8 @@ class ResetPasswordNotifier extends Notifier<ResetPasswordState> {
   @override
   ResetPasswordState build() => ResetPasswordState.initial();
 
-  static final RegExp _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+  static final RegExp _emailRegex =
+      RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,63}$');
 
   void setEmail(String value) {
     final trimmed = value.trim();

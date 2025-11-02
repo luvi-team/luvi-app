@@ -11,21 +11,19 @@ class ConsentButton extends ConsumerStatefulWidget {
 }
 
 class _ConsentButtonState extends ConsumerState<ConsentButton> {
-  final _consentService = ConsentService();
+  static const String _consentVersion = 'v1.0';
+  static const List<String> _consentScopes = ['terms', 'privacy'];
+
   bool _isLoading = false;
 
   Future<void> _handleAccept() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+    setState(() => _isLoading = true);
     try {
-      const version = 'v1.0';
-      final scopes = ['terms', 'privacy'];
-      await _consentService.accept(
-        version: version,
-        scopes: scopes,
-      );
+      final consentService = ref.read(consentServiceProvider);
+      const version = _consentVersion;
+      const scopes = _consentScopes;
+
+      await consentService.accept(version: version, scopes: scopes);
 
       // Fire analytics event only after successful server persistence
       final a = ref.read(analyticsProvider);
@@ -37,21 +35,19 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Consent accepted')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Consent accepted')),
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
       }
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }

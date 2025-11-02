@@ -55,12 +55,16 @@ class OnboardingHeader extends StatelessWidget {
       text: TextSpan(text: stepFraction, style: stepTextStyle),
       textDirection: Directionality.of(context),
     )..layout();
+    
+    // Measure width, then dispose
+    final stepWidth = stepPainter.width;
+    stepPainter.dispose();
 
     final showBackButton = step > 1;
     const double backButtonHitSize = Sizes.touchTargetMin;
     const double interSlotSpacing = Spacing.s;
     final double reservedLeft = backButtonHitSize + interSlotSpacing;
-    final double reservedRight = interSlotSpacing + stepPainter.width;
+    final double reservedRight = interSlotSpacing + stepWidth;
     final double centeredPadding = math.max(reservedLeft, reservedRight);
     final EdgeInsets titlePadding = centerTitle
         ? EdgeInsets.symmetric(horizontal: centeredPadding)

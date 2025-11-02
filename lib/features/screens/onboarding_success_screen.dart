@@ -192,9 +192,6 @@ class OnboardingSuccessScreen extends ConsumerWidget {
       onPressed: isBusy
           ? null
           : () async {
-              if (ref.read(_successBtnBusyProvider)) {
-                return;
-              }
               final busyNotifier = ref.read(_successBtnBusyProvider.notifier);
               busyNotifier.setBusy(true);
               try {

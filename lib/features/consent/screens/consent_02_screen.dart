@@ -118,13 +118,10 @@ class Consent02Screen extends ConsumerWidget {
                         () => ref.read(userStateServiceProvider.future),
                         tag: 'userState',
                       );
-                      try {
-                        await userState?.markWelcomeSeen();
-                      } catch (error, stackTrace) {
-                        debugPrint(
-                          'markWelcomeSeen failed: $error\n$stackTrace',
-                        );
-                      }
+                      await tryOrNullAsync(() async {
+                        if (userState == null) return;
+                        await userState.markWelcomeSeen();
+                      }, tag: 'markWelcomeSeen');
                       if (context.mounted) {
                         context.go(AuthEntryScreen.routeName);
                       }

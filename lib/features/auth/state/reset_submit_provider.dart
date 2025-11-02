@@ -38,7 +38,6 @@ Future<void> submitReset(String email) async {
   // In tests or when Supabase isn't initialized, simulate success to keep
   // widget tests deterministic and offline.
   if (!SupabaseService.isInitialized) {
-    await Future<void>.delayed(const Duration(milliseconds: 300));
     return;
   }
   await supa.Supabase.instance.client.auth.resetPasswordForEmail(

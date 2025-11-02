@@ -32,13 +32,15 @@ void main() async {
   }
 
   const appLinks = ProdAppLinks();
-
-  // Debug/Profile: Fail fast via assert (only active in debug builds)
-  // Commented out for development - using example.com is fine for testing
-  // assert(
-  //   appLinks.hasValidPrivacy && appLinks.hasValidTerms,
-  //   'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
-  // );
+  // Optional: Enforce legal links in debug via --dart-define=ENFORCE_LINKS_IN_DEBUG=true
+  // Asserts run only in debug builds; this keeps release behavior unchanged.
+  const bool kEnforceLinksInDebug =
+      bool.fromEnvironment('ENFORCE_LINKS_IN_DEBUG', defaultValue: false);
+  assert(
+    !kEnforceLinksInDebug ||
+        (appLinks.hasValidPrivacy && appLinks.hasValidTerms),
+    'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
+  );
 
   // Release: hard runtime check (not via assert)
   if (kReleaseMode && (!appLinks.hasValidPrivacy || !appLinks.hasValidTerms)) {

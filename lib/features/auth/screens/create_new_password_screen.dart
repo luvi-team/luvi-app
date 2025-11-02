@@ -14,6 +14,7 @@ import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+ 
 
 class CreateNewPasswordScreen extends StatefulWidget {
   static const String routeName = '/auth/password/new';
@@ -38,6 +39,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   static const double _backButtonSize = AuthLayout.backButtonSize;
   @override
@@ -89,30 +91,97 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           width: double.infinity,
           child: ElevatedButton(
             key: const ValueKey('create_new_cta_button'),
-            onPressed: () async {
-              final newPw = _newPasswordController.text.trim();
-              final confirmPw = _confirmPasswordController.text.trim();
-              if (newPw.isEmpty || confirmPw.isEmpty) return;
-              if (newPw != confirmPw) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.authPasswordMismatchError)),
-                );
-                return;
-              }
-              try {
-                await supa.Supabase.instance.client.auth.updateUser(
-                  supa.UserAttributes(password: newPw),
-                );
-                if (!context.mounted) return;
-                context.goNamed(SuccessScreen.passwordSuccessRouteName);
-              } catch (_) {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.authPasswordUpdateError)),
-                );
-              }
-            },
-            child: Text(AuthStrings.createNewCta),
+            onPressed: _isLoading
+                ? null
+                : () async {
+                    final newPw = _newPasswordController.text.trim();
+                    final confirmPw = _confirmPasswordController.text.trim();
+
+                    // Basic empty check
+                    if (newPw.isEmpty || confirmPw.isEmpty) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(AuthStrings.errPasswordInvalid)),
+                      );
+                      return;
+                    }
+
+                    // Confirm match
+                    if (newPw != confirmPw) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l10n.authPasswordMismatchError),
+                        ),
+                      );
+                      return;
+                    }
+
+                    // Strength validation
+                    final pw = newPw;
+                    final hasMinLen = pw.length >= 8;
+                    final hasLetter = RegExp(r"[A-Za-z]").hasMatch(pw);
+                    final hasNumber = RegExp(r"\d").hasMatch(pw);
+                    final hasSpecial = RegExp(
+                      r'[!@#\$%\^&*()_\+\-=\{\}\[\]:;,.<>/?`~|\\]',
+                    ).hasMatch(pw);
+                    final commonWeak = <RegExp>[
+                      RegExp(r'^password\d*$', caseSensitive: false),
+                      RegExp(r'^123456(78|789)?$'),
+                      RegExp(r'^qwerty\d*$', caseSensitive: false),
+                      RegExp(r'^letmein\d*$', caseSensitive: false),
+                    ];
+                    final isCommonWeak =
+                        commonWeak.any((r) => r.hasMatch(pw.trim()));
+
+                    String? validationError;
+                    if (!hasMinLen) {
+                      validationError = AuthStrings.errPasswordInvalid;
+                    } else if (!(hasLetter && hasNumber && hasSpecial)) {
+                      validationError = AuthStrings.errPasswordInvalid;
+                    } else if (isCommonWeak) {
+                      validationError = AuthStrings.errPasswordInvalid;
+                    }
+
+                    if (validationError != null) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(validationError)),
+                      );
+                      return;
+                    }
+
+                    setState(() => _isLoading = true);
+                    try {
+                      await supa.Supabase.instance.client.auth.updateUser(
+                        supa.UserAttributes(password: newPw),
+                      );
+                      if (!context.mounted) return;
+                      context.goNamed(
+                        SuccessScreen.passwordSuccessRouteName,
+                      );
+                    } catch (error) {
+                      // Log only error type to avoid leaking PII.
+                      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l10n.authPasswordUpdateError),
+                        ),
+                      );
+                    } finally {
+                      if (mounted) {
+                        setState(() => _isLoading = false);
+                      }
+                    }
+                  },
+            child: _isLoading
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(AuthStrings.createNewCta),
           ),
         ),
       ),

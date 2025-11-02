@@ -6,7 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseService {
   static bool _initialized = false;
-  static Future<void>? _initFuture;
+  // A single gate to ensure only the first caller performs initialization and
+  // others await the same Future. This avoids non-atomic check-then-assign races.
+  static Completer<void>? _initCompleter;
   static Object? _initializationError;
   static StackTrace? _initializationStackTrace;
   static SupabaseValidationConfig _validationConfig =
@@ -28,10 +30,24 @@ class SupabaseService {
   /// Attempt to load environment configuration and initialize Supabase.
   static Future<void> tryInitialize({String envFile = '.env.development'}) {
     if (_initialized) return Future.value();
-    final existing = _initFuture;
-    if (existing != null) return existing;
-    _initFuture = _performInitializeAndCache(envFile);
-    return _initFuture!;
+
+    // Fast-path if an initialization is already in-flight; return the shared Future.
+    final existingGate = _initCompleter;
+    if (existingGate != null) return existingGate.future;
+
+    // Create the gate synchronously to avoid races; only the first caller gets here.
+    final gate = _initCompleter = Completer<void>();
+
+    // Kick off initialization and complete the shared gate accordingly.
+    _performInitializeAndCache(envFile).then((_) {
+      if (!gate.isCompleted) gate.complete();
+    }).catchError((Object error, StackTrace stack) {
+      // Allow subsequent retries after a failure by clearing the gate.
+      _initCompleter = null;
+      if (!gate.isCompleted) gate.completeError(error, stack);
+    });
+
+    return gate.future;
   }
 
   static void configure({SupabaseValidationConfig? validationConfig}) {
@@ -43,7 +59,7 @@ class SupabaseService {
   @visibleForTesting
   static void resetForTest() {
     _initialized = false;
-    _initFuture = null;
+    _initCompleter = null;
     _initializationError = null;
     _initializationStackTrace = null;
     _validationConfig = const SupabaseValidationConfig();
@@ -61,7 +77,7 @@ class SupabaseService {
       _initialized = false;
       _initializationError = error;
       _initializationStackTrace = stackTrace;
-      _initFuture = null;
+      // Do not keep a failed future; allow retry via clearing the gate in tryInitialize's catch handler
       FlutterError.reportError(
         FlutterErrorDetails(
           exception: error,
