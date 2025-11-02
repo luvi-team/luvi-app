@@ -7,7 +7,7 @@ import 'package:luvi_services/supabase_service.dart';
 
 class ResetSubmitNotifier extends AsyncNotifier<void> {
   @override
-  void build() {}
+  FutureOr<void> build() {}
 
   Future<void> submit(
     String email, {
@@ -17,9 +17,12 @@ class ResetSubmitNotifier extends AsyncNotifier<void> {
       return;
     }
     state = const AsyncLoading();
+    // Ensure the loading state is visible for at least one frame
+    // so widget tests (and UX) can observe the spinner deterministically.
+    await Future<void>.delayed(Duration.zero);
     try {
-      // Ensure at least one frame shows loading state for UX/tests
-      await Future<void>.delayed(const Duration(milliseconds: 1));
+      // Tests should explicitly pump a frame to observe the loading state.
+      // Avoid artificial delays in runtime logic to keep control flow simple.
       await submitReset(email);
       state = const AsyncData(null);
       await onSuccess();
