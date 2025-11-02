@@ -14,7 +14,7 @@ USE_REAL_HOME="${CODEX_USE_REAL_HOME:-0}"
 
 if [[ ! -x "${FLUTTER_BIN}" ]]; then
   echo "[flutter_codex] Error: ${FLUTTER_BIN} not found or not executable." >&2
-  echo "[flutter_codex] Ensure the vendored Flutter SDK exists at .local_flutter.\n" >&2
+  echo "[flutter_codex] Ensure the vendored Flutter SDK exists at .local_flutter." >&2
   exit 127
 fi
 
