@@ -3,7 +3,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_08.dart';
 
@@ -31,13 +30,6 @@ void main() {
           builder: (context, state) {
             navigatedPath = Onboarding08Screen.routeName;
             return const Scaffold(body: Text('Onboarding 08 (Stub)'));
-          },
-        ),
-        GoRoute(
-          path: HeuteScreen.routeName,
-          builder: (context, state) {
-            navigatedPath = HeuteScreen.routeName;
-            return const HeuteScreen();
           },
         ),
       ],

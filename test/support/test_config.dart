@@ -14,9 +14,10 @@ class TestConfig {
   /// Ensures shared test-only configuration (feature flags, localized strings) is initialized.
   static void ensureInitialized({AppLocalizations? locale}) {
     TestWidgetsFlutterBinding.ensureInitialized();
+    // Apply once for this test file and register a single cleanup for the suite.
     AuthStrings.debugOverrideLocalizations(locale ?? AppLocalizationsDe());
     AuthStrings.overrideResolver(() => ui.PlatformDispatcher.instance.locale);
-    _registerCleanup();
+    _registerSuiteLifecycle();
   }
 
   /// Preferred test bootstrap to configure shared bindings and test-only overrides.
@@ -34,20 +35,15 @@ class TestConfig {
   /// Flutter tests to toggle the exercised code paths.
   static bool get featureDashboardV2 => FeatureFlags.featureDashboardV2;
 
-  static bool _cleanupRegistered = false;
-
-  static void _registerCleanup() {
-    if (_cleanupRegistered) {
-      return;
-    }
-    _cleanupRegistered = true;
-    setUp(() {
+  static void _registerSuiteLifecycle() {
+    // Apply overrides once per test file and clean them up once after all tests.
+    setUpAll(() {
       AuthStrings.debugOverrideLocalizations(AppLocalizationsDe());
       AuthStrings.overrideResolver(() => ui.PlatformDispatcher.instance.locale);
-      addTearDown(() {
-        AuthStrings.debugOverrideLocalizations(null);
-        AuthStrings.overrideResolver(null);
-      });
+    });
+    tearDownAll(() {
+      AuthStrings.debugOverrideLocalizations(null);
+      AuthStrings.overrideResolver(null);
     });
   }
 }

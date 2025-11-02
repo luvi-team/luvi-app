@@ -27,12 +27,6 @@ void main() {
 
     setUp(() {
       mockRepo = _MockAuthRepository();
-      when(
-        () => mockRepo.signInWithPassword(
-          email: any(named: 'email'),
-          password: any(named: 'password'),
-        ),
-      ).thenThrow(supa.AuthException('invalid credentials'));
     });
 
     testWidgets(
@@ -156,6 +150,14 @@ void main() {
     testWidgets(
       'No overflow when keyboard is visible on LoginScreen (integration test)',
       (tester) async {
+        // Only this integration test needs to simulate an auth failure; widget
+        // tests above do not invoke authentication.
+        when(
+          () => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          ),
+        ).thenThrow(supa.AuthException('invalid credentials'));
         await tester.pumpWidget(
           ProviderScope(
             overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
