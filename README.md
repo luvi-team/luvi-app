@@ -4,10 +4,14 @@ A new Flutter project.
 
 ## App-Kontext (SSOT)
 
-Der aktuelle, bereinigte App‑Kontext ist hier abgelegt:
-- context/refs/app_context_v3.2.md:1
+Primäre Quelle im Repo:
+- docs/product/app-context.md:1
+
+Roadmap (SSOT):
+- docs/product/roadmap.md:1
 
 Archiv (älter):
+- context/refs/app_context_v3.2.md:1
 - context/refs/archive/app_context_napkin_v3.1.txt:1
 
 ## Getting Started

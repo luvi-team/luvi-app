@@ -7,6 +7,7 @@ Scope & Nutzung: Gilt ab Repo-Root rekursiv; Default Auto-Role; Misch-Tasks via 
 Governance
 - Dossiers (01–05): context/agents/README.md
 - SSOT Acceptance v1.1 (Core + Role extensions): context/agents/_acceptance_v1.1.md
+ - SSOT (Product): docs/product/app-context.md · docs/product/roadmap.md
 
 Arbeitsweise
 - Codex CLI-first; BMAD → PRP (Plan → Run → Prove).
