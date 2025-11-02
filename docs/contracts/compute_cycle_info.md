@@ -1,9 +1,12 @@
 # Compute Cycle Info — Contract v1 (MVP)
 
-Status: Draft/SSOT. Gilt für S1 und Folge-Sprints bis Revision.
+Status: Draft (awaiting approval)
+Applies to: S1 and subsequent sprints until revision
 
 ## Purpose
-Deterministische Berechnung der aktuellen Zyklusphase und Ableitungen für UI/Ranking. Schnell (P95 ≤ 50 ms), testbar, ohne PII-Overreach.
+Deterministische Berechnung der aktuellen Zyklusphase und Ableitungen für UI/Ranking. Testbar, ohne PII-Overreach.
+
+- Performance (P95 ≤ 50 ms): compute_cycle_info() from function entry to return, computation‑only (keine Network/DB‑I/O). Warm‑start Messung (JIT/caches warm). Baseline: Mid‑range Mobile/CPU (z. B. Apple M1/A14‑äquiv. oder Snapdragon 7xx), 1 Thread, keine konkurrierende Last. Methode: 10 000 Aufrufe über repräsentativen Input‑Satz, erste 100 als Warm‑up verwerfen; P95 via StopWatch/Harness berechnet und mit Sample‑Anzahl dokumentiert.
 
 ## Inputs
 - lmp_date (string, ISO 8601 `YYYY-MM-DD`, lokal): Erster Tag der letzten Periode. Pflicht.
@@ -28,7 +31,8 @@ Deterministische Berechnung der aktuellen Zyklusphase und Ableitungen für UI/Ra
 3. Phasegrenzen:
    - Menstruation: Tage `1 .. period_length_days`.
    - Luteal: Letzte `luteal_length_days` Tage des Zyklus.
-   - Ovulatorisch: Fenster um Ovulationstag `ov_day = cycle_length_days - luteal_length_days` → Tage `ov_day .. ov_day+1` (2‑Tage‑Fenster; clamp in [1..cycle_length_days]).
+   - Ovulatorisch: Ovulationstag `ov_day = cycle_length_days - luteal_length_days`; danach clampen: `ov_day ∈ [1, cycle_length_days]`. Das 2‑Tage‑Fenster ist `[ov_day, min(ov_day+1, cycle_length_days)]`. Ob `day_in_cycle` in diesem Fenster liegt, bestimmt die Phase `ovulatory` (ansonsten nicht).
+     Beispiele: (a) `ov_day < 1` → Clamp auf 1 ⇒ Fenster `[1, 2]`; (b) `ov_day = cycle_length_days` ⇒ Fenster `[cycle_length_days, cycle_length_days]` (ein Tag).
    - Follikulär: Rest zwischen Menstruation und Ovulation.
 4. `phase_window_start/end` aus Phase + Grenzen ableiten; `next_phase` und `next_phase_start` deterministisch berechnen.
 5. Clamps: Eingaben außerhalb erlaubter Bereiche auf Grenzen setzen; `clamps_applied = true` und `notes` füllen.
@@ -37,7 +41,16 @@ Deterministische Berechnung der aktuellen Zyklusphase und Ableitungen für UI/Ra
 - cycle_length_days: min 21, max 35 (Default 28).
 - period_length_days: min 2, max 8 (Default 5).
 - luteal_length_days: min 10, max 16 (Default 14).
-- Ovulation: `ov_day = max(1, min(cycle_length_days, cycle_length_days - luteal_length_days))`.
+- Ovulationstag‑Berechnung: Vor der Berechnung werden alle Eingaben auf erlaubte Bereiche geclamped. Danach gilt: `ov_day = max(1, min(cycle_length_days, cycle_length_days - luteal_length_days))`.
+
+  Fachlicher Kontext: Ovulation tritt typischerweise ~`luteal_length_days` Tage vor der nächsten Menstruation auf (klinischer Standard; vgl. ACOG Patient Education; Wilcox AJ et al., BMJ 2000). Grenzen: Wenn `luteal_length_days ≥ cycle_length_days` in den Roh‑Eingaben, sind die Eingaben biologisch inkonsistent; durch Clamps (min/max) wird auf einen sicheren Bereich normalisiert und als Hinweis in `notes` vermerkt.
+
+  Beispiele:
+  - Normal: `cycle_length_days=28`, `luteal_length_days=14` ⇒ `ov_day=14` ⇒ Fenster `[14,15]`.
+  - Kurzzyklus: `cycle_length_days=21`, `luteal_length_days=16` ⇒ `ov_day=5` ⇒ Fenster `[5,6]` (ungewöhnliche Kombination; klinisch einordnen, ggf. Hinweis anzeigen).
+  - Pathologischer Input (luteal ≥ cycle): z. B. `cycle_length_days=16`, `luteal_length_days=16` ⇒ nach Clamps `cycle_length_days→21`, `luteal_length_days→16`, `ov_day=5`, `notes += ["cycle_length_clamped"]`.
+
+References: ACOG Patient Education (Ovulation/Menstrual Cycle); Wilcox AJ et al., BMJ 2000 (Timing of the fertile window)
 
 ## Edge Cases
 - Missing LMP: return `{ phase: null, phase_confidence: 0, requires_onboarding: true }`.
@@ -46,14 +59,42 @@ Deterministische Berechnung der aktuellen Zyklusphase und Ableitungen für UI/Ra
 - TZ/Leap: Berechnung in lokaler TZ; Datumsteil für Fenstergrenzen verwenden.
 - Legacy Migration: Falls alte Felder (z. B. `avg_cycle_length`) vorhanden, Priorität: explizite Eingaben > Historie.
 
-## Test Cases (Mindestens)
-- T00 Defaults: 28/5/14, `now = lmp+0d` → menstrual, day 1.
-- T01 Menstruation Ende: `now = lmp+4d` → menstrual, day 5; `now = lmp+5d` → follikulär, day 6.
-- T02 Ovulation: `now = lmp+13d` (ov_day=14) → ovulatory.
-- T03 Luteal: `now = lmp+20d` → luteal.
-- T04 Clamps: cycle_length=19 → clamp 21; luteal=20 → clamp 16.
-- T05 Missing LMP → requires_onboarding.
-- T06 Future LMP → clamp to day 1 menstrual.
+Input‑Validierung (nach Clamps, deterministisch):
+- Invarianten: `1 ≤ period_length_days ≤ cycle_length_days`, `1 ≤ luteal_length_days < cycle_length_days`.
+- Falls eine Invariante nach Clamps nicht erfüllt ist, weitere Korrektur auf nächstzulässigen Wert und `notes` ergänzen (z. B. `"invariant_adjustment"`). In v1 sind die Clamp‑Grenzen so gewählt, dass diese Invariante regulär erfüllt ist.
+
+## Test Cases (mindestens)
+Hinweis: Referenzen auf Algorithmus‑Schritte in Klammern (z. B. [Step 2]). Alle Outputs vollständig spezifiziert.
+
+- T00 Defaults (Basisfall):
+  Input: `lmp=2025-01-01`, `now=2025-01-01`, `cycle_length=28`, `period_length=5`, `luteal_length=14`.
+  Normalisiert: keine Clamps.
+  Erwartet: `{ phase: menstrual, day_in_cycle: 1, day_in_phase: 1, phase_window_start: 2025-01-01, phase_window_end: 2025-01-05, next_phase: follicular, next_phase_start: 2025-01-06, phase_confidence: 1.0, clamps_applied: false, notes: [] }` [Steps 1–5].
+
+- T01 Menstruation‑Grenze (Übergang):
+  a) `now = lmp+4d` ⇒ `{ phase: menstrual, day_in_cycle: 5, day_in_phase: 5, next_phase: follicular, next_phase_start: lmp+5d, phase_confidence: 1.0, clamps_applied: false, notes: [] }` [Steps 2–4].
+  b) `now = lmp+5d` ⇒ `{ phase: follicular, day_in_cycle: 6, day_in_phase: 1, phase_confidence: 1.0, clamps_applied: false, notes: [] }` [Steps 2–4].
+
+- T02 Ovulation‑Fenster (Mitgliedschaft entscheidet):
+  `now = lmp+13d` (bei 28/14) ⇒ `ov_day=14`, Fenster `[14,15]` ⇒ `{ phase: ovulatory, day_in_cycle: 14, phase_confidence: 1.0, clamps_applied: false, notes: [] }` [Step 3].
+
+- T03 Luteal‑Phase:
+  `now = lmp+20d` (28/14) ⇒ `{ phase: luteal, day_in_cycle: 21, phase_confidence: 1.0, clamps_applied: false, notes: [] }` [Step 3].
+
+- T04 Multiple Clamps (Cross‑Clamp‑Szenario):
+  Input: `cycle_length=19`, `luteal_length=20`, `period_length=9`.
+  Erwartete Normalisierung: `cycle_length→21`, `luteal_length→16`, `period_length→8` [Step 5].
+  Erwarteter Output‑Teil: `{ phase_confidence: 1.0, clamps_applied: true, notes: ["cycle_length_clamped", "luteal_length_clamped", "period_length_clamped"] }`.
+
+- T05 Input‑Inkonsistenz vor Clamps (luteal ≥ cycle):
+  Input: `cycle_length=16`, `luteal_length=16`, `period_length=5`.
+  Erwartete Normalisierung: `cycle_length→21`, `luteal_length→16` ⇒ `ov_day=5`; `notes` enthält mindestens `"cycle_length_clamped"`; `{ phase_confidence: 1.0, clamps_applied: true }` [Steps 3,5].
+
+- T06 Missing LMP:
+  Input: `lmp=null` ⇒ `{ phase: null, phase_confidence: 0, requires_onboarding: true, clamps_applied: false, notes: [] }` [Edge Case].
+
+- T07 Future LMP:
+  Input: `lmp = tomorrow`, `now = today` ⇒ `d=0` Clamp, `{ phase: menstrual, day_in_cycle: 1, phase_confidence: 1.0, clamps_applied: true, notes: ["future_lmp_clamped"] }` [Steps 1–2, Edge Case].
 
 ## Versioning
 - v1.0 (MVP): deterministisch, keine Wearables/AI.

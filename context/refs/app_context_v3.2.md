@@ -1,5 +1,5 @@
 LUVI — App-Kontext (v3.2 – bereinigt & konsolidiert)
-Version: 2025-10-15
+Version: 2025-11-02
 
 1) Ziel & Haltung
 LUVI ist eine holistische FemTech-App mit personalisierten Empfehlungen in den Bereichen Training, Ernährung, Regeneration und Achtsamkeit.  
@@ -60,7 +60,7 @@ Bottom-Navigation mit fünf Hauptbereichen:
 8) Einzel-Screens
 - Zyklus: Kalender · Vergleich mehrerer Zyklen · Tipps je Phase.  
 - LUVI Sync: Journal + Empfehlung + (bei Wearables) Schlaf/Regeneration.  
-- Puls: Trends zu HR, HRV, Schritten, kcal; Integration Apple Health/Google Fit (geplant in M4.5).  
+- Puls: Trends zu HR, HRV, Schritten, kcal; Integration Apple Health/Google Fit (geplant in S8 – Post-MVP).  
 - Profil: User-Einstellungen + Zyklus-Parameter.
 
 ---
@@ -79,7 +79,7 @@ Weitere Workouts horizontal nach Phase.
 ---
 
 11) Monetarisierung
-Freemium + 7-Tage-Testphase → Paywall für Premium-Funktionen (M6 Paywall in Roadmap).
+Freemium + 7-Tage-Testphase → Paywall für Premium-Funktionen (S5 in Roadmap).
 
 ---
 

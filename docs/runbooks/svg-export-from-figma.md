@@ -114,8 +114,9 @@ Das Script:
 **Symptom:** `grep "var(--"` zeigt noch Treffer
 **Lösung:** Script-Output prüfen; bei Regex-Edge-Case manuell ersetzen:
 - Häufige Fälle: verschachtelte `var(--token, var(--fallback))`, vendor-prefixed Fallbacks (`-webkit-`, `-moz-`), oder Tokens mit Kommentaren am Zeilenende.
-- Öffne das SVG im Editor oder nutze `rg "var\\(--" <datei>.svg`, finde z. B. `fill="var(--fill-4, #FBC343)"` und ersetze den gesamten Ausdruck durch `fill="#FBC343"`.
-- Für mehrere Vorkommen helfen Befehle wie `sed -E 's/var\\(--fill-4, ([^)]*)\)/\1/g' asset.svg`; kompakte Regex-Referenz: https://www.regular-expressions.info/quickstart.html
+- Öffne das SVG im Editor oder nutze `rg "var\\(--" <datei>.svg`, finde z. B. `fill="var(--fill-4, #FBC343)"` und ersetze den gesamten Ausdruck durch `fill="#FBC343"`.
+- Für mehrere Vorkommen kannst du den Python-Script anpassen oder manuell mit einem Editor mehrfach suchen/ersetzen
+- Alternativ (nur macOS/Linux): `sed -E 's/var\\(--fill-4, ([^)]*)\)/\1/g' asset.svg > asset_fixed.svg && mv asset_fixed.svg asset.svg`
 
 ## Checkliste (Asset-Integration)
 

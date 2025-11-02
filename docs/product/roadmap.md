@@ -165,7 +165,7 @@ Goal
 • Premium via IAP; Trial **7 Tage** (MVP-Standard). Coach-Tab sichtbar (Preview), Start nur Premium.
 
 UX
-• Coach: Programme sichtbar (Woche-1 Vorschau: 2× GK, 1× Mobility, 1× Cardio); Start → Paywall bei no-entitlement.
+• Coach: Programme sichtbar (Woche-1 Vorschau: 2× GK (Ganzkörper/full-body), 1× Mobility, 1× Cardio); Start → Paywall bei no-entitlement.
 • Upsells im Feed (Coach-Teaser nach relevanten Plays).
 • Paywall Copy: 3 Varianten (Credibility/Community/Compliance), DE/EN.
 • Reminder: Day 4 (Wertbeweis), Day 6/7 (Trial-Ende). Restore Purchases in Settings.
@@ -238,5 +238,4 @@ KPIs (MVP)
 72-H PLAN (angepasst)
 Tag 1: Consent-Flow ergänzen (Externe Inhalte Hinweis), feature_flags.dart & analytics.dart final; Health 200; Home „Heute“-Placeholder.
 Tag 2: Supabase Tabellen: channel, video, video_phase, video_tags, user_event, consent_logs; Seed Import (30–50 Videos); Stream-List & Karten.
-Tag 3: IFrame + CMP-Overlays (Long/Short, DE/EN inkl. „Cookies/Local Storage“); Player-Screen; Events play/25/50/95; „Weiter ansehen“ Basis.q
-
+Tag 3: IFrame + CMP-Overlays (Long/Short, DE/EN inkl. „Cookies/Local Storage"); Player-Screen; Events play/25/50/95; „Weiter ansehen" Basis.
