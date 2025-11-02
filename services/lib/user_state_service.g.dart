@@ -46,4 +46,4 @@ final class UserStateServiceProvider
   }
 }
 
-String _$userStateServiceHash() => r'29460d76b3f195a73efe8bef14fb1c1e77c2353c';
+String _$userStateServiceHash() => r'1022a470551cac63bb421131337e4c4c71c9ee85';

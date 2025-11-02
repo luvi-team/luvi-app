@@ -70,10 +70,8 @@ class UserStateService {
   Future<void> markOnboardingComplete({
     required FitnessLevel fitnessLevel,
   }) async {
-    await Future.wait([
-      prefs.setBool(_keyHasCompletedOnboarding, true),
-      prefs.setString(_keyFitnessLevel, fitnessLevel.name),
-    ]);
+    await prefs.setBool(_keyHasCompletedOnboarding, true);
+    await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
   }
 
   Future<void> setFitnessLevel(FitnessLevel level) async {
@@ -81,11 +79,33 @@ class UserStateService {
   }
 
   Future<void> reset() async {
-    await Future.wait([
-      prefs.remove(_keyHasSeenWelcome),
-      prefs.remove(_keyHasCompletedOnboarding),
-      prefs.remove(_keyFitnessLevel),
-    ]);
+    // Perform removals sequentially to avoid masking failures that can occur
+    // when running in parallel. This is best-effort: if any removal fails,
+    // previously removed keys are not rolled back (SharedPreferences has no
+    // transactional API). We attempt all removals and then throw with the
+    // list of failed keys so the caller can decide to retry or surface an
+    // error to the user.
+    final failures = <String>[];
+    Future<void> removeKey(String key) async {
+      try {
+        final ok = await prefs.remove(key);
+        if (ok != true) {
+          failures.add(key);
+        }
+      } catch (_) {
+        failures.add(key);
+      }
+    }
+
+    await removeKey(_keyHasSeenWelcome);
+    await removeKey(_keyHasCompletedOnboarding);
+    await removeKey(_keyFitnessLevel);
+
+    if (failures.isNotEmpty) {
+      throw StateError(
+        'Failed to clear user state keys: ${failures.join(', ')}',
+      );
+    }
   }
 }
 
