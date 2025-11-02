@@ -1,148 +1,161 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
-const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
-const VALID_SCOPES = ['health', 'analytics', 'marketing', 'ai_journal', 'terms'] as const
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const VALID_SCOPES = [
+  "health",
+  "analytics",
+  "marketing",
+  "ai_journal",
+  "terms",
+] as const;
 
 interface ConsentRequestPayload {
-  policy_version?: unknown
-  version?: unknown
-  scopes?: unknown
-  source?: unknown
-  appVersion?: unknown
+  policy_version?: unknown;
+  version?: unknown;
+  scopes?: unknown;
+  source?: unknown;
+  appVersion?: unknown;
+}
+
+function validateScopes(raw: unknown): { valid: string[]; invalid: unknown[] } {
+  if (!Array.isArray(raw)) return { valid: [], invalid: [] };
+  const invalid: unknown[] = [];
+  const valid: string[] = [];
+  for (const scope of raw) {
+    if (typeof scope !== "string") {
+      invalid.push(scope);
+      continue;
+    }
+    if (!VALID_SCOPES.includes(scope)) {
+      invalid.push(scope);
+      continue;
+    }
+    valid.push(scope);
+  }
+  return { valid, invalid };
 }
 
 serve(async (req) => {
-  if (req.method !== 'POST') {
+  if (req.method !== "POST") {
     return new Response(
-      JSON.stringify({ error: 'Method not allowed' }),
-      { 
+      JSON.stringify({ error: "Method not allowed" }),
+      {
         status: 405,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
-  const authorization = req.headers.get('Authorization')
+  const authorization = req.headers.get("Authorization");
   if (!authorization) {
     return new Response(
-      JSON.stringify({ error: 'Missing Authorization header' }),
-      { 
+      JSON.stringify({ error: "Missing Authorization header" }),
+      {
         status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
-  let body: ConsentRequestPayload = {}
+  let body: ConsentRequestPayload = {};
   try {
-    body = await req.json()
-  } catch (_error) {
+    body = await req.json();
+  } catch (error) {
+    console.error("Invalid request body parse error", error);
     return new Response(
-      JSON.stringify({ error: 'Invalid request body' }),
-      { 
+      JSON.stringify({ error: "Invalid request body" }),
+      {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
-  const policyVersion =
-    typeof body.policy_version === 'string'
-      ? body.policy_version
-      : (typeof body.version === 'string' ? (body.version as string) : undefined)
-  const rawScopes = Array.isArray(body.scopes) ? body.scopes : undefined
+  const policyVersion = typeof body.policy_version === "string"
+    ? body.policy_version
+    : (typeof body.version === "string" ? (body.version as string) : undefined);
+  const rawScopes = Array.isArray(body.scopes) ? body.scopes : undefined;
   if (!policyVersion) {
     return new Response(
-      JSON.stringify({ error: 'policy_version is required' }),
-      { 
+      JSON.stringify({ error: "policy_version is required" }),
+      {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
   if (!rawScopes || rawScopes.length === 0) {
     return new Response(
-      JSON.stringify({ error: 'scopes must be a non-empty array' }),
-      { 
+      JSON.stringify({ error: "scopes must be a non-empty array" }),
+      {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
-  const invalidScopes: unknown[] = []
-  const validatedScopes: string[] = []
-
-  for (const scope of rawScopes) {
-    if (typeof scope !== 'string') {
-      invalidScopes.push(scope)
-      continue
-    }
-    if (!VALID_SCOPES.includes(scope)) {
-      invalidScopes.push(scope)
-      continue
-    }
-    validatedScopes.push(scope)
-  }
+  const { valid: validatedScopes, invalid: invalidScopes } = validateScopes(
+    rawScopes,
+  );
 
   if (invalidScopes.length > 0) {
     return new Response(
-      JSON.stringify({ error: 'Invalid scopes provided', invalidScopes }),
-      { 
+      JSON.stringify({ error: "Invalid scopes provided", invalidScopes }),
+      {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
       headers: {
-        Authorization: authorization
-      }
-    }
-  })
+        Authorization: authorization,
+      },
+    },
+  });
 
-  const { data: userResult, error: authError } = await supabase.auth.getUser()
+  const { data: userResult, error: authError } = await supabase.auth.getUser();
   if (authError || !userResult?.user) {
     return new Response(
-      JSON.stringify({ error: 'Unauthorized' }),
-      { 
+      JSON.stringify({ error: "Unauthorized" }),
+      {
         status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
   const payload = {
     user_id: userResult.user.id,
     version: policyVersion,
-    scopes: validatedScopes
-  }
+    scopes: validatedScopes,
+  };
 
   const { error } = await supabase
-    .from('consents')
-    .insert(payload)
+    .from("consents")
+    .insert(payload);
 
   if (error) {
-    console.error('consents insert failed', error?.code ?? 'unknown')
+    console.error("consents insert failed", error?.code ?? "unknown");
     return new Response(
-      JSON.stringify({ error: 'Failed to log consent' }),
-      { 
+      JSON.stringify({ error: "Failed to log consent" }),
+      {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
   return new Response(
     JSON.stringify({ ok: true }),
-    { 
+    {
       status: 201,
-      headers: { 'Content-Type': 'application/json' }
-    }
-  )
-})
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+});
