@@ -48,7 +48,7 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   // Client-side sanity guard; server-side validation stays authoritative.
   static final RegExp _emailRegex =
       RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,63}$');
-  static const int _kMinPasswordLength = 6;
+  static const int _kMinPasswordLength = 8;
   static const Object _noChange = Object();
 
   @override
@@ -90,7 +90,7 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
     );
   }
 
-  /// MIWF: einfache Client-Validierung; Server-Submit passiert im Submit-Provider.
+  /// MIWF: Simple client-side validation; server submit happens in the submit provider.
   Future<void> validateAndSubmit() async {
     state = await AsyncValue.guard(() async {
       final current = _current();
@@ -113,10 +113,11 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
     });
   }
 
-  /// Hilfsmethode für Tests, um synchronen Zugriff zu vereinfachen.
+  /// Helper method for tests to simplify synchronous access.
   LoginState debugState() => _current();
 }
 
 final loginProvider = AsyncNotifierProvider<LoginNotifier, LoginState>(
   LoginNotifier.new,
+  name: 'loginProvider',
 );

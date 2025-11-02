@@ -78,6 +78,32 @@ class AuthStrings {
   static String get loginSocialGoogle => _l10n().authLoginSocialGoogle;
   static String get errEmailInvalid => _l10n().authErrEmailInvalid;
   static String get errPasswordInvalid => _l10n().authErrPasswordInvalid;
+  // More granular password validation errors with graceful fallback to the
+  // generic password error when the specific localization is not available yet.
+  static String get errPasswordTooShort {
+    final l = _l10n();
+    try {
+      return (l as dynamic).authErrPasswordTooShort as String;
+    } catch (_) {
+      return l.authErrPasswordInvalid;
+    }
+  }
+  static String get errPasswordMissingTypes {
+    final l = _l10n();
+    try {
+      return (l as dynamic).authErrPasswordMissingTypes as String;
+    } catch (_) {
+      return l.authErrPasswordInvalid;
+    }
+  }
+  static String get errPasswordCommonWeak {
+    final l = _l10n();
+    try {
+      return (l as dynamic).authErrPasswordCommonWeak as String;
+    } catch (_) {
+      return l.authErrPasswordInvalid;
+    }
+  }
   static String get errConfirmEmail => _l10n().authErrConfirmEmail;
   static String get invalidCredentials => _l10n().authInvalidCredentials;
   static String get errLoginUnavailable => _l10n().authErrLoginUnavailable;

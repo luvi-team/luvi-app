@@ -44,7 +44,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('a@b.com');
-    notifier.setPassword('secret6');
+    notifier.setPassword('secret88');
     await notifier.validateAndSubmit();
 
     final state = notifier.debugState();
@@ -60,7 +60,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('');
-    notifier.setPassword('secret6');
+    notifier.setPassword('secret88');
     await notifier.validateAndSubmit();
 
     final state = notifier.debugState();
@@ -92,7 +92,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('test@');
-    notifier.setPassword('secret6');
+    notifier.setPassword('secret88');
     await notifier.validateAndSubmit();
 
     final state = notifier.debugState();
@@ -117,14 +117,14 @@ void main() {
     expect(state.isValid, isFalse);
   });
 
-  test('validateAndSubmit valid for password length 6', () async {
+  test('validateAndSubmit valid for password length 8', () async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
     final notifier = container.read(loginProvider.notifier);
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
-    notifier.setPassword('123456');
+    notifier.setPassword('12345678');
     await notifier.validateAndSubmit();
 
     final state = notifier.debugState();
@@ -144,7 +144,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
-    notifier.setPassword('123456');
+    notifier.setPassword('12345678');
     await notifier.validateAndSubmit();
 
     final state = notifier.debugState();
