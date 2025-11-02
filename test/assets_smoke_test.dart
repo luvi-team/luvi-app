@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'support/test_config.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.ensureInitialized();
 
   group('Asset smoke tests', () {
     test('loads onboarding success trophy image', () async {

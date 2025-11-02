@@ -42,11 +42,6 @@ class ProdAppLinks implements AppLinksApi {
   static const _rawPrivacyUrl = String.fromEnvironment('PRIVACY_URL');
   static const _rawTermsUrl = String.fromEnvironment('TERMS_URL');
   static final Uri _sentinelUri = Uri.parse(_sentinelUrl);
-  static final String _sentinelScheme = _sentinelUri.scheme
-      .trim()
-      .toLowerCase();
-  static final String _sentinelHost = _sentinelUri.host.trim().toLowerCase();
-  static final String _sentinelPath = _sentinelUri.path.trim().toLowerCase();
 
   static final Uri _privacyPolicy = _parseConfiguredUri(
     rawValue: _rawPrivacyUrl,
@@ -76,12 +71,6 @@ class ProdAppLinks implements AppLinksApi {
 
     final scheme = uri.scheme.trim().toLowerCase();
     final host = uri.host.trim().toLowerCase();
-    final path = uri.path.trim().toLowerCase();
-    final isSentinelMatch =
-        scheme == _sentinelScheme &&
-        host == _sentinelHost &&
-        path == _sentinelPath;
-    if (isSentinelMatch) return false;
     if (scheme.isEmpty || host.isEmpty) return false;
 
     if (scheme != 'https') return false;

@@ -34,15 +34,19 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
   @override
   void initState() {
     super.initState();
-    unawaited(_loadInitialSelection());
+    // Preload any saved selection for a smoother UX.
+    // Safe to call from initState in ConsumerState.
+    // ignore: discarded_futures
+    _loadInitialSelection();
   }
 
   void _selectOption(int index) {
     setState(() {
       _selected = index;
     });
-    final level = FitnessLevel.fromSelectionIndex(index);
-    unawaited(_persistSelection(level));
+    // Persist selection immediately for resilience across navigation and rebuilds.
+    // ignore: discarded_futures
+    _persistSelection(FitnessLevel.fromSelectionIndex(index));
   }
 
   Future<void> _handleContinue() async {

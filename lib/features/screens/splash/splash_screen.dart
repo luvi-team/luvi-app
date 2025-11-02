@@ -66,18 +66,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _navigateAfterAnimation() async {
     if (_hasNavigated) return;
+    _hasNavigated = true;
+    
     final userState = await tryOrNullAsync(
       () => ref.read(userStateServiceProvider.future),
       tag: 'userState',
     );
     if (!mounted) return;
-    if (_hasNavigated) return;
     final isAuth = SupabaseService.isAuthenticated;
     final hasSeenWelcome = userState?.hasSeenWelcome ?? false;
     final nextRoute = !hasSeenWelcome
         ? ConsentWelcome01Screen.routeName
         : (isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName);
-    _hasNavigated = true;
     if (!mounted) return;
     context.go(nextRoute);
   }

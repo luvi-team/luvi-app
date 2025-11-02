@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 const double _kMinTapSize = 44.0;
-const double _kHorizontalTouchPadding = 18.0;
+const double _kDefaultHorizontalTouchPadding = 8.0; // conservative for inline links
 
 /// Piece of rich text that can optionally behave like a link.
 class LinkTextPart {
@@ -27,12 +27,21 @@ class LinkText extends StatelessWidget {
   final TextStyle style;
   final List<LinkTextPart> parts;
   final double minTapTargetSize;
+  /// Horizontal padding (per side) to expand the tap target of inline links.
+  /// Keep small to avoid overlapping adjacent link targets in dense text.
+  final double horizontalTouchPadding;
+  /// When true, the horizontal hit rect may overflow beyond the text bounds
+  /// by [horizontalTouchPadding]. When false, the hit rect is clipped to the
+  /// inline box width (no horizontal overflow), reducing overlap risk.
+  final bool allowHorizontalOverflowHitRect;
 
   const LinkText({
     super.key,
     required this.style,
     required this.parts,
     this.minTapTargetSize = _kMinTapSize,
+    this.horizontalTouchPadding = _kDefaultHorizontalTouchPadding,
+    this.allowHorizontalOverflowHitRect = false,
   });
 
   @override
@@ -59,6 +68,8 @@ class LinkText extends StatelessWidget {
               semanticsLabel: part.semanticsLabel,
               onTap: part.onTap!,
               minTapTargetSize: minTapTargetSize,
+              horizontalTouchPadding: horizontalTouchPadding,
+              allowHorizontalOverflowHitRect: allowHorizontalOverflowHitRect,
             ),
           );
         }).toList(),
@@ -73,12 +84,16 @@ class _LinkTextTapTarget extends StatelessWidget {
   final String? semanticsLabel;
   final VoidCallback onTap;
   final double minTapTargetSize;
+  final double horizontalTouchPadding;
+  final bool allowHorizontalOverflowHitRect;
 
   const _LinkTextTapTarget({
     required this.text,
     required this.style,
     required this.onTap,
     required this.minTapTargetSize,
+    required this.horizontalTouchPadding,
+    required this.allowHorizontalOverflowHitRect,
     this.semanticsLabel,
   });
 
@@ -99,8 +114,9 @@ class _LinkTextTapTarget extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Positioned.fill(
-          left: -_kHorizontalTouchPadding,
-          right: -_kHorizontalTouchPadding,
+          // Limit horizontal expansion when overlap with adjacent links is a concern.
+          left: allowHorizontalOverflowHitRect ? -horizontalTouchPadding : 0.0,
+          right: allowHorizontalOverflowHitRect ? -horizontalTouchPadding : 0.0,
           top: -verticalPadding,
           bottom: -verticalPadding,
           child: _LinkTapRegion(

@@ -72,9 +72,15 @@ String _formatDayMonthDe(DateTime date) {
 
 /// Inline calendar used on the dashboard header.
 class CycleInlineCalendar extends StatelessWidget {
-  const CycleInlineCalendar({super.key, required this.view});
+  const CycleInlineCalendar({
+    super.key,
+    required this.view,
+    this.onSegmentsPainted,
+  });
 
   final WeekStripView view;
+  @visibleForTesting
+  final void Function(List<PaintedSegmentDebug>)? onSegmentsPainted;
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +121,7 @@ class CycleInlineCalendar extends StatelessWidget {
           radiusTokens: radiusTokens,
           days: view.days,
           segments: view.segments,
+          onSegmentsPainted: onSegmentsPainted,
         );
       },
     );
@@ -132,6 +139,7 @@ class _CalendarContent extends StatelessWidget {
     required this.radiusTokens,
     required this.days,
     required this.segments,
+    this.onSegmentsPainted,
   });
 
   final double availableWidth;
@@ -143,6 +151,7 @@ class _CalendarContent extends StatelessWidget {
   final CalendarRadiusTokens radiusTokens;
   final List<WeekStripDay> days;
   final List<WeekStripSegment> segments;
+  final void Function(List<PaintedSegmentDebug>)? onSegmentsPainted;
 
   @override
   Widget build(BuildContext context) {
@@ -171,6 +180,7 @@ class _CalendarContent extends StatelessWidget {
                 phaseTokens: phaseTokens,
                 textTokens: textTokens,
                 radiusTokens: radiusTokens,
+                onSegmentsPainted: onSegmentsPainted,
               ),
             ),
           ),
@@ -201,6 +211,7 @@ class _CalendarStack extends StatelessWidget {
     required this.phaseTokens,
     required this.textTokens,
     required this.radiusTokens,
+    this.onSegmentsPainted,
   });
 
   final double availableWidth;
@@ -212,6 +223,7 @@ class _CalendarStack extends StatelessWidget {
   final CyclePhaseTokens phaseTokens;
   final TextColorTokens textTokens;
   final CalendarRadiusTokens radiusTokens;
+  final void Function(List<PaintedSegmentDebug>)? onSegmentsPainted;
 
   @override
   Widget build(BuildContext context) {
@@ -225,6 +237,7 @@ class _CalendarStack extends StatelessWidget {
           todayDay: todayDay,
           phaseTokens: phaseTokens,
           radiusTokens: radiusTokens,
+          onSegmentsPainted: onSegmentsPainted,
         ),
         Positioned.fill(
           child: Align(
@@ -254,6 +267,7 @@ class _CalendarLayers extends StatelessWidget {
     required this.todayDay,
     required this.phaseTokens,
     required this.radiusTokens,
+    this.onSegmentsPainted,
   });
 
   final double availableWidth;
@@ -263,6 +277,7 @@ class _CalendarLayers extends StatelessWidget {
   final WeekStripDay? todayDay;
   final CyclePhaseTokens phaseTokens;
   final CalendarRadiusTokens radiusTokens;
+  final void Function(List<PaintedSegmentDebug>)? onSegmentsPainted;
 
   @override
   Widget build(BuildContext context) {
@@ -277,6 +292,7 @@ class _CalendarLayers extends StatelessWidget {
             segments: segments,
             tokens: phaseTokens,
             radiusTokens: radiusTokens,
+            onSegmentsPainted: onSegmentsPainted,
           ),
           _TodayPillLayer(
             todayGeometry: todayGeometry,
@@ -292,6 +308,7 @@ class _CalendarLayers extends StatelessWidget {
 
 class _DayColumn extends StatelessWidget {
   const _DayColumn({
+    super.key,
     required this.day,
     required this.geometry,
     required this.textTokens,
@@ -320,6 +337,7 @@ class _DayColumn extends StatelessWidget {
     );
 
     return SizedBox(
+      key: ValueKey('day_chip_${day.date.day}'),
       width: geometry.width,
       height: _trackHeight,
       child: Padding(
@@ -366,6 +384,7 @@ class _SegmentLayer extends StatelessWidget {
     required this.segments,
     required this.tokens,
     required this.radiusTokens,
+    this.onSegmentsPainted,
   });
 
   final double availableWidth;
@@ -373,6 +392,7 @@ class _SegmentLayer extends StatelessWidget {
   final List<WeekStripSegment> segments;
   final CyclePhaseTokens tokens;
   final CalendarRadiusTokens radiusTokens;
+  final void Function(List<PaintedSegmentDebug>)? onSegmentsPainted;
 
   @override
   Widget build(BuildContext context) {
@@ -385,6 +405,7 @@ class _SegmentLayer extends StatelessWidget {
         radiusTokens: radiusTokens,
         topOffset: _segmentTopOffset,
         segmentHeight: _segmentHeight,
+        onPaintDebug: onSegmentsPainted,
       ),
     );
   }
@@ -448,6 +469,7 @@ class _DaysRow extends StatelessWidget {
       final bool isLast = i == days.length - 1;
       children.add(
         _DayColumn(
+          key: ValueKey('day_col_${day.date.toIso8601String()}'),
           day: day,
           geometry: geometry,
           textTokens: textTokens,
@@ -551,6 +573,7 @@ class _SegmentPainter extends CustomPainter {
     required this.radiusTokens,
     required this.topOffset,
     required this.segmentHeight,
+    this.onPaintDebug,
   });
 
   final List<WeekStripSegment> segments;
@@ -559,9 +582,12 @@ class _SegmentPainter extends CustomPainter {
   final CalendarRadiusTokens radiusTokens;
   final double topOffset;
   final double segmentHeight;
+  final void Function(List<PaintedSegmentDebug>)? onPaintDebug;
 
   @override
   void paint(Canvas canvas, Size size) {
+    List<PaintedSegmentDebug>? debug;
+    if (onPaintDebug != null) debug = <PaintedSegmentDebug>[];
     for (final segment in segments) {
       final startGeometry = geometries[segment.startIndex];
       final endGeometry = geometries[segment.endIndex];
@@ -581,9 +607,18 @@ class _SegmentPainter extends CustomPainter {
         topRight: radiusRight,
         bottomRight: radiusRight,
       );
-      final paint = Paint()..color = _segmentColor(segment.phase, tokens);
+      final color = _segmentColor(segment.phase, tokens);
+      final paint = Paint()..color = color;
       canvas.drawRRect(rrect, paint);
+      if (debug != null) {
+        debug.add(PaintedSegmentDebug(
+          phase: segment.phase,
+          rect: rect,
+          color: color,
+        ));
+      }
     }
+    if (onPaintDebug != null && debug != null) onPaintDebug!(debug);
   }
 
   @override
@@ -623,4 +658,18 @@ Color _todayColor(Phase phase, CyclePhaseTokens tokens) {
     case Phase.luteal:
       return tokens.luteal;
   }
+}
+
+/// Debug info for painted segments, exposed in tests via
+/// [CycleInlineCalendar.onSegmentsPainted].
+@immutable
+class PaintedSegmentDebug {
+  const PaintedSegmentDebug({
+    required this.phase,
+    required this.rect,
+    required this.color,
+  });
+  final Phase phase;
+  final Rect rect;
+  final Color color;
 }

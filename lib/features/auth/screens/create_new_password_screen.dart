@@ -136,11 +136,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
                     String? validationError;
                     if (!hasMinLen) {
-                      validationError = AuthStrings.errPasswordInvalid;
+                      validationError = AuthStrings.errPasswordTooShort;
                     } else if (!(hasLetter && hasNumber && hasSpecial)) {
-                      validationError = AuthStrings.errPasswordInvalid;
+                      validationError = AuthStrings.errPasswordMissingTypes;
                     } else if (isCommonWeak) {
-                      validationError = AuthStrings.errPasswordInvalid;
+                      validationError = AuthStrings.errPasswordCommonWeak;
                     }
 
                     if (validationError != null) {

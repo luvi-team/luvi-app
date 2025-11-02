@@ -92,5 +92,33 @@ void main() {
       expect(base.hashCode, same.hashCode);
       expect(base == different, isFalse);
     });
+
+    test('cycleProgressRatio boundary values (0.0 and 1.0) remain intact and immutable', () {
+      const vmZero = DashboardVM(
+        cycleProgressRatio: 0.0,
+        heroCta: HeroCtaState.startNewWorkout,
+        selectedCategory: Category.training,
+      );
+      const vmOne = DashboardVM(
+        cycleProgressRatio: 1.0,
+        heroCta: HeroCtaState.resumeActiveWorkout,
+        selectedCategory: Category.nutrition,
+      );
+
+      // Field assertions
+      expect(vmZero.cycleProgressRatio, 0.0);
+      expect(vmOne.cycleProgressRatio, 1.0);
+
+      // copyWith preserves values (immutability semantics)
+      final zeroCopy = vmZero.copyWith();
+      final oneCopy = vmOne.copyWith();
+
+      expect(zeroCopy.cycleProgressRatio, 0.0);
+      expect(oneCopy.cycleProgressRatio, 1.0);
+      expect(zeroCopy, vmZero);
+      expect(oneCopy, vmOne);
+      expect(identical(zeroCopy, vmZero), isFalse);
+      expect(identical(oneCopy, vmOne), isFalse);
+    });
   });
 }

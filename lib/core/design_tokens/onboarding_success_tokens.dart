@@ -16,6 +16,10 @@ class OnboardingSuccessTokens {
   /// Canonical: `OnboardingSpacing._kOnboardingSuccessTrophyToTitleGap`.
   static const double gapToTitle = 28.0;
 
+  /// Target gap (in px) between the title and the button.
+  /// Canonical: `OnboardingSpacing._titleToButton`.
+  static const double titleToButton = 66.0;
+
   /// Responsive config for the celebration animation based on viewport height.
   static OnboardingSuccessIllustrationConfig celebrationConfig({
     required double viewHeight,

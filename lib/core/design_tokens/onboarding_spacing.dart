@@ -44,7 +44,7 @@ class OnboardingSpacing {
     required this.lastOptionToFootnote07,
     required this.footnoteToCta07,
     required this.ctaToHome07,
-    // ONB_08 specific spacing (analog zu Screen 7: 90px Rhythmus)
+    // ONB_08 specific spacing (same rhythm as Screen 7: 90px)
     required this.headerToQuestion08,
     required this.questionToFirstOption08,
     required this.optionGap08,
@@ -113,7 +113,7 @@ class OnboardingSpacing {
   final double footnoteToCta07;
   final double ctaToHome07;
 
-  // ONB_08 specific spacing (analog zu Screen 7: 90px Rhythmus)
+  // ONB_08 specific spacing (same rhythm as Screen 7: 90px)
   final double headerToQuestion08;
   final double questionToFirstOption08;
   final double optionGap08;
@@ -298,11 +298,11 @@ class OnboardingSpacing {
   static const double _footnoteToCta07 = 90.0;
   static const double _ctaToHome07 = 90.0;
 
-  // ONB_08 specific spacing (90px Rhythmus analog zu Screen 7)
-  // Konsistenter 90px-Rhythmus für visuelles Gleichgewicht
+  // ONB_08 specific spacing (90px rhythm analogous to Screen 7)
+  // Consistent 90px rhythm for visual balance
   static const double _headerToQuestion08 = _onbSharedRhythm90;
   static const double _questionToFirstOption08 = _onbSharedRhythm90;
-  static const double _optionGap08 = 24.0; // konsistent mit anderen Screens
+  static const double _optionGap08 = 24.0; // consistent with other screens
   static const double _lastOptionToFootnote08 = _onbSharedRhythm90;
   static const double _footnoteToCta08 = _onbSharedRhythm90;
   static const double _ctaToHome08 = _onbSharedRhythm90;

@@ -64,13 +64,12 @@ void main() {
         'Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.',
       );
 
-      final dayNumberCount = tester
-          .widgetList(find.byType(Text))
-          .whereType<Text>()
-          .where((text) => RegExp(r'^\d+$').hasMatch(text.data ?? ''))
-          .length;
-
-      expect(dayNumberCount, 7);
+      // Count day chips via explicit keys to avoid fragile digit matching.
+      final dayChipFinder = find.byWidgetPredicate((widget) {
+        final key = widget.key;
+        return key is ValueKey<String> && key.value.startsWith('day_chip_');
+      });
+      expect(dayChipFinder, findsNWidgets(7));
 
       semanticsHandle.dispose();
     },
@@ -145,11 +144,11 @@ void main() {
 
     final inkWell = tester.widget<InkWell>(inkWellFinder);
     final inkWellChild = inkWell.child;
-    expect(inkWellChild, isNotNull, reason: 'InkWell sollte eine SizedBox als Kind liefern');
+    expect(inkWellChild, isNotNull, reason: 'InkWell should provide a SizedBox as its child');
     expect(
       inkWellChild,
       isA<SizedBox>(),
-      reason: 'Inline-Calendar erwartet SizedBox als Container für Breitenprüfung',
+      reason: 'Inline calendar expects a SizedBox as the container for width verification',
     );
     final sizedBox = inkWellChild! as SizedBox;
 
@@ -203,14 +202,14 @@ void main() {
     // Get the first positioned Container (today pill)
     final todayPill = tester.widget<Container>(todayPillFinder.first);
     final decoration = todayPill.decoration;
-    expect(decoration, isNotNull, reason: 'Heute-Pill sollte eine Decoration besitzen');
+    expect(decoration, isNotNull, reason: 'Today pill should have a decoration');
     expect(
       decoration,
       isA<BoxDecoration>(),
-      reason: 'Heute-Pill erwartet BoxDecoration zur Farbprüfung',
+      reason: 'Today pill expects a BoxDecoration for color verification',
     );
     final boxDecoration = decoration! as BoxDecoration;
-    expect(boxDecoration.color, isNotNull, reason: 'Heute-Pill benötigt eine Farbe');
+    expect(boxDecoration.color, isNotNull, reason: 'Today pill requires a color');
 
     // Verify color is follicularDark (#4169E1) with 100% opacity for follicular phase today
     expect(
@@ -282,14 +281,14 @@ void main() {
 
       final todayPill = tester.widget<Container>(todayPillFinder.first);
       final decoration = todayPill.decoration;
-      expect(decoration, isNotNull, reason: 'Heute-Pill sollte eine Decoration besitzen');
+      expect(decoration, isNotNull, reason: 'Today pill should have a decoration');
       expect(
         decoration,
         isA<BoxDecoration>(),
-        reason: 'Heute-Pill erwartet BoxDecoration zur Farbprüfung',
+        reason: 'Today pill expects a BoxDecoration for color verification',
       );
       final boxDecoration = decoration! as BoxDecoration;
-      expect(boxDecoration.color, isNotNull, reason: 'Heute-Pill benötigt eine Farbe');
+      expect(boxDecoration.color, isNotNull, reason: 'Today pill requires a color');
 
       // Verify color is ovulation gold (#E1B941) with 100% opacity
       expect(

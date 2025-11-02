@@ -5,6 +5,7 @@ import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/l10n/app_localizations_de.dart';
+import 'package:luvi_services/init_mode.dart';
 import 'test_app_links.dart';
 
 /// Centralized configuration for test-specific feature flags used by tests.
@@ -14,9 +15,8 @@ class TestConfig {
   /// Ensures shared test-only configuration (feature flags, localized strings) is initialized.
   static void ensureInitialized({AppLocalizations? locale}) {
     TestWidgetsFlutterBinding.ensureInitialized();
-    // Apply once for this test file and register a single cleanup for the suite.
-    AuthStrings.debugOverrideLocalizations(locale ?? AppLocalizationsDe());
-    AuthStrings.overrideResolver(() => ui.PlatformDispatcher.instance.locale);
+    // Register suite-scoped localization overrides and cleanup. Overrides are
+    // applied in setUpAll to avoid double-initialization; see _registerSuiteLifecycle().
     _registerSuiteLifecycle();
   }
 
@@ -38,6 +38,9 @@ class TestConfig {
   static void _registerSuiteLifecycle() {
     // Apply overrides once per test file and clean them up once after all tests.
     setUpAll(() {
+      // Force test InitMode globally for this suite unless explicitly overridden
+      // via Provider override in individual tests.
+      InitModeBridge.resolve = () => InitMode.test;
       AuthStrings.debugOverrideLocalizations(AppLocalizationsDe());
       AuthStrings.overrideResolver(() => ui.PlatformDispatcher.instance.locale);
     });

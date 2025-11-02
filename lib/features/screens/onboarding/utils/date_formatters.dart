@@ -21,15 +21,10 @@ class DateFormatters {
     try {
       final formatter = DateFormat.yMMMMd(effectiveLocale);
       return formatter.format(date);
-    } catch (e) {
-      // Fall back to default locale on any failure and avoid throwing
-      try {
-        final fallback = DateFormat.yMMMMd();
-        return fallback.format(date);
-      } catch (_) {
-        // As an absolute last resort, return ISO-like date
-        return DateFormat('y-MM-dd').format(date);
-      }
+    } catch (_) {
+      // On any failure, fall back to a safe, locale-agnostic ISO-like format.
+      // Avoid rethrowing and ensure a string is always returned.
+      return DateFormat('y-MM-dd').format(date);
     }
   }
 }

@@ -44,10 +44,9 @@ void main() {
         );
 
         final appleButton = find.byType(SignInWithAppleButton);
-        final googleButton = find.widgetWithText(
-          SignInButton,
-          'Mit Google anmelden',
-        );
+        // Use a locale-independent finder: there is exactly one Google SignInButton
+        // in this widget tree; avoid relying on a localized label.
+        final googleButton = find.byType(SignInButton);
 
         expect(appleButton, findsOneWidget);
         expect(googleButton, findsOneWidget);

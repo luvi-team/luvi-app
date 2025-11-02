@@ -231,9 +231,9 @@ void main() {
       final context = tester.element(find.byType(OnboardingSuccessScreen));
       final spacing = OnboardingSpacing.of(context);
 
-      // From updated spec: trophyToTitle = 28px, titleToButton = 66px
+      // From updated spec: trophyToTitle = 28px, titleToButton = design token value
       expect(spacing.trophyToTitle, OnboardingSuccessTokens.gapToTitle);
-      expect(spacing.titleToButton, 66.0);
+      expect(spacing.titleToButton, OnboardingSuccessTokens.titleToButton);
 
       // Reset view size
       addTearDown(tester.view.reset);

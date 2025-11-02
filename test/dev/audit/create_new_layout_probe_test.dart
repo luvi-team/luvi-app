@@ -89,8 +89,8 @@ void main() {
       final ctaRect = tester.getRect(ctaFinder);
 
       // Try to find password fields by their hint text
-      final field1Finder = find.byKey(const Key('AuthPasswordField'));
-      final field2Finder = find.byKey(const Key('AuthConfirmPasswordField'));
+      final field1Finder = find.byKey(const ValueKey('AuthPasswordField'));
+      final field2Finder = find.byKey(const ValueKey('AuthConfirmPasswordField'));
 
       final field1Rect = tester.getRect(field1Finder);
       final field2Rect = tester.getRect(field2Finder);

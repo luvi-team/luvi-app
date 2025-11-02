@@ -29,6 +29,7 @@ import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart
 import 'package:luvi_app/features/screens/splash/splash_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_services/user_state_service.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
@@ -41,6 +42,22 @@ const String _consentPathPrefix = '$_consentRootPath/';
 
 class OnboardingRoutes {
   static const done = '/onboarding/done';
+}
+
+// Route helpers for readability and maintainability. These are pure functions
+// so they can be unit-tested easily by passing a location string.
+bool _isOnboardingRoute(String location) {
+  return location == _onboardingRootPath ||
+      location.startsWith('$_onboardingRootPath/');
+}
+
+bool _isWelcomeRoute(String location) {
+  return location.startsWith(_welcomeRootPath);
+}
+
+bool _isConsentRoute(String location) {
+  return location == _consentRootPath ||
+      location.startsWith(_consentPathPrefix);
 }
 
 final List<GoRoute> featureRoutes = [
@@ -72,7 +89,9 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: Consent02Screen.routeName,
     name: 'consent02',
-    builder: (context, state) => const Consent02Screen(),
+    builder: (context, state) => const Consent02Screen(
+      appLinks: ProdAppLinks(),
+    ),
   ),
   GoRoute(
     path: Onboarding01Screen.routeName,
@@ -117,15 +136,22 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: OnboardingSuccessScreen.routeName,
     name: 'onboarding_success',
+    redirect: (ctx, st) {
+      final extra = st.extra;
+      // Ensure navigation only proceeds when a valid FitnessLevel is supplied.
+      if (extra is FitnessLevel) {
+        return null; // ok
+      }
+      // Fallback to onboarding start when missing/invalid extras
+      return Onboarding01Screen.routeName;
+    },
     builder: (ctx, st) {
       final extra = st.extra;
-      if (extra is! FitnessLevel) {
-        throw ArgumentError(
-          'OnboardingSuccessScreen requires a FitnessLevel extra. '
-          'Received ${extra.runtimeType}.',
-        );
+      if (extra is FitnessLevel) {
+        return OnboardingSuccessScreen(fitnessLevel: extra);
       }
-      return OnboardingSuccessScreen(fitnessLevel: extra);
+      // Defensive fallback (should be caught by redirect above)
+      return const Onboarding01Screen();
     },
   ),
   GoRoute(
@@ -225,13 +251,9 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   final isAuthEntry = state.matchedLocation.startsWith(
     AuthEntryScreen.routeName,
   );
-  final isOnboarding =
-      state.matchedLocation == _onboardingRootPath ||
-      state.matchedLocation.startsWith('$_onboardingRootPath/');
-  final isWelcome = state.matchedLocation.startsWith(_welcomeRootPath);
-  final isConsent =
-      state.matchedLocation == _consentRootPath ||
-      state.matchedLocation.startsWith(_consentPathPrefix);
+  final isOnboarding = _isOnboardingRoute(state.matchedLocation);
+  final isWelcome = _isWelcomeRoute(state.matchedLocation);
+  final isConsent = _isConsentRoute(state.matchedLocation);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
   final session = isInitialized

@@ -6,6 +6,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import '../../../support/test_config.dart';
 
 void main() {
@@ -15,42 +16,7 @@ void main() {
     await tester.pumpWidget(
       buildLocalizedApp(
         theme: AppTheme.buildAppTheme(),
-        home: Builder(
-          builder: (context) {
-            final l10n = AppLocalizations.of(context)!;
-            final theme = Theme.of(context);
-            final headline = theme.textTheme.headlineMedium;
-            final accentStyle =
-                headline?.copyWith(color: theme.colorScheme.secondary);
-            return WelcomeShell(
-              hero: const SizedBox(), // asset-free for test stability
-              title: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: headline,
-                  children: [
-                    TextSpan(text: l10n.welcome01TitlePrefix.trim()),
-                    const TextSpan(text: ' '),
-                    TextSpan(
-                      text: l10n.welcome01TitleAccent.trim(),
-                      style: accentStyle,
-                    ),
-                    const TextSpan(text: ' '),
-                    TextSpan(text: l10n.welcome01TitleSuffixLine1.trim()),
-                    const TextSpan(text: '\n'),
-                    TextSpan(text: l10n.welcome01TitleSuffixLine2.trim()),
-                  ],
-                ),
-              ),
-              subtitle: l10n.welcome01Subtitle,
-              primaryButtonLabel: l10n.welcome01PrimaryCta,
-              onNext: () {},
-              heroAspect: 438 / 619,
-              waveHeightPx: 413,
-              activeIndex: 0,
-            );
-          },
-        ),
+        home: const ConsentWelcome01Screen(),
       ),
     );
 

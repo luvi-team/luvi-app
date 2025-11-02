@@ -30,7 +30,8 @@ final _consentBtnBusyProvider =
     );
 
 class Consent02Screen extends ConsumerWidget {
-  const Consent02Screen({super.key, this.appLinks = const ProdAppLinks()});
+  /// Requires explicit [appLinks] to make the dependency visible and testable.
+  const Consent02Screen({super.key, required this.appLinks});
 
   static const String routeName = '/consent/02';
   final AppLinksApi appLinks;
@@ -114,17 +115,41 @@ class Consent02Screen extends ConsumerWidget {
                     );
                     busyNotifier.setBusy(true);
                     try {
+                      Exception? markError;
+
                       final userState = await tryOrNullAsync(
                         () => ref.read(userStateServiceProvider.future),
                         tag: 'userState',
                       );
-                      await tryOrNullAsync(() async {
-                        if (userState == null) return;
-                        await userState.markWelcomeSeen();
-                      }, tag: 'markWelcomeSeen');
-                      if (context.mounted) {
-                        context.go(AuthEntryScreen.routeName);
+
+                      if (userState != null) {
+                        // Only attempt to mark when a user state exists. Capture any error.
+                        await tryOrNullAsync(
+                          () async {
+                            await userState.markWelcomeSeen();
+                          },
+                          tag: 'markWelcomeSeen',
+                          onError: (error, stack) {
+                            if (error is Exception) markError = error;
+                          },
+                        );
                       }
+
+                      if (!context.mounted) return;
+
+                      if (markError != null) {
+                        final l = AppLocalizations.of(context);
+                        final msg = l?.consentSnackbarError(markError.toString()) ??
+                            'Failed to save your choice. Please try again.';
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(msg)),
+                        );
+                        // Do not navigate on failure; allow user to retry.
+                        return;
+                      }
+
+                      // Navigate only when marking succeeded or there was nothing to mark (no userState).
+                      context.go(AuthEntryScreen.routeName);
                     } finally {
                       busyNotifier.setBusy(false);
                     }
