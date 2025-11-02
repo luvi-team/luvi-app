@@ -25,6 +25,19 @@ Tooling (Flutter, Sandbox)
 - Optional (Build/Signing/Performance): `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh <cmd>` nutzt das echte `$HOME` und den Default‑`PUB_CACHE` (z. B. `~/.gradle`, `~/.cocoapods`, `~/.pub-cache`).
   - Empfohlen nur außerhalb strenger Sandbox oder mit Approval; Analyze/Test bleiben standardmäßig im sicheren Modus.
 
+## Flutter Test Execution Policy (MVP)
+- Analyze bleibt sandboxed: `scripts/flutter_codex.sh analyze` (telemetry off, `--no-pub`).
+- Tests sind erlaubt „ohne Sandbox“ ausschließlich über den Wrapper:
+  - Erlaubt: `scripts/flutter_codex.sh test -j 1` (Loopback‑Socket auf `127.0.0.1` erforderlich; kein externer Netzverkehr).
+  - Der Assistent kündigt Testläufe an und eskaliert mit Begründung „Loopback‑Socket nötig“. Session‑weite Einmal‑Freigabe ist zulässig.
+  - Tests müssen offline sein (keine externen HTTP‑Calls). Bei Bedarf `--offline` nutzen oder Netzwerk via Mocks/`HttpOverrides` stubben.
+- Stabilität/Performance:
+  - Standard: `-j 1` um lokale Port/Isolate‑Flakes zu vermeiden; Ressourcen über `rootBundle`/Fixtures.
+  - Paketverwaltung bleibt im sicheren Modus (`--no-pub`); Abhängigkeiten werden nicht während Tests aktualisiert.
+- Safety‑Rails:
+  - Keine Schreibzugriffe außerhalb des Repos; HOME/PUB_CACHE sind auf `.tooling/*` gesetzt.
+  - Optional eskalieren: `CODEX_USE_REAL_HOME=1` ist für Tests nicht erforderlich und soll nicht genutzt werden.
+
 Rollenwahl
 - Default: Auto-Role (ankündigen). Misch-Tasks: `role: …` (Primärrolle zuerst).
 - Auto-Role Map (SSOT): `context/agents/_auto_role_map.md`

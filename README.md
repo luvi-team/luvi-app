@@ -85,3 +85,9 @@ Widget tests verify RLS enforcement:
 ```bash
 flutter test test/widgets/daily_plan_rls_test.dart
 ```
+
+## Init Mode (Tests vs Prod)
+
+- The app uses an InitMode to control initialization behavior (prod/test). The default is `prod` via `initModeProvider`.
+- Services access the mode via a small bridge bound in `main.dart`. In widget tests, override with `ProviderScope(overrides: [initModeProvider.overrideWithValue(InitMode.test)])` to run offline without retries/overlays.
+- Tests that require a logically initialized client should inject fakes via Provider overrides instead of hitting real network.
