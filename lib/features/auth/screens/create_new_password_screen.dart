@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async' show TimeoutException;
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -166,6 +167,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     try {
                       await supa.Supabase.instance.client.auth.updateUser(
                         supa.UserAttributes(password: newPw),
+                      ).timeout(
+                        const Duration(seconds: 30),
+                        onTimeout: () => throw TimeoutException('Password update timed out'),
                       );
                       if (!context.mounted) return;
                       context.goNamed(

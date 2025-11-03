@@ -19,6 +19,6 @@ bool nonEmptyNameValidator(
   if (trimmed.length < minLength || trimmed.length > maxLength) return false;
 
   // Allow letters (ASCII + common accents), spaces, hyphens, apostrophes.
-  final re = allowedCharsPattern ?? RegExp(r"^[A-Za-zÀ-ÿ'\- ]+$");
+  final re = allowedCharsPattern ?? RegExp(r"^[A-Za-zÀ-ÿ' -]+$");
   return re.hasMatch(trimmed);
 }
