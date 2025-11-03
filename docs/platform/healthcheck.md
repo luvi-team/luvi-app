@@ -4,7 +4,7 @@
 - **URL:** `/api/health`
 - **Method:** `GET`
 - **Timeout:** 5 s pro Request
-- **Retry:** Bis zu 3 Versuche mit Backoff 1 s → 3 s → 9 s
+- **Retry:** Max. 3 Retries (zusätzlich zum Initialversuch); Backoff exponentiell (Base‑2): 1 s → 2 s → 4 s
 - **Polling-Frequenz (Gate/CI):** alle 5 min
 
 ## Response Schema
