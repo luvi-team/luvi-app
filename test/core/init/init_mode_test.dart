@@ -12,11 +12,16 @@ void main() {
 
   testWidgets('InitMode.test bypasses init overlay', (tester) async {
     // Ensure bridge reflects test mode and provider override also set to test.
+    final prev = InitModeBridge.resolve;
     InitModeBridge.resolve = () => InitMode.test;
+    addTearDown(() {
+      InitModeBridge.resolve = prev;
+    });
     final controller = RouteOrientationController(
       defaultOrientations: const [DeviceOrientation.portraitUp],
       setter: (orientations) async {},
     );
+
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -27,17 +32,24 @@ void main() {
       ),
     );
     await tester.pump();
+
     expect(find.byType(MaterialApp), findsOneWidget);
-    expect(find.text('Retry'), findsNothing);
+    expect(find.byIcon(Icons.wifi_off), findsNothing);
   });
 
   testWidgets('InitMode.prod shows init overlay', (tester) async {
-    // Force bridge to prod before app bootstrap so main binds bridge from provider.
+    // Force bridge to prod before app bootstrap so MyAppWrapper binds bridge
+    // from provider rather than keeping test short-circuit.
+    final prev = InitModeBridge.resolve;
     InitModeBridge.resolve = () => InitMode.prod;
+    addTearDown(() {
+      InitModeBridge.resolve = prev;
+    });
     final controller = RouteOrientationController(
       defaultOrientations: const [DeviceOrientation.portraitUp],
       setter: (orientations) async {},
     );
+
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
@@ -48,6 +60,7 @@ void main() {
       ),
     );
     await tester.pump();
+
     // Overlay renders a WiFi off icon when not yet initialized.
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
   });

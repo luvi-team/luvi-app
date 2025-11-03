@@ -87,11 +87,15 @@ void _reportHandledError({
   }
 
   if (kDebugMode) {
-    final sanitized = _sanitizeError(error);
-    final suffix = sanitized == null ? '' : ': $sanitized';
-    debugPrint(
-      '[$tag] ${error.runtimeType}$suffix\n${_shortStackTrace(stackTrace)}',
-    );
+    try {
+      final sanitized = _sanitizeError(error);
+      final suffix = sanitized == null ? '' : ': $sanitized';
+      debugPrint(
+        '[$tag] ${error.runtimeType}$suffix\n${_shortStackTrace(stackTrace)}',
+      );
+    } catch (_) {
+      debugPrint('[$tag] ${error.runtimeType} (sanitization failed)');
+    }
   }
 }
 
