@@ -75,7 +75,7 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
     def replace_css_var(match):
         fallback_color = match.group(1).strip()
         # Skip replacement if fallback fails to parse cleanly to avoid corrupting content.
-        if not fallback_color or fallback_color.startswith('var('):
+        if not fallback_color or 'var(' in fallback_color:
             logger.warning(
                 "Skipping CSS var replacement in '%s' at offset %d: fallback='%s', raw='%s'",
                 svg_file,
