@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 class LegalViewer extends StatefulWidget {
   final String assetPath;
@@ -33,11 +35,12 @@ class _LegalViewerState extends State<LegalViewer> {
         future: _documentFuture,
         builder: (context, snap) {
           if (snap.hasError) {
-            return const Center(
-              child: Text(
-                'Das Dokument konnte nicht geladen werden. Bitte versuchen Sie es später erneut.',
-              ),
-            );
+            // Log the underlying error for diagnostics
+            log.e('error', tag: 'legal_viewer', error: snap.error!, stack: snap.stackTrace);
+            final l10n = AppLocalizations.of(context);
+            final message = l10n?.documentLoadError ??
+                'Das Dokument konnte nicht geladen werden.';
+            return Center(child: Text(message));
           }
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());

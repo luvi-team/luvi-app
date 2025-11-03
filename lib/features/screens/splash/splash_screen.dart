@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
-import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -66,19 +66,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _navigateAfterAnimation() async {
     if (_hasNavigated) return;
-    _hasNavigated = true;
-    
-    final userState = await tryOrNullAsync(
-      () => ref.read(userStateServiceProvider.future),
-      tag: 'userState',
-    );
-    if (!mounted) return;
-    final isAuth = SupabaseService.isAuthenticated;
-    final hasSeenWelcome = userState?.hasSeenWelcome ?? false;
-    final nextRoute = !hasSeenWelcome
-        ? ConsentWelcome01Screen.routeName
-        : (isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName);
-    if (!mounted) return;
-    context.go(nextRoute);
+    try {
+      final service = await ref.read(userStateServiceProvider.future);
+      final isAuth = SupabaseService.isAuthenticated;
+      final hasSeenWelcomeMaybe = service.hasSeenWelcomeOrNull;
+
+      late final String target;
+      if (hasSeenWelcomeMaybe == null) {
+        // Unknown state: choose conservatively based on auth.
+        target = isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName;
+      } else if (!hasSeenWelcomeMaybe) {
+        target = ConsentWelcome01Screen.routeName;
+      } else {
+        target = isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName;
+      }
+
+      if (!mounted || _hasNavigated) return;
+      _hasNavigated = true;
+      context.go(target);
+    } catch (e, st) {
+      log.e('routing error', tag: 'splash', error: e, stack: st);
+      if (!mounted || _hasNavigated) return;
+      _hasNavigated = true;
+      final isAuth = SupabaseService.isAuthenticated;
+      context.go(isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName);
+    }
   }
 }

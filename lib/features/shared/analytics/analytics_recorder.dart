@@ -45,8 +45,10 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
   }) {
     assert(name.isNotEmpty, 'Analytics event name must not be empty');
     if (kDebugMode) {
-      final payload = properties.isEmpty ? '' : ' $properties';
-      debugPrint('[analytics] $name$payload');
+      final sanitizedProps = properties.isEmpty 
+          ? '' 
+          : ' (${properties.length} properties)';
+      debugPrint('[analytics] $name$sanitizedProps');
     }
     // Always forward to backend (if provided), regardless of build mode.
     final sink = backend;

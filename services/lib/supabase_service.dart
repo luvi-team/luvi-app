@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'logger.dart';
 import 'init_mode.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -221,8 +222,8 @@ class SupabaseService {
     try {
       await dotenv.load(fileName: envFile);
     } catch (error, stackTrace) {
-      debugPrint('Failed to load Supabase environment from '
-          '"$envFile": $error\n$stackTrace');
+      log.e('Failed to load Supabase environment', tag: 'supabase_service',
+          error: error, stack: stackTrace);
       // In tests, don't crash app initialization; proceed with offline UI.
       final isTest = InitModeBridge.resolve() == InitMode.test;
       if (!isTest) {

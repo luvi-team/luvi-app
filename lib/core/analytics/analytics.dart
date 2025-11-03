@@ -19,4 +19,9 @@ class Analytics {
   void track(String name, Map<String, Object?> props) {
     _recorder.recordEvent(name, properties: props);
   }
+
+  // NOTE: MVP keeps a flexible Map-based API for event properties.
+  // For stronger typing later, consider introducing event classes that
+  // implement a common AnalyticsEvent interface with toMap()/properties,
+  // and add an overload like trackTyped<T extends AnalyticsEvent>(T event).
 }
