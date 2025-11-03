@@ -57,6 +57,14 @@ class UserStateService {
 
   bool get hasSeenWelcome => prefs.getBool(_keyHasSeenWelcome) ?? false;
 
+  /// Returns whether the welcome has been seen, or null if the key is absent
+  /// (unknown state). Useful for callers that want to treat "unknown"
+  /// differently from an explicit false.
+  bool? get hasSeenWelcomeOrNull {
+    if (!prefs.containsKey(_keyHasSeenWelcome)) return null;
+    return prefs.getBool(_keyHasSeenWelcome);
+  }
+
   bool get hasCompletedOnboarding =>
       prefs.getBool(_keyHasCompletedOnboarding) ?? false;
 
@@ -70,8 +78,23 @@ class UserStateService {
   Future<void> markOnboardingComplete({
     required FitnessLevel fitnessLevel,
   }) async {
-    await prefs.setBool(_keyHasCompletedOnboarding, true);
-    await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
+    // Persist fitness level first, then the completion flag. If the second
+    // write fails, attempt to roll back the first to avoid inconsistent state.
+    try {
+      final wroteLevel = await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
+      if (wroteLevel != true) {
+        throw StateError('Failed to persist fitness level');
+      }
+      final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
+      if (wroteFlag != true) {
+        // Rollback: best-effort removal of fitness level
+        await prefs.remove(_keyFitnessLevel);
+        throw StateError('Failed to persist onboarding completion flag');
+      }
+    } catch (e) {
+      // Surface the error to callers so they can retry or report.
+      rethrow;
+    }
   }
 
   Future<void> setFitnessLevel(FitnessLevel level) async {
