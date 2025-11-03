@@ -23,10 +23,13 @@ Zweck: CMP/Consent vor dem Laden externer YouTube‑Inhalte verifizieren (Overla
 2. Erwartung: YouTube‑IFrame mit `youtube-nocookie` geladen; Player‑UI unmodifiziert (No‑Ad‑Interference).
 3. Events: `video_consent_accept`, anschließend `video_play_start`.
 4. DB‑Log (owner‑RLS):
+   Hinweis: Parameterisiere die Abfrage oder ersetze `<video_id>` durch eine bekannte Test‑ID, um versehentliche Produktionsdaten‑Zugriffe zu vermeiden.
+   Beispiel (benannter Parameter):
    ```sql
+   -- :video_id ist ein benannter Parameter, im Tool/Client zu binden
    select user_id, video_id, decision, ts, ua_hash, ip_hash, client_version, locale
    from consent_logs
-   where user_id = auth.uid() and video_id = '<video_id>'
+   where user_id = auth.uid() and video_id = :video_id
    order by ts desc limit 1;
    -- Erwartung: decision = 'accept'
    ```

@@ -17,9 +17,9 @@
   - data/            (API/repo/data sources)
   - domain/          (entities/models)
   - widgets/         (PhaseBadge)
-- services/ (lokales Package `luvi_services`)
-  - lib/user_state_service.dart
-  - lib/supabase_service.dart
+- services/ — local sibling Dart package in this repository (`luvi_services`)
+  - Contains shared app services, e.g. `lib/user_state_service.dart`, `lib/supabase_service.dart`
+  - Consumed via a path dependency from the app `pubspec.yaml`
 - test/
   - features/
     - consent/       (tests mirror the feature)
