@@ -66,15 +66,12 @@ class SocialAuthRow extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    // Vertical layout: Apple first, optional gap, then Google
-    if (buttons.length == 2) {
-      children.addAll([
-        buttons.first,
-        const SizedBox(height: Spacing.m), // 16dp gap between buttons
-        buttons.last,
-      ]);
-    } else {
-      children.addAll(buttons);
+    // Add buttons with spacing between them
+    for (int i = 0; i < buttons.length; i++) {
+      if (i > 0) {
+        children.add(const SizedBox(height: Spacing.m));
+      }
+      children.add(buttons[i]);
     }
 
     return Column(
