@@ -672,4 +672,16 @@ class PaintedSegmentDebug {
   final Phase phase;
   final Rect rect;
   final Color color;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is PaintedSegmentDebug &&
+        other.phase == phase &&
+        other.rect == rect &&
+        other.color == color;
+  }
+
+  @override
+  int get hashCode => Object.hash(phase, rect, color);
 }

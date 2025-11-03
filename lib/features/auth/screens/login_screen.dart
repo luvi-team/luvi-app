@@ -53,6 +53,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       );
     }
+    // Schedule initial measurement once after first layout.
+    _scheduleSocialBlockMeasurement();
   }
 
   @override
@@ -85,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = submitState.isLoading;
     final hasValidationError = emailError != null || passwordError != null;
 
-    _scheduleSocialBlockMeasurement();
+    // Measurement scheduled in initState and when dependencies change.
 
     void submit() => ref
         .read(loginSubmitProvider.notifier)

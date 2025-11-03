@@ -44,9 +44,9 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     setState(() {
       _selected = index;
     });
-    // Persist selection immediately for resilience across navigation and rebuilds.
-    // ignore: discarded_futures
-    _persistSelection(FitnessLevel.fromSelectionIndex(index));
+    // Persist immediately on selection; do not block UI/CTA state.
+    final level = FitnessLevel.fromSelectionIndex(index);
+    unawaited(_persistSelection(level));
   }
 
   Future<void> _handleContinue() async {
@@ -193,7 +193,11 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
       () => ref.read(userStateServiceProvider.future),
       tag: 'userState',
     );
-    final savedSelection = userState?.fitnessLevel;
+    if (userState == null) {
+      // Failed to load user state for initial selection (logged via tryOrNullAsync)
+      return;
+    }
+    final savedSelection = userState.fitnessLevel;
     final index = FitnessLevel.selectionIndexFor(savedSelection);
     if (!mounted || index == null) return;
     setState(() {

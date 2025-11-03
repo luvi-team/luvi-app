@@ -6,6 +6,7 @@ import '../widgets/welcome_shell.dart';
 import 'consent_welcome_03_screen.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../widgets/localized_builder.dart';
 
 class ConsentWelcome02Screen extends StatelessWidget {
   const ConsentWelcome02Screen({super.key});
@@ -14,13 +15,12 @@ class ConsentWelcome02Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildLocalizedContent(context);
+    return LocalizedBuilder(builder: _buildLocalizedContent);
   }
 
-  Widget _buildLocalizedContent(BuildContext context) {
+  Widget _buildLocalizedContent(BuildContext context, AppLocalizations l10n) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
     final titleStyle = t.headlineMedium?.copyWith(
       fontSize: TypographyTokens.size28,
       height: TypographyTokens.lineHeightRatio36on28,

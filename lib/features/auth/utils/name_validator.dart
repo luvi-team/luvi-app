@@ -1,3 +1,24 @@
-/// Validates that the provided name input is non-null and not empty after trimming.
-bool nonEmptyNameValidator(String? value) =>
-    value != null && value.trim().isNotEmpty;
+/// Validates a personal name using basic, configurable constraints.
+///
+/// Rules (defaults chosen for MVP UX and common western names):
+/// - Non-null and non-empty after trimming
+/// - Length between [minLength] and [maxLength] (inclusive); defaults 2–50
+/// - Characters match [allowedCharsPattern] (defaults to letters incl. accents,
+///   spaces, hyphens, apostrophes)
+///
+/// Returns true when the name satisfies all constraints.
+bool nonEmptyNameValidator(
+  String? value, {
+  int minLength = 2,
+  int maxLength = 50,
+  RegExp? allowedCharsPattern,
+}) {
+  if (value == null) return false;
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return false;
+  if (trimmed.length < minLength || trimmed.length > maxLength) return false;
+
+  // Allow letters (ASCII + common accents), spaces, hyphens, apostrophes.
+  final re = allowedCharsPattern ?? RegExp(r"^[A-Za-zÀ-ÿ'\- ]+$");
+  return re.hasMatch(trimmed);
+}

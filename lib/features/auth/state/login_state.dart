@@ -90,7 +90,12 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
     );
   }
 
-  /// MIWF: Simple client-side validation; server submit happens in the submit provider.
+  /// Simple client-side validation only.
+  ///
+  /// Important:
+  /// - This method does NOT perform any network submission.
+  /// - Server-side submission is handled by the submit provider
+  ///   (see login_submit_provider.dart).
   Future<void> validateAndSubmit() async {
     state = await AsyncValue.guard(() async {
       final current = _current();
