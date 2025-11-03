@@ -41,6 +41,8 @@ void main() {
     expect(props.containsKey('b'), isFalse);
     expect(props['a'], 1);
     expect(props['c'], 'x');
+
+    container.dispose();
   });
 }
-
+ 

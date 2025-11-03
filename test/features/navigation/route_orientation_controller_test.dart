@@ -73,7 +73,7 @@ void main() {
     observer.didPush(landscapeRoute, defaultRoute);
     observer.didPop(landscapeRoute, defaultRoute);
 
-    await tester.pump(); // flush microtasks
+    await tester.pump(); // trigger frame for async operations
 
     expect(fakeSetter.calls, [
       [DeviceOrientation.portraitUp],

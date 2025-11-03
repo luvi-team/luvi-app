@@ -15,9 +15,12 @@ import 'package:luvi_app/features/auth/widgets/social_auth_row.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
 import '../../../support/test_config.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
+// Note: No Supabase usage in these tests; keep imports minimal.
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
+
+// Minimum expected height when both social buttons are present in vertical layout.
+const double _expectedMinHeightForTwoButtons = 150.0;
 
 void main() {
   TestConfig.ensureInitialized();
@@ -97,7 +100,7 @@ void main() {
       if (FeatureFlags.enableAppleSignIn && FeatureFlags.enableGoogleSignIn) {
         expect(
           actualHeight,
-          greaterThan(150.0),
+          greaterThan(_expectedMinHeightForTwoButtons),
           reason:
               'Height should be ~173dp for vertical layout with both buttons',
         );
@@ -149,14 +152,6 @@ void main() {
     testWidgets(
       'No overflow when keyboard is visible on LoginScreen (integration test)',
       (tester) async {
-        // Only this integration test needs to simulate an auth failure; widget
-        // tests above do not invoke authentication.
-        when(
-          () => mockRepo.signInWithPassword(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          ),
-        ).thenThrow(supa.AuthException('invalid credentials'));
         await tester.pumpWidget(
           ProviderScope(
             overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
@@ -182,7 +177,6 @@ void main() {
         // an on-screen keyboard so we can assert the layout without a platform channel.
         tester.view.viewInsets = const FakeViewPadding(bottom: 300.0);
         addTearDown(() {
-          tester.platformDispatcher.clearAllTestValues();
           tester.view.reset();
         });
         await tester.pump();
