@@ -14,7 +14,7 @@ class _MockAuthRepository extends Mock implements AuthRepository {}
 void main() {
   TestConfig.ensureInitialized();
 
-  test('guard avoids network and sets invalid credentials when only password error', () async {
+  test('submit avoids network; keeps local password error when only password invalid', () async {
     final mockRepo = _MockAuthRepository();
     final container = ProviderContainer(overrides: [
       authRepositoryProvider.overrideWithValue(mockRepo),
@@ -37,8 +37,9 @@ void main() {
         ));
 
     final state = container.read(loginProvider).value!;
-    expect(state.emailError, AuthStrings.invalidCredentials);
-    expect(state.passwordError, isNull);
+    // Email stays valid; password keeps its local validation error.
+    expect(state.emailError, isNull);
+    expect(state.passwordError, AuthStrings.errPasswordInvalid);
     expect(state.globalError, isNull);
   });
 

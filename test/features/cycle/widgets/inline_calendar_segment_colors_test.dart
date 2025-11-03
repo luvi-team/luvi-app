@@ -8,7 +8,11 @@ import 'package:luvi_app/features/cycle/domain/week_strip.dart';
 import 'package:luvi_app/features/cycle/widgets/cycle_inline_calendar.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
+import '../../../support/test_config.dart';
+
 void main() {
+  TestConfig.ensureInitialized();
+
   testWidgets('Segment painter exposes phases and colors via debug callback', (
     tester,
   ) async {

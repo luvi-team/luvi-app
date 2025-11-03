@@ -147,7 +147,7 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
                     statusMessage = 'Created plan for ${plan.ownerId}';
                   } on AuthorizationException catch (e) {
                     statusMessage = 'Creation blocked: ${e.message}';
-                  } on Exception catch (error) {
+                  } catch (error) {
                     statusMessage = 'Creation failed: $error';
                   } finally {
                     statusNotifier.state = statusMessage;

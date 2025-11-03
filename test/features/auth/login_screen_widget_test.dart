@@ -61,7 +61,11 @@ void main() {
     expect(passwordField, findsOneWidget);
 
     await tester.enterText(emailField, 'user@example.com');
-    await tester.enterText(passwordField, 'wrongpw');
+    // Ensure we pass client-side min length (8) so server-side invalid
+    // credentials path is exercised.
+    await tester.enterText(passwordField, 'wrongpass');
+    // Allow UI to rebuild so the CTA enables (validation cleared)
+    await tester.pump();
 
     // Tap the CTA button
     final loginButton = find.widgetWithText(
