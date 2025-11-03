@@ -78,6 +78,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboarding04CalloutSuffix => '. A rough estimate is enough to get started.';
 
   @override
+  String get documentLoadError => 'Failed to load document.';
+
+  @override
   String get commonContinue => 'Continue';
 
   @override
@@ -354,6 +357,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingSuccessTitle => 'You\'re ready to go!';
 
   @override
+  String get onboardingSuccessStateUnavailable => 'We couldn\'t complete onboarding. Please try again.';
+
+  @override
+  String get onboardingSuccessGenericError => 'Something went wrong. Please try again.';
+
+  @override
   String get welcome01Subtitle => 'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.';
 
   @override
@@ -447,14 +456,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consent02SemanticUnselected => 'Not selected';
 
   @override
-  String get consentSnackbarAccepted => 'Consent accepted';
-
-  @override
-  String consentSnackbarError(String error) {
-    return 'Consent failed: $error';
-  }
-
-  @override
   String get authLoginHeadline => 'Welcome back 💜';
 
   @override
@@ -486,6 +487,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authErrPasswordInvalid => 'Please double-check your password.';
+
+  @override
+  String get authErrPasswordTooShort => 'Your password is too short.';
+
+  @override
+  String get authErrPasswordMissingTypes => 'Your password must include letters and numbers or symbols.';
+
+  @override
+  String get authErrPasswordCommonWeak => 'Your password is too common or weak.';
 
   @override
   String get authErrConfirmEmail => 'Please verify your email (resend the link?).';
@@ -597,4 +607,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authVerifyResend => 'Resend';
+
+  @override
+  String get consentSnackbarAccepted => 'Consent accepted';
+
+  @override
+  String consentSnackbarError(String error) {
+    return 'Consent failed: $error';
+  }
 }

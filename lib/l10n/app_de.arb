@@ -102,6 +102,10 @@
   "@onboarding04CalloutSuffix": {
     "description": "Suffix text displayed after the emphasized part of the onboarding 04 callout."
   },
+  "documentLoadError": "Dokument konnte nicht geladen werden.",
+  "@documentLoadError": {
+    "description": "Allgemeine Fehlermeldung, wenn ein rechtliches oder Markdown-Dokument nicht geladen werden kann."
+  },
   "commonContinue": "Weiter",
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
@@ -511,6 +515,14 @@
   "@onboardingSuccessTitle": {
     "description": "Title shown on the onboarding success screen."
   },
+  "onboardingSuccessStateUnavailable": "Onboarding konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
+  "@onboardingSuccessStateUnavailable": {
+    "description": "Fehler, wenn der Benutzerstatus beim Abschluss des Onboardings nicht verfügbar ist."
+  },
+  "onboardingSuccessGenericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+  "@onboardingSuccessGenericError": {
+    "description": "Allgemeine Fehlermeldung (SnackBar) auf dem Onboarding-Erfolgsscreen."
+  },
   "consent02Title": "Deine Gesundheit,\ndeine Entscheidung!",
   "@consent02Title": {
     "description": "Headline shown on the consent 02 screen. Translator note: keep the newline escape '\\n' between the two lines."
@@ -630,6 +642,18 @@
   "authErrPasswordInvalid": "Ups, bitte Passwort überprüfen",
   "@authErrPasswordInvalid": {
     "description": "Validierungsfehler, wenn das Passwort ungültig ist."
+  },
+  "authErrPasswordTooShort": "Dein Passwort ist zu kurz.",
+  "@authErrPasswordTooShort": {
+    "description": "Fehlermeldung, wenn das Passwort zu kurz ist."
+  },
+  "authErrPasswordMissingTypes": "Dein Passwort muss Buchstaben und Zahlen oder Sonderzeichen enthalten.",
+  "@authErrPasswordMissingTypes": {
+    "description": "Fehlermeldung, wenn erforderliche Zeichentypen fehlen."
+  },
+  "authErrPasswordCommonWeak": "Dein Passwort ist zu häufig oder leicht zu erraten.",
+  "@authErrPasswordCommonWeak": {
+    "description": "Fehlermeldung, wenn das Passwort verbreitet oder schwach ist."
   },
   "authErrConfirmEmail": "Bitte E-Mail bestätigen (Link erneut senden?)",
   "@authErrConfirmEmail": {

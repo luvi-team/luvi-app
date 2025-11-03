@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
 /// Provides localized auth strings while keeping the existing static API surface
 /// for legacy callers. Strings resolve against [AppLocalizations] and can be
@@ -82,27 +83,21 @@ class AuthStrings {
   // generic password error when the specific localization is not available yet.
   static String get errPasswordTooShort {
     final l = _l10n();
-    try {
-      return (l as dynamic).authErrPasswordTooShort as String;
-    } catch (_) {
-      return l.authErrPasswordInvalid;
-    }
+    return l.hasGranularPasswordErrors
+        ? l.authErrPasswordTooShort
+        : l.authErrPasswordInvalid;
   }
   static String get errPasswordMissingTypes {
     final l = _l10n();
-    try {
-      return (l as dynamic).authErrPasswordMissingTypes as String;
-    } catch (_) {
-      return l.authErrPasswordInvalid;
-    }
+    return l.hasGranularPasswordErrors
+        ? l.authErrPasswordMissingTypes
+        : l.authErrPasswordInvalid;
   }
   static String get errPasswordCommonWeak {
     final l = _l10n();
-    try {
-      return (l as dynamic).authErrPasswordCommonWeak as String;
-    } catch (_) {
-      return l.authErrPasswordInvalid;
-    }
+    return l.hasGranularPasswordErrors
+        ? l.authErrPasswordCommonWeak
+        : l.authErrPasswordInvalid;
   }
   static String get errConfirmEmail => _l10n().authErrConfirmEmail;
   static String get invalidCredentials => _l10n().authInvalidCredentials;

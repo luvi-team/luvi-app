@@ -102,6 +102,10 @@
   "@onboarding04CalloutSuffix": {
     "description": "Suffix text displayed after the emphasized part of the onboarding 04 callout."
   },
+  "documentLoadError": "Failed to load document.",
+  "@documentLoadError": {
+    "description": "Generic error shown when a legal or markdown document cannot be loaded."
+  },
   "commonContinue": "Continue",
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."
@@ -463,6 +467,14 @@
   "@onboardingSuccessTitle": {
     "description": "Title shown on the onboarding success screen."
   },
+  "onboardingSuccessStateUnavailable": "We couldn't complete onboarding. Please try again.",
+  "@onboardingSuccessStateUnavailable": {
+    "description": "Error shown when user state is unavailable while finalizing onboarding."
+  },
+  "onboardingSuccessGenericError": "Something went wrong. Please try again.",
+  "@onboardingSuccessGenericError": {
+    "description": "Generic error SnackBar on onboarding success screen when an unexpected failure occurs."
+  },
   "welcome01Subtitle": "Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.",
   "@welcome01Subtitle": {
     "description": "Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings."
@@ -630,6 +642,18 @@
   "authErrPasswordInvalid": "Please double-check your password.",
   "@authErrPasswordInvalid": {
     "description": "Validation error shown when the password is malformed."
+  },
+  "authErrPasswordTooShort": "Your password is too short.",
+  "@authErrPasswordTooShort": {
+    "description": "Validation error when the password is too short."
+  },
+  "authErrPasswordMissingTypes": "Your password must include letters and numbers or symbols.",
+  "@authErrPasswordMissingTypes": {
+    "description": "Validation error when the password is missing required character types."
+  },
+  "authErrPasswordCommonWeak": "Your password is too common or weak.",
+  "@authErrPasswordCommonWeak": {
+    "description": "Validation error when the password is common or weak."
   },
   "authErrConfirmEmail": "Please verify your email (resend the link?).",
   "@authErrConfirmEmail": {

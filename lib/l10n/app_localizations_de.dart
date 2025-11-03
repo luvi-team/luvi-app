@@ -78,6 +78,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding04CalloutSuffix => '. Eine ungefähre Schätzung reicht für den Start völlig aus.';
 
   @override
+  String get documentLoadError => 'Dokument konnte nicht geladen werden.';
+
+  @override
   String get commonContinue => 'Weiter';
 
   @override
@@ -354,6 +357,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingSuccessTitle => 'Du bist startklar!';
 
   @override
+  String get onboardingSuccessStateUnavailable => 'Onboarding konnte nicht abgeschlossen werden. Bitte versuche es erneut.';
+
+  @override
+  String get onboardingSuccessGenericError => 'Etwas ist schiefgelaufen. Bitte versuche es erneut.';
+
+  @override
   String get welcome01Subtitle => 'Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.';
 
   @override
@@ -447,14 +456,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consent02SemanticUnselected => 'Nicht ausgewählt';
 
   @override
-  String get consentSnackbarAccepted => 'Einwilligung akzeptiert';
-
-  @override
-  String consentSnackbarError(String error) {
-    return 'Einwilligung fehlgeschlagen: $error';
-  }
-
-  @override
   String get authLoginHeadline => 'Willkommen zurück 💜';
 
   @override
@@ -486,6 +487,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authErrPasswordInvalid => 'Ups, bitte Passwort überprüfen';
+
+  @override
+  String get authErrPasswordTooShort => 'Dein Passwort ist zu kurz.';
+
+  @override
+  String get authErrPasswordMissingTypes => 'Dein Passwort muss Buchstaben und Zahlen oder Sonderzeichen enthalten.';
+
+  @override
+  String get authErrPasswordCommonWeak => 'Dein Passwort ist zu häufig oder leicht zu erraten.';
 
   @override
   String get authErrConfirmEmail => 'Bitte E-Mail bestätigen (Link erneut senden?)';
@@ -597,4 +607,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authVerifyResend => 'Erneut senden';
+
+  @override
+  String get consentSnackbarAccepted => 'Einwilligung akzeptiert';
+
+  @override
+  String consentSnackbarError(String error) {
+    return 'Einwilligung fehlgeschlagen: $error';
+  }
 }

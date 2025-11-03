@@ -221,6 +221,12 @@ abstract class AppLocalizations {
   /// **'. A rough estimate is enough to get started.'**
   String get onboarding04CalloutSuffix;
 
+  /// Generic error shown when a legal or markdown document cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load document.'**
+  String get documentLoadError;
+
   /// Label for primary continue CTA buttons.
   ///
   /// In en, this message translates to:
@@ -749,6 +755,18 @@ abstract class AppLocalizations {
   /// **'You\'re ready to go!'**
   String get onboardingSuccessTitle;
 
+  /// Error shown when user state is unavailable while finalizing onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t complete onboarding. Please try again.'**
+  String get onboardingSuccessStateUnavailable;
+
+  /// Generic error SnackBar on onboarding success screen when an unexpected failure occurs.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get onboardingSuccessGenericError;
+
   /// Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings.
   ///
   /// In en, this message translates to:
@@ -935,18 +953,6 @@ abstract class AppLocalizations {
   /// **'Not selected'**
   String get consent02SemanticUnselected;
 
-  /// Snackbar text shown when consent was successfully recorded.
-  ///
-  /// In en, this message translates to:
-  /// **'Consent accepted'**
-  String get consentSnackbarAccepted;
-
-  /// Snackbar error template when consent logging fails. Include the error message.
-  ///
-  /// In en, this message translates to:
-  /// **'Consent failed: {error}'**
-  String consentSnackbarError(String error);
-
   /// Headline shown on the login screen.
   ///
   /// In en, this message translates to:
@@ -1012,6 +1018,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please double-check your password.'**
   String get authErrPasswordInvalid;
+
+  /// Validation error when the password is too short.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password is too short.'**
+  String get authErrPasswordTooShort;
+
+  /// Validation error when the password is missing required character types.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password must include letters and numbers or symbols.'**
+  String get authErrPasswordMissingTypes;
+
+  /// Validation error when the password is common or weak.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password is too common or weak.'**
+  String get authErrPasswordCommonWeak;
 
   /// Error displayed when the user's email has not been confirmed.
   ///
@@ -1234,6 +1258,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resend'**
   String get authVerifyResend;
+
+  /// Snackbar text shown when consent was successfully recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent accepted'**
+  String get consentSnackbarAccepted;
+
+  /// Snackbar error template when consent logging fails. Include the error message.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent failed: {error}'**
+  String consentSnackbarError(String error);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

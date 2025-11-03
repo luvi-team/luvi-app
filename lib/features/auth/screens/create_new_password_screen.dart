@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
@@ -40,6 +39,14 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
+
+  // Common weak password patterns extracted for reuse and testability
+  static final List<RegExp> _commonWeakPatterns = <RegExp>[
+    RegExp(r'^password\d*$', caseSensitive: false),
+    RegExp(r'^123456(78|789)?$'),
+    RegExp(r'^qwerty\d*$', caseSensitive: false),
+    RegExp(r'^letmein\d*$', caseSensitive: false),
+  ];
 
   static const double _backButtonSize = AuthLayout.backButtonSize;
   @override
@@ -101,7 +108,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     if (newPw.isEmpty || confirmPw.isEmpty) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(AuthStrings.errPasswordInvalid)),
+                        SnackBar(content: Text(l10n.authErrPasswordInvalid)),
                       );
                       return;
                     }
@@ -125,22 +132,16 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     final hasSpecial = RegExp(
                       r'[!@#\$%\^&*()_\+\-=\{\}\[\]:;,.<>/?`~|\\]',
                     ).hasMatch(pw);
-                    final commonWeak = <RegExp>[
-                      RegExp(r'^password\d*$', caseSensitive: false),
-                      RegExp(r'^123456(78|789)?$'),
-                      RegExp(r'^qwerty\d*$', caseSensitive: false),
-                      RegExp(r'^letmein\d*$', caseSensitive: false),
-                    ];
                     final isCommonWeak =
-                        commonWeak.any((r) => r.hasMatch(pw.trim()));
+                        _commonWeakPatterns.any((r) => r.hasMatch(pw.trim()));
 
                     String? validationError;
                     if (!hasMinLen) {
-                      validationError = AuthStrings.errPasswordTooShort;
+                      validationError = l10n.authErrPasswordInvalid;
                     } else if (!(hasLetter && hasNumber && hasSpecial)) {
-                      validationError = AuthStrings.errPasswordMissingTypes;
+                      validationError = l10n.authErrPasswordInvalid;
                     } else if (isCommonWeak) {
-                      validationError = AuthStrings.errPasswordCommonWeak;
+                      validationError = l10n.authErrPasswordInvalid;
                     }
 
                     if (validationError != null) {
@@ -181,7 +182,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(AuthStrings.createNewCta),
+                : Text(l10n.authCreateNewCta),
           ),
         ),
       ),
