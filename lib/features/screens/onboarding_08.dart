@@ -77,7 +77,13 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     } catch (e) {
       // Log error and optionally show user feedback
       if (mounted) {
-        // Show SnackBar or error dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.onboardingSuccessGenericError,
+            ),
+          ),
+        );
       }
     } finally {
       if (mounted) {

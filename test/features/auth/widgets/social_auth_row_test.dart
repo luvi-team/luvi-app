@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
-import 'package:luvi_app/features/auth/data/auth_repository.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
-import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/widgets/social_auth_row.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
 import '../../../support/test_config.dart';
 // Note: No Supabase usage in these tests; keep imports minimal.
-
-class _MockAuthRepository extends Mock implements AuthRepository {}
 
 // Minimum expected height when both social buttons are present in vertical layout.
 const double _expectedMinHeightForTwoButtons = 150.0;
@@ -26,11 +21,7 @@ void main() {
   TestConfig.ensureInitialized();
 
   group('SocialAuthRow Widget Tests', () {
-    late _MockAuthRepository mockRepo;
-
-    setUp(() {
-      mockRepo = _MockAuthRepository();
-    });
+    // No repository interactions in these tests.
 
     testWidgets(
       'Apple button appears above Google button (both enabled)',
@@ -154,9 +145,9 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
             child: MaterialApp(
               theme: AppTheme.buildAppTheme(),
+              // Theme/l10n needed for LoginScreen to build.
               home: const LoginScreen(),
               locale: const Locale('de'),
               supportedLocales: AppLocalizations.supportedLocales,

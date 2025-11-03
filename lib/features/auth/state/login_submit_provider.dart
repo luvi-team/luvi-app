@@ -21,25 +21,8 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     final loginState = ref.read(loginProvider).value ?? LoginState.initial();
     final hasLocalErrors =
         loginState.emailError != null || loginState.passwordError != null;
-    // Client-side guard: when email looks valid but password has a local
-    // validation error, avoid a server call and surface the same message used
-    // for Supabase "invalid credentials" to keep UX/tests consistent and to
-    // reduce unnecessary network load.
-    final emailOk =
-        loginState.emailError == null && (loginState.email.isNotEmpty);
-    final pwHasError =
-        loginState.passwordError != null && (loginState.password.isNotEmpty);
-    if (emailOk && pwHasError) {
-      loginNotifier.updateState(
-        email: loginState.email,
-        password: loginState.password,
-        emailError: AuthStrings.invalidCredentials,
-        passwordError: null,
-        globalError: null,
-      );
-      state = const AsyncData(null);
-      return;
-    }
+    // If local validation reported errors, do not hit the network.
+    // Keep the existing field errors intact for clear UX.
     if (hasLocalErrors) {
       state = const AsyncData(null);
       return;

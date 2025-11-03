@@ -70,10 +70,11 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
     );
   }
 
-  Future<void> _handleBack() async {
-    final didPop = await Navigator.of(context).maybePop();
-    if (!mounted) return;
-    if (!didPop) {
+  void _handleBack() {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      router.pop();
+    } else {
       context.go(Onboarding04Screen.routeName);
     }
   }

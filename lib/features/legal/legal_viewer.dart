@@ -38,20 +38,21 @@ class _LegalViewerState extends State<LegalViewer> {
             // Log the underlying error for diagnostics
             log.e('error', tag: 'legal_viewer', error: snap.error!, stack: snap.stackTrace);
             final l10n = AppLocalizations.of(context);
-            final message = l10n?.documentLoadError ??
-                'Das Dokument konnte nicht geladen werden.';
+            final message =
+                l10n?.documentLoadError ?? 'Document could not be loaded.';
             return Center(child: Text(message));
           }
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
+          final theme = Theme.of(context);
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Markdown(
               data: snap.data!,
               selectable: true,
-              styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
-                p: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
+              styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                p: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
               ),
             ),
           );

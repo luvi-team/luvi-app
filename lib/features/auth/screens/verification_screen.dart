@@ -106,6 +106,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     if (router.canPop()) {
       router.pop();
     } else {
+      // Navigate by route name for consistency with GoRouter configuration.
       context.goNamed('login');
     }
   }

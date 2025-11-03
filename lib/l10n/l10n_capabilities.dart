@@ -4,7 +4,7 @@ import 'app_localizations.dart';
 /// Keep this file stable across regeneration and avoid modifying generated code.
 extension AppLocalizationsX on AppLocalizations {
   /// Capability: whether granular password error strings are available.
-  /// Since all supported locales define the keys, return true.
+  /// Intentional design: kept `true` and enforced via CI test that
+  /// all ARB locales define the granular password error keys.
   bool get hasGranularPasswordErrors => true;
 }
-

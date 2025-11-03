@@ -37,9 +37,10 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       });
 
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
+        final text = l10n?.consentSnackbarAccepted ?? 'Consent accepted';
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.consentSnackbarAccepted)),
+          SnackBar(content: Text(text)),
         );
       }
     } catch (e) {
@@ -53,10 +54,12 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
         'scopes': scopes,
       });
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.consentSnackbarError(e.toString()))),
-        );
+        final l10n = AppLocalizations.of(context);
+        if (l10n != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.consentSnackbarError(e.toString()))),
+          );
+        }
       }
     } finally {
       if (mounted) {

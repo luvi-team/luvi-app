@@ -109,7 +109,7 @@ Future<void> openPrivacy(
 }) async {
   final l10n = AppLocalizations.of(context);
   final resolvedTitle =
-      title ?? l10n?.privacyPolicyTitle ?? 'Datenschutzerklärung';
+      title ?? l10n?.privacyPolicyTitle ?? 'Privacy Policy';
   await _openLegal(
     context,
     uri: appLinks.privacyPolicy,
@@ -128,7 +128,7 @@ Future<void> openTerms(
 }) async {
   final l10n = AppLocalizations.of(context);
   final resolvedTitle =
-      title ?? l10n?.termsOfServiceTitle ?? 'Nutzungsbedingungen';
+      title ?? l10n?.termsOfServiceTitle ?? 'Terms of Service';
   await _openLegal(
     context,
     uri: appLinks.termsOfService,
