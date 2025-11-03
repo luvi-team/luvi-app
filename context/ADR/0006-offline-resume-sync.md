@@ -61,7 +61,7 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
 
 - App (Flutter):
   - Privacy Center: Screens/Flows „Verlauf ansehen“, „Daten exportieren“, „Daten löschen“ mit Re‑Auth, Doppel‑Bestätigung, Fehlerzustände, Progress.
-  - API‑Clients: typed Endpunkt‑Wrapper; Streaming‑Download für Export; CSV/JSON Handling; Timeouts/Retry begrenzt.
+  - API‑Clients: typed Endpunkt‑Wrapper; Buffered download für Export (Default); CSV/JSON Handling; Timeouts/Retry begrenzt. Faustregel: Streaming nur für sehr große Exporte (> 10 MB oder > 1 000 Snapshots) oder wenn niedrige Latenz beim fortlaufenden Anzeigen erforderlich ist. Implementierungen sollen die Exportgröße vorab grob schätzen (z. B. per `Content‑Length` Header oder Snapshot‑Count×Durchschnittsgröße) und bei Überschreitung des Schwellenwerts automatisch auf Streaming zurückfallen. Dabei stets die Speicherfußabdruck‑Schätzung berücksichtigen, um OOM zu vermeiden.
   - Lokale Behandlung: On‑Signal Erasure → Secure‑Storage + SQLite Wipe der Snapshots; Upload‑Queue leeren und deaktivieren bis Neustart.
   - Telemetrie: Nicht‑PII Events für Flow‑Erfolg/Fehler (keine Inhalte), korrelierbar via `request_id`.
 
@@ -72,14 +72,14 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
 
 ## Konsequenzen
 - Tests: Unit-Tests prüfen Persistenz, Verschlüsselungs-Init und TTL-Löschung; Integrationstests decken Signed-In Sync, Konfliktlösung und Offline-Replay ab.
-- Compliance: DSGVO-Checkliste referenziert neue Datenkategorie „Workout Resume Snapshot" (PII: User-ID; Device-ID nur unter folgenden Bedingungen: Die Device-ID wurde auf dem Gerät explizit erzeugt/zugewiesen UND der Nutzer hat Device‑Level‑Telemetrie zugestimmt; alternativ bei verknüpften Mehrgeräte‑Accounts zur eindeutigen Zuordnung). Wenn die Device‑ID enthalten ist, wird sie als PII behandelt und unterliegt Einwilligung, 90‑Tage‑Retention (wie oben) sowie Löschung/Export auf Anfrage; wird sie nicht erhoben, wird sie weder übertragen noch gespeichert).
+- Compliance: DSGVO-Checkliste referenziert neue Datenkategorie „Workout Resume Snapshot" (PII: User-ID, Device-ID). Device-ID wird immer als PII behandelt, wenn erfasst, und unterliegt Einwilligung, 90‑Tage‑Retention sowie Löschung/Export auf Anfrage. Wenn Device-ID nicht erfasst wird, wird sie weder übertragen noch gespeichert.
 - Monitoring & Alerts:
   - Telemetrie-Events `resume_snapshot_saved`, `resume_snapshot_synced`, `resume_snapshot_conflict` validieren die Pipeline.
   - Messmethode (täglich): `error_rate_events = failed_sync_events / total_sync_events` (angemeldete Nutzer); zusätzlich `error_rate_users = users_with_≥1_failure / users_with_≥1_sync` zur Betroffenheitsabschätzung.
   - Baseline: Zielwert < 1 % (Events) pro Tag; p95‑Tageswert < 2 % unter Normalbetrieb (Mobilfunkfluktuation eingerechnet).
   - Schwellwerte & Eskalation:
     - Warnung (asynchron): ≥ 2 % über ≥ 60 min ODER Trend +0,5 %/h → Ticket im Board, Owner: Feature‑Team Workout.
-    - Page (SEV‑3): ≥ 5 % Tagesquote ODER ≥ 7 % über ≥ 30 min → On‑Call wird gepaged.
+    - Page (SEV‑3): ≥ 5 % über rollierendes 24h‑Fenster ODER ≥ 7 % über ≥ 30 min → On‑Call wird gepaged.
     - SEV‑2: ≥ 10 % über ≥ 30 min ODER ≥ 5 000 betroffene Nutzer/Tag → Incident Commander, dedizierter Channel.
     - SEV‑1: ≥ 25 % über ≥ 15 min ODER Datenkorruptionssignale → globaler Write‑Stopp für Snapshots, Feature‑Flag „local‑only“ aktivieren.
   - Begründung 5 %: Resume‑Sync ist wichtig für Cross‑Device‑Kontinuität, aber nicht transaktional‑kritisch für den Live‑Workout, da der lokale Offline‑Fallback den Fortgang am aktuellen Gerät sicherstellt. 5 % vermeidet Pager‑Fatigue bei regionalen Netzausfällen, liegt deutlich über dem < 1 %‑Baseline‑Ziel und signalisiert spürbaren Nutzer‑Impact, der aktives Eingreifen rechtfertigt.
