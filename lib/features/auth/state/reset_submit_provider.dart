@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart' show kDebugMode, kProfileMode, visibleForTesting;
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_services/init_mode.dart';
 
 class ResetSubmitNotifier extends AsyncNotifier<void> {
   @override
@@ -37,11 +39,26 @@ final resetSubmitProvider =
   ResetSubmitNotifier.new,
 );
 
+// Testability toggle: allows unit tests to simulate production behavior even when
+// running under kDebugMode. Null = no override; true = force silent; false = force throw.
+bool? _resetSilentOverride;
+
+@visibleForTesting
+void debugSetResetSilentOverride(bool? value) {
+  _resetSilentOverride = value;
+}
+
 Future<void> submitReset(String email) async {
   // In tests or when Supabase isn't initialized, simulate success to keep
   // widget tests deterministic and offline.
   if (!SupabaseService.isInitialized) {
-    return;
+    final isTest = InitModeBridge.resolve() == InitMode.test;
+    final allowSilent = _resetSilentOverride ?? (kDebugMode || kProfileMode || isTest);
+    if (allowSilent) {
+      // In debug/profile/test modes (or when overridden), allow silent success to keep flows offline.
+      return;
+    }
+    throw Exception('Supabase is not initialized');
   }
   await supa.Supabase.instance.client.auth.resetPasswordForEmail(
     email,
