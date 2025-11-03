@@ -6,10 +6,14 @@ Applies to: S1 and subsequent sprints until revision
 ## Purpose
 Deterministic computation of the current cycle phase and derived values for UI/ranking. Testable without PII overreach.
 
-- Performance (P95 ≤ 50 ms): compute_cycle_info() from function entry to return, computation‑only (no network/DB I/O). Warm‑start measurement (JIT/caches warm). Baseline: mid‑range mobile/CPU (e.g., Apple M1/A14‑equivalent or Snapdragon 7xx), single thread, no concurrent load. Method: 10,000 invocations over a representative input set; discard the first 100 as warm‑up; compute P95 via StopWatch/harness and document the sample count.
-  - Baseline (pre‑optimizations; record once and update here): example device “Apple M1 (8‑core, 16 GB), macOS 14, Flutter 3.35.4 release”; sample size `n=9,900` (after `warmup=100`); measured P95: <value> ms.
+- Performance (target P95 ≤ 50 ms): compute_cycle_info() from function entry to return, computation‑only (no network/DB I/O). Warm‑start measurement (JIT/caches warm). Baseline: mid‑range mobile/CPU (e.g., Apple M1/A14‑equivalent or Snapdragon 7xx), single thread, no concurrent load. Method: 10,000 invocations over a representative input set; discard the first 100 as warm‑up; compute P95 via `Stopwatch`/harness and document the sample count.
+  - Baseline cadence: run baseline measurement (a) before merge of relevant changes, (b) after any performance‑affecting change to compute_cycle_info or its dependencies, and (c) on a scheduled nightly/weekly CI job on a stable runner.
+  - Baseline (reference; record and update here): example device “Apple M1 (8‑core, 16 GB), macOS 14, Flutter 3.35.4 release”; sample size `n=9,900` (after `warmup=100`); measured P95: <value> ms. If the measurement device/build differs from the reference, record the deviation in the artifact (see below).
   - Instrumentation/Harness: Dart `Stopwatch` around compute only; script `tools/perf/compute_cycle_info_bench.dart`; warm‑up `100`, samples `10,000`; P95 computed from sorted durations at index `ceil(0.95*n)-1`. Reproduce locally: `dart run tools/perf/compute_cycle_info_bench.dart --samples 10000 --warmup 100 --json docs/perf/compute_cycle_info/<DATE>.json`.
-  - Regression/Artifacts: CI job “Performance CI / compute_cycle_info” (GitHub Actions) publishes artifact `perf-compute-cycle-info-<run_id>.json`; commit the latest under `docs/perf/compute_cycle_info/` with device, build, n, P50/P95/P99.
+  - Artifacts (commit required): commit the produced JSON under `docs/perf/compute_cycle_info/`.
+    - Required fields: `timestamp`, `device` (model, OS, CPU, memory), `build` (Flutter/Dart versions, build mode), `warmup`, `samples`, `p50`, `p95`, `p99`, and `deviations` (from the reference device/build, if any).
+    - Naming: `compute_cycle_info_<YYYY-MM-DD>_<device|runner>.json` (or CI‑provided run ID). One canonical latest artifact should live in this folder per runner/device profile.
+  - CI regression rule: job name “Performance CI / compute_cycle_info”. Fail the job if measured `P95 > 60 ms` (slightly above the 50 ms target to avoid flakiness). The job uploads its raw JSON artifact and links to the committed baseline for traceability.
 
 ## Inputs
 - lmp_date (string, ISO 8601 `YYYY-MM-DD`, local): First day of the last period. Required.
@@ -53,6 +57,7 @@ Deterministic computation of the current cycle phase and derived values for UI/r
   - For date-only strings (e.g., `YYYY-MM-DD`), interpret them as dates in `tz`.
 - DST/cross-midnight: daylight saving time transitions affect the number of hours in a day, not calendar day differences.
 - Example (DST forward): `tz=Europe/Berlin`, `lmp_date=2025-03-29`, `now=2025-03-30T23:00+02:00` (DST started on 2025‑03‑30; 23‑hour day). After normalization, `daysBetween(2025-03-29, 2025-03-30) = 1`, so `day_in_cycle = 2`. `phase_window_start=2025-03-29`, `phase_window_end=…` per phase. Add `notes += ["timezone_used:Europe/Berlin", "dst_transition"]`.
+ - Leap seconds: ignore for v1. Use calendar (date‑only) arithmetic rather than timestamp arithmetic to avoid leap‑second and DST artifacts. Implementation note: compute `daysBetween` from date components via UTC‑normalized dates (e.g., `DateTime.utc(y, m, d)` for both operands) so that midnight‑to‑midnight across DST yields exactly 1 day.
 
 ## Offsets/Clamps
 - cycle_length_days: min 21, max 35 (default 28).
@@ -73,7 +78,7 @@ References: ACOG Patient Education (Ovulation/Menstrual Cycle); Wilcox AJ et a
 - Missing LMP: return `{ phase: null, phase_confidence: 0, requires_onboarding: true }`.
 - Future LMP (`lmp_date > now`): clamp `d = 0`, phase = `menstrual`, `notes += ["future_lmp_clamped"]`.
 - Very long/short cycles: clamps trigger; `notes += ["cycle_length_clamped"]`.
-- TZ/Leap: compute in local time zone; use the date component for window boundaries.
+- TZ/Leap: compute in local time zone using date‑only arithmetic; ignore leap seconds; window boundaries are calendar dates.
 - Legacy migration: if legacy fields (e.g., `avg_cycle_length`) exist, precedence is explicit inputs > history.
 
 Input validation (after clamps, deterministic):
