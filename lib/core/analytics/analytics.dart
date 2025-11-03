@@ -16,8 +16,13 @@ class Analytics {
 
   /// Emit a structured analytics event using the current recorder.
   /// Unified signature: track(name, props)
+  ///
+  /// Null-valued properties are filtered out before forwarding so the
+  /// underlying recorder/backends never receive `null` values.
   void track(String name, Map<String, Object?> props) {
-    _recorder.recordEvent(name, properties: props);
+    final clean = Map<String, Object?>.from(props)
+      ..removeWhere((_, v) => v == null);
+    _recorder.recordEvent(name, properties: clean);
   }
 
   // NOTE: MVP keeps a flexible Map-based API for event properties.
