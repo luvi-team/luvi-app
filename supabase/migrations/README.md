@@ -42,6 +42,13 @@ WHERE user_id = auth.uid() AND version = 'v1.0';
 SELECT * FROM consents WHERE user_id != auth.uid();
 ```
 
+### Performance
+
+- Composite index for sliding-window queries: `idx_consents_user_id_created_at` on `(user_id, created_at DESC)`.
+  - Added via migration `20251103113000_consents_user_id_created_at_idx.sql`.
+  - Optimizes `WHERE user_id = $1 AND created_at > $2` for rate limit checks and timelines.
+  - Verify in production: `\d+ consents` and `EXPLAIN ANALYZE` on the rate-limit count.
+
 ### Cycle Data Table Tests
 
 ```sql

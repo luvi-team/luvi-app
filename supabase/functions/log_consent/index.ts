@@ -25,6 +25,18 @@ const ALERT_SAMPLE_RATE = Math.max(
   Math.min(1, Number(Deno.env.get("CONSENT_ALERT_SAMPLE_RATE") ?? 0.1)),
 );
 
+// Read-after-write tolerance for counting queries in environments with
+// potential replica lag. Low values keep impact minimal while improving
+// resilience under load. Tunable via env if needed.
+const COUNT_RETRY_ATTEMPTS = Math.max(
+  1,
+  parseInt(Deno.env.get("CONSENT_COUNT_RETRY_ATTEMPTS") ?? "3"),
+);
+const COUNT_RETRY_BACKOFF_MS = Math.max(
+  0,
+  parseInt(Deno.env.get("CONSENT_COUNT_RETRY_BACKOFF_MS") ?? "50"),
+);
+
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error("Missing required environment variables: SUPABASE_URL and SUPABASE_ANON_KEY must be set");
 }
@@ -93,6 +105,49 @@ function logMetric(
   if (severity === "error") console.error(line);
   else if (severity === "warning") console.warn(line);
   else console.log(line);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function countConsentsWithRetry(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  windowStartIso: string,
+  requestId: string,
+) {
+  let attempt = 0;
+  let lastError: unknown = undefined;
+  const started = Date.now();
+  while (attempt < COUNT_RETRY_ATTEMPTS) {
+    const t0 = Date.now();
+    const { count, error } = await supabase
+      .from("consents")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gt("created_at", windowStartIso);
+    const duration = Date.now() - t0;
+    // Emit a lightweight metric for the count latency
+    try {
+      console.info("consent_count_latency", {
+        request_id: requestId,
+        attempt: attempt + 1,
+        duration_ms: duration,
+      });
+    } catch (_) {
+      // ignore
+    }
+    if (!error && typeof count === "number") {
+      return { count, total_duration_ms: Date.now() - started };
+    }
+    lastError = error ?? new Error("count returned non-number");
+    attempt += 1;
+    if (attempt < COUNT_RETRY_ATTEMPTS) {
+      await sleep(COUNT_RETRY_BACKOFF_MS * attempt); // linear backoff
+    }
+  }
+  return { count: null as number | null, error: lastError, total_duration_ms: Date.now() - started };
 }
 
 async function maybeAlert(
@@ -229,7 +284,10 @@ serve(async (req) => {
 
   const { data: userResult, error: authError } = await supabase.auth.getUser();
   if (authError || !userResult?.user) {
-    logMetric(requestId, "unauthorized", { reason: "auth_failed" });
+    logMetric(requestId, "unauthorized", { 
+      reason: "auth_failed",
+      code: authError?.code ?? "unknown"
+    });
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
@@ -245,15 +303,16 @@ serve(async (req) => {
   // Per-user sliding-window rate limit using existing consents timestamps
   try {
     const windowStartIso = new Date(Date.now() - RATE_LIMIT_WINDOW_SEC * 1000).toISOString();
-    const { count, error: rlError } = await supabase
-      .from("consents")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", payload.user_id)
-      .gt("created_at", windowStartIso);
+    const { count, error: rlError, total_duration_ms } = await countConsentsWithRetry(
+      supabase,
+      payload.user_id,
+      windowStartIso,
+      requestId,
+    );
 
     if (rlError) {
       console.error("rate_limit_count_error", rlError);
-      logMetric(requestId, "error", { where: "rate_limit_count", code: rlError.code ?? "unknown" });
+      logMetric(requestId, "error", { where: "rate_limit_count", code: (rlError as any)?.code ?? "unknown" });
       await maybeAlert(requestId, "error", { where: "rate_limit_count" });
     } else if ((count ?? 0) >= RATE_LIMIT_MAX_REQUESTS) {
       const elapsed = Date.now() - started;
@@ -263,6 +322,7 @@ serve(async (req) => {
         window_sec: RATE_LIMIT_WINDOW_SEC,
         max: RATE_LIMIT_MAX_REQUESTS,
         duration_ms: elapsed,
+        count_latency_ms: total_duration_ms,
       });
       await maybeAlert(requestId, "rate_limited", {
         user_id: payload.user_id,
