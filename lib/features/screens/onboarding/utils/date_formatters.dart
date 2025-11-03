@@ -21,9 +21,12 @@ class DateFormatters {
     try {
       final formatter = DateFormat.yMMMMd(effectiveLocale);
       return formatter.format(date);
-    } catch (_) {
+    } catch (e, stackTrace) {
       // On any failure, fall back to a safe, locale-agnostic ISO-like format.
-      // Avoid rethrowing and ensure a string is always returned.
+      debugPrint('DateFormatters.localizedDayMonthYear fallback: $e');
+      if (kDebugMode) {
+        debugPrintStack(stackTrace: stackTrace, label: 'DateFormat error');
+      }
       return DateFormat('y-MM-dd').format(date);
     }
   }

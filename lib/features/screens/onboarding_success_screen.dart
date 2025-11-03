@@ -203,6 +203,15 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                   debugPrint(
                     'Cannot complete onboarding: user state service unavailable',
                   );
+                  if (context.mounted) {
+                    final cs = Theme.of(context).colorScheme;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: cs.error,
+                        content: Text(l10n.onboardingSuccessStateUnavailable),
+                      ),
+                    );
+                  }
                   return;
                 }
                 await userState.markOnboardingComplete(
@@ -215,6 +224,15 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                 debugPrint(
                   'markOnboardingComplete failed: $error\n$stackTrace',
                 );
+                if (context.mounted) {
+                  final cs = Theme.of(context).colorScheme;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: cs.error,
+                      content: Text(l10n.onboardingSuccessGenericError),
+                    ),
+                  );
+                }
               } finally {
                 busyNotifier.setBusy(false);
               }

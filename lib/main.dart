@@ -82,6 +82,16 @@ class MyAppWrapper extends ConsumerWidget {
     }
     // Ensure initialization controller is created and running.
     final envFile = kReleaseMode ? '.env.production' : '.env.development';
+    // Note: supabaseInitController is an intentionally used global singleton
+    // for startup/initialization orchestration (not a Riverpod provider).
+    // Lifecycle: created once at app start and kept alive for the entire
+    // process lifetime; it coordinates non-blocking Supabase init and retries.
+    // Thread-safety: used on the main isolate only, state changes notify
+    // listeners via ChangeNotifier; no cross-isolate sharing.
+    // Rationale: this init path executes before ProviderScope is available
+    // to ensure the app boots quickly and never crashes during backend init.
+    // For a Riverpod-based alternative, consider exposing a provider-backed
+    // controller once initialization may move later in the startup sequence.
     supabaseInitController.ensureInitialized(envFile: envFile);
 
     // Allow overriding the initial route in development via --dart-define
@@ -116,34 +126,42 @@ class MyAppWrapper extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       routerConfig: router,
-    );
-
-    // In test mode, skip the offline/initializing overlay for stability.
-    // The app should build its root widget tree without network or timers.
-    if (InitModeBridge.resolve() == InitMode.test) {
-      return app;
-    }
-
-    // Lightweight offline/fallback UI overlay: visible until initialized.
-    return AnimatedBuilder(
-      animation: supabaseInitController,
-      builder: (context, _) {
-        if (SupabaseService.isInitialized) return app;
-        return Stack(
-          alignment: Alignment.topLeft,
-          children: [
-            app,
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: SafeArea(
-                minimum: const EdgeInsets.all(12),
-                child: _InitBanner(initState: supabaseInitController.state),
-              ),
-            ),
-          ],
+      // Integrate the offline/init overlay inside MaterialApp to inherit
+      // Directionality/Localizations. This avoids needing Directionality
+      // wrappers in tests and keeps behavior consistent across app and tests.
+      builder: (context, child) {
+        return AnimatedBuilder(
+          animation: supabaseInitController,
+          builder: (context, _) {
+            // In test mode, skip overlay for stability.
+            if (InitModeBridge.resolve() == InitMode.test) {
+              return child ?? const SizedBox.shrink();
+            }
+            if (SupabaseService.isInitialized) {
+              return child ?? const SizedBox.shrink();
+            }
+            return Stack(
+              alignment: Alignment.topLeft,
+              children: [
+                child ?? const SizedBox.shrink(),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SafeArea(
+                    minimum: const EdgeInsets.all(12),
+                    child: _InitBanner(
+                      initState: supabaseInitController.state,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
+
+    // Return app directly; overlay handled via MaterialApp.builder.
+    return app;
   }
 }
 
@@ -166,37 +184,41 @@ class _InitBanner extends ConsumerWidget {
 
     return Material(
       color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: border),
-          boxShadow: const [
-            BoxShadow(blurRadius: 8, spreadRadius: 0, color: Colors.black26),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(isConfig ? Icons.error_outline : Icons.wifi_off, color: text),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                message,
-                style: TextStyle(color: text),
-                overflow: TextOverflow.ellipsis,
+      child: Semantics(
+        label: message,
+        liveRegion: true,
+        child: Container(
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: border),
+            boxShadow: const [
+              BoxShadow(blurRadius: 8, spreadRadius: 0, color: Colors.black26),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(isConfig ? Icons.error_outline : Icons.wifi_off, color: text),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  message,
+                  style: TextStyle(color: text),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            if (initState.canRetry)
-              TextButton(
-                onPressed: () {
-                  supabaseInitController.retryNow();
-                },
-                child: const Text('Retry'),
-              ),
-          ],
+              const SizedBox(width: 12),
+              if (initState.canRetry)
+                TextButton(
+                  onPressed: () {
+                    supabaseInitController.retryNow();
+                  },
+                  child: const Text('Retry'),
+                ),
+            ],
+          ),
         ),
       ),
     );

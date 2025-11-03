@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/legal/legal_viewer.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -96,6 +97,12 @@ class ProdAppLinks implements AppLinksApi {
     return parsed;
   }
 }
+
+/// Riverpod provider for [AppLinksApi].
+///
+/// Defaults to [ProdAppLinks] but can be overridden in tests or
+/// higher in the widget tree for custom environments.
+final appLinksProvider = Provider<AppLinksApi>((ref) => const ProdAppLinks());
 
 /// Opens a legal link externally when valid, otherwise falls back to
 /// an in-app Markdown viewer bundled with the app.

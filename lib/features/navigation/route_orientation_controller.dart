@@ -49,24 +49,64 @@ class _RouteOrientationObserver extends NavigatorObserver {
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPush(route, previousRoute);
-    unawaited(_controller.applyForRoute(route.settings.name));
+    final name = route.settings.name;
+    unawaited(
+      _controller.applyForRoute(name).catchError((error, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'route_orientation_controller',
+          context: ErrorDescription('applyForRoute(didPush, name=$name)'),
+        ));
+      }),
+    );
   }
 
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
-    unawaited(_controller.applyForRoute(newRoute?.settings.name));
+    final name = newRoute?.settings.name;
+    unawaited(
+      _controller.applyForRoute(name).catchError((error, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'route_orientation_controller',
+          context: ErrorDescription('applyForRoute(didReplace, name=$name)'),
+        ));
+      }),
+    );
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPop(route, previousRoute);
-    unawaited(_controller.applyForRoute(previousRoute?.settings.name));
+    final name = previousRoute?.settings.name;
+    unawaited(
+      _controller.applyForRoute(name).catchError((error, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'route_orientation_controller',
+          context: ErrorDescription('applyForRoute(didPop, name=$name)'),
+        ));
+      }),
+    );
   }
 
   @override
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didRemove(route, previousRoute);
-    unawaited(_controller.applyForRoute(previousRoute?.settings.name));
+    final name = previousRoute?.settings.name;
+    unawaited(
+      _controller.applyForRoute(name).catchError((error, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'route_orientation_controller',
+          context: ErrorDescription('applyForRoute(didRemove, name=$name)'),
+        ));
+      }),
+    );
   }
 }

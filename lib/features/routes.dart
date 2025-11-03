@@ -31,6 +31,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_services/user_state_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
@@ -89,9 +90,12 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: Consent02Screen.routeName,
     name: 'consent02',
-    builder: (context, state) => const Consent02Screen(
-      appLinks: ProdAppLinks(),
-    ),
+    builder: (context, state) {
+      // Obtain AppLinks via Riverpod to enable DI and testing.
+      final container = ProviderScope.containerOf(context, listen: false);
+      final appLinks = container.read(appLinksProvider);
+      return Consent02Screen(appLinks: appLinks);
+    },
   ),
   GoRoute(
     path: Onboarding01Screen.routeName,

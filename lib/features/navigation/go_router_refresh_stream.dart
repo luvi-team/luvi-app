@@ -10,24 +10,26 @@ class GoRouterRefreshStream extends ChangeNotifier {
     void Function(Object error, StackTrace stackTrace)? onError,
     VoidCallback? onDone,
   }) {
-    // Create the subscription first and assign to the field immediately to avoid
-    // LateInitializationError if the stream emits synchronously during listen().
-    final subscription = stream.listen(null);
-    _subscription = subscription;
-
-    subscription.onData((_) {
-      if (_isDisposed) return;
-      notifyListeners();
-    });
-    subscription.onError((Object error, StackTrace stackTrace) {
-      debugPrint('GoRouterRefreshStream stream error: $error\n$stackTrace');
-      onError?.call(error, stackTrace);
-      subscription.cancel();
-    });
-    subscription.onDone(() {
-      onDone?.call();
-      subscription.cancel();
-    });
+    // Register callbacks inline with listen() so synchronous emissions
+    // are handled and not dropped.
+    late final StreamSubscription<dynamic> sub;
+    sub = stream.listen(
+      (_) {
+        if (_isDisposed) return;
+        notifyListeners();
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        debugPrint('GoRouterRefreshStream stream error: $error\n$stackTrace');
+        onError?.call(error, stackTrace);
+        sub.cancel();
+      },
+      onDone: () {
+        onDone?.call();
+        sub.cancel();
+      },
+      cancelOnError: false,
+    );
+    _subscription = sub;
   }
 
   late final StreamSubscription<dynamic> _subscription;
