@@ -146,10 +146,14 @@ async function countConsentsWithRetry(
     }
     lastError = error ?? new Error("count returned non-number");
     attempt += 1;
+    // Apply backoff between attempts to reduce load / allow replicas to catch up
     if (attempt < COUNT_RETRY_ATTEMPTS) {
-  return { count: null, error: lastError, total_duration_ms: Date.now() - started };
+      const delay = COUNT_RETRY_BACKOFF_MS;
+      if (delay > 0) await sleep(delay);
+      continue;
     }
   }
+  // Exhausted all attempts
   return { count: null as number | null, error: lastError, total_duration_ms: Date.now() - started };
 }
 
