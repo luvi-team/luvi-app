@@ -37,8 +37,11 @@ const COUNT_RETRY_BACKOFF_MS = Math.max(
   parseInt(Deno.env.get("CONSENT_COUNT_RETRY_BACKOFF_MS") ?? "50"),
 );
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error("Missing required environment variables: SUPABASE_URL and SUPABASE_ANON_KEY must be set");
+if (!SUPABASE_URL) {
+  throw new Error("Missing required environment variable: SUPABASE_URL must be set");
+}
+if (!SUPABASE_ANON_KEY) {
+  throw new Error("Missing required environment variable: SUPABASE_ANON_KEY must be set");
 }
 const VALID_SCOPES = [
   "health",
@@ -144,7 +147,7 @@ async function countConsentsWithRetry(
     lastError = error ?? new Error("count returned non-number");
     attempt += 1;
     if (attempt < COUNT_RETRY_ATTEMPTS) {
-      await sleep(COUNT_RETRY_BACKOFF_MS * attempt); // linear backoff
+  return { count: null, error: lastError, total_duration_ms: Date.now() - started };
     }
   }
   return { count: null as number | null, error: lastError, total_duration_ms: Date.now() - started };
@@ -171,6 +174,7 @@ async function maybeAlert(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(5000), // 5 second timeout
     });
   } catch (e) {
     // Swallow to avoid affecting the main path; still log for forensics.
