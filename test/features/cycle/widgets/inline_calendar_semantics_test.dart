@@ -350,7 +350,6 @@ void main() {
 
     // Property test: Verify that the widget builds without errors
     // and attaches the painter responsible for drawing segment colors.
-    // TODO(cycle-inline-calendar-colors): Add painter color verification by exposing a
-    // debug getter from CycleInlineCalendar or pixel-matching the rendered CustomPaint.
+
   });
 }
