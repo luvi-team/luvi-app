@@ -106,4 +106,102 @@ void main() {
       expect(sanitized, isNot(contains(uuid)));
     });
   });
+
+  group('tryOrNull (sync)', () {
+    test('returns null and invokes onError for Exception', () {
+      Object? capturedError;
+      StackTrace? capturedStack;
+
+      final result = tryOrNull<int>(
+        () => throw Exception('boom'),
+        onError: (e, s) {
+          capturedError = e;
+          capturedStack = s;
+        },
+      );
+
+      expect(result, isNull);
+      expect(capturedError, isA<Exception>());
+      expect(capturedStack, isA<StackTrace>());
+    });
+
+    test('rethrows Error and invokes onError', () {
+      Object? capturedError;
+      StackTrace? capturedStack;
+
+      expect(
+        () => tryOrNull<void>(
+          () => throw StateError('failure'),
+          onError: (e, s) {
+            capturedError = e;
+            capturedStack = s;
+          },
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(capturedError, isA<StateError>());
+      expect(capturedStack, isA<StackTrace>());
+    });
+
+    test('returns value on success', () {
+      final result = tryOrNull<int>(() => 42);
+      expect(result, 42);
+    });
+  });
+
+  group('tryOrNullAsync (async)', () {
+    test('returns null and invokes onError for Exception', () async {
+      Object? capturedError;
+      StackTrace? capturedStack;
+
+      final result = await tryOrNullAsync<int>(
+        () async => throw Exception('async boom'),
+        onError: (e, s) {
+          capturedError = e;
+          capturedStack = s;
+        },
+      );
+
+      expect(result, isNull);
+      expect(capturedError, isA<Exception>());
+      expect(capturedStack, isA<StackTrace>());
+    });
+
+    test('rethrows Error and invokes onError', () async {
+      Object? capturedError;
+      StackTrace? capturedStack;
+
+      await expectLater(
+        tryOrNullAsync<void>(
+          () async => throw StateError('async failure'),
+          onError: (e, s) {
+            capturedError = e;
+            capturedStack = s;
+          },
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(capturedError, isA<StateError>());
+      expect(capturedStack, isA<StackTrace>());
+    });
+
+    test('returns awaited value on success', () async {
+      final result = await tryOrNullAsync<int>(() async => 7);
+      expect(result, 7);
+    });
+  });
+
+  group('phone PII helper edge cases', () {
+    test('does not count extension digits toward minimum threshold', () {
+      // 9 digits + ext. 1 should NOT redact because ext digits are ignored.
+      final sanitized = debugSanitizeError('Contact 123 456 789 ext. 1');
+      expect(sanitized, isNull);
+    });
+
+    test('redacts when base number has >= 10 digits even with extension', () {
+      final sanitized = debugSanitizeError('Call 123 456 7890 ext. 123');
+      expect(sanitized, contains('[redacted-phone]'));
+      expect(sanitized, isNot(contains('123 456 7890')));
+    });
+  });
 }

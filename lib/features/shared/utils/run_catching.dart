@@ -37,7 +37,18 @@ T? tryOrNull<T>(
 }) {
   try {
     return fn();
-  } on Exception catch (error, stackTrace) {
+  } catch (error, stackTrace) {
+    if (error is Error) {
+      // Do not swallow Dart Errors; surface them while still notifying onError.
+      if (onError != null) {
+        try {
+          onError(error, stackTrace);
+        } catch (_) {
+          // Keep null-contract; ignore failures from the onError callback.
+        }
+      }
+      rethrow;
+    }
     _reportHandledError(
       error: error,
       stackTrace: stackTrace,
@@ -58,7 +69,15 @@ Future<T?> tryOrNullAsync<T>(
 }) async {
   try {
     return await fn();
-  } on Exception catch (error, stackTrace) {
+  } catch (error, stackTrace) {
+    if (error is Error) {
+      if (onError != null) {
+        try {
+          onError(error, stackTrace);
+        } catch (_) {}
+      }
+      rethrow;
+    }
     _reportHandledError(
       error: error,
       stackTrace: stackTrace,
@@ -73,7 +92,7 @@ String _shortStackTrace(StackTrace stackTrace) =>
     stackTrace.toString().split('\n').take(3).join('\n');
 
 void _reportHandledError({
-  required Exception error,
+  required Object error,
   required StackTrace stackTrace,
   required String tag,
   void Function(Object error, StackTrace stackTrace)? onError,
@@ -108,16 +127,7 @@ String? _sanitizeError(Object error) {
 
   sanitized = sanitized.replaceAllMapped(_phoneCandidatePattern, (match) {
     final candidate = match.group(0)!;
-    // Remove extension markers (e.g., "ext. 123") before counting digits so the
-    // minimum length check focuses on the core phone number.
-    final withoutExtensions =
-        candidate.replaceAll(_extensionTokenPattern, '');
-    final digitCount =
-        _digitCounterPattern.allMatches(withoutExtensions).length;
-    if (digitCount >= 10) {
-      return '[redacted-phone]';
-    }
-    return candidate;
+    return _isPiiPhone(candidate) ? '[redacted-phone]' : candidate;
   });
 
   sanitized = sanitized.replaceAllMapped(_prefixedTokenPattern, (match) {
@@ -136,3 +146,11 @@ String? _sanitizeError(Object error) {
 
 @visibleForTesting
 String? debugSanitizeError(Object error) => _sanitizeError(error);
+
+bool _isPiiPhone(String candidate) {
+  // Remove extension markers (e.g., "ext. 123") before counting digits so the
+  // minimum length check focuses on the core phone number.
+  final stripped = candidate.replaceAll(_extensionTokenPattern, '');
+  final digits = _digitCounterPattern.allMatches(stripped).length;
+  return digits >= 10;
+}
