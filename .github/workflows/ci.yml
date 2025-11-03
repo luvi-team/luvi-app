@@ -17,7 +17,18 @@ jobs:
           channel: stable
           flutter-version: '3.35.4'
           cache: true
+      - name: Log Flutter version
+        run: flutter --version
       - run: flutter pub get
+      - name: Generate localizations (gen-l10n)
+        run: flutter gen-l10n
+      - name: Enforce l10n generated files up-to-date
+        run: |
+          git diff --exit-code lib/l10n || {
+            echo "::error::lib/l10n not up-to-date. Run 'flutter gen-l10n' locally and commit generated files.";
+            git --no-pager diff -- lib/l10n || true;
+            exit 1;
+          }
       - run: flutter analyze
       - run: flutter pub run dart_code_metrics:metrics analyze lib --disable-sunset-warning || true
       - run: flutter test --no-pub
