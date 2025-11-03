@@ -46,6 +46,16 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     RegExp(r'^123456(78|789)?$'),
     RegExp(r'^qwerty\d*$', caseSensitive: false),
     RegExp(r'^letmein\d*$', caseSensitive: false),
+    // Expanded weak/common patterns (conservative MVP set)
+    RegExp(r'^abc123$', caseSensitive: false),
+    RegExp(r'^admin\d*$', caseSensitive: false),
+    RegExp(r'^welcome\d*$', caseSensitive: false),
+    RegExp(r'^monkey\d*$', caseSensitive: false),
+    RegExp(r'^dragon\d*$', caseSensitive: false),
+    RegExp(r'^zxcvbn\d*$', caseSensitive: false),
+    RegExp(r'^asdfgh\d*$', caseSensitive: false),
+    RegExp(r'^abcdef$', caseSensitive: false),
+    RegExp(r'^654321$'),
   ];
 
   static const double _backButtonSize = AuthLayout.backButtonSize;
@@ -137,11 +147,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
                     String? validationError;
                     if (!hasMinLen) {
-                      validationError = l10n.authErrPasswordInvalid;
+                      validationError = l10n.authErrPasswordTooShort;
                     } else if (!(hasLetter && hasNumber && hasSpecial)) {
-                      validationError = l10n.authErrPasswordInvalid;
+                      validationError = l10n.authErrPasswordMissingTypes;
                     } else if (isCommonWeak) {
-                      validationError = l10n.authErrPasswordInvalid;
+                      validationError = l10n.authErrPasswordCommonWeak;
                     }
 
                     if (validationError != null) {

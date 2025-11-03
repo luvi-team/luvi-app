@@ -492,7 +492,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authErrPasswordTooShort => 'Dein Passwort ist zu kurz.';
 
   @override
-  String get authErrPasswordMissingTypes => 'Dein Passwort muss Buchstaben und Zahlen oder Sonderzeichen enthalten.';
+  String get authErrPasswordMissingTypes => 'Dein Passwort muss Buchstaben, Zahlen und Sonderzeichen enthalten.';
 
   @override
   String get authErrPasswordCommonWeak => 'Dein Passwort ist zu häufig oder leicht zu erraten.';

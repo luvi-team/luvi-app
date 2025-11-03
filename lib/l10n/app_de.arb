@@ -647,7 +647,7 @@
   "@authErrPasswordTooShort": {
     "description": "Fehlermeldung, wenn das Passwort zu kurz ist."
   },
-  "authErrPasswordMissingTypes": "Dein Passwort muss Buchstaben und Zahlen oder Sonderzeichen enthalten.",
+  "authErrPasswordMissingTypes": "Dein Passwort muss Buchstaben, Zahlen und Sonderzeichen enthalten.",
   "@authErrPasswordMissingTypes": {
     "description": "Fehlermeldung, wenn erforderliche Zeichentypen fehlen."
   },

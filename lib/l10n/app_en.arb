@@ -647,7 +647,7 @@
   "@authErrPasswordTooShort": {
     "description": "Validation error when the password is too short."
   },
-  "authErrPasswordMissingTypes": "Your password must include letters and numbers or symbols.",
+  "authErrPasswordMissingTypes": "Your password must include letters, numbers, and special characters.",
   "@authErrPasswordMissingTypes": {
     "description": "Validation error when the password is missing required character types."
   },
