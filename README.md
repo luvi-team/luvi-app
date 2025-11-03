@@ -33,10 +33,10 @@ Note: Dieses Projekt verwendet `flutter_dotenv`; lokale Entwicklung nutzt `.env.
 
 - Standardisierte Aufrufe über Wrapper: `scripts/flutter_codex.sh`
   - Analyze: `scripts/flutter_codex.sh analyze`
-  - Tests: `scripts/flutter_codex.sh test -j 1` (Loopback‑Socket kann in Sandbox Approval erfordern)
+  - Tests: `scripts/flutter_codex.sh test -j 1` (Loopback-Socket kann eine Sandbox-Genehmigung erfordern)
   - Version: `scripts/flutter_codex.sh --version`
 - Optional für Builds/Signing/Performance:
-  - `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh <cmd>` nutzt das echte `$HOME`/Standard‑Caches (z. B. `~/.gradle`, `~/.cocoapods`).
+  - `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh <cmd>` nutzt das echte `$HOME`/Standard-Caches (z. B. `~/.gradle`, `~/.cocoapods`).
 - Make‑Shortcuts:
   - `make analyze`
   - `make test`

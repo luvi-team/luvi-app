@@ -52,7 +52,7 @@ python3 scripts/fix_svg_css_variables.py assets/images/onboarding/onboarding_suc
 Das Script:
 - Findet alle `var(--fill-N, FARBE)` Patterns
 - Ersetzt sie durch die Fallback-Farbe (`FARBE`)
-- Schreibt zunächst in eine temporäre Datei `<datei>.svg.tmp`; nur der abschließende Rename/Replace des Originals ist auf den meisten Dateisystemen atomar (das Original bleibt bis zu diesem finalen Schritt unverändert). Die Schreiboperation in die temporäre Datei selbst ist nicht atomar.
+- Schreibt in eine temporäre Datei `<datei>.svg.tmp`, dann ersetzt atomar das Original.
 - Überschreibt die Originaldatei ohne automatisches Backup – Empfehlung: vor dem Lauf manuell eine Kopie anlegen, wenn du die Figma-Version behalten möchtest
 - Gibt Statistik aus (gefundene/ersetzte CSS-Variablen)
 
@@ -116,7 +116,7 @@ Das Script:
 - Häufige Fälle: verschachtelte `var(--token, var(--fallback))`, vendor-prefixed Fallbacks (`-webkit-`, `-moz-`), oder Tokens mit Kommentaren am Zeilenende.
 - Öffne das SVG im Editor oder nutze `rg "var\\(--" <datei>.svg`, finde z. B. `fill="var(--fill-4, #FBC343)"` und ersetze den gesamten Ausdruck durch `fill="#FBC343"`.
 - Für mehrere Vorkommen kannst du den Python-Script anpassen oder manuell mit einem Editor mehrfach suchen/ersetzen
-- Alternativ (nur macOS/Linux): `sed -E 's/var\\(--[^,]+, ([^)]*)\)/\1/g' asset.svg > asset_fixed.svg && mv asset_fixed.svg asset.svg`
+- Hinweis: Verwende das mitgelieferte Python-Script `scripts/fix_svg_css_variables.py` oder die oben dokumentierte plattformübergreifende Methode. Einfache `sed`-One-Liner sind nicht zuverlässig, da sie verschachtelte Klammern (z. B. `rgb(...)`/`rgba(...)`) nicht korrekt parsen und dadurch SVGs beschädigen können.
 
 ## Checkliste (Asset-Integration)
 
