@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 typedef LocalizedContentBuilder =
     Widget Function(BuildContext context, AppLocalizations localizations);
@@ -37,10 +38,31 @@ class LocalizedBuilder extends StatelessWidget {
         builder: (overrideContext) {
           final resolved = AppLocalizations.of(overrideContext);
           if (resolved == null) {
+            // Fail-fast in debug with clear remediation guidance.
             assert(() {
-              debugPrint('LocalizedBuilder: Failed to resolve AppLocalizations');
-              return true;
+              throw FlutterError.fromParts(<DiagnosticsNode>[
+                ErrorSummary('Missing AppLocalizations in LocalizedBuilder.'),
+                ErrorDescription(
+                  'AppLocalizations.of(context) returned null. This usually means the localization delegates are not configured on your app root.',
+                ),
+                ErrorHint(
+                  'Add the following to your MaterialApp (or CupertinoApp):\n'
+                  '  localizationsDelegates: AppLocalizations.localizationsDelegates,\n'
+                  '  supportedLocales: AppLocalizations.supportedLocales,',
+                ),
+              ]);
             }());
+
+            // Release: log and return a safe fallback to avoid a blank screen crash.
+            log.e(
+              'Failed to resolve AppLocalizations; returning safe fallback widget.',
+              tag: 'localized_builder',
+            );
+            FlutterError.reportError(FlutterErrorDetails(
+              exception: FlutterError('AppLocalizations.of(context) returned null'),
+              library: 'localized_builder',
+              context: ErrorDescription('Localizations.override resolution failed'),
+            ));
             return const SizedBox.shrink();
           }
           return builder(overrideContext, resolved);

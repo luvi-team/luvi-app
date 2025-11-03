@@ -1028,7 +1028,7 @@ abstract class AppLocalizations {
   /// Validation error when the password is missing required character types.
   ///
   /// In en, this message translates to:
-  /// **'Your password must include letters and numbers or symbols.'**
+  /// **'Your password must include letters, numbers, and special characters.'**
   String get authErrPasswordMissingTypes;
 
   /// Validation error when the password is common or weak.
