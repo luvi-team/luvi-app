@@ -8,12 +8,12 @@ Deterministic computation of the current cycle phase and derived values for UI/r
 
 - Performance (target P95 ≤ 50 ms): compute_cycle_info() from function entry to return, computation‑only (no network/DB I/O). Warm‑start measurement (JIT/caches warm). Baseline: mid‑range mobile/CPU (e.g., Apple M1/A14‑equivalent or Snapdragon 7xx), single thread, no concurrent load. Method: 10,000 invocations over a representative input set; discard the first 100 as warm‑up; compute P95 via `Stopwatch`/harness and document the sample count.
   - Baseline cadence: run baseline measurement (a) before merge of relevant changes, (b) after any performance‑affecting change to compute_cycle_info or its dependencies, and (c) on a scheduled nightly/weekly CI job on a stable runner.
-  - Baseline (reference; record and update here): example device “Apple M1 (8‑core, 16 GB), macOS 14, Flutter 3.35.4 release”; sample size `n=9,900` (after `warmup=100`); measured P95: <value> ms. If the measurement device/build differs from the reference, record the deviation in the artifact (see below).
+  - Baseline (reference; record and update here): example device "Apple M1 (8‑core, 16 GB), macOS 14, Flutter 3.35.4 release"; sample size `n=9,900` (after `warmup=100`); measured P95: **TBD** ms (pending initial measurement). If the measurement device/build differs from the reference, record the deviation in the artifact (see below).
   - Instrumentation/Harness: Dart `Stopwatch` around compute only; script `tools/perf/compute_cycle_info_bench.dart`; warm‑up `100`, samples `10,000`; P95 computed from sorted durations at index `ceil(0.95*n)-1`. Reproduce locally: `dart run tools/perf/compute_cycle_info_bench.dart --samples 10000 --warmup 100 --json docs/perf/compute_cycle_info/<DATE>.json`.
   - Artifacts (commit required): commit the produced JSON under `docs/perf/compute_cycle_info/`.
     - Required fields: `timestamp`, `device` (model, OS, CPU, memory), `build` (Flutter/Dart versions, build mode), `warmup`, `samples`, `p50`, `p95`, `p99`, and `deviations` (from the reference device/build, if any).
     - Naming: `compute_cycle_info_<YYYY-MM-DD>_<device|runner>.json` (or CI‑provided run ID). One canonical latest artifact should live in this folder per runner/device profile.
-  - CI regression rule: job name “Performance CI / compute_cycle_info”. Fail the job if measured `P95 > 60 ms` (slightly above the 50 ms target to avoid flakiness). The job uploads its raw JSON artifact and links to the committed baseline for traceability.
+  - CI regression rule: job name "Performance CI / compute_cycle_info". Fail the job if measured `P95 > 60 ms` (slightly above the 50 ms target to avoid flakiness). The job uploads its raw JSON artifact and links to the committed baseline for traceability.
 
 ## Inputs
 - lmp_date (string, ISO 8601 `YYYY-MM-DD`, local): First day of the last period. Required.

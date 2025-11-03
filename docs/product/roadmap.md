@@ -93,7 +93,7 @@ Events (mindestens)
 • video_like, video_save, video_share, video_resume
 
 Seed/Import
-• 30–50 kuratierte „Evergreen“-Videos + 20 Kanäle (DACH-lastig): initialer CSV-Import; Daily-5 bias auf < 10–12 min.
+• 30–50 kuratierte „Evergreen"-Videos + 20 Kanäle (DACH-lastig): initialer CSV-Import; Daily-5 (siehe S4) bias auf < 10–12 min.
 
 QA/DoD
 • „No-Ad-Interference“ (Player nicht modifizieren, Ads erlaubt), IFrame-UI unberührt.
