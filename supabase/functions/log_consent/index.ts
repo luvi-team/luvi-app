@@ -7,9 +7,15 @@ const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 const RATE_LIMIT_WINDOW_SEC = parseInt(
   Deno.env.get("CONSENT_RATE_LIMIT_WINDOW_SEC") ?? "60",
 );
+if (RATE_LIMIT_WINDOW_SEC <= 0 || RATE_LIMIT_WINDOW_SEC > 3600) {
+  throw new Error("CONSENT_RATE_LIMIT_WINDOW_SEC must be between 1 and 3600");
+}
 const RATE_LIMIT_MAX_REQUESTS = parseInt(
   Deno.env.get("CONSENT_RATE_LIMIT_MAX_REQUESTS") ?? "20",
 );
+if (RATE_LIMIT_MAX_REQUESTS <= 0 || RATE_LIMIT_MAX_REQUESTS > 1000) {
+  throw new Error("CONSENT_RATE_LIMIT_MAX_REQUESTS must be between 1 and 1000");
+}
 // Optional webhook to raise alerts on notable events (errors/spikes). This should
 // point to your alerting system (e.g. Slack incoming webhook, Log Ingest, etc.).
 const ALERT_WEBHOOK_URL = Deno.env.get("CONSENT_ALERT_WEBHOOK_URL");
@@ -51,7 +57,7 @@ function getRequestId(req: Request): string {
     if (v && v.length > 0) return v;
   }
   try {
-    // @ts-ignore Deno runtime provides crypto.randomUUID
+    // @ts-ignore: crypto.randomUUID exists in Deno runtime but not in TypeScript's lib.dom types
     return crypto.randomUUID();
   } catch {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
