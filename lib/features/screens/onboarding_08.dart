@@ -74,6 +74,11 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
       if (mounted) {
         context.go(OnboardingSuccessScreen.routeName, extra: level);
       }
+    } catch (e) {
+      // Log error and optionally show user feedback
+      if (mounted) {
+        // Show SnackBar or error dialog
+      }
     } finally {
       if (mounted) {
         setState(() {

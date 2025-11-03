@@ -90,9 +90,9 @@ _Phase _phaseForDate({
   int lutealLength = 13,
   int ovulationWindowDays = 2,
 }) {
-  // Normalize to day-only comparison (ignore time)
-  final start = DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day);
-  final q = DateTime(date.year, date.month, date.day);
+  // Normalize to day-only comparison using UTC to avoid DST/offset artifacts
+  final start = DateTime.utc(lastPeriod.year, lastPeriod.month, lastPeriod.day);
+  final q = DateTime.utc(date.year, date.month, date.day);
   final diff = q.difference(start).inDays;
 
   // Calculate 1-based cycle day (wrap negatives cyclically)

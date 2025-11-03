@@ -56,8 +56,9 @@ class LinkText extends StatelessWidget {
           final partStyle = part.bold
               ? resolvedBaseStyle.copyWith(fontWeight: FontWeight.w700)
               : resolvedBaseStyle;
+          final styledPart = partStyle.copyWith(color: part.color);
           if (part.onTap == null) {
-            return TextSpan(text: part.text, style: partStyle);
+            return TextSpan(text: part.text, style: styledPart);
           }
           return WidgetSpan(
             alignment: PlaceholderAlignment.baseline,

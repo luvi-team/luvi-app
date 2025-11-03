@@ -41,6 +41,8 @@ final resetSubmitProvider =
 
 // Testability toggle: allows unit tests to simulate production behavior even when
 // running under kDebugMode. Null = no override; true = force silent; false = force throw.
+// Important: Tests must call debugSetResetSilentOverride(null) in tearDown to avoid
+// affecting subsequent tests.
 bool? _resetSilentOverride;
 
 @visibleForTesting

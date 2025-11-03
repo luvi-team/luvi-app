@@ -27,7 +27,7 @@ class DateFormatters {
       if (kDebugMode) {
         debugPrintStack(stackTrace: stackTrace, label: 'DateFormat error');
       }
-      return DateFormat('y-MM-dd').format(date);
+      return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     }
   }
 }
