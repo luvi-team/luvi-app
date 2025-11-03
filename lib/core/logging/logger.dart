@@ -1,9 +1,23 @@
 import 'package:flutter/foundation.dart';
 
-/// Minimal logging facade for consistent, swappable logging.
+// TODO(#15): Consolidate with services/lib/logger.dart into a shared module
+// while preserving the public API (d/i/w/e signatures and tag/error/stack).
+
+/// Logging facade for app code (UI layer).
 ///
-/// Do not log PII. Prefer error types, IDs, and high‑level context.
+/// SECURITY NOTICE — DO NOT LOG PII
+/// - Never log raw emails, phone numbers, tokens, session IDs, addresses,
+///   or free‑form user input that may contain personal data.
+/// - Prefer structured context (enums/IDs) and sanitized error details.
+/// - If you must include identifiers, redact them before logging.
+///
+/// This facade focuses on consistent formatting and a single, clear surface for
+/// log calls. It intentionally keeps implementation simple and avoids external
+/// deps; a future consolidation with the services logger is planned.
 typedef LogFn = void Function(String message, {String? tag, Object? error, StackTrace? stack});
+
+// ignore: constant_identifier_names
+const String PII_WARNING = 'DO NOT LOG PII (emails, phones, tokens, sessions, addresses) — redact identifiers.';
 
 class Logger {
   const Logger();
@@ -25,6 +39,10 @@ class Logger {
     _print(lines.toString());
   }
 
+  // Print indirection: kept intentionally as a seam for testing and potential
+  // output redirection (e.g., capture logs in tests or swap sink in the future).
+  // If not needed, this could be inlined to debugPrint, but we keep it to make
+  // redirection straightforward without touching all call sites.
   void _print(String line) {
     debugPrint(line);
   }

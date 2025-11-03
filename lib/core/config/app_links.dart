@@ -36,7 +36,7 @@ abstract class AppLinksApi {
 
 /// Production implementation that reads URLs from --dart-define values and
 /// enforces validation without any test-specific bypasses.
-class ProdAppLinks implements AppLinksApi {
+class ProdAppLinks extends AppLinksApi {
   const ProdAppLinks();
 
   static const _sentinelUrl = 'about:blank';
@@ -59,11 +59,7 @@ class ProdAppLinks implements AppLinksApi {
   @override
   Uri get termsOfService => _termsOfService;
 
-  @override
-  bool get hasValidPrivacy => isConfiguredUrl(privacyPolicy);
 
-  @override
-  bool get hasValidTerms => isConfiguredUrl(termsOfService);
 
   @override
   bool isConfiguredUrl(Uri? uri) {

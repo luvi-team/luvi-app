@@ -56,7 +56,7 @@ class FixSvgCssVariablesTests(unittest.TestCase):
     self.assertIn('fill="var(--fill-2, var(--nested, #000))"', rewritten)
 
   def test_raises_file_not_found(self):
-    missing = Path("/tmp/definitely_missing_file_1234567890.svg")
+    missing = Path(tempfile.gettempdir()) / "definitely_missing_file_1234567890.svg"
     if missing.exists():
       # Ensure it doesn't exist for the test scenario
       missing.unlink()

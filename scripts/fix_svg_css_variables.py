@@ -20,10 +20,9 @@ The script will:
 5. Print statistics (variables found, variables replaced)
 
 Exit codes:
-    0: Success
+    0: Success (either fixed variables or already clean)
     1: File not found
     2: Invalid file format (not SVG)
-    3: No changes needed (no CSS variables found)
     4: Partial fixes applied
 """
 
@@ -155,7 +154,8 @@ def main():
         if found == 0:
             print(f"✅ No CSS variables found in {svg_path}")
             print("   File is already compatible with flutter_svg.")
-            sys.exit(3)
+            # No-op is a success: return 0 for clean files
+            sys.exit(0)
 
         if replaced == found:
             print(f"✅ Fixed SVG: {svg_path}")

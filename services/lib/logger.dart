@@ -1,6 +1,15 @@
 import 'package:flutter/foundation.dart';
 
-// Minimal logger for services package. Do not log PII.
+/// Logging facade for the services package (data/domain layer).
+///
+/// SECURITY NOTICE — DO NOT LOG PII
+/// - Never log raw emails, phone numbers, tokens, session IDs, addresses,
+///   or free‑form user input that may contain personal data.
+/// - Prefer structured context (enums/IDs) and sanitized error details.
+/// - If you must include identifiers, redact them before logging.
+// ignore: constant_identifier_names
+const String PII_WARNING = 'DO NOT LOG PII (emails, phones, tokens, sessions, addresses) — redact identifiers.';
+
 class Logger {
   const Logger();
   void d(String message, {String? tag}) => debugPrint(_format('D', message, tag: tag));

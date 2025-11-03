@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-/// Base gap (px) between the success trophy and the title, shared with tokens.
+/// Base gap (px) between the success trophy and the title.
+/// Matches docs/audits/ONB_SUCCESS_measures.json token `trophyToTitle` (28px).
 const double _kOnboardingSuccessTrophyToTitleGap = 28.0;
 
 /// Discrete spacing tokens for onboarding screens with gentle scaling.
