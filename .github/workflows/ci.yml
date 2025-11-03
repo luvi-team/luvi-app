@@ -53,6 +53,27 @@ jobs:
           else
             echo "Kein 'service_role' im Client (lib/) gefunden."
           fi
+      - name: Block placeholder privacy fallback (PR)
+        run: |
+          FILE="docs/privacy/privacy.md"
+          if [ ! -f "$FILE" ]; then
+            echo "::error::$FILE fehlt. Für DSGVO-Compliance ist eine finale Datenschutzerklärung erforderlich (oder extern verlinkt via PRIVACY_URL)."
+            exit 1
+          fi
+          if grep -nE 'Bitte ersetzen Sie diesen Text|PLACEHOLDER|placeholder' "$FILE" >/dev/null 2>&1; then
+            echo "::error::$FILE enthält Platzhaltertext. Bitte finale DSGVO-konforme Datenschutzerklärung einpflegen und Legal-Freigabe dokumentieren."
+            sed -n '1,80p' "$FILE" || true
+            exit 1
+          else
+            echo "Privacy fallback-Datei enthält keinen offensichtlichen Platzhalter."
+          fi
+
+      - name: Warn if terms fallback looks like a draft (non-blocking)
+        run: |
+          TERMS="docs/privacy/terms.md"
+          if [ -f "$TERMS" ] && grep -nE '\bDRAFT\b|PENDING LEGAL|NICHT PRODUKTIV AUSLIEFERN' "$TERMS" >/dev/null 2>&1; then
+            echo "::notice::$TERMS scheint ein Entwurf zu sein (DRAFT/PENDING LEGAL). Für Produktion finalisieren und freigeben lassen."
+          fi
       - name: Detect changed paths
         id: changes
         uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
