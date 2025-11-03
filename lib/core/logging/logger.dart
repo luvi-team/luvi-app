@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart';
 /// This facade focuses on consistent formatting and a single, clear surface for
 /// log calls. It intentionally keeps implementation simple and avoids external
 /// deps; a future consolidation with the services logger is planned.
-typedef LogFn = void Function(String message, {String? tag, Object? error, StackTrace? stack});
+typedef LogFn = void Function(String message, {String? tag});
 
 // ignore: constant_identifier_names
 const String PII_WARNING = 'DO NOT LOG PII (emails, phones, tokens, sessions, addresses) — redact identifiers.';
