@@ -61,6 +61,7 @@ class SupabaseInitController extends ChangeNotifier {
   Timer? _retryTimer;
   bool _disposed = false;
   String? _envFile;
+  static final _random = math.Random();
 
   void ensureInitialized({required String envFile}) {
     _envFile ??= envFile;
@@ -118,8 +119,9 @@ class SupabaseInitController extends ChangeNotifier {
 
       // In tests do not schedule retry timers to avoid pending timers
       if (!isTest && !isConfig && _state.hasAttemptsLeft && !_disposed) {
-        final baseMs = 500 * math.pow(2, attempt - 1).toInt();
-        final jitterMs = math.Random().nextInt(400);
+        // Exponential backoff without floating point: 500ms * (2^(attempt-1))
+        final baseMs = 500 * (1 << (attempt - 1));
+        final jitterMs = _random.nextInt(400);
         final delay = Duration(milliseconds: baseMs + jitterMs);
         _retryTimer?.cancel();
         _setState(_state.copyWith(retryScheduled: true));

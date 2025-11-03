@@ -86,16 +86,13 @@ class MyAppWrapper extends ConsumerWidget {
     }
     // Ensure initialization controller is created and running.
     final envFile = kReleaseMode ? '.env.production' : '.env.development';
-    // Note: supabaseInitController is an intentionally used global singleton
-    // for startup/initialization orchestration (not a Riverpod provider).
+    // Note: supabaseInitController is a global singleton for startup/initialization 
+    // orchestration. While ProviderScope is available here, we use a singleton to
+    // ensure initialization state is accessible outside the Riverpod tree.
     // Lifecycle: created once at app start and kept alive for the entire
     // process lifetime; it coordinates non-blocking Supabase init and retries.
     // Thread-safety: used on the main isolate only, state changes notify
     // listeners via ChangeNotifier; no cross-isolate sharing.
-    // Rationale: this init path executes before ProviderScope is available
-    // to ensure the app boots quickly and never crashes during backend init.
-    // For a Riverpod-based alternative, consider exposing a provider-backed
-    // controller once initialization may move later in the startup sequence.
     supabaseInitController.ensureInitialized(envFile: envFile);
 
     // Allow overriding the initial route in development via --dart-define

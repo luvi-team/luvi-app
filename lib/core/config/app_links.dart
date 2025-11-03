@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// Shared app link constants (non-instance based)
 class AppLinks {
+  AppLinks._(); // Private constructor prevents instantiation
+  
   // OAuth redirect URI used for mobile deep linking. Configurable via --dart-define.
   static const String oauthRedirectUri = String.fromEnvironment(
     'OAUTH_REDIRECT_URI',
@@ -59,8 +61,6 @@ class ProdAppLinks extends AppLinksApi {
   @override
   Uri get termsOfService => _termsOfService;
 
-
-
   @override
   bool isConfiguredUrl(Uri? uri) {
     if (uri == null) return false;
@@ -76,10 +76,13 @@ class ProdAppLinks extends AppLinksApi {
       return false;
     }
     if (host.startsWith('127.')) return false;
+    // Block IPv6 local ranges: fe80:: (link-local), fc00:: and fd00:: (unique local)
+    if (host.startsWith('fe80:') || host.startsWith('fc00:') || host.startsWith('fd00:')) {
+      return false;
+    }
     if (host.endsWith('.local') || host.endsWith('.localhost')) return false;
     return true;
   }
-
   static Uri _parseConfiguredUri({
     required String rawValue,
     required String defaultValue,

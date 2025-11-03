@@ -56,16 +56,16 @@ class LinkText extends StatelessWidget {
           final partStyle = part.bold
               ? resolvedBaseStyle.copyWith(fontWeight: FontWeight.w700)
               : resolvedBaseStyle;
-          final styledPart = partStyle.copyWith(color: part.color);
+          final styledPartWithColor = partStyle.copyWith(color: part.color);
           if (part.onTap == null) {
-            return TextSpan(text: part.text, style: styledPart);
+            return TextSpan(text: part.text, style: styledPartWithColor);
           }
           return WidgetSpan(
             alignment: PlaceholderAlignment.baseline,
             baseline: TextBaseline.alphabetic,
             child: _LinkTextTapTarget(
               text: part.text,
-              style: partStyle.copyWith(color: part.color),
+              style: styledPartWithColor,
               semanticsLabel: part.semanticsLabel,
               onTap: part.onTap!,
               minTapTargetSize: minTapTargetSize,
@@ -125,7 +125,9 @@ class _LinkTextTapTarget extends StatelessWidget {
             semanticsLabel: semanticsLabel ?? text,
           ),
         ),
-        Text(text, style: resolvedStyle),
+        ExcludeSemantics(
+          child: Text(text, style: resolvedStyle),
+        ),
       ],
     );
   }

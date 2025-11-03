@@ -90,13 +90,10 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
     );
   }
 
-  /// Simple client-side validation only.
-  ///
-  /// Important:
-  /// - This method does NOT perform any network submission.
-  /// - Server-side submission is handled by the submit provider
-  ///   (see login_submit_provider.dart).
-  Future<void> validateAndSubmit() async {
+  /// Performs client-side validation only.
+  /// 
+  /// Server-side submission is handled separately by login_submit_provider.
+  Future<void> validate() async {
     state = await AsyncValue.guard(() async {
       final current = _current();
 
@@ -116,6 +113,12 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
         globalError: null,
       );
     });
+  }
+
+  /// Backward-compatible shim used by existing call sites and tests.
+  /// Performs client-side validation; network submission remains elsewhere.
+  Future<void> validateAndSubmit() async {
+    await validate();
   }
 
   /// Helper method for tests to simplify synchronous access.

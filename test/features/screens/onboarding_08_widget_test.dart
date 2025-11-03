@@ -53,6 +53,7 @@ void main() {
   Future<void> pumpRouter(
     WidgetTester tester, {
     required GoRouter router,
+    Locale locale = const Locale('de'),
   }) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -65,7 +66,7 @@ void main() {
         child: MaterialApp.router(
           theme: AppTheme.buildAppTheme(),
           routerConfig: router,
-          locale: const Locale('de'),
+          locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),

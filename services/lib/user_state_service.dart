@@ -88,7 +88,14 @@ class UserStateService {
       final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
       if (wroteFlag != true) {
         // Rollback: best-effort removal of fitness level
-        await prefs.remove(_keyFitnessLevel);
+        try {
+          await prefs.remove(_keyFitnessLevel);
+        } catch (rollbackError) {
+          // Rollback failed; we're in an inconsistent state
+          throw StateError(
+            'Failed to persist onboarding completion flag and rollback failed: $rollbackError'
+          );
+        }
         throw StateError('Failed to persist onboarding completion flag');
       }
     } catch (e) {

@@ -282,7 +282,7 @@ class OnboardingSpacing {
   static const double _calloutToCta06 = 48.0;
   static const double _ctaToHome06 = 48.0;
 
-  // Shared 90 px rhythm used across late-onboarding screens.
+  // Shared 90 px rhythm used across late-onboarding screens (ONB_07, ONB_08).
   static const double _onbSharedRhythm90 = 90.0;
 
   // ONB_07 specific spacing (from Figma audit ONB_07_measures.json)

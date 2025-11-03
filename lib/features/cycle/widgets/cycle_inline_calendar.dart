@@ -337,7 +337,7 @@ class _DayColumn extends StatelessWidget {
     );
 
     return SizedBox(
-      key: ValueKey('day_chip_${day.date.day}'),
+      key: ValueKey('day_chip_${day.date.toIso8601String()}'),
       width: geometry.width,
       height: _trackHeight,
       child: Padding(

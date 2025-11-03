@@ -96,11 +96,13 @@ class WelcomeShell extends StatelessWidget {
 
   Widget _buildDefaultContent(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context) ?? 
-      (throw FlutterError(
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) {
+      throw FlutterError(
         'AppLocalizations must be provided above WelcomeShell. '
         'Ensure MaterialApp includes localizationsDelegates and supportedLocales.',
-      ));
+      );
+    }
     final buttonLabel = primaryButtonLabel ?? l10n.commonContinue;
     final skipLabel = secondaryButtonLabel ?? l10n.commonSkip;
     final children = <Widget>[];
@@ -108,19 +110,14 @@ class WelcomeShell extends StatelessWidget {
     if (title != null) {
       children.add(Semantics(header: true, child: title!));
     }
-    if (title != null && subtitle != null) {
-      children.add(const SizedBox(height: Spacing.s));
-    }
     if (subtitle != null) {
       children.add(
-        Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: subtitleMaxWidth),
-            child: Text(
-              subtitle!,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium,
-            ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: subtitleMaxWidth),
+          child: Text(
+            subtitle!,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
           ),
         ),
       );

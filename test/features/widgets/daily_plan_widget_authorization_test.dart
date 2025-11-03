@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:riverpod/legacy.dart';
+
 import '../../support/test_config.dart';
 
 class DailyPlan {
@@ -55,8 +56,17 @@ final dailyPlanRepositoryProvider = Provider<DailyPlanRepository>((ref) {
   );
 });
 
+class CreationStatusNotifier extends AsyncNotifier<String?> {
+  @override
+  FutureOr<String?> build() => null;
+
+  void set(String? value) => state = AsyncData(value);
+}
+
 final creationStatusProvider =
-    StateProvider.autoDispose<String?>((ref) => null);
+    AsyncNotifierProvider.autoDispose<CreationStatusNotifier, String?>(
+  CreationStatusNotifier.new,
+);
 
 final userScopedDailyPlansProvider =
     FutureProvider.autoDispose<List<DailyPlan>>((ref) async {
@@ -87,7 +97,7 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final plansAsync = ref.watch(userScopedDailyPlansProvider);
-    final creationStatus = ref.watch(creationStatusProvider);
+    final creationStatus = ref.watch(creationStatusProvider).value;
 
     return MaterialApp(
       home: Scaffold(
@@ -135,9 +145,7 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
                   final controller = ref.read(
                     dailyPlanCreationControllerProvider,
                   );
-                  final statusNotifier = ref.read(
-                    creationStatusProvider.notifier,
-                  );
+                  final statusNotifier = ref.read(creationStatusProvider.notifier);
                   var statusMessage = 'Creation failed';
 
                   try {
@@ -150,7 +158,7 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
                   } catch (error) {
                     statusMessage = 'Creation failed: $error';
                   } finally {
-                    statusNotifier.state = statusMessage;
+                    statusNotifier.set(statusMessage);
                   }
                 },
                 child: const Text('Create Plan'),
@@ -197,7 +205,7 @@ void main() {
     testWidgets('renders plans scoped to the authenticated user', (
       tester,
     ) async {
-      when(repository.fetchMyDailyPlans).thenAnswer(
+      when(() => repository.fetchMyDailyPlans()).thenAnswer(
         (invocation) async => [
           const DailyPlan(
             id: 'plan-1',
@@ -217,14 +225,14 @@ void main() {
       expect(find.text('owner: $userId'), findsOneWidget);
       expect(find.text('No plans available'), findsNothing);
 
-      verify(repository.fetchMyDailyPlans).called(1);
+      verify(() => repository.fetchMyDailyPlans()).called(1);
     });
 
     testWidgets('renders empty state when repository returns no plans', (
       tester,
     ) async {
       when(
-        repository.fetchMyDailyPlans,
+        () => repository.fetchMyDailyPlans(),
       ).thenAnswer((invocation) async => const <DailyPlan>[]);
 
       await pumpHarness(tester, repository: repository);

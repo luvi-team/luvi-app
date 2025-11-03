@@ -19,7 +19,7 @@ bool nonEmptyNameValidator(
   if (trimmed.length < minLength || trimmed.length > maxLength) return false;
 
   // Allow letters (ASCII + common accents), spaces, hyphens, apostrophes.
-  // Allow letters (ASCII + common accents), spaces, hyphens, apostrophes.
+  // Must contain at least one letter.
   // Must contain at least one letter.
   final re = allowedCharsPattern ?? 
       RegExp(r"^[A-Za-zÀ-ÖØ-öø-ÿ' -]*[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ' -]*$");
