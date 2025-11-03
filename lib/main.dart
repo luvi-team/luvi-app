@@ -29,8 +29,12 @@ void main() async {
   // classification (config vs transient) and backoff retries.
 
   const appLinks = ProdAppLinks();
-  // Optional: Enforce legal links in debug via --dart-define=ENFORCE_LINKS_IN_DEBUG=true
-  // Asserts run only in debug builds; this keeps release behavior unchanged.
+  // Legal links enforcement modes:
+  // - Debug: asserts + optional runtime check when ENFORCE_LINKS_IN_DEBUG=true
+  // - Profile: optional runtime check when ENFORCE_LINKS_IN_DEBUG=true
+  // - Release: hard runtime check always (throws if links are missing/invalid)
+  // Enable the optional debug/profile runtime check via:
+  //   --dart-define=ENFORCE_LINKS_IN_DEBUG=true
   const bool kEnforceLinksInDebug =
       bool.fromEnvironment('ENFORCE_LINKS_IN_DEBUG', defaultValue: false);
   assert(
@@ -40,8 +44,8 @@ void main() async {
   );
 
   // Explicit runtime validation in debug/profile when enforcement is enabled.
-  // Asserts run only in debug and can be disabled; this ensures developers see
-  // a clear failure early when local configuration is invalid.
+  // Asserts run only in debug; this runtime check ensures a clear failure
+  // early during local development when configuration is invalid.
   if (!kReleaseMode && kEnforceLinksInDebug) {
     final hasValid = appLinks.hasValidPrivacy && appLinks.hasValidTerms;
     if (!hasValid) {
@@ -103,36 +107,26 @@ class MyAppWrapper extends ConsumerWidget {
             defaultValue: SplashScreen.routeName,
           );
 
-    final refresh = SupabaseService.isInitialized
-        ? luvi_refresh.GoRouterRefreshStream(
-            SupabaseService.client.auth.onAuthStateChange,
-          )
-        : null;
-    final router = GoRouter(
-      routes: routes.featureRoutes,
-      initialLocation: initialLocation,
-      redirect: routes.supabaseRedirect,
-      refreshListenable: refresh,
-      observers: [orientationController.navigatorObserver],
-    );
-    final app = MaterialApp.router(
-      title: 'LUVI',
-      theme: AppTheme.buildAppTheme(),
-      supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      routerConfig: router,
-      // Integrate the offline/init overlay inside MaterialApp to inherit
-      // Directionality/Localizations. This avoids needing Directionality
-      // wrappers in tests and keeps behavior consistent across app and tests.
-      builder: (context, child) {
-        return AnimatedBuilder(
-          animation: supabaseInitController,
-          builder: (context, _) {
+    // Rebuild MaterialApp (and thus router) when Supabase init state changes
+    // so that refreshListenable attaches once the client is ready.
+    return AnimatedBuilder(
+      animation: supabaseInitController,
+      builder: (context, _) {
+        final app = MaterialApp.router(
+          title: 'LUVI',
+          theme: AppTheme.buildAppTheme(),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          routerConfig: _buildRouter(initialLocation),
+          // Integrate the offline/init overlay inside MaterialApp to inherit
+          // Directionality/Localizations. This avoids needing Directionality
+          // wrappers in tests and keeps behavior consistent across app and tests.
+          builder: (context, child) {
             // In test mode, skip overlay for stability.
             if (InitModeBridge.resolve() == InitMode.test) {
               return child ?? const SizedBox.shrink();
@@ -157,12 +151,26 @@ class MyAppWrapper extends ConsumerWidget {
             );
           },
         );
+        return app;
       },
     );
-
-    // Return app directly; overlay handled via MaterialApp.builder.
-    return app;
   }
+
+  GoRouter _buildRouter(String initialLocation) {
+    final refresh = SupabaseService.isInitialized
+        ? luvi_refresh.GoRouterRefreshStream(
+            SupabaseService.client.auth.onAuthStateChange,
+          )
+        : null;
+    return GoRouter(
+      routes: routes.featureRoutes,
+      initialLocation: initialLocation,
+      redirect: routes.supabaseRedirect,
+      refreshListenable: refresh,
+      observers: [orientationController.navigatorObserver],
+    );
+  }
+
 }
 
 class _InitBanner extends ConsumerWidget {
