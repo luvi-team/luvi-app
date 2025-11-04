@@ -10,7 +10,6 @@ Objectives
 Decisions
 - Key origin: Generate a random 32-byte secret on first use. Store in OS-backed Secure Storage (Keychain/Keystore). Do not derive from user password.
 - DB keying: Use the stored secret as SQLCipher passphrase. Rely on SQLCipher’s PBKDF2-HMAC-SHA512 derivation. Prefer explicitly setting iteration count where supported via `PRAGMA kdf_iter` to a modern value; otherwise use library defaults.
-- Rotation/rekey: Prefer in-place `PRAGMA rekey = '<new_key>'` when available. Default rotation window: 180 days (configurable). Rekey runs only when the database is open and healthy. Keep a monotonic `last_rotated_at` (UTC) in app preferences.
  - Rotation/rekey: Prefer in-place `PRAGMA rekey = '<new_key>'` when available. Default rotation window: 180 days (configurable). Rekey runs only when the database is open and healthy. After rekey, existing pages are rewritten under the new key; no legacy keys must be retained. Keep a monotonic `last_rotated_at` (UTC) in app preferences.
 - Migration/new device: No key portability. A new device generates a new key and an empty local DB and then rehydrates from server. Local-only anonymous caches may be discarded on migration.
 - Secure Storage loss/compromise:
