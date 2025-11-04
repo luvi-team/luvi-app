@@ -14,14 +14,15 @@ class Logger {
   void d(String message, {String? tag}) => _print(_format('D', message, tag: tag));
   void i(String message, {String? tag}) => _print(_format('I', message, tag: tag));
   void w(String message, {String? tag, Object? error, StackTrace? stack}) {
-    final b = StringBuffer(_format('W', message, tag: tag));
-    if (error != null) b.write('\n$error');
-    if (stack != null) b.write('\n$stack');
-    _print(b.toString());
+    _printWithError('W', message, tag: tag, error: error, stack: stack);
   }
 
   void e(String message, {String? tag, Object? error, StackTrace? stack}) {
-    final b = StringBuffer(_format('E', message, tag: tag));
+    _printWithError('E', message, tag: tag, error: error, stack: stack);
+  }
+
+  void _printWithError(String level, String message, {String? tag, Object? error, StackTrace? stack}) {
+    final b = StringBuffer(_format(level, message, tag: tag));
     if (error != null) b.write('\n$error');
     if (stack != null) b.write('\n$stack');
     _print(b.toString());
