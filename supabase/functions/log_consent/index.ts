@@ -308,73 +308,59 @@ serve(async (req) => {
     scopes: validatedScopes,
   };
 
-  // Per-user sliding-window rate limit using existing consents timestamps
-  try {
-    const windowStartIso = new Date(Date.now() - RATE_LIMIT_WINDOW_SEC * 1000).toISOString();
-    const { count, error: rlError, total_duration_ms } = await countConsentsWithRetry(
-      supabase,
-      payload.user_id,
-      windowStartIso,
-      requestId,
-    );
+  // Atomic rate-limit check + insert wrapped in a per-user advisory lock via RPC
+  const t0Rpc = Date.now();
+  const { data: allowed, error: rpcError } = await supabase.rpc(
+    "log_consent_if_allowed",
+    {
+      p_user_id: payload.user_id,
+      p_version: payload.version,
+      p_scopes: payload.scopes as unknown as Record<string, unknown>,
+      p_window_sec: RATE_LIMIT_WINDOW_SEC,
+      p_max_requests: RATE_LIMIT_MAX_REQUESTS,
+    },
+  );
+  const rpcDuration = Date.now() - t0Rpc;
 
-    if (rlError) {
-      console.error("rate_limit_count_error", rlError);
-      logMetric(requestId, "error", { where: "rate_limit_count", code: (rlError as any)?.code ?? "unknown" });
-      await maybeAlert(requestId, "error", { where: "rate_limit_count" });
-    } else if ((count ?? 0) >= RATE_LIMIT_MAX_REQUESTS) {
-      const elapsed = Date.now() - started;
-      logMetric(requestId, "rate_limited", {
-        user_id: payload.user_id,
-        count,
-        window_sec: RATE_LIMIT_WINDOW_SEC,
-        max: RATE_LIMIT_MAX_REQUESTS,
-        duration_ms: elapsed,
-        count_latency_ms: total_duration_ms,
-      });
-      await maybeAlert(requestId, "rate_limited", {
-        user_id: payload.user_id,
-        in_window: count ?? 0,
-        window_sec: RATE_LIMIT_WINDOW_SEC,
-      });
-      return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
-        status: 429,
-        headers: {
-          "Content-Type": "application/json",
-          "Retry-After": `${RATE_LIMIT_WINDOW_SEC}`,
-          "X-RateLimit-Limit": `${RATE_LIMIT_MAX_REQUESTS}`,
-          "X-RateLimit-Remaining": "0",
-          "X-Request-Id": requestId,
-        },
-      });
-    }
-  } catch (e) {
-    console.error("rate_limit_check_exception", e);
-    logMetric(requestId, "error", { where: "rate_limit_exception" });
-    await maybeAlert(requestId, "error", { where: "rate_limit_exception" });
-  }
-
-  const { error } = await supabase
-    .from("consents")
-    .insert(payload);
-
-  if (error) {
-    console.error("consents insert failed", error?.code ?? "unknown");
+  if (rpcError) {
+    console.error("consent_rpc_failed", rpcError?.code ?? "unknown");
     const elapsed = Date.now() - started;
     logMetric(requestId, "error", {
-      where: "consents_insert",
-      code: error.code ?? "unknown",
+      where: "consent_rpc",
+      code: (rpcError as any)?.code ?? "unknown",
       user_id: payload.user_id,
       duration_ms: elapsed,
+      rpc_latency_ms: rpcDuration,
     });
-    await maybeAlert(requestId, "error", {
-      where: "consents_insert",
-      code: error.code ?? "unknown",
-      user_id: payload.user_id,
-    });
+    await maybeAlert(requestId, "error", { where: "consent_rpc" });
     return new Response(JSON.stringify({ error: "Failed to log consent" }), {
       status: 500,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  if (allowed === false) {
+    const elapsed = Date.now() - started;
+    logMetric(requestId, "rate_limited", {
+      user_id: payload.user_id,
+      window_sec: RATE_LIMIT_WINDOW_SEC,
+      max: RATE_LIMIT_MAX_REQUESTS,
+      duration_ms: elapsed,
+      rpc_latency_ms: rpcDuration,
+    });
+    await maybeAlert(requestId, "rate_limited", {
+      user_id: payload.user_id,
+      window_sec: RATE_LIMIT_WINDOW_SEC,
+    });
+    return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
+      status: 429,
+      headers: {
+        "Content-Type": "application/json",
+        "Retry-After": `${RATE_LIMIT_WINDOW_SEC}`,
+        "X-RateLimit-Limit": `${RATE_LIMIT_MAX_REQUESTS}`,
+        "X-RateLimit-Remaining": "0",
+        "X-Request-Id": requestId,
+      },
     });
   }
 
@@ -383,6 +369,7 @@ serve(async (req) => {
     user_id: payload.user_id,
     scopes_count: payload.scopes.length,
     duration_ms: elapsed,
+    rpc_latency_ms: rpcDuration,
     version: payload.version,
     source: (typeof body.source === "string" ? body.source : undefined) ?? null,
     appVersion: (typeof body.appVersion === "string" ? body.appVersion : undefined) ?? null,
