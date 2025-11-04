@@ -55,15 +55,15 @@ String sanitizeForLog(String input) {
   // Bearer tokens
   out = out.replaceAllMapped(_bearerPattern, (m) => 'Bearer [redacted-token]');
 
-  // Long hex
-  out = out.replaceAll(_longHexPattern, '[redacted-hex]');
-
   // Prefixed tokens (keep the prefix)
   out = out.replaceAllMapped(_prefixedTokenPattern, (m) {
     final full = m.group(0)!;
     final id = m.group(1)!;
     return full.replaceFirst(id, '[redacted-id]');
   });
+
+  // Long hex
+  out = out.replaceAll(_longHexPattern, '[redacted-hex]');
 
   // SSN
   out = out.replaceAll(_ssnPattern, '[redacted-ssn]');

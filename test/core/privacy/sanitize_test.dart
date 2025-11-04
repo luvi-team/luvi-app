@@ -47,17 +47,12 @@ void main() {
       expect(out, contains('[redacted-cc]'));
     });
 
-    test('does not redact random 16-digit non-Luhn sequence', () {
+    test('does not redact Luhn-invalid 16-digit sequence', () {
       final s = 'digits 1234 5678 9012 3456'; // most likely fails Luhn
       final out = sanitizeForLog(s);
-      // might coincidentally pass Luhn; ensure at least it does not claim cc if not detected
-      // If it passes on rare chance, the expectation below should be relaxed.
-      if (out.contains('[redacted-cc]')) {
-        // Rare case: accept redaction if Luhn happens to validate this sequence.
-        expect(out, contains('[redacted-cc]'));
-      } else {
-        expect(out, contains('1234 5678 9012 3456'));
-      }
+      // This sequence fails Luhn validation, so should not be redacted
+      expect(out, contains('1234 5678 9012 3456'));
+      expect(out, isNot(contains('[redacted-cc]')));
     });
 
     test('keeps neutral text unchanged', () {
