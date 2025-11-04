@@ -31,7 +31,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byIcon(Icons.wifi_off), findsNothing);
@@ -59,8 +59,8 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
-
+    await tester.pumpAndSettle();
+    
     // Overlay renders a WiFi off icon when not yet initialized.
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
   });
