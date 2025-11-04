@@ -19,7 +19,7 @@ final RegExp _uuidPattern = RegExp(
 );
 // Extend the prefix list cautiously if new identifier types require masking.
 final RegExp _prefixedTokenPattern = RegExp(
-  r'\b(?:id|token|session|trace|request|user|auth|ref)[-_:= ]*([A-F0-9]{16,})\b',
+  r'\b(?:id|token|session|trace|request|user|auth|ref)[-_:= ]*([A-Fa-f0-9]{16,})\b',
   caseSensitive: false,
 );
 

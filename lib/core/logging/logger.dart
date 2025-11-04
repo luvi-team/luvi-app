@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:luvi_app/core/privacy/sanitize.dart';
 
 // TODO(#15): Consolidate with services/lib/logger.dart into a shared module
 // while preserving the public API (d/i/w/e signatures and tag/error/stack).
@@ -27,15 +28,29 @@ class Logger {
 
   void w(String message, {String? tag, Object? error, StackTrace? stack}) {
     final lines = StringBuffer(_format('W', message, tag: tag));
-    if (error != null) lines.write('\n$error');
-    if (stack != null) lines.write('\n$stack');
+    if (error != null) {
+      lines.write('\n');
+      lines.write(sanitizeForLog('$error'));
+    }
+    if (stack != null) {
+      lines.write('\n');
+      // Stack traces rarely hold PII, but sanitize defensively to avoid
+      // leaking embedded messages from exception toString().
+      lines.write(sanitizeForLog(stack.toString()));
+    }
     _print(lines.toString());
   }
 
   void e(String message, {String? tag, Object? error, StackTrace? stack}) {
     final lines = StringBuffer(_format('E', message, tag: tag));
-    if (error != null) lines.write('\n$error');
-    if (stack != null) lines.write('\n$stack');
+    if (error != null) {
+      lines.write('\n');
+      lines.write(sanitizeForLog('$error'));
+    }
+    if (stack != null) {
+      lines.write('\n');
+      lines.write(sanitizeForLog(stack.toString()));
+    }
     _print(lines.toString());
   }
 

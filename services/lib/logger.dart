@@ -7,8 +7,7 @@ import 'package:flutter/foundation.dart';
 ///   or free‑form user input that may contain personal data.
 /// - Prefer structured context (enums/IDs) and sanitized error details.
 /// - If you must include identifiers, redact them before logging.
-// ignore: constant_identifier_names
-const String PII_WARNING = 'DO NOT LOG PII (emails, phones, tokens, sessions, addresses) — redact identifiers.';
+const String piiWarning = 'DO NOT LOG PII (emails, phones, tokens, sessions, addresses) — redact identifiers.';
 
 class Logger {
   const Logger();
@@ -34,9 +33,10 @@ class Logger {
   }
 
   String _format(String level, String message, {String? tag}) {
-    final tagPart = (tag == null || tag.isEmpty) ? '' : ' [$tag]';
+    final tagPart = tag?.isNotEmpty == true ? ' [$tag]' : '';
     return '[$level]$tagPart $message';
   }
+
 }
 
 const log = Logger();
