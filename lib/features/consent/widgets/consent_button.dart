@@ -13,23 +13,22 @@ class ConsentButton extends ConsumerStatefulWidget {
 }
 
 class _ConsentButtonState extends ConsumerState<ConsentButton> {
-
   bool _isLoading = false;
 
   Future<void> _handleAccept() async {
     setState(() => _isLoading = true);
     // Keep version/scopes in outer scope so both success and failure paths
     // can include them in analytics.
-      const version = ConsentConfig.currentVersion;
-      const scopes = ConsentConfig.requiredScopes;
+    final version = ConsentConfig.currentVersion;
+    final scopes = ConsentConfig.requiredScopes;
     try {
       final consentService = ref.read(consentServiceProvider);
 
       await consentService.accept(version: version, scopes: scopes);
 
       // Fire analytics event only after successful server persistence
-      final a = ref.read(analyticsProvider);
-      a.track('consent_accepted', {
+      final analytics = ref.read(analyticsProvider);
+      analytics.track('consent_accepted', {
         'policy_version': version,
         'required_ok': true,
         'scopes_count': scopes.length,
@@ -47,8 +46,8 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
     } catch (e) {
       // Track consent failure with error and context; still show user-facing
       // feedback via SnackBar if the widget is mounted.
-      final a = ref.read(analyticsProvider);
-      a.track('consent_failed', {
+      final analytics = ref.read(analyticsProvider);
+      analytics.track('consent_failed', {
         'error': e.toString(),
         'policy_version': version,
         'scopes_count': scopes.length,

@@ -100,11 +100,8 @@ class _LinkTextTapTarget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultStyle = DefaultTextStyle.of(context).style;
-    final resolvedStyle = defaultStyle.merge(style);
-    final fallbackFontSize = defaultStyle.fontSize ?? 14.0;
-    final fontSize = resolvedStyle.fontSize ?? fallbackFontSize;
-    final baseHeightFactor = resolvedStyle.height ?? defaultStyle.height ?? 1.0;
+    final fontSize = style.fontSize ?? DefaultTextStyle.of(context).style.fontSize ?? 14.0;
+    final baseHeightFactor = style.height ?? DefaultTextStyle.of(context).style.height ?? 1.0;
     final lineHeight = fontSize * baseHeightFactor;
     final verticalPadding = math.max(
       0.0,
@@ -115,7 +112,6 @@ class _LinkTextTapTarget extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Positioned.fill(
-          // Limit horizontal expansion when overlap with adjacent links is a concern.
           left: allowHorizontalOverflowHitRect ? -horizontalTouchPadding : 0.0,
           right: allowHorizontalOverflowHitRect ? -horizontalTouchPadding : 0.0,
           top: -verticalPadding,
@@ -126,7 +122,7 @@ class _LinkTextTapTarget extends StatelessWidget {
           ),
         ),
         ExcludeSemantics(
-          child: Text(text, style: resolvedStyle),
+          child: Text(text, style: style),
         ),
       ],
     );
