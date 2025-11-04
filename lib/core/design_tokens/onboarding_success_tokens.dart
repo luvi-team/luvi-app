@@ -14,7 +14,8 @@ class OnboardingSuccessTokens {
 
   /// Target gap (in px) between the trophy illustration and the title.
   /// Canonical: `OnboardingSpacing._kOnboardingSuccessTrophyToTitleGap`.
-  static const double gapToTitle = 28.0;
+  /// Per ADR-0006, we standardize on 24px (8px grid) instead of Figma's 28px.
+  static const double gapToTitle = 24.0;
 
   /// Target gap (in px) between the title and the button.
   /// Canonical: `OnboardingSpacing._titleToButton`.
