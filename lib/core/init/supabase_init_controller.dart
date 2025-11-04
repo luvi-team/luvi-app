@@ -79,10 +79,10 @@ class SupabaseInitController extends ChangeNotifier {
   Future<void> retryNow() async {
     _retryTimer?.cancel();
     _setState(_state.copyWith(retryScheduled: false));
-    await _attemptInit(force: true);
+    await _attemptInit();
   }
 
-  Future<void> _attemptInit({bool force = false}) async {
+  Future<void> _attemptInit() async {
     if (_envFile == null) return;
     if (SupabaseService.isInitialized) {
       _setState(_state.copyWith(initialized: true, error: null, configError: false));

@@ -64,6 +64,8 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
 
   void clearGlobalError() => updateState(globalError: null);
 
+  void setGlobalError(String message) => updateState(globalError: message);
+
   /// Eine (1) kanonische Variante inkl. globalError – kompatibel zu Provider/Tests.
   void updateState({
     String? email,

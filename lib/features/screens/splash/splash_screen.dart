@@ -75,7 +75,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       if (hasSeenWelcomeMaybe == null) {
         // Unknown state: choose conservatively based on auth.
         target = isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName;
-      } else if (!hasSeenWelcomeMaybe) {
+      } else if (isAuth && !hasSeenWelcomeMaybe) {
+        // Consent/Welcome flow only for authenticated users.
         target = ConsentWelcome01Screen.routeName;
       } else {
         target = isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName;

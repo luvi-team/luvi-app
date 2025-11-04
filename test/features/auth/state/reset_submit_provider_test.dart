@@ -29,10 +29,9 @@ void main() {
     // Force production-like behavior even under kDebugMode in unit tests.
     debugSetResetSilentOverride(false);
 
-    expect(
-      () => submitReset('user@example.com'),
+    await expectLater(
+      submitReset('user@example.com'),
       throwsA(isA<Exception>()),
     );
   });
 }
-

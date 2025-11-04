@@ -11,6 +11,7 @@ import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_form_section.dart';
 import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
 import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 // LaunchMode kommt über supabase_flutter (kein url_launcher nötig)
 
@@ -33,6 +34,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   MediaQueryData? _lastMediaQuery;
   Locale? _lastLocale;
   bool _pendingSocialMeasurement = false;
+  bool _oauthLoading = false;
 
   @override
   void initState() {
@@ -228,22 +230,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               gapBelowForgot: gapBelowForgot,
               socialGap: socialGap,
               socialBlockKey: _socialAuthKey,
-              onGoogle: () {
-                final redirect = AppLinks.oauthRedirectUri;
-                supa.Supabase.instance.client.auth.signInWithOAuth(
-                  supa.OAuthProvider.google,
-                  redirectTo: kIsWeb ? null : redirect,
-                  authScreenLaunchMode: supa.LaunchMode.externalApplication,
-                );
-              },
-              onApple: () {
-                final redirect = AppLinks.oauthRedirectUri;
-                supa.Supabase.instance.client.auth.signInWithOAuth(
-                  supa.OAuthProvider.apple,
-                  redirectTo: kIsWeb ? null : redirect,
-                  authScreenLaunchMode: supa.LaunchMode.externalApplication,
-                );
-              },
+              onGoogle: () { _handleOAuthSignIn(supa.OAuthProvider.google); },
+              onApple: () { _handleOAuthSignIn(supa.OAuthProvider.apple); },
             ),
             if (globalError != null) ...[
               const SizedBox(height: Spacing.m),
@@ -280,5 +268,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _toggleObscurePassword() {
     setState(() => _obscurePassword = !_obscurePassword);
+  }
+
+  Future<void> _handleOAuthSignIn(supa.OAuthProvider provider) async {
+    if (_oauthLoading) return;
+    setState(() { _oauthLoading = true; });
+    try {
+      final redirect = AppLinks.oauthRedirectUri;
+      await supa.Supabase.instance.client.auth.signInWithOAuth(
+        provider,
+        redirectTo: kIsWeb ? null : redirect,
+        authScreenLaunchMode: supa.LaunchMode.externalApplication,
+      );
+    } catch (error, stackTrace) {
+      FlutterError.reportError(FlutterErrorDetails(
+        exception: error,
+        stack: stackTrace,
+        library: 'login_screen',
+        context: ErrorDescription('OAuth sign-in failed: ${provider.name}'),
+      ));
+      if (!mounted) return;
+      ref.read(loginProvider.notifier).setGlobalError(
+            AuthStrings.errLoginUnavailable,
+          );
+    } finally {
+      if (mounted) {
+        setState(() { _oauthLoading = false; });
+      }
+    }
   }
 }
