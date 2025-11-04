@@ -70,10 +70,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
                   title: AppLocalizations.of(context)!.onboarding01Title,
                   step: 1,
                   totalSteps: kOnboardingTotalSteps,
-                  onBack: () {
-                    final navigator = Navigator.of(context);
-                    navigator.maybePop();
-                  },
+                  onBack: () => Navigator.of(context).maybePop(),
                 ),
                 SizedBox(height: spacing.headerToInstruction01),
                 _buildInstruction(textTheme, colorScheme),

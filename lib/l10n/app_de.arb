@@ -599,139 +599,11 @@
   "@consent02SemanticUnselected": {
     "description": "Semantics label announcing a consent card is not selected."
   },
-  "authLoginHeadline": "Willkommen zurück 💜",
-  "@authLoginHeadline": {
-    "description": "Überschrift auf dem Login-Screen."
-  },
-  "authLoginSubhead": "Schön, dass du da bist.",
-  "@authLoginSubhead": {
-    "description": "Unterzeile unter der Login-Überschrift."
-  },
-  "authLoginCta": "Anmelden",
-  "@authLoginCta": {
-    "description": "Primärer Call-to-Action auf dem Login-Screen."
-  },
-  "authLoginCtaLoadingSemantic": "Anmeldung läuft",
-  "@authLoginCtaLoadingSemantic": {
-    "description": "Semantischer Status, solange die Anmeldung ausgeführt wird."
-  },
-  "authLoginCtaLinkPrefix": "Neu bei LUVI? ",
-  "@authLoginCtaLinkPrefix": {
-    "description": "Vortext für den Sign-up-Link auf dem Login-Screen. Nachgestelltes Leerzeichen beibehalten."
-  },
-  "authLoginCtaLinkAction": "Starte hier",
-  "@authLoginCtaLinkAction": {
-    "description": "Link-Text für neue Nutzer:innen zum Sign-up."
-  },
-  "authLoginForgot": "Passwort vergessen?",
-  "@authLoginForgot": {
-    "description": "Link zum Passwort-vergessen-Flow."
-  },
-  "authLoginSocialDivider": "Oder melde dich an mit",
-  "@authLoginSocialDivider": {
-    "description": "Divider-Text oberhalb der Social-Login-Buttons."
-  },
-  "authLoginSocialGoogle": "Mit Google anmelden",
-  "@authLoginSocialGoogle": {
-    "description": "Button-Text für Google-Login (Social-Auth-Button)."
-  },
-  "authErrEmailInvalid": "Ups, bitte E-Mail überprüfen",
-  "@authErrEmailInvalid": {
-    "description": "Validierungsfehler, wenn die E-Mail ungültig ist."
-  },
-  "authErrPasswordInvalid": "Ups, bitte Passwort überprüfen",
-  "@authErrPasswordInvalid": {
-    "description": "Validierungsfehler, wenn das Passwort ungültig ist."
-  },
-  "authErrPasswordTooShort": "Dein Passwort ist zu kurz.",
-  "@authErrPasswordTooShort": {
-    "description": "Fehlermeldung, wenn das Passwort zu kurz ist."
-  },
-  "authErrPasswordMissingTypes": "Dein Passwort muss Buchstaben, Zahlen und Sonderzeichen enthalten.",
-  "@authErrPasswordMissingTypes": {
-    "description": "Fehlermeldung, wenn erforderliche Zeichentypen fehlen."
-  },
-  "authErrPasswordCommonWeak": "Dein Passwort ist zu häufig oder leicht zu erraten.",
-  "@authErrPasswordCommonWeak": {
-    "description": "Fehlermeldung, wenn das Passwort verbreitet oder schwach ist."
-  },
-  "authErrConfirmEmail": "Bitte E-Mail bestätigen (Link erneut senden?)",
-  "@authErrConfirmEmail": {
-    "description": "Fehlermeldung, wenn die E-Mail Adresse noch nicht bestätigt wurde."
-  },
-  "authInvalidCredentials": "E-Mail oder Passwort ist falsch.",
-  "@authInvalidCredentials": {
-    "description": "Fehlermeldung bei falschen Zugangsdaten."
-  },
-  "authErrLoginUnavailable": "Login derzeit nicht möglich.",
-  "@authErrLoginUnavailable": {
-    "description": "Allgemeine Fehlermeldung, wenn Login vorübergehend nicht möglich ist."
-  },
-  "authPasswordMismatchError": "Passwörter stimmen nicht überein.",
-  "@authPasswordMismatchError": {
-    "description": "Fehlermeldung, wenn die eingegebenen Passwörter nicht identisch sind."
-  },
-  "authPasswordUpdateError": "Passwort konnte nicht aktualisiert werden.",
-  "@authPasswordUpdateError": {
-    "description": "Fehlermeldung, wenn das Aktualisieren des Passworts fehlschlägt."
-  },
-  "authEmailHint": "Deine E-Mail",
-  "@authEmailHint": {
-    "description": "Hint-Text für das E-Mail-Feld."
-  },
-  "authPasswordHint": "Dein Passwort",
-  "@authPasswordHint": {
-    "description": "Hint-Text für das Passwort-Feld."
-  },
-  "authSignupTitle": "Deine Reise beginnt hier 💜",
-  "@authSignupTitle": {
-    "description": "Überschrift auf dem Sign-up-Screen."
-  },
-  "authSignupSubtitle": "Schnell registrieren - dann geht's los.",
-  "@authSignupSubtitle": {
-    "description": "Unterzeile, die zur Registrierung motiviert."
-  },
-  "authSignupCta": "Registrieren",
-  "@authSignupCta": {
-    "description": "Primärer Call-to-Action auf dem Sign-up-Screen."
-  },
-  "authSignupCtaLoadingSemantic": "Registrierung läuft",
-  "@authSignupCtaLoadingSemantic": {
-    "description": "Semantischer Status, solange die Registrierung ausgeführt wird."
-  },
-  "authSignupLinkPrefix": "Schon dabei? ",
-  "@authSignupLinkPrefix": {
-    "description": "Vortext für den Sign-in-Link auf dem Sign-up-Screen. Nachgestelltes Leerzeichen beibehalten."
-  },
-  "authSignupLinkAction": "Anmelden",
-  "@authSignupLinkAction": {
-    "description": "Link zurück zum Login für bestehende Nutzer:innen."
-  },
-  "authSignupHintFirstName": "Dein Vorname",
-  "@authSignupHintFirstName": {
-    "description": "Hint-Text für das Vornamen-Feld."
-  },
-  "authSignupHintLastName": "Dein Nachname",
-  "@authSignupHintLastName": {
-    "description": "Hint-Text für das Nachnamen-Feld."
-  },
-  "authSignupHintPhone": "Deine Telefonnummer",
-  "@authSignupHintPhone": {
-    "description": "Hint-Text für das Telefonnummer-Feld."
-  },
-  "authSignupMissingFields": "Bitte E-Mail und Passwort eingeben.",
-  "@authSignupMissingFields": {
-    "description": "Fehlermeldung, wenn Pflichtfelder fehlen."
-  },
-  "authSignupGenericError": "Registrierung gerade nicht möglich. Bitte später erneut versuchen.",
-  "@authSignupGenericError": {
-    "description": "Allgemeine Fehlermeldung bei fehlgeschlagener Registrierung."
-  },
   "authForgotTitle": "Passwort vergessen? 💜",
   "@authForgotTitle": {
     "description": "Überschrift für den Passwort-vergessen-Screen."
   },
-  "authForgotSubtitle": "E-Mail eingeben für Link.",
+  "authForgotSubtitle": "Gib deine E-Mail ein, um den Reset-Link zu erhalten.",
   "@authForgotSubtitle": {
     "description": "Unterzeile zum Ablauf des Passwort-vergessen-Flows."
   },
@@ -739,69 +611,17 @@
   "@authForgotCta": {
     "description": "Primärer CTA auf dem Passwort-vergessen-Screen."
   },
-  "authBackSemantic": "Zurück",
-  "@authBackSemantic": {
-    "description": "Semantisches Label für Zurück-Schaltflächen."
+  "authErrPasswordTooShort": "Dein Passwort ist zu kurz.",
+  "@authErrPasswordTooShort": {
+    "description": "Validierungsfehler, wenn das Passwort zu kurz ist."
   },
-  "authSuccessPwdTitle": "Geschafft!",
-  "@authSuccessPwdTitle": {
-    "description": "Titel nach erfolgreichem Setzen eines neuen Passworts."
+  "authErrPasswordMissingTypes": "Dein Passwort muss Buchstaben, Zahlen und Sonderzeichen enthalten.",
+  "@authErrPasswordMissingTypes": {
+    "description": "Validierungsfehler, wenn erforderliche Zeichentypen fehlen."
   },
-  "authSuccessPwdSubtitle": "Neues Passwort gespeichert.",
-  "@authSuccessPwdSubtitle": {
-    "description": "Unterzeile nach erfolgreichem Setzen eines neuen Passworts."
-  },
-  "authSuccessForgotTitle": "E-Mail gesendet!",
-  "@authSuccessForgotTitle": {
-    "description": "Titel nach Versand der Passwort-Zurücksetzen-E-Mail."
-  },
-  "authSuccessForgotSubtitle": "Bitte Postfach prüfen.",
-  "@authSuccessForgotSubtitle": {
-    "description": "Unterzeile, die auf das E-Mail-Postfach hinweist."
-  },
-  "authSuccessCta": "Fertig",
-  "@authSuccessCta": {
-    "description": "Button-Text zum Schließen des Erfolgsbildschirms."
-  },
-  "authCreateNewHint1": "Neues Passwort",
-  "@authCreateNewHint1": {
-    "description": "Hint-Text für das Feld \"Neues Passwort\"."
-  },
-  "authCreateNewHint2": "Neues Passwort bestätigen",
-  "@authCreateNewHint2": {
-    "description": "Hint-Text für das Feld zur Passwort-Bestätigung."
-  },
-  "authCreateNewCta": "Speichern",
-  "@authCreateNewCta": {
-    "description": "Primärer CTA beim Setzen eines neuen Passworts."
-  },
-  "authVerifyResetTitle": "Code eingeben 💜",
-  "@authVerifyResetTitle": {
-    "description": "Überschrift für den Passwort-Reset-Verifizierungsscreen."
-  },
-  "authVerifyResetSubtitle": "Gerade an deine E-Mail gesendet.",
-  "@authVerifyResetSubtitle": {
-    "description": "Unterzeile, die auf die versandte Verifizierungs-E-Mail verweist."
-  },
-  "authVerifyEmailTitle": "E-Mail bestätigen 💜",
-  "@authVerifyEmailTitle": {
-    "description": "Überschrift für den E-Mail-Verifizierungsscreen."
-  },
-  "authVerifyEmailSubtitle": "Code eingeben",
-  "@authVerifyEmailSubtitle": {
-    "description": "Unterzeile, die zur Eingabe des Codes auffordert."
-  },
-  "authVerifyCta": "Bestätigen",
-  "@authVerifyCta": {
-    "description": "Primärer CTA auf dem Verifizierungsscreen."
-  },
-  "authVerifyHelper": "Nichts angekommen?",
-  "@authVerifyHelper": {
-    "description": "Hinweis, falls kein Code angekommen ist."
-  },
-  "authVerifyResend": "Erneut senden",
-  "@authVerifyResend": {
-    "description": "Link-Text zum erneuten Senden des Codes."
+  "authErrPasswordCommonWeak": "Dein Passwort ist zu häufig oder zu schwach.",
+  "@authErrPasswordCommonWeak": {
+    "description": "Validierungsfehler, wenn das Passwort zu häufig oder schwach ist."
   },
   "consentSnackbarAccepted": "Einwilligung akzeptiert",
   "@consentSnackbarAccepted": {

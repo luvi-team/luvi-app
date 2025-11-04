@@ -142,20 +142,13 @@ final List<GoRoute> featureRoutes = [
     name: 'onboarding_success',
     redirect: (ctx, st) {
       final extra = st.extra;
-      // Ensure navigation only proceeds when a valid FitnessLevel is supplied.
       if (extra is FitnessLevel) {
         return null; // ok
       }
-      // Fallback to onboarding start when missing/invalid extras
       return Onboarding01Screen.routeName;
     },
     builder: (ctx, st) {
-      final extra = st.extra;
-      if (extra is FitnessLevel) {
-        return OnboardingSuccessScreen(fitnessLevel: extra);
-      }
-      // Defensive fallback (should be caught by redirect above)
-      return const Onboarding01Screen();
+      return OnboardingSuccessScreen(fitnessLevel: st.extra as FitnessLevel);
     },
   ),
   GoRoute(

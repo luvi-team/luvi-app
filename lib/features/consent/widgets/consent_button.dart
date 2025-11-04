@@ -38,10 +38,11 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
 
       if (mounted) {
         final l10n = AppLocalizations.of(context);
-        final text = l10n?.consentSnackbarAccepted ?? 'Consent accepted';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(text)),
-        );
+        if (l10n != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.consentSnackbarAccepted)),
+          );
+        }
       }
     } catch (e) {
       // Track consent failure with error and context; still show user-facing

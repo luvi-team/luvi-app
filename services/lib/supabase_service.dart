@@ -185,7 +185,14 @@ class SupabaseService {
     }
     final normalizedLastPeriod = lastPeriod.toUtc();
     final nowUtc = DateTime.now().toUtc();
-    if (normalizedLastPeriod.isAfter(nowUtc)) {
+    // Compare dates only to avoid clock skew issues with "today"
+    final lastPeriodDate = DateTime.utc(
+      normalizedLastPeriod.year,
+      normalizedLastPeriod.month,
+      normalizedLastPeriod.day,
+    );
+    final nowDate = DateTime.utc(nowUtc.year, nowUtc.month, nowUtc.day);
+    if (lastPeriodDate.isAfter(nowDate)) {
       throw ArgumentError.value(
         lastPeriod,
         'lastPeriod',

@@ -35,9 +35,7 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
   void initState() {
     super.initState();
     // Preload any saved selection for a smoother UX.
-    // Safe to call from initState in ConsumerState.
-    // ignore: discarded_futures
-    _loadInitialSelection();
+    unawaited(_loadInitialSelection());
   }
 
   void _selectOption(int index) {
@@ -217,11 +215,7 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
   }
 
   Future<void> _persistSelection(FitnessLevel level) async {
-    final userState = await tryOrNullAsync(
-      () => ref.read(userStateServiceProvider.future),
-      tag: 'userState',
-    );
-    if (userState == null) return;
+    final userState = await ref.read(userStateServiceProvider.future);
     await userState.setFitnessLevel(level);
   }
 }

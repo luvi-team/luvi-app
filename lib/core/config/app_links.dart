@@ -91,7 +91,11 @@ class ProdAppLinks extends AppLinksApi {
     final trimmed = effectiveValue.trim();
     final parsed = Uri.tryParse(trimmed);
     if (parsed == null) {
-      return Uri.parse(defaultValue);
+      final fallback = Uri.tryParse(defaultValue);
+      if (fallback == null) {
+        throw FormatException('Invalid default URL: $defaultValue');
+      }
+      return fallback;
     }
     return parsed;
   }

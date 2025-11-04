@@ -96,12 +96,10 @@ class SupabaseInitController extends ChangeNotifier {
       _setState(_state.copyWith(initialized: true, error: null, configError: false));
       return;
     } catch (error, stack) {
-      final message = error.toString();
-      final isConfig = error is StateError && (
-        message.contains('Missing') ||
-        message.contains('Failed to load Supabase environment') ||
-        (message.contains('Supabase.initialize failed:') && message.contains('FormatException'))
-      );
+      // Check for specific error types that indicate configuration issues
+      final isConfig = error is StateError || 
+                       error is FormatException ||
+                       error is ArgumentError;
 
       // During tests, avoid reporting as uncaught errors to keep tests green
       // while the app shows the offline/initializing UI.
