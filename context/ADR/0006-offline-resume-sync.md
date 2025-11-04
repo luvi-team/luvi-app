@@ -37,6 +37,11 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
 
 - Retention & Soft‑Delete Policy:
   - Standard‑Retention für Snapshots: 90 Tage Inaktivität, opt‑in „pinnen“ hebt Retention auf.
+  - Inaktivitätsdefinition (präzise):
+    - Serverseitig maßgeblich ist `resume_snapshots.updated_at` (UTC) des jeweiligen Snapshot‑Datensatzes. Ein Snapshot gilt als inaktiv, wenn sein `updated_at` ≥ 90 Tage zurückliegt und er nicht gepinnt ist.
+    - `updated_at` wird serverseitig gesetzt/überschrieben (DB/Edge), Client‑Timestamps dienen nur zur Telemetrie. So bleiben Zeitzonen/Clock‑Skews ohne Einfluss.
+    - Hinweis: Serverzustand ist autoritativ; Client‑Clock‑Skew und Eskalationspfade werden im Runbook gepflegt (siehe `docs/runbooks/resume_sync_operational_runbook.md`).
+    - Clientseitige Bereinigung (anonyme Nutzer/offline): basiert auf lokalem `updated_at` und spiegelt dieselbe 90‑Tage‑Logik wider; beim ersten erfolgreichen Sync führt der Server die Autorität.
   - Erasure überschreibt Retention/Pinning; Soft‑Delete → Purge nach 7 Tagen, es sei denn gesetzliche Aufbewahrungspflichten greifen (nicht einschlägig für diese Datenklasse).
 
 - Tests (Compliance):
@@ -59,9 +64,9 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
   - `DELETE /functions/v1/resume_snapshots` mit Soft‑Delete (Flag/Timestamp), Audit‑Event, Job‑Enqueue und Cron‑Purge nach 7 Tagen; Kaskaden prüfen.
   - Tabellen/Policies: `resume_snapshots` (RLS ON), Neben‑Tabellen, `audit_dsr_requests` (RLS: nur Owner SELECT; INSERT/UPDATE nur via Service‑Role).
 
-- App (Flutter):
+  - App (Flutter):
   - Privacy Center: Screens/Flows „Verlauf ansehen“, „Daten exportieren“, „Daten löschen“ mit Re‑Auth, Doppel‑Bestätigung, Fehlerzustände, Progress.
-  - API‑Clients: typed Endpunkt‑Wrapper; Buffered download für Export (Default); CSV/JSON Handling; Timeouts/Retry begrenzt. Faustregel: Streaming nur für sehr große Exporte (> 10 MB oder > 1 000 Snapshots) oder wenn niedrige Latenz beim fortlaufenden Anzeigen erforderlich ist. Implementierungen sollen die Exportgröße vorab grob schätzen (z. B. per `Content‑Length` Header oder Snapshot‑Count×Durchschnittsgröße) und bei Überschreitung des Schwellenwerts automatisch auf Streaming zurückfallen. Dabei stets die Speicherfußabdruck‑Schätzung berücksichtigen, um OOM zu vermeiden.
+  - API‑Clients: typed Endpunkt‑Wrapper; Buffered download (Default); CSV/JSON Handling; Timeouts/Retry begrenzt. Hinweise zu Streaming (Schwellen, Speicherfußabdruck) sind operativ und werden im Runbook geführt (siehe „Operational Notes“).
   - Lokale Behandlung: On‑Signal Erasure → Secure‑Storage + SQLite Wipe der Snapshots; Upload‑Queue leeren und deaktivieren bis Neustart.
   - Telemetrie: Nicht‑PII Events für Flow‑Erfolg/Fehler (keine Inhalte), korrelierbar via `request_id`.
 
@@ -73,6 +78,16 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
 ## Konsequenzen
 - Tests: Unit-Tests prüfen Persistenz, Verschlüsselungs-Init und TTL-Löschung; Integrationstests decken Signed-In Sync, Konfliktlösung und Offline-Replay ab.
 - Compliance: DSGVO-Checkliste referenziert neue Datenkategorie „Workout Resume Snapshot" (PII: User-ID, Device-ID). Device-ID wird immer als PII behandelt, wenn erfasst, und unterliegt Einwilligung, 90‑Tage‑Retention sowie Löschung/Export auf Anfrage. Wenn Device-ID nicht erfasst wird, wird sie weder übertragen noch gespeichert.
+- Zeit & Zeitzonen:
+  - Alle persistierten Zeitfelder sind in UTC zu führen; `updated_at` wird ausschließlich serverseitig (DB‑Default/Trigger oder Edge) gesetzt (`now()` in UTC). Clients dürfen lokale Zeiten für UI/Telemetry verwenden, nicht für Persistenzentscheidungen.
+
+- Security – Key Management (Zusammenfassung, Details ausgelagert):
+  - Lokale Verschlüsselung verwendet eine gerätespezifische, zufällig generierte Schlüsselableitung (nicht aus dem Nutzerpasswort). Der Schlüssel wird OS‑gestützt im Secure Storage (Keychain/Keystore) abgelegt und nur im App‑Kontext genutzt. Details zu Ableitung (PBKDF2‑Parameter), Rotation/Rekey, Gerätemigration, Kompromittierung/Root‑Erkennung und Multi‑Device sind im Security‑Design dokumentiert; siehe `docs/security/offline_resume_key_management.md`.
+
+- Compliance & DPIA:
+  - DPIA: Wird nach Risikoprüfung festgelegt. Diese ADR erhebt keinen Anspruch auf „High‑Risk“; falls die Bewertung (Skalierung, Drittlandtransfer, Sensitivität) ein hohes Risiko ergibt, folgt eine eigenständige DPIA vor Launch.
+  - Device‑ID als PII: Standardmäßig wird `device_id` nicht erhoben. Eine optionale Erhebung erfordert explizite Einwilligung und wird in der Datenschutzerklärung dokumentiert (Zweck, Trigger, Widerruf).
+
 - Monitoring & Alerts:
   - Telemetrie-Events `resume_snapshot_saved`, `resume_snapshot_synced`, `resume_snapshot_conflict` validieren die Pipeline.
   - Messmethode (täglich): `error_rate_events = failed_sync_events / total_sync_events` (angemeldete Nutzer); zusätzlich `error_rate_users = users_with_≥1_failure / users_with_≥1_sync` zur Betroffenheitsabschätzung.
@@ -83,5 +98,9 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
     - SEV‑2: ≥ 10 % über ≥ 30 min ODER ≥ 5 000 betroffene Nutzer/Tag → Incident Commander, dedizierter Channel.
     - SEV‑1: ≥ 25 % über ≥ 15 min ODER Datenkorruptionssignale → globaler Write‑Stopp für Snapshots, Feature‑Flag „local‑only“ aktivieren.
   - Begründung 5 %: Resume‑Sync ist wichtig für Cross‑Device‑Kontinuität, aber nicht transaktional‑kritisch für den Live‑Workout, da der lokale Offline‑Fallback den Fortgang am aktuellen Gerät sicherstellt. 5 % vermeidet Pager‑Fatigue bei regionalen Netzausfällen, liegt deutlich über dem < 1 %‑Baseline‑Ziel und signalisiert spürbaren Nutzer‑Impact, der aktives Eingreifen rechtfertigt.
-  - Runbook (Kurzfassung): 1) Fehlerklassen prüfen (4xx/5xx/Netz/429), 2) Backoff/Retry begrenzen, 3) Feature‑Flag „local‑only“ bei Server‑Degradation, 4) Queue‑Länge & Latenz prüfen, 5) Status‑Kommunikation, 6) RCA ≤ 48 h und Regressionstest ergänzen; Schwellen bei Bedarf in dieser ADR nachziehen.
+  - Operational Notes: Schwellen, Streaming‑Leitplanken und Eskalationspfade werden in `docs/runbooks/resume_sync_operational_runbook.md` gepflegt und nach Go‑Live anhand realer Daten kalibriert.
+
+### Referenzen
+- Security Design: `docs/security/offline_resume_key_management.md` (Stand: 2025‑11‑04 · Version: v1.0)
+- Operational Runbook: `docs/runbooks/resume_sync_operational_runbook.md` (Stand: 2025‑11‑04 · Version: v1.0)
 - Dokumentation: `docs/product/roadmap.md` verweist auf diese ADR; Entwickler aktualisieren API‑Spezifikation (`lib/features/workout/state/progress_store.dart`, Endpunkte unter `/functions/v1/resume_snapshots*`) bei Änderungen.

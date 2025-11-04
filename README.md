@@ -5,6 +5,7 @@ A new Flutter project.
 ## App-Kontext (SSOT)
 
 Primäre Quelle im Repo:
+Hinweis: ":1" kennzeichnet die Startzeile (Zeile 1) des Dokuments.
 - docs/product/app-context.md:1
 
 Roadmap (SSOT):

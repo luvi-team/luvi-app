@@ -20,6 +20,12 @@ Wir verarbeiten personenbezogene Daten nur im erforderlichen Umfang. Im Einzelne
   - Daten: technische Nutzungsdaten (z. B. App‑Version, Gerät/OS, Zeitpunkt, Request‑IDs), Protokolle mit PII‑Redaktion, Fehlerereignisse.
   - Zweck: Bereitstellung der App, Stabilität, Missbrauchs‑/Störungsabwehr, Fehleranalyse ohne personenbezogene Inhalte.
 
+- Gerätekennungen (nur bei Opt‑in, Art. 6 Abs. 1 lit. a DSGVO)
+  - Daten: Device‑ID bzw. eine gerätespezifische Kennung.
+  - Zweck: Optional zur Konfliktauflösung/Diagnose in einzelnen Funktionen (z. B. Resume‑Sync). Standardmäßig nicht aktiviert; eine Erhebung erfolgt nur nach ausdrücklicher Einwilligung in der App. Details siehe technische Hinweise in der App/Hilfe.
+  - Widerruf: Deine Einwilligung kannst du jederzeit in Einstellungen → Datenschutz widerrufen; der Widerruf wirkt für die Zukunft.
+  - Empfänger & Aufbewahrung: Wir übermitteln diese Daten ausschließlich an unsere Auftragsverarbeiter (Hosting/Analyse). Eine Speicherung erfolgt nur solange die Funktion aktiv ist; danach werden die Daten gelöscht oder entkoppelt.
+
 - Inhalte & persönliche Einstellungen (Art. 6 Abs. 1 lit. b DSGVO; optional Art. 6 Abs. 1 lit. a DSGVO bei Komfortfunktionen)
   - Daten: Favoriten, Playlists, Verlauf, Spracheinstellungen, Präferenzen.
   - Zweck: Personalisierte Funktionalität, Merken von Einstellungen.
@@ -75,4 +81,3 @@ Diese Erklärung kann angepasst werden, z. B. bei Funktionsänderungen, Rechts
 
 ## 12. Kontakt
 Fragen zum Datenschutz richten Sie bitte an die im Rechtsbereich der App oder auf der Website genannte Kontaktadresse. Bei sensiblen Anliegen nutzen Sie möglichst eine sichere Kommunikationsform.
-
