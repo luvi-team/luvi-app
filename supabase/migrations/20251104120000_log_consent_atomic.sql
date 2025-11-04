@@ -35,7 +35,7 @@ begin
   select count(*) into recent_count
   from public.consents c
   where c.user_id = p_user_id
-    and c.created_at > now() - (p_window_sec::text || ' seconds')::interval;
+    and c.created_at > now() - make_interval(secs => p_window_sec);
 
   if recent_count >= p_max_requests then
     return false; -- rate limited
