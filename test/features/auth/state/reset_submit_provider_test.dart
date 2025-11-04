@@ -31,7 +31,13 @@ void main() {
 
     await expectLater(
       submitReset('user@example.com'),
-      throwsA(isA<Exception>()),
+      throwsA(
+        isA<StateError>().having(
+          (e) => e.message,
+          'message',
+          contains('Supabase'),
+        ),
+      ),
     );
   });
 }

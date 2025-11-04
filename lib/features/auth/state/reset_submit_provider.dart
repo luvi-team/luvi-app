@@ -47,6 +47,11 @@ bool? _resetSilentOverride;
 
 @visibleForTesting
 void debugSetResetSilentOverride(bool? value) {
+  assert(
+    value == null || _resetSilentOverride == null,
+    'Previous test did not reset _resetSilentOverride. '
+    'Call debugSetResetSilentOverride(null) in tearDown.',
+  );
   _resetSilentOverride = value;
 }
 
@@ -60,7 +65,7 @@ Future<void> submitReset(String email) async {
       // In debug/profile/test modes (or when overridden), allow silent success to keep flows offline.
       return;
     }
-    throw Exception('Supabase is not initialized');
+    throw StateError('Supabase is not initialized');
   }
   await supa.Supabase.instance.client.auth.resetPasswordForEmail(
     email,
