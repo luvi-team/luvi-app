@@ -32,9 +32,17 @@ class CreateNewHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: topGap),
-        Text('Neues Passwort erstellen 💜', style: titleStyle),
+        Text(
+          'Neues Passwort erstellen 💜',
+          key: const ValueKey('create_new_title'),
+          style: titleStyle,
+        ),
         const SizedBox(height: Spacing.xs),
-        Text('Mach es stark.', style: subtitleStyle),
+        Text(
+          'Mach es stark.',
+          key: const ValueKey('create_new_subtitle'),
+          style: subtitleStyle,
+        ),
       ],
     );
   }

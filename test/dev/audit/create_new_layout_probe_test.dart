@@ -78,8 +78,8 @@ void main() {
 
       // Find key widgets and their positions
       final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
-      final titleFinder = find.text('Neues Passwort erstellen 💜');
-      final subtitleFinder = find.text('Mach es stark.');
+      final titleFinder = find.byKey(const ValueKey('create_new_title'));
+      final subtitleFinder = find.byKey(const ValueKey('create_new_subtitle'));
       final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 
       // Get Y positions
