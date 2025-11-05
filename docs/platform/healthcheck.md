@@ -80,50 +80,64 @@
 - Alerting/escalation: `degraded` → warning/Slack; `down` → page/PagerDuty, with auto-resolve after recovery criteria are met.
 
 ### Aggregation and hysteresis counters (state machine semantics)
-- A single "check" may perform internal retries per the retry/backoff policy. These retries MUST be collapsed into one aggregated outcome: `pass` if any attempt succeeds within thresholds and error-rate < threshold; otherwise `failed`.
-- The consecutive-failure counter increments by 1 only when the aggregated outcome of a check is `failed`. It resets to 0 on any aggregated `pass`.
-- Error-rate threshold is evaluated per aggregated check (e.g., if aggregated `error_rate ≥ 5%` → outcome `failed`, contributes +1 to the consecutive-failure counter). There is not a second counter for error-rate.
-- State transitions evaluate only these aggregated results and the consecutive-failure counter.
+- A single "check" may perform internal retries per the retry/backoff policy. These retries MUST be collapsed into one aggregated outcome level: `ok`, `degraded`, or `failed` based on aggregated metrics and thresholds.
+- The consecutive counters track only aggregated outcomes: `consecutiveFailed` increments on `failed`; `consecutiveOk` increments on `ok`; any other outcome (`degraded`) resets the opposing counter but does not increment it.
+- Error-rate threshold is evaluated per aggregated check (e.g., if aggregated `error_rate ≥ 5%` → outcome `failed`, contributes +1 to the consecutive‑failure counter). There is not a second counter for error‑rate.
+- State transitions evaluate only these aggregated results and the consecutive counters.
 
 Pseudocode (reference implementation):
 ```pseudo
 state ∈ {ok, degraded, down}
 consecutiveFailed = 0
+consecutiveOk = 0
 
 function runSingleCheckWithRetries(checkFn):
   attempts = []
   for i in 0..maxRetries:
     res = checkFn()
     attempts.append(res)
-    if res.success and res.errorRate < 0.05 and res.latency <= thresholds.degraded_lte:
-      return { outcome: "pass", errorRate: res.errorRate, latency: res.latency }
+    if res.success:
+      // Classify immediate attempt to short‑circuit if it's clearly within OK or degraded thresholds
+      if res.errorRate < 0.05 and res.latency <= thresholds.ok_lte:
+        return { level: "ok", errorRate: res.errorRate, latency: res.latency }
+      if res.errorRate < 0.20 and res.latency <= thresholds.degraded_lte:
+        return { level: "degraded", errorRate: res.errorRate, latency: res.latency }
     backoff(i)
   // Aggregate after retries exhausted
   aggErrorRate = aggregateErrorRate(attempts) // e.g., weighted by samples
   aggLatency = aggregateLatency(attempts)     // per selected metric p95/p50/ma_last_5m
-  if aggErrorRate >= 0.05 or aggLatency > thresholds.degraded_lte or repeatedTimeouts(attempts):
-    return { outcome: "failed", errorRate: aggErrorRate, latency: aggLatency }
-  return { outcome: "pass", errorRate: aggErrorRate, latency: aggLatency }
+  if aggErrorRate >= 0.20 or aggLatency > thresholds.degraded_lte or repeatedTimeouts(attempts):
+    return { level: "failed", errorRate: aggErrorRate, latency: aggLatency }
+  if aggErrorRate < 0.05 and aggLatency <= thresholds.ok_lte:
+    return { level: "ok", errorRate: aggErrorRate, latency: aggLatency }
+  return { level: "degraded", errorRate: aggErrorRate, latency: aggLatency }
 
 function updateState(aggResult):
-  if aggResult.outcome == "failed":
+  if aggResult.level == "failed":
     consecutiveFailed += 1
-  else:
+    consecutiveOk = 0
+  else if aggResult.level == "ok":
+    consecutiveOk += 1
     consecutiveFailed = 0
+  else: // level == "degraded"
+    consecutiveOk = 0
 
   switch state:
     case ok:
+      // Any non‑ok aggregated result breaks ok streaks; degrade after 2 failures
       if consecutiveFailed >= 2: state = degraded
     case degraded:
       if consecutiveFailed >= 2 and (
            aggResult.latency > thresholds.degraded_lte or repeatedTimeoutsLastChecks()):
         state = down
-      else if consecutiveFailed == 0 for 3 consecutive checks within ok thresholds:
+      else if consecutiveOk >= 3: // require 3 consecutive OK results
         state = ok
     case down:
-      if consecutiveFailed == 0 for 2 consecutive checks and latency <= thresholds.degraded_lte:
-        state = degraded
-      if consecutiveFailed == 0 for 3 consecutive checks within ok thresholds:
+      if aggResult.level != "failed" and aggResult.latency <= thresholds.degraded_lte and consecutiveFailed == 0:
+        // Count consecutive non‑failed results up to 2 to lift to degraded
+        // (implementation keeps a separate short counter or reuses consecutiveOk after reset).
+        if consecutiveOk >= 2: state = degraded
+      if consecutiveOk >= 3:
         state = ok
 ```
 
