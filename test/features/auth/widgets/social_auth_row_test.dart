@@ -15,6 +15,8 @@ import '../../../support/test_config.dart';
 // Note: No Supabase usage in these tests; keep imports minimal.
 
 // Minimum expected height when both social buttons are present in vertical layout.
+// Lower-bound target for vertical layout when two providers are enabled.
+// Intentionally conservative to avoid device/theme variance flakiness.
 const double _expectedMinHeightForTwoButtons = 150.0;
 
 void main() {
@@ -92,9 +94,8 @@ void main() {
         expect(
           actualHeight,
           greaterThan(_expectedMinHeightForTwoButtons),
-          reason:
-              'Height should be ~173dp for vertical layout with both buttons',
-        );
+          reason: 'Height should exceed a conservative 150dp bound',
+      );
       }
     });
 

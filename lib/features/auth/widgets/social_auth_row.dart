@@ -22,21 +22,8 @@ class SocialAuthRow extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final children = <Widget>[
-      _SocialDivider(
-        label: AuthStrings.loginSocialDivider,
-        lineColor: colorScheme.outlineVariant,
-        textStyle: textTheme.bodyMedium?.copyWith(
-          fontSize: 20,
-          height: 1.2,
-          color: colorScheme.onSurface,
-        ),
-      ),
-      SizedBox(height: dividerToButtonsGap),
-    ];
-
+    // Collect enabled provider buttons (Apple-first per Apple HIG)
     final buttons = <Widget>[];
-    // Apple-first ordering per Apple HIG
     if (FeatureFlags.enableAppleSignIn) {
       buttons.add(
         SizedBox(
@@ -66,7 +53,20 @@ class SocialAuthRow extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    // Add buttons with spacing between them
+    // Build children: divider + gap + buttons with spacing
+    final children = <Widget>[
+      _SocialDivider(
+        label: AuthStrings.loginSocialDivider,
+        lineColor: colorScheme.outlineVariant,
+        textStyle: textTheme.bodyMedium?.copyWith(
+          fontSize: 20,
+          height: 1.2,
+          color: colorScheme.onSurface,
+        ),
+      ),
+      SizedBox(height: dividerToButtonsGap),
+    ];
+
     for (int i = 0; i < buttons.length; i++) {
       if (i > 0) {
         children.add(const SizedBox(height: Spacing.m));
