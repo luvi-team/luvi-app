@@ -18,7 +18,12 @@ void main() {
             final l10n = AppLocalizations.of(context)!;
             return WelcomeShell(
               hero: const SizedBox(), // asset-free for test stability
-              title: Text('${l10n.welcome01TitlePrefix} ${l10n.welcome01TitleAccent}'),
+              title: Text(
+                l10n.welcome01Title(
+                  l10n.welcome01TitlePrefix.trim(),
+                  l10n.welcome01TitleAccent.trim(),
+                ),
+              ),
               subtitle: l10n.welcome01Subtitle,
               onNext: () {},
               heroAspect: 438 / 619,
