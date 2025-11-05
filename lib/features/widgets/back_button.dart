@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 
 class BackButtonCircle extends StatelessWidget {
   const BackButtonCircle({
@@ -13,6 +12,7 @@ class BackButtonCircle extends StatelessWidget {
     this.iconColor,
     this.isCircular = true,
     this.iconSize = 20,
+    this.semanticLabel = 'Back',
   });
 
   final VoidCallback onPressed;
@@ -22,6 +22,7 @@ class BackButtonCircle extends StatelessWidget {
   final Color? iconColor;
   final bool isCircular;
   final double iconSize;
+  final String semanticLabel;
 
   static const _chevronSvg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5007 14.1666L8.33398 9.99992L12.5007 5.83325" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -43,7 +44,7 @@ class BackButtonCircle extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: AuthStrings.backSemantic,
+      label: semanticLabel,
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           minWidth: Sizes.touchTargetMin,

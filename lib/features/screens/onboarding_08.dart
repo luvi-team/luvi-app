@@ -10,6 +10,7 @@ import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/shared/analytics/analytics_recorder.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -45,11 +46,39 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     // Persist selection immediately to align with UX tests; analytics remains on CTA.
     try {
       final level = FitnessLevel.fromSelectionIndex(index);
-      // Fire-and-forget; errors are handled by CTA flow if needed.
+      // Fire-and-forget; unexpected async errors must be surfaced to logs/reporting.
       // ignore: discarded_futures
-      ref.read(userStateServiceProvider.future).then((svc) => svc.setFitnessLevel(level));
-    } catch (_) {
+      ref
+          .read(userStateServiceProvider.future)
+          .then((svc) => svc.setFitnessLevel(level))
+          .catchError((Object error, StackTrace stack) {
+        // Network/auth/storage failures should not be silently dropped.
+        log.e('persist_fitness_level_async_failed', tag: 'onboarding08', error: error, stack: stack);
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stack,
+            library: 'onboarding_08',
+            context: ErrorDescription('persisting fitness level (fire-and-forget)'),
+          ),
+        );
+      });
+    } on RangeError catch (_) {
       // Ignore out-of-range selections (e.g., optional 'unknown').
+    } on ArgumentError catch (_) {
+      // Ignore invalid argument mapping errors.
+    } catch (error, stack) {
+      // Surface unexpected synchronous errors (e.g., coding/service issues).
+      log.e('persist_fitness_level_sync_failed', tag: 'onboarding08', error: error, stack: stack);
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'onboarding_08',
+          context: ErrorDescription('mapping selection index to fitness level'),
+        ),
+      );
+      // Non-fatal: do not rethrow to avoid crashing on tap.
     }
   }
 
