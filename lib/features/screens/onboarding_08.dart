@@ -43,43 +43,10 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     setState(() {
       _selected = index;
     });
-    // Persist selection immediately to align with UX tests; analytics remains on CTA.
-    try {
-      final level = FitnessLevel.fromSelectionIndex(index);
-      // Fire-and-forget; unexpected async errors must be surfaced to logs/reporting.
-      // ignore: discarded_futures
-      ref
-          .read(userStateServiceProvider.future)
-          .then((svc) => svc.setFitnessLevel(level))
-          .catchError((Object error, StackTrace stack) {
-        // Network/auth/storage failures should not be silently dropped.
-        log.e('persist_fitness_level_async_failed', tag: 'onboarding08', error: error, stack: stack);
-        FlutterError.reportError(
-          FlutterErrorDetails(
-            exception: error,
-            stack: stack,
-            library: 'onboarding_08',
-            context: ErrorDescription('persisting fitness level (fire-and-forget)'),
-          ),
-        );
-      });
-    } on RangeError catch (_) {
-      // Ignore out-of-range selections (e.g., optional 'unknown').
-    } on ArgumentError catch (_) {
-      // Ignore invalid argument mapping errors.
-    } catch (error, stack) {
-      // Surface unexpected synchronous errors (e.g., coding/service issues).
-      log.e('persist_fitness_level_sync_failed', tag: 'onboarding08', error: error, stack: stack);
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: error,
-          stack: stack,
-          library: 'onboarding_08',
-          context: ErrorDescription('mapping selection index to fitness level'),
-        ),
-      );
-      // Non-fatal: do not rethrow to avoid crashing on tap.
-    }
+    // Persist immediately on selection for better UX and to satisfy contract
+    // expected by widget tests. Analytics is recorded on CTA.
+    final level = FitnessLevel.fromSelectionIndex(index);
+    unawaited(_persistSelection(level));
   }
 
   Future<void> _handleContinue() async {
@@ -107,8 +74,9 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
       if (mounted) {
         context.go(OnboardingSuccessScreen.routeName, extra: level);
       }
-    } catch (e) {
+    } catch (e, stack) {
       // Log error and optionally show user feedback
+      log.e('onboarding08_persist_failed', tag: 'onboarding08', error: e, stack: stack);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
