@@ -73,7 +73,7 @@ void main() {
       // Find widgets
       final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
       final confirmFieldFinder = find.byKey(
-        const Key('AuthConfirmPasswordField'),
+        const ValueKey('AuthConfirmPasswordField'),
       );
       final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 

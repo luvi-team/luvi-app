@@ -84,11 +84,11 @@ void main() {
       // Find widgets
       final backButtonFinder = find.byType(BackButtonCircle);
       // Use a stable key instead of hard-coded localized text
-      final headerFinder = find.byKey(const ValueKey('create_new_title'));
+      final headerFinder = find.byKey(const Key('create_new_title'));
       final confirmFieldFinder = find.byKey(
         const Key('AuthConfirmPasswordField'),
       );
-      final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
+      final ctaFinder = find.byKey(const Key('create_new_cta_button'));
 
       // Get positions
       final backButtonRect = tester.getRect(backButtonFinder);

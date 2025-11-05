@@ -48,7 +48,7 @@ void main() {
     });
 
     test('does not redact Luhn-invalid 16-digit sequence', () {
-      final s = 'digits 1234 5678 9012 3456'; // most likely fails Luhn
+      final s = 'digits 1234 5678 9012 3456'; // Luhn-invalid
       final out = sanitizeForLog(s);
       // This sequence fails Luhn validation, so should not be redacted
       expect(out, contains('1234 5678 9012 3456'));

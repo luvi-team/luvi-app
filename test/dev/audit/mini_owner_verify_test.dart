@@ -72,7 +72,7 @@ void main() {
 
       // Find widgets
       final backButtonFinder = find.byKey(const Key('backButtonCircle'));
-      final subtitleFinder = find.text('Mach es stark.');
+      final subtitleFinder = find.byKey(const Key('create_new_subtitle'));
       final confirmFieldFinder = find.byKey(
         const Key('AuthConfirmPasswordField'),
       );
