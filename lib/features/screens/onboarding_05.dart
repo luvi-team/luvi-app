@@ -71,11 +71,10 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   void _handleBack() {
-    final router = GoRouter.of(context);
-    if (router.canPop()) {
+    if (GoRouter.of(context).canPop()) {
       context.pop();
     } else {
-      context.go(Onboarding04Screen.routeName);
+      context.push(Onboarding04Screen.routeName);
     }
   }
 

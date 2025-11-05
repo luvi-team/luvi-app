@@ -49,6 +49,7 @@ class AuthLayout {
       socialBlockHeight >= 0,
       'socialBlockHeight must be non-negative. Got: $socialBlockHeight',
     );
+    // Use fallback when height is not yet measured (0 or unavailable)
     final measured =
         socialBlockHeight > 0 ? socialBlockHeight : socialBlockReserveFallback;
     return Sizes.buttonHeight + Spacing.l * 2 + measured + Spacing.m;

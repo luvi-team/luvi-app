@@ -26,7 +26,7 @@ class Consent01Screen extends StatelessWidget {
           // Back button (44pt hitbox, 40px visual circle)
           Positioned(
             left: ConsentSpacing.pageHorizontal,
-            top: y(47 + ConsentSpacing.topBarSafeAreaOffset),
+            top: paddingTop + ConsentSpacing.topBarSafeAreaOffset,
             child: BackButtonCircle(
               onPressed: () => context.go(ConsentWelcome03Screen.routeName),
               semanticLabel:

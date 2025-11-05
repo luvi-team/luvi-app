@@ -9,17 +9,17 @@ Future<String?> fetchRemoteMarkdown(
 }) async {
   final client = HttpClient();
   try {
-    // Apply an overall timeout to the operation.
+    // Apply an overall timeout to the entire operation rather than per step.
     final String result = await () async {
-      final request = await client.getUrl(uri).timeout(timeout);
-      final response = await request.close().timeout(timeout);
+      final request = await client.getUrl(uri);
+      final response = await request.close();
       final status = response.statusCode;
       if (status < 200 || status >= 300) {
         return '';
       }
-      final body = await utf8.decoder.bind(response).join().timeout(timeout);
+      final body = await utf8.decoder.bind(response).join();
       return body;
-    }();
+    }().timeout(timeout);
     return result.isEmpty ? null : result;
   } on TimeoutException {
     // Consider: logger.warning('Remote markdown fetch timed out: $uri');

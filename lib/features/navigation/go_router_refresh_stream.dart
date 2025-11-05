@@ -18,9 +18,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
       },
       onError: (Object error, StackTrace stackTrace) {
         debugPrint('GoRouterRefreshStream stream error: $error\n$stackTrace');
-        try {
-          onError?.call(error, stackTrace);
-        } finally {}
+        onError?.call(error, stackTrace);
       },
       onDone: () {
         dispose();

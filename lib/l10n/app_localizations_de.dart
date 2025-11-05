@@ -501,6 +501,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authErrPasswordCommonWeak => 'Dein Passwort ist zu häufig oder leicht zu erraten.';
 
   @override
+  String get authErrEmailEmpty => 'Bitte E-Mail eingeben.';
+
+  @override
+  String get authErrPasswordEmpty => 'Bitte Passwort eingeben.';
+
+  @override
+  String authErrWaitBeforeRetry(int seconds) {
+    return 'Bitte warte $seconds Sekunden, bevor du es erneut versuchst.';
+  }
+
+  @override
   String get authErrConfirmEmail => 'Bitte E-Mail bestätigen (Link erneut senden?)';
 
   @override

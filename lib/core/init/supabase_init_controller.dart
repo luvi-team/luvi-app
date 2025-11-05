@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/init_mode.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
 class InitState {
@@ -51,11 +52,17 @@ class InitState {
   static const _sentinel = Object();
 }
 
-class SupabaseInitController extends ChangeNotifier {
-  SupabaseInitController();
-
-  InitState _state = const InitState();
-  InitState get state => _state;
+class SupabaseInitController extends Notifier<InitState> {
+  @override
+  InitState build() {
+    // Trigger initialization using envFile from provider
+    // Schedule it for next frame to avoid modifying provider during build
+    Future.microtask(() {
+      final envFile = ref.read(supabaseEnvFileProvider);
+      ensureInitialized(envFile: envFile);
+    });
+    return const InitState();
+  }
 
   bool _started = false;
   Timer? _retryTimer;
@@ -65,13 +72,13 @@ class SupabaseInitController extends ChangeNotifier {
 
   void ensureInitialized({required String envFile}) {
     // First call wins; subsequent calls with different envFile are ignored.
-    assert(_envFile == null || _envFile == envFile, 
+    assert(_envFile == null || _envFile == envFile,
            'envFile must be consistent across calls');
     _envFile ??= envFile;
     if (_started || SupabaseService.isInitialized) {
       _started = true;
-      if (SupabaseService.isInitialized && !_state.initialized) {
-        _setState(_state.copyWith(initialized: true, error: null, configError: false));
+      if (SupabaseService.isInitialized && !state.initialized) {
+        _setState(state.copyWith(initialized: true, error: null, configError: false));
       }
       return;
     }
@@ -80,28 +87,28 @@ class SupabaseInitController extends ChangeNotifier {
   }
 
   Future<void> retryNow() async {
-    if (!_state.canRetry || !_state.hasAttemptsLeft) return;
+    if (!state.canRetry || !state.hasAttemptsLeft) return;
     _retryTimer?.cancel();
-    _setState(_state.copyWith(retryScheduled: false));
+    _setState(state.copyWith(retryScheduled: false));
     await _attemptInit();
   }
 
   Future<void> _attemptInit() async {
     if (_envFile == null) return;
     if (SupabaseService.isInitialized) {
-      _setState(_state.copyWith(initialized: true, error: null, configError: false));
+      _setState(state.copyWith(initialized: true, error: null, configError: false));
       return;
     }
 
-    final attempt = _state.attempts + 1;
-    _setState(_state.copyWith(attempts: attempt, lastAttemptAt: DateTime.now()));
+    final attempt = state.attempts + 1;
+    _setState(state.copyWith(attempts: attempt, lastAttemptAt: DateTime.now()));
     try {
       await SupabaseService.tryInitialize(envFile: _envFile!);
-      _setState(_state.copyWith(initialized: true, error: null, configError: false));
+      _setState(state.copyWith(initialized: true, error: null, configError: false));
       return;
     } catch (error, stack) {
       // Check for specific error types that indicate configuration issues
-      final isConfig = error is StateError || 
+      final isConfig = error is StateError ||
                        error is FormatException ||
                        error is ArgumentError;
 
@@ -113,11 +120,11 @@ class SupabaseInitController extends ChangeNotifier {
           exception: error,
           stack: stack,
           library: 'supabase_init_controller',
-          context: ErrorDescription('attempt $attempt of ${_state.maxAttempts}'),
+          context: ErrorDescription('attempt $attempt of ${state.maxAttempts}'),
         ));
       }
 
-      if (!isTest && !isConfig && _state.hasAttemptsLeft && !_disposed) {
+      if (!isTest && !isConfig && state.hasAttemptsLeft && !_disposed) {
         // Exponential backoff without floating point: 500ms * (2^(attempt-1))
         final baseMs = 500 * (1 << (attempt - 1));
         // Symmetric jitter in [-20%, +20%] around baseMs
@@ -125,30 +132,60 @@ class SupabaseInitController extends ChangeNotifier {
         final jitterMs = _random.nextInt(jitterRange * 2 + 1) - jitterRange;
         final delay = Duration(milliseconds: baseMs + jitterMs);
         _retryTimer?.cancel();
-        _setState(_state.copyWith(retryScheduled: true));
+        _setState(state.copyWith(retryScheduled: true));
         _retryTimer = Timer(delay, () {
           if (_disposed) return;
-          _setState(_state.copyWith(retryScheduled: false));
+          _setState(state.copyWith(retryScheduled: false));
           _attemptInit();
         });
       }
       // Record the error/config state regardless of scheduling a retry
-      _setState(_state.copyWith(error: error, configError: isConfig));
+      _setState(state.copyWith(error: error, configError: isConfig));
     }
   }
 
   void _setState(InitState value) {
-    _state = value;
-    notifyListeners();
+    state = value;
   }
 
-  @override
-  void dispose() {
+  /// Testing-only helper that clears internal state so a fresh initialization
+  /// cycle can run in isolated tests. This does not touch SupabaseService
+  /// itself; tests should also call SupabaseService.resetForTest() as needed.
+  @visibleForTesting
+  void resetForTesting() {
+    _retryTimer?.cancel();
+    _retryTimer = null;
+    state = const InitState();
+    _envFile = null;
+    _started = false;
+    _disposed = false;
+  }
+
+  void disposeController() {
     _disposed = true;
     _retryTimer?.cancel();
-    super.dispose();
   }
 }
 
-// Global controller instance used by the app root.
-final supabaseInitController = SupabaseInitController();
+/// Provider for the env file used during Supabase initialization.
+///
+/// Default is '.env.development'. The app root should override this to
+/// '.env.production' in release mode:
+///   ProviderScope(overrides: [
+///     supabaseEnvFileProvider.overrideWithValue('.env.production'),
+///   ], child: App())
+final supabaseEnvFileProvider = Provider<String>((ref) => '.env.development');
+
+/// App-scoped provider that constructs and initializes the
+/// SupabaseInitController. The controller is kept alive for the app lifetime.
+///
+/// Tests can override this provider to supply a fresh controller and call
+/// resetForTesting() to isolate state between runs:
+///   final controller = SupabaseInitController()..resetForTesting();
+///   await tester.pumpWidget(ProviderScope(overrides: [
+///     supabaseInitControllerProvider.overrideWithValue(controller),
+///   ], child: MyApp(...)));
+final supabaseInitControllerProvider =
+    NotifierProvider<SupabaseInitController, InitState>(() {
+  return SupabaseInitController();
+});

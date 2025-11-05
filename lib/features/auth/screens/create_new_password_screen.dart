@@ -14,8 +14,6 @@ import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/l10n/l10n_capabilities.dart';
- 
 
 class CreateNewPasswordScreen extends StatefulWidget {
   static const String routeName = '/auth/password/new';

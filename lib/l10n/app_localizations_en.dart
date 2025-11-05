@@ -501,6 +501,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authErrPasswordCommonWeak => 'Your password is too common or weak.';
 
   @override
+  String get authErrEmailEmpty => 'Please enter your email.';
+
+  @override
+  String get authErrPasswordEmpty => 'Please enter your password.';
+
+  @override
   String get authErrConfirmEmail => 'Please verify your email (resend the link?).';
 
   @override
@@ -514,6 +520,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authPasswordUpdateError => 'We couldn\'t update your password.';
+
+  @override
+  String authErrWaitBeforeRetry(int seconds) {
+    return 'Please wait $seconds seconds before retrying.';
+  }
 
   @override
   String get authEmailHint => 'Your email';

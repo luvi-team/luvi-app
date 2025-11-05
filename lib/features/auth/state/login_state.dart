@@ -143,7 +143,8 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   LoginState debugState() => _current();
 }
 
-final loginProvider = AsyncNotifierProvider<LoginNotifier, LoginState>(
+// Screen-scoped form state; dispose automatically when screen is gone.
+final loginProvider = AsyncNotifierProvider.autoDispose<LoginNotifier, LoginState>(
   LoginNotifier.new,
   name: 'loginProvider',
 );

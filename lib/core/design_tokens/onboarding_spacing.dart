@@ -321,6 +321,6 @@ class OnboardingSpacing {
   // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
   // Custom values (not aligned with existing rhythm tokens)
   static const double _trophyToTitle =
-      _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (28px)
+      _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px per ADR-0006)
   static const double _titleToButton = 66.0; // Title end → Button start
 }

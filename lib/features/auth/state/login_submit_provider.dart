@@ -90,7 +90,8 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
   }
 }
 
+// Screen-scoped submit state; dispose when no longer listened to.
 final loginSubmitProvider =
-    AsyncNotifierProvider<LoginSubmitNotifier, void>(
+    AsyncNotifierProvider.autoDispose<LoginSubmitNotifier, void>(
   LoginSubmitNotifier.new,
 );

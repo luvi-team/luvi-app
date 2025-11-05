@@ -1043,6 +1043,18 @@ abstract class AppLocalizations {
   /// **'Your password is too common or weak.'**
   String get authErrPasswordCommonWeak;
 
+  /// Validation error shown when the email field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email.'**
+  String get authErrEmailEmpty;
+
+  /// Validation error shown when the password field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password.'**
+  String get authErrPasswordEmpty;
+
   /// Error displayed when the user's email has not been confirmed.
   ///
   /// In en, this message translates to:
@@ -1072,6 +1084,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t update your password.'**
   String get authPasswordUpdateError;
+
+  /// Snackbar/content message advising the user to wait a number of seconds before trying again.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait {seconds} seconds before retrying.'**
+  String authErrWaitBeforeRetry(int seconds);
 
   /// Hint text for the email input field.
   ///

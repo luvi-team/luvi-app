@@ -3,6 +3,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+// Salt used to pseudonymize consent/user identifiers in metrics logs.
+// If not provided, we fall back to an unsalted SHA-256 hash to avoid logging PII
+// while keeping metrics functional in lower environments.
+const CONSENT_METRIC_SALT = Deno.env.get("CONSENT_METRIC_SALT") ?? undefined;
 // Observability & protection controls (overridable via env, safe defaults)
 const RATE_LIMIT_WINDOW_SEC = parseInt(
   Deno.env.get("CONSENT_RATE_LIMIT_WINDOW_SEC") ?? "60",
@@ -62,8 +66,7 @@ function getRequestId(req: Request): string {
     if (v && v.length > 0) return v;
   }
   try {
-    // @ts-ignore: crypto.randomUUID exists in Deno runtime but not in TypeScript's lib.dom types
-    return crypto.randomUUID();
+    return (crypto as any).randomUUID() as string;
   } catch {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   }
@@ -76,6 +79,25 @@ type MetricOutcome =
   | "unauthorized"
   | "error"
   | "method_not_allowed";
+
+async function hmacSha256Hex(key: string, message: string): Promise<string> {
+  const enc = new TextEncoder();
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(key),
+    { name: "HMAC", hash: { name: "SHA-256" } },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", cryptoKey, enc.encode(message));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Hex(message: string): Promise<string> {
+  const enc = new TextEncoder();
+  const digest = await crypto.subtle.digest("SHA-256", enc.encode(message));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 function logMetric(
   requestId: string,
@@ -184,7 +206,7 @@ serve(async (req) => {
   try {
     body = await req.json();
   } catch (error) {
-    console.error("Invalid request body parse error", error);
+    console.error("Invalid request body parse error", error instanceof Error ? error.message : "parse_failed");
     logMetric(requestId, "invalid", { reason: "invalid_json" });
     return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,
@@ -192,15 +214,11 @@ serve(async (req) => {
     });
   }
 
-  let policyVersion: string | undefined;
-  if (typeof body.policy_version === "string") {
-    policyVersion = body.policy_version;
-  } else if (typeof body.version === "string") {
-    policyVersion = body.version;
-  } else {
-    policyVersion = undefined;
-  }
-  const rawScopes = Array.isArray(body.scopes) ? body.scopes : undefined;
+  const policyVersion = typeof body.policy_version === "string"
+    ? body.policy_version
+    : typeof body.version === "string"
+    ? body.version
+    : undefined;
   if (!policyVersion) {
     logMetric(requestId, "invalid", { reason: "missing_policy_version" });
     return new Response(JSON.stringify({ error: "policy_version is required" }), {
@@ -209,7 +227,8 @@ serve(async (req) => {
     });
   }
 
-  if (!rawScopes || rawScopes.length === 0) {
+  const rawScopes = (body as any).scopes as unknown;
+  if (!rawScopes || (Array.isArray(rawScopes) && rawScopes.length === 0)) {
     logMetric(requestId, "invalid", { reason: "missing_scopes" });
     return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
       status: 400,
@@ -253,7 +272,13 @@ serve(async (req) => {
     user_id: userResult.user.id,
     version: policyVersion,
     scopes: validatedScopes,
-  };
+  } as const;
+
+  // Compute a deterministic pseudonym for metrics: prefer HMAC(user_id, salt)
+  // and fall back to plain SHA-256 when salt is not provided (lower envs).
+  const consentIdHash = CONSENT_METRIC_SALT
+    ? await hmacSha256Hex(CONSENT_METRIC_SALT, payload.user_id)
+    : await sha256Hex(payload.user_id);
 
   // Atomic rate-limit check + insert wrapped in a per-user advisory lock via RPC
   const t0Rpc = Date.now();
@@ -275,7 +300,7 @@ serve(async (req) => {
     logMetric(requestId, "error", {
       where: "consent_rpc",
       code: (rpcError as any)?.code ?? "unknown",
-      user_id: payload.user_id,
+      consent_id_hash: consentIdHash,
       duration_ms: elapsed,
       rpc_latency_ms: rpcDuration,
     });
@@ -290,7 +315,7 @@ serve(async (req) => {
   if (allowed === false) {
     const elapsed = Date.now() - started;
     logMetric(requestId, "rate_limited", {
-      user_id: payload.user_id,
+      consent_id_hash: consentIdHash,
       window_sec: RATE_LIMIT_WINDOW_SEC,
       max: RATE_LIMIT_MAX_REQUESTS,
       duration_ms: elapsed,
@@ -298,7 +323,7 @@ serve(async (req) => {
     });
     // Fire-and-forget: do not block response path on alert delivery
     maybeAlert(requestId, "rate_limited", {
-      user_id: payload.user_id,
+      consent_id_hash: consentIdHash,
       window_sec: RATE_LIMIT_WINDOW_SEC,
     });
     return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
@@ -315,7 +340,7 @@ serve(async (req) => {
 
   const elapsed = Date.now() - started;
   logMetric(requestId, "success", {
-    user_id: payload.user_id,
+    consent_id_hash: consentIdHash,
     scopes_count: payload.scopes.length,
     duration_ms: elapsed,
     rpc_latency_ms: rpcDuration,
@@ -328,7 +353,7 @@ serve(async (req) => {
   // Do not log full scopes or other sensitive data.
   try {
     console.info("consent_recorded", {
-      user_id: payload.user_id,
+      consent_id_hash: consentIdHash,
       version: payload.version,
       scope_count: payload.scopes.length,
     });

@@ -67,6 +67,11 @@ void main() async {
 
   runApp(
     ProviderScope(
+      overrides: [
+        supabaseEnvFileProvider.overrideWithValue(
+          kReleaseMode ? '.env.production' : '.env.development',
+        ),
+      ],
       child: MyAppWrapper(orientationController: orientationController),
     ),
   );
@@ -85,16 +90,9 @@ class MyAppWrapper extends ConsumerWidget {
     if (InitModeBridge.resolve() != InitMode.test) {
       InitModeBridge.resolve = () => ref.read(initModeProvider);
     }
-    // Ensure initialization controller is created and running.
-    final envFile = kReleaseMode ? '.env.production' : '.env.development';
-    // Note: supabaseInitController is a global singleton for startup/initialization 
-    // orchestration. While ProviderScope is available here, we use a singleton to
-    // ensure initialization state is accessible outside the Riverpod tree.
-    // Lifecycle: created once at app start and kept alive for the entire
-    // process lifetime; it coordinates non-blocking Supabase init and retries.
-    // Thread-safety: used on the main isolate only, state changes notify
-    // listeners via ChangeNotifier; no cross-isolate sharing.
-    supabaseInitController.ensureInitialized(envFile: envFile);
+    // Watch the init state to rebuild when it changes
+    // The Notifier's build() method triggers initialization automatically
+    final initState = ref.watch(supabaseInitControllerProvider);
 
     // Allow overriding the initial route in development via --dart-define
     // Example: flutter run --dart-define=INITIAL_LOCATION=/onboarding/01
@@ -107,9 +105,7 @@ class MyAppWrapper extends ConsumerWidget {
 
     // Rebuild MaterialApp (and thus router) when Supabase init state changes
     // so that refreshListenable attaches once the client is ready.
-    return AnimatedBuilder(
-      animation: supabaseInitController,
-      builder: (context, _) {
+    {
         final app = MaterialApp.router(
           title: 'LUVI',
           theme: AppTheme.buildAppTheme(),
@@ -137,7 +133,7 @@ class MyAppWrapper extends ConsumerWidget {
                   child: SafeArea(
                     minimum: const EdgeInsets.all(12),
                     child: _InitBanner(
-                      initState: supabaseInitController.state,
+                      initState: initState,
                     ),
                   ),
                 ),
@@ -149,8 +145,7 @@ class MyAppWrapper extends ConsumerWidget {
           },
         );
         return app;
-      },
-    );
+    }
   }
 
   GoRouter _buildRouter(String initialLocation) {
@@ -249,7 +244,7 @@ class _InitBanner extends ConsumerWidget {
               if (initState.canRetry)
                 TextButton(
                   onPressed: () {
-                    supabaseInitController.retryNow();
+                    ref.read(supabaseInitControllerProvider.notifier).retryNow();
                   },
                   child: const Text('Retry'),
                 ),

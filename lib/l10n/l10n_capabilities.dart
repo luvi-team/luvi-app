@@ -34,9 +34,13 @@ extension AppLocalizationsAuthAdditions on AppLocalizations {
   String authErrWaitBeforeRetry(int seconds) {
     switch (localeName) {
       case 'de':
-        return 'Bitte warte $seconds Sekunden, bevor du es erneut versuchst.';
+        return seconds == 1
+            ? 'Bitte warte $seconds Sekunde, bevor du es erneut versuchst.'
+            : 'Bitte warte $seconds Sekunden, bevor du es erneut versuchst.';
       default:
-        return 'Please wait $seconds seconds before retrying.';
+        return seconds == 1
+            ? 'Please wait $seconds second before retrying.'
+            : 'Please wait $seconds seconds before retrying.';
     }
   }
 }

@@ -57,8 +57,18 @@ Map<String, Object?> _sanitizeMap(Map<String, Object?> input, {bool topLevel = f
 Object? _sanitizeValue(Object? value) {
   if (value == null) return null;
   if (value is Map) {
-    // Best-effort generic typing
-    return _sanitizeMap(value.cast<String, Object?>());
+    // Best-effort: convert to String keys, skip non-String keys
+    final stringMap = <String, Object?>{};
+    for (final entry in value.entries) {
+      final key = entry.key;
+      if (key is String) {
+        stringMap[key] = entry.value;
+      } else {
+        // Skip non-String keys or convert with toString()
+        stringMap[key.toString()] = entry.value;
+      }
+    }
+    return _sanitizeMap(stringMap);
   }
   if (value is List) {
     return value.map(_sanitizeValue).toList(growable: false);
@@ -81,7 +91,7 @@ Object? _maskValue(Object? value) {
   if (value is String) {
     // Keep very short identifiers; otherwise replace with redacted marker.
     final sanitized = log_sanitize.sanitizeForLog(value);
-    return sanitized.length <= 6 ? '[redacted]' : '[redacted]';
+    return sanitized.length <= 6 ? sanitized : '[redacted]';
   }
   if (value is num || value is bool) return '[redacted]';
   if (value is Map || value is List) return '[redacted]';

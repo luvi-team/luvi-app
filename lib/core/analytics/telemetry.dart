@@ -6,7 +6,7 @@ import 'package:luvi_app/core/privacy/telemetry_sanitize.dart';
 /// Minimal telemetry facade for MVP. Sentry can be wired behind this interface
 /// when enabled via feature flag.
 class Telemetry {
-  Telemetry._();
+  const Telemetry._();
 
   static bool get _enabled => FeatureFlags.enableLegalViewerTelemetry;
 
