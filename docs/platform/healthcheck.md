@@ -36,7 +36,7 @@ Explicit thresholds ensure consistent behavior across environments with low traf
   - Example: `serviceA` with `health.criticalDependencies = ["supabase_db", "revenuecat_proxy"]` becomes `down` if `supabase_db` is `down`; if only `external_apis` is `down`, `serviceA` is `degraded`.
   - Operators can manage the list under: Settings → Health → Dependencies → Critical Dependencies.
 - Retry/backoff: apply the endpoint retry policy above during each check; a single check is `failed` only after retries are exhausted.
-- Alerting/escalation: `degraded` → warning/Slack; `down` → page/PagerDuty. Auto-resolve is automatic (no manual acknowledgement required) but only occurs after the service remains in `ok` for a continuous confirmation window of 5 minutes to avoid flapping. An immediate transition to `ok` does not trigger auto-resolve until the 5‑minute window has passed. Operators may acknowledge incidents manually at any time but are not required to. PagerDuty stale-incident timeout is 24 hours (incidents auto-close if not updated within 24h).
+- Alerting/escalation: `degraded` → warning/Slack; `down` → page/PagerDuty. Auto‑resolve does not occur immediately on an `ok` transition. Instead, when a service transitions to `ok`, the incident remains open until the service has remained continuously `ok` for a 5‑minute confirmation window; only after that sustained 5 minutes does auto‑resolve occur. This same 5‑minute window also serves as flap‑prevention to avoid rapid re‑alerting. Operators may acknowledge incidents manually at any time but are not required to. PagerDuty stale‑incident timeout is 24 hours (incidents auto‑close if not updated within 24h).
 
 ### Aggregation and hysteresis counters (state machine semantics)
 - A single "check" may perform internal retries per the retry/backoff policy. These retries MUST be collapsed into one aggregated outcome level: `ok`, `degraded`, or `failed` based on aggregated metrics and thresholds.
@@ -109,9 +109,11 @@ function updateState(aggResult):
       // Any non‑ok aggregated result breaks ok streaks; degrade after 2 failures
       if consecutiveFailed >= 2: state = degraded
     case degraded:
-      // Degraded → down condition is evaluated on aggregated metrics across the
-      // two consecutive failed checks (as opposed to requiring both to individually
-      // exceed the threshold). Alternative policy is acceptable if documented.
+      // Degraded → down: the state machine MUST evaluate the aggregated metrics
+      // across the last two consecutive failed checks to determine transition.
+      // Any deviation from this evaluation method MUST be explicitly opted‑in via
+      // a documented service configuration schema or an ADR that defines the
+      // opt‑in mechanism and validation requirements.
       if consecutiveFailed >= 2 and (
            aggResult.latency > thresholds.degraded_lte or repeatedTimeoutsLastChecks()):
         state = down
@@ -136,6 +138,35 @@ To remove ambiguity around timeout-based transitions, use the following concrete
 Notes:
 - A “timeout” here refers to any attempt that hit the per-request timeout (5 s) and produced no successful response.
 - These thresholds are tuned for the MVP; services may override them with stricter windows if needed.
+
+## Per-service threshold overrides
+- See: docs/config/service-config-schema.md (Service configuration schema)
+- Precedence: explicit per‑service overrides take priority over organization/global defaults, which take priority over this spec’s baked‑in defaults. Invalid or partial overrides must be rejected by validation and fall back to the next lower precedence.
+
+Example (YAML):
+
+```yaml
+service: revenuecat_proxy
+health:
+  thresholds:
+    ok_lte: 250ms
+    degraded_lte: 1200ms
+    error_rate_warn: 0.05   # 5%
+    error_rate_crit: 0.20   # 20%
+  windows:
+    consecutive_ok_for_recover_ok: 3
+    consecutive_fail_for_degrade: 2
+    consecutive_fail_for_down: 2
+    confirm_ok_auto_resolve_minutes: 5
+  timeouts:
+    per_request_timeout: 5s
+    repeated_timeouts_per_check: 2
+    repeated_timeouts_last_checks: 2
+  evaluation:
+    degraded_to_down_method: aggregated_last_two_failed   # opt‑in keys must validate against schema
+```
+
+Operators can apply overrides via the Settings UI (Settings → Health → Thresholds) referenced above, or by editing the service registry and CI deployment manifests that carry this configuration. Changes must pass schema validation before taking effect.
 
 ## Monitoring
 - Results are pushed to the observability stack (Grafana/PostHog).

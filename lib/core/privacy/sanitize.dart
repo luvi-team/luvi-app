@@ -57,8 +57,9 @@ String sanitizeForLog(String input) {
 
   // Prefixed tokens (keep the prefix)
   out = out.replaceAllMapped(_prefixedTokenPattern, (m) {
-    final full = m.group(0)!;
-    final id = m.group(1)!;
+    final full = m.group(0);
+    final id = m.group(1);
+    if (full == null || id == null) return m.group(0) ?? '';
     return full.replaceFirst(id, '[redacted-id]');
   });
 

@@ -273,7 +273,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   }
 
   // Dev-only bypass to allow opening onboarding without auth
-  if (allowOnboardingDev && isOnboarding) {
+  if (allowOnboardingDev && !kReleaseMode && isOnboarding) {
     return null;
   }
 

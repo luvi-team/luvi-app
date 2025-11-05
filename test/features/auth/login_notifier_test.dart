@@ -8,11 +8,9 @@ class _FakeServerErrorLoginNotifier extends LoginNotifier {
   @override
   Future<void> validateAndSubmit() async {
     await super.validateAndSubmit();
-    final current = currentState;
+    final current = state.value!;
     state = AsyncData(
       current.copyWith(
-        emailError: current.emailError,
-        passwordError: current.passwordError,
         globalError: AuthStrings.errLoginUnavailable,
       ),
     );
@@ -32,8 +30,8 @@ void main() {
     await notifier.validateAndSubmit();
 
     final state = notifier.debugState();
-    expect(state.emailError, isNotNull);
-    expect(state.passwordError, isNotNull);
+    expect(state.emailError, AuthStrings.errEmailInvalid);
+    expect(state.passwordError, AuthStrings.errPasswordInvalid);
     expect(state.isValid, isFalse);
   });
 

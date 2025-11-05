@@ -142,18 +142,10 @@ void main() {
     );
     expect(inkWellFinder, findsOneWidget);
 
-    final inkWell = tester.widget<InkWell>(inkWellFinder);
-    final inkWellChild = inkWell.child;
-    expect(inkWellChild, isNotNull, reason: 'InkWell should provide a SizedBox as its child');
+    // Verify layout through rendered bounds instead of widget tree structure
+    final inkWellBox = tester.getRect(inkWellFinder);
     expect(
-      inkWellChild,
-      isA<SizedBox>(),
-      reason: 'Inline calendar expects a SizedBox as the container for width verification',
-    );
-    final sizedBox = inkWellChild! as SizedBox;
-
-    expect(
-      sizedBox.width,
+      inkWellBox.width,
       equals(availableWidth),
       reason: 'Calendar container should use full available width',
     );

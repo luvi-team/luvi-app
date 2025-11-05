@@ -66,7 +66,7 @@ function getRequestId(req: Request): string {
     if (v && v.length > 0) return v;
   }
   try {
-    return (crypto as any).randomUUID() as string;
+    return crypto.randomUUID();
   } catch {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   }
@@ -345,8 +345,8 @@ serve(async (req) => {
     duration_ms: elapsed,
     rpc_latency_ms: rpcDuration,
     version: payload.version,
-    source: (typeof body.source === "string" ? body.source : undefined) ?? null,
-    appVersion: (typeof body.appVersion === "string" ? body.appVersion : undefined) ?? null,
+    source: typeof body.source === "string" ? body.source : null,
+    appVersion: typeof body.appVersion === "string" ? body.appVersion : null,
   });
 
   // Audit (info-level): minimal, structured log that confirms consent was recorded.

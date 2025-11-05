@@ -90,9 +90,20 @@ _Phase _phaseForDate({
   int lutealLength = 13,
   int ovulationWindowDays = 2,
 }) {
-  // Normalize to day-only comparison using UTC to avoid DST/offset artifacts
-  final start = DateTime.utc(lastPeriod.year, lastPeriod.month, lastPeriod.day);
-  final q = DateTime.utc(date.year, date.month, date.day);
+  // Determine target timezone per contract (fallbacks):
+  // 1) If inputs carry a zone, prefer it; 2) else use user's/device local TZ;
+  // 3) fallback to UTC only if local TZ is not available (not typical in app).
+  // Dart DateTime supports only local or UTC zones, so we implement by
+  // converting inputs to local, extracting their calendar date, then creating
+  // UTC date-only values to perform DST-safe day arithmetic.
+  DateTime toLocalZone(DateTime dt) => dt.isUtc ? dt.toLocal() : dt;
+  DateTime toUtcDateOnly(DateTime local) =>
+      DateTime.utc(local.year, local.month, local.day);
+
+  final lastPeriodLocal = toLocalZone(lastPeriod);
+  final dateLocal = toLocalZone(date);
+  final start = toUtcDateOnly(lastPeriodLocal);
+  final q = toUtcDateOnly(dateLocal);
   final diff = q.difference(start).inDays;
 
   // Calculate 1-based cycle day (wrap negatives cyclically)

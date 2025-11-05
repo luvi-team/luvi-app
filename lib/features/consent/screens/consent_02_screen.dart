@@ -152,6 +152,8 @@ class Consent02Screen extends ConsumerWidget {
                         return;
                       }
 
+                      if (!context.mounted) return;
+
                       // Navigate only when marking succeeded or there was nothing to mark (no userState).
                       context.go(AuthEntryScreen.routeName);
                     } finally {

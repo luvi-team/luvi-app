@@ -23,7 +23,7 @@ Datenschutz ist Kernprinzip (EU-Only, DSGVO-first). Coach-Programme & KI-Suche/P
 • AI (Premium): Edge in EU; stateless; keine PII-Persistenz der Prompts.
 
 5) Onboarding Flow
-Splash → Welcome → Consent (App) → Auth → Onboarding (Zyklus-Eckdaten, Ziele, Intensität) + Content-Präferenzen (Kategorien, Sprache) → Success (Onboarding08Screen).
+Splash → Welcome → Consent (App) → Auth → Onboarding (Zyklus-Eckdaten, Ziele, Intensität) + Content-Präferenzen (Kategorien, Sprache) → Success Screen.
 
 6) Informationsarchitektur & Navigation
 1. Home — „Heute in deiner Phase“ (Hero 3–6) + Daily-5 (kurze Impulse) + „Weiter ansehen“ + „Neu im LUVI“.
