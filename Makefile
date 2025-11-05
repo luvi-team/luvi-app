@@ -1,9 +1,11 @@
 .PHONY: analyze test flutter-version
 
 analyze:
+	@echo "Running Flutter analysis..."
 	@scripts/flutter_codex.sh analyze
 
 test:
+	@echo "Running tests (sequential)..."
 	@scripts/flutter_codex.sh test -j 1
 
 flutter-version:

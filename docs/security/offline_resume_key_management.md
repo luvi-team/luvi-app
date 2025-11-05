@@ -24,8 +24,8 @@ Operational Notes
 
 Rekey Safety and Procedure
 1) Preconditions (both in-place and export):
-- Verify free disk space ≥ 2× current DB file size to ensure headroom for temporary artifacts and WAL/journal files.
-- Ensure the DB is idle (no long-running transactions), and checkpoints have been run if using WAL.
+- Verify free disk space ≥ 2× the current DB file size (baseline). Allow up to 3× when page/reserved-byte layout changes or VACUUM-style rewrites may occur, to accommodate temporary artifacts.
+- Ensure the DB is idle (no long-running transactions). If using WAL, checkpoint and truncate the WAL (or close all connections) prior to rekeying to avoid additional temporary WAL usage during the operation.
 
 2) Recommended default: export → rename
 - Steps:

@@ -51,13 +51,13 @@ dependencies:
   go_router: ^16.2.1
   riverpod_annotation: ^3.0.3
   url_launcher: ^6.3.0
-  flutter_markdown: ^0.7.3
+  flutter_markdown: ^0.7.7
   intl: ^0.20.2
   lottie: ^3.3.2
   shared_preferences: ^2.5.3
   luvi_services:
     path: services
-  sign_in_with_apple: ^6.1.0
+  sign_in_with_apple: ^7.0.1
   sign_in_button: ^4.0.1
 
 dev_dependencies:
