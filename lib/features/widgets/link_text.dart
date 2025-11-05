@@ -139,7 +139,6 @@ class _LinkTapRegion extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: semanticsLabel,
-      button: true,
       link: true,
       excludeSemantics: true,
       child: FocusableActionDetector(

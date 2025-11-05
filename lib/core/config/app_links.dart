@@ -125,6 +125,7 @@ Future<void> openPrivacy(
     isValid: appLinks.hasValidPrivacy,
     fallbackAsset: 'docs/privacy/privacy.md',
     title: resolvedTitle,
+    appLinks: appLinks,
   );
 }
 
@@ -144,6 +145,7 @@ Future<void> openTerms(
     isValid: appLinks.hasValidTerms,
     fallbackAsset: 'docs/privacy/terms.md',
     title: resolvedTitle,
+    appLinks: appLinks,
   );
 }
 
@@ -153,6 +155,7 @@ Future<void> _openLegal(
   required bool isValid,
   required String fallbackAsset,
   required String title,
+  required AppLinksApi appLinks,
 }) async {
   // Try external if valid
   if (isValid) {
@@ -163,7 +166,11 @@ Future<void> _openLegal(
   // Fallback to in-app Markdown viewer
   await Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (_) => LegalViewer.asset(fallbackAsset, title: title),
+      builder: (_) => LegalViewer.asset(
+        fallbackAsset,
+        title: title,
+        appLinks: appLinks,
+      ),
     ),
   );
 }

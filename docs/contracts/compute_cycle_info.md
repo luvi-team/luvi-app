@@ -44,8 +44,10 @@ Deterministic computation of the current cycle phase and derived values for UI/r
    - Luteal: last `luteal_length_days` days of the cycle.
    - Ovulatory: ovulation day `ov_day = cycle_length_days - luteal_length_days`; then clamp: `ov_day ∈ [1, cycle_length_days]`. The 2‑day window is `[ov_day, min(ov_day+1, cycle_length_days)]`. Whether `day_in_cycle` falls into this window determines phase `ovulatory` (otherwise not).
      Examples: (a) `ov_day < 1` → clamp to 1 ⇒ window `[1, 2]`; (b) `ov_day = cycle_length_days` ⇒ window `[cycle_length_days, cycle_length_days]` (one day).
+     Overlap precedence: if `day_in_cycle` lies in the ovulatory window, set `phase = ovulatory` — ovulatory takes precedence over menstrual on overlap (e.g., when ovulatory day equals menstrual day N).
    - Follicular: remainder between menstrual and ovulation windows.
 4. Derive `phase_window_start/end` from the phase and boundaries; both are calendar dates in `tz` and represent whole-day boundaries (inclusive start and inclusive end), independent of time-of-day. Compute `next_phase` and `next_phase_start` deterministically.
+   - For the determined `phase`, compute `day_in_phase = (day_in_cycle - phase_start_day) + 1` (1‑based). Clamp `day_in_phase` to `[1, phase_length]`; populate the output field and add a note if a clamp was applied.
 5. Clamps: set inputs outside allowed ranges to their bounds; set `clamps_applied = true` and populate `notes`.
 
 ## Timezone & Date Boundaries

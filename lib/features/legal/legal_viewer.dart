@@ -15,11 +15,13 @@ import 'remote_loader_base.dart'
 class LegalViewer extends StatefulWidget {
   final String assetPath;
   final String title;
+  final AppLinksApi appLinks;
 
   const LegalViewer.asset(
     this.assetPath, {
     super.key,
     required this.title,
+    this.appLinks = const ProdAppLinks(),
   });
 
   @override
@@ -47,8 +49,8 @@ class _LegalViewerState extends State<LegalViewer> {
   }
 
   Uri? _deriveRemoteUri(String assetPath) {
-    // Map known assets to configured remote URLs
-    final appLinks = const ProdAppLinks();
+    // Map known assets to configured remote URLs using injected AppLinks
+    final appLinks = widget.appLinks;
     if (assetPath.endsWith('/privacy.md') || assetPath.endsWith('privacy.md')) {
       final uri = appLinks.privacyPolicy;
       return appLinks.isConfiguredUrl(uri) ? uri : null;

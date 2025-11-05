@@ -89,15 +89,15 @@ void main() {
         reason:
             'Actual height ($actualHeight dp) must fit within reserve (${AuthLayout.socialBlockReserveFallback} dp)',
       );
-      // Assert lower bound sanity only when both providers are enabled
-      if (FeatureFlags.enableAppleSignIn && FeatureFlags.enableGoogleSignIn) {
-        expect(
-          actualHeight,
-          greaterThan(_expectedMinHeightForTwoButtons),
-          reason: 'Height should exceed a conservative 150dp bound',
+      // Assert lower bound sanity
+      expect(
+        actualHeight,
+        greaterThan(_expectedMinHeightForTwoButtons),
+        reason: 'Height should exceed a conservative 150dp bound',
       );
-      }
-    });
+    },
+    skip: !(FeatureFlags.enableAppleSignIn && FeatureFlags.enableGoogleSignIn),
+    );
 
     testWidgets(
       'Apple-only variant (enable_apple_sign_in=true, enable_google_sign_in=false)',

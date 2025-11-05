@@ -12,8 +12,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
   }) {
     // Register callbacks inline with listen() so synchronous emissions
     // are handled and not dropped.
-    late final StreamSubscription<dynamic> sub;
-    sub = stream.listen(
+    _subscription = stream.listen(
       (_) {
         _notifyIfNotDisposed();
       },
@@ -26,14 +25,10 @@ class GoRouterRefreshStream extends ChangeNotifier {
         }
       },
       onDone: () {
-      // (previous lines remain unchanged)
-      // cancelOnError: false, <- REMOVED
-      // (subsequent lines remain unchanged)
         dispose();
       },
       cancelOnError: false,
     );
-    _subscription = sub;
   }
 
   late final StreamSubscription<dynamic> _subscription;

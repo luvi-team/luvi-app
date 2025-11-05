@@ -24,6 +24,7 @@ Operational Notes
 
 Rekey Safety and Procedure
 1) Preconditions (both in-place and export):
+- Verify the local DB has been successfully synced to server (for signed-in users) to ensure no local-only data is at risk.
 - Verify free disk space ≥ 2× the current DB file size (baseline). Allow up to 3× when page/reserved-byte layout changes or VACUUM-style rewrites may occur, to accommodate temporary artifacts.
 - Ensure the DB is idle (no long-running transactions). If using WAL, checkpoint and truncate the WAL (or close all connections) prior to rekeying to avoid additional temporary WAL usage during the operation.
 

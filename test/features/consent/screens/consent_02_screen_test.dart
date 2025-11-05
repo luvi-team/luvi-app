@@ -97,7 +97,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     final screenContext = tester.element(find.byType(Consent02Screen));
     final l10n = AppLocalizations.of(screenContext)!;
@@ -109,7 +109,7 @@ void main() {
     expect(bulkButtonFinder, findsOneWidget);
 
     await tester.tap(bulkButtonFinder);
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(
       find.widgetWithText(ElevatedButton, l10n.consent02DeselectAll),

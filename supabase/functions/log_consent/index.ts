@@ -31,6 +31,8 @@ if (!SUPABASE_URL) {
 if (!SUPABASE_ANON_KEY) {
   throw new Error("Missing required environment variable: SUPABASE_ANON_KEY must be set");
 }
+// Canonical scopes list: keep in sync with client/shared config. Source of truth to be centralized
+// TODO: Move to env (CONSENT_VALID_SCOPES), shared config module, or DB table to avoid drift.
 const VALID_SCOPES = [
   "health",
   "analytics",
@@ -277,7 +279,8 @@ serve(async (req) => {
       duration_ms: elapsed,
       rpc_latency_ms: rpcDuration,
     });
-    await maybeAlert(requestId, "error", { where: "consent_rpc" });
+    // Fire-and-forget: do not block response path on alert delivery
+    maybeAlert(requestId, "error", { where: "consent_rpc" });
     return new Response(JSON.stringify({ error: "Failed to log consent" }), {
       status: 500,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
@@ -293,7 +296,8 @@ serve(async (req) => {
       duration_ms: elapsed,
       rpc_latency_ms: rpcDuration,
     });
-    await maybeAlert(requestId, "rate_limited", {
+    // Fire-and-forget: do not block response path on alert delivery
+    maybeAlert(requestId, "rate_limited", {
       user_id: payload.user_id,
       window_sec: RATE_LIMIT_WINDOW_SEC,
     });

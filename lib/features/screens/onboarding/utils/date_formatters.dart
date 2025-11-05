@@ -10,9 +10,25 @@ class DateFormatters {
   static String localizedDayMonthYear(DateTime date, {String? localeName}) {
     final trimmed = localeName?.trim();
 
-    // Accept patterns like 'de', 'en', 'en_US', 'pt_BR', 'zh_Hans', 'zh-Hans'
-    final localePattern =
-        RegExp(r'^[A-Za-z]{2,3}([_-][A-Za-z0-9]{2,8}){0,2}$');
+    // Pragmatic BCP 47 language tag validation (RFC 5646-inspired, not exhaustive).
+    // Accepts common forms like:
+    // - 'de', 'en'
+    // - 'en-US', 'pt-BR'
+    // - 'zh-Hans', 'zh-Hant-TW'
+    // - with variants/extensions/private-use (e.g., 'sl-rozaj-biske', 'en-US-u-ca-buddhist', 'x-private')
+    // Note: Full BCP 47 ABNF (incl. grandfathered tags) is intentionally not implemented for MVP.
+    final localePattern = RegExp(
+      r'^(?:'
+      r'x(?:-[A-Za-z0-9]{1,8})+' // private-use only
+      r'|'
+      r'(?:[A-Za-z]{2,8}(?:-[A-Za-z]{3}){0,3})' // language + optional extlang
+      r'(?:-[A-Za-z]{4})?' // optional script
+      r'(?:-(?:[A-Za-z]{2}|\d{3}))?' // optional region
+      r'(?:-(?:\d[A-Za-z0-9]{3}|[A-Za-z0-9]{5,8}))*' // variants
+      r'(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z0-9]{2,8})+)*' // extensions
+      r'(?:-x(?:-[A-Za-z0-9]{1,8})+)?' // optional private-use tail
+      r')$'
+    );
     final effectiveLocale =
         (trimmed == null || trimmed.isEmpty || !localePattern.hasMatch(trimmed))
             ? null

@@ -1,6 +1,6 @@
 # ADR-0006: Offline Resume Sync
 Status: Accepted  
-Datum: 2025-01-16
+Datum: 2025-11-05
 
 ## Kontext
 - Workout-Flow benötigt eine zuverlässige Resume-Position, auch ohne Netz.

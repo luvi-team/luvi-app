@@ -47,12 +47,15 @@ class SupabaseService {
 
       // Create the shared gate and kick off initialization exactly once.
       final gate = _initCompleter = Completer<void>();
-      _performInitializeAndCache(envFile).then((_) {
+      _performInitializeAndCache(envFile).then<void>((_) {
         if (!gate.isCompleted) gate.complete();
       }).catchError((Object error, StackTrace stack) {
-        // Allow subsequent retries after a failure by clearing the gate.
-        _initCompleter = null;
-        if (!gate.isCompleted) gate.completeError(error, stack);
+        // Clear the shared gate and complete with error under the same lock
+        // that guards creation/inspection to avoid races for late callers.
+        return _initLock.synchronized<void>(() {
+          _initCompleter = null;
+          if (!gate.isCompleted) gate.completeError(error, stack);
+        });
       });
       return gate.future;
     });
@@ -164,7 +167,7 @@ class SupabaseService {
   }
 
   /// Upsert cycle data for the current user
-  /// Upsert cycle data for the current user.
+  ///
   ///
   /// Timezone handling for [lastPeriod]: this method interprets the provided
   /// DateTime as a calendar date in the user's local timezone and normalizes

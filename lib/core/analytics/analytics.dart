@@ -20,8 +20,10 @@ class Analytics {
   /// Null-valued properties are filtered out before forwarding so the
   /// underlying recorder/backends never receive `null` values.
   void track(String name, Map<String, Object?> props) {
-    final clean = Map<String, Object?>.from(props)
-      ..removeWhere((_, v) => v == null);
+    final clean = {
+      for (final entry in props.entries)
+        if (entry.value != null) entry.key: entry.value
+    };
     _recorder.recordEvent(name, properties: clean);
   }
 

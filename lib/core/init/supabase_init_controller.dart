@@ -64,6 +64,9 @@ class SupabaseInitController extends ChangeNotifier {
   static final _random = math.Random();
 
   void ensureInitialized({required String envFile}) {
+    // First call wins; subsequent calls with different envFile are ignored.
+    assert(_envFile == null || _envFile == envFile, 
+           'envFile must be consistent across calls');
     _envFile ??= envFile;
     if (_started || SupabaseService.isInitialized) {
       _started = true;
@@ -114,13 +117,10 @@ class SupabaseInitController extends ChangeNotifier {
         ));
       }
 
-      _setState(_state.copyWith(error: error, configError: isConfig));
-
-      // In tests do not schedule retry timers to avoid pending timers
       if (!isTest && !isConfig && _state.hasAttemptsLeft && !_disposed) {
         // Exponential backoff without floating point: 500ms * (2^(attempt-1))
         final baseMs = 500 * (1 << (attempt - 1));
-        final jitterMs = _random.nextInt(400);
+        final jitterMs = _random.nextInt(baseMs ~/ 5); // ±20% jitter
         final delay = Duration(milliseconds: baseMs + jitterMs);
         _retryTimer?.cancel();
         _setState(_state.copyWith(retryScheduled: true));
@@ -130,6 +130,8 @@ class SupabaseInitController extends ChangeNotifier {
           _attemptInit();
         });
       }
+      // Record the error/config state regardless of scheduling a retry
+      _setState(_state.copyWith(error: error, configError: isConfig));
     }
   }
 

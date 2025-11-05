@@ -36,6 +36,9 @@ Future<String?> fetchRemoteMarkdown(Uri uri, {Duration timeout = const Duration(
     return completer.future;
   } catch (_) {
     cleanup();
+    try {
+      req.abort();
+    } catch (_) {}
     return null;
   }
 }

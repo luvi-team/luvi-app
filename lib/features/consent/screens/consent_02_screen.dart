@@ -116,7 +116,7 @@ class Consent02Screen extends ConsumerWidget {
                     );
                     busyNotifier.setBusy(true);
                     try {
-                      Exception? markError;
+                      Object? markError;
 
                       final userState = await tryOrNullAsync(
                         () => ref.read(userStateServiceProvider.future),
@@ -133,7 +133,7 @@ class Consent02Screen extends ConsumerWidget {
                           },
                           tag: 'markWelcomeSeen',
                           onError: (error, stack) {
-                            if (error is Exception) markError = error;
+                            markError = error;
                           },
                         );
                       }
