@@ -11,14 +11,14 @@ const String piiWarning = 'DO NOT LOG PII (emails, phones, tokens, sessions, add
 
 class Logger {
   const Logger();
-  void d(String message, {String? tag}) => _print(_format('D', message, tag: tag));
-  void i(String message, {String? tag}) => _print(_format('I', message, tag: tag));
+  void d(String message, {String? tag}) => _print(_format('D', _sanitizeForLog(message), tag: tag));
+  void i(String message, {String? tag}) => _print(_format('I', _sanitizeForLog(message), tag: tag));
   void w(String message, {String? tag, Object? error, StackTrace? stack}) {
-    _printWithError('W', message, tag: tag, error: error, stack: stack);
+    _printWithError('W', _sanitizeForLog(message), tag: tag, error: error, stack: stack);
   }
 
   void e(String message, {String? tag, Object? error, StackTrace? stack}) {
-    _printWithError('E', message, tag: tag, error: error, stack: stack);
+    _printWithError('E', _sanitizeForLog(message), tag: tag, error: error, stack: stack);
   }
 
   void _printWithError(String level, String message, {String? tag, Object? error, StackTrace? stack}) {

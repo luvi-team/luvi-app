@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 
@@ -47,7 +48,7 @@ class LoginState {
 class LoginNotifier extends AsyncNotifier<LoginState> {
   // Client-side sanity guard; server-side validation stays authoritative.
   static final RegExp _emailRegex =
-      RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,63}$');
+      RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$');
   static const int _kMinPasswordLength = 8;
   static const Object _noChange = Object();
 
@@ -139,6 +140,7 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
     await validate();
   }
 
+  @visibleForTesting
   /// Helper method for tests to simplify synchronous access.
   LoginState debugState() => _current();
 }

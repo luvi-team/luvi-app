@@ -1,6 +1,8 @@
 import 'package:luvi_app/features/consent/model/consent_types.dart';
 
 class ConsentConfig {
+  const ConsentConfig._();
+
   // Single source of truth for consent policy version used across app.
   static const String currentVersion = 'v1.0';
 

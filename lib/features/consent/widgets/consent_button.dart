@@ -16,6 +16,24 @@ class ConsentButton extends ConsumerStatefulWidget {
 class _ConsentButtonState extends ConsumerState<ConsentButton> {
   bool _isLoading = false;
 
+  /// Categorizes exceptions into generic error types to avoid leaking
+  /// internal class names (e.g., _InternalSupabaseAuthException).
+  /// Returns a safe, user-facing error category string.
+  String _categorizeError(Object error) {
+    final typeName = error.runtimeType.toString().toLowerCase();
+    if (typeName.contains('network') || typeName.contains('socket')) {
+      return 'network_error';
+    } else if (typeName.contains('timeout')) {
+      return 'timeout_error';
+    } else if (typeName.contains('auth') || typeName.contains('permission')) {
+      return 'auth_error';
+    } else if (typeName.contains('validation')) {
+      return 'validation_error';
+    } else {
+      return 'unknown_error';
+    }
+  }
+
   Future<void> _handleAccept() async {
     setState(() => _isLoading = true);
     // Keep version/scopes in outer scope so both success and failure paths
@@ -47,7 +65,7 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       // feedback via SnackBar if the widget is mounted.
       final analytics = ref.read(analyticsProvider);
       analytics.track('consent_failed', {
-        'error_type': e.runtimeType.toString(),
+        'error_type': _categorizeError(e),
         'policy_version': version,
         'scopes_count': scopes.length,
         'scopes': scopes,

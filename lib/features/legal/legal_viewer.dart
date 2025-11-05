@@ -51,11 +51,12 @@ class _LegalViewerState extends State<LegalViewer> {
   Uri? _deriveRemoteUri(String assetPath) {
     // Map known assets to configured remote URLs using injected AppLinks
     final appLinks = widget.appLinks;
-    if (assetPath.endsWith('/privacy.md') || assetPath.endsWith('privacy.md')) {
+    final normalized = assetPath.replaceAll('\\', '/');
+    if (normalized == 'assets/legal/privacy.md') {
       final uri = appLinks.privacyPolicy;
       return appLinks.isConfiguredUrl(uri) ? uri : null;
     }
-    if (assetPath.endsWith('/terms.md') || assetPath.endsWith('terms.md')) {
+    if (normalized == 'assets/legal/terms.md') {
       final uri = appLinks.termsOfService;
       return appLinks.isConfiguredUrl(uri) ? uri : null;
     }

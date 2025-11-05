@@ -64,8 +64,8 @@ Object? _sanitizeValue(Object? value) {
       if (key is String) {
         stringMap[key] = entry.value;
       } else {
-        // Skip non-String keys or convert with toString()
-        stringMap[key.toString()] = entry.value;
+        // Skip non-String keys to avoid potential PII in toString()
+        continue;
       }
     }
     return _sanitizeMap(stringMap);

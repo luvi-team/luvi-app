@@ -66,7 +66,7 @@ class AuthStrings {
       try {
         final l10n = lookupAppLocalizations(candidate);
         _cachedL10n = l10n;
-        _cachedTag = candidate.toLanguageTag();
+        _cachedTag = currentTag;
         return l10n;
       } on FlutterError {
         continue;

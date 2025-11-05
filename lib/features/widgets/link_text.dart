@@ -6,6 +6,10 @@ const double _kMinTapSize = 44.0;
 const double _kDefaultHorizontalTouchPadding = 8.0; // conservative for inline links
 
 /// Piece of rich text that can optionally behave like a link.
+///
+/// **Important:** Tappable parts (with [onTap] provided) must have visible text
+/// to ensure proper accessibility and usability. Empty text with a tap handler
+/// will cause an assertion error in debug mode.
 class LinkTextPart {
   final String text;
   final VoidCallback? onTap;
@@ -13,13 +17,14 @@ class LinkTextPart {
   final Color? color;
   final String? semanticsLabel;
 
-  const LinkTextPart(
+  LinkTextPart(
     this.text, {
     this.onTap,
     this.bold = false,
     this.color,
     this.semanticsLabel,
-  });
+  }) : assert(onTap == null || text.isNotEmpty,
+            'Tappable parts must have visible text for accessibility and usability');
 }
 
 /// Inline rich text renderer that keeps semantics and analytics wiring consistent.
@@ -56,7 +61,9 @@ class LinkText extends StatelessWidget {
           final partStyle = part.bold
               ? resolvedBaseStyle.copyWith(fontWeight: FontWeight.w700)
               : resolvedBaseStyle;
-          final styledPartWithColor = partStyle.copyWith(color: part.color);
+          final styledPartWithColor = part.color != null 
+              ? partStyle.copyWith(color: part.color)
+              : partStyle;
           if (part.onTap == null) {
             return TextSpan(text: part.text, style: styledPartWithColor);
           }

@@ -40,6 +40,10 @@ Explicit thresholds ensure consistent behavior across environments with low traf
 
 ### Aggregation and hysteresis counters (state machine semantics)
 - A single "check" may perform internal retries per the retry/backoff policy. These retries MUST be collapsed into one aggregated outcome level: `ok`, `degraded`, or `failed` based on aggregated metrics and thresholds.
+
+**Terminology clarification:**
+- **`failed`** is an internal aggregated outcome produced by a check's retry/aggregation logic and used by the state machine to decide transitions. It is not directly exposed to API consumers.
+- **`down`** is the external observable service status, emitted by the state machine after completing state transitions. Once the state machine determines that `failed` outcomes have persisted (e.g., `consecutiveFailed >= 2`), it transitions the service status to `down`.
 - The consecutive counters track only aggregated outcomes and are context aware:
   - `consecutiveFailed` increments on `failed` and resets on non‑failed.
   - `consecutiveOk` increments on `ok` and resets on non‑ok.
@@ -78,12 +82,14 @@ function runSingleCheckWithRetries(checkFn):
   aggErrorRate = aggregateErrorRate(attempts) // e.g., weighted by samples
   aggLatency = aggregateLatency(attempts)     // per selected metric p95/p50/ma_last_5m
   if aggErrorRate >= 0.20 or aggLatency > thresholds.degraded_lte or repeatedTimeouts(attempts):
+    // "failed" is internal outcome; see terminology clarification above
     return { level: "failed", errorRate: aggErrorRate, latency: aggLatency }
   if aggErrorRate < 0.05 and aggLatency <= thresholds.ok_lte:
     return { level: "ok", errorRate: aggErrorRate, latency: aggLatency }
   return { level: "degraded", errorRate: aggErrorRate, latency: aggLatency }
 
 function updateState(aggResult):
+  // "failed" is internal outcome; external status "down" is set by state machine below
   if aggResult.level == "failed":
     consecutiveFailed += 1
     consecutiveOk = 0
@@ -94,6 +100,8 @@ function updateState(aggResult):
     if state == down: consecutiveNonFailedWhileDown += 1
   else: // level == "degraded"
     consecutiveOk = 0
+    // Only track consecutiveNonFailedWhileDown while in 'down' state
+    // (not when state is degraded or ok)
     if state == down: consecutiveNonFailedWhileDown += 1
 
   switch state:
