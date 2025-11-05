@@ -52,7 +52,7 @@ void main() {
     ]);
   });
 
-  testWidgets('navigator observer applies overrides per route', (tester) async {
+  test('navigator observer applies overrides per route', () async {
     final fakeSetter = _FakeOrientationSetter();
     final controller = RouteOrientationController(
       defaultOrientations: const [DeviceOrientation.portraitUp],
@@ -73,7 +73,8 @@ void main() {
     observer.didPush(landscapeRoute, defaultRoute);
     observer.didPop(landscapeRoute, defaultRoute);
 
-    await tester.pumpAndSettle(); // ensure all async operations complete
+    // If the controller schedules async work, wait for it explicitly
+    await Future.microtask(() {});
 
     expect(fakeSetter.calls, [
       [DeviceOrientation.portraitUp],

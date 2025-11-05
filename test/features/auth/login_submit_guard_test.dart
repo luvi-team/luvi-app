@@ -82,5 +82,6 @@ void main() {
     final state = container.read(loginProvider).value!;
     expect(state.emailError, AuthStrings.errEmailInvalid);
     expect(state.passwordError, AuthStrings.errPasswordInvalid);
+    expect(state.globalError, isNull);
   });
 }
