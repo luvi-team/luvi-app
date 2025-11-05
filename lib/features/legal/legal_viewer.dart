@@ -44,7 +44,11 @@ class _LegalViewerState extends State<LegalViewer> {
             return Center(child: Text(message));
           }
           if (!snap.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: 'Loading document',
+              ),
+            );
           }
           final theme = Theme.of(context);
           return Padding(
