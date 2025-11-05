@@ -19,6 +19,19 @@ declare
   recent_count integer := 0;
   lock_key bigint;
 begin
+  -- Validate input parameters early to avoid ambiguous failures downstream.
+  if p_user_id is null then
+    raise exception 'p_user_id must be a non-null valid uuid';
+  end if;
+  if p_version is null or btrim(p_version) = '' then
+    raise exception 'p_version must be provided';
+  end if;
+  if p_scopes is null or jsonb_typeof(p_scopes) <> 'array' then
+    raise exception 'p_scopes must be a non-empty array';
+  end if;
+  if jsonb_array_length(p_scopes) < 1 then
+    raise exception 'p_scopes must be a non-empty array';
+  end if;
   if p_window_sec is null or p_window_sec <= 0 then
     raise exception 'p_window_sec must be > 0';
   end if;
@@ -27,8 +40,7 @@ begin
   end if;
 
   -- Derive a stable 64-bit key from the UUID for advisory locking.
-  -- md5 -> take first 16 hex chars -> cast to bit(64) -> bigint
-  lock_key := ('x' || substr(md5(p_user_id::text), 1, 16))::bit(64)::bigint;
+  lock_key := hashtext(p_user_id::text);
   perform pg_advisory_xact_lock(lock_key);
 
   -- Count consents in the sliding window for this user
@@ -54,4 +66,3 @@ comment on function public.log_consent_if_allowed(uuid, text, jsonb, integer, in
 
 grant execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer)
   to authenticated;
-

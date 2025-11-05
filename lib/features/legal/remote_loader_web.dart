@@ -16,7 +16,7 @@ Future<String?> fetchRemoteMarkdown(Uri uri, {Duration timeout = const Duration(
       ..responseType = 'text'
       ..onLoad.listen((_) {
         if (req.status != null && req.status! >= 200 && req.status! < 300) {
-          if (!completer.isCompleted) completer.complete(req.responseText ?? '');
+          if (!completer.isCompleted) completer.complete(req.responseText);
         } else {
           if (!completer.isCompleted) completer.complete(null);
         }

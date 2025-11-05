@@ -253,6 +253,8 @@ class _ConsentTopBar extends StatelessWidget {
                   context.go(Consent01Screen.routeName);
                 }
               },
+              semanticLabel:
+                  (AppLocalizations.of(context)?.authBackSemantic) ?? 'Back',
             ),
           ),
           const SizedBox(height: ConsentSpacing.topBarButtonToTitle),

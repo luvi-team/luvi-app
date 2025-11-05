@@ -2,8 +2,8 @@
 
 Status: accepted
 Owner: Product Design & Flutter Core
-Date: 2025-01-18
-Hinweis: Datum entspricht dem Entscheidungsdatum; im Repo erfasst am 2025-10-31.
+Date: 2025-10-31
+Hinweis: Datum entspricht dem Entscheidungs- und PR-Erstellungsdatum (2025-10-31).
 
 ## Kontext
 Das Figma-Layout für den Onboarding-Success-Screen definiert einen Abstand von 28px zwischen Trophy-Illustration und Titel. In der Flutter-Implementierung ist der Abstand auf 24px reduziert worden, um das Element-Raster (8px-Rhythmus) sowie bestehende Spacing-Tokens (`Spacing.l = 24px`) wiederzuverwenden und unnötige Sonderwerte im Design-System zu vermeiden.

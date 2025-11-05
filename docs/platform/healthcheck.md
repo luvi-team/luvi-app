@@ -9,7 +9,9 @@
 
 ## Response Schema
 
-  - Rationale: explicit thresholds ensure consistent behavior across environments with low traffic while preserving sensitivity under normal load.
+### Rationale
+Explicit thresholds ensure consistent behavior across environments with low traffic while preserving sensitivity under normal load.
+
 - Status mapping (default unless overridden by per-service `thresholds`):
   - `ok` if `response_ms` ≤ `ok_lte` and error rate < 5%.
   - `degraded` if `response_ms` ≤ `degraded_lte` or error rate ≥ 5% and < 20%.
@@ -53,8 +55,10 @@ consecutiveOk = 0
 consecutiveNonFailedWhileDown = 0
 
 function runSingleCheckWithRetries(checkFn):
+  // Perform the initial attempt plus maxRetries additional retries
+  attemptsCount = maxRetries + 1
   attempts = []
-  for i in 0..maxRetries:
+  for i in 0..attemptsCount-1:
     res = checkFn()
     attempts.append(res)
     if res.success:
@@ -63,7 +67,9 @@ function runSingleCheckWithRetries(checkFn):
         return { level: "ok", errorRate: res.errorRate, latency: res.latency }
       if res.errorRate < 0.20 and res.latency <= thresholds.degraded_lte:
         return { level: "degraded", errorRate: res.errorRate, latency: res.latency }
-    backoff(i)
+    // Only back off if another retry remains
+    if i < attemptsCount - 1:
+      backoff(i)
   // Aggregate after retries exhausted
   aggErrorRate = aggregateErrorRate(attempts) // e.g., weighted by samples
   aggLatency = aggregateLatency(attempts)     // per selected metric p95/p50/ma_last_5m
@@ -91,6 +97,9 @@ function updateState(aggResult):
       // Any non‑ok aggregated result breaks ok streaks; degrade after 2 failures
       if consecutiveFailed >= 2: state = degraded
     case degraded:
+      // Degraded → down condition is evaluated on aggregated metrics across the
+      // two consecutive failed checks (as opposed to requiring both to individually
+      // exceed the threshold). Alternative policy is acceptable if documented.
       if consecutiveFailed >= 2 and (
            aggResult.latency > thresholds.degraded_lte or repeatedTimeoutsLastChecks()):
         state = down
@@ -98,9 +107,12 @@ function updateState(aggResult):
         state = ok
     case down:
       if aggResult.level != "failed" and aggResult.latency <= thresholds.degraded_lte:
-        if consecutiveNonFailedWhileDown >= 2: state = degraded
+        if consecutiveNonFailedWhileDown >= 2:
+          state = degraded
+          consecutiveNonFailedWhileDown = 0 // reset after leaving "down"
       if consecutiveOk >= 3:
         state = ok
+        consecutiveNonFailedWhileDown = 0 // reset after leaving "down"
 ```
 
 ## Monitoring

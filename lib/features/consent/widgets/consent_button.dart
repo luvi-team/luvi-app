@@ -46,7 +46,7 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       // feedback via SnackBar if the widget is mounted.
       final analytics = ref.read(analyticsProvider);
       analytics.track('consent_failed', {
-        'error': e.toString(),
+        'error_type': e.runtimeType.toString(),
         'policy_version': version,
         'scopes_count': scopes.length,
         'scopes': scopes,

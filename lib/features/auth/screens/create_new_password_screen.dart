@@ -14,6 +14,7 @@ import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/l10n/l10n_capabilities.dart';
  
 
 class CreateNewPasswordScreen extends StatefulWidget {
@@ -188,7 +189,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Please wait $wait seconds before retrying.'),
+                          content: Text(l10n.authErrWaitBeforeRetry(wait)),
                         ),
                       );
                       return;
@@ -281,7 +282,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            '${l10n.authPasswordUpdateError} Please wait $wait seconds before retrying.',
+                            '${l10n.authPasswordUpdateError} ${l10n.authErrWaitBeforeRetry(wait)}',
                           ),
                         ),
                       );

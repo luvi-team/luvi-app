@@ -33,9 +33,11 @@ class OnboardingSuccessTokens {
     final effectiveHeight = (viewHeight / textScaleFactor)
         .clamp(_minViewportHeight, _maxViewportHeight)
         .toDouble();
-    final t =
-        (effectiveHeight - _minViewportHeight) /
-        (_maxViewportHeight - _minViewportHeight);
+    final denom = (_maxViewportHeight - _minViewportHeight);
+    final tRaw = denom > 0
+        ? (effectiveHeight - _minViewportHeight) / denom
+        : 0.0; // defensive fallback when range collapses
+    final t = tRaw.clamp(0.0, 1.0);
     final scale = lerpDouble(_minScaleValue, _maxScaleValue, t)!;
     final baselineOffset = lerpDouble(
       _minBaselineOffset,

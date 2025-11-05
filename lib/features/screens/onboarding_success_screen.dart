@@ -234,7 +234,9 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                   );
                 }
               } finally {
-                busyNotifier.setBusy(false);
+                if (context.mounted) {
+                  busyNotifier.setBusy(false);
+                }
               }
             },
       child: Text(l10n.commonStartNow),

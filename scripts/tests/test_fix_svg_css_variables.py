@@ -84,7 +84,7 @@ class FixSvgCssVariablesTests(unittest.TestCase):
       """
     )
     found, replaced = fix_svg_css_variables(str(svg_path))
-    self.assertGreaterEqual(found, 2)
+    self.assertEqual(found, 2)
     self.assertEqual(replaced, 1)
     rewritten = svg_path.read_text(encoding="utf-8")
     # Valid replacement applied

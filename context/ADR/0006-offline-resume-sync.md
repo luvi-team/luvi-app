@@ -26,7 +26,7 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
 
 - Right to Erasure (Art. 17):
   - API: `DELETE /functions/v1/resume_snapshots` löscht alle serverseitigen Snapshots und zugehörige Metadaten des angemeldeten Nutzers. Antwort: `202 Accepted { job_id }`.
-  - Löschmodell: Sofortige serverseitige Soft‑Delete (`deleted_at` gesetzt, RLS sperrt Zugriff) und Hintergrund‑Purge nach `purge_at = now() + 7d` via Job/cron. Hartlöschung umfasst Snapshots, Indizes, eventuelle Materialized Views und Telemetrie‑Joins (nur nicht‑aggregierte personenbezogene Felder). Pinned‑Status hat keinen Vorrang: alles wird gelöscht.
+  - Löschmodell: Sofortige serverseitige Soft‑Delete (`deleted_at` gesetzt, RLS sperrt Zugriff) und Hintergrund‑Purge nach `purge_at = now() + 7d` via Job/cron. Hartlöschung umfasst Snapshots, Indizes, eventuelle Materialized Views und Telemetrie‑Joins (nur nicht‑aggregierte personenbezogene Felder). Wichtig: Pinning schützt nicht vor expliziten Löschaufträgen (Right to Erasure) oder unmittelbaren Purge‑Jobs – auch gepinnte Snapshots werden in diesem Fall gelöscht.
   - Kaskaden: FK‑Kaskade auf `resume_snapshot_events`/`resume_snapshot_conflicts`/ähnliche Neben‑Tabellen; Tombstones verhindern Re‑Import derselben Daten während der Purge‑Phase.
   - Client‑Verhalten: Bei `erase_requested` oder 410/Gone‑Signal löscht die App lokale, verschlüsselte Kopien und stoppt Upload‑Queues. Der Nutzer wird über den irreversiblen Schritt informiert.
   - UI: „Daten löschen“ mit Re‑Auth (z. B. Passworteingabe/OS‑Biometrie), Doppel‑Bestätigung (Eingabe „DELETE“) und Hinweis auf lokale Kopien.
@@ -36,7 +36,7 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
   - Aufbewahrung von Audit‑Logs: 24 Monate, getrennt von Nutzdaten; enthält keine Payload‑Inhalte, nur Meta.
 
 - Retention & Soft‑Delete Policy:
-  - Standard‑Retention für Snapshots: 90 Tage Inaktivität, opt‑in „pinnen“ hebt Retention auf.
+  - Standard‑Retention für Snapshots: 90 Tage Inaktivität. Opt‑in „Pinnen“ hebt ausschließlich die automatische 90‑Tage‑Retention auf (gepinnt = von geplanten Retention‑Jobs ausgenommen), schützt aber nicht vor expliziten Löschaufträgen (Right to Erasure) oder sofortigen Purge‑Jobs.
   - Inaktivitätsdefinition (präzise):
     - Serverseitig maßgeblich ist `resume_snapshots.updated_at` (UTC) des jeweiligen Snapshot‑Datensatzes. Ein Snapshot gilt als inaktiv, wenn sein `updated_at` ≥ 90 Tage zurückliegt und er nicht gepinnt ist.
     - `updated_at` wird serverseitig gesetzt/überschrieben (DB/Edge), Client‑Timestamps dienen nur zur Telemetrie. So bleiben Zeitzonen/Clock‑Skews ohne Einfluss.

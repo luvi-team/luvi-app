@@ -64,7 +64,7 @@ void main() {
     await notifier.validateAndSubmit();
 
     final state = notifier.debugState();
-    expect(state.emailError, AuthStrings.errEmailInvalid);
+    expect(state.emailError, AuthStrings.errEmailEmpty);
     expect(state.passwordError, isNull);
     expect(state.isValid, isFalse);
   });
@@ -81,7 +81,7 @@ void main() {
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);
-    expect(state.passwordError, AuthStrings.errPasswordInvalid);
+    expect(state.passwordError, AuthStrings.errPasswordEmpty);
     expect(state.isValid, isFalse);
   });
 

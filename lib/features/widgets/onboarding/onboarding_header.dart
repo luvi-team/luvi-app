@@ -98,6 +98,9 @@ class OnboardingHeader extends StatelessWidget {
                 BackButtonCircle(
                   onPressed: onBack,
                   iconColor: colorScheme.onSurface,
+                  semanticLabel: (AppLocalizations.of(context)
+                          ?.authBackSemantic) ??
+                      'Back',
                 )
               else
                 const SizedBox(

@@ -631,6 +631,14 @@
   "@authErrPasswordCommonWeak": {
     "description": "Validierungsfehler, wenn das Passwort zu häufig oder schwach ist."
   },
+  "authErrEmailEmpty": "Bitte gib deine E-Mail ein.",
+  "@authErrEmailEmpty": {
+    "description": "Validierungsfehler, wenn das E-Mail-Feld leer ist."
+  },
+  "authErrPasswordEmpty": "Bitte gib dein Passwort ein.",
+  "@authErrPasswordEmpty": {
+    "description": "Validierungsfehler, wenn das Passwort-Feld leer ist."
+  },
   "authCreateNewTitle": "Neues Passwort erstellen 💜",
   "@authCreateNewTitle": {
     "description": "Überschrift für den Bildschirm zum Erstellen eines neuen Passworts."
@@ -638,6 +646,13 @@
   "authCreateNewSubtitle": "Mach es stark.",
   "@authCreateNewSubtitle": {
     "description": "Untertitel für den Bildschirm zum Erstellen eines neuen Passworts."
+  },
+  "authErrWaitBeforeRetry": "Bitte warte {seconds} Sekunden, bevor du es erneut versuchst.",
+  "@authErrWaitBeforeRetry": {
+    "description": "Hinweistext, der die verbleibende Wartezeit bis zum nächsten Versuch kommuniziert.",
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
   },
   "consentSnackbarAccepted": "Einwilligung akzeptiert",
   "@consentSnackbarAccepted": {

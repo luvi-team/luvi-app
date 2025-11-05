@@ -75,7 +75,7 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
     if (router.canPop()) {
       context.pop();
     } else {
-      context.push(Onboarding04Screen.routeName);
+      context.go(Onboarding04Screen.routeName);
     }
   }
 

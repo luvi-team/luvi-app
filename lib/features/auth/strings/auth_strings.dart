@@ -89,7 +89,9 @@ class AuthStrings {
   static String get loginSocialDivider => _l10n().authLoginSocialDivider;
   static String get loginSocialGoogle => _l10n().authLoginSocialGoogle;
   static String get errEmailInvalid => _l10n().authErrEmailInvalid;
+  static String get errEmailEmpty => _l10n().authErrEmailEmpty;
   static String get errPasswordInvalid => _l10n().authErrPasswordInvalid;
+  static String get errPasswordEmpty => _l10n().authErrPasswordEmpty;
   // More granular password validation errors with graceful fallback to the
   // generic password error when the specific localization is not available yet.
   static String get errPasswordTooShort {

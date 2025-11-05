@@ -18,7 +18,7 @@ Future<String?> fetchRemoteMarkdown(Uri uri, {Duration timeout = const Duration(
       acc.addAll(chunk);
       return acc;
     }).timeout(timeout);
-    // Try to decode as UTF-8; fall back to system encoding if needed
+    // Decode as UTF-8; malformed sequences are replaced with U+FFFD
     return utf8.decode(bytes, allowMalformed: true);
   } on TimeoutException {
     return null;

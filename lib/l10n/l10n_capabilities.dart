@@ -8,3 +8,35 @@ extension AppLocalizationsX on AppLocalizations {
   /// all ARB locales define the granular password error keys.
   bool get hasGranularPasswordErrors => true;
 }
+
+/// Temporary additive API for newly added auth error strings.
+/// Once gen-l10n runs, generated instance members will take precedence and
+/// these extension members will be effectively shadowed.
+extension AppLocalizationsAuthAdditions on AppLocalizations {
+  String get authErrEmailEmpty {
+    switch (localeName) {
+      case 'de':
+        return 'Bitte gib deine E-Mail ein.';
+      default:
+        return 'Please enter your email.';
+    }
+  }
+
+  String get authErrPasswordEmpty {
+    switch (localeName) {
+      case 'de':
+        return 'Bitte gib dein Passwort ein.';
+      default:
+        return 'Please enter your password.';
+    }
+  }
+
+  String authErrWaitBeforeRetry(int seconds) {
+    switch (localeName) {
+      case 'de':
+        return 'Bitte warte $seconds Sekunden, bevor du es erneut versuchst.';
+      default:
+        return 'Please wait $seconds seconds before retrying.';
+    }
+  }
+}

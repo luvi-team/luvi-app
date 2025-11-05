@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../core/design_tokens/sizes.dart';
 import 'consent_02_screen.dart';
 import 'consent_welcome_03_screen.dart';
@@ -28,6 +29,8 @@ class Consent01Screen extends StatelessWidget {
             top: y(47 + ConsentSpacing.topBarSafeAreaOffset),
             child: BackButtonCircle(
               onPressed: () => context.go(ConsentWelcome03Screen.routeName),
+              semanticLabel:
+                  (AppLocalizations.of(context)?.authBackSemantic) ?? 'Back',
             ),
           ),
 

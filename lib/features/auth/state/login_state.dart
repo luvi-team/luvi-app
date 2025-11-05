@@ -74,19 +74,23 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
     Object? passwordError = _noChange,
     Object? globalError = _noChange,
   }) {
-    final current = _current();
+    // Preserve any existing data even when state is loading/errored.
+    final preserved = state.maybeWhen(
+      data: (d) => d,
+      orElse: () => state.value ?? LoginState.initial(),
+    );
     state = AsyncData(
-      current.copyWith(
-        email: email ?? current.email,
-        password: password ?? current.password,
+      preserved.copyWith(
+        email: email ?? preserved.email,
+        password: password ?? preserved.password,
         emailError: identical(emailError, _noChange)
-            ? current.emailError
+            ? preserved.emailError
             : emailError as String?,
         passwordError: identical(passwordError, _noChange)
-            ? current.passwordError
+            ? preserved.passwordError
             : passwordError as String?,
         globalError: identical(globalError, _noChange)
-            ? current.globalError
+            ? preserved.globalError
             : globalError as String?,
       ),
     );
@@ -98,21 +102,33 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   Future<void> validate() async {
     state = await AsyncValue.guard(() async {
       final current = _current();
+      final trimmedEmail = current.email.trim();
+      final trimmedPassword = current.password.trim();
 
       String? eErr;
       String? pErr;
 
-      if (!_emailRegex.hasMatch(current.email)) {
+      if (trimmedEmail.isEmpty) {
+        eErr = AuthStrings.errEmailEmpty;
+      } else if (!_emailRegex.hasMatch(trimmedEmail)) {
         eErr = AuthStrings.errEmailInvalid;
       }
-      if (current.password.length < _kMinPasswordLength) {
+
+      if (trimmedPassword.isEmpty) {
+        pErr = AuthStrings.errPasswordEmpty;
+      } else if (trimmedPassword.length < _kMinPasswordLength) {
         pErr = AuthStrings.errPasswordInvalid;
       }
 
       return current.copyWith(
+        email: trimmedEmail,
+        password: trimmedPassword,
         emailError: eErr,
         passwordError: pErr,
-        globalError: null,
+        // Only clear globalError when validation passes for both fields.
+        globalError: (eErr == null && pErr == null)
+            ? null
+            : current.globalError,
       );
     });
   }

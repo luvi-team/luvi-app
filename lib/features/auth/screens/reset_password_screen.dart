@@ -11,6 +11,7 @@ import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   static const String routeName = '/auth/forgot';
@@ -98,6 +99,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             innerSize: AuthLayout.backButtonSize,
             backgroundColor: theme.colorScheme.primary,
             iconColor: theme.colorScheme.onSurface,
+            semanticLabel:
+                (AppLocalizations.of(context)?.authBackSemantic) ?? 'Back',
           ),
           const SizedBox(height: AuthLayout.backButtonToTitle),
           Text(
