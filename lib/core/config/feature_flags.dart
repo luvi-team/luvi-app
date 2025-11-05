@@ -114,17 +114,18 @@ class FeatureFlags {
       defaultValue: true,
     );
   }
-}
 
-extension FeatureFlagsTelemetry on FeatureFlags {
-  /// Enable Sentry/telemetry for legal viewer. Default false; gate via
-  /// `--dart-define=FEATURE_SENTRY_LEGAL_VIEWER=true` or runtime override.
+  /// Telemetry enable flag for legal viewer and similar diagnostics (e.g., Sentry).
+  /// Toggle via `--dart-define=FEATURE_LEGAL_VIEWER_TELEMETRY=false` or runtime override.
   static bool get enableLegalViewerTelemetry {
-    final override = FeatureFlags._legalViewerTelemetryOverride;
-    if (override != null) return override;
+    final override = _legalViewerTelemetryOverride;
+    if (override != null) {
+      return override;
+    }
     return const bool.fromEnvironment(
-      'FEATURE_SENTRY_LEGAL_VIEWER',
+      'FEATURE_LEGAL_VIEWER_TELEMETRY',
       defaultValue: false,
     );
   }
 }
+

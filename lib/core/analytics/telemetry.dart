@@ -6,7 +6,7 @@ import 'package:luvi_app/core/logging/logger.dart';
 class Telemetry {
   Telemetry._();
 
-  static bool get _enabled => FeatureFlagsTelemetry.enableLegalViewerTelemetry;
+  static bool get _enabled => FeatureFlags.enableLegalViewerTelemetry;
 
   /// Record a breadcrumb-like event (no stack) for diagnostics.
   static void maybeBreadcrumb(String name, {Map<String, Object?>? data}) {
@@ -27,4 +27,3 @@ class Telemetry {
     log.e('event: $name props=${data ?? const {}}', tag: 'telemetry', error: error, stack: stack);
   }
 }
-
