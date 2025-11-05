@@ -8,50 +8,7 @@
 - **Polling frequency (Gate/CI):** every 5 minutes
 
 ## Response Schema
-```json
-{
-  "status": "ok",
-  "checkedAt": "2024-01-01T12:00:00Z",
-  "window": "last_5m",
-  "metric": "p95",
-  "services": {
-    "supabase_db": {
-      "status": "ok",
-      "response_ms": 180,
-      "thresholds": {"ok_lte": 200, "degraded_lte": 1000}
-    },
-    "supabase_auth": {
-      "status": "ok",
-      "response_ms": 160,
-      "thresholds": {"ok_lte": 200, "degraded_lte": 1000}
-    },
-    "analytics_pipeline": {
-      "status": "ok",
-      "response_ms": 220,
-      "thresholds": {"ok_lte": 300, "degraded_lte": 1500}
-    },
-    "revenuecat_proxy": {
-      "status": "ok",
-      "response_ms": 140,
-      "thresholds": {"ok_lte": 250, "degraded_lte": 1200}
-    },
-    "external_apis": {
-      "status": "ok",
-      "response_ms": 190,
-      "thresholds": {"ok_lte": 300, "degraded_lte": 1500}
-    }
-  },
-  "version": "app-1.0.0",
-  "notes": []
-}
-```
-- `status`: `ok`, `degraded`, or `down` (aggregated across services using worst-of logic).
-- `services`: per dependent component report with `status`, measured `response_ms` (numeric), and explicit per-service `thresholds`.
-- Measurement method and fallbacks:
-  - Primary: use `p95` latency over the `last_5m` window when `sampleSize ≥ 20`.
-  - Fallback 1: if `sampleSize < 20` but `sampleSize ≥ 5`, use `p50` (median) over the same `last_5m` window.
-  - Fallback 2: if `sampleSize < 5` and percentiles are not statistically meaningful, use a simple moving average over `last_5m`.
-  - Implementations MUST record the metric actually used in the top-level `metric` field using one of: `p95`, `p50`, or `ma_last_5m`. They SHOULD also include `sampleSize` in each service entry to aid debugging and audits.
+
   - Rationale: explicit thresholds ensure consistent behavior across environments with low traffic while preserving sensitivity under normal load.
 - Status mapping (default unless overridden by per-service `thresholds`):
   - `ok` if `response_ms` ≤ `ok_lte` and error rate < 5%.
@@ -81,7 +38,10 @@
 
 ### Aggregation and hysteresis counters (state machine semantics)
 - A single "check" may perform internal retries per the retry/backoff policy. These retries MUST be collapsed into one aggregated outcome level: `ok`, `degraded`, or `failed` based on aggregated metrics and thresholds.
-- The consecutive counters track only aggregated outcomes: `consecutiveFailed` increments on `failed`; `consecutiveOk` increments on `ok`; any other outcome (`degraded`) resets the opposing counter but does not increment it.
+- The consecutive counters track only aggregated outcomes and are context aware:
+  - `consecutiveFailed` increments on `failed` and resets on non‑failed.
+  - `consecutiveOk` increments on `ok` and resets on non‑ok.
+  - While in `down`, a separate short counter `consecutiveNonFailedWhileDown` increments on any non‑failed result (`ok` or `degraded`) and resets on `failed`. This is used exclusively for the `down → degraded` transition.
 - Error-rate threshold is evaluated per aggregated check (e.g., if aggregated `error_rate ≥ 5%` → outcome `failed`, contributes +1 to the consecutive‑failure counter). There is not a second counter for error‑rate.
 - State transitions evaluate only these aggregated results and the consecutive counters.
 
@@ -90,6 +50,7 @@ Pseudocode (reference implementation):
 state ∈ {ok, degraded, down}
 consecutiveFailed = 0
 consecutiveOk = 0
+consecutiveNonFailedWhileDown = 0
 
 function runSingleCheckWithRetries(checkFn):
   attempts = []
@@ -116,11 +77,14 @@ function updateState(aggResult):
   if aggResult.level == "failed":
     consecutiveFailed += 1
     consecutiveOk = 0
+    consecutiveNonFailedWhileDown = 0
   else if aggResult.level == "ok":
     consecutiveOk += 1
     consecutiveFailed = 0
+    if state == down: consecutiveNonFailedWhileDown += 1
   else: // level == "degraded"
     consecutiveOk = 0
+    if state == down: consecutiveNonFailedWhileDown += 1
 
   switch state:
     case ok:
@@ -133,10 +97,8 @@ function updateState(aggResult):
       else if consecutiveOk >= 3: // require 3 consecutive OK results
         state = ok
     case down:
-      if aggResult.level != "failed" and aggResult.latency <= thresholds.degraded_lte and consecutiveFailed == 0:
-        // Count consecutive non‑failed results up to 2 to lift to degraded
-        // (implementation keeps a separate short counter or reuses consecutiveOk after reset).
-        if consecutiveOk >= 2: state = degraded
+      if aggResult.level != "failed" and aggResult.latency <= thresholds.degraded_lte:
+        if consecutiveNonFailedWhileDown >= 2: state = degraded
       if consecutiveOk >= 3:
         state = ok
 ```
