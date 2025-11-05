@@ -83,7 +83,8 @@ void main() {
 
       // Find widgets
       final backButtonFinder = find.byType(BackButtonCircle);
-      final headerFinder = find.text('Mach es stark.');
+      // Use a stable key instead of hard-coded localized text
+      final headerFinder = find.byKey(const ValueKey('create_new_title'));
       final confirmFieldFinder = find.byKey(
         const Key('AuthConfirmPasswordField'),
       );
