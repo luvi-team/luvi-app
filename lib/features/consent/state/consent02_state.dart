@@ -1,31 +1,22 @@
 // ignore_for_file: constant_identifier_names
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:luvi_app/features/consent/model/consent_types.dart';
+
+// Re-export to keep existing import sites working.
+export 'package:luvi_app/features/consent/model/consent_types.dart'
+    show ConsentScope, kRequiredConsentScopes;
 
 part 'consent02_state.g.dart';
-
-enum ConsentScope {
-  terms,
-  health_processing,
-  ai_journal,
-  analytics,
-  marketing,
-  model_training,
-}
-
-const requiredScopes = {
-  ConsentScope.terms,
-  ConsentScope.health_processing,
-  ConsentScope.ai_journal,
-};
 
 @immutable
 class Consent02State {
   final Map<ConsentScope, bool> choices;
   const Consent02State(this.choices);
-  bool get requiredAccepted => requiredScopes.every((s) => choices[s] == true);
+  bool get requiredAccepted =>
+      kRequiredConsentScopes.every((s) => choices[s] == true);
   bool get allOptionalSelected => ConsentScope.values
-      .where((s) => !requiredScopes.contains(s))
+      .where((s) => !kRequiredConsentScopes.contains(s))
       .every((s) => choices[s] == true);
   Consent02State copyWith({Map<ConsentScope, bool>? choices}) =>
       Consent02State(choices ?? this.choices);
@@ -44,7 +35,7 @@ class Consent02Notifier extends _$Consent02Notifier {
   void selectAllOptional() {
     final m = {...state.choices};
     for (final s in ConsentScope.values) {
-      if (!requiredScopes.contains(s)) m[s] = true;
+      if (!kRequiredConsentScopes.contains(s)) m[s] = true;
     }
     state = state.copyWith(choices: m);
   }
@@ -52,7 +43,7 @@ class Consent02Notifier extends _$Consent02Notifier {
   void clearAllOptional() {
     final m = {...state.choices};
     for (final s in ConsentScope.values) {
-      if (!requiredScopes.contains(s)) m[s] = false;
+      if (!kRequiredConsentScopes.contains(s)) m[s] = false;
     }
     state = state.copyWith(choices: m);
   }

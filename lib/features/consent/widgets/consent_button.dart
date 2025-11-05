@@ -20,7 +20,7 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
     // Keep version/scopes in outer scope so both success and failure paths
     // can include them in analytics.
     final version = ConsentConfig.currentVersion;
-    final scopes = ConsentConfig.requiredScopes;
+    final scopes = ConsentConfig.requiredScopeNames;
     try {
       final consentService = ref.read(consentServiceProvider);
 
