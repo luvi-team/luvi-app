@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 
 class CreateNewHeader extends StatelessWidget {
   const CreateNewHeader({
@@ -33,13 +35,15 @@ class CreateNewHeader extends StatelessWidget {
       children: [
         SizedBox(height: topGap),
         Text(
-          'Neues Passwort erstellen 💜',
+          (AppLocalizations.of(context)?.authCreateNewTitle ??
+              auth_strings.AuthStrings.createNewTitle),
           key: const ValueKey('create_new_title'),
           style: titleStyle,
         ),
         const SizedBox(height: Spacing.xs),
         Text(
-          'Mach es stark.',
+          (AppLocalizations.of(context)?.authCreateNewSubtitle ??
+              auth_strings.AuthStrings.createNewSubtitle),
           key: const ValueKey('create_new_subtitle'),
           style: subtitleStyle,
         ),

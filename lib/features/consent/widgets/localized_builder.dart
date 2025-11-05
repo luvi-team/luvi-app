@@ -19,7 +19,18 @@ class LocalizedBuilder extends StatelessWidget {
     }
 
     final supportedLocales = AppLocalizations.supportedLocales;
-    final fallbackLocale = supportedLocales.first;
+    // Guard against empty supportedLocales to avoid RangeError on .first.
+    final Locale fallbackLocale;
+    if (supportedLocales.isEmpty) {
+      // Fallback to a sensible default and log a warning for diagnostics.
+      fallbackLocale = const Locale('en');
+      log.w(
+        'AppLocalizations.supportedLocales is empty. Falling back to en.',
+        tag: 'localized_builder',
+      );
+    } else {
+      fallbackLocale = supportedLocales.first;
+    }
     final currentLocale = Localizations.maybeLocaleOf(context);
     final effectiveLocale = currentLocale == null
         ? fallbackLocale

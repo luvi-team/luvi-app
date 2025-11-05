@@ -623,6 +623,14 @@
   "@authErrPasswordCommonWeak": {
     "description": "Validierungsfehler, wenn das Passwort zu häufig oder schwach ist."
   },
+  "authCreateNewTitle": "Neues Passwort erstellen 💜",
+  "@authCreateNewTitle": {
+    "description": "Überschrift für den Bildschirm zum Erstellen eines neuen Passworts."
+  },
+  "authCreateNewSubtitle": "Mach es stark.",
+  "@authCreateNewSubtitle": {
+    "description": "Untertitel für den Bildschirm zum Erstellen eines neuen Passworts."
+  },
   "consentSnackbarAccepted": "Einwilligung akzeptiert",
   "@consentSnackbarAccepted": {
     "description": "Snackbar-Text nach erfolgreichem Speichern der Einwilligung."

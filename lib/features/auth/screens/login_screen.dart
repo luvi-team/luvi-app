@@ -13,7 +13,7 @@ import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
-// LaunchMode kommt über supabase_flutter (kein url_launcher nötig)
+// LaunchMode comes from supabase_flutter (no url_launcher needed)
 
 /// LoginScreen with pixel-perfect Figma implementation.
 class LoginScreen extends ConsumerStatefulWidget {

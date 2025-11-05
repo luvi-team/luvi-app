@@ -36,7 +36,8 @@ class _LegalViewerState extends State<LegalViewer> {
         builder: (context, snap) {
           if (snap.hasError) {
             // Log the underlying error for diagnostics
-            log.e('error', tag: 'legal_viewer', error: snap.error!, stack: snap.stackTrace);
+            log.e('Failed to load legal document from asset: ${widget.assetPath}', 
+                  tag: 'legal_viewer', error: snap.error!, stack: snap.stackTrace);
             final l10n = AppLocalizations.of(context);
             final message =
                 l10n?.documentLoadError ?? 'Document could not be loaded.';

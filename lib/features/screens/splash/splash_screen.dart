@@ -51,6 +51,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           frameRate: FrameRate.composition,
           fit: BoxFit.contain,
           onLoaded: (composition) {
+            if (!mounted) return;
             _controller.duration = composition.duration;
             _controller.forward(from: 0);
           },
@@ -66,9 +67,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _navigateAfterAnimation() async {
     if (_hasNavigated) return;
+    final isAuth = SupabaseService.isAuthenticated;
     try {
       final service = await ref.read(userStateServiceProvider.future);
-      final isAuth = SupabaseService.isAuthenticated;
       final hasSeenWelcomeMaybe = service.hasSeenWelcomeOrNull;
 
       late final String target;
@@ -89,7 +90,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       log.e('routing error', tag: 'splash', error: e, stack: st);
       if (!mounted || _hasNavigated) return;
       _hasNavigated = true;
-      final isAuth = SupabaseService.isAuthenticated;
       context.go(isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName);
     }
   }

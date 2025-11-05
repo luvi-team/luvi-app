@@ -125,15 +125,10 @@ class MyAppWrapper extends ConsumerWidget {
           // Directionality/Localizations. This avoids needing Directionality
           // wrappers in tests and keeps behavior consistent across app and tests.
           builder: (context, child) {
-            // In test mode, skip overlay for stability.
-            if (InitModeBridge.resolve() == InitMode.test) {
-              return LocaleChangeCacheReset(child: child ?? const SizedBox.shrink());
-            }
-            if (SupabaseService.isInitialized) {
-              return LocaleChangeCacheReset(child: child ?? const SizedBox.shrink());
-            }
-            return LocaleChangeCacheReset(
-              child: Stack(
+            final shouldShowBanner = InitModeBridge.resolve() != InitMode.test && 
+                                     !SupabaseService.isInitialized;
+            final content = shouldShowBanner
+              ? Stack(
               alignment: Alignment.topLeft,
               children: [
                 child ?? const SizedBox.shrink(),
@@ -147,8 +142,10 @@ class MyAppWrapper extends ConsumerWidget {
                   ),
                 ),
               ],
-              ),
-            );
+              )
+              : child ?? const SizedBox.shrink();
+            
+            return LocaleChangeCacheReset(child: content);
           },
         );
         return app;
@@ -194,10 +191,8 @@ class _LocaleChangeCacheResetState extends State<LocaleChangeCacheReset> {
       // Reset localized string caches on locale change.
       // This ensures classes with static caches (e.g., AuthStrings) refresh.
       // Note: relies on single-threaded access on main isolate.
-      // We explicitly call the testing-visible method here as a lightweight
-      // invalidation. Consider exposing a public reset API if needed.
-      // ignore: invalid_use_of_visible_for_testing_member
-      auth_strings.AuthStrings.debugResetCache();
+      // Clear localized string caches on locale changes via public API.
+      auth_strings.AuthStrings.resetCache();
       _last = current;
     }
   }

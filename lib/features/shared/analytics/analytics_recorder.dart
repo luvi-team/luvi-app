@@ -51,9 +51,8 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
       debugPrint('[analytics] $name$sanitizedProps');
     }
     // Always forward to backend (if provided), regardless of build mode.
-    final sink = backend;
-    if (sink != null) {
-      sink(name, properties);
+    if (backend != null) {
+      backend!(name, properties);
     }
   }
 }

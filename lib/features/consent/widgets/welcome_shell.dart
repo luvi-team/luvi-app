@@ -98,7 +98,7 @@ class WelcomeShell extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     if (l10n == null) {
-      throw FlutterError(
+      throw StateError(
         'AppLocalizations must be provided above WelcomeShell. '
         'Ensure MaterialApp includes localizationsDelegates and supportedLocales.',
       );

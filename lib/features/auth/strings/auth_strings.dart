@@ -31,6 +31,15 @@ class AuthStrings {
 
   @visibleForTesting
   static void debugResetCache() {
+    // Delegate to the public API to ensure consistent behavior in tests.
+    resetCache();
+  }
+
+  /// Public API to clear the cached localization instance.
+  ///
+  /// Use this in production code when locale changes (e.g., after
+  /// Localizations updates) to ensure freshly resolved strings.
+  static void resetCache() {
     _cachedL10n = null;
     _cachedTag = null;
   }
@@ -132,6 +141,8 @@ class AuthStrings {
   static String get createNewHint1 => _l10n().authCreateNewHint1;
   static String get createNewHint2 => _l10n().authCreateNewHint2;
   static String get createNewCta => _l10n().authCreateNewCta;
+  static String get createNewTitle => _l10n().authCreateNewTitle;
+  static String get createNewSubtitle => _l10n().authCreateNewSubtitle;
   static String get verifyResetTitle => _l10n().authVerifyResetTitle;
   static String get verifyResetSubtitle => _l10n().authVerifyResetSubtitle;
   static String get verifyEmailTitle => _l10n().authVerifyEmailTitle;

@@ -77,6 +77,7 @@ class SupabaseInitController extends ChangeNotifier {
   }
 
   Future<void> retryNow() async {
+    if (!_state.canRetry || !_state.hasAttemptsLeft) return;
     _retryTimer?.cancel();
     _setState(_state.copyWith(retryScheduled: false));
     await _attemptInit();

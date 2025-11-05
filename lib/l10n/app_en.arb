@@ -763,6 +763,14 @@
   "@authSuccessCta": {
     "description": "Button label closing the success screen."
   },
+  "authCreateNewTitle": "Create a new password 💜",
+  "@authCreateNewTitle": {
+    "description": "Headline for the create-new-password screen."
+  },
+  "authCreateNewSubtitle": "Make it strong.",
+  "@authCreateNewSubtitle": {
+    "description": "Subtitle for the create-new-password screen."
+  },
   "authCreateNewHint1": "New password",
   "@authCreateNewHint1": {
     "description": "Hint text for the new password input."

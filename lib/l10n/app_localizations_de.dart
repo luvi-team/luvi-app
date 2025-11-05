@@ -579,6 +579,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSuccessCta => 'Fertig';
 
   @override
+  String get authCreateNewTitle => 'Neues Passwort erstellen 💜';
+
+  @override
+  String get authCreateNewSubtitle => 'Mach es stark.';
+
+  @override
   String get authCreateNewHint1 => 'Neues Passwort';
 
   @override

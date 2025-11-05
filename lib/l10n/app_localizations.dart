@@ -1199,6 +1199,18 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get authSuccessCta;
 
+  /// Headline for the create-new-password screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new password 💜'**
+  String get authCreateNewTitle;
+
+  /// Subtitle for the create-new-password screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Make it strong.'**
+  String get authCreateNewSubtitle;
+
   /// Hint text for the new password input.
   ///
   /// In en, this message translates to:
