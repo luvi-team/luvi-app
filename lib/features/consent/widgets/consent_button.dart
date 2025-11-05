@@ -36,12 +36,10 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       });
 
       if (mounted) {
-        final l10n = AppLocalizations.of(context);
-        if (l10n != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.consentSnackbarAccepted)),
-          );
-        }
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.consentSnackbarAccepted)),
+        );
       }
     } catch (e) {
       // Track consent failure with error and context; still show user-facing
@@ -54,12 +52,10 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
         'scopes': scopes,
       });
       if (mounted) {
-        final l10n = AppLocalizations.of(context);
-        if (l10n != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.consentSnackbarError(e.toString()))),
-          );
-        }
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.consentSnackbarError(e.toString()))),
+        );
       }
     } finally {
       if (mounted) {

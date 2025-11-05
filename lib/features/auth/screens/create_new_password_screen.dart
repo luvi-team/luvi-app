@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async' show TimeoutException;
+import 'dart:async' show TimeoutException, Timer;
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -40,6 +40,40 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
+
+  // Simple client-side rate limiting with exponential backoff
+  int _consecutiveFailures = 0;
+  DateTime? _lastFailureAt;
+  Timer? _backoffTicker;
+
+  int get _backoffRemainingSeconds {
+    if (_consecutiveFailures <= 0 || _lastFailureAt == null) return 0;
+    const baseDelaySecs = 2; // starting backoff window
+    const maxDelaySecs = 60; // cap to keep UX reasonable
+    final multiplier = 1 << _consecutiveFailures; // 2^attempts
+    final delaySecs = (baseDelaySecs * multiplier).clamp(0, maxDelaySecs);
+    final end = _lastFailureAt!.add(Duration(seconds: delaySecs));
+    final now = DateTime.now();
+    final remaining = end.difference(now).inSeconds;
+    return remaining > 0 ? remaining : 0;
+  }
+
+  bool get _isBackoffActive => _backoffRemainingSeconds > 0;
+
+  void _startBackoffTicker() {
+    _backoffTicker?.cancel();
+    if (!_isBackoffActive) return;
+    _backoffTicker = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
+      if (!_isBackoffActive) {
+        t.cancel();
+      }
+      setState(() {});
+    });
+  }
 
   // Common weak password patterns extracted for reuse and testability
   static final List<RegExp> _commonWeakPatterns = <RegExp>[
@@ -100,6 +134,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     _scrollController.dispose();
+    _backoffTicker?.cancel();
     super.dispose();
   }
 
@@ -144,9 +179,20 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           width: double.infinity,
           child: ElevatedButton(
             key: const ValueKey('create_new_cta_button'),
-            onPressed: _isLoading
+            onPressed: (_isLoading || _isBackoffActive)
                 ? null
                 : () async {
+                    if (_isBackoffActive) {
+                      // Defensive: in case state flips between build and tap
+                      final wait = _backoffRemainingSeconds;
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please wait $wait seconds before retrying.'),
+                        ),
+                      );
+                      return;
+                    }
                     final newPw = _newPasswordController.text.trim();
                     final confirmPw = _confirmPasswordController.text.trim();
 
@@ -212,6 +258,12 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                         onTimeout: () => throw TimeoutException('Password update timed out'),
                       );
                       if (!context.mounted) return;
+                      // Success: reset backoff tracking
+                      setState(() {
+                        _consecutiveFailures = 0;
+                        _lastFailureAt = null;
+                      });
+                      _backoffTicker?.cancel();
                       context.goNamed(
                         SuccessScreen.passwordSuccessRouteName,
                       );
@@ -219,9 +271,18 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       // Log only error type to avoid leaking PII.
                       debugPrint('[auth.updatePassword] ${error.runtimeType}');
                       if (!context.mounted) return;
+                      // Increment backoff and show friendly wait time.
+                      setState(() {
+                        _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, 16);
+                        _lastFailureAt = DateTime.now();
+                      });
+                      _startBackoffTicker();
+                      final wait = _backoffRemainingSeconds;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(l10n.authPasswordUpdateError),
+                          content: Text(
+                            '${l10n.authPasswordUpdateError} Please wait $wait seconds before retrying.',
+                          ),
                         ),
                       );
                     } finally {

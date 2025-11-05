@@ -8,6 +8,6 @@ class ConsentConfig {
   static const Set<ConsentScope> requiredScopes = kRequiredConsentScopes;
 
   // For APIs/analytics that expect string names.
-  static List<String> get requiredScopeNames =>
-      requiredScopes.map((e) => e.name).toList(growable: false);
+  static final List<String> requiredScopeNames =
+      List.unmodifiable(requiredScopes.map((e) => e.name));
 }

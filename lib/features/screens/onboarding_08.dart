@@ -46,7 +46,18 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     // Persist immediately on selection for better UX and to satisfy contract
     // expected by widget tests. Analytics is recorded on CTA.
     final level = FitnessLevel.fromSelectionIndex(index);
-    unawaited(_persistSelection(level));
+    // Persist in the background; log failures explicitly to avoid silent errors
+    // while keeping UX non-blocking.
+    unawaited(
+      _persistSelection(level).catchError((e, stack) {
+        log.w(
+          'onboarding08_immediate_persist_failed',
+          tag: 'onboarding08',
+          error: e,
+          stack: stack,
+        );
+      }),
+    );
   }
 
   Future<void> _handleContinue() async {
