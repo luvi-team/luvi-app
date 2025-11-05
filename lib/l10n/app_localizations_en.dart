@@ -622,6 +622,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String consentSnackbarError(String error) {
-    return 'Consent failed: $error';
+    // Do not expose raw error details to users.
+    // Raw error should be logged upstream (sanitized) for diagnostics.
+    return "We couldn't save your consent. Please try again.";
   }
 }

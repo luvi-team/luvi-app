@@ -24,12 +24,13 @@ void main() {
 
     final shellContext = tester.element(find.byType(WelcomeShell));
     final l10n = AppLocalizations.of(shellContext)!;
-    final richTitle = tester.widget<RichText>(
-      find.descendant(
-        of: find.byType(WelcomeShell),
-        matching: find.byType(RichText),
-      ).first,
+    final richFinder = find.descendant(
+      of: find.byType(WelcomeShell),
+      matching: find.byType(RichText),
     );
+    // Ensure at least one RichText descendant exists before accessing .first
+    expect(richFinder, findsWidgets);
+    final richTitle = tester.widget<RichText>(richFinder.first);
     final plainText = richTitle.text.toPlainText();
     expect(plainText, contains(l10n.welcome01TitlePrefix.trim()));
     expect(plainText, contains(l10n.welcome01TitleAccent.trim()));

@@ -9,12 +9,11 @@ void main() {
     SupabaseService.resetForTest();
     // Clear any previous override.
     debugSetResetSilentOverride(null);
-  });
-
-  tearDown(() {
-    // Reset override and mode resolver after each test.
-    debugSetResetSilentOverride(null);
-    InitModeBridge.resolve = () => InitMode.prod;
+    // Ensure cleanup even if a test fails.
+    addTearDown(() {
+      debugSetResetSilentOverride(null);
+      InitModeBridge.resolve = () => InitMode.prod;
+    });
   });
 
   test('Test mode: does not throw when Supabase is not initialized', () async {

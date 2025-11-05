@@ -120,7 +120,9 @@ class SupabaseInitController extends ChangeNotifier {
       if (!isTest && !isConfig && _state.hasAttemptsLeft && !_disposed) {
         // Exponential backoff without floating point: 500ms * (2^(attempt-1))
         final baseMs = 500 * (1 << (attempt - 1));
-        final jitterMs = _random.nextInt(baseMs ~/ 5); // ±20% jitter
+        // Symmetric jitter in [-20%, +20%] around baseMs
+        final jitterRange = baseMs ~/ 5; // 20%
+        final jitterMs = _random.nextInt(jitterRange * 2 + 1) - jitterRange;
         final delay = Duration(milliseconds: baseMs + jitterMs);
         _retryTimer?.cancel();
         _setState(_state.copyWith(retryScheduled: true));

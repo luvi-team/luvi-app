@@ -100,7 +100,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             backgroundColor: theme.colorScheme.primary,
             iconColor: theme.colorScheme.onSurface,
             semanticLabel:
-                (AppLocalizations.of(context)?.authBackSemantic) ?? 'Back',
+                AppLocalizations.of(context)?.authBackSemantic ?? 'Back',
           ),
           const SizedBox(height: AuthLayout.backButtonToTitle),
           Text(

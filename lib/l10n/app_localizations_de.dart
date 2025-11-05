@@ -622,6 +622,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String consentSnackbarError(String error) {
-    return 'Einwilligung fehlgeschlagen: $error';
+    // Keine technischen Details im UI anzeigen; Details sollen upstream geloggt werden.
+    return 'Wir konnten deine Einwilligung nicht speichern. Bitte versuche es erneut.';
   }
 }

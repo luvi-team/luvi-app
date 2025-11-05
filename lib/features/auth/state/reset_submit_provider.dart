@@ -39,8 +39,8 @@ final resetSubmitProvider =
 
 // Testability toggle: allows unit tests to simulate production behavior even when
 // running under kDebugMode. Null = no override; true = force silent; false = force throw.
-// Important: Tests must call debugSetResetSilentOverride(null) in tearDown to avoid
-// affecting subsequent tests.
+// IMPORTANT: Use addTearDown(() => debugSetResetSilentOverride(null)) in tests so cleanup
+// runs even on failures. Alternatively, wrap test logic with runWithResetSilentOverride.
 bool? _resetSilentOverride;
 
 @visibleForTesting
@@ -54,6 +54,19 @@ void debugSetResetSilentOverride(bool? value) {
     'Current value: $_resetSilentOverride, attempting to set: $value',
   );
   _resetSilentOverride = value;
+}
+
+/// Helper for tests: sets the override for the duration of [body] and restores
+/// the previous value even if [body] throws.
+@visibleForTesting
+Future<T> runWithResetSilentOverride<T>(bool? value, Future<T> Function() body) async {
+  final prev = _resetSilentOverride;
+  _resetSilentOverride = value;
+  try {
+    return await body();
+  } finally {
+    _resetSilentOverride = prev;
+  }
 }
 
 Future<void> submitReset(String email) async {

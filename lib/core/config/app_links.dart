@@ -76,6 +76,18 @@ class ProdAppLinks extends AppLinksApi {
       return false;
     }
     if (host.startsWith('127.')) return false;
+    // Block private IPv4 ranges
+    if (host.startsWith('10.')) return false;
+    if (host.startsWith('192.168.')) return false;
+    if (host.startsWith('169.254.')) return false;
+    // Block 172.16.0.0/12 (172.16.x.x through 172.31.x.x)
+    final parts = host.split('.');
+    if (parts.length >= 2 && parts[0] == '172') {
+      final second = int.tryParse(parts[1]);
+      if (second != null && second >= 16 && second <= 31) {
+        return false;
+      }
+    }
     // Block IPv6 local ranges: fe80:: (link-local), fc00:: and fd00:: (unique local)
     if (host.startsWith('fe80:') || host.startsWith('fc00:') || host.startsWith('fd00:')) {
       return false;

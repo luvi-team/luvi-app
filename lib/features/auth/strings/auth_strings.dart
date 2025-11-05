@@ -56,7 +56,7 @@ class AuthStrings {
     if (cached != null && _cachedTag == currentTag) {
       return cached;
     }
-    const fallbackLocale = ui.Locale.fromSubtags(languageCode: 'de');
+    const fallbackLocale = ui.Locale.fromSubtags(languageCode: 'en');
 
     for (final candidate in <ui.Locale>[
       resolvedLocale,

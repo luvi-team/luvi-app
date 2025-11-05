@@ -37,7 +37,11 @@ Note: Dieses Projekt verwendet `flutter_dotenv`; lokale Entwicklung nutzt `.env.
   - Tests: `scripts/flutter_codex.sh test -j 1` (Loopback-Socket kann eine Sandbox-Genehmigung erfordern)
   - Version: `scripts/flutter_codex.sh --version`
 - Optional für Builds/Signing/Performance:
-  - `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh <cmd>` nutzt das echte `$HOME`/Standard-Caches (z. B. `~/.gradle`, `~/.cocoapods`).
+  - WARNUNG: `CODEX_USE_REAL_HOME=1` ist ausschließlich für lokale Entwicklung gedacht und darf NIEMALS in CI verwendet werden.
+    - Risiken: Sicherheitsprobleme (Zugriff/Leak auf echte Credentials & Schlüssel in `~/.gradle`, `~/.cocoapods`, `~/.pub-cache`) und fehlende Reproduzierbarkeit.
+    - Lokales Beispiel (sicherer): `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh build` nur auf deinem Dev‑Rechner; im Zweifel vorher temporäre Test-Accounts/Creds nutzen.
+    - Empfehlung (Guard): In `scripts/flutter_codex.sh` einen Runtime‑Check ergänzen, der bei gesetztem `CODEX_USE_REAL_HOME` in CI abbricht oder laut warnt (erkenne gängige CI‑Variablen wie `CI`, `GITHUB_ACTIONS`, `BUILD_NUMBER`, `VERCEL`, `CODESPACES`).
+  - `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh <cmd>` nutzt das echte `$HOME`/Standard‑Caches (z. B. `~/.gradle`, `~/.cocoapods`).
 - Make‑Shortcuts:
   - `make analyze`
   - `make test`
