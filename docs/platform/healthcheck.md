@@ -13,9 +13,9 @@
 Explicit thresholds ensure consistent behavior across environments with low traffic while preserving sensitivity under normal load.
 
 - Status mapping (default unless overridden by per-service `thresholds`):
-  - `ok` if `response_ms` ≤ `ok_lte` and error rate < 5%.
-  - `degraded` if `response_ms` ≤ `degraded_lte` or error rate ≥ 5% and < 20%.
-  - `down` if `response_ms` > `degraded_lte`, repeated timeouts, or error rate ≥ 20%.
+  - `ok` if (`response_ms` ≤ `ok_lte`) AND (error rate < 5%).
+  - `degraded` if ((`ok_lte` < `response_ms` ≤ `degraded_lte`) AND (error rate < 20%)) OR ((5% ≤ error rate < 20%) AND (`response_ms` ≤ `degraded_lte`)).
+  - `down` if (`response_ms` > `degraded_lte`) OR repeated timeouts OR (error rate ≥ 20%).
 
 ## Success Criteria
 - Gate passes when HTTP 200 + `status = ok` and no service is `down`.
@@ -36,7 +36,7 @@ Explicit thresholds ensure consistent behavior across environments with low traf
   - Example: `serviceA` with `health.criticalDependencies = ["supabase_db", "revenuecat_proxy"]` becomes `down` if `supabase_db` is `down`; if only `external_apis` is `down`, `serviceA` is `degraded`.
   - Operators can manage the list under: Settings → Health → Dependencies → Critical Dependencies.
 - Retry/backoff: apply the endpoint retry policy above during each check; a single check is `failed` only after retries are exhausted.
-- Alerting/escalation: `degraded` → warning/Slack; `down` → page/PagerDuty, with auto-resolve after recovery criteria are met.
+- Alerting/escalation: `degraded` → warning/Slack; `down` → page/PagerDuty. Auto-resolve is automatic (no manual acknowledgement required) but only occurs after the service remains in `ok` for a continuous confirmation window of 5 minutes to avoid flapping. An immediate transition to `ok` does not trigger auto-resolve until the 5‑minute window has passed. Operators may acknowledge incidents manually at any time but are not required to. PagerDuty stale-incident timeout is 24 hours (incidents auto-close if not updated within 24h).
 
 ### Aggregation and hysteresis counters (state machine semantics)
 - A single "check" may perform internal retries per the retry/backoff policy. These retries MUST be collapsed into one aggregated outcome level: `ok`, `degraded`, or `failed` based on aggregated metrics and thresholds.
@@ -49,6 +49,10 @@ Explicit thresholds ensure consistent behavior across environments with low traf
 
 Pseudocode (reference implementation):
 ```pseudo
+// Initial state
+// On startup, initial state = ok. Counters start at 0; the first aggregated
+// health check may transition immediately per the rules below. Alerting follows
+// the alerting policy above (e.g., auto-resolve confirmation window).
 state ∈ {ok, degraded, down}
 consecutiveFailed = 0
 consecutiveOk = 0
@@ -114,6 +118,16 @@ function updateState(aggResult):
         state = ok
         consecutiveNonFailedWhileDown = 0 // reset after leaving "down"
 ```
+
+### Definition: repeated timeouts
+To remove ambiguity around timeout-based transitions, use the following concrete thresholds and windows:
+
+- `repeatedTimeouts(attempts)` (within a single aggregated check): true if the number of timed-out attempts across the initial try plus retries is ≥ 2 (not necessarily consecutive).
+- `repeatedTimeoutsLastChecks()` (across recent aggregated checks): true if `repeatedTimeouts(...)` was true in each of the last 2 aggregated checks (i.e., repeated timeouts in the last 2 checks).
+
+Notes:
+- A “timeout” here refers to any attempt that hit the per-request timeout (5 s) and produced no successful response.
+- These thresholds are tuned for the MVP; services may override them with stricter windows if needed.
 
 ## Monitoring
 - Results are pushed to the observability stack (Grafana/PostHog).
