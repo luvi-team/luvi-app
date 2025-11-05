@@ -16,8 +16,7 @@ import 'package:luvi_app/core/privacy/sanitize.dart';
 /// log calls. It intentionally keeps implementation simple and avoids external
 /// deps; a future consolidation with the services logger is planned.
 
-// ignore: constant_identifier_names
-const String PII_WARNING =
+const String piiWarning =
     'DO NOT LOG PII (emails, phones, tokens, sessions, addresses) — redact identifiers.';
 
 class Logger {

@@ -23,8 +23,16 @@ class Logger {
 
   void _printWithError(String level, String message, {String? tag, Object? error, StackTrace? stack}) {
     final b = StringBuffer(_format(level, message, tag: tag));
-    if (error != null) b.write('\n$error');
-    if (stack != null) b.write('\n$stack');
+    if (error != null) {
+      final errStr = _sanitizeForLog('$error');
+      b.write('\n');
+      b.write(errStr);
+    }
+    if (stack != null) {
+      final stStr = _sanitizeForLog(stack.toString());
+      b.write('\n');
+      b.write(stStr);
+    }
     _print(b.toString());
   }
 
@@ -41,3 +49,29 @@ class Logger {
 }
 
 const log = Logger();
+
+// --- Lightweight sanitizer (services-local) ---
+
+final RegExp _emailPattern = RegExp(
+  r'([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})',
+  caseSensitive: false,
+);
+final RegExp _uuidPattern = RegExp(
+  r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b',
+);
+final RegExp _bearerPattern = RegExp(r'\bBearer\s+([A-Za-z0-9\-._~+/=]+)');
+final RegExp _longHexPattern = RegExp(r'\b[0-9a-fA-F]{20,}\b');
+
+String _sanitizeForLog(String input) {
+  var out = input;
+  out = out.replaceAll(_emailPattern, '[redacted-email]');
+  out = out.replaceAll(_uuidPattern, '[redacted-uuid]');
+  out = out.replaceAllMapped(_bearerPattern, (m) => 'Bearer [redacted-token]');
+  out = out.replaceAll(_longHexPattern, '[redacted-hex]');
+  // Guard against excessively long lines.
+  const max = 4000; // conservative cap for logs
+  if (out.length > max) {
+    out = '${out.substring(0, max)}…';
+  }
+  return out;
+}

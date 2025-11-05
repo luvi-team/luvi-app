@@ -15,19 +15,16 @@ class GoRouterRefreshStream extends ChangeNotifier {
     late final StreamSubscription<dynamic> sub;
     sub = stream.listen(
       (_) {
-        if (_isDisposed) return;
-        notifyListeners();
+        _notifyIfNotDisposed();
       },
       onError: (Object error, StackTrace stackTrace) {
         debugPrint('GoRouterRefreshStream stream error: $error\n$stackTrace');
         onError?.call(error, stackTrace);
-        _isDisposed = true;
-        sub.cancel();
+        dispose();
       },
       onDone: () {
         onDone?.call();
-        _isDisposed = true;
-        sub.cancel();
+        dispose();
       },
       cancelOnError: false,
     );
@@ -37,10 +34,18 @@ class GoRouterRefreshStream extends ChangeNotifier {
   late final StreamSubscription<dynamic> _subscription;
   bool _isDisposed = false;
 
+  void _notifyIfNotDisposed() {
+    if (!_isDisposed && hasListeners) {
+      notifyListeners();
+    }
+  }
+
   @override
   void dispose() {
+    if (_isDisposed) return;
     _isDisposed = true;
     _subscription.cancel();
     super.dispose();
   }
+
 }
