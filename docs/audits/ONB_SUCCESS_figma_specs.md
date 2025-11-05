@@ -7,7 +7,7 @@
 - **Figma URL:** https://www.figma.com/design/iQthMdxpCbl6afzXxvzqlt/Nova-Health-UI-%E2%80%93-Working-Copy?node-id=68597-8050&m=dev
 - **Generated:** 2025-10-22
 - **Auditor:** Claude Code (ui-frontend)
-- **Status:** Specs Complete
+- **Status:** Specs Pending
 
 ---
 
@@ -54,6 +54,8 @@
 - Previous documentation (approx.): ~6 streamers, ~41 dots
 - Exact Figma analysis: 5 streamers, 42 dots
 - Classification criteria: Streamers = width OR height > 20px; Dots = width AND height ≤ 20px
+
+Note: Confetti element colors are placeholders pending verification against the source Figma node. Document status remains "Specs Pending" until these values are confirmed or replaced with verified tokens.
 
 **Region criteria (relative to viewport center x=214px):**
 - Left: x < 160
@@ -367,9 +369,9 @@ Trophy besteht ausschließlich aus Vektor-Shapes (Body mit Gradient, Henkel, Ste
 
 #### Button-Text auf Button-BG
 - **Farben:** #030401 (Button Text, Black) auf #D9B18E (Button BG, Gold)
-- **Kontrast-Ratio:** 4.5:1
-- **WCAG-Level:** AA (≥4.5:1 for normal text, ≥3:1 for large text) ✓ Pass
-- **Note:** Black text on gold background provides sufficient contrast for accessibility.
+- **Kontrast-Ratio:** 10.41:1
+- **WCAG-Level:** AAA (≥7:1 for normal text, ≥4.5:1 for large text) ✓ Pass
+- **Note:** Black text on gold background provides high contrast; exceeds AA and AAA requirements.
 
 ### Tap-Targets
 #### Button
@@ -420,7 +422,7 @@ Trophy besteht ausschließlich aus Vektor-Shapes (Body mit Gradient, Henkel, Ste
 4. **Action Required:** Prüfe `lib/l10n/app_de.arb` und verwende für UI denselben Token
 
 ### Accessibility Summary
-1. **Button contrast (4.5:1) passes WCAG AA**
+1. **Button contrast (10.41:1) passes WCAG AAA**
    - Black text (#030401) on gold background (#D9B18E)
    - Sufficient contrast for large bold text (20px/700)
 2. **Title contrast (21:1) passes WCAG AAA**
@@ -447,7 +449,7 @@ Alle Punkte erfüllt:
 - [x] A11y: Kontrast-Ratios berechnet, Tap-Targets verifiziert
 - [x] Notes: Besonderheiten dokumentiert
 
-**Status:** ✓ Complete (All values filled from Figma)
+**Status:** ⚠ Partial (Confetti colors pending Figma verification; all other values verified)
 
 ---
 
@@ -456,5 +458,5 @@ Alle Punkte erfüllt:
 - **2025-10-22 (Final):** Values filled from Figma node `68597-8050` via MCP (Claude Code ui-frontend agent)
   - Trophy: 308×300px, SVG, no raster effects → Export: SVG
   - Spacing: 28px (Trophy→Title), 66px (Title→Button) → New tokens required
-  - Kontrast: Button text color corrected to black (#030401) → 4.5:1 contrast, WCAG AA Pass
+  - Kontrast: Button text color corrected to black (#030401) → 10.41:1 contrast, WCAG AAA Pass
   - Text-Korrektur: Button-Text fehlt Apostroph in Figma ("Los gehts!" → "Los geht's!")

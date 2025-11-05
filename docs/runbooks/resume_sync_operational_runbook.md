@@ -10,7 +10,7 @@ Alerting (initial; calibrate post-launch)
 - Warn (async): ≥ 2% over ≥ 60 min OR trend +0.5%/h → ticket for feature team.
 - Page (SEV‑3): ≥ 5% over rolling 24h OR ≥ 7% over ≥ 30 min.
 - SEV‑2: ≥ 10% over ≥ 30 min OR ≥ 5,000 affected users/day.
-- SEV‑1: ≥ 25% over ≥ 15 min OR data corruption indicators → enable feature‑flag „local‑only“.
+- SEV‑1: ≥ 25% over ≥ 15 min OR data corruption indicators → enable feature‑flag "local‑only".
 
 Streaming Guidance
 - Default to buffered downloads for exports.
@@ -20,7 +20,7 @@ Streaming Guidance
 Triage Steps
 1) Identify error class (4xx, 5xx, network, 429/rate-limit).
 2) Verify client backoff/retry bounds; enable/decrease concurrency if needed.
-3) Consider feature‑flag „local‑only“ on server degradation.
+3) Consider feature‑flag "local‑only" on server degradation.
 4) Inspect queue length, batch sizes, and latencies.
 5) Communicate status; publish RCA ≤ 48h; add regression tests for the cause.
 

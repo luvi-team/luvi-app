@@ -8,9 +8,9 @@ Objectives
 - Enable periodic rekey; tolerate device loss/migration without data loss of server truth.
 
 Decisions
-- Key origin: Generate a random 32-byte secret on first use. Store in OS-backed Secure Storage (Keychain/Keystore). Do not derive from user password.
-- DB keying: Use the stored secret as SQLCipher passphrase. Rely on SQLCipher’s PBKDF2-HMAC-SHA512 derivation. Prefer explicitly setting iteration count where supported via `PRAGMA kdf_iter` to a modern value; otherwise use library defaults.
- - Rotation/rekey: Prefer in-place `PRAGMA rekey = '<new_key>'` when available. Default rotation window: 180 days (configurable). Rekey runs only when the database is open and healthy. After rekey, existing pages are rewritten under the new key; no legacy keys must be retained. Keep a monotonic `last_rotated_at` (UTC) in app preferences.
+- Key origin: Generate a random 32-byte secret on first use via a cryptographically secure RNG (`Random.secure()` in Dart). Store in OS-backed Secure Storage (Keychain/Keystore). Do not derive from user password.
+- DB keying: Use the stored secret as SQLCipher passphrase. Rely on SQLCipher’s PBKDF2-HMAC-SHA512 derivation. Explicitly set the iteration count via `PRAGMA kdf_iter` to a modern value (target 210,000 for PBKDF2-HMAC-SHA512 per OWASP 2023) where supported; otherwise use library defaults.
+- Rotation/rekey: Prefer export → rename using `sqlcipher_export` to a fresh encrypted database file, followed by an atomic rename into place. In-place `PRAGMA rekey = '<new_key>'` is permitted only when constraints require it and preconditions are met (see below). Default rotation window: 180 days (configurable). Rekey/export runs only when the database is open and healthy. After success, record `last_rotated_at` (UTC) both inside the encrypted DB (e.g., `pragma user_version` or a `meta` table) and in app preferences for cross-checking.
 - Migration/new device: No key portability. A new device generates a new key and an empty local DB and then rehydrates from server. Local-only anonymous caches may be discarded on migration.
 - Secure Storage loss/compromise:
   - Loss (key missing/unavailable): Drop local DB and rehydrate from server for signed-in users; show a non-blocking info toast. Anonymous caches are discarded.
@@ -19,9 +19,36 @@ Decisions
 
 Operational Notes
 - Key material never leaves the device. Server-side snapshots remain encrypted at transport (TLS) and are stored unencrypted on the server DB (server-side security via RLS and access controls). Local encryption is a defense-in-depth measure.
-- Error handling: Any failure to open with the current key triggers a single re-try after a short delay. If still failing, treat as key loss: wipe local DB and rehydrate.
+- Error handling: Any failure to open with the current key triggers a single retry after a short delay. If still failing, treat as key loss: wipe local DB and rehydrate. During rekey/export, if an error occurs, abort the operation, retry once with the old key, and attempt rehydration from server backup if corruption is suspected. Fail closed with a clear remediation path if recovery is not possible (do not proceed with a partially rekeyed file).
 - Telemetry: Emit non-PII events for `resume_local_rekey_start|success|failure` and `resume_local_rehydrate_start|success|failure` with error-class only.
 
+Rekey Safety and Procedure
+1) Preconditions (both in-place and export):
+- Verify free disk space ≥ 2× current DB file size to ensure headroom for temporary artifacts and WAL/journal files.
+- Ensure the DB is idle (no long-running transactions), and checkpoints have been run if using WAL.
+
+2) Recommended default: export → rename
+- Steps:
+  - Open the existing DB with `PRAGMA key` (old key), then set `PRAGMA kdf_iter = 210000` (if supported) before any reads/writes.
+  - Create a new temporary database file (`<db>.tmp`) and open it; apply `PRAGMA key = '<new_key>'` then `PRAGMA kdf_iter = 210000`.
+  - Run `SELECT sqlcipher_export('<main_or_alias_of_tmp>');` to copy contents into the new encrypted DB.
+  - On the new DB, run `PRAGMA integrity_check;` and verify `ok`.
+  - fsync and close both DBs; atomically rename `<db>.tmp` over the original `<db>` (use platform atomic rename APIs).
+  - Reopen the final DB and run another `PRAGMA integrity_check;`.
+
+3) In-place rekey (only if necessary)
+- Caveat: `PRAGMA rekey` is not filesystem-atomic. Crash safety depends on `journal_mode`, `synchronous`, and the VFS’s atomic-commit guarantees. Use conservative settings during rekey:
+  - `PRAGMA journal_mode = wal;` or `DELETE` based on platform guarantees and library defaults.
+  - `PRAGMA synchronous = FULL;` for the operation window.
+- Steps:
+  - Open with `PRAGMA key` (old key) → set `PRAGMA kdf_iter = 210000` (if supported) → run `PRAGMA rekey = '<new_key>';`.
+  - After completion, run `PRAGMA integrity_check;` and verify `ok`.
+- If any step fails, do not continue using the possibly partially rekeyed file; close, reopen with the old key, and fall back to export → rename or full rehydrate.
+
+4) Post-rotation bookkeeping
+- Update `last_rotated_at` inside the DB (e.g., `meta(key='last_rotated_at', value=ISO8601)`) and in app preferences.
+- Log success telemetry; on failure, include error class and chosen recovery path (retry/rehydrate/abort).
+
 Open Items
-- Validate `kdf_iter` control support in `sqflite_sqlcipher` for explicit iteration tuning; otherwise document library defaults.
+- Validate `kdf_iter` control support in `sqflite_sqlcipher` for explicit iteration tuning; otherwise document library defaults. Confirm platform-specific atomic rename semantics and recommended `journal_mode` for safest rekey on iOS/Android.
 - Document platform-specific secure storage behavior (iOS keychain accessibility class; Android Keystore backup behavior) in a short appendix.
