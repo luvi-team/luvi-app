@@ -16,7 +16,7 @@ class _PreselectedConsent02Notifier extends Consent02Notifier {
   Consent02State build() {
     return Consent02State({
       for (final scope in ConsentScope.values)
-        scope: requiredScopes.contains(scope),
+        scope: kRequiredConsentScopes.contains(scope),
     });
   }
 }
