@@ -25,7 +25,6 @@ const ALERT_SAMPLE_RATE = Math.max(
   Math.min(1, Number(Deno.env.get("CONSENT_ALERT_SAMPLE_RATE") ?? 0.1)),
 );
 
- if (!SUPABASE_URL) {
 if (!SUPABASE_URL) {
   throw new Error("Missing required environment variable: SUPABASE_URL must be set");
 }

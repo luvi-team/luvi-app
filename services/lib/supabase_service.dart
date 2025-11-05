@@ -11,6 +11,10 @@ class SupabaseService {
   // A single gate to ensure only the first caller performs initialization and
   // others await the same Future. This avoids non-atomic check-then-assign races.
   static Completer<void>? _initCompleter;
+  // Serialize the check + assign of _initCompleter so only one caller
+  // creates/assigns the gate at a time. Avoids duplicate initialization
+  // under concurrent callers.
+  static final _AsyncLock _initLock = _AsyncLock();
   static Object? _initializationError;
   static StackTrace? _initializationStackTrace;
   static SupabaseValidationConfig _validationConfig =
@@ -33,23 +37,25 @@ class SupabaseService {
   static Future<void> tryInitialize({String envFile = '.env.development'}) {
     if (_initialized) return Future.value();
 
-    // Fast-path if an initialization is already in-flight; return the shared Future.
-    final existingGate = _initCompleter;
-    if (existingGate != null) return existingGate.future;
+    // Serialize check+assign so only one caller creates the gate; others
+    // will either see the existing gate or wait briefly for this section.
+    return _initLock.synchronized<void>(() {
+      if (_initialized) return Future.value();
 
-    // Create the gate synchronously to avoid races; only the first caller gets here.
-    final gate = _initCompleter = Completer<void>();
+      final existingGate = _initCompleter;
+      if (existingGate != null) return existingGate.future;
 
-    // Kick off initialization and complete the shared gate accordingly.
-    _performInitializeAndCache(envFile).then((_) {
-      if (!gate.isCompleted) gate.complete();
-    }).catchError((Object error, StackTrace stack) {
-      // Allow subsequent retries after a failure by clearing the gate.
-      _initCompleter = null;
-      if (!gate.isCompleted) gate.completeError(error, stack);
+      // Create the shared gate and kick off initialization exactly once.
+      final gate = _initCompleter = Completer<void>();
+      _performInitializeAndCache(envFile).then((_) {
+        if (!gate.isCompleted) gate.complete();
+      }).catchError((Object error, StackTrace stack) {
+        // Allow subsequent retries after a failure by clearing the gate.
+        _initCompleter = null;
+        if (!gate.isCompleted) gate.completeError(error, stack);
+      });
+      return gate.future;
     });
-
-    return gate.future;
   }
 
   static void configure({SupabaseValidationConfig? validationConfig}) {
@@ -158,6 +164,13 @@ class SupabaseService {
   }
 
   /// Upsert cycle data for the current user
+  /// Upsert cycle data for the current user.
+  ///
+  /// Timezone handling for [lastPeriod]: this method interprets the provided
+  /// DateTime as a calendar date in the user's local timezone and normalizes
+  /// it to a UTC date-only value (YYYY-MM-DD). The time-of-day and timezone
+  /// offset of the input are ignored to avoid accidental date shifts when
+  /// converting between local and UTC.
   static Future<Map<String, dynamic>?> upsertCycleData({
     required int cycleLength,
     required int periodDuration,
@@ -190,15 +203,19 @@ class SupabaseService {
         'must be between ${ageConfig.minAge} and ${ageConfig.maxAge}',
       );
     }
-    final normalizedLastPeriod = lastPeriod.toUtc();
-    final nowUtc = DateTime.now().toUtc();
-    // Compare dates only to avoid clock skew issues with "today"
+    // Normalize to date-only, preserving the user's local calendar date.
     final lastPeriodDate = DateTime.utc(
-      normalizedLastPeriod.year,
-      normalizedLastPeriod.month,
-      normalizedLastPeriod.day,
+      lastPeriod.year,
+      lastPeriod.month,
+      lastPeriod.day,
     );
-    final nowDate = DateTime.utc(nowUtc.year, nowUtc.month, nowUtc.day);
+    // Compare against today's local calendar date, normalized similarly.
+    final nowLocal = DateTime.now();
+    final nowDate = DateTime.utc(
+      nowLocal.year,
+      nowLocal.month,
+      nowLocal.day,
+    );
     if (lastPeriodDate.isAfter(nowDate)) {
       throw ArgumentError.value(
         lastPeriod,
@@ -210,7 +227,9 @@ class SupabaseService {
       'user_id': user.id,
       'cycle_length': cycleLength,
       'period_duration': periodDuration,
-      'last_period': _formatIsoDate(normalizedLastPeriod),
+      // Persist as an ISO date (YYYY-MM-DD) based on the normalized
+      // date-only value to avoid timezone-induced shifts.
+      'last_period': _formatIsoDate(lastPeriodDate),
       'age': age,
     };
     final row = await client
@@ -320,4 +339,16 @@ class SupabaseValidationConfig {
 
   final int minAge;
   final int maxAge;
+}
+
+/// Minimal async lock to serialize critical sections without external deps.
+class _AsyncLock {
+  Future<void> _tail = Future<void>.value();
+
+  Future<T> synchronized<T>(FutureOr<T> Function() action) {
+    final next = _tail.then((_) => Future<T>.sync(action));
+    // Ensure subsequent callers chain after this action completes (success or error).
+    _tail = next.then((_) {}, onError: (_) {});
+    return next;
+  }
 }
