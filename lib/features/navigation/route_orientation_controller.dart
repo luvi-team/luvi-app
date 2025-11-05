@@ -13,7 +13,12 @@ class RouteOrientationController {
     required List<DeviceOrientation> defaultOrientations,
     Map<String, List<DeviceOrientation>> routeOverrides = const {},
     OrientationSetter? setter,
-  })  : defaultOrientations = List.unmodifiable(defaultOrientations),
+  })  : assert(defaultOrientations.isNotEmpty, 'defaultOrientations must not be empty'),
+        assert(
+          routeOverrides.values.every((list) => list.isNotEmpty),
+          'All orientation lists in routeOverrides must be non-empty',
+        ),
+        defaultOrientations = List.unmodifiable(defaultOrientations),
         routeOverrides = Map.unmodifiable(
           routeOverrides.map<String, List<DeviceOrientation>>(
             (key, value) => MapEntry<String, List<DeviceOrientation>>(
