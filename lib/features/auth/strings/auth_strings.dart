@@ -12,6 +12,10 @@ class AuthStrings {
 
   static AppLocalizations? _debugOverride;
   static ui.Locale? Function()? _resolver;
+  // Cache is accessed only on Flutter's main isolate. This class assumes
+  // single-threaded access from the UI thread; no explicit locking is used.
+  // Cache is invalidated on locale change by the app root (see MyAppWrapper
+  // builder/LocaleChangeCacheReset in main.dart) or via debugResetCache().
   static AppLocalizations? _cachedL10n;
   static String? _cachedTag;
 
@@ -60,10 +64,8 @@ class AuthStrings {
       }
     }
 
-    final l10n = lookupAppLocalizations(fallbackLocale);
-    _cachedL10n = l10n;
-    _cachedTag = fallbackLocale.toLanguageTag();
-    return l10n;
+    // Fallback was already attempted in the loop above; if we reach here, rethrow
+    throw FlutterError('AppLocalizations lookup failed for all candidates including fallback.');
   }
 
   static String get loginHeadline => _l10n().authLoginHeadline;
