@@ -366,6 +366,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get welcome01Subtitle => 'Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.';
 
   @override
+  String welcome01Title(String prefix, String accent) => '$prefix $accent';
+
+  @override
   String get welcome01TitlePrefix => 'Im ';
 
   @override

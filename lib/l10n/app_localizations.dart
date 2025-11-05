@@ -773,6 +773,12 @@ abstract class AppLocalizations {
   /// **'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.'**
   String get welcome01Subtitle;
 
+  /// Combined title (prefix + accent) for consent welcome 01 with placeholder parameters.
+  ///
+  /// In en, this message translates to:
+  /// **'{prefix} {accent}'**
+  String welcome01Title(String prefix, String accent);
+
   /// Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed.
   ///
   /// In en, this message translates to:

@@ -249,6 +249,14 @@
   "@welcome01Subtitle": {
     "description": "Untertitel für Consent Welcome Screen 1 (unterhalb des Titels). Vorbereitung für spätere i18n‑Migration der hart verdrahteten Texte."
   },
+  "welcome01Title": "{prefix} {accent}",
+  "@welcome01Title": {
+    "description": "Kombinierter Titel (Präfix + Akzent) mit steuerbarer Wortreihenfolge/Abständen in der Übersetzung.",
+    "placeholders": {
+      "prefix": {"type": "String"},
+      "accent": {"type": "String"}
+    }
+  },
   "welcome01TitlePrefix": "Im ",
   "@welcome01TitlePrefix": {
     "description": "Einstiegstext für den Titel von Consent Welcome Screen 1 (vor dem Akzent-Wort). Einschließlich nachfolgendem Leerzeichen falls nötig."

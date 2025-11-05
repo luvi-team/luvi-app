@@ -366,6 +366,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome01Subtitle => 'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.';
 
   @override
+  String welcome01Title(String prefix, String accent) => '$prefix $accent';
+
+  @override
   String get welcome01TitlePrefix => 'In ';
 
   @override

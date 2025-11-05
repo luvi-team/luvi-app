@@ -479,6 +479,14 @@
   "@welcome01Subtitle": {
     "description": "Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings."
   },
+  "welcome01Title": "{prefix} {accent}",
+  "@welcome01Title": {
+    "description": "Combined title prefix + accent with translatable order/spacing.",
+    "placeholders": {
+      "prefix": {"type": "String"},
+      "accent": {"type": "String"}
+    }
+  },
   "welcome01TitlePrefix": "In ",
   "@welcome01TitlePrefix": {
     "description": "Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed."
