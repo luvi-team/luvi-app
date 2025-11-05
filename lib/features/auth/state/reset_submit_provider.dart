@@ -19,12 +19,10 @@ class ResetSubmitNotifier extends AsyncNotifier<void> {
       return;
     }
     state = const AsyncLoading();
-    // Ensure the loading state is visible for at least one frame
-    // so widget tests (and UX) can observe the spinner deterministically.
+    // Ensure at least one event-loop turn where loading state is visible
+    // so widget tests can observe the spinner after a tap.
     await Future<void>.delayed(Duration.zero);
     try {
-      // Tests should explicitly pump a frame to observe the loading state.
-      // Avoid artificial delays in runtime logic to keep control flow simple.
       await submitReset(email);
       state = const AsyncData(null);
       await onSuccess();
