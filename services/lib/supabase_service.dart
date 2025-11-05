@@ -175,6 +175,13 @@ class SupabaseService {
         'must be positive',
       );
     }
+    if (periodDuration > cycleLength) {
+      throw ArgumentError.value(
+        periodDuration,
+        'periodDuration',
+        'cannot exceed cycle length',
+      );
+    }
     final ageConfig = _validationConfig;
     if (age < ageConfig.minAge || age > ageConfig.maxAge) {
       throw ArgumentError.value(
