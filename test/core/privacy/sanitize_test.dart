@@ -10,7 +10,7 @@ void main() {
     });
 
     test('redacts Bearer tokens', () {
-      final s = 'Authorization: Bearer abc.DEF-123_~+/' 'xyz=';
+      final s = 'Authorization: Bearer abc.DEF-123_~+/xyz=';
       final out = sanitizeForLog(s);
       expect(out, contains('Bearer [redacted-token]'));
       expect(out, isNot(contains('abc.DEF-123_~+/xyz=')));
