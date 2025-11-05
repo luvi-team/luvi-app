@@ -43,21 +43,56 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   // Common weak password patterns extracted for reuse and testability
   static final List<RegExp> _commonWeakPatterns = <RegExp>[
+    // Dictionary-like base words
     RegExp(r'^password\d*$', caseSensitive: false),
-    RegExp(r'^123456(78|789)?$'),
     RegExp(r'^qwerty\d*$', caseSensitive: false),
     RegExp(r'^letmein\d*$', caseSensitive: false),
-    // Expanded weak/common patterns (conservative MVP set)
-    RegExp(r'^abc123$', caseSensitive: false),
-    RegExp(r'^admin\d*$', caseSensitive: false),
     RegExp(r'^welcome\d*$', caseSensitive: false),
+    RegExp(r'^admin\d*$', caseSensitive: false),
     RegExp(r'^monkey\d*$', caseSensitive: false),
     RegExp(r'^dragon\d*$', caseSensitive: false),
     RegExp(r'^zxcvbn\d*$', caseSensitive: false),
     RegExp(r'^asdfgh\d*$', caseSensitive: false),
+    RegExp(r'^iloveyou\d*$', caseSensitive: false),
+    RegExp(r'^abc123$', caseSensitive: false),
     RegExp(r'^abcdef$', caseSensitive: false),
+
+    // Numeric sequences and common variants
+    RegExp(r'^123456(7|78|789)?$'), // 123456 / 1234567 / 12345678 / 123456789
     RegExp(r'^654321$'),
+    RegExp(r'^12345$'),
+    RegExp(r'^123123$'),
+    RegExp(r'^password1$|^password123$', caseSensitive: false),
+    RegExp(r'^qwerty123$', caseSensitive: false),
+
+    // Repetitive digit shortcuts
+    RegExp(r'^000000$'),
+    RegExp(r'^111111$'),
+    RegExp(r'^222222$'),
+    RegExp(r'^aaaaaa$', caseSensitive: false),
   ];
+
+  static bool _isRepetitive(String s) => RegExp(r'^(.)\1{5,}$').hasMatch(s);
+
+  static bool _isNumericSequence(String s) {
+    if (!RegExp(r'^\d+$').hasMatch(s)) return false;
+    if (s.length < 5) return false; // ignore very short sequences
+    final codes = s.codeUnits;
+    var asc = true;
+    var desc = true;
+    for (var i = 1; i < codes.length; i++) {
+      if (codes[i] != codes[i - 1] + 1) asc = false;
+      if (codes[i] != codes[i - 1] - 1) desc = false;
+      if (!asc && !desc) break;
+    }
+    return asc || desc;
+  }
+
+  static bool _isRepeatedBlock(String s) {
+    // Detect repeated subpatterns like 121212, 123123
+    final re = RegExp(r'^(.{2,})\1+$');
+    return re.hasMatch(s);
+  }
 
   static const double _backButtonSize = AuthLayout.backButtonSize;
   @override
@@ -143,8 +178,13 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     final hasSpecial = RegExp(
                       r'[!@#\$%\^&*()_\+\-=\{\}\[\]:;,.<>/?`~|\\]',
                     ).hasMatch(pw);
-                    final isCommonWeak =
-                        _commonWeakPatterns.any((r) => r.hasMatch(pw.trim()));
+                    final trimmed = pw.trim();
+                    final isCommonWeak = _commonWeakPatterns.any(
+                          (r) => r.hasMatch(trimmed),
+                        ) ||
+                        _isRepetitive(trimmed) ||
+                        _isNumericSequence(trimmed) ||
+                        _isRepeatedBlock(trimmed);
 
                     String? validationError;
                     if (!hasMinLen) {
