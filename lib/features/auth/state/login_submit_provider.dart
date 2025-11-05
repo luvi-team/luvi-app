@@ -91,6 +91,6 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
 }
 
 final loginSubmitProvider =
-    AsyncNotifierProvider.autoDispose<LoginSubmitNotifier, void>(
+    AsyncNotifierProvider<LoginSubmitNotifier, void>(
   LoginSubmitNotifier.new,
 );

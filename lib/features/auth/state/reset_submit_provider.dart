@@ -45,10 +45,13 @@ bool? _resetSilentOverride;
 
 @visibleForTesting
 void debugSetResetSilentOverride(bool? value) {
+  // Allow clearing (setting to null) at any time; only assert when attempting
+  // to set a non-null value while a previous non-null override is still active.
   assert(
-    value == null || _resetSilentOverride == null,
-    'Previous test did not reset _resetSilentOverride. '
-    'Call debugSetResetSilentOverride(null) in tearDown.',
+    _resetSilentOverride == null || value == null,
+    'Previous test did not reset _resetSilentOverride to null. '
+    'Always call debugSetResetSilentOverride(null) in tearDown. '
+    'Current value: $_resetSilentOverride, attempting to set: $value',
   );
   _resetSilentOverride = value;
 }

@@ -11,6 +11,7 @@ import 'package:luvi_app/features/auth/widgets/verify_footer.dart';
 import 'package:luvi_app/features/auth/widgets/verify_header.dart';
 import 'package:luvi_app/features/auth/widgets/verify_otp_section.dart';
 import 'package:luvi_app/features/auth/widgets/verify_text_styles.dart';
+import 'package:luvi_app/features/auth/screens/login_screen.dart';
 
 enum VerificationScreenVariant { resetPassword, emailConfirmation }
 
@@ -106,8 +107,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     if (router.canPop()) {
       router.pop();
     } else {
-      // Navigate by route name for consistency with GoRouter configuration.
-      context.goNamed('login');
+      context.goNamed(LoginScreen.routeName);
     }
   }
 }

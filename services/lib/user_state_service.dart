@@ -72,7 +72,10 @@ class UserStateService {
       FitnessLevel.tryParse(prefs.getString(_keyFitnessLevel));
 
   Future<void> markWelcomeSeen() async {
-    await prefs.setBool(_keyHasSeenWelcome, true);
+    final success = await prefs.setBool(_keyHasSeenWelcome, true);
+    if (success != true) {
+      throw StateError('Failed to persist welcome seen flag');
+    }
   }
 
   Future<void> markOnboardingComplete({
