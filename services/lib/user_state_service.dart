@@ -80,32 +80,30 @@ class UserStateService {
   }) async {
     // Persist fitness level first, then the completion flag. If the second
     // write fails, attempt to roll back the first to avoid inconsistent state.
-    try {
-      final wroteLevel = await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
-      if (wroteLevel != true) {
-        throw StateError('Failed to persist fitness level');
+    final wroteLevel = await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
+    if (wroteLevel != true) {
+      throw StateError('Failed to persist fitness level');
+    }
+    final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
+    if (wroteFlag != true) {
+      // Rollback: best-effort removal of fitness level
+      try {
+        await prefs.remove(_keyFitnessLevel);
+      } catch (rollbackError) {
+        // Rollback failed; we're in an inconsistent state
+        throw StateError(
+          'Failed to persist onboarding completion flag and rollback failed: $rollbackError'
+        );
       }
-      final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
-      if (wroteFlag != true) {
-        // Rollback: best-effort removal of fitness level
-        try {
-          await prefs.remove(_keyFitnessLevel);
-        } catch (rollbackError) {
-          // Rollback failed; we're in an inconsistent state
-          throw StateError(
-            'Failed to persist onboarding completion flag and rollback failed: $rollbackError'
-          );
-        }
-        throw StateError('Failed to persist onboarding completion flag');
-      }
-    } catch (e) {
-      // Surface the error to callers so they can retry or report.
-      rethrow;
+      throw StateError('Failed to persist onboarding completion flag');
     }
   }
 
   Future<void> setFitnessLevel(FitnessLevel level) async {
-    await prefs.setString(_keyFitnessLevel, level.name);
+    final success = await prefs.setString(_keyFitnessLevel, level.name);
+    if (success != true) {
+      throw StateError('Failed to persist fitness level');
+    }
   }
 
   Future<void> reset() async {

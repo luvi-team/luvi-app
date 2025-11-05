@@ -148,7 +148,12 @@ final List<GoRoute> featureRoutes = [
       return Onboarding01Screen.routeName;
     },
     builder: (ctx, st) {
-      return OnboardingSuccessScreen(fitnessLevel: st.extra as FitnessLevel);
+      final fitnessLevel = st.extra;
+      if (fitnessLevel is! FitnessLevel) {
+        // Should never happen due to redirect, but defensive programming
+        throw StateError('OnboardingSuccessScreen requires FitnessLevel');
+      }
+      return OnboardingSuccessScreen(fitnessLevel: fitnessLevel);
     },
   ),
   GoRoute(

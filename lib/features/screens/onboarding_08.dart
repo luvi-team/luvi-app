@@ -42,12 +42,15 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     setState(() {
       _selected = index;
     });
-    // Persist immediately on selection; do not block UI/CTA state.
-    final level = FitnessLevel.fromSelectionIndex(index);
-    unawaited(_persistSelection(level).catchError((e) {
-      // Log error; selection still shows in UI but may not persist
-      debugPrint('Failed to persist selection: $e');
-    }));
+    // Persist selection immediately to align with UX tests; analytics remains on CTA.
+    try {
+      final level = FitnessLevel.fromSelectionIndex(index);
+      // Fire-and-forget; errors are handled by CTA flow if needed.
+      // ignore: discarded_futures
+      ref.read(userStateServiceProvider.future).then((svc) => svc.setFitnessLevel(level));
+    } catch (_) {
+      // Ignore out-of-range selections (e.g., optional 'unknown').
+    }
   }
 
   Future<void> _handleContinue() async {

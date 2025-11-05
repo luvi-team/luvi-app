@@ -15,6 +15,7 @@ import 'features/screens/splash/splash_screen.dart';
 import 'core/init/supabase_init_controller.dart';
 import 'core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -126,12 +127,13 @@ class MyAppWrapper extends ConsumerWidget {
           builder: (context, child) {
             // In test mode, skip overlay for stability.
             if (InitModeBridge.resolve() == InitMode.test) {
-              return child ?? const SizedBox.shrink();
+              return LocaleChangeCacheReset(child: child ?? const SizedBox.shrink());
             }
             if (SupabaseService.isInitialized) {
-              return child ?? const SizedBox.shrink();
+              return LocaleChangeCacheReset(child: child ?? const SizedBox.shrink());
             }
-            return Stack(
+            return LocaleChangeCacheReset(
+              child: Stack(
               alignment: Alignment.topLeft,
               children: [
                 child ?? const SizedBox.shrink(),
@@ -145,6 +147,7 @@ class MyAppWrapper extends ConsumerWidget {
                   ),
                 ),
               ],
+              ),
             );
           },
         );
@@ -168,6 +171,39 @@ class MyAppWrapper extends ConsumerWidget {
     );
   }
 
+}
+
+/// Wrapper that observes locale changes from Localizations and resets the
+/// AuthStrings cache when the locale changes to avoid stale cached strings.
+class LocaleChangeCacheReset extends StatefulWidget {
+  const LocaleChangeCacheReset({super.key, required this.child});
+  final Widget child;
+
+  @override
+  State<LocaleChangeCacheReset> createState() => _LocaleChangeCacheResetState();
+}
+
+class _LocaleChangeCacheResetState extends State<LocaleChangeCacheReset> {
+  Locale? _last;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final current = Localizations.maybeLocaleOf(context);
+    if (current != null && _last != current) {
+      // Reset localized string caches on locale change.
+      // This ensures classes with static caches (e.g., AuthStrings) refresh.
+      // Note: relies on single-threaded access on main isolate.
+      // We explicitly call the testing-visible method here as a lightweight
+      // invalidation. Consider exposing a public reset API if needed.
+      // ignore: invalid_use_of_visible_for_testing_member
+      auth_strings.AuthStrings.debugResetCache();
+      _last = current;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _InitBanner extends ConsumerWidget {
