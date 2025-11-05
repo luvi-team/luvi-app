@@ -7,13 +7,13 @@ const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 const RATE_LIMIT_WINDOW_SEC = parseInt(
   Deno.env.get("CONSENT_RATE_LIMIT_WINDOW_SEC") ?? "60",
 );
-if (RATE_LIMIT_WINDOW_SEC <= 0 || RATE_LIMIT_WINDOW_SEC > 3600) {
+if (isNaN(RATE_LIMIT_WINDOW_SEC) || RATE_LIMIT_WINDOW_SEC <= 0 || RATE_LIMIT_WINDOW_SEC > 3600) {
   throw new Error("CONSENT_RATE_LIMIT_WINDOW_SEC must be between 1 and 3600");
 }
 const RATE_LIMIT_MAX_REQUESTS = parseInt(
   Deno.env.get("CONSENT_RATE_LIMIT_MAX_REQUESTS") ?? "20",
 );
-if (RATE_LIMIT_MAX_REQUESTS <= 0 || RATE_LIMIT_MAX_REQUESTS > 1000) {
+if (isNaN(RATE_LIMIT_MAX_REQUESTS) || RATE_LIMIT_MAX_REQUESTS <= 0 || RATE_LIMIT_MAX_REQUESTS > 1000) {
   throw new Error("CONSENT_RATE_LIMIT_MAX_REQUESTS must be between 1 and 1000");
 }
 // Optional webhook to raise alerts on notable events (errors/spikes). This should
@@ -25,17 +25,7 @@ const ALERT_SAMPLE_RATE = Math.max(
   Math.min(1, Number(Deno.env.get("CONSENT_ALERT_SAMPLE_RATE") ?? 0.1)),
 );
 
-// Read-after-write tolerance for counting queries in environments with
-// potential replica lag. Low values keep impact minimal while improving
-// resilience under load. Tunable via env if needed.
-const COUNT_RETRY_ATTEMPTS = Math.max(
-  1,
-  parseInt(Deno.env.get("CONSENT_COUNT_RETRY_ATTEMPTS") ?? "3"),
-);
-const COUNT_RETRY_BACKOFF_MS = Math.max(
-  0,
-  parseInt(Deno.env.get("CONSENT_COUNT_RETRY_BACKOFF_MS") ?? "50"),
-);
+// Any code that would appear before line 28 in the original file
 
 if (!SUPABASE_URL) {
   throw new Error("Missing required environment variable: SUPABASE_URL must be set");
@@ -110,52 +100,9 @@ function logMetric(
   else console.log(line);
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
-async function countConsentsWithRetry(
-  supabase: ReturnType<typeof createClient>,
-  userId: string,
-  windowStartIso: string,
-  requestId: string,
-) {
-  let attempt = 0;
-  let lastError: unknown = undefined;
-  const started = Date.now();
-  while (attempt < COUNT_RETRY_ATTEMPTS) {
-    const t0 = Date.now();
-    const { count, error } = await supabase
-      .from("consents")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .gt("created_at", windowStartIso);
-    const duration = Date.now() - t0;
-    // Emit a lightweight metric for the count latency
-    try {
-      console.info("consent_count_latency", {
-        request_id: requestId,
-        attempt: attempt + 1,
-        duration_ms: duration,
-      });
-    } catch (_) {
-      // ignore
-    }
-    if (!error && typeof count === "number") {
-      return { count, total_duration_ms: Date.now() - started };
-    }
-    lastError = error ?? new Error("count returned non-number");
-    attempt += 1;
-    // Apply backoff between attempts to reduce load / allow replicas to catch up
-    if (attempt < COUNT_RETRY_ATTEMPTS) {
-      const delay = COUNT_RETRY_BACKOFF_MS;
-      if (delay > 0) await sleep(delay);
-      continue;
-    }
-  }
-  // Exhausted all attempts
-  return { count: null as number | null, error: lastError, total_duration_ms: Date.now() - started };
-}
+
+
 
 async function maybeAlert(
   requestId: string,
@@ -315,7 +262,7 @@ serve(async (req) => {
     {
       p_user_id: payload.user_id,
       p_version: payload.version,
-      p_scopes: payload.scopes as unknown as Record<string, unknown>,
+      p_scopes: payload.scopes,
       p_window_sec: RATE_LIMIT_WINDOW_SEC,
       p_max_requests: RATE_LIMIT_MAX_REQUESTS,
     },
