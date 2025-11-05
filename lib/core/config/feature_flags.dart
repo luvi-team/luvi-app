@@ -12,6 +12,7 @@ class FeatureFlags {
   static bool? _enableFtueBackendOverride;
   static bool? _googleSignInOverride;
   static bool? _appleSignInOverride;
+  static bool? _legalViewerTelemetryOverride;
 
   /// Allows runtime systems (e.g. remote config, QA toggles) to override
   /// Dashboard V2 availability without rebuilding the app.
@@ -39,6 +40,11 @@ class FeatureFlags {
     _appleSignInOverride = value;
   }
 
+  /// Allows runtime systems to toggle telemetry for the legal viewer (e.g., Sentry).
+  static void setLegalViewerTelemetryOverride(bool? value) {
+    _legalViewerTelemetryOverride = value;
+  }
+
   /// Resets runtime overrides so tests remain isolated between runs.
   static void resetOverrides() {
     _dashboardV2Override = null;
@@ -46,6 +52,7 @@ class FeatureFlags {
     _enableFtueBackendOverride = null;
     _googleSignInOverride = null;
     _appleSignInOverride = null;
+    _legalViewerTelemetryOverride = null;
   }
 
   /// Dashboard V2 flag: defaults to `true` but can be toggled via
@@ -105,6 +112,19 @@ class FeatureFlags {
     return const bool.fromEnvironment(
       'FEATURE_APPLE_SIGN_IN',
       defaultValue: true,
+    );
+  }
+}
+
+extension FeatureFlagsTelemetry on FeatureFlags {
+  /// Enable Sentry/telemetry for legal viewer. Default false; gate via
+  /// `--dart-define=FEATURE_SENTRY_LEGAL_VIEWER=true` or runtime override.
+  static bool get enableLegalViewerTelemetry {
+    final override = FeatureFlags._legalViewerTelemetryOverride;
+    if (override != null) return override;
+    return const bool.fromEnvironment(
+      'FEATURE_SENTRY_LEGAL_VIEWER',
+      defaultValue: false,
     );
   }
 }

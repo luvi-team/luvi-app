@@ -25,6 +25,10 @@ final analyticsBackendSinkProvider = Provider<AnalyticsEventSink?>((_) => null);
 
 /// Dev-only analytics recorder.
 ///
+/// **Privacy**: Callers must ensure that properties are PII-free before
+/// invoking recordEvent. This recorder forwards all properties to the backend
+/// sink without filtering or redaction.
+///
 /// Strictly intended for development logging: in debug mode it prints events to
 /// the console; in profile/release, it suppresses printing but still forwards to
 /// an optional backend sink when provided via [analyticsBackendSinkProvider].
