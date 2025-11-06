@@ -96,9 +96,9 @@ Object? _sanitizeValue(Object? value) {
 Object? _maskValue(Object? value) {
   if (value == null) return null;
   if (value is String) {
-    // Keep very short identifiers; otherwise replace with redacted marker.
-    final sanitized = log_sanitize.sanitizeForLog(value);
-    return sanitized.length <= 6 ? sanitized : '[redacted]';
+    // Always mask string values regardless of length to prevent leaking
+    // short tokens or identifiers.
+    return '[redacted]';
   }
   if (value is num || value is bool) return '[redacted]';
   if (value is Map || value is List) return '[redacted]';
