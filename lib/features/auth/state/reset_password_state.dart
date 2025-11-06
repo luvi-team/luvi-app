@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/features/auth/validation/email_validator.dart';
 
 enum ResetPasswordError { invalidEmail }
 
@@ -34,9 +35,6 @@ class ResetPasswordNotifier extends Notifier<ResetPasswordState> {
   @override
   ResetPasswordState build() => ResetPasswordState.initial();
 
-  static final RegExp _emailRegex =
-      RegExp(r'^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$');
-
   void setEmail(String value) {
     final trimmed = value.trim();
     final validation = _validateEmail(trimmed);
@@ -59,7 +57,9 @@ class ResetPasswordNotifier extends Notifier<ResetPasswordState> {
     if (email.isEmpty) {
       return null;
     }
-    return _emailRegex.hasMatch(email) ? null : ResetPasswordError.invalidEmail;
+    return EmailValidator.isValid(email)
+        ? null
+        : ResetPasswordError.invalidEmail;
   }
 }
 

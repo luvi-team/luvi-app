@@ -41,7 +41,7 @@ void main() {
     final notifier = container.read(loginProvider.notifier);
     await container.read(loginProvider.future);
 
-    notifier.setEmail('a@b.com');
+    notifier.setEmail('ab@b.com');
     notifier.setPassword('secret88');
     await notifier.validateAndSubmit();
 

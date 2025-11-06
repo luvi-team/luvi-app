@@ -28,9 +28,17 @@ bool nonEmptyNameValidator(
   int maxLength = 50,
   RegExp? allowedCharsPattern,
 }) {
-  assert(minLength > 0, 'minLength must be positive');
-  assert(maxLength > 0, 'maxLength must be positive');
-  assert(minLength <= maxLength, 'minLength must not exceed maxLength');
+  if (minLength <= 0) {
+    throw ArgumentError.value(minLength, 'minLength', 'must be positive');
+  }
+  if (maxLength <= 0) {
+    throw ArgumentError.value(maxLength, 'maxLength', 'must be positive');
+  }
+  if (minLength > maxLength) {
+    throw ArgumentError(
+      'minLength ($minLength) must not exceed maxLength ($maxLength)',
+    );
+  }
   if (value == null) return false;
   final trimmed = value.trim();
   if (trimmed.isEmpty) return false;

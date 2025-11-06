@@ -8,11 +8,16 @@ void main() {
   TestConfig.ensureInitialized();
 
   group('ResetPasswordNotifier email validation', () {
-    test('accepts valid email', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-      final notifier = container.read(resetPasswordProvider.notifier);
+    late ProviderContainer container;
+    late ResetPasswordNotifier notifier;
 
+    setUp(() {
+      container = ProviderContainer();
+      addTearDown(container.dispose);
+      notifier = container.read(resetPasswordProvider.notifier);
+    });
+
+    test('accepts valid email', () {
       notifier.setEmail('user@example.com');
 
       final state = container.read(resetPasswordProvider);
@@ -21,10 +26,6 @@ void main() {
     });
 
     test('flags invalid email (missing domain)', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-      final notifier = container.read(resetPasswordProvider.notifier);
-
       notifier.setEmail('user@');
 
       final state = container.read(resetPasswordProvider);
@@ -33,10 +34,6 @@ void main() {
     });
 
     test('empty email yields no error but is not valid', () {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-      final notifier = container.read(resetPasswordProvider.notifier);
-
       notifier.setEmail('');
 
       final state = container.read(resetPasswordProvider);

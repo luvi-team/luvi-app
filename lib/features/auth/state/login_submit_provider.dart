@@ -20,7 +20,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
 
     final loginAsync = ref.read(loginProvider);
     if (loginAsync.isLoading) {
-      // Provider still loading; wait for it to complete
+      // Provider still loading; return early to avoid duplicate submission
       state = const AsyncData(null);
       return;
     }
