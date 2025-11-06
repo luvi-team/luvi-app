@@ -49,13 +49,16 @@ class SupabaseService {
       final gate = _initCompleter = Completer<void>();
       _performInitializeAndCache(envFile).then<void>((_) {
         if (!gate.isCompleted) gate.complete();
-      }).catchError((Object error, StackTrace stack) {
-        // Do not re-enter the lock here; just clear the gate and propagate.
-        _initCompleter = null;
+      }).catchError((Object error, StackTrace stack) async {
+        // Clear the shared completer inside the lock to avoid races.
+        await _initLock.synchronized<void>(() {
+          _initCompleter = null;
+          return Future<void>.value();
+        });
+        // Propagate the error to all awaiters outside the lock.
         if (!gate.isCompleted) {
           gate.completeError(error, stack);
         }
-        // Let callers still observe the failure via the gate's completion.
       });
       return gate.future;
     });
@@ -79,32 +82,35 @@ class SupabaseService {
   }
 
   static Future<void> _performInitializeAndCache(String envFile) async {
+    // Resolve test-mode at the start and short-circuit: in tests we operate
+    // without an initialized Supabase singleton and keep [_initialized] false
+    // so callers avoid touching `Supabase.instance`.
+    final bool isTest = InitModeBridge.resolve() == InitMode.test;
+    if (isTest) {
+      _initialized = false;
+      _initializationError = null;
+      _initializationStackTrace = null;
+      return;
+    }
+
     try {
       await _performInitialize(envFile: envFile);
-      // In tests, treat initialization as skipped/offline.
-      final isTest = InitModeBridge.resolve() == InitMode.test;
-      _initialized = !isTest;
+      _initialized = true;
       _initializationError = null;
       _initializationStackTrace = null;
     } catch (error, stackTrace) {
       _initialized = false;
       _initializationError = error;
       _initializationStackTrace = stackTrace;
-      // Do not keep a failed future; allow retry via clearing the gate in tryInitialize's catch handler
-      final isTest = InitModeBridge.resolve() == InitMode.test;
-      if (!isTest) {
-        FlutterError.reportError(
-          FlutterErrorDetails(
-            exception: error,
-            stack: stackTrace,
-            library: 'supabase_service',
-            context: ErrorDescription('initializing Supabase'),
-          ),
-        );
-      }
-      if (!isTest) {
-        rethrow;
-      }
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'supabase_service',
+          context: ErrorDescription('initializing Supabase'),
+        ),
+      );
+      rethrow;
     }
   }
 
@@ -113,6 +119,9 @@ class SupabaseService {
     if (InitModeBridge.resolve() == InitMode.test) {
       return;
     }
+    // Load .env for local development as a fallback only. For production,
+    // prefer passing credentials via --dart-define. _resolveCredentials()
+    // will read from compile-time defines first and fall back to dotenv.
     await _loadEnvironment(envFile);
     final credentials = _resolveCredentials(envFile);
     await _initializeSupabase(credentials);
@@ -272,10 +281,17 @@ class SupabaseService {
   }
 
   static _SupabaseCredentials _resolveCredentials(String envFile) {
-    final url = dotenv.maybeGet('SUPABASE_URL') ?? dotenv.maybeGet('SUPA_URL');
-    final anon =
-        dotenv.maybeGet('SUPABASE_ANON_KEY') ??
-        dotenv.maybeGet('SUPA_ANON_KEY');
+    // 1) Prefer compile-time --dart-define values (not stored in assets)
+    const defineUrl = String.fromEnvironment('SUPABASE_URL');
+    const defineAnon = String.fromEnvironment('SUPABASE_ANON_KEY');
+
+    // 2) Fallback to dotenv (local dev only) with legacy key support
+    final envUrl = dotenv.maybeGet('SUPABASE_URL') ?? dotenv.maybeGet('SUPA_URL');
+    final envAnon =
+        dotenv.maybeGet('SUPABASE_ANON_KEY') ?? dotenv.maybeGet('SUPA_ANON_KEY');
+
+    final url = (defineUrl.isNotEmpty ? defineUrl : envUrl);
+    final anon = (defineAnon.isNotEmpty ? defineAnon : envAnon);
 
     final missing = <String>[];
     if (url == null || url.isEmpty) {
