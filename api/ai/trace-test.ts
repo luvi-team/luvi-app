@@ -30,32 +30,43 @@ export default async function handler(req: Request): Promise<Response> {
       await gen.end();
 
       // Optionally finalize trace if SDK exposes end() on trace client
-      if ((trace as any)?.end) {
-        await (trace as any).end();
+      if ('end' in trace && typeof trace.end === 'function') {
+        await trace.end();
       }
+
+      // Ausstehende Events sofort senden und Client ggf. schließen
+      await (instance as any)?.flushAsync?.();
+      await (instance as any)?.shutdownAsync?.();
 
       traceUrl = trace.getTraceUrl?.();
       posted = true;
     } catch (e) {
       console.error("langfuse trace-test error", e);
-      err = e instanceof Error ? e.message : String(e);
-    }
+  const isProd = process.env.VERCEL_ENV === 'production';
+  if (isProd && !safe) {
+    return new Response(JSON.stringify({ ok: false }), { status: 503 });
   }
 
   const tookMs = Date.now() - started;
   return new Response(
     JSON.stringify({
-      ok: true,
+      ok: safe && !err,
       safe,
       posted,
-      env: process.env.VERCEL_ENV,
-      host: process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com",
+      ...(isProd ? {} : {
+        env: process.env.VERCEL_ENV,
+        host: process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com",
+      }),
       tookMs,
       err,
       traceUrl,
     }),
     {
-    status: 200,
+    status: safe && !err ? 200 : 500,
+    headers: { "content-type": "application/json" },
+    },
+  );
+}
     headers: { "content-type": "application/json" },
     },
   );

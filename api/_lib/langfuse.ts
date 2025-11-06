@@ -1,9 +1,6 @@
 import { Langfuse } from "langfuse";
 
-type SafeLangfuse = {
-  instance?: Langfuse;
-  safe: boolean;
-};
+type SafeLangfuse = { instance?: Langfuse; safe: boolean };
 
 export function createLangfuse(): SafeLangfuse {
   const pk = process.env.LANGFUSE_PUBLIC_KEY;
@@ -11,11 +8,8 @@ export function createLangfuse(): SafeLangfuse {
   const host = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
 
   if (!pk || !sk) {
-    console.warn('Langfuse env vars missing, using stub mode');
-    return {
-      safe: false,
-      instance: undefined,
-    };
+    // Fallback: keine ENV gesetzt -> Stub, damit App nicht crasht
+    return { safe: false, instance: undefined };
   }
 
   try {
@@ -23,12 +17,28 @@ export function createLangfuse(): SafeLangfuse {
       publicKey: pk,
       secretKey: sk,
       baseUrl: host,
-    });
+      // sofort senden & Kontext
+      flushAt: 1,
+      flushInterval: 0,
+      release: process.env.VERCEL_GIT_COMMIT_SHA,
+      environment: process.env.VERCEL_ENV,
+   } catch (error) {
+     console.error('Failed to initialize Langfuse:', error);
+     return { safe: false, instance: undefined };
+   }
+ });
+
+    // Debug-Ausgabe aktivieren, falls verfügbar
+    try {
+      lf.debug?.(true as any);
+    } catch (_) {
+      // ignore optional debug support differences
+    }
+
     return { safe: true, instance: lf };
   } catch (error) {
-    console.error('Failed to initialize Langfuse:', error);
+    // Defensiv: nie throwen in Edge-Handlern
+    console.error("Failed to initialize Langfuse:", error);
     return { safe: false, instance: undefined };
   }
-  return { safe: true, instance: lf };
 }
-
