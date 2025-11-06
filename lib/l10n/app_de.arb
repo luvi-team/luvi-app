@@ -647,6 +647,10 @@
   "@authCreateNewSubtitle": {
     "description": "Untertitel für den Bildschirm zum Erstellen eines neuen Passworts."
   },
+  "authCreateNewCta": "Speichern",
+  "@authCreateNewCta": {
+    "description": "Primärer CTA-Text beim Speichern des neuen Passworts."
+  },
   "authErrWaitBeforeRetry": "Bitte warte {seconds} Sekunden, bevor du es erneut versuchst.",
   "@authErrWaitBeforeRetry": {
     "description": "Hinweistext, der die verbleibende Wartezeit bis zum nächsten Versuch kommuniziert.",
@@ -658,11 +662,8 @@
   "@consentSnackbarAccepted": {
     "description": "Snackbar-Text nach erfolgreichem Speichern der Einwilligung."
   },
-  "consentSnackbarError": "Einwilligung fehlgeschlagen: {error}",
+  "consentSnackbarError": "Wir konnten deine Einwilligung nicht speichern. Bitte versuche es erneut.",
   "@consentSnackbarError": {
-    "description": "Snackbar-Fehlervorlage bei gescheiterter Einwilligungsprotokollierung. Fehlernachricht einfügen.",
-    "placeholders": {
-      "error": { "type": "String" }
-    }
+    "description": "Snackbar-Fehlertext bei gescheiterter Einwilligungsprotokollierung. Keine technischen Details anzeigen."
   }
 }

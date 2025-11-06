@@ -840,9 +840,6 @@
   },
   "consentSnackbarError": "We couldn't save your consent. Please try again.",
   "@consentSnackbarError": {
-    "description": "Snackbar error shown when consent logging fails. The error parameter is provided for future extensibility but should not expose technical details to users. Raw errors should be logged upstream (sanitized) for diagnostics.",
-    "placeholders": {
-      "error": { "type": "String" }
-    }
+    "description": "Snackbar text shown when consent logging fails. No error details are exposed."
   }
 }

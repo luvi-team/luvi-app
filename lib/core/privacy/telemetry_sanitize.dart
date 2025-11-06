@@ -8,7 +8,7 @@ import 'package:luvi_app/core/privacy/sanitize.dart' as log_sanitize;
 /// - Sanitizing string values with the log sanitizer
 Map<String, Object?> sanitizeTelemetryData(Map<String, Object?>? data) {
   if (data == null || data.isEmpty) return const <String, Object?>{};
-  return _sanitizeMap(data, topLevel: true);
+  return _sanitizeMap(data);
 }
 
 // Common sensitive keys; match in a case-insensitive manner.
@@ -45,7 +45,7 @@ const Set<String> _sensitiveKeys = {
   'filepath',
 };
 
-Map<String, Object?> _sanitizeMap(Map<String, Object?> input, {bool topLevel = false}) {
+Map<String, Object?> _sanitizeMap(Map<String, Object?> input) {
   final out = <String, Object?>{};
   for (final entry in input.entries) {
     final key = entry.key;

@@ -35,8 +35,8 @@ class CreateNewHeader extends StatelessWidget {
       children: [
         SizedBox(height: topGap),
         Text(
-          (AppLocalizations.of(context)?.authCreateNewTitle ??
-              auth_strings.AuthStrings.createNewTitle),
+          AppLocalizations.of(context)?.authCreateNewTitle ??
+              auth_strings.AuthStrings.createNewTitle,
           key: const ValueKey('create_new_title'),
           style: titleStyle,
         ),

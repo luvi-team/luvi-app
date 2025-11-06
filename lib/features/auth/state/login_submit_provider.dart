@@ -18,7 +18,14 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     final loginNotifier = ref.read(loginProvider.notifier);
     await loginNotifier.validateAndSubmit();
 
-    final loginState = ref.read(loginProvider).value ?? LoginState.initial();
+    final loginAsync = ref.read(loginProvider);
+    final loginState = loginAsync.value;
+    if (loginState == null) {
+      // Provider not ready; surface a clear, user-facing error and do not submit.
+      loginNotifier.setGlobalError(AuthStrings.errLoginUnavailable);
+      state = const AsyncData(null);
+      return;
+    }
     final hasLocalErrors =
         loginState.emailError != null || loginState.passwordError != null;
     // If local validation reported errors, do not hit the network.

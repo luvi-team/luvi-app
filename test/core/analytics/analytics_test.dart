@@ -1,4 +1,4 @@
-import'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/analytics/analytics.dart';
 import 'package:luvi_app/features/shared/analytics/analytics_recorder.dart';

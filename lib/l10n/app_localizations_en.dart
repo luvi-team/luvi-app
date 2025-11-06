@@ -366,7 +366,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome01Subtitle => 'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.';
 
   @override
-  String welcome01Title(String prefix, String accent) => '$prefix $accent';
+  String welcome01Title(String prefix, String accent) {
+    return '$prefix $accent';
+  }
 
   @override
   String get welcome01TitlePrefix => 'In ';
@@ -632,9 +634,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentSnackbarAccepted => 'Consent accepted';
 
   @override
-  String consentSnackbarError(String error) {
-    // Do not expose raw error details to users.
-    // Raw error should be logged upstream (sanitized) for diagnostics.
-    return "We couldn't save your consent. Please try again.";
-  }
+  String get consentSnackbarError => 'We couldn\'t save your consent. Please try again.';
 }

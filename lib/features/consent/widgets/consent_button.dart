@@ -4,7 +4,6 @@ import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/core/analytics/analytics.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/core/privacy/sanitize.dart';
 
 class ConsentButton extends ConsumerStatefulWidget {
   const ConsentButton({super.key});
@@ -72,10 +71,8 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       });
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        // Sanitize error before passing to UI to avoid leaking sensitive details.
-        final safe = sanitizeForLog(e.toString());
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.consentSnackbarError(safe))),
+          SnackBar(content: Text(l10n.consentSnackbarError)),
         );
       }
     } finally {

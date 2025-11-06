@@ -181,17 +181,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             onPressed: (_isLoading || _isBackoffActive)
                 ? null
                 : () async {
-                    if (_isBackoffActive) {
-                      // Defensive: in case state flips between build and tap
-                      final wait = _backoffRemainingSeconds;
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.authErrWaitBeforeRetry(wait)),
-                        ),
-                      );
-                      return;
-                    }
+                  // Defensive check removed: button is disabled during backoff
                     final newPw = _newPasswordController.text.trim();
                     final confirmPw = _confirmPasswordController.text.trim();
 
@@ -250,11 +240,17 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
                     setState(() => _isLoading = true);
                     try {
-                      await supa.Supabase.instance.client.auth.updateUser(
+                      await supa.Supabase.instance.client.auth
+                          .updateUser(
                         supa.UserAttributes(password: newPw),
-                      ).timeout(
+                      )
+                          .timeout(
                         const Duration(seconds: 30),
-                        onTimeout: () => throw TimeoutException('Password update timed out'),
+                        // Wrap timeout into an AuthException so upstream
+                        // catch (AuthException) logic can handle backoff.
+                        onTimeout: () => throw supa.AuthException(
+                          'Password update timed out after 30s (TimeoutException)',
+                        ),
                       );
                       if (!context.mounted) return;
                       // Success: reset backoff tracking
@@ -265,6 +261,42 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       _backoffTicker?.cancel();
                       context.goNamed(
                         SuccessScreen.passwordSuccessRouteName,
+                      );
+                    } on supa.AuthException catch (error) {
+                      // Log only error type to avoid leaking PII.
+                      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+                      if (!context.mounted) return;
+                      // Increment backoff and show friendly wait time.
+                      setState(() {
+                        _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, 16);
+                        _lastFailureAt = DateTime.now();
+                      });
+                      _startBackoffTicker();
+                      final wait = _backoffRemainingSeconds;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${l10n.authPasswordUpdateError} ${l10n.authErrWaitBeforeRetry(wait)}',
+                          ),
+                        ),
+                      );
+                    } on TimeoutException catch (error) {
+                      // Log only error type to avoid leaking PII.
+                      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+                      if (!context.mounted) return;
+                      // Treat timeouts the same as auth failures for backoff purposes.
+                      setState(() {
+                        _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, 16);
+                        _lastFailureAt = DateTime.now();
+                      });
+                      _startBackoffTicker();
+                      final wait = _backoffRemainingSeconds;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${l10n.authPasswordUpdateError} ${l10n.authErrWaitBeforeRetry(wait)}',
+                          ),
+                        ),
                       );
                     } catch (error) {
                       // Log only error type to avoid leaking PII.

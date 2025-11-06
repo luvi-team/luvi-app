@@ -91,7 +91,6 @@ void main() {
       expect(base, same);
       expect(base.hashCode, same.hashCode);
       expect(base == different, isFalse);
-
     });
 
     test('cycleProgressRatio boundary values (0.0 and 1.0) remain intact and immutable', () {

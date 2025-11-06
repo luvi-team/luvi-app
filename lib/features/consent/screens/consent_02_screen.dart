@@ -10,7 +10,6 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/shared/utils/run_catching.dart';
-import 'package:luvi_app/core/privacy/sanitize.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/link_text.dart';
@@ -142,8 +141,7 @@ class Consent02Screen extends ConsumerWidget {
 
                       if (markError != null) {
                         final l = AppLocalizations.of(context);
-                        final safe = sanitizeForLog(markError.toString());
-                        final msg = l?.consentSnackbarError(safe) ??
+                        final msg = l?.consentSnackbarError ??
                             'Failed to save your choice. Please try again.';
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(msg)),

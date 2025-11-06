@@ -773,7 +773,7 @@ abstract class AppLocalizations {
   /// **'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.'**
   String get welcome01Subtitle;
 
-  /// Combined title (prefix + accent) for consent welcome 01 with placeholder parameters.
+  /// Combined title prefix + accent with translatable order/spacing.
   ///
   /// In en, this message translates to:
   /// **'{prefix} {accent}'**
@@ -1301,11 +1301,11 @@ abstract class AppLocalizations {
   /// **'Consent accepted'**
   String get consentSnackbarAccepted;
 
-  /// Snackbar error template when consent logging fails. Include the error message.
+  /// Snackbar text shown when consent logging fails. No error details are exposed.
   ///
   /// In en, this message translates to:
-  /// **'Consent failed: {error}'**
-  String consentSnackbarError(String error);
+  /// **'We couldn\'t save your consent. Please try again.'**
+  String get consentSnackbarError;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

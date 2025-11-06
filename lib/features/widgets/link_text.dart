@@ -10,6 +10,7 @@ const double _kDefaultHorizontalTouchPadding = 8.0; // conservative for inline l
 /// **Important:** Tappable parts (with [onTap] provided) must have visible text
 /// to ensure proper accessibility and usability. Empty text with a tap handler
 /// will cause an assertion error in debug mode.
+@immutable
 class LinkTextPart {
   final String text;
   final VoidCallback? onTap;
@@ -47,7 +48,8 @@ class LinkText extends StatelessWidget {
     this.minTapTargetSize = _kMinTapSize,
     this.horizontalTouchPadding = _kDefaultHorizontalTouchPadding,
     this.allowHorizontalOverflowHitRect = false,
-  });
+  }) : assert(minTapTargetSize >= 0, 'minTapTargetSize must be non-negative'),
+       assert(horizontalTouchPadding >= 0, 'horizontalTouchPadding must be non-negative');
 
   @override
   Widget build(BuildContext context) {

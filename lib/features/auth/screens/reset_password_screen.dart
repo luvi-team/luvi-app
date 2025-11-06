@@ -93,7 +93,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               if (router.canPop()) {
                 router.pop();
               } else {
-                context.goNamed(LoginScreen.routeName);
+                context.go(LoginScreen.routeName);
               }
             },
             size: AuthLayout.backButtonSize,

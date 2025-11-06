@@ -3,6 +3,7 @@ import 'screens/consent_02_screen.dart';
 
 /// Public route names for consent screens exposed to the rest of the app.
 abstract class ConsentRoutes {
+  ConsentRoutes._();
 
   /// Identifier for the first consent step.
   static const String consent01 = Consent01Screen.routeName;
