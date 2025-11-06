@@ -9,9 +9,9 @@ import 'package:flutter/foundation.dart';
 class EmailValidator {
   const EmailValidator._();
 
-  static final RegExp _pattern =
-      RegExp(r'^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$');
+  static final RegExp _pattern = RegExp(
+    r'^[A-Za-z0-9][A-Za-z0-9._%+-]*[A-Za-z0-9]@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*\.[A-Za-z]{2,63}$',
+  );
 
   static bool isValid(String value) => _pattern.hasMatch(value.trim());
 }
-

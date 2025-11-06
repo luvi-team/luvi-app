@@ -5,6 +5,7 @@ import 'package:luvi_app/features/auth/state/login_state.dart';
 import '../../support/test_config.dart';
 
 class _FakeServerErrorLoginNotifier extends LoginNotifier {
+  // Simulates server error after successful client-side validation
   @override
   Future<void> validateAndSubmit() async {
     await super.validateAndSubmit();

@@ -99,8 +99,8 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   /// Performs client-side validation only.
   /// 
   /// Server-side submission is handled separately by login_submit_provider.
-  Future<void> validate() async {
-    state = await AsyncValue.guard(() async {
+  void validate() {
+    try {
       final current = _current();
       final trimmedEmail = current.email.trim();
       final trimmedPassword = current.password.trim();
@@ -120,23 +120,24 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
         pErr = AuthStrings.errPasswordInvalid;
       }
 
-      return current.copyWith(
+      state = AsyncData(current.copyWith(
         email: trimmedEmail,
         password: trimmedPassword,
         emailError: eErr,
         passwordError: pErr,
-        // Only clear globalError when validation passes for both fields.
         globalError: (eErr == null && pErr == null)
             ? null
             : current.globalError,
-      );
-    });
+      ));
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 
   /// Backward-compatible shim used by existing call sites and tests.
   /// Performs client-side validation; network submission remains elsewhere.
   Future<void> validateAndSubmit() async {
-    await validate();
+    validate();
   }
 
   @visibleForTesting

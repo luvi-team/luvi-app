@@ -10,7 +10,7 @@
 ///
 /// The pattern enforces at least one letter and allows internal separators.
 final RegExp defaultNamePattern = RegExp(
-  r"^[A-Za-zÀ-ÖØ-öø-ÿ]+(['\- ][A-Za-zÀ-ÖØ-öø-ÿ]+)*$",
+  r"^[A-Za-zÀ-ÖØ-öø-ÿ]+([-' ][A-Za-zÀ-ÖØ-öø-ÿ]+)*$",
 );
 
 /// Validates a personal name using basic, configurable constraints.
