@@ -71,9 +71,14 @@ class SupabaseInitController extends Notifier<InitState> {
   static final _random = math.Random();
 
   void ensureInitialized({required String envFile}) {
-    // First call wins; subsequent calls with different envFile are ignored.
-    assert(_envFile == null || _envFile == envFile,
-           'envFile must be consistent across calls');
+    // First call wins; subsequent calls with a different envFile are invalid in
+    // all build modes. Throw a StateError to enforce consistency at runtime.
+    if (_envFile != null && _envFile != envFile) {
+      throw StateError(
+        'SupabaseInitController.ensureInitialized called with a different envFile. '
+        'Expected "$_envFile", got "$envFile".',
+      );
+    }
     _envFile ??= envFile;
     final alreadyInitialized = SupabaseService.isInitialized;
     if (_started || alreadyInitialized) {

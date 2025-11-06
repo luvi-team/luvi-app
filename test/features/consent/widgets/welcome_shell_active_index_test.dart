@@ -20,8 +20,8 @@ void main() {
               hero: const SizedBox(), // asset-free for test stability
               title: Text(
                 l10n.welcome01Title(
-                  l10n.welcome01TitlePrefix.trim(),
-                  l10n.welcome01TitleAccent.trim(),
+                  l10n.welcome01TitlePrefix,
+                  l10n.welcome01TitleAccent,
                 ),
               ),
               subtitle: l10n.welcome01Subtitle,

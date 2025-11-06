@@ -261,7 +261,7 @@
       "accent": {"type": "String"}
     }
   },
-  "welcome01TitlePrefix": "Im ",
+  "welcome01TitlePrefix": "Im",
   "@welcome01TitlePrefix": {
     "description": "Einstiegstext für den Titel von Consent Welcome Screen 1 (vor dem Akzent-Wort). Einschließlich nachfolgendem Leerzeichen falls nötig."
   },

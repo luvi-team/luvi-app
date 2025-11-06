@@ -84,18 +84,18 @@ class UserStateService {
     required FitnessLevel fitnessLevel,
   }) async {
     final wroteLevel = await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
-    if (wroteLevel != true) {
+    if (!wroteLevel) {
       throw StateError('Failed to persist fitness level');
     }
     final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
-    if (wroteFlag != true) {
+    if (!wroteFlag) {
       throw StateError('Failed to persist onboarding completion flag');
     }
   }
 
   Future<void> setFitnessLevel(FitnessLevel level) async {
     final success = await prefs.setString(_keyFitnessLevel, level.name);
-    if (success != true) {
+    if (!success) {
       throw StateError('Failed to persist fitness level');
     }
   }
@@ -111,7 +111,7 @@ class UserStateService {
     Future<void> removeKey(String key) async {
       try {
         final ok = await prefs.remove(key);
-        if (ok != true) {
+        if (!ok) {
           failures.add(key);
         }
       } on Exception {

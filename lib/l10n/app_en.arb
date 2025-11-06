@@ -491,7 +491,7 @@
       "accent": {"type": "String"}
     }
   },
-  "welcome01TitlePrefix": "In ",
+  "welcome01TitlePrefix": "In",
   "@welcome01TitlePrefix": {
     "description": "Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed."
   },

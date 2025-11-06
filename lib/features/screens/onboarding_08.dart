@@ -46,18 +46,8 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     // Persist immediately on selection for better UX and to satisfy contract
     // expected by widget tests. Analytics is recorded on CTA.
     final level = FitnessLevel.fromSelectionIndex(index);
-    // Persist in the background; log failures explicitly to avoid silent errors
-    // while keeping UX non-blocking.
-    unawaited(
-      _persistSelection(level).catchError((e, stack) {
-        log.w(
-          'onboarding08_immediate_persist_failed',
-          tag: 'onboarding08',
-          error: e,
-          stack: stack,
-        );
-      }),
-    );
+    // Persist in the background via helper that handles errors.
+    _persistInBackground(level);
   }
 
   Future<void> _handleContinue() async {
@@ -233,5 +223,20 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
   Future<void> _persistSelection(FitnessLevel level) async {
     final userState = await ref.read(userStateServiceProvider.future);
     await userState.setFitnessLevel(level);
+  }
+
+  /// Fire-and-forget persistence with internal error handling to avoid missing
+  /// synchronous or already-completed errors while keeping the UX non-blocking.
+  Future<void> _persistInBackground(FitnessLevel level) async {
+    try {
+      await _persistSelection(level);
+    } catch (e, stack) {
+      log.w(
+        'onboarding08_immediate_persist_failed',
+        tag: 'onboarding08',
+        error: e,
+        stack: stack,
+      );
+    }
   }
 }

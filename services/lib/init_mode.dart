@@ -1,14 +1,12 @@
+import 'package:flutter/foundation.dart';
+
 enum InitMode { prod, test }
 
 typedef InitModeResolver = InitMode Function();
 
 /// Lightweight bridge to expose the current InitMode to layers without a
-/// Riverpod context (e.g., services package). The app is responsible for
-/// wiring this via a Provider at startup.
-///
-/// Note: The static, mutable [resolve] is intended for tests to override.
-/// Always restore the original resolver in tearDown to prevent cross-test
-/// pollution.
+/// Riverpod context (e.g., services package). Production code must only read
+/// the resolver via the getter; tests may override via the annotated setter.
 ///
 /// Example usage in a test:
 /// ```dart
@@ -16,6 +14,17 @@ typedef InitModeResolver = InitMode Function();
 /// InitModeBridge.resolve = () => InitMode.test;
 /// addTearDown(() => InitModeBridge.resolve = previous);
 /// ```
-class InitModeBridge {
-  static InitModeResolver resolve = () => InitMode.prod;
+abstract class InitModeBridge {
+  InitModeBridge._();
+
+  static InitModeResolver _resolver = () => InitMode.prod;
+
+  /// Read the current resolver.
+  static InitModeResolver get resolve => _resolver;
+
+  /// Test-only override for the resolver. Do not use in production code.
+  @visibleForTesting
+  static set resolve(InitModeResolver newResolver) {
+    _resolver = newResolver;
+  }
 }

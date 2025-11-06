@@ -5,7 +5,7 @@
     "osVersion": "Version 26.0.1 (Build 25A362)",
     "model": "",
     "cpu": "",
-    "arch": "\"macos_arm64\""
+    "arch": "macos_arm64"
   },
   "build": {
     "dart": "3.9.2",

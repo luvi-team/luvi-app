@@ -125,7 +125,7 @@ class ProdAppLinks extends AppLinksApi {
         return fallback;
       }
       // Last-resort safe URI that always parses.
-      return Uri.parse('about:blank');
+      return Uri.parse(_sentinelUrl);
     }
     return parsed;
   }

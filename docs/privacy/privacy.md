@@ -31,9 +31,8 @@ Wir verarbeiten personenbezogene Daten nur im erforderlichen Umfang. Im Einzelne
   - Zweck: Personalisierte Funktionalität, Merken von Einstellungen.
 
 - Optionale gesundheitsnahe Angaben innerhalb von Self‑Tracking‑/Zyklus‑Features (nur mit Einwilligung, Art. 9 Abs. 2 lit. a DSGVO)
-  - Daten: von Ihnen aktiv eingegebene Angaben (z. B. Zyklus‑Notizen). Erhebung ist optional und erkennbar gekennzeichnet.
-  - Zweck: Bereitstellung entsprechender In‑App‑Funktionen. Speicherung erfolgt [lokal auf Ihrem Gerät / auf EU‑Servern / mit optionalem Sync auf EU‑Servern]. Verarbeitung erfolgt ausschließlich nach ausdrücklich erteilter Einwilligung, die Sie jederzeit in den Einstellungen widerrufen können. Ohne Einwilligung werden diese Funktionen nicht genutzt.
-
+  - Daten: von Ihnen aktiv eingegebene Angaben (z. B. Zyklus‑Notizen). Erhebung ist optional und erkennbar gekennzeichnet.
+  - Zweck: Bereitstellung entsprechender In‑App‑Funktionen. Speicherung erfolgt lokal auf Ihrem Gerät mit optionalem Sync auf EU‑Servern. Verarbeitung erfolgt ausschließlich nach ausdrücklich erteilter Einwilligung, die Sie jederzeit in den Einstellungen widerrufen können. Ohne Einwilligung werden diese Funktionen nicht genutzt.
 - Externe Inhalte (z. B. YouTube) – nur nach Einwilligung (Art. 6 Abs. 1 lit. a DSGVO)
   - Daten: Beim Laden externer Inhalte erhebt der jeweilige Anbieter ggf. Nutzungsdaten (z. B. IP‑Adresse, Geräteinformationen).
   - Zweck: Wiedergabe externer Medien. Die Einbettung erfolgt erst nach Ihrer aktiven Zustimmung (Consent‑Gate in der App). Informationen zu Anbietern erhalten Sie vor der Aktivierung.

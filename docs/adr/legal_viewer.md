@@ -21,7 +21,7 @@ Die App zeigt rechtlich verbindliche Texte (Privacy Policy, Terms) über einen M
   - Retry-Semantik: Automatischer einmaliger Retry mit Backoff (z. B. 500–1000 ms, Timeout 5 s) wird simuliert; anschließend manueller Retry-Button wird angeboten und getestet.
   - UI-Fallbacks: Gelbes Offline-Banner vorhanden (persistent, non-blocking); bei Doppel‑Fehler (Remote+Lokal) wird das Fehlermodul mit Support-Hinweis angezeigt.
   - Sentry-Assertions: Breadcrumb `legal_viewer_fallback` bei Remote‑Fail + lokalem Erfolg; Event `legal_viewer_failed` nur bei Doppel‑Fail. Assertions prüfen Felder gemäß oben definierten Schemas.
-  - Referenz: Siehe Testimplementierung `test/legal_viewer/legal_viewer_fallback_test.dart` (Naming exemplarisch) oder verlinkte CI‑Logs.
+  - Referenz: Testpfad wird während der Implementierung konkretisiert (TBD). Falls stattdessen CI‑Logs als Referenz dienen, notiere den spezifischen Job („Flutter CI / analyze-test“) und den Build‑Run (Commit‑SHA) mit Direktlink in diesem ADR.
 
 ## CI/Release-Runbook (Durchsetzung Versionierung)
 - Git-Tag-Pflicht: Releases erzeugen einen Git‑Tag; Verantwortlich: Release Owner. Tag wird an `SENTRY_RELEASE` gebunden.

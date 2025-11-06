@@ -374,7 +374,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get welcome01TitlePrefix => 'Im ';
+  String get welcome01TitlePrefix => 'Im';
 
   @override
   String get welcome01TitleAccent => 'Einklang';

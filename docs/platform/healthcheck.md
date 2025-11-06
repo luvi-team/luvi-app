@@ -14,7 +14,9 @@ Explicit thresholds ensure consistent behavior across environments with low traf
 
 - Status mapping (default unless overridden by per-service `thresholds`):
   - `ok` if (`response_ms` ≤ `ok_lte`) AND (error rate < 5%).
-  - `degraded` if ((`ok_lte` < `response_ms` ≤ `degraded_lte`) AND (error rate < 20%)) OR ((5% ≤ error rate < 20%) AND (`response_ms` ≤ `degraded_lte`)).
+  - `degraded` if:
+    - (`ok_lte` < `response_ms` ≤ `degraded_lte`) AND (error rate < 20%), OR
+    - (5% ≤ error rate < 20%) AND (`response_ms` ≤ `degraded_lte`)
   - `down` if (`response_ms` > `degraded_lte`) OR repeated timeouts OR (error rate ≥ 20%).
 
 ## Success Criteria

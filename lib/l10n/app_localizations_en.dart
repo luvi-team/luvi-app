@@ -374,7 +374,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get welcome01TitlePrefix => 'In ';
+  String get welcome01TitlePrefix => 'In';
 
   @override
   String get welcome01TitleAccent => 'harmony';
