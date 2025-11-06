@@ -96,7 +96,12 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
 
     try:
         if temp_path.exists():
-            temp_path.unlink()
+            try:
+                temp_path.unlink()
+            except OSError:
+                # If we can't clean up an existing temp file, proceed anyway
+                # The write_text will overwrite or fail with a clearer error
+                pass
 
         temp_path.write_text(fixed_content, encoding='utf-8')
         temp_path.replace(svg_file)
@@ -140,6 +145,11 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
 
 
 def main():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(levelname)s: %(message)s'
+    )
+
     if len(sys.argv) != 2:
         print("Usage: python3 fix_svg_css_variables.py <path-to-svg-file>")
         print("\nExample:")

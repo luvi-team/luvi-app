@@ -11,6 +11,8 @@ enum FitnessLevel {
   beginner,
   occasional,
   fit,
+  /// Sentinel value indicating an invalid or unset fitness level.
+  /// Not selectable by users; excluded from selection order.
   unknown;
 
   static const List<FitnessLevel> _selectionOrder = [

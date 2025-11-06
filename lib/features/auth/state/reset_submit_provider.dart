@@ -37,13 +37,34 @@ final resetSubmitProvider =
   ResetSubmitNotifier.new,
 );
 
-// Testability toggle: allows unit tests to simulate production behavior even when
+// Testability toggle (global): allows unit tests to simulate production behavior even when
 // running under kDebugMode. Null = no override; true = force silent; false = force throw.
-// IMPORTANT: Use addTearDown(() => debugSetResetSilentOverride(null)) in tests so cleanup
-// runs even on failures. Alternatively, wrap test logic with runWithResetSilentOverride.
+// NOTE: Prefer the scoped helper `runWithResetSilentOverride(...)` over touching this state
+// directly. Global mutation can cause race hazards in parallel tests.
+// For legacy tests that still mutate this directly, ensure cleanup with
+// `addTearDown(() => debugSetResetSilentOverride(null))`.
 bool? _resetSilentOverride;
 
 @visibleForTesting
+/// Advanced-only: sets the global override used by [submitReset] to determine
+/// whether to allow silent success when Supabase is not initialized.
+///
+/// Deprecated: Prefer [runWithResetSilentOverride] which automatically restores
+/// the previous value even on failures. This reduces flakiness and makes tests
+/// easier to reason about.
+///
+/// Example (preferred):
+///
+/// ```dart
+/// await runWithResetSilentOverride(true, () async {
+///   // test body
+/// });
+/// ```
+///
+/// If you require true parallel test execution, consider using Zones or
+/// per-test-local state (e.g., Riverpod Ref/state) instead of a process-global
+/// flag.
+@Deprecated('Use runWithResetSilentOverride for tests; direct use is advanced-only and can be flaky in parallel runs.')
 void debugSetResetSilentOverride(bool? value) {
   // Allow clearing (setting to null) at any time; only assert when attempting
   // to set a non-null value while a previous non-null override is still active.

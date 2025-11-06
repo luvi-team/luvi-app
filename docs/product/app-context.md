@@ -15,6 +15,14 @@ Datenschutz ist Kernprinzip (EU-Only, DSGVO-first). Coach-Programme & KI-Suche/P
 • Klar benannt: Datenübertragung an Google/YouTube, Speicherung (Cookies/Local Storage), Widerruf jederzeit.
 • Ablehnen → „Auf YouTube öffnen“ (kein IFrame). Akzeptieren → offizieller YouTube-IFrame (youtube-nocookie).
 • Consent-Logs (user_id, video_id, decision, timestamp, ua_hash, ip_hash, client_version, locale), Retention 12 Monate; Export/Löschung über Einstellungen.
+  
+  Datenschutz-Update (ip_hash, DSGVO):
+  • Rechtsgrundlage: Speicherung von IP-Hashs erfolgt primär auf Basis berechtigter Interessen (Art. 6 Abs. 1 lit. f DSGVO) zur IT‑Sicherheit, Missbrauchs-/Fraud‑Prävention, Abuse‑Rate‑Limiting und Audit‑Nachweis; alternativ über Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) sofern im Consent‑Flow ausgewählt. Freigabe/Dokumentation: „Legal‑Freigabe v1.1“; Hinterlegung in docs/privacy/ (inkl. Abwägung und Zweckbindung).
+  • Hashing‑Verfahren: Strikt einweg, mit starker Salz/Pepper‑Strategie.
+    – Algorithmus/Versionierung: ip_hash_version = v1 (HMAC‑SHA256 mit systemweiter Pepper, im Secret Store), optional v2 (Argon2id mit Pepper+Salt).
+    – Pepper wird getrennt vom Datenbankzugriff verwaltet (z. B. Secret Manager/Edge‑Config). Salts werden pro Eintrag generiert oder über rotierende System‑Pepper gelöst. Keine Möglichkeit zur Rückrechnung (kein Reversing).
+  • Aufbewahrung: Standard 12 Monate – Begründung: (a) Rechts-/Nachweisinteressen (Audit/Abuse), (b) Betrugsprävention/Rate‑Limiting, (c) Qualitäts-/Sicherheitsaudits im Jahreszyklus. Retention als Policy konfigurierbar (z. B. 3/6/12 Monate) und dokumentiert; automatische Löschung/Archivierung via Scheduled Job/Edge Function (inkl. Löschprotokoll) nach Ablauf.
+  • Verträge/Notizen: AV‑/DPA‑Ergänzung und interne Privacy Notes um „gehashte IPs“ erweitern; Datenexport umfasst ip_hash (inkl. Version) und erlaubt nutzerinitiierte Löschung. Die in Abschnitt „Consent‑Logs“ referenzierten Export‑/Löschmechanismen decken ip_hash vollständig ab (inkl. referenzieller Kaskaden/Löschroutinen).
 
 4) Technische Grundlage & Betrieb
 • EU-Only Gateway: Vercel Edge (fra1) als verschlüsselter Proxy; /api/health als Betriebsnachweis.

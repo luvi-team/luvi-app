@@ -129,11 +129,11 @@ class SupabaseService {
 
   /// Check if user is authenticated
   static bool get isAuthenticated =>
-      _initialized && Supabase.instance.client.auth.currentUser != null;
+      _initialized && client.auth.currentUser != null;
 
   /// Get current user
   static User? get currentUser =>
-      _initialized ? Supabase.instance.client.auth.currentUser : null;
+      _initialized ? client.auth.currentUser : null;
 
   /// Initialize Supabase from environment variables
   static Future<void> initializeFromEnv({

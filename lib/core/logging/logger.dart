@@ -27,8 +27,8 @@ class Logger {
   void i(String message, {String? tag}) =>
       _print(_format('I', sanitizeForLog(message), tag: tag));
 
-  void w(String message, {String? tag, Object? error, StackTrace? stack}) {
-    final lines = StringBuffer(_format('W', sanitizeForLog(message), tag: tag));
+  void w(String? message, {String? tag, Object? error, StackTrace? stack}) {
+    final lines = StringBuffer(_format('W', sanitizeForLog(message ?? ''), tag: tag));
     if (error != null) {
       lines.write('\n');
       lines.write(sanitizeForLog('$error'));
@@ -42,8 +42,8 @@ class Logger {
     _print(lines.toString());
   }
 
-  void e(String message, {String? tag, Object? error, StackTrace? stack}) {
-    final lines = StringBuffer(_format('E', sanitizeForLog(message), tag: tag));
+  void e(String? message, {String? tag, Object? error, StackTrace? stack}) {
+    final lines = StringBuffer(_format('E', sanitizeForLog(message ?? ''), tag: tag));
     if (error != null) {
       lines.write('\n');
       lines.write(sanitizeForLog('$error'));

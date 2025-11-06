@@ -28,7 +28,9 @@ health:
     repeated_timeouts_per_check: <int>        # default ≥2 attempts
     repeated_timeouts_last_checks: <int>      # default 2 checks
   evaluation:
-    degraded_to_down_method: <enum>           # allowed: aggregated_last_two_failed (default)
+    degraded_to_down_method: <enum>           # allowed: aggregated_last_two_failed (default); extensions require ADR; unknown values rejected
+  aggregation:
+    latency_metric: <enum>                    # allowed: p95 (default), p50, max, ma_last_5m
 ```
 
 ### Validation rules
@@ -37,6 +39,7 @@ health:
 - All counters must be positive integers.
 - Durations must parse to finite values (e.g., `Xs`, `Xms`).
 - `evaluation.degraded_to_down_method` must be `aggregated_last_two_failed` unless explicitly extended via ADR; unknown values are rejected.
+- `aggregation.latency_metric` must be one of `p95 | p50 | max | ma_last_5m` (default `p95`). Any future extensions MUST follow the ADR process and be added to the allowed values list; unknown values are rejected.
 
 ### Precedence and rollout
 - Precedence: per‑service overrides → org/global defaults → spec defaults.
@@ -64,5 +67,6 @@ health:
     repeated_timeouts_last_checks: 2
   evaluation:
     degraded_to_down_method: aggregated_last_two_failed
+  aggregation:
+    latency_metric: p95
 ```
-

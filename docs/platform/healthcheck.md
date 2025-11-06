@@ -81,8 +81,9 @@ function runSingleCheckWithRetries(checkFn):
     if i < attemptsCount - 1:
       backoff(i)
   // Aggregate after retries exhausted
-  aggErrorRate = aggregateErrorRate(attempts) // e.g., weighted by samples
-  aggLatency = aggregateLatency(attempts)     // per selected metric p95/p50/ma_last_5m
+  // See section "Aggregation Policy (concrete)" for exact formulas.
+  aggErrorRate = aggregateErrorRate(attempts) // weighted by sample_count across attempts
+  aggLatency = aggregateLatency(attempts)     // default p95 across merged samples (configurable)
   if aggErrorRate >= 0.20 or aggLatency > thresholds.degraded_lte or repeatedTimeouts(attempts):
     // "failed" is internal outcome; see terminology clarification above
     return { level: "failed", errorRate: aggErrorRate, latency: aggLatency }
@@ -135,6 +136,36 @@ function updateState(aggResult):
         consecutiveNonFailedWhileDown = 0 // reset after leaving "down"
 ```
 
+### Aggregation Policy (concrete)
+
+Error‑rate (weighted average by samples across all attempts in a single check):
+
+Let attempt i provide `sample_count_i` total responses and `error_count_i` errors (timeouts that yield no responses contribute to the timeout rules below, not to counts here).
+
+```
+total_error_count  = Σ_i error_count_i
+total_sample_count = Σ_i sample_count_i
+aggErrorRate       = total_error_count / max(1, total_sample_count)
+```
+
+Timeout‑only attempts (no responses within the per‑request timeout) are excluded from the numerator and denominator above and are handled by `repeatedTimeouts(...)` and `repeatedTimeoutsLastChecks()`.
+
+Latency (default p95 across attempts):
+- Default aggregation computes p95 over the union of all per‑attempt latency samples within the single check (merge all samples, then compute p95).
+- This can be overridden per service via configuration. Allowed options:
+  - `p50` (median across merged samples)
+  - `p95` (default; across merged samples)
+  - `max` (maximum across merged samples)
+  - `ma_last_5m` (moving average over last 5 minutes; requires backend support; if unsupported, fallback to `p95`).
+
+Configuration knobs (per service):
+- `health.aggregation.latency_metric`: one of `p50 | p95 | max | ma_last_5m` (default: `p95`).
+- Error‑rate method is fixed to `weighted_by_samples` for MVP and is not configurable; any future change must go through ADR and schema extension.
+
+Governance & compatibility:
+- Unknown enum values MUST be rejected by validation.
+- Extensions to aggregation policy require an ADR and a schema update listing the new allowed values. See docs/config/service-config-schema.md.
+
 ### Definition: repeated timeouts
 To remove ambiguity around timeout-based transitions, use the following concrete thresholds and windows:
 
@@ -170,6 +201,8 @@ health:
     repeated_timeouts_last_checks: 2
   evaluation:
     degraded_to_down_method: aggregated_last_two_failed   # opt‑in keys must validate against schema
+  aggregation:
+    latency_metric: p95  # allowed: p50 | p95 (default) | max | ma_last_5m
 ```
 
 Operators can apply overrides via the Settings UI (Settings → Health → Thresholds) referenced above, or by editing the service registry and CI deployment manifests that carry this configuration. Changes must pass schema validation before taking effect.

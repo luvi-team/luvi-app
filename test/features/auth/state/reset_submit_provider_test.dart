@@ -7,11 +7,8 @@ void main() {
   setUp(() {
     // Ensure Supabase is considered not initialized.
     SupabaseService.resetForTest();
-    // Clear any previous override.
-    debugSetResetSilentOverride(null);
     // Ensure cleanup even if a test fails.
     addTearDown(() {
-      debugSetResetSilentOverride(null);
       InitModeBridge.resolve = () => InitMode.prod;
     });
   });
@@ -26,17 +23,17 @@ void main() {
   test('Prod path: throws when Supabase is not initialized (override to simulate prod)', () async {
     InitModeBridge.resolve = () => InitMode.prod;
     // Force production-like behavior even under kDebugMode in unit tests.
-    debugSetResetSilentOverride(false);
-
-    await expectLater(
-      submitReset('user@example.com'),
-      throwsA(
-        isA<StateError>().having(
-          (e) => e.message,
-          'message',
-          contains('Supabase'),
+    await runWithResetSilentOverride(false, () async {
+      await expectLater(
+        submitReset('user@example.com'),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            contains('Supabase'),
+          ),
         ),
-      ),
-    );
+      );
+    });
   });
 }

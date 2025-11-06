@@ -148,6 +148,43 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   }
 
   static const double _backButtonSize = AuthLayout.backButtonSize;
+
+  // Extracted password validation for readability and reuse.
+  String? _validatePassword(
+    String newPw,
+    String confirmPw,
+    AppLocalizations l10n,
+  ) {
+    if (newPw.isEmpty || confirmPw.isEmpty) {
+      return l10n.authErrPasswordInvalid;
+    }
+    if (newPw != confirmPw) {
+      return l10n.authPasswordMismatchError;
+    }
+    final pw = newPw;
+    final hasMinLen = pw.length >= 8;
+    final hasLetter = RegExp(r"[A-Za-z]").hasMatch(pw);
+    final hasNumber = RegExp(r"\d").hasMatch(pw);
+    final hasSpecial = RegExp(
+      r'[!@#\$%\^&*()_\+\-=\{\}\[\]:;,.<>/?`~|\\]',
+    ).hasMatch(pw);
+    final trimmed = pw.trim();
+    final isCommonWeak = _commonWeakPatterns.any((r) => r.hasMatch(trimmed)) ||
+        _isRepetitive(trimmed) ||
+        _isNumericSequence(trimmed) ||
+        _isRepeatedBlock(trimmed);
+
+    if (!hasMinLen) {
+      return l10n.authErrPasswordTooShort;
+    }
+    if (!(hasLetter && hasNumber && hasSpecial)) {
+      return l10n.authErrPasswordMissingTypes;
+    }
+    if (isCommonWeak) {
+      return l10n.authErrPasswordCommonWeak;
+    }
+    return null; // valid
+  }
   @override
   void dispose() {
     _newPasswordController.dispose();
@@ -204,6 +241,14 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   // Defensive check removed: button is disabled during backoff
                     final newPw = _newPasswordController.text.trim();
                     final confirmPw = _confirmPasswordController.text.trim();
+                    final validationErrorMsg = _validatePassword(newPw, confirmPw, l10n);
+                    if (validationErrorMsg != null) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(validationErrorMsg)),
+                      );
+                      return;
+                    }
 
                     // Basic empty check
                     if (newPw.isEmpty || confirmPw.isEmpty) {

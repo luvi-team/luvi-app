@@ -87,11 +87,10 @@ String sanitizeForLog(String input) {
 bool _isLikelyPhone(String candidate) {
   final stripped = candidate.replaceAll(_extensionTokenPattern, '');
   final digits = _digitCounterPattern.allMatches(stripped).length;
-  // Avoid treating credit-card-like sequences as phone numbers.
-  if (digits >= 13 && digits <= 19) {
-    return false;
-  }
-  return digits >= 10;
+  // Treat as phone only for plausible E.164 ranges (10–15 digits).
+  // Avoid redacting long 16+ digit sequences that may resemble credit cards
+  // but fail Luhn (tests expect those not to be redacted as phones).
+  return digits >= 10 && digits <= 15;
 }
 
 bool _isLikelyCc(String numeric) {
@@ -114,4 +113,3 @@ bool _luhnValid(String digits) {
   }
   return sum % 10 == 0;
 }
-

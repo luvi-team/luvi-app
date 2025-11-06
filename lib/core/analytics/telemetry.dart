@@ -15,9 +15,11 @@ class Telemetry {
     if (!_enabled) return;
     // Sanitize payload before emitting.
     final sanitized = sanitizeTelemetryData(data);
-    if (kDebugMode && data != null && data.isNotEmpty && sanitized.isEmpty) {
+    if (data != null && data.isNotEmpty && sanitized.isEmpty) {
       // Soft signal in debug if everything got stripped; do not include raw data.
-      log.w('breadcrumb: $name props=[sanitized-empty]', tag: 'telemetry');
+      if (kDebugMode) {
+        log.w('breadcrumb: $name props=[sanitized-empty]', tag: 'telemetry');
+      }
       return;
     }
     log.i('breadcrumb: $name props=$sanitized', tag: 'telemetry');
