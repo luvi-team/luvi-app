@@ -6,7 +6,7 @@ const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 // Salt used to pseudonymize consent/user identifiers in metrics logs.
 // If not provided, we fall back to an unsalted SHA-256 hash to avoid logging PII
 // while keeping metrics functional in lower environments.
-const CONSENT_METRIC_SALT = Deno.env.get("CONSENT_METRIC_SALT") ?? undefined;
+const CONSENT_METRIC_SALT = Deno.env.get("CONSENT_METRIC_SALT");
 // Observability & protection controls (overridable via env, safe defaults)
 const RATE_LIMIT_WINDOW_SEC = parseInt(
   Deno.env.get("CONSENT_RATE_LIMIT_WINDOW_SEC") ?? "60",
@@ -227,7 +227,7 @@ serve(async (req) => {
     });
   }
 
-  const rawScopes = (body as any).scopes as unknown;
+  const rawScopes = body.scopes;
   if (!rawScopes || (Array.isArray(rawScopes) && rawScopes.length === 0)) {
     logMetric(requestId, "invalid", { reason: "missing_scopes" });
     return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
