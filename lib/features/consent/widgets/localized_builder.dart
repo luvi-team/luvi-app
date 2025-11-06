@@ -49,32 +49,30 @@ class LocalizedBuilder extends StatelessWidget {
         builder: (overrideContext) {
           final resolved = AppLocalizations.of(overrideContext);
           if (resolved == null) {
-            // Fail-fast in debug with clear remediation guidance.
+            // Debug: warn loudly but do not crash the app.
             assert(() {
-              throw FlutterError.fromParts(<DiagnosticsNode>[
-                ErrorSummary('Missing AppLocalizations in LocalizedBuilder.'),
-                ErrorDescription(
-                  'AppLocalizations.of(context) returned null. This usually means the localization delegates are not configured on your app root.',
-                ),
-                ErrorHint(
-                  'Add the following to your MaterialApp (or CupertinoApp):\n'
-                  '  localizationsDelegates: AppLocalizations.localizationsDelegates,\n'
-                  '  supportedLocales: AppLocalizations.supportedLocales,',
-                ),
-              ]);
+              log.e(
+                'AppLocalizations.of(context) returned null. Ensure delegates/supportedLocales are configured at app root.',
+                tag: 'localized_builder',
+              );
+              return true;
             }());
 
-            // Release: log and return a safe fallback to avoid a blank screen crash.
-            log.e(
-              'Failed to resolve AppLocalizations; returning safe fallback widget.',
-              tag: 'localized_builder',
-            );
+            // Release: show a minimal error UI instead of a blank widget.
             FlutterError.reportError(FlutterErrorDetails(
               exception: FlutterError('AppLocalizations.of(context) returned null'),
               library: 'localized_builder',
               context: ErrorDescription('Localizations.override resolution failed'),
             ));
-            return const SizedBox.shrink();
+            return Semantics(
+              label: 'Localization unavailable',
+              child: const Center(
+                child: Text(
+                  'Localization unavailable',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
           }
           return builder(overrideContext, resolved);
         },

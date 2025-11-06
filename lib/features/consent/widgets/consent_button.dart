@@ -42,7 +42,8 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
     try {
       final consentService = ref.read(consentServiceProvider);
 
-      await consentService.accept(version: version, scopes: scopes);
+      await consentService.accept(version: version, scopes: scopes)
+        .timeout(const Duration(seconds: 10));
 
       // Fire analytics event only after successful server persistence
       final analytics = ref.read(analyticsProvider);
