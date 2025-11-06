@@ -46,6 +46,8 @@
 - **Grouping:** Part of trophy group
 
 ### Konfetti (Confetti)
+
+⚠️ WARNING: All confetti colors (lines 71-145) are placeholders pending Figma verification. Do not use in production implementation.
 - **Total Count:** 47 elements (5 streamers + 42 dots)
 - **Layer-Typ:** Vector (all SVG)
 - **Export Note:** All confetti elements are part of a single SVG group (node `68597:8099`), making this ideal for single-asset export.
@@ -68,38 +70,40 @@ Note: Confetti element colors are placeholders pending verification against the 
    - Position: x=55px, y=358.28px
    - Size: 86.46px × 26.45px
    - Shape: Curved path
-   - Color: #896CFE (purple, placeholder - not verified from Figma)
+   - Color: #896CFE (purple, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Left
 
 2. **Streamer 02** (Node 68597:8103)
    - Position: x=241.88px, y=271.23px
    - Size: 65.88px × 63.91px
    - Shape: Curved path
-   - Color: #7B68EE (purple, placeholder - not verified from Figma)
+   - Color: #7B68EE (purple, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Center
 
 3. **Streamer 03** (Node 68597:8106)
    - Position: x=280.93px, y=351.44px
    - Size: 81.95px × 41.75px
    - Shape: Curved path
-   - Color: #6A5ACD (blue, placeholder - not verified from Figma)
+   - Color: #6A5ACD (blue, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Right
 
 4. **Streamer 04** (Node 68597:8109)
    - Position: x=104.61px, y=273.27px
    - Size: 58.11px × 61.59px
    - Shape: Curved path
-   - Color: #896CFE (purple, placeholder - not verified from Figma)
+   - Color: #896CFE (purple, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Left
 
 5. **Streamer 05** (Node 68597:8193)
    - Position: x=179.81px, y=244px
    - Size: 27.55px × 86.19px
    - Shape: Curved path
-   - Color: #7B68EE (purple, placeholder - not verified from Figma)
+   - Color: #7B68EE (purple, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Center
 
 #### Dots (42 total)
+
+Note: All dot color entries below are placeholders pending Figma verification. Each color value is marked implicitly as [TODO: VERIFY].
 
 1. **Dot 01** (Node 68597:8112) - Position: x=59.76px, y=349.06px - Size: 8.86px × 8.59px - Color: #FFEB3B (yellow, placeholder - not verified from Figma) - Region: Left
 2. **Dot 02** (Node 68597:8115) - Position: x=260.19px, y=309.57px - Size: 8.88px × 8.64px - Color: #FFFF00 (yellow, placeholder - not verified from Figma) - Region: Center
