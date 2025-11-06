@@ -28,6 +28,13 @@ Rekey Safety and Procedure
 - Verify free disk space ≥ 2× the current DB file size (baseline). Allow up to 3× when page/reserved-byte layout changes or VACUUM-style rewrites may occur, to accommodate temporary artifacts.
 - Ensure the DB is idle (no long-running transactions). If using WAL, checkpoint and truncate the WAL (or close all connections) prior to rekeying to avoid additional temporary WAL usage during the operation.
 
+ Failure behavior when preconditions are unmet:
+ - The rekey operation MUST be deferred and MUST NOT start.
+ - Return a clear error code and message, e.g. `REKEY_PRECONDITION_FAILED` with diagnostics describing which check failed and the current observed values (e.g., `free_space_bytes`, `db_size_bytes`, `active_connections`, `wal_size_bytes`).
+ - Notify the user/admin with actionable steps: free disk space, close database connections, run a WAL checkpoint/truncate, or retry later when device is idle.
+ - Optional automated fallback: schedule a retry with exponential backoff (e.g., base 30s, multiplier 2×, jitter ±20%) with a bounded maximum attempts window (e.g., 5 attempts). If the app supports offline work queues, enqueue the rekey for an offline retry window.
+ - Safe rollback/logging: ensure no partial rekey attempts are left on disk. Do not modify the original DB file. Log a structured event with error-class, precondition details, and whether a retry was scheduled. No user data changes are permitted in this state.
+
 2) Recommended default: export → rename
 - Steps:
   - Open the existing DB with `PRAGMA key` (old key), then set `PRAGMA kdf_iter = 210000` (if supported) before any reads/writes.
