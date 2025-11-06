@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
@@ -19,18 +23,24 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
   /// internal class names (e.g., _InternalSupabaseAuthException).
   /// Returns a safe, user-facing error category string.
   String _categorizeError(Object error) {
-    final typeName = error.runtimeType.toString().toLowerCase();
-    if (typeName.contains('network') || typeName.contains('socket')) {
+    // Network-related errors
+    if (error is SocketException || error is HttpException || error is IOException) {
       return 'network_error';
-    } else if (typeName.contains('timeout')) {
-      return 'timeout_error';
-    } else if (typeName.contains('auth') || typeName.contains('permission')) {
-      return 'auth_error';
-    } else if (typeName.contains('validation')) {
-      return 'validation_error';
-    } else {
-      return 'unknown_error';
     }
+    // Timeout
+    if (error is TimeoutException) {
+      return 'timeout_error';
+    }
+    // Auth/permission errors (platform/channel level)
+    if (error is PlatformException) {
+      return 'auth_error';
+    }
+    // Validation/format issues
+    if (error is FormatException) {
+      return 'validation_error';
+    }
+    // Fallback
+    return 'unknown_error';
   }
 
   Future<void> _handleAccept() async {

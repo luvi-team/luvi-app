@@ -1,4 +1,4 @@
-# ADR: Legal Front‑Matter Schema (Autoritativ)
+# ADR: Legal Front-Matter Schema (Autoritativ)
 
 Dieses Dokument definiert das verbindliche YAML‑Front‑Matter‑Schema für alle rechtlich relevanten Markdown‑Dokumente unter `docs/privacy/*.md`. Die CI validiert exakt gegen diese Spezifikation.
 

@@ -75,9 +75,10 @@ class SupabaseInitController extends Notifier<InitState> {
     assert(_envFile == null || _envFile == envFile,
            'envFile must be consistent across calls');
     _envFile ??= envFile;
-    if (_started || SupabaseService.isInitialized) {
+    final alreadyInitialized = SupabaseService.isInitialized;
+    if (_started || alreadyInitialized) {
       _started = true;
-      if (SupabaseService.isInitialized && !state.initialized) {
+      if (alreadyInitialized && !state.initialized) {
         _setState(state.copyWith(initialized: true, error: null, configError: false));
       }
       return;

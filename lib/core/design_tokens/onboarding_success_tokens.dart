@@ -72,7 +72,6 @@ class OnboardingSuccessTokens {
   static double get maxBaselineOffset => _maxBaselineOffset;
 }
 
-/// Immutable config describing how the celebration illustration should render.
 class OnboardingSuccessIllustrationConfig {
   const OnboardingSuccessIllustrationConfig({
     required this.scale,
@@ -81,4 +80,15 @@ class OnboardingSuccessIllustrationConfig {
 
   final double scale;
   final double baselineOffset;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OnboardingSuccessIllustrationConfig &&
+          runtimeType == other.runtimeType &&
+          scale == other.scale &&
+          baselineOffset == other.baselineOffset;
+
+  @override
+  int get hashCode => Object.hash(scale, baselineOffset);
 }

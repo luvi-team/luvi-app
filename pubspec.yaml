@@ -58,6 +58,7 @@ dependencies:
   http: ^1.5.0
   luvi_services:
     path: services
+  flutter_secure_storage: ^9.2.2
   sign_in_with_apple: ^7.0.1
   sign_in_button: ^4.0.1
 

@@ -22,7 +22,11 @@ declare
   recent_count integer := 0;
   lock_key bigint;
   d bytea;
-  unsigned64 numeric;
+declare
+  recent_count integer := 0;
+  lock_key bigint;
+  d bytea;
+begin
 begin
   -- Validate input parameters early to avoid ambiguous failures downstream.
   if p_user_id is null then

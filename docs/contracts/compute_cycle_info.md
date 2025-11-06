@@ -85,7 +85,13 @@ References: ACOG Patient Education (Ovulation/Menstrual Cycle); Wilcox AJ et a
 
 Input validation (after clamps, deterministic):
 - Invariants: `1 ≤ period_length_days ≤ cycle_length_days`, `1 ≤ luteal_length_days < cycle_length_days`.
-- If an invariant is not met after clamps, further correct to the nearest admissible value and add to `notes` (e.g., `"invariant_adjustment"`). In v1, clamp bounds are chosen such that these invariants are normally satisfied.
+- If an invariant is not met after clamps, perform a minimal adjustment to restore it. Procedure (apply in this order and record one note per field adjusted):
+  - If `period_length_days ≥ cycle_length_days`, set `period_length_days = cycle_length_days - 1`.
+  - If `luteal_length_days ≥ cycle_length_days`, set `luteal_length_days = cycle_length_days - 1`.
+  - If `period_length_days < 1`, set `period_length_days = 1`.
+  - If `luteal_length_days < 1`, set `luteal_length_days = 1`.
+  After each change, append to `notes` an entry `"invariant_adjustment"` including the original and adjusted values, e.g. `"invariant_adjustment: period_length_days 12→11 (cycle_length_days=12)"`.
+  Example: inputs `cycle_length_days=12`, `period_length_days=12`, `luteal_length_days=14` (after initial clamps). Adjust to `period_length_days=11`, `luteal_length_days=11` so that `period_length_days < cycle_length_days` and `luteal_length_days < cycle_length_days` hold; add two notes for the adjustments.
 
 ## Test Cases (at minimum)
 Note: References to algorithm steps in brackets (e.g., [Step 2]). All outputs fully specified.

@@ -250,59 +250,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       return;
                     }
 
-                    // Basic empty check
-                    if (newPw.isEmpty || confirmPw.isEmpty) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.authErrPasswordInvalid)),
-                      );
-                      return;
-                    }
-
-                    // Confirm match
-                    if (newPw != confirmPw) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.authPasswordMismatchError),
-                        ),
-                      );
-                      return;
-                    }
-
-                    // Strength validation
-                    final pw = newPw;
-                    final hasMinLen = pw.length >= 8;
-                    final hasLetter = RegExp(r"[A-Za-z]").hasMatch(pw);
-                    final hasNumber = RegExp(r"\d").hasMatch(pw);
-                    final hasSpecial = RegExp(
-                      r'[!@#\$%\^&*()_\+\-=\{\}\[\]:;,.<>/?`~|\\]',
-                    ).hasMatch(pw);
-                    final trimmed = pw.trim();
-                    final isCommonWeak = _commonWeakPatterns.any(
-                          (r) => r.hasMatch(trimmed),
-                        ) ||
-                        _isRepetitive(trimmed) ||
-                        _isNumericSequence(trimmed) ||
-                        _isRepeatedBlock(trimmed);
-
-                    String? validationError;
-                    if (!hasMinLen) {
-                      validationError = l10n.authErrPasswordTooShort;
-                    } else if (!(hasLetter && hasNumber && hasSpecial)) {
-                      validationError = l10n.authErrPasswordMissingTypes;
-                    } else if (isCommonWeak) {
-                      validationError = l10n.authErrPasswordCommonWeak;
-                    }
-
-                    if (validationError != null) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(validationError)),
-                      );
-                      return;
-                    }
-
                     setState(() => _isLoading = true);
                     try {
                       await supa.Supabase.instance.client.auth

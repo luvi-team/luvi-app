@@ -15,7 +15,9 @@ final RegExp _extensionTokenPattern = RegExp(
 );
 final RegExp _digitCounterPattern = RegExp(r'\d');
 final RegExp _uuidPattern = RegExp(
-  r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b',
+  // Match any RFC4122-like UUID without enforcing version/variant bits to
+  // stay consistent with services/lib/logger.dart.
+  r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b',
 );
 // Extend the prefix list cautiously if new identifier types require masking.
 final RegExp _prefixedTokenPattern = RegExp(
@@ -121,7 +123,10 @@ void _reportHandledError({
 String? _sanitizeError(Object error) {
   final raw = error.toString();
 
-  String sanitized = raw.replaceAll(_emailPattern, '[redacted-email]');
+  // Sanitize control characters to prevent log injection
+  String sanitized = raw.replaceAll(RegExp(r'[\r\n\t\x00-\x1F\x7F]'), ' ');
+
+  sanitized = sanitized.replaceAll(_emailPattern, '[redacted-email]');
 
   sanitized = sanitized.replaceAll(_uuidPattern, '[redacted-uuid]');
 

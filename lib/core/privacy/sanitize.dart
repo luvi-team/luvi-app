@@ -11,7 +11,9 @@ final RegExp _emailPattern = RegExp(
 );
 
 final RegExp _uuidPattern = RegExp(
-  r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b',
+  // Keep in sync with services/lib/logger.dart and
+  // lib/features/shared/utils/run_catching.dart
+  r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b',
 );
 
 // Bearer tokens (JWT/Base64-ish/opaque).
@@ -113,3 +115,4 @@ bool _luhnValid(String digits) {
   }
   return sum % 10 == 0;
 }
+

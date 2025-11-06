@@ -22,7 +22,7 @@ void main() {
 
       final decoded = jsonDecode(jsonString);
       expect(decoded, isA<Map<String, dynamic>>());
-      expect((decoded as Map<String, dynamic>).isNotEmpty, isTrue);
+      expect(decoded, isNotEmpty);
     });
   });
 }

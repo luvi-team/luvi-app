@@ -105,10 +105,10 @@ Object? _sanitizeValue(Object? value) {
   }
   // Primitive types (int/double/bool): keep as-is
   // Any other object: avoid dumping toString() which may include PII
-  final typeName = value.runtimeType.toString();
-  if (typeName == 'DateTime') {
+  if (value is DateTime) {
     return value.toString();
   }
+  final typeName = value.runtimeType.toString();
   // Fallback to a type marker only
   return '<$typeName>';
 }

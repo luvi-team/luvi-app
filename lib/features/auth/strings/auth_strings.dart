@@ -5,8 +5,19 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
 /// Provides localized auth strings while keeping the existing static API surface
-/// for legacy callers. Strings resolve against [AppLocalizations] and can be
-/// overridden in tests via [debugOverrideLocalizations].
+/// for legacy callers.
+///
+/// Cache behavior and safety
+/// - Strings resolve against [AppLocalizations] and are cached per locale tag.
+/// - By default, the current tag is derived from `PlatformDispatcher.instance.locale`.
+/// - To avoid external cache invalidation and ensure consistency with
+///   `Localizations.localeOf(context)`, production code SHOULD install a locale
+///   resolver via [setLocaleResolver] at app startup (e.g., in the root widget).
+/// - The cache re-resolves automatically when the resolver's tag changes.
+/// - Tests can still override via [debugOverrideLocalizations].
+///
+/// In debug mode, when a tag change is detected, a diagnostic is printed to
+/// help catch stale cache coordination issues early during development.
 class AuthStrings {
   AuthStrings._();
 
@@ -26,6 +37,15 @@ class AuthStrings {
 
   @visibleForTesting
   static void overrideResolver(ui.Locale? Function()? resolver) {
+    _resolver = resolver;
+  }
+
+  /// Installs a locale resolver used to derive the current locale.
+  ///
+  /// Recommended: pass a closure that resolves to `Localizations.localeOf(context)`
+  /// from your app root, so that cache invalidation is driven by the real
+  /// widget tree locale rather than the platform locale.
+  static void setLocaleResolver(ui.Locale Function() resolver) {
     _resolver = resolver;
   }
 
@@ -56,6 +76,16 @@ class AuthStrings {
     if (cached != null && _cachedTag == currentTag) {
       return cached;
     }
+    assert(() {
+      // In debug builds, surface when cache is considered stale.
+      if (_cachedTag != null && _cachedTag != currentTag) {
+        debugPrint(
+          '[AuthStrings] Locale tag changed from "$_cachedTag" to "$currentTag". '
+          'Re-resolving AppLocalizations.',
+        );
+      }
+      return true;
+    }());
     const fallbackLocale = ui.Locale.fromSubtags(languageCode: 'en');
 
     for (final candidate in <ui.Locale>[
@@ -74,7 +104,9 @@ class AuthStrings {
     }
 
     // Fallback was already attempted in the loop above; if we reach here, rethrow
-    throw FlutterError('AppLocalizations lookup failed for all candidates including fallback.');
+    throw FlutterError(
+      'AppLocalizations lookup failed for locale "$currentTag" and all fallback candidates including en.'
+    );
   }
 
   static String get loginHeadline => _l10n().authLoginHeadline;

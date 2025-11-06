@@ -33,7 +33,11 @@ class DateFormatters {
       if (kDebugMode) {
         debugPrintStack(stackTrace: stackTrace, label: 'DateFormat error');
       }
-      return date.toIso8601String().substring(0, 10);
+      try {
+        return date.toIso8601String().substring(0, 10);
+      } catch (_) {
+        return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      }
     }
   }
 }
