@@ -11,19 +11,24 @@ export function createLangfuse(): SafeLangfuse {
   const host = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
 
   if (!pk || !sk) {
-    // Fallback: keine ENV gesetzt -> Stub, damit App nicht crasht
+    console.warn('Langfuse env vars missing, using stub mode');
     return {
       safe: false,
       instance: undefined,
     };
   }
 
-  const lf = new Langfuse({
-    publicKey: pk,
-    secretKey: sk,
-    baseUrl: host,
-  });
-
+  try {
+    const lf = new Langfuse({
+      publicKey: pk,
+      secretKey: sk,
+      baseUrl: host,
+    });
+    return { safe: true, instance: lf };
+  } catch (error) {
+    console.error('Failed to initialize Langfuse:', error);
+    return { safe: false, instance: undefined };
+  }
   return { safe: true, instance: lf };
 }
 
