@@ -278,7 +278,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await supa.Supabase.instance.client.auth.signInWithOAuth(
         provider,
         redirectTo: kIsWeb ? null : redirect,
-        authScreenLaunchMode: supa.LaunchMode.externalApplication,
+        authScreenLaunchMode: kIsWeb
+            ? supa.LaunchMode.platformDefault
+            : supa.LaunchMode.externalApplication,
       );
     } catch (error, stackTrace) {
       FlutterError.reportError(FlutterErrorDetails(

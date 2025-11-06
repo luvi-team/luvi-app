@@ -106,6 +106,10 @@
   "@documentLoadError": {
     "description": "Generic error shown when a legal or markdown document cannot be loaded."
   },
+  "legalViewerFallbackBanner": "Remote unavailable — showing offline copy.",
+  "@legalViewerFallbackBanner": {
+    "description": "Banner text shown when remote legal document could not be fetched and app displays bundled offline copy."
+  },
   "commonContinue": "Continue",
   "@commonContinue": {
     "description": "Label for primary continue CTA buttons."

@@ -1,5 +1,14 @@
-// Default pattern: letters (ASCII + common accents), spaces, hyphens,
-// apostrophes; must contain at least one letter.
+/// Default pattern for western/Latin-based personal names.
+///
+/// Supports the following characters:
+/// - Letters: `A-Z`, `a-z`, and Latin-extended accents `À-Ö`, `Ø-ö`, `ø-ÿ`
+/// - Separators: spaces, hyphens (`-`), apostrophes (`'`)
+///
+/// Not supported by default: Cyrillic, CJK, Arabic, Hebrew, Devanagari and
+/// other non-Latin scripts. Consumers that need full international support
+/// should provide a custom `allowedCharsPattern` to `nonEmptyNameValidator`.
+///
+/// The pattern enforces at least one letter and allows internal separators.
 final RegExp defaultNamePattern = RegExp(
   r"^[A-Za-zÀ-ÖØ-öø-ÿ]+(['\- ][A-Za-zÀ-ÖØ-öø-ÿ]+)*$",
 );

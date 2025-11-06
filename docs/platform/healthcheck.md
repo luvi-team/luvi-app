@@ -23,7 +23,7 @@ Explicit thresholds ensure consistent behavior across environments with low traf
 
 ## Status Transitions
 - Hysteresis is required to avoid flapping. Use consecutive check counts/time windows:
-  - ok → degraded: threshold exceeded for 2 consecutive checks (or error rate ≥ 5% for 2 checks) or partial feature failure is detected.
+  - ok → degraded: 2 consecutive non‑ok aggregated outcomes (i.e., either degraded or failed), or a partial feature failure is detected.
   - degraded → ok: 3 consecutive checks back within `ok` thresholds and error rate < 5%.
   - degraded → down: persistent failures after all retries in 2 consecutive checks, repeated timeouts, or p95 exceeding `degraded_lte` for 2 checks.
   - down → degraded: first sustained successful responses below `degraded_lte` for 2 consecutive checks.
@@ -45,10 +45,11 @@ Explicit thresholds ensure consistent behavior across environments with low traf
 - **`failed`** is an internal aggregated outcome produced by a check's retry/aggregation logic and used by the state machine to decide transitions. It is not directly exposed to API consumers.
 - **`down`** is the external observable service status, emitted by the state machine after completing state transitions. Once the state machine determines that `failed` outcomes have persisted (e.g., `consecutiveFailed >= 2`), it transitions the service status to `down`.
 - The consecutive counters track only aggregated outcomes and are context aware:
-  - `consecutiveFailed` increments on `failed` and resets on non‑failed.
   - `consecutiveOk` increments on `ok` and resets on non‑ok.
+  - `consecutiveFailed` increments on `failed` (≥ 20% error, latency > `degraded_lte`, or repeated timeouts) and resets on non‑failed.
+  - `consecutiveNonOk` increments on any non‑ok outcome (`degraded` or `failed`) and resets on `ok`. This is used for the `ok → degraded` hysteresis.
   - While in `down`, a separate short counter `consecutiveNonFailedWhileDown` increments on any non‑failed result (`ok` or `degraded`) and resets on `failed`. This is used exclusively for the `down → degraded` transition.
-- Error-rate threshold is evaluated per aggregated check (e.g., if aggregated `error_rate ≥ 5%` → outcome `failed`, contributes +1 to the consecutive‑failure counter). There is not a second counter for error‑rate.
+- Error-rate threshold is evaluated per aggregated check consistent with the status mapping above: aggregated `error_rate ≥ 20%` contributes a `failed` outcome; `5% ≤ error_rate < 20%` contributes a `degraded` outcome. There is not a separate counter for error‑rate.
 - State transitions evaluate only these aggregated results and the consecutive counters.
 
 Pseudocode (reference implementation):
@@ -58,8 +59,9 @@ Pseudocode (reference implementation):
 // health check may transition immediately per the rules below. Alerting follows
 // the alerting policy above (e.g., auto-resolve confirmation window).
 state ∈ {ok, degraded, down}
-consecutiveFailed = 0
 consecutiveOk = 0
+consecutiveFailed = 0
+consecutiveNonOk = 0
 consecutiveNonFailedWhileDown = 0
 
 function runSingleCheckWithRetries(checkFn):
@@ -92,22 +94,26 @@ function updateState(aggResult):
   // "failed" is internal outcome; external status "down" is set by state machine below
   if aggResult.level == "failed":
     consecutiveFailed += 1
+    consecutiveNonOk += 1
     consecutiveOk = 0
     consecutiveNonFailedWhileDown = 0
   else if aggResult.level == "ok":
     consecutiveOk += 1
     consecutiveFailed = 0
+    consecutiveNonOk = 0
     if state == down: consecutiveNonFailedWhileDown += 1
   else: // level == "degraded"
     consecutiveOk = 0
+    consecutiveFailed = 0 // degraded is not failed
+    consecutiveNonOk += 1
     // Only track consecutiveNonFailedWhileDown while in 'down' state
     // (not when state is degraded or ok)
     if state == down: consecutiveNonFailedWhileDown += 1
 
   switch state:
     case ok:
-      // Any non‑ok aggregated result breaks ok streaks; degrade after 2 failures
-      if consecutiveFailed >= 2: state = degraded
+      // Any non‑ok aggregated result breaks ok streaks; degrade after 2 non‑ok outcomes
+      if consecutiveNonOk >= 2: state = degraded
     case degraded:
       // Degraded → down: the state machine MUST evaluate the aggregated metrics
       // across the last two consecutive failed checks to determine transition.

@@ -148,6 +148,7 @@ class _LegalViewerState extends State<LegalViewer> {
             );
           }
           final theme = Theme.of(context);
+          final l10n = AppLocalizations.of(context);
           final doc = snap.data!;
           final children = <Widget>[];
           if (doc.usedFallback) {
@@ -167,8 +168,8 @@ class _LegalViewerState extends State<LegalViewer> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          // Keep string inline (MVP); consider l10n if needed.
-                          'Remote unavailable — showing offline copy.',
+                          l10n?.legalViewerFallbackBanner ??
+                              'Remote unavailable — showing offline copy.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.amber.shade900,
                           ),

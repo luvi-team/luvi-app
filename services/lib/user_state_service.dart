@@ -91,7 +91,10 @@ class UserStateService {
     if (wroteFlag != true) {
       // Rollback: best-effort removal of fitness level
       try {
-        await prefs.remove(_keyFitnessLevel);
+        final removed = await prefs.remove(_keyFitnessLevel);
+        if (removed != true) {
+          throw StateError('Rollback failed: could not remove fitness level key');
+        }
       } catch (rollbackError) {
         // Rollback failed; we're in an inconsistent state
         throw StateError(

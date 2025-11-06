@@ -88,9 +88,21 @@ class ProdAppLinks extends AppLinksApi {
         return false;
       }
     }
-    // Block IPv6 local ranges: fe80:: (link-local), fc00:: and fd00:: (unique local)
-    if (host.startsWith('fe80:') || host.startsWith('fc00:') || host.startsWith('fd00:')) {
+    // Block IPv6 local ranges
+    // - fe80::/10 (link-local) — keep simple startsWith check
+    // - fc00::/7 (unique local) — any first 16-bit group 0xFC00..0xFDFF
+    if (host.startsWith('fe80:')) {
       return false;
+    }
+    if (host.contains(':')) {
+      final firstGroup = host.split(':').firstWhere(
+            (g) => g.isNotEmpty,
+            orElse: () => '',
+          );
+      final head = int.tryParse(firstGroup, radix: 16);
+      if (head != null && head >= 0xFC00 && head <= 0xFDFF) {
+        return false;
+      }
     }
     if (host.endsWith('.local') || host.endsWith('.localhost')) return false;
     return true;
@@ -169,10 +181,15 @@ Future<void> _openLegal(
   required String title,
   required AppLinksApi appLinks,
 }) async {
-  // Try external if valid
+  // Try external if valid; if it throws or returns false, fall back to in-app
   if (isValid) {
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (ok) return;
+    try {
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (ok) return;
+    } catch (error, stackTrace) {
+      debugPrint('[links] launchUrl failed for $uri: $error\n$stackTrace');
+      // proceed to fallback
+    }
   }
   if (!context.mounted) return;
   // Fallback to in-app Markdown viewer

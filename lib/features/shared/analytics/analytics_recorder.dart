@@ -23,6 +23,25 @@ typedef AnalyticsEventSink = void Function(
 /// - Default is `null`, which means no backend forwarding is performed.
 final analyticsBackendSinkProvider = Provider<AnalyticsEventSink?>((_) => null);
 
+/// Returns true when [properties] contains keys that look like PII indicators
+/// (e.g., email, phone, name, address). Case-insensitive, substring match.
+bool _containsSuspiciousPII(Map<String, Object?> properties) {
+  if (properties.isEmpty) return false;
+  const suspicious = <String>{
+    'email', 'e-mail', 'mail',
+    'phone', 'tel', 'telephone', 'mobile',
+    'name', 'first_name', 'firstname', 'last_name', 'lastname', 'full_name', 'fullname',
+    'address', 'street', 'city', 'zip', 'zipcode', 'postal', 'postcode',
+  };
+  for (final key in properties.keys) {
+    final k = key.toLowerCase();
+    for (final s in suspicious) {
+      if (k.contains(s)) return true;
+    }
+  }
+  return false;
+}
+
 /// Dev-only analytics recorder.
 ///
 /// **Privacy**: Callers must ensure that properties are PII-free before
@@ -47,16 +66,35 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
     String name, {
     Map<String, Object?> properties = const <String, Object?>{},
   }) {
-    assert(name.isNotEmpty, 'Analytics event name must not be empty');
-    if (kDebugMode) {
-      final sanitizedProps = properties.isEmpty
-          ? ''
-          : ' (keys: ${properties.keys.join(', ')})';
-      debugPrint('[analytics] $name$sanitizedProps');
+    if (name.isEmpty) {
+      debugPrint('[analytics] ERROR: Event name must not be empty');
+      return;
     }
-    // Always forward to backend (if provided), regardless of build mode.
+
+    // Debug-only guardrail: catch unsanitized PII-like property keys early.
+    assert(() {
+      final hasPII = _containsSuspiciousPII(properties);
+      if (hasPII) {
+        debugPrint(
+          '[analytics] BLOCKED in debug: Event "$name" contains potentially PII-like property keys: '
+          '${properties.keys.join(', ')}',
+        );
+      }
+      return !hasPII;
+    }());
+
+    if (kDebugMode) {
+      final keys = properties.keys.join(', ');
+      final suffix = properties.isEmpty ? '' : ' (keys: $keys)';
+      debugPrint('[analytics] $name$suffix');
+    }
+
     if (backend != null) {
-      backend!(name, properties);
+      try {
+        backend!(name, properties);
+      } catch (error, stackTrace) {
+        debugPrint('[analytics] Backend error: $error\n$stackTrace');
+      }
     }
   }
 }

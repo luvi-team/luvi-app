@@ -74,6 +74,26 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     });
   }
 
+  // Consolidated failure handling for password update attempts.
+  void _handlePasswordUpdateFailure(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    setState(() {
+      _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, 16);
+      _lastFailureAt = DateTime.now();
+    });
+    _startBackoffTicker();
+    final wait = _backoffRemainingSeconds;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${l10n.authPasswordUpdateError} ${l10n.authErrWaitBeforeRetry(wait)}',
+        ),
+      ),
+    );
+  }
+
   // Common weak password patterns extracted for reuse and testability
   static final List<RegExp> _commonWeakPatterns = <RegExp>[
     // Dictionary-like base words
@@ -246,11 +266,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       )
                           .timeout(
                         const Duration(seconds: 30),
-                        // Wrap timeout into an AuthException so upstream
-                        // catch (AuthException) logic can handle backoff.
-                        onTimeout: () => throw supa.AuthException(
-                          'Password update timed out after 30s (TimeoutException)',
-                        ),
                       );
                       if (!context.mounted) return;
                       // Success: reset backoff tracking
@@ -266,56 +281,17 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       // Log only error type to avoid leaking PII.
                       debugPrint('[auth.updatePassword] ${error.runtimeType}');
                       if (!context.mounted) return;
-                      // Increment backoff and show friendly wait time.
-                      setState(() {
-                        _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, 16);
-                        _lastFailureAt = DateTime.now();
-                      });
-                      _startBackoffTicker();
-                      final wait = _backoffRemainingSeconds;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${l10n.authPasswordUpdateError} ${l10n.authErrWaitBeforeRetry(wait)}',
-                          ),
-                        ),
-                      );
+                      _handlePasswordUpdateFailure(context, l10n);
                     } on TimeoutException catch (error) {
                       // Log only error type to avoid leaking PII.
                       debugPrint('[auth.updatePassword] ${error.runtimeType}');
                       if (!context.mounted) return;
-                      // Treat timeouts the same as auth failures for backoff purposes.
-                      setState(() {
-                        _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, 16);
-                        _lastFailureAt = DateTime.now();
-                      });
-                      _startBackoffTicker();
-                      final wait = _backoffRemainingSeconds;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${l10n.authPasswordUpdateError} ${l10n.authErrWaitBeforeRetry(wait)}',
-                          ),
-                        ),
-                      );
+                      _handlePasswordUpdateFailure(context, l10n);
                     } catch (error) {
                       // Log only error type to avoid leaking PII.
                       debugPrint('[auth.updatePassword] ${error.runtimeType}');
                       if (!context.mounted) return;
-                      // Increment backoff and show friendly wait time.
-                      setState(() {
-                        _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, 16);
-                        _lastFailureAt = DateTime.now();
-                      });
-                      _startBackoffTicker();
-                      final wait = _backoffRemainingSeconds;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${l10n.authPasswordUpdateError} ${l10n.authErrWaitBeforeRetry(wait)}',
-                          ),
-                        ),
-                      );
+                      _handlePasswordUpdateFailure(context, l10n);
                     } finally {
                       if (mounted) {
                         setState(() => _isLoading = false);

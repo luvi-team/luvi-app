@@ -50,13 +50,11 @@ class SupabaseService {
       _performInitializeAndCache(envFile).then<void>((_) {
         if (!gate.isCompleted) gate.complete();
       }).catchError((Object error, StackTrace stack) {
-        // Avoid returning a nested synchronized Future here to prevent
-        // potential deadlocks from re-entering the lock chain.
-        _initLock.synchronized<void>(() {
-          _initCompleter = null;
-          if (!gate.isCompleted) gate.completeError(error, stack);
-          return Future.value();
-        });
+        // Do not re-enter the lock here; just clear the gate and propagate.
+        _initCompleter = null;
+        if (!gate.isCompleted) {
+          gate.completeError(error, stack);
+        }
         // Let callers still observe the failure via the gate's completion.
       });
       return gate.future;

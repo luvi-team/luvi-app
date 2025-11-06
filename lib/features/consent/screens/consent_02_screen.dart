@@ -205,14 +205,8 @@ class Consent02Screen extends ConsumerWidget {
 TextStyle _consentBodyTextStyle(ThemeData theme) {
   final textTheme = theme.textTheme;
   final colorScheme = theme.colorScheme;
-  return textTheme.bodyMedium?.copyWith(
-        color: colorScheme.onSurface,
-        fontSize: 16,
-        height: 1.5,
-        fontWeight: FontWeight.w400,
-        fontFamily: FontFamilies.figtree,
-      ) ??
-      TextStyle(
+  final base = textTheme.bodyMedium ?? const TextStyle();
+  return base.copyWith(
         color: colorScheme.onSurface,
         fontSize: 16,
         height: 1.5,
@@ -253,8 +247,7 @@ class _ConsentTopBar extends StatelessWidget {
                   context.go(Consent01Screen.routeName);
                 }
               },
-              semanticLabel:
-                  (AppLocalizations.of(context)?.authBackSemantic) ?? 'Back',
+              semanticLabel: AppLocalizations.of(context)!.authBackSemantic,
             ),
           ),
           const SizedBox(height: ConsentSpacing.topBarButtonToTitle),

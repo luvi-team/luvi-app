@@ -5,8 +5,8 @@ Die App zeigt rechtlich verbindliche Texte (Privacy Policy, Terms) über einen M
 
 ## Entscheidungen
 - **Speicherort:** Verbindliche Markdown-Dateien liegen im Repo unter `docs/privacy/`. Der Build bundelt sie unverändert ins App-Paket; Pfade werden im Viewer hart verdrahtet.
-- **Versionierung:** Jede App-Version verknüpft die angezeigten Texte mit dem Git-Tag des Builds (`SENTRY_RELEASE` / Release-Notes). Änderungen an Markdown-Dateien erfolgen per Pull Request und werden durch Git-Historie nachvollzogen. Siehe „CI/Release-Runbook“ zur Durchsetzung.
-- **Lade-Reihenfolge:** Viewer lädt zunächst Remote-URLs (`PRIVACY_URL`, `TERMS_URL`). Fällt der Abruf aus (5 s timeout; Abruch, wenn innerhalb von 5 Sekunden keine Antwort), oder bei HTTP ≥ 400, wird automatisch auf die gebündelten Dateien (`docs/privacy/privacy.md`, `docs/privacy/terms.md`) zurückgegriffen.
+- **Versionierung:** Jede App-Version verknüpft die angezeigten Texte mit dem Git-Tag des Builds (`SENTRY_RELEASE` / Release-Notes). Änderungen an Markdown-Dateien erfolgen per Pull Request und werden durch Git-Geschichte nachvollzogen. Siehe „CI/Release-Runbook" zur Durchsetzung.
+- **Lade-Reihenfolge:** Viewer lädt zunächst Remote-URLs (`PRIVACY_URL`, `TERMS_URL`). Fällt der Abruf aus (5 s timeout; Abruch, wenn innerhalb von 5 Sekunden keine Antwort), oder bei HTTP ≥ 400, wird automatisch auf die gebündelten Dateien (`assets/legal/privacy.md`, `assets/legal/terms.md`) zurückgegriffen.
 - **Fallback-Benutzerführung:** Bei Remote-Fehler blendet die UI eine gelbe Banner-Warnung („Offline-Version“) ein, zeigt Dateiversion + Build-Tag und protokolliert einen Sentry-Breadcrumb `legal_viewer_fallback`.
   - Banner-Lifecycle: persistent bis Browser/App-Refresh oder erfolgreichem Remote-Load. Optional manuelles Dismiss erlaubt; Dismiss ändert NICHT den Fallback-Zustand und verhindert keine erneuten Sentry-Signale.
   - Interaktion: non-blocking, als oberes Inline-Banner; Lesen der Inhalte bleibt möglich. Wenn sowohl Remote als auch lokal fehlschlagen, zeigt der Screen ein blockierendes Fehlermodul (siehe Fehlerfall).

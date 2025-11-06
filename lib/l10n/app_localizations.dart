@@ -227,6 +227,12 @@ abstract class AppLocalizations {
   /// **'Failed to load document.'**
   String get documentLoadError;
 
+  /// Banner text shown when remote legal document could not be fetched and app displays bundled offline copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote unavailable — showing offline copy.'**
+  String get legalViewerFallbackBanner;
+
   /// Label for primary continue CTA buttons.
   ///
   /// In en, this message translates to:

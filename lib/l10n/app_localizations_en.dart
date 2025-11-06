@@ -81,6 +81,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get documentLoadError => 'Failed to load document.';
 
   @override
+  String get legalViewerFallbackBanner => 'Remote unavailable — showing offline copy.';
+
+  @override
   String get commonContinue => 'Continue';
 
   @override
