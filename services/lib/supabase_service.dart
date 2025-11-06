@@ -207,10 +207,11 @@ class SupabaseService {
       );
     }
     // Normalize to date-only, preserving the user's local calendar date.
+    final lpLocal = lastPeriod.toLocal();
     final lastPeriodDate = DateTime.utc(
-      lastPeriod.year,
-      lastPeriod.month,
-      lastPeriod.day,
+      lpLocal.year,
+      lpLocal.month,
+      lpLocal.day,
     );
     // Compare against today's local calendar date, normalized similarly.
     final nowLocal = DateTime.now();
