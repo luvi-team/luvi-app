@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 
@@ -64,12 +64,33 @@ class LocalizedBuilder extends StatelessWidget {
               library: 'localized_builder',
               context: ErrorDescription('Localizations.override resolution failed'),
             ));
+            final languageCode = effectiveLocale.languageCode.toLowerCase();
+            const Map<String, String> unavailableByLang = {
+              'en': 'Localization unavailable',
+              'de': 'Lokalisierung nicht verfügbar',
+              'fr': 'Localisation indisponible',
+              'es': 'Localización no disponible',
+              'it': 'Localizzazione non disponibile',
+              'pt': 'Localização indisponível',
+              'nl': 'Lokalisatie niet beschikbaar',
+              'sv': 'Lokalisering inte tillgänglig',
+              'pl': 'Lokalizacja niedostępna',
+            };
+            final message =
+                unavailableByLang[languageCode] ?? unavailableByLang['en']!;
             return Semantics(
-              label: 'Localization unavailable',
-              child: const Center(
-                child: Text(
-                  'Localization unavailable',
-                  textAlign: TextAlign.center,
+              label: message,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.language, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
             );
