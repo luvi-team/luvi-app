@@ -22,16 +22,12 @@ export function createLangfuse(): SafeLangfuse {
       flushInterval: 0,
       release: process.env.VERCEL_GIT_COMMIT_SHA,
       environment: process.env.VERCEL_ENV,
-   } catch (error) {
-     console.error('Failed to initialize Langfuse:', error);
-     return { safe: false, instance: undefined };
-   }
- });
+    });
 
     // Debug-Ausgabe aktivieren, falls verfügbar
     try {
-      lf.debug?.(true as any);
-    } catch (_) {
+      (lf as any).debug?.(true);
+    } catch {
       // ignore optional debug support differences
     }
 

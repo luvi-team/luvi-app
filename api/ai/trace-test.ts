@@ -8,6 +8,7 @@ export default async function handler(req: Request): Promise<Response> {
   const started = Date.now();
   let posted = false;
   let traceUrl: string | undefined;
+  let uiUrl: string | undefined;
   let err: string | undefined;
 
   if (safe && instance) {
@@ -29,45 +30,53 @@ export default async function handler(req: Request): Promise<Response> {
 
       await gen.end();
 
-      // Optionally finalize trace if SDK exposes end() on trace client
-      if ('end' in trace && typeof trace.end === 'function') {
-        await trace.end();
+      // Trace optional beenden (nicht alle Typen exportieren .end)
+      if ((trace as any)?.end) {
+        await (trace as any).end();
       }
 
-      // Ausstehende Events sofort senden und Client ggf. schließen
+      // Ausstehende Events senden
       await (instance as any)?.flushAsync?.();
+
+      // Projektgebundenen UI‑Pfad ermitteln (falls verfügbar)
+      try {
+        const traceId: string | undefined = (trace as any)?.id ?? (trace as any)?.traceId;
+        if (traceId && (instance as any)?.api?.traceGet) {
+          const t = await (instance as any).api.traceGet(traceId);
+          const host = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
+          if (t?.htmlPath) uiUrl = host + t.htmlPath;
+        }
+      } catch (_) {
+        // uiUrl ist optional
+      }
+
+      // Client ggf. schließen
       await (instance as any)?.shutdownAsync?.();
 
-      traceUrl = trace.getTraceUrl?.();
+      traceUrl = (trace as any)?.getTraceUrl?.();
       posted = true;
     } catch (e) {
       console.error("langfuse trace-test error", e);
-  const isProd = process.env.VERCEL_ENV === 'production';
-  if (isProd && !safe) {
-    return new Response(JSON.stringify({ ok: false }), { status: 503 });
+      err = e instanceof Error ? e.message : String(e);
+    }
   }
 
   const tookMs = Date.now() - started;
   return new Response(
     JSON.stringify({
-      ok: safe && !err,
+      ok: true,
       safe,
       posted,
-      ...(isProd ? {} : {
-        env: process.env.VERCEL_ENV,
-        host: process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com",
-      }),
+      env: process.env.VERCEL_ENV,
+      host: process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com",
       tookMs,
       err,
       traceUrl,
+      uiUrl,
     }),
     {
-    status: safe && !err ? 200 : 500,
-    headers: { "content-type": "application/json" },
-    },
-  );
-}
-    headers: { "content-type": "application/json" },
+      status: 200,
+      headers: { "content-type": "application/json" },
     },
   );
 }
