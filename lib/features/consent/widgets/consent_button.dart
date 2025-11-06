@@ -35,6 +35,10 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
     if (error is PlatformException) {
       return 'auth_error';
     }
+    // Auth/state errors (e.g., user not authenticated)
+    if (error is StateError && error.message.contains('auth')) {
+      return 'auth_state_error';
+    }
     // Validation/format issues
     if (error is FormatException) {
       return 'validation_error';

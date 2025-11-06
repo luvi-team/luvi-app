@@ -104,6 +104,7 @@ Object? _sanitizeValue(Object? value) {
     return log_sanitize.sanitizeForLog(value);
   }
   // Primitive types (int/double/bool): keep as-is
+  if (value is num || value is bool) return value;
   // Any other object: avoid dumping toString() which may include PII
   if (value is DateTime) {
     return value.toString();

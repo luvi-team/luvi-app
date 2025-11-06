@@ -90,12 +90,10 @@ _Phase _phaseForDate({
   int lutealLength = 13,
   int ovulationWindowDays = 2,
 }) {
-  // Determine target timezone per contract (fallbacks):
-  // 1) If inputs carry a zone, prefer it; 2) else use user's/device local TZ;
-  // 3) fallback to UTC only if local TZ is not available (not typical in app).
-  // Dart DateTime supports only local or UTC zones, so we implement by
-  // converting inputs to local, extracting their calendar date, then creating
-  // UTC date-only values to perform DST-safe day arithmetic.
+  // Dart DateTime supports only local or UTC zones. To perform DST-safe day
+  // arithmetic, we: 1) convert UTC inputs to local time, keeping local inputs
+  // as-is; 2) extract the calendar date (year/month/day) in local time; and
+  // 3) create UTC date-only values for difference calculations.
   DateTime toLocalZone(DateTime dt) => dt.isUtc ? dt.toLocal() : dt;
   DateTime toUtcDateOnly(DateTime local) =>
       DateTime.utc(local.year, local.month, local.day);

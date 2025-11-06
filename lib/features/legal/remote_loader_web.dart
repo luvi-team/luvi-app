@@ -10,8 +10,7 @@ Future<String?> fetchRemoteMarkdown(
   final client = BrowserClient(); // withCredentials=false by default
   try {
     final http.Response resp = await client.get(uri).timeout(timeout);
-    final status = resp.statusCode;
-    if (status < 200 || status >= 300) {
+    if (resp.statusCode ~/ 100 != 2) {
       return null;
     }
     return resp.body;

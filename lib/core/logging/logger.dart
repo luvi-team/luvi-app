@@ -22,10 +22,10 @@ const String piiWarning =
 class Logger {
   const Logger();
 
-  void d(String message, {String? tag}) =>
-      _print(_format('D', sanitizeForLog(message), tag: tag));
-  void i(String message, {String? tag}) =>
-      _print(_format('I', sanitizeForLog(message), tag: tag));
+  void d(String? message, {String? tag}) =>
+      _print(_format('D', sanitizeForLog(message ?? ''), tag: tag));
+  void i(String? message, {String? tag}) =>
+      _print(_format('I', sanitizeForLog(message ?? ''), tag: tag));
 
   void w(String? message, {String? tag, Object? error, StackTrace? stack}) {
     final lines = StringBuffer(_format('W', sanitizeForLog(message ?? ''), tag: tag));

@@ -138,4 +138,4 @@ Das Script:
 ## Changelog
 
 Hinweis: Die Datumsangaben beziehen sich auf tatsächliche Erstellung/Änderungen; der erste Eintrag ist das ursprüngliche Veröffentlichungsdatum.
-- 2025-10-22: Initial version (Onboarding Success Trophy Fix)
+- 2025-11-06: Initial version (Onboarding Success Trophy Fix)

@@ -44,6 +44,14 @@ final RegExp _prefixedTokenPattern = RegExp(
   caseSensitive: false,
 );
 
+// IPv4 address (simple): 1-3 digits dot 4 times; not strict 0-255 validation
+final RegExp _ipv4Pattern = RegExp(r'\b(?:\d{1,3}\.){3}\d{1,3}\b');
+
+// IPv6 address (simple): 1-7 groups of 1-4 hex digits separated by ':'
+final RegExp _ipv6Pattern = RegExp(
+  r'\b(?:(?:[A-Fa-f0-9]{1,4}:){1,7}[A-Fa-f0-9]{0,4})\b',
+);
+
 /// Sanitizes a string for safe logging.
 String sanitizeForLog(String input) {
   var out = input;
@@ -70,6 +78,10 @@ String sanitizeForLog(String input) {
 
   // SSN
   out = out.replaceAll(_ssnPattern, '[redacted-ssn]');
+
+  // IP addresses
+  out = out.replaceAll(_ipv4Pattern, '[redacted-ip]');
+  out = out.replaceAll(_ipv6Pattern, '[redacted-ip]');
 
   // Credit cards via Luhn check
   out = out.replaceAllMapped(_ccCandidatePattern, (m) {
@@ -115,4 +127,3 @@ bool _luhnValid(String digits) {
   }
   return sum % 10 == 0;
 }
-

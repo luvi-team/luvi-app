@@ -223,9 +223,11 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     final savedSelection = userState.fitnessLevel;
     final index = FitnessLevel.selectionIndexFor(savedSelection);
     if (!mounted || index == null) return;
-    setState(() {
-      _selected = index;
-    });
+    if (_selected == null) {
+      setState(() {
+        _selected = index;
+      });
+    }
   }
 
   Future<void> _persistSelection(FitnessLevel level) async {

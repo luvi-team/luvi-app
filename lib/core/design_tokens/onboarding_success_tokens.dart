@@ -30,18 +30,30 @@ class OnboardingSuccessTokens {
     assert(textScaleFactor > 0, 'textScaleFactor must be > 0');
     assert(_maxViewportHeight > _minViewportHeight,
       'Invalid viewport height range configuration');
-    final effectiveHeight = (viewHeight / textScaleFactor)
+    final effectiveHeight = viewHeight
         .clamp(_minViewportHeight, _maxViewportHeight)
         .toDouble();
     final denom = (_maxViewportHeight - _minViewportHeight);
     final tRaw = (effectiveHeight - _minViewportHeight) / denom;
     final t = tRaw.clamp(0.0, 1.0);
-    final scale = lerpDouble(_minScaleValue, _maxScaleValue, t)!;
-    final baselineOffset = lerpDouble(
+    var scale = lerpDouble(_minScaleValue, _maxScaleValue, t)!;
+    var baselineOffset = lerpDouble(
       _minBaselineOffset,
       _maxBaselineOffset,
       t,
     )!;
+    // Reduce illustration scale and baseline offset for increased
+    // textScaleFactor to preserve layout balance (larger text ⇒
+    // slightly smaller illustration/offset). Keep effect gentle.
+    final tsf = textScaleFactor.clamp(0.5, 2.0);
+    if (tsf != 1.0) {
+      final factor = 1.0 - 0.10 * (tsf - 1.0); // 10% damp per +1.0 tsf
+      // Guard against negative/zero factors for extreme values
+      final damp = factor.clamp(0.8, 1.2);
+      scale = (scale * damp).clamp(_minScaleValue, _maxScaleValue);
+      baselineOffset =
+          (baselineOffset * damp).clamp(_minBaselineOffset, _maxBaselineOffset);
+    }
     final config = OnboardingSuccessIllustrationConfig(
       scale: scale,
       baselineOffset: baselineOffset,

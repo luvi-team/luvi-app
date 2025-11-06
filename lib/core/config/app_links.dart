@@ -89,19 +89,23 @@ class ProdAppLinks extends AppLinksApi {
       }
     }
     // Block IPv6 local ranges
-    // - fe80::/10 (link-local) — keep simple startsWith check
+    // - fe80::/10 (link-local): first 16-bit group 0xFE80..0xFEBF
     // - fc00::/7 (unique local) — any first 16-bit group 0xFC00..0xFDFF
-    if (host.startsWith('fe80:')) {
-      return false;
-    }
     if (host.contains(':')) {
       final firstGroup = host.split(':').firstWhere(
             (g) => g.isNotEmpty,
             orElse: () => '',
           );
       final head = int.tryParse(firstGroup, radix: 16);
-      if (head != null && head >= 0xFC00 && head <= 0xFDFF) {
-        return false;
+      if (head != null) {
+        // fe80::/10 → 0xFE80..0xFEBF
+        if (head >= 0xFE80 && head <= 0xFEBF) {
+          return false;
+        }
+        // fc00::/7 → 0xFC00..0xFDFF
+        if (head >= 0xFC00 && head <= 0xFDFF) {
+          return false;
+        }
       }
     }
     if (host.endsWith('.local') || host.endsWith('.localhost')) return false;

@@ -27,3 +27,24 @@ Triage Steps
 Time & Timestamps
 - Persist `updated_at` strictly in UTC (server-controlled). Clients may display localized times but must not persist device-local times.
 
+Data Corruption Indicators
+- Non-monotonic sequence or version counters for the same record (e.g., `version` decreases).
+- Checksum/hash mismatch for snapshot payloads (e.g., stored `content_hash` != recomputed hash).
+- Orphaned child rows (FK exists but parent missing) detected by integrity queries.
+- Duplicate primary keys/unique keys observed in logs or constraint violation bursts.
+- Server rejects payloads due to schema drift (unknown fields, type mismatches) after a deploy.
+- Invariant violations in app logs (e.g., “resume-sync invariant failed: negative delta”, “invalid snapshot window”).
+
+Example Integrity Queries (read-only)
+- Orphans: `select child.id from child left join parent on child.parent_id = parent.id where parent.id is null limit 50;`
+- Duplicate keys (by logical business key):
+  `select logical_key, count(*) from snapshots group by logical_key having count(*) > 1 limit 50;`
+- Non-monotonic versions per user:
+  `select user_id from (select user_id, max(version) as max_v, min(version) as min_v from snapshots group by user_id) t where max_v < min_v;`
+
+Local-Only Mode
+- Behavior: disables outbound sync/network writes; client persists locally and defers any server mutations. Read paths may be stubbed/mocked or disabled.
+- Purpose: immediate blast-radius reduction during suspected corruption or widespread server instability.
+- Enable: roll out a remote feature-flag targeting 100% of affected users (key: `resume_sync.local_only`). If remote flags are unavailable, coordinate a server-side mitigation (e.g., temporarily disable sync endpoints via gateway/WAF) as an operational fallback.
+- Disable: roll back the flag after mitigation and verification; gradually re-enable (10% → 50% → 100%) while monitoring error and corruption indicators.
+- Client considerations: ensure UI communicates “sync paused – local changes queued” and that retries/backoff remain bounded.

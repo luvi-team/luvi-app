@@ -42,12 +42,9 @@ class OnboardingHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final stepSemantic =
-        l10n?.onboardingStepSemantic(step, totalSteps) ??
-        'Step $step of $totalSteps';
-    final stepFraction =
-        l10n?.onboardingStepFraction(step, totalSteps) ?? '$step/$totalSteps';
+    final l10n = AppLocalizations.of(context)!;
+    final stepSemantic = l10n.onboardingStepSemantic(step, totalSteps);
+    final stepFraction = l10n.onboardingStepFraction(step, totalSteps);
     final stepTextStyle = textTheme.bodySmall?.copyWith(
       color: colorScheme.onSurface,
     );
@@ -98,9 +95,7 @@ class OnboardingHeader extends StatelessWidget {
                 BackButtonCircle(
                   onPressed: onBack,
                   iconColor: colorScheme.onSurface,
-                  semanticLabel: (AppLocalizations.of(context)
-                          ?.authBackSemantic) ??
-                      'Back',
+                  semanticLabel: l10n.authBackSemantic,
                 )
               else
                 const SizedBox(

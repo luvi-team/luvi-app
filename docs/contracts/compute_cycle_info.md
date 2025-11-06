@@ -8,7 +8,7 @@ Deterministic computation of the current cycle phase and derived values for UI/r
 
 - Performance (target P95 ≤ 50 ms): compute_cycle_info() from function entry to return, computation‑only (no network/DB I/O). Warm‑start measurement (JIT/caches warm). Baseline: mid‑range mobile/CPU (e.g., Apple M1/A14‑equivalent or Snapdragon 7xx), single thread, no concurrent load. Method: 10,000 invocations over a representative input set; discard the first 100 as warm‑up; compute P95 via `Stopwatch`/harness and document the sample count.
   - Baseline cadence: run baseline measurement (a) before merge of relevant changes, (b) after any performance‑affecting change to compute_cycle_info or its dependencies, and (c) on a scheduled nightly/weekly CI job on a stable runner.
-  - Baseline (reference; record and update here): example device "Apple M1 (8‑core, 16 GB), macOS 14, Flutter 3.35.4 release"; sample size `n=9,900` (after `warmup=100`); measured P95: **TBD** ms (pending initial measurement). If the measurement device/build differs from the reference, record the deviation in the artifact (see below).
+  - Baseline (reference; record and update here): example device "Apple M1 (8‑core, 16 GB), macOS 14, Flutter 3.35.4 release"; sample size `n=9,900` (after `warmup=100`); measured P95: **0.0 ms** (see latest artifact under `docs/perf/compute_cycle_info/`). If the measurement device/build differs from the reference, record the deviation in the artifact (see below).
   - Instrumentation/Harness: Dart `Stopwatch` around compute only; script `tools/perf/compute_cycle_info_bench.dart`; warm‑up `100`, samples `10,000`; P95 computed from sorted durations at index `ceil(0.95*n)-1`. Reproduce locally: `dart run tools/perf/compute_cycle_info_bench.dart --samples 10000 --warmup 100 --json docs/perf/compute_cycle_info/<DATE>.json`.
   - Artifacts (commit required): commit the produced JSON under `docs/perf/compute_cycle_info/`.
     - Required fields: `timestamp`, `device` (model, OS, CPU, memory), `build` (Flutter/Dart versions, build mode), `warmup`, `samples`, `p50`, `p95`, `p99`, and `deviations` (from the reference device/build, if any).
@@ -36,6 +36,7 @@ Deterministic computation of the current cycle phase and derived values for UI/r
 ## Algorithm (v1, deterministic)
 1. Day 1 = `lmp_date` in the target timezone. All day arithmetic uses calendar days in the user's local timezone (or the timezone attached to the inputs), not raw UTC timestamps:
    - Determine `tz`: (1) use the `timezone` param (IANA) if present and valid; else (2) derive from `now` if it carries an offset/zone; else (3) use the device/environment timezone; if none is determinable (server context), fall back to `UTC`.
+     - Validation and error handling: if an invalid IANA timezone string is provided (e.g., `"Foo/Bar"`), ignore it, add a note `"timezone_invalid:Foo/Bar"`, and continue the fallback cascade described above. Do not throw. If the cascade ultimately falls back to `UTC`, add `"timezone_defaulted:UTC"` to `notes`.
    - Normalize `lmp_date` and `now` into `tz` and convert to date-only (midnight→midnight in `tz`).
    - Compute `d = daysBetween(lmp_date_localDate, now_localDate)`; if `d < 0` → clamp to 0.
 2. Cycle day: `day_in_cycle = (d % cycle_length_days) + 1` (1‑based).
@@ -78,6 +79,11 @@ References: ACOG Patient Education (Ovulation/Menstrual Cycle); Wilcox AJ et a
 
 ## Edge Cases
 - Missing LMP: return `{ phase: null, phase_confidence: 0, requires_onboarding: true }`.
+
+### Requires Onboarding — Semantics (v1)
+- Set `requires_onboarding = true` only when the Last Menstrual Period is missing or unknown (i.e., `lmp_date = null`), yielding `phase = null`.
+- For all other conditions (timezone fallbacks/invalid IANA, boundary clamps, unusual cycle parameters within allowed ranges), compute deterministically and keep `requires_onboarding = false`; instead, surface context via `notes` (e.g., `timezone_invalid:...`, `timezone_defaulted:UTC`, `future_lmp_clamped`).
+- Input validation failures that make computation impossible (e.g., unparsable date strings in contexts that cannot recover) should be treated like missing LMP and return `phase = null`, `phase_confidence = 0`, `requires_onboarding = true` with an explanatory note `validation_failed:<reason>`.
 - Future LMP (`lmp_date > now`): clamp `d = 0`, phase = `menstrual`, `notes += ["future_lmp_clamped"]`.
 - Very long/short cycles: clamps trigger; `notes += ["cycle_length_clamped"]`.
 - TZ/Leap: compute in local time zone using date‑only arithmetic; ignore leap seconds; window boundaries are calendar dates.

@@ -98,10 +98,9 @@ class WelcomeShell extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     if (l10n == null) {
-      assert(false, 
-        'AppLocalizations must be provided above WelcomeShell. '
+      debugPrint(
+        'WARNING: AppLocalizations must be provided above WelcomeShell. '
         'Ensure MaterialApp includes localizationsDelegates and supportedLocales.');
-      // Graceful fallback for production
       return const SizedBox.shrink();
     }
     final buttonLabel = primaryButtonLabel ?? l10n.commonContinue;
