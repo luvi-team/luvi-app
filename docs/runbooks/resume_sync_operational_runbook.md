@@ -39,8 +39,20 @@ Example Integrity Queries (read-only)
 - Orphans: `select child.id from child left join parent on child.parent_id = parent.id where parent.id is null limit 50;`
 - Duplicate keys (by logical business key):
   `select logical_key, count(*) from snapshots group by logical_key having count(*) > 1 limit 50;`
-- Non-monotonic versions per user:
-  `select user_id from (select user_id, max(version) as max_v, min(version) as min_v from snapshots group by user_id) t where max_v < min_v;`
+- Non-monotonic versions per user (sequential check):
+  `select user_id, id, version, created_at from (
+     select s.*, lag(version) over (partition by user_id order by created_at) as prev_version
+     from snapshots s
+   ) t
+   where prev_version is not null and version < prev_version
+   limit 50;`
+- Duplicate versions per user (optional):
+  `select user_id, version, count(*) as n
+   from snapshots
+   group by user_id, version
+   having count(*) > 1
+   order by n desc
+   limit 50;`
 
 Local-Only Mode
 - Behavior: disables outbound sync/network writes; client persists locally and defers any server mutations. Read paths may be stubbed/mocked or disabled.
