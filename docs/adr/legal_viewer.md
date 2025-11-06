@@ -4,11 +4,11 @@
 Die App zeigt rechtlich verbindliche Texte (Privacy Policy, Terms) über einen Markdown-Viewer an. Die Inhalte müssen offline verfügbar sein, mit App-Releases versioniert werden und eine definierte Fallback-Strategie besitzen.
 
 ## Entscheidungen
-- **Speicherort:** Verbindliche Markdown-Dateien liegen im Repo unter `docs/privacy/`. Der Build bundelt sie unverändert ins App-Paket; Pfade werden im Viewer hart verdrahtet.
+- **Speicherort:** Die autoritative Quelle liegt im Repo unter `docs/privacy/`. Für die App‑Auslieferung werden geprüfte Kopien unter `assets/legal/` gebündelt. Der Ordner `docs/privacy/` wird nicht als App‑Asset eingebunden.
 - **Versionierung:** Jede App-Version verknüpft die angezeigten Texte mit dem Git-Tag des Builds (`SENTRY_RELEASE` / Release-Notes). Änderungen an Markdown-Dateien erfolgen per Pull Request und werden durch Git-Geschichte nachvollzogen. Siehe „CI/Release-Runbook" zur Durchsetzung.
-- **Lade-Reihenfolge:** Viewer lädt zunächst Remote-URLs (`PRIVACY_URL`, `TERMS_URL`). Fällt der Abruf aus (5 s timeout; Abbruch, wenn innerhalb von 5 Sekunden keine Antwort), oder bei HTTP ≥ 400, wird automatisch auf die gebündelten Dateien (`assets/legal/privacy.md`, `assets/legal/terms.md`) zurückgegriffen.
+- **Lade-Reihenfolge:** Viewer lädt zunächst Remote-URLs (`PRIVACY_URL`, `TERMS_URL`). Fällt der Abruf aus (5 s timeout), oder bei HTTP ≥ 400, wird automatisch auf die gebündelten Dateien (`assets/legal/privacy.md`, `assets/legal/terms.md`) zurückgegriffen.
 - **Fallback-Benutzerführung:** Bei Remote-Fehler blendet die UI eine gelbe Banner-Warnung („Offline-Version“) ein, zeigt Dateiversion + Build-Tag und protokolliert einen Sentry-Breadcrumb `legal_viewer_fallback`.
-  - Banner-Lifecycle: persistent bis Browser/App-Refresh oder erfolgreichem Remote-Load. Optional manuelles Dismiss erlaubt; Dismiss ändert NICHT den Fallback-Zustand und verhindert keine erneuten Sentry-Signale.
+  - Banner-Lifecycle: persistent bis Browser/App‑Refresh oder erfolgreichem Remote‑Load. Optionales Dismiss ist rein lokal und kosmetisch: Dismiss = nur UI ausblenden bis zum nächsten Refresh/Remote‑Load, keine Status‑Mutation und keine Unterdrückung/Änderung von Telemetrie (Sentry‑Signale bleiben unverändert).
   - Interaktion: non-blocking, als oberes Inline-Banner; Lesen der Inhalte bleibt möglich. Wenn sowohl Remote als auch lokal fehlschlagen, zeigt der Screen ein blockierendes Fehlermodul (siehe Fehlerfall).
   - Visual/Placement: Top-inline Banner, Farbe „Gelb/Warning“, Icon „Warning/Outline“. Copy-Format: „Offline-Version angezeigt – privacy.md (vX.Y) • Build {SENTRY_RELEASE}“. Referenz: Design/Wireframe `assets/ui/legal_viewer_banner.png` (oder Figma‑Spec ID, falls vorhanden).
 - **Fehlerfall (Remote + Lokal):** Scheitern sowohl Remote- als auch lokale Ressourcen, blockiert der Screen mit einem Fehlermodul, schlägt einen Retry vor und verweist auf Support. Ereignis `legal_viewer_failed` wird erfasst.

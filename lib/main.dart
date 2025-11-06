@@ -35,33 +35,21 @@ void main() async {
   // - Release: hard runtime check always (throws if links are missing/invalid)
   // Enable the optional debug/profile runtime check via:
   //   --dart-define=ENFORCE_LINKS_IN_DEBUG=true
+  // Validate legal links at startup
   const bool kEnforceLinksInDebug =
       bool.fromEnvironment('ENFORCE_LINKS_IN_DEBUG', defaultValue: false);
-  assert(
-    !kEnforceLinksInDebug ||
-        (appLinks.hasValidPrivacy && appLinks.hasValidTerms),
-    'Set PRIVACY_URL and TERMS_URL via --dart-define to comply with consent requirements.',
-  );
-
-  // Explicit runtime validation in debug/profile when enforcement is enabled.
-  // Asserts run only in debug; this runtime check ensures a clear failure
-  // early during local development when configuration is invalid.
-  if (!kReleaseMode && kEnforceLinksInDebug) {
+  
+  // Always enforce in release; optionally enforce in debug/profile via flag
+  if (kReleaseMode || (!kReleaseMode && kEnforceLinksInDebug)) {
     final hasValid = appLinks.hasValidPrivacy && appLinks.hasValidTerms;
     if (!hasValid) {
-      const msg =
-          'Legal links invalid in debug/profile. Provide PRIVACY_URL and TERMS_URL via --dart-define.\n'
-          'Example: flutter run --dart-define=PRIVACY_URL=https://… --dart-define=TERMS_URL=https://…';
-      debugPrint(msg);
+      final msg = kReleaseMode
+          ? 'Legal links invalid. Provide PRIVACY_URL and TERMS_URL via --dart-define.'
+          : 'Legal links invalid in debug/profile. Provide PRIVACY_URL and TERMS_URL via --dart-define.\n'
+            'Example: flutter run --dart-define=PRIVACY_URL=https://… --dart-define=TERMS_URL=https://…';
+      if (!kReleaseMode) debugPrint(msg);
       throw StateError(msg);
     }
-  }
-
-  // Release: hard runtime check (not via assert)
-  if (kReleaseMode && (!appLinks.hasValidPrivacy || !appLinks.hasValidTerms)) {
-    throw StateError(
-      'Legal links invalid. Provide PRIVACY_URL and TERMS_URL via --dart-define.',
-    );
   }
 
   runApp(

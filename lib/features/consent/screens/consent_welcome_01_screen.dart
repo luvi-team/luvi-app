@@ -27,8 +27,8 @@ class ConsentWelcome01Screen extends StatelessWidget {
     final theme = Theme.of(context);
     final t = theme.textTheme;
     final c = theme.colorScheme;
-    final prefix = l10n.welcome01TitlePrefix.trim();
-    final accent = l10n.welcome01TitleAccent.trim();
+    final prefix = l10n.welcome01TitlePrefix;
+    final accent = l10n.welcome01TitleAccent;
     final suffixLine1 = l10n.welcome01TitleSuffixLine1.trim();
     final suffixLine2 = l10n.welcome01TitleSuffixLine2.trim();
     final titleStyle = (t.headlineMedium ?? const TextStyle()).copyWith(

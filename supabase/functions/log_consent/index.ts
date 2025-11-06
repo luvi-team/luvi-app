@@ -299,7 +299,7 @@ serve(async (req) => {
     const elapsed = Date.now() - started;
     logMetric(requestId, "error", {
       where: "consent_rpc",
-      code: (rpcError as any)?.code ?? "unknown",
+      code: rpcError?.code ?? "unknown",
       consent_id_hash: consentIdHash,
       duration_ms: elapsed,
       rpc_latency_ms: rpcDuration,

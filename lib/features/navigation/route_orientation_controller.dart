@@ -1,4 +1,5 @@
 import 'dart:async';
+// Removed unused 'meta' import to satisfy analyzer and avoid extra dependency.
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';

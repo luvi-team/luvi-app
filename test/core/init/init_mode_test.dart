@@ -38,6 +38,12 @@ void main() {
   });
 
   testWidgets('InitMode.prod shows init overlay', (tester) async {
+    // Swallow framework error reporting for this test: we intentionally run in
+    // prod mode without valid env to exercise the overlay. Initialization will
+    // report errors via FlutterError which would normally fail the test.
+    final prevOnError = FlutterError.onError;
+    FlutterError.onError = (details) {};
+    addTearDown(() { FlutterError.onError = prevOnError; });
     // Force bridge to prod before app bootstrap so MyAppWrapper binds bridge
     // from provider rather than keeping test short-circuit.
     final prev = InitModeBridge.resolve;

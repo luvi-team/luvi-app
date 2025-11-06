@@ -44,14 +44,13 @@ class AuthLayout {
   /// - The caller should add the platform `safeBottom` inset separately.
   /// - When the measured social block height is unavailable, use
   ///   `socialBlockReserveFallback` as a conservative default.
-  static double inlineCtaReserveLogin(double socialBlockHeight) {
+  static double inlineCtaReserveLogin(double? socialBlockHeight) {
     assert(
-      socialBlockHeight >= 0,
-      'socialBlockHeight must be non-negative. Got: $socialBlockHeight',
+      socialBlockHeight == null || socialBlockHeight >= 0,
+      'socialBlockHeight must be non-negative when provided. Got: $socialBlockHeight',
     );
-    // Use fallback when height is not yet measured (0 or unavailable)
-    final measured =
-        socialBlockHeight > 0 ? socialBlockHeight : socialBlockReserveFallback;
+    // Use fallback when height is not yet measured (null)
+    final measured = socialBlockHeight ?? socialBlockReserveFallback;
     return Sizes.buttonHeight + Spacing.l * 2 + measured + Spacing.m;
   }
   static const double backButtonSize = 40;

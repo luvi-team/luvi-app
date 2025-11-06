@@ -23,3 +23,8 @@ format-apply:
 
 fix:
 	@scripts/flutter_codex.sh dart fix --apply
+
+.PHONY: privacy-gate
+privacy-gate:
+	@echo "Running privacy gate check..."
+	@scripts/flutter_codex.sh dart run tools/validate_assets_no_drafts.dart

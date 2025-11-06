@@ -151,7 +151,7 @@ Future<void> openPrivacy(
     context,
     uri: appLinks.privacyPolicy,
     isValid: appLinks.hasValidPrivacy,
-    fallbackAsset: 'docs/privacy/privacy.md',
+    fallbackAsset: 'assets/legal/privacy.md',
     title: resolvedTitle,
     appLinks: appLinks,
   );
@@ -171,7 +171,7 @@ Future<void> openTerms(
     context,
     uri: appLinks.termsOfService,
     isValid: appLinks.hasValidTerms,
-    fallbackAsset: 'docs/privacy/terms.md',
+    fallbackAsset: 'assets/legal/terms.md',
     title: resolvedTitle,
     appLinks: appLinks,
   );

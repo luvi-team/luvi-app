@@ -49,7 +49,7 @@ final RegExp _ipv4Pattern = RegExp(r'\b(?:\d{1,3}\.){3}\d{1,3}\b');
 
 // IPv6 address (simple): 1-7 groups of 1-4 hex digits separated by ':'
 final RegExp _ipv6Pattern = RegExp(
-  r'\b(?:(?:[A-Fa-f0-9]{1,4}:){1,7}[A-Fa-f0-9]{0,4})\b',
+  r'\b(?:(?:[A-Fa-f0-9]{1,4}:){1,7}[A-Fa-f0-9]{0,4}|(?:[A-Fa-f0-9]{0,4}:){0,7}:[A-Fa-f0-9]{0,4})\b',
 );
 
 /// Sanitizes a string for safe logging.

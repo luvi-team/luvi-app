@@ -48,15 +48,18 @@ class _LegalViewerState extends State<LegalViewer> {
     );
   }
 
+  static const String _privacyAssetPath = 'assets/legal/privacy.md';
+  static const String _termsAssetPath = 'assets/legal/terms.md';
+
   Uri? _deriveRemoteUri(String assetPath) {
     // Map known assets to configured remote URLs using injected AppLinks
     final appLinks = widget.appLinks;
     final normalized = assetPath.replaceAll('\\', '/');
-    if (normalized == 'assets/legal/privacy.md') {
+    if (normalized == _privacyAssetPath) {
       final uri = appLinks.privacyPolicy;
       return appLinks.isConfiguredUrl(uri) ? uri : null;
     }
-    if (normalized == 'assets/legal/terms.md') {
+    if (normalized == _termsAssetPath) {
       final uri = appLinks.termsOfService;
       return appLinks.isConfiguredUrl(uri) ? uri : null;
     }

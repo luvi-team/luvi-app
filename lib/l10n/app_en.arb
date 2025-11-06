@@ -695,11 +695,14 @@
   "@authPasswordUpdateError": {
     "description": "Error shown when the password update request fails."
   },
-  "authErrWaitBeforeRetry": "Please wait {seconds} seconds before retrying.",
+  "authErrWaitBeforeRetry": "Please wait {seconds, plural, one {# second} other {# seconds}} before retrying.",
   "@authErrWaitBeforeRetry": {
     "description": "Snackbar/content message advising the user to wait a number of seconds before trying again.",
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": { 
+        "type": "int",
+        "format": "compact"
+      }
     }
   },
   "authEmailHint": "Your email",

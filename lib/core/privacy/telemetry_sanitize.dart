@@ -11,6 +11,17 @@ Map<String, Object?> sanitizeTelemetryData(Map<String, Object?>? data) {
   return _sanitizeMap(data);
 }
 
+/// Privacy level for DateTime sanitization in telemetry payloads.
+/// - day: normalize to UTC and keep only YYYY-MM-DD
+/// - hour: normalize to UTC and keep only YYYY-MM-DDTHH:00Z
+/// - redacted: replace with a stable marker
+/// - hash: deterministic hash of the UTC epoch millis
+enum TelemetryDateSanitization { day, hour, redacted, hash }
+
+// Prefer day granularity for MVP; adjust if needed via code change/DI.
+const TelemetryDateSanitization _dateSanitization =
+    TelemetryDateSanitization.day;
+
 // Common sensitive keys; match in a case-insensitive manner.
 const Set<String> _sensitiveKeys = {
   'email',
@@ -107,11 +118,35 @@ Object? _sanitizeValue(Object? value) {
   if (value is num || value is bool) return value;
   // Any other object: avoid dumping toString() which may include PII
   if (value is DateTime) {
-    return value.toString();
+    return _sanitizeDateTime(value);
   }
   final typeName = value.runtimeType.toString();
   // Fallback to a type marker only
   return '<$typeName>';
+}
+
+Object _sanitizeDateTime(DateTime dt) {
+  final utc = dt.toUtc();
+  switch (_dateSanitization) {
+    case TelemetryDateSanitization.day:
+      final y = utc.year.toString().padLeft(4, '0');
+      final m = utc.month.toString().padLeft(2, '0');
+      final d = utc.day.toString().padLeft(2, '0');
+      // ISO-like date string with day granularity
+      return '$y-$m-$d';
+    case TelemetryDateSanitization.hour:
+      final y = utc.year.toString().padLeft(4, '0');
+      final m = utc.month.toString().padLeft(2, '0');
+      final d = utc.day.toString().padLeft(2, '0');
+      final h = utc.hour.toString().padLeft(2, '0');
+      return '$y-$m-${d}T$h:00Z';
+    case TelemetryDateSanitization.redacted:
+      return '<DateTime>';
+    case TelemetryDateSanitization.hash:
+      // Deterministic non-crypto hash of epoch millis to bucket identical moments
+      final ms = utc.millisecondsSinceEpoch.toString();
+      return _hashHex(ms);
+  }
 }
 
 Object? _maskValue(Object? value) {

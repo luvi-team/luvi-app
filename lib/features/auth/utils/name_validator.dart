@@ -22,11 +22,16 @@ final RegExp defaultNamePattern = RegExp(
 ///   spaces, hyphens, apostrophes) and contain at least one letter
 ///
 /// Returns true when the name satisfies all constraints.
+/// Optional [letterPattern] enforces the documented constraint "contains at
+/// least one letter" independent from [allowedCharsPattern]. Defaults to a
+/// Latin + extended accents pattern. For non‑Latin scripts, provide a custom
+/// [letterPattern] matching the expected character classes.
 bool nonEmptyNameValidator(
   String? value, {
   int minLength = 2,
   int maxLength = 50,
   RegExp? allowedCharsPattern,
+  RegExp? letterPattern,
 }) {
   if (minLength <= 0) {
     throw ArgumentError.value(minLength, 'minLength', 'must be positive');
@@ -44,6 +49,12 @@ bool nonEmptyNameValidator(
   if (trimmed.isEmpty) return false;
   if (trimmed.length < minLength || trimmed.length > maxLength) return false;
 
-  final re = allowedCharsPattern ?? defaultNamePattern;
-  return re.hasMatch(trimmed);
+  final reAllowed = allowedCharsPattern ?? defaultNamePattern;
+  if (!reAllowed.hasMatch(trimmed)) return false;
+
+  // Enforce at least one letter regardless of the allowedCharsPattern.
+  final reLetter = letterPattern ?? RegExp(r"[A-Za-zÀ-ÖØ-öø-ÿ]");
+  if (!reLetter.hasMatch(trimmed)) return false;
+
+  return true;
 }

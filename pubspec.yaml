@@ -91,7 +91,7 @@ flutter:
       # requires: assets/icons/google_g.svg (official multicolor Google 'G')
     - assets/icons/dashboard/
     - assets/animations/
-    - docs/privacy/
+    - assets/legal/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

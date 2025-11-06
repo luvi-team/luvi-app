@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/init/init_mode.dart';
+import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
@@ -69,8 +72,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (_hasNavigated) return;
     // Avoid any async auth calls here; rely on immediate client state.
     final isAuth = SupabaseService.isInitialized && SupabaseService.currentUser != null;
+    final isTestMode = ref.read(initModeProvider) == InitMode.test;
     try {
-      final service = await ref.read(userStateServiceProvider.future);
+      final serviceFuture = ref.read(userStateServiceProvider.future);
+      final useTimeout = kReleaseMode && !isTestMode;
+      final service = useTimeout
+          ? await serviceFuture.timeout(const Duration(seconds: 3))
+          : await serviceFuture;
       final hasSeenWelcomeMaybe = service.hasSeenWelcomeOrNull;
 
       late final String target;

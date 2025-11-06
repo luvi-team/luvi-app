@@ -115,10 +115,6 @@ class SupabaseService {
   }
 
   static Future<void> _performInitialize({required String envFile}) async {
-    // In tests, skip environment loading and network initialization entirely.
-    if (InitModeBridge.resolve() == InitMode.test) {
-      return;
-    }
     // Load .env for local development as a fallback only. For production,
     // prefer passing credentials via --dart-define. _resolveCredentials()
     // will read from compile-time defines first and fall back to dotenv.

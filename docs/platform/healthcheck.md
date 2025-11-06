@@ -25,7 +25,7 @@ Explicit thresholds ensure consistent behavior across environments with low traf
 
 ## Status Transitions
 - Hysteresis is required to avoid flapping. Use consecutive check counts/time windows:
-  - ok → degraded: 2 consecutive non‑ok aggregated outcomes (i.e., either degraded or failed), or a partial feature failure is detected.
+  - ok → degraded: 2 consecutive non‑ok aggregated outcomes (i.e., latency or error rate outside ok thresholds), or a partial feature failure is detected.
   - degraded → ok: 3 consecutive checks back within `ok` thresholds and error rate < 5%.
   - degraded → down: persistent failures after all retries in 2 consecutive checks, repeated timeouts, or p95 exceeding `degraded_lte` for 2 checks.
   - down → degraded: first sustained successful responses below `degraded_lte` for 2 consecutive checks.
@@ -38,7 +38,11 @@ Explicit thresholds ensure consistent behavior across environments with low traf
   - Example: `serviceA` with `health.criticalDependencies = ["supabase_db", "revenuecat_proxy"]` becomes `down` if `supabase_db` is `down`; if only `external_apis` is `down`, `serviceA` is `degraded`.
   - Operators can manage the list under: Settings → Health → Dependencies → Critical Dependencies.
 - Retry/backoff: apply the endpoint retry policy above during each check; a single check is `failed` only after retries are exhausted.
-- Alerting/escalation: `degraded` → warning/Slack; `down` → page/PagerDuty. Auto‑resolve does not occur immediately on an `ok` transition. Instead, when a service transitions to `ok`, the incident remains open until the service has remained continuously `ok` for a 5‑minute confirmation window; only after that sustained 5 minutes does auto‑resolve occur. This same 5‑minute window also serves as flap‑prevention to avoid rapid re‑alerting. Operators may acknowledge incidents manually at any time but are not required to. PagerDuty stale‑incident timeout is 24 hours (incidents auto‑close if not updated within 24h).
+- Alerting/escalation: 
+  - `degraded` → warning/Slack; `down` → page/PagerDuty.
+  - Auto-resolve behavior: When a service transitions to `ok`, the incident remains open for a 5-minute confirmation window. Auto-resolve occurs only after the service remains continuously `ok` for the full 5 minutes. This window prevents flap-induced re-alerting.
+  - Manual acknowledgment: Operators may acknowledge incidents manually at any time but are not required to.
+  - Stale incident timeout: PagerDuty incidents auto-close if not updated within 24 hours.
 
 ### Aggregation and hysteresis counters (state machine semantics)
 - A single "check" may perform internal retries per the retry/backoff policy. These retries MUST be collapsed into one aggregated outcome level: `ok`, `degraded`, or `failed` based on aggregated metrics and thresholds.
@@ -137,6 +141,21 @@ function updateState(aggResult):
         state = ok
         consecutiveNonFailedWhileDown = 0 // reset after leaving "down"
 ```
+
+### Degraded → Down Evaluation Method
+
+Services may optionally opt into a specific degraded → down evaluation method via the per‑service configuration key `health.evaluation.degraded_to_down_method`.
+
+- Key: `degraded_to_down_method`
+- Scope: per service (`health.evaluation`)
+- Allowed values (MVP):
+  - `aggregated_last_two_failed` (default, and only allowed value without ADR): Transition to `down` when the last two consecutive aggregated checks are `failed` and either p95 latency exceeds `degraded_lte` or repeated timeouts were observed in those checks.
+  - `any_single_failed` (extension; requires ADR): Transition to `down` after any single aggregated `failed` check (more aggressive; increases sensitivity, higher risk of flapping).
+  - `majority_failed` (extension; requires ADR): Evaluate a sliding window and transition if the majority of aggregated checks in the window are `failed`.
+
+Notes:
+- For the MVP, unknown values are rejected by schema validation and only `aggregated_last_two_failed` is accepted. Any future method must be introduced via ADR and added to the schema allow‑list.
+- This key controls only the degraded → down transition; other transitions follow the counters/hysteresis described above.
 
 ### Aggregation Policy (concrete)
 

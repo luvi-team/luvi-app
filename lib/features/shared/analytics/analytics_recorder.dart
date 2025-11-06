@@ -31,29 +31,59 @@ final analyticsBackendSinkProvider = Provider<AnalyticsEventSink?>((_) => null);
 final analyticsOptOutProvider = Provider<bool>((_) => false);
 
 /// Returns true when [properties] contains keys that look like PII indicators
-/// (e.g., email, phone, name, address). Case-insensitive, substring match.
+/// (e.g., email, phone, name, address).
+///
+/// Implementation details:
+/// - Normalizes keys to lowercase and trims whitespace.
+/// - Checks against an explicit suspicious-keys set (exact matches) and a
+///   conservative whole-word regex (word boundaries by start/end/underscore/hyphen/space).
+/// - Applies an allowlist of safe keys to avoid false positives (e.g.,
+///   `username`, `theme`, `customer_email_count`).
 bool _containsSuspiciousPII(Map<String, Object?> properties) {
   if (properties.isEmpty) return false;
-  const suspicious = <String>{
-    'email', 'e-mail', 'mail',
-    'phone', 'tel', 'telephone', 'mobile',
+
+  // Safe keys that may otherwise falsely match (e.g., contain "email").
+  const safeAllowlist = <String>{
+    'theme',
+    'username',
+    'customer_email_count',
+  };
+
+  // Exact suspicious keys and common variations.
+  const suspiciousExact = <String>{
+    'email', 'email_address', 'e-mail',
+    'emailverified', 'email_verified',
+    'phone', 'phone_number', 'phonenumber', 'tel', 'telephone', 'mobile',
     'name', 'first_name', 'firstname', 'last_name', 'lastname', 'full_name', 'fullname',
     'address', 'street', 'city', 'zip', 'zipcode', 'postal', 'postcode',
+    'ssn', 'social_security', 'social_security_number',
+    'dob', 'date_of_birth', 'birthdate', 'birthday',
+    'credit_card', 'card_number', 'cc_number', 'cvv', 'expiry',
   };
-  for (final key in properties.keys) {
-    final k = key.toLowerCase();
-    for (final s in suspicious) {
-      if (k.contains(s)) return true;
-    }
+
+  // Whole-word pattern (start/end or separated by underscore/hyphen/space).
+  final suspiciousWord = RegExp(
+    r'(^|[_\-\s])(email|e-mail|email_address|email_verified|phone|tel|telephone|mobile|address|street|city|zip|zipcode|postal|postcode|ssn|social_security(_number)?|dob|date_of_birth|birthdate|first_name|last_name|full_name|name|credit_card|card_number|cc_number|cvv|expiry)([_\-\s]|$)',
+  );
+
+  for (final rawKey in properties.keys) {
+    final k = rawKey.trim().toLowerCase();
+    if (k.isEmpty) continue;
+    if (safeAllowlist.contains(k)) continue;
+    if (suspiciousExact.contains(k)) return true;
+    if (suspiciousWord.hasMatch(k)) return true;
   }
   return false;
 }
 
 /// Dev-only analytics recorder.
 ///
-/// **Privacy**: Callers must ensure that properties are PII-free before
-/// invoking recordEvent. This recorder forwards all properties to the backend
-/// sink without filtering or redaction.
+/// Privacy: This recorder performs defensive PII detection on event property
+/// keys. If suspicious PII-like keys are detected (e.g., `email`, `phone`,
+/// name/address variants), the event is blocked and a debug log is emitted.
+/// Callers should still avoid sending any PII and prefer coarse, non-identifying
+/// telemetry. When no suspicious keys are present, properties are forwarded
+/// unfiltered to the backend sink.
 ///
 /// Strictly intended for development logging: in debug mode it prints events to
 /// the console; in profile/release, it suppresses printing but still forwards to

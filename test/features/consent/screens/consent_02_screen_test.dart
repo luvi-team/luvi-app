@@ -75,10 +75,9 @@ void main() {
         ?.resolve({})
         ?.height;
 
-    expect(minHeight, isNotNull);
+    expect(minHeight, isNotNull, reason: 'Theme elevatedButtonTheme.style.minimumSize.height should be defined');
     final buttonSize = tester.getSize(buttonFinder);
-    final resolvedMinHeight = minHeight!;
-    expect(buttonSize.height, greaterThanOrEqualTo(resolvedMinHeight));
+    expect(buttonSize.height, greaterThanOrEqualTo(minHeight!));
   });
 
   testWidgets('Consent footer toggles between accept and deselect all labels', (
