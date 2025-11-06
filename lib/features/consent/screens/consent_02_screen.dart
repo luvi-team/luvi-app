@@ -107,9 +107,6 @@ class Consent02Screen extends ConsumerWidget {
                   onClearAll: notifier.clearAllOptional,
                   allOptionalSelected: state.allOptionalSelected,
                   onNext: () async {
-                    if (ref.read(_consentBtnBusyProvider)) {
-                      return;
-                    }
                     final busyNotifier = ref.read(
                       _consentBtnBusyProvider.notifier,
                     );
