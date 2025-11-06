@@ -39,6 +39,13 @@ class LinkText extends StatelessWidget {
   /// When true, the horizontal hit rect may overflow beyond the text bounds
   /// by [horizontalTouchPadding]. When false, the hit rect is clipped to the
   /// inline box width (no horizontal overflow), reducing overlap risk.
+  ///
+  /// Accessibility tradeoff: When overflow is disabled, this widget enforces a
+  /// minimum tap-target width equal to [minTapTargetSize] by expanding the
+  /// inline hit region horizontally (centered on the text). This may affect
+  /// text wrapping in tight layouts. If overflow is enabled, we keep visual
+  /// layout unchanged and expand the hit rect outward by
+  /// [horizontalTouchPadding], which can overlap adjacent inline areas.
   final bool allowHorizontalOverflowHitRect;
 
   const LinkText({
@@ -117,7 +124,24 @@ class _LinkTextTapTarget extends StatelessWidget {
       (minTapTargetSize - lineHeight) / 2.0,
     );
 
-    return Stack(
+    // When horizontal overflow is not allowed, enforce a minimum tap-target
+    // width by adding symmetric padding around the text so the inline box
+    // itself grows (centered). This keeps the larger hit region without
+    // relying on overflow, at the cost of potentially affecting wrapping.
+    double innerHorizontalPadding = 0.0;
+    if (!allowHorizontalOverflowHitRect) {
+      final textPainter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: Directionality.of(context),
+        maxLines: 1,
+      )..layout(maxWidth: double.infinity);
+      final measuredWidth = textPainter.width;
+      final neededHalf = math.max(0.0, (minTapTargetSize - measuredWidth) / 2.0);
+      // Also respect the configured touch padding as a lower bound inside
+      // the inline box when overflow is disabled.
+      innerHorizontalPadding = math.max(neededHalf, horizontalTouchPadding);
+    }
+    final content = Stack(
       clipBehavior: Clip.none,
       children: [
         Positioned.fill(
@@ -135,35 +159,83 @@ class _LinkTextTapTarget extends StatelessWidget {
         ),
       ],
     );
+
+    // If overflow is disabled, apply the computed inner padding to expand the
+    // inline box width; otherwise keep layout unchanged.
+    return innerHorizontalPadding > 0.0
+        ? Padding(
+            padding: EdgeInsets.symmetric(horizontal: innerHorizontalPadding),
+            child: content,
+          )
+        : content;
   }
 }
 
-class _LinkTapRegion extends StatelessWidget {
+class _LinkTapRegion extends StatefulWidget {
   final VoidCallback onTap;
   final String semanticsLabel;
 
   const _LinkTapRegion({required this.onTap, required this.semanticsLabel});
 
   @override
+  State<_LinkTapRegion> createState() => _LinkTapRegionState();
+}
+
+class _LinkTapRegionState extends State<_LinkTapRegion> {
+  late final FocusNode _focusNode;
+  bool _focused = false;
+  bool _hovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode(debugLabel: 'LinkTapRegion');
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final focusColor = theme.colorScheme.primary;
+    final hoverColor = theme.colorScheme.primary.withValues(alpha: 0.08);
+
     return Semantics(
-      label: semanticsLabel,
+      label: widget.semanticsLabel,
       link: true,
       excludeSemantics: true,
       child: FocusableActionDetector(
+        focusNode: _focusNode,
         mouseCursor: SystemMouseCursors.click,
+        onShowFocusHighlight: (value) => setState(() => _focused = value),
+        onShowHoverHighlight: (value) => setState(() => _hovered = value),
         actions: {
           ActivateIntent: CallbackAction<ActivateIntent>(
             onInvoke: (intent) {
-              onTap();
+              widget.onTap();
               return null;
             },
           ),
         },
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: onTap,
-          child: const SizedBox.expand(),
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            curve: Curves.easeOut,
+            decoration: BoxDecoration(
+              color: _hovered && !_focused ? hoverColor : null,
+              border: _focused
+                  ? Border.all(color: focusColor, width: 2.0)
+                  : null,
+              borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+            ),
+            child: const SizedBox.expand(),
+          ),
         ),
       ),
     );

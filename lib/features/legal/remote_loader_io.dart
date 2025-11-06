@@ -16,17 +16,20 @@ Future<String?> fetchRemoteMarkdown(
       final response = await request.close();
       final status = response.statusCode;
       if (status < 200 || status >= 300) {
-        return '';
+        // Propagate HTTP errors so callers can distinguish failures from
+        // successful-but-empty responses.
+        final reason = response.reasonPhrase;
+        final suffix = reason.isNotEmpty ? ' $reason' : '';
+        throw HttpException('HTTP $status$suffix', uri: uri);
       }
       final body = await utf8.decoder.bind(response).join();
       return body;
     }().timeout(timeout);
-    return result.isEmpty ? null : result;
+    // Return the actual body (including empty string) so callers can detect
+    // empty-but-successful responses distinctly from errors.
+    return result;
   } on TimeoutException {
     // Consider: logger.warning('Remote markdown fetch timed out: $uri');
-    return null;
-  } catch (_) {
-    // Consider: logger.warning('Remote markdown fetch failed: $uri', _);
     return null;
   } finally {
     // Always close the client to avoid resource leaks.
