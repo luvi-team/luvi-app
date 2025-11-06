@@ -81,26 +81,12 @@ class UserStateService {
   Future<void> markOnboardingComplete({
     required FitnessLevel fitnessLevel,
   }) async {
-    // Persist fitness level first, then the completion flag. If the second
-    // write fails, attempt to roll back the first to avoid inconsistent state.
     final wroteLevel = await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
     if (wroteLevel != true) {
       throw StateError('Failed to persist fitness level');
     }
     final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
     if (wroteFlag != true) {
-      // Rollback: best-effort removal of fitness level
-      try {
-        final removed = await prefs.remove(_keyFitnessLevel);
-        if (removed != true) {
-          throw StateError('Rollback failed: could not remove fitness level key');
-        }
-      } catch (rollbackError) {
-        // Rollback failed; we're in an inconsistent state
-        throw StateError(
-          'Failed to persist onboarding completion flag and rollback failed: $rollbackError'
-        );
-      }
       throw StateError('Failed to persist onboarding completion flag');
     }
   }
