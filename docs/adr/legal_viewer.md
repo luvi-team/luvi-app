@@ -6,7 +6,7 @@ Die App zeigt rechtlich verbindliche Texte (Privacy Policy, Terms) über einen M
 ## Entscheidungen
 - **Speicherort:** Verbindliche Markdown-Dateien liegen im Repo unter `docs/privacy/`. Der Build bundelt sie unverändert ins App-Paket; Pfade werden im Viewer hart verdrahtet.
 - **Versionierung:** Jede App-Version verknüpft die angezeigten Texte mit dem Git-Tag des Builds (`SENTRY_RELEASE` / Release-Notes). Änderungen an Markdown-Dateien erfolgen per Pull Request und werden durch Git-Geschichte nachvollzogen. Siehe „CI/Release-Runbook" zur Durchsetzung.
-- **Lade-Reihenfolge:** Viewer lädt zunächst Remote-URLs (`PRIVACY_URL`, `TERMS_URL`). Fällt der Abruf aus (5 s timeout; Abruch, wenn innerhalb von 5 Sekunden keine Antwort), oder bei HTTP ≥ 400, wird automatisch auf die gebündelten Dateien (`assets/legal/privacy.md`, `assets/legal/terms.md`) zurückgegriffen.
+- **Lade-Reihenfolge:** Viewer lädt zunächst Remote-URLs (`PRIVACY_URL`, `TERMS_URL`). Fällt der Abruf aus (5 s timeout; Abbruch, wenn innerhalb von 5 Sekunden keine Antwort), oder bei HTTP ≥ 400, wird automatisch auf die gebündelten Dateien (`assets/legal/privacy.md`, `assets/legal/terms.md`) zurückgegriffen.
 - **Fallback-Benutzerführung:** Bei Remote-Fehler blendet die UI eine gelbe Banner-Warnung („Offline-Version“) ein, zeigt Dateiversion + Build-Tag und protokolliert einen Sentry-Breadcrumb `legal_viewer_fallback`.
   - Banner-Lifecycle: persistent bis Browser/App-Refresh oder erfolgreichem Remote-Load. Optional manuelles Dismiss erlaubt; Dismiss ändert NICHT den Fallback-Zustand und verhindert keine erneuten Sentry-Signale.
   - Interaktion: non-blocking, als oberes Inline-Banner; Lesen der Inhalte bleibt möglich. Wenn sowohl Remote als auch lokal fehlschlagen, zeigt der Screen ein blockierendes Fehlermodul (siehe Fehlerfall).
@@ -26,7 +26,7 @@ Die App zeigt rechtlich verbindliche Texte (Privacy Policy, Terms) über einen M
 ## CI/Release-Runbook (Durchsetzung Versionierung)
 - Git-Tag-Pflicht: Releases erzeugen einen Git‑Tag; Verantwortlich: Release Owner. Tag wird an `SENTRY_RELEASE` gebunden.
 - Release Notes: Änderungen an `docs/privacy/*.md` erfordern Update/Autogenerierung der Release Notes (Änderungsliste Abschnitt „Legal“).
-- CI-Check: Pipeline extrahiert Version/Front‑Matter aus `docs/privacy/*.md` (oder Build‑Artefakten) und vergleicht mit `SENTRY_RELEASE`/Git‑Tag. Bei Mismatch: Pipeline schlägt fehl und gibt eine klare Fehlermeldung aus („Legal docs version mismatch: expected {TAG}, found {DOC_VERSION} in {FILE}“).
+- CI-Check: Pipeline extrahiert Version/Front‑Matter aus `docs/privacy/*.md` (oder Build‑Artefakten) und vergleicht mit `SENTRY_RELEASE`/Git‑Tag. Die Front‑Matter muss dem in `docs/adr/legal_front_matter.md` definierten Schema entsprechen (autoritative Quelle für Keys/Typen/Validierung). Bei Mismatch: Pipeline schlägt fehl und gibt eine klare Fehlermeldung aus („Legal docs version mismatch: expected {TAG}, found {DOC_VERSION} in {FILE}“).
 - Runbook (Remediation): 1) Prüfe, ob Tag korrekt erstellt wurde; 2) Passe Dokument‑Version/Front‑Matter an; 3) Triggere Build erneut; 4) Prüfe, dass Smoke‑Tests (Fallback/Retry/Sentry) grün sind.
 
 ## Implementierungs-Checkliste (UI/Telemetry)
