@@ -2,6 +2,10 @@ import 'dart:async';
 
 /// Platform-agnostic API to fetch remote Markdown content.
 /// 
+/// Platform implementations:
+/// - IO: See `remote_loader_io.dart`
+/// - Web: See `remote_loader_web.dart`
+/// 
 /// Returns the Markdown content as a String, or null if:
 /// - The fetch fails (network error, timeout, etc.)
 /// - The platform implementation is missing
