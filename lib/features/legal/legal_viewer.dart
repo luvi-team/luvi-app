@@ -127,6 +127,7 @@ class _LegalViewerState extends State<LegalViewer> {
       body: FutureBuilder<_LegalDocData>(
         future: _documentFuture,
         builder: (context, snap) {
+          final l10n = AppLocalizations.of(context);
           if (snap.hasError) {
             // Log the underlying error for diagnostics
             log.e(
@@ -135,7 +136,6 @@ class _LegalViewerState extends State<LegalViewer> {
               error: snap.error!,
               stack: snap.stackTrace,
             );
-            final l10n = AppLocalizations.of(context);
             final message =
                 l10n?.documentLoadError ?? 'Document could not be loaded.';
             return Center(child: Text(message));
@@ -148,13 +148,13 @@ class _LegalViewerState extends State<LegalViewer> {
             );
           }
           final theme = Theme.of(context);
-          final l10n = AppLocalizations.of(context);
           final doc = snap.data!;
           final children = <Widget>[];
           if (doc.usedFallback) {
             children.add(
               Semantics(
-                label: 'Fallback banner',
+                label: l10n?.legalViewerFallbackBanner ??
+                    'Remote unavailable — showing offline copy.',
                 child: Container(
                   margin: const EdgeInsets.only(top: 8, left: 16, right: 16),
                   padding: const EdgeInsets.all(12),

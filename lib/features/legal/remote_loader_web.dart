@@ -2,7 +2,12 @@ import 'dart:async';
 import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
 
-/// Web implementation using package:http with BrowserClient.
+/// Fetches remote markdown content from the given [uri].
+///
+/// Returns the markdown content as a string on success (2xx response),
+/// or null if the request fails, times out, or returns a non-2xx status.
+///
+/// The [timeout] defaults to 5 seconds to prevent hanging on slow connections.
 Future<String?> fetchRemoteMarkdown(
   Uri uri, {
   Duration timeout = const Duration(seconds: 5),
@@ -16,7 +21,9 @@ Future<String?> fetchRemoteMarkdown(
     return resp.body;
   } on TimeoutException {
     return null;
-  } catch (_) {
+  } catch (e) {
+    // Log or handle specific exceptions if needed
+    // For now, return null for any network/parse errors
     return null;
   } finally {
     client.close();
