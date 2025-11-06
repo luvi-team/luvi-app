@@ -23,6 +23,13 @@ typedef AnalyticsEventSink = void Function(
 /// - Default is `null`, which means no backend forwarding is performed.
 final analyticsBackendSinkProvider = Provider<AnalyticsEventSink?>((_) => null);
 
+/// Global opt-out to disable analytics emission entirely.
+///
+/// - Override in tests or at app bootstrap when analytics handling is uncertain
+///   (e.g., while hardening PII filters or during privacy reviews).
+/// - Default: `false` (analytics enabled).
+final analyticsOptOutProvider = Provider<bool>((_) => false);
+
 /// Returns true when [properties] contains keys that look like PII indicators
 /// (e.g., email, phone, name, address). Case-insensitive, substring match.
 bool _containsSuspiciousPII(Map<String, Object?> properties) {
@@ -56,7 +63,13 @@ bool _containsSuspiciousPII(Map<String, Object?> properties) {
 /// gradual rollout of a real backend. Replace the sink override with a concrete
 /// implementation once the analytics SDK is integrated.
 class DebugAnalyticsRecorder implements AnalyticsRecorder {
-  const DebugAnalyticsRecorder({this.backend});
+  const DebugAnalyticsRecorder({
+    required this.enabled,
+    this.backend,
+  });
+
+  /// Whether analytics are enabled. When false, events are dropped.
+  final bool enabled;
 
   /// Optional backend sink to forward events to.
   final AnalyticsEventSink? backend;
@@ -67,21 +80,23 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
     Map<String, Object?> properties = const <String, Object?>{},
   }) {
     if (name.isEmpty) {
-      debugPrint('[analytics] ERROR: Event name must not be empty');
+      throw ArgumentError.value(name, 'name', 'Event name must not be empty');
+    }
+
+    // Runtime guardrails (active in all build modes).
+    if (!enabled) {
+      debugPrint('[analytics] DROPPED (disabled via config): "$name"');
       return;
     }
 
-    // Debug-only guardrail: catch unsanitized PII-like property keys early.
-    assert(() {
-      final hasPII = _containsSuspiciousPII(properties);
-      if (hasPII) {
-        debugPrint(
-          '[analytics] BLOCKED in debug: Event "$name" contains potentially PII-like property keys: '
-          '${properties.keys.join(', ')}',
-        );
-      }
-      return !hasPII;
-    }());
+    // Block events that appear to include PII-like keys; log and return early.
+    if (_containsSuspiciousPII(properties)) {
+      final keys = properties.keys.join(', ');
+      debugPrint(
+        '[analytics] BLOCKED (PII suspected): "$name" — offending keys among: $keys',
+      );
+      return;
+    }
 
     if (kDebugMode) {
       final keys = properties.keys.join(', ');
@@ -106,5 +121,9 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
 /// TODO: Replace with a concrete Prod recorder when the analytics SDK is ready.
 final analyticsRecorderProvider = Provider<AnalyticsRecorder>((ref) {
   final sink = ref.watch(analyticsBackendSinkProvider);
-  return DebugAnalyticsRecorder(backend: sink);
+  final optOut = ref.watch(analyticsOptOutProvider);
+  return DebugAnalyticsRecorder(
+    enabled: !optOut,
+    backend: sink,
+  );
 });
