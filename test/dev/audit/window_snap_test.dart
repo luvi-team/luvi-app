@@ -71,10 +71,10 @@ void main() {
       }
 
       // Find widgets
-      final headerFinder = find.byKey(const Key('create_new_title'));
-      final passwordFieldFinder = find.byKey(const Key('AuthPasswordField'));
+      final headerFinder = find.byKey(const ValueKey('create_new_title'));
+      final passwordFieldFinder = find.byKey(const ValueKey('AuthPasswordField'));
       final confirmFieldFinder = find.byKey(
-        const Key('AuthConfirmPasswordField'),
+        const ValueKey('AuthConfirmPasswordField'),
       );
       final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 

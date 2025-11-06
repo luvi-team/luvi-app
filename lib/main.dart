@@ -105,8 +105,7 @@ class MyAppWrapper extends ConsumerWidget {
 
     // Rebuild MaterialApp (and thus router) when Supabase init state changes
     // so that refreshListenable attaches once the client is ready.
-    {
-        final app = MaterialApp.router(
+    return MaterialApp.router(
           title: 'LUVI',
           theme: AppTheme.buildAppTheme(),
           supportedLocales: AppLocalizations.supportedLocales,
@@ -117,35 +116,30 @@ class MyAppWrapper extends ConsumerWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           routerConfig: _buildRouter(initialLocation),
-          // Integrate the offline/init overlay inside MaterialApp to inherit
-          // Directionality/Localizations. This avoids needing Directionality
-          // wrappers in tests and keeps behavior consistent across app and tests.
           builder: (context, child) {
-            final shouldShowBanner = InitModeBridge.resolve() != InitMode.test && 
-                                     !SupabaseService.isInitialized;
+            final shouldShowBanner = InitModeBridge.resolve() != InitMode.test &&
+                !SupabaseService.isInitialized;
             final content = shouldShowBanner
-              ? Stack(
-              alignment: Alignment.topLeft,
-              children: [
-                child ?? const SizedBox.shrink(),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SafeArea(
-                    minimum: const EdgeInsets.all(12),
-                    child: _InitBanner(
-                      initState: initState,
-                    ),
-                  ),
-                ),
-              ],
-              )
-              : child ?? const SizedBox.shrink();
-            
+                ? Stack(
+                    alignment: Alignment.topLeft,
+                    children: [
+                      child ?? const SizedBox.shrink(),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SafeArea(
+                          minimum: const EdgeInsets.all(12),
+                          child: _InitBanner(
+                            initState: initState,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : child ?? const SizedBox.shrink();
+
             return LocaleChangeCacheReset(child: content);
           },
         );
-        return app;
-    }
   }
 
   GoRouter _buildRouter(String initialLocation) {

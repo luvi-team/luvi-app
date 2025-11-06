@@ -22,6 +22,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
         dispose();
       },
       onDone: () {
+        onDone?.call();
         dispose();
       },
       // Auto-cancel on error to avoid manual double-cancel/dispose.

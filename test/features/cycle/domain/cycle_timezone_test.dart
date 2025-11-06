@@ -27,7 +27,7 @@ void main() {
 
       final sameCalendarDayLocal = DateTime(2025, 2, 12, 18, 00);
       // Convert by components to a UTC instant representing the same date-only when normalized
-      final sameCalendarDayUtc = DateTime.utc(2025, 2, 12, 1, 0);
+      final sameCalendarDayUtc = DateTime.utc(2025, 2, 12, 12, 0);
 
       expect(info.phaseOn(sameCalendarDayLocal), isNotEmpty);
       expect(info.phaseOn(sameCalendarDayUtc), info.phaseOn(sameCalendarDayLocal));

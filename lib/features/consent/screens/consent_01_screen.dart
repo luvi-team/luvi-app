@@ -30,7 +30,7 @@ class Consent01Screen extends StatelessWidget {
             child: BackButtonCircle(
               onPressed: () => context.go(ConsentWelcome03Screen.routeName),
               semanticLabel:
-                  (AppLocalizations.of(context)?.authBackSemantic) ?? 'Back',
+                  (AppLocalizations.of(context)?.authBackSemantic) ?? 'Zurück',
             ),
           ),
 

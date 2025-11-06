@@ -17,18 +17,8 @@ class DateFormatters {
     // - 'zh-Hans', 'zh-Hant-TW'
     // - with variants/extensions/private-use (e.g., 'sl-rozaj-biske', 'en-US-u-ca-buddhist', 'x-private')
     // Note: Full BCP 47 ABNF (incl. grandfathered tags) is intentionally not implemented for MVP.
-    final localePattern = RegExp(
-      r'^(?:'
-      r'x(?:-[A-Za-z0-9]{1,8})+' // private-use only
-      r'|'
-      r'(?:[A-Za-z]{2,8}(?:-[A-Za-z]{3}){0,3})' // language + optional extlang
-      r'(?:-[A-Za-z]{4})?' // optional script
-      r'(?:-(?:[A-Za-z]{2}|\d{3}))?' // optional region
-      r'(?:-(?:\d[A-Za-z0-9]{3}|[A-Za-z0-9]{5,8}))*' // variants
-      r'(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z0-9]{2,8})+)*' // extensions
-      r'(?:-x(?:-[A-Za-z0-9]{1,8})+)?' // optional private-use tail
-      r')$'
-    );
+    // Expose the same pattern via [kBcp47LocalePattern] for unit tests.
+    final localePattern = kBcp47LocalePattern;
     final effectiveLocale =
         (trimmed == null || trimmed.isEmpty || !localePattern.hasMatch(trimmed))
             ? null
@@ -46,4 +36,28 @@ class DateFormatters {
       return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     }
   }
+}
+
+/// Pragmatic BCP 47-like language tag validator used across the app.
+///
+/// Note: This is not a full RFC implementation, but aligns with common cases
+/// and keeps extlang repetition at {0,2} to match RFC 5646 (extlang = 3ALPHA *2("-" 3ALPHA)).
+final RegExp kBcp47LocalePattern = RegExp(
+  r'^(?:'
+  r'x(?:-[A-Za-z0-9]{1,8})+' // private-use only
+  r'|'
+  r'(?:[A-Za-z]{2,8}(?:-[A-Za-z]{3}){0,2})' // language + optional extlang (max 2)
+  r'(?:-[A-Za-z]{4})?' // optional script
+  r'(?:-(?:[A-Za-z]{2}|\d{3}))?' // optional region
+  r'(?:-(?:\d[A-Za-z0-9]{3}|[A-Za-z0-9]{5,8}))*' // variants
+  r'(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z0-9]{2,8})+)*' // extensions
+  r'(?:-x(?:-[A-Za-z0-9]{1,8})+)?' // optional private-use tail
+  r')$'
+);
+
+/// Convenience helper for tests/callers to validate a tag.
+bool isLikelyBcp47LocaleTag(String? tag) {
+  final trimmed = tag?.trim();
+  if (trimmed == null || trimmed.isEmpty) return false;
+  return kBcp47LocalePattern.hasMatch(trimmed);
 }

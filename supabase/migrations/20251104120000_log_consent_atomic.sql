@@ -40,7 +40,10 @@ begin
   end if;
 
   -- Derive a stable 64-bit key from the UUID for advisory locking.
-  lock_key := hashtext(p_user_id::text);
+  -- Use two independent 32-bit hashes, combine into a bigint to reduce collisions.
+  -- This stays deterministic and avoids relying on non-portable extensions.
+  lock_key := ((hashtext(p_user_id::text)::bigint & 4294967295) << 32)
+              | (hashtext('salt:' || p_user_id::text)::bigint & 4294967295);
   perform pg_advisory_xact_lock(lock_key);
 
   -- Count consents in the sliding window for this user

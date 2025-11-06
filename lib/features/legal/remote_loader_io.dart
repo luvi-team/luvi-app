@@ -7,7 +7,8 @@ Future<String?> fetchRemoteMarkdown(
   Uri uri, {
   Duration timeout = const Duration(seconds: 5),
 }) async {
-  final client = HttpClient();
+  final client = HttpClient()
+    ..connectionTimeout = const Duration(seconds: 3);
   try {
     // Apply an overall timeout to the entire operation rather than per step.
     final String result = await () async {
