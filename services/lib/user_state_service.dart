@@ -73,7 +73,7 @@ class UserStateService {
 
   Future<void> markWelcomeSeen() async {
     final success = await prefs.setBool(_keyHasSeenWelcome, true);
-    if (success != true) {
+    if (!success) {
       throw StateError('Failed to persist welcome seen flag');
     }
   }
@@ -126,7 +126,7 @@ class UserStateService {
         if (ok != true) {
           failures.add(key);
         }
-      } catch (_) {
+      } on Exception {
         failures.add(key);
       }
     }
