@@ -2,7 +2,7 @@
 
 Stand: 2025-11-03 · Version: v1.0
 
-Diese Datenschutzerklärung informiert Sie über die Verarbeitung personenbezogener Daten bei Nutzung der LUVI‑App (nachfolgend „App“). Die nachfolgende Fassung ist die in der App gebündelte Offline‑Fallback‑Version. Maßgeblich ist die jeweils aktuelle Online‑Version, die in der App im Rechtsbereich verlinkt ist. Inhaltlich sind beide Versionen deckungsgleich zum Zeitpunkt des Builds.
+Diese Datenschutzerklärung informiert Sie über die Verarbeitung personenbezogener Daten bei Nutzung der LUVI‑App (nachfolgend „App"). Die nachfolgende Fassung ist die in der App gebündelte Offline‑Fallback‑Version. Maßgeblich ist die jeweils aktuelle Online‑Version, die in der App im Rechtsbereich verlinkt ist. Inhaltlich sind beide Versionen deckungsgleich zum Zeitpunkt des Builds. Sollten sich beide Versionen unterscheiden, ist die Online-Version maßgeblich.
 
 ## 1. Verantwortlicher
 LUVI (App‑Anbieter) – Verantwortlicher im Sinne der DSGVO.
@@ -32,7 +32,7 @@ Wir verarbeiten personenbezogene Daten nur im erforderlichen Umfang. Im Einzelne
 
 - Optionale gesundheitsnahe Angaben innerhalb von Self‑Tracking‑/Zyklus‑Features (nur mit Einwilligung, Art. 9 Abs. 2 lit. a DSGVO)
   - Daten: von Ihnen aktiv eingegebene Angaben (z. B. Zyklus‑Notizen). Erhebung ist optional und erkennbar gekennzeichnet.
-  - Zweck: Bereitstellung entsprechender In‑App‑Funktionen. Verarbeitung erfolgt ausschließlich nach ausdrücklich erteilter Einwilligung, die Sie jederzeit in den Einstellungen widerrufen können. Ohne Einwilligung werden diese Funktionen nicht genutzt.
+  - Zweck: Bereitstellung entsprechender In‑App‑Funktionen. Speicherung erfolgt [lokal auf Ihrem Gerät / auf EU‑Servern / mit optionalem Sync auf EU‑Servern]. Verarbeitung erfolgt ausschließlich nach ausdrücklich erteilter Einwilligung, die Sie jederzeit in den Einstellungen widerrufen können. Ohne Einwilligung werden diese Funktionen nicht genutzt.
 
 - Externe Inhalte (z. B. YouTube) – nur nach Einwilligung (Art. 6 Abs. 1 lit. a DSGVO)
   - Daten: Beim Laden externer Inhalte erhebt der jeweilige Anbieter ggf. Nutzungsdaten (z. B. IP‑Adresse, Geräteinformationen).
@@ -71,7 +71,7 @@ Sie können erteilte Einwilligungen jederzeit in den App‑Einstellungen widerru
 Die Bereitstellung von Kontaktdaten (z. B. E‑Mail) ist für den Abschluss des Nutzungsvertrags erforderlich. Ohne diese Daten kann kein Konto erstellt werden. Alle darüber hinausgehenden Angaben sind freiwillig und werden nur mit Ihrer Einwilligung verarbeitet.
 
 ## 9. Datensicherheit
-Wir treffen angemessene technische und organisatorische Maßnahmen (TOM), u. a. Verschlüsselung in Transit/at Rest (soweit verfügbar), rollenbasierte Zugriffskonzepte (RLS), Prinzip „Need‑to‑Know“, Pseudonymisierung/PII‑Redaktion in Logs sowie regelmäßige Sicherheits‑/Compliance‑Prüfungen.
+Wir treffen angemessene technische und organisatorische Maßnahmen (TOM), u. a. Verschlüsselung in Transit und at Rest, rollenbasierte Zugriffskonzepte (RLS), Prinzip „Need‑to‑Know", Pseudonymisierung/PII‑Redaktion in Logs sowie regelmäßige Sicherheits‑/Compliance‑Prüfungen.
 
 ## 10. Keine automatisierten Einzelentscheidungen
 Es findet keine ausschließlich auf einer automatisierten Verarbeitung – einschließlich Profiling – beruhende Entscheidung mit Rechtswirkung statt (Art. 22 DSGVO).
