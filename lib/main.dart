@@ -13,7 +13,6 @@ import 'core/theme/app_theme.dart';
 import 'features/routes.dart' as routes;
 import 'features/screens/splash/splash_screen.dart';
 import 'core/init/supabase_init_controller.dart';
-import 'core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 
@@ -84,12 +83,7 @@ class MyAppWrapper extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Bind the InitMode bridge so lower layers can resolve the current mode
-    // even without Riverpod context (e.g., in services). If tests have already
-    // forced test mode before app bootstrap, respect that and do not override.
-    if (InitModeBridge.resolve() != InitMode.test) {
-      InitModeBridge.resolve = () => ref.read(initModeProvider);
-    }
+    // In production the bridge defaults to prod; tests override via setter.
     // Watch the init state to rebuild when it changes
     // The Notifier's build() method triggers initialization automatically
     final initState = ref.watch(supabaseInitControllerProvider);

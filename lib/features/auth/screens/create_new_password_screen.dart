@@ -267,7 +267,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       });
                       _backoffTicker?.cancel();
                       context.goNamed(
-                        SuccessScreen.passwordSuccessRouteName,
+                        SuccessScreen.passwordSavedRouteName,
                       );
                     } on supa.AuthException catch (error) {
                       // Log only error type to avoid leaking PII.

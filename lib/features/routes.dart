@@ -197,8 +197,8 @@ final List<GoRoute> featureRoutes = [
     ),
   ),
   GoRoute(
-    path: SuccessScreen.passwordSuccessRoutePath,
-    name: SuccessScreen.passwordSuccessRouteName,
+    path: SuccessScreen.passwordSavedRoutePath,
+    name: SuccessScreen.passwordSavedRouteName,
     builder: (context, state) => const SuccessScreen(),
   ),
   GoRoute(
