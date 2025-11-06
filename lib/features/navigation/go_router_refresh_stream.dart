@@ -19,11 +19,11 @@ class GoRouterRefreshStream extends ChangeNotifier {
       onError: (Object error, StackTrace stackTrace) {
         debugPrint('GoRouterRefreshStream stream error: $error\n$stackTrace');
         onError?.call(error, stackTrace);
-        dispose();
+        Future.microtask(() => dispose());
       },
       onDone: () {
         onDone?.call();
-        dispose();
+        Future.microtask(() => dispose());
       },
       // Auto-cancel on error to avoid manual double-cancel/dispose.
       cancelOnError: true,
