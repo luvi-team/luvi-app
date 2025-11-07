@@ -24,7 +24,7 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
   /// Returns a safe, user-facing error category string.
   String _categorizeError(Object error) {
     // Network-related errors
-    if (error is SocketException || error is HttpException || error is IOException) {
+    if (error is SocketException || error is IOException) {
       return 'network_error';
     }
     // Timeout

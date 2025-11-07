@@ -17,5 +17,4 @@ enum ConsentScope {
 const Set<ConsentScope> kRequiredConsentScopes = <ConsentScope>{
   ConsentScope.terms,
   ConsentScope.health_processing,
-  ConsentScope.ai_journal,
 };

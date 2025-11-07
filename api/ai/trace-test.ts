@@ -13,48 +13,58 @@ export default async function handler(req: Request): Promise<Response> {
 
   if (safe && instance) {
     try {
-      const trace = instance.trace({
-        name: "trace-test",
-        userId: "dev-check",
-        input: { source: "manual-test" },
-        metadata: { route: "/api/ai/trace-test", env: process.env.VERCEL_ENV ?? "unknown" },
-      });
+      const LANGFUSE_TIMEOUT_MS = 8000;
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Langfuse operation timeout")), LANGFUSE_TIMEOUT_MS),
+      );
 
-      const gen = trace.generation({
-        name: "sample-generation",
-        model: "test/dummy",
-        input: "ping",
-        output: "pong",
-        usage: { promptTokens: 1, completionTokens: 1 },
-      });
+      await Promise.race([
+        (async () => {
+          const trace = instance.trace({
+            name: "trace-test",
+            userId: "dev-check",
+            input: { source: "manual-test" },
+            metadata: { route: "/api/ai/trace-test", env: process.env.VERCEL_ENV ?? "unknown" },
+          });
 
-      await gen.end();
+          const gen = trace.generation({
+            name: "sample-generation",
+            model: "test/dummy",
+            input: "ping",
+            output: "pong",
+            usage: { promptTokens: 1, completionTokens: 1 },
+          });
 
-      // Trace optional beenden (nicht alle Typen exportieren .end)
-      if ((trace as any)?.end) {
-        await (trace as any).end();
-      }
+          await gen.end();
 
-      // Ausstehende Events senden
-      await (instance as any)?.flushAsync?.();
+          // Trace optional beenden (nicht alle Typen exportieren .end)
+          if ((trace as any)?.end) {
+            await (trace as any).end();
+          }
 
-      // Projektgebundenen UI‑Pfad ermitteln (falls verfügbar)
-      try {
-        const traceId: string | undefined = (trace as any)?.id ?? (trace as any)?.traceId;
-        if (traceId && (instance as any)?.api?.traceGet) {
-          const t = await (instance as any).api.traceGet(traceId);
-          const host = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
-          if (t?.htmlPath) uiUrl = host + t.htmlPath;
-        }
-      } catch (_) {
-        // uiUrl ist optional
-      }
+          // Ausstehende Events senden
+          await (instance as any)?.flushAsync?.();
 
-      // Client ggf. schließen
-      await (instance as any)?.shutdownAsync?.();
+          // Projektgebundenen UI‑Pfad ermitteln (falls verfügbar)
+          try {
+            const traceId: string | undefined = (trace as any)?.id ?? (trace as any)?.traceId;
+            if (traceId && (instance as any)?.api?.traceGet) {
+              const t = await (instance as any).api.traceGet(traceId);
+              const host = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
+              if (t?.htmlPath) uiUrl = host + t.htmlPath;
+            }
+          } catch (_) {
+            // uiUrl ist optional
+          }
 
-      traceUrl = (trace as any)?.getTraceUrl?.();
-      posted = true;
+          // Client ggf. schließen
+          await (instance as any)?.shutdownAsync?.();
+
+          traceUrl = (trace as any)?.getTraceUrl?.();
+          posted = true;
+        })(),
+        timeoutPromise,
+      ]);
     } catch (e) {
       console.error("langfuse trace-test error", e);
       err = e instanceof Error ? e.message : String(e);

@@ -36,12 +36,8 @@ void main() {
       notifier.toggle(ConsentScope.terms);
       expect(container.read(consent02Provider).requiredAccepted, isFalse);
 
-      // Terms + health -> still false
+      // Terms + health -> now true (AI journal is optional)
       notifier.toggle(ConsentScope.health_processing);
-      expect(container.read(consent02Provider).requiredAccepted, isFalse);
-
-      // All required scopes true -> true
-      notifier.toggle(ConsentScope.ai_journal);
       expect(container.read(consent02Provider).requiredAccepted, isTrue);
     });
 
@@ -61,11 +57,11 @@ void main() {
       expect(state.choices[ConsentScope.analytics], isTrue);
       expect(state.choices[ConsentScope.marketing], isTrue);
       expect(state.choices[ConsentScope.model_training], isTrue);
+      expect(state.choices[ConsentScope.ai_journal], isTrue);
 
       // Required unchanged
       expect(state.choices[ConsentScope.terms], isFalse);
       expect(state.choices[ConsentScope.health_processing], isFalse);
-      expect(state.choices[ConsentScope.ai_journal], isFalse);
     });
   });
 }

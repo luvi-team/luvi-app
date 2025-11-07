@@ -58,11 +58,7 @@ class Consent02Screen extends ConsumerWidget {
         scope: ConsentScope.terms,
         trailing: _buildLinkTrailing(context, l10n),
       ),
-      ConsentChoiceListItem(
-        key: const Key('consent02_card_required_ai_journal'),
-        body: l10n.consent02CardAiJournal,
-        scope: ConsentScope.ai_journal,
-      ),
+      // AI Journal is optional (opt-in)
       ConsentChoiceListItem(
         body: l10n.consent02CardAnalytics,
         scope: ConsentScope.analytics,
@@ -74,6 +70,11 @@ class Consent02Screen extends ConsumerWidget {
       ConsentChoiceListItem(
         body: l10n.consent02CardModelTraining,
         scope: ConsentScope.model_training,
+      ),
+      ConsentChoiceListItem(
+        key: const Key('consent02_card_optional_ai_journal'),
+        body: l10n.consent02CardAiJournal,
+        scope: ConsentScope.ai_journal,
       ),
     ];
 

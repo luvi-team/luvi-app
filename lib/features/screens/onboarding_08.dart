@@ -31,6 +31,8 @@ class Onboarding08Screen extends ConsumerStatefulWidget {
 class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
   int? _selected;
   bool _isSaving = false;
+  // Sequence token to ensure only the latest background persist runs
+  int _bgPersistRequestId = 0;
 
   @override
   void initState() {
@@ -46,8 +48,10 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     // Persist immediately on selection for better UX and to satisfy contract
     // expected by widget tests. Analytics is recorded on CTA.
     final level = FitnessLevel.fromSelectionIndex(index);
-    // Persist in the background via helper that handles errors.
-    _persistInBackground(level);
+    // Increase request id to invalidate any in-flight background persists
+    final requestId = ++_bgPersistRequestId;
+    // Persist in the background ensuring only the latest selection is applied
+    _persistInBackground(level, requestId);
   }
 
   Future<void> _handleContinue() async {
@@ -62,7 +66,7 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     });
 
     try {
-      await _persistSelection(level);
+      await _persistSelection(level).timeout(const Duration(seconds: 10));
       ref
           .read(analyticsRecorderProvider)
           .recordEvent(
@@ -225,11 +229,17 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     await userState.setFitnessLevel(level);
   }
 
-  /// Fire-and-forget persistence with internal error handling to avoid missing
-  /// synchronous or already-completed errors while keeping the UX non-blocking.
-  Future<void> _persistInBackground(FitnessLevel level) async {
+  /// Fire-and-forget persistence with cancellation by sequence token so that
+  /// rapid taps only persist the latest choice. Keeps UX non-blocking and
+  /// still satisfies tests expecting quick persistence.
+  Future<void> _persistInBackground(FitnessLevel level, int requestId) async {
     try {
-      await _persistSelection(level);
+      // Abort if a newer selection was made
+      if (requestId != _bgPersistRequestId) return;
+      final userState = await ref.read(userStateServiceProvider.future);
+      // Re-check right before writing to avoid out-of-order saves
+      if (requestId != _bgPersistRequestId) return;
+      await userState.setFitnessLevel(level);
     } catch (e, stack) {
       log.w(
         'onboarding08_immediate_persist_failed',

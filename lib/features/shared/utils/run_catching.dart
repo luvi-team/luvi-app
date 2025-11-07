@@ -126,27 +126,40 @@ String? _sanitizeError(Object error) {
   // Sanitize control characters to prevent log injection
   String sanitized = raw.replaceAll(RegExp(r'[\r\n\t\x00-\x1F\x7F]'), ' ');
 
-  sanitized = sanitized.replaceAll(_emailPattern, '[redacted-email]');
+  bool changedForPii = false;
 
-  sanitized = sanitized.replaceAll(_uuidPattern, '[redacted-uuid]');
+  if (_emailPattern.hasMatch(sanitized)) {
+    sanitized = sanitized.replaceAll(_emailPattern, '[redacted-email]');
+    changedForPii = true;
+  }
+
+  if (_uuidPattern.hasMatch(sanitized)) {
+    sanitized = sanitized.replaceAll(_uuidPattern, '[redacted-uuid]');
+    changedForPii = true;
+  }
 
   sanitized = sanitized.replaceAllMapped(_phoneCandidatePattern, (match) {
     final candidate = match.group(0)!;
-    return _isPiiPhone(candidate) ? '[redacted-phone]' : candidate;
+    if (_isPiiPhone(candidate)) {
+      changedForPii = true;
+      return '[redacted-phone]';
+    }
+    return candidate;
   });
 
-  sanitized = sanitized.replaceAllMapped(_prefixedTokenPattern, (match) {
-    final fullMatch = match.group(0)!;
-    final identifier = match.group(1)!;
-    // Keep the descriptive prefix while masking the sensitive identifier.
-    return fullMatch.replaceFirst(identifier, '[redacted-id]');
-  });
-
-  if (sanitized == raw || sanitized.trim().isEmpty) {
-    return null;
+  if (_prefixedTokenPattern.hasMatch(sanitized)) {
+    sanitized = sanitized.replaceAllMapped(_prefixedTokenPattern, (match) {
+      final fullMatch = match.group(0)!;
+      final identifier = match.group(1)!;
+      changedForPii = true;
+      // Keep the descriptive prefix while masking the sensitive identifier.
+      return fullMatch.replaceFirst(identifier, '[redacted-id]');
+    });
   }
 
-  return sanitized;
+  // Only return a string when we actually redacted PII; otherwise report null
+  // so callers can decide to log the original error message.
+  return changedForPii ? sanitized : null;
 }
 
 @visibleForTesting

@@ -831,7 +831,7 @@
   "@authCreateNewCta": {
     "description": "Primärer CTA-Text beim Speichern des neuen Passworts."
   },
-  "authErrWaitBeforeRetry": "Bitte warte {seconds} Sekunden, bevor du es erneut versuchst.",
+  "authErrWaitBeforeRetry": "Bitte warte {seconds, plural, one {# Sekunde} other {# Sekunden}}, bevor du es erneut versuchst.",
   "@authErrWaitBeforeRetry": {
     "description": "Hinweistext, der die verbleibende Wartezeit bis zum nächsten Versuch kommuniziert.",
     "placeholders": {

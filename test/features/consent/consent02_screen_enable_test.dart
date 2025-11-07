@@ -30,9 +30,7 @@ void main() {
       // Tap required cards via deterministic keys
       final health = find.byKey(const Key('consent02_card_required_health'));
       final terms = find.byKey(const Key('consent02_card_required_terms'));
-      final aiJournal = find.byKey(
-        const Key('consent02_card_required_ai_journal'),
-      );
+      // AI Journal is optional now
       final list = find.byType(Scrollable);
       expect(health, findsOneWidget);
       expect(terms, findsOneWidget);
@@ -44,13 +42,6 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(terms);
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(aiJournal, 200, scrollable: list);
-      await tester.drag(list, const Offset(0, 120));
-      await tester.pumpAndSettle();
-      expect(aiJournal, findsOneWidget);
-      await tester.tap(aiJournal);
-      await tester.pumpAndSettle();
-
       // Weiter should now be enabled
       expect(tester.widget<ElevatedButton>(weiter).onPressed, isNotNull);
 
@@ -77,6 +68,7 @@ void main() {
       expect(stateAfterSelect.choices[ConsentScope.analytics], isTrue);
       expect(stateAfterSelect.choices[ConsentScope.marketing], isTrue);
       expect(stateAfterSelect.choices[ConsentScope.model_training], isTrue);
+      expect(stateAfterSelect.choices[ConsentScope.ai_journal], isTrue);
 
       await tester.tap(allAcceptFinder);
       await tester.pumpAndSettle();
@@ -86,6 +78,7 @@ void main() {
       expect(stateAfterClear.choices[ConsentScope.analytics], isFalse);
       expect(stateAfterClear.choices[ConsentScope.marketing], isFalse);
       expect(stateAfterClear.choices[ConsentScope.model_training], isFalse);
+      expect(stateAfterClear.choices[ConsentScope.ai_journal], isFalse);
       expect(find.text('Alle akzeptieren'), findsOneWidget);
 
       // Ensure no explicit card titles are present

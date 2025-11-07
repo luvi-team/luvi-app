@@ -528,7 +528,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String authErrWaitBeforeRetry(int seconds) {
-    return 'Please wait $seconds seconds before retrying.';
+    final unit = seconds == 1 ? 'second' : 'seconds';
+    return 'Please wait $seconds $unit before retrying.';
   }
 
   @override

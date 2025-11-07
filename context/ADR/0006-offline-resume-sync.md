@@ -95,8 +95,8 @@ Zur ursprünglichen DSGVO-Nennung werden folgende Betroffenenrechte explizit adr
   - Schwellwerte & Eskalation:
     - Warnung (asynchron): ≥ 2 % über ≥ 60 min ODER Trend +0,5 %/h → Ticket im Board, Owner: Feature‑Team Workout.
     - Page (SEV‑3): ≥ 5 % über rollierendes 24h‑Fenster ODER ≥ 7 % über ≥ 30 min → On‑Call wird gepaged.
-    - SEV‑2: ≥ 10 % über ≥ 30 min ODER ≥ 5 000 betroffene Nutzer/Tag → Incident Commander, dedizierter Channel.
-    - SEV‑1: ≥ 25 % über ≥ 15 min ODER Datenkorruptionssignale → globaler Write‑Stopp für Snapshots, Feature‑Flag „local‑only“ aktivieren.
+    - SEV‑2: ≥ 10 % über ≥ 30 min ODER ≥ 2 000 betroffene Nutzer/Tag → Incident Commander, dedizierter Channel.
+    - SEV‑1: ≥ 15 % über ≥ 15 min ODER ≥ 3 000 betroffene Nutzer/Tag ODER Datenkorruptionssignale → globaler Write‑Stopp für Snapshots, Feature‑Flag „local‑only“ aktivieren.
   - Begründung 5 %: Resume‑Sync ist wichtig für Cross‑Device‑Kontinuität, aber nicht transaktional‑kritisch für den Live‑Workout, da der lokale Offline‑Fallback den Fortgang am aktuellen Gerät sicherstellt. 5 % vermeidet Pager‑Fatigue bei regionalen Netzausfällen, liegt deutlich über dem < 1 %‑Baseline‑Ziel und signalisiert spürbaren Nutzer‑Impact, der aktives Eingreifen rechtfertigt.
   - Operational Notes: Schwellen, Streaming‑Leitplanken und Eskalationspfade werden in `docs/runbooks/resume_sync_operational_runbook.md` gepflegt und nach Go‑Live anhand realer Daten kalibriert.
 

@@ -9,12 +9,14 @@ class _FakeServerErrorLoginNotifier extends LoginNotifier {
   @override
   Future<void> validateAndSubmit() async {
     await super.validateAndSubmit();
-    final current = state.value!;
-    state = AsyncData(
-      current.copyWith(
-        globalError: AuthStrings.errLoginUnavailable,
-      ),
-    );
+    final current = state.value;
+    if (current != null) {
+      state = AsyncData(
+        current.copyWith(
+          globalError: AuthStrings.errLoginUnavailable,
+        ),
+      );
+    }
   }
 }
 

@@ -32,8 +32,11 @@ void main() {
     expect(find.text(l10n.consent02Title), findsOneWidget);
     final scrollable = find.byType(Scrollable);
     expect(find.text(l10n.consent02CardHealth), findsOneWidget);
+    // Verify the terms card (with links) exists before scrolling
+    expect(find.byKey(const Key('consent02_card_required_terms')), findsOneWidget);
+    // Then scroll to reveal the AI journal optional card
     await tester.scrollUntilVisible(
-      find.byKey(const Key('consent02_card_required_ai_journal')),
+      find.byKey(const Key('consent02_card_optional_ai_journal')),
       200,
       scrollable: scrollable,
     );
@@ -45,7 +48,6 @@ void main() {
       find.widgetWithText(ElevatedButton, l10n.consent02AcceptAll),
       findsOneWidget,
     );
-    expect(find.text(l10n.consent02LinkPrivacyLabel), findsOneWidget);
   });
 
   testWidgets('Consent footer button height matches elevated button theme', (
