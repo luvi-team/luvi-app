@@ -74,7 +74,7 @@ export default async function handler(req: Request): Promise<Response> {
   const tookMs = Date.now() - started;
   return new Response(
     JSON.stringify({
-      ok: true,
+      ok: posted && !err,
       safe,
       posted,
       env: process.env.VERCEL_ENV,
@@ -84,6 +84,11 @@ export default async function handler(req: Request): Promise<Response> {
       traceUrl,
       uiUrl,
     }),
+    {
+      status: err ? 500 : 200,
+      headers: { "content-type": "application/json" },
+    },
+  );
     {
       status: 200,
       headers: { "content-type": "application/json" },

@@ -203,6 +203,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                   debugPrint(
                     'Cannot complete onboarding: user state service unavailable',
                   );
+                  busyNotifier.setBusy(false);
                   if (context.mounted) {
                     final cs = Theme.of(context).colorScheme;
                     ScaffoldMessenger.of(context).showSnackBar(

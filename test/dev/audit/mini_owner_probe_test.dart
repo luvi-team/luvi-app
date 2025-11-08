@@ -71,13 +71,13 @@ void main() {
       }
 
       // Find widgets by specific finders
-      final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
-      final subtitleFinder = find.byKey(const ValueKey('create_new_subtitle'));
-      final passwordFieldFinder = find.byKey(const ValueKey('AuthPasswordField'));
+      final backButtonFinder = find.byKey(const Key('backButtonCircle'));
+      final subtitleFinder = find.byKey(const Key('create_new_subtitle'));
+      final passwordFieldFinder = find.byKey(const Key('AuthPasswordField'));
       final confirmFieldFinder = find.byKey(
-        const ValueKey('AuthConfirmPasswordField'),
+        const Key('AuthConfirmPasswordField'),
       );
-      final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
+      final ctaFinder = find.byKey(const Key('create_new_cta_button'));
 
       // Get positions
       final backButtonRect = tester.getRect(backButtonFinder);

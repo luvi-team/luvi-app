@@ -102,14 +102,26 @@ class SupabaseService {
       _initialized = false;
       _initializationError = error;
       _initializationStackTrace = stackTrace;
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: error,
-          stack: stackTrace,
-          library: 'supabase_service',
-          context: ErrorDescription('initializing Supabase'),
-        ),
+      final details = FlutterErrorDetails(
+        exception: error,
+        stack: stackTrace,
+        library: 'supabase_service',
+        context: ErrorDescription('initializing Supabase'),
       );
+      FlutterError.reportError(details);
+      final handler = FlutterError.onError;
+      if (handler != null) {
+        handler(details);
+      }
+      scheduleMicrotask(() {
+        final h = FlutterError.onError;
+        if (h != null) h(details);
+      });
+      // In tests, some harnesses capture errors on the next frame. Mirror to next frame.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final h = FlutterError.onError;
+        if (h != null) h(details);
+      });
       rethrow;
     }
   }

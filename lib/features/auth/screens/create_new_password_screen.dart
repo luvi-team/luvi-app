@@ -238,7 +238,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             onPressed: (_isLoading || _isBackoffActive)
                 ? null
                 : () async {
-                  // Defensive check removed: button is disabled during backoff
+                  // Button is disabled when loading or backoff is active;
+                  // no additional defensive check is required here.
                     final newPw = _newPasswordController.text.trim();
                     final confirmPw = _confirmPasswordController.text.trim();
                     final validationErrorMsg = _validatePassword(newPw, confirmPw, l10n);

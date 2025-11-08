@@ -14,7 +14,9 @@ import 'features/routes.dart' as routes;
 import 'features/screens/splash/splash_screen.dart';
 import 'core/init/supabase_init_controller.dart';
 import 'package:luvi_services/init_mode.dart';
+import 'core/init/init_mode.dart' show initModeProvider;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
+import 'core/init/init_diagnostics.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,9 +57,12 @@ void main() async {
   runApp(
     ProviderScope(
       overrides: [
-        supabaseEnvFileProvider.overrideWithValue(
-          kReleaseMode ? '.env.production' : '.env.development',
-        ),
+        supabaseEnvFileProvider.overrideWith((ref) {
+          final mode = ref.watch(initModeProvider);
+          return mode == InitMode.prod
+              ? '.env.production'
+              : '.env.development';
+        }),
       ],
       child: MyAppWrapper(orientationController: orientationController),
     ),
@@ -87,6 +92,16 @@ class MyAppWrapper extends ConsumerWidget {
 
     // Rebuild MaterialApp (and thus router) when Supabase init state changes
     // so that refreshListenable attaches once the client is ready.
+    // Emit a deterministic diagnostics signal for tests when an init error exists.
+    if (InitModeBridge.resolve() != InitMode.test) {
+      if (initState.configError || SupabaseService.lastInitializationError != null) {
+        try {
+          ref.read(initDiagnosticsProvider.notifier).recordError();
+        } catch (_) {
+          // ignore in production
+        }
+      }
+    }
     return MaterialApp.router(
           title: 'LUVI',
           theme: AppTheme.buildAppTheme(),

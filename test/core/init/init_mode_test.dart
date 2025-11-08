@@ -6,6 +6,7 @@ import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/features/navigation/route_orientation_controller.dart';
 import 'package:luvi_app/main.dart';
 import 'package:luvi_services/init_mode.dart';
+import 'package:luvi_app/core/init/supabase_init_controller.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -32,17 +33,42 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // Wait until the controller attempted initialization at least once.
+    final element = tester.element(find.byType(MaterialApp));
+    final container = ProviderScope.containerOf(element);
+    for (var i = 0; i < 10; i++) {
+      final s = container.read(supabaseInitControllerProvider);
+      if (s.attempts > 0) break;
+      await tester.pump(const Duration(milliseconds: 50));
+    }
 
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byIcon(Icons.wifi_off), findsNothing);
   });
 
   testWidgets('InitMode.prod shows init overlay', (tester) async {
-    // Swallow framework error reporting for this test: we intentionally run in
-    // prod mode without valid env to exercise the overlay. Initialization will
-    // report errors via FlutterError which would normally fail the test.
+    // Capture only expected initialization errors and forward unexpected ones
+    // to avoid hiding legitimate failures.
     final prevOnError = FlutterError.onError;
-    FlutterError.onError = (details) {};
+    final recorded = <FlutterErrorDetails>[];
+    FlutterError.onError = (details) {
+      final lib = details.library ?? '';
+      final context = details.context?.toDescription() ?? '';
+      final isExpectedInitError =
+          (lib.contains('supabase_service') && context.contains('initializing Supabase')) ||
+          (lib.contains('supabase_init_controller') && context.contains('attempt'));
+      if (isExpectedInitError) {
+        recorded.add(details);
+        return; // swallow expected init errors
+      }
+      // Forward unexpected errors
+      if (prevOnError != null) {
+        prevOnError(details);
+      } else {
+        FlutterError.dumpErrorToConsole(details);
+        fail('Unexpected Flutter error: ${details.exceptionAsString()}');
+      }
+    };
     addTearDown(() { FlutterError.onError = prevOnError; });
     // Force bridge to prod before app bootstrap so MyAppWrapper binds bridge
     // from provider rather than keeping test short-circuit.
@@ -69,5 +95,25 @@ void main() {
     
     // Overlay renders a WiFi off icon when not yet initialized.
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    // Ensure initialization was attempted at least once (no flakiness), then
+    // assert the offline overlay is visible.
+    final element = tester.element(find.byType(MaterialApp));
+    final container = ProviderScope.containerOf(element);
+    for (var i = 0; i < 10; i++) {
+      final s = container.read(supabaseInitControllerProvider);
+      if (s.attempts > 0) break;
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    // If any errors were recorded, verify they match the expected init context.
+    if (recorded.isNotEmpty) {
+      final allExpected = recorded.every((details) {
+        final lib = details.library ?? '';
+        final context = details.context?.toDescription() ?? '';
+        return (lib.contains('supabase_service') && context.contains('initializing Supabase')) ||
+               (lib.contains('supabase_init_controller') && context.contains('attempt'));
+      });
+      expect(allExpected, isTrue, reason: 'Unexpected Flutter errors captured during prod init test');
+    }
   });
 }

@@ -9,7 +9,7 @@ Metrics
 Alerting (initial; calibrate post-launch)
 - Warn (async): ≥ 2% over ≥ 60 min OR trend +0.5%/h → ticket for feature team.
 - Page (SEV‑3): ≥ 5% over rolling 24h OR ≥ 7% over ≥ 30 min.
-- SEV‑2: ≥ 10% over ≥ 30 min OR ≥ 5,000 affected users/day.
+- SEV‑2: ≥ 10% over ≥ 30 min OR ≥ 2,000 affected users/day.
 - SEV‑1: ≥ 25% over ≥ 15 min OR data corruption indicators → enable feature‑flag "local‑only".
 
 Streaming Guidance

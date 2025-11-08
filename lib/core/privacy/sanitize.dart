@@ -69,7 +69,7 @@ String sanitizeForLog(String input) {
   out = out.replaceAllMapped(_prefixedTokenPattern, (m) {
     final full = m.group(0);
     final id = m.group(1);
-    if (full == null || id == null) return m.group(0) ?? '';
+    if (full == null || id == null) return m.group(0)!;
     return full.replaceFirst(id, '[redacted-id]');
   });
 

@@ -83,13 +83,18 @@ class UserStateService {
   Future<void> markOnboardingComplete({
     required FitnessLevel fitnessLevel,
   }) async {
-    final wroteLevel = await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
-    if (!wroteLevel) {
-      throw StateError('Failed to persist fitness level');
-    }
+    // Write completion flag first, then persist fitness level. If the second
+    // write fails, best-effort rollback the flag to avoid a partially
+    // completed onboarding state.
     final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
     if (!wroteFlag) {
       throw StateError('Failed to persist onboarding completion flag');
+    }
+    final wroteLevel = await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
+    if (!wroteLevel) {
+      // Best-effort rollback; ignore rollback failure and surface original error
+      try { await prefs.remove(_keyHasCompletedOnboarding); } catch (_) {}
+      throw StateError('Failed to persist fitness level');
     }
   }
 

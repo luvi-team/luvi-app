@@ -34,7 +34,8 @@ class DateFormatters {
         debugPrintStack(stackTrace: stackTrace, label: 'DateFormat error');
       }
       try {
-        return date.toIso8601String().substring(0, 10);
+        final iso = date.toIso8601String();
+        return iso.length >= 10 ? iso.substring(0, 10) : iso;
       } catch (_) {
         return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
       }

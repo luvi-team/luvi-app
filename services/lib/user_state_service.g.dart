@@ -7,7 +7,7 @@ part of 'user_state_service.dart';
 // **************************************************************************
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
+// ignore_for_file: type=lint, invalid_use_of_internal_member
 
 @ProviderFor(userStateService)
 const userStateServiceProvider = UserStateServiceProvider._();

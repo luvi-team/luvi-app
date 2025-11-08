@@ -835,7 +835,10 @@
   "@authErrWaitBeforeRetry": {
     "description": "Hinweistext, der die verbleibende Wartezeit bis zum nächsten Versuch kommuniziert.",
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int",
+        "format": "compact"
+      }
     }
   },
   "consentSnackbarAccepted": "Einwilligung akzeptiert",

@@ -3,6 +3,10 @@
 -- Behavior: acquires a transaction-scoped advisory lock per user, checks the
 --           sliding-window count, and conditionally inserts a consent record.
 -- Returns: boolean (true if inserted, false if rate-limited)
+-- Exceptions: this function raises exceptions for invalid input parameters
+--             and will propagate INSERT errors (e.g., RLS denials, unique
+--             violations, or other DB errors). Callers must be prepared to
+--             handle exceptions in addition to the boolean return value.
 
 -- Ensure pgcrypto is available for digest()
 create extension if not exists pgcrypto;
@@ -71,7 +75,7 @@ end;
 $$;
 
 comment on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer)
-  is 'Atomically logs a consent after a sliding-window rate limit check under a per-user advisory lock.';
+  is 'Atomically logs a consent after a sliding-window rate limit check under a per-user advisory lock. Returns true when inserted, false when rate-limited. Invalid inputs and INSERT failures (e.g., RLS/constraints) raise exceptions.';
 
 grant execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer)
   to authenticated;

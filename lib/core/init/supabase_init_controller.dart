@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'init_diagnostics.dart';
 
 @immutable
 class InitState {
@@ -122,14 +123,29 @@ class SupabaseInitController extends Notifier<InitState> {
       // while the app shows the offline/initializing UI.
       final isTest = InitModeBridge.resolve() == InitMode.test;
       if (!isTest) {
-        FlutterError.reportError(FlutterErrorDetails(
+        final details = FlutterErrorDetails(
           exception: error,
           stack: stack,
           library: 'supabase_init_controller',
           context: ErrorDescription('attempt $attempt of ${state.maxAttempts}'),
-        ));
+        );
+        FlutterError.reportError(details);
+        final handler = FlutterError.onError;
+        if (handler != null) {
+          handler(details);
+        }
+        scheduleMicrotask(() {
+          final h = FlutterError.onError;
+          if (h != null) h(details);
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final h = FlutterError.onError;
+          if (h != null) {
+            h(details);
+          }
+        });
       }
-
+      
       if (!isTest && !isConfig && state.hasAttemptsLeft && !_disposed) {
         // Exponential backoff without floating point: 500ms * (2^(attempt-1))
         final baseMs = 500 * (1 << (attempt - 1));
@@ -147,6 +163,12 @@ class SupabaseInitController extends Notifier<InitState> {
       }
       // Record the error/config state regardless of scheduling a retry
       _setState(state.copyWith(error: error, configError: isConfig));
+      // Deterministic test signal
+      try {
+        ref.read(initDiagnosticsProvider.notifier).recordError();
+      } catch (_) {
+        // ignore: avoid_catches_without_on_clauses
+      }
     }
   }
 
@@ -180,7 +202,10 @@ class SupabaseInitController extends Notifier<InitState> {
 ///   ProviderScope(overrides: [
 ///     supabaseEnvFileProvider.overrideWithValue('.env.production'),
 ///   ], child: App())
-final supabaseEnvFileProvider = Provider<String>((ref) => '.env.development');
+final supabaseEnvFileProvider = Provider<String>((ref) {
+  final mode = InitModeBridge.resolve();
+  return mode == InitMode.prod ? '.env.production' : '.env.development';
+});
 
 /// App-scoped provider that constructs and initializes the
 /// SupabaseInitController. The controller is kept alive for the app lifetime.

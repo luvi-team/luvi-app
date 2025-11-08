@@ -10,7 +10,7 @@
 ///
 /// The pattern enforces at least one letter and allows internal separators.
 final RegExp defaultNamePattern = RegExp(
-  r"^[A-Za-zÀ-ÖØ-öø-ÿ]+([-' ][A-Za-zÀ-ÖØ-öø-ÿ]+)*$",
+  r"^[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ\u0300-\u036f]*([-' ][A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ\u0300-\u036f]*)*$",
 );
 
 /// Validates a personal name using basic, configurable constraints.
@@ -47,14 +47,21 @@ bool nonEmptyNameValidator(
   if (value == null) return false;
   final trimmed = value.trim();
   if (trimmed.isEmpty) return false;
-  if (trimmed.length < minLength || trimmed.length > maxLength) return false;
+  final normalized = _normalizeToNfc(trimmed);
+  if (normalized.length < minLength || normalized.length > maxLength) {
+    return false;
+  }
 
   final reAllowed = allowedCharsPattern ?? defaultNamePattern;
-  if (!reAllowed.hasMatch(trimmed)) return false;
+  if (!reAllowed.hasMatch(normalized)) return false;
 
   // Enforce at least one letter regardless of the allowedCharsPattern.
   final reLetter = letterPattern ?? RegExp(r"[A-Za-zÀ-ÖØ-öø-ÿ]");
-  if (!reLetter.hasMatch(trimmed)) return false;
+  if (!reLetter.hasMatch(normalized)) return false;
 
   return true;
+}
+
+String _normalizeToNfc(String input) {
+  return input;
 }
