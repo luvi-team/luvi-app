@@ -62,7 +62,7 @@ Rekey Safety and Procedure
   - Reopen the final DB and run another `PRAGMA integrity_check;`.
 
 3) In-place rekey (only if necessary)
-- Caveat: `PRAGMA rekey` is not filesystem-atomic. Crash safety depends on `journal_mode`, `synchronous`, and the VFS’s atomic-commit guarantees. Use conservative settings during rekey:
+- **Caveat**: `PRAGMA rekey` is not filesystem-atomic and creates a corruption risk window. A crash or power loss during the operation may render the database unrecoverable. Ensure device has adequate battery and stable power before proceeding. Crash safety depends on `journal_mode`, `synchronous`, and the VFS's atomic-commit guarantees. Use conservative settings during rekey:
   - `PRAGMA journal_mode = wal;` or `DELETE` based on platform guarantees and library defaults.
   - `PRAGMA synchronous = FULL;` for the operation window.
 - Steps:
