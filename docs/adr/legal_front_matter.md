@@ -5,8 +5,9 @@ Dieses Dokument definiert das verbindliche YAML‑Front‑Matter‑Schema für a
 ## Schema
 - required fields:
   - `version` (string)
-    - Format: SemVer‑artig; Regex: `^v?\d+\.\d+(?:\.\d+)?(?:-[0-9A-Za-z.-]+)?$`
-    - Beispiele: `1.0`, `v1.2.3`, `1.2.0-beta.1`
+    - Format: SemVer‑artig; Regex: `^v?\d+\.\d+(?:\.\d+)?(?:-(?:[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$`
+    - Anforderungen: Optionales führendes `v`; `major.minor(.patch)` mit Zahlen; optionale Prä‑Release‑Kennzeichnung beginnt mit `-` und besteht aus ein oder mehreren, mit Punkten getrennten Identifikatoren. Jeder Identifikator muss aus mindestens einem alphanumerischen Zeichen oder Bindestrich bestehen (keine leeren Segmente, keine aufeinanderfolgenden Punkte, keine führenden/abschließenden Punkte).
+    - Beispiele: `1.0`, `v1.2.3`, `1.2.0-beta.1`, `v2.5.0-rc-1`
   - `date` (string)
     - Format: ISO‑Datum `YYYY-MM-DD` (z. B. `2025-11-06`)
   - `title` (string)
@@ -40,4 +41,3 @@ draft: false
 
 Inhalt …
 ```
-

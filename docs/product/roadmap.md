@@ -74,13 +74,14 @@ DB/Schema (Supabase; public read; owner RLS für Events/Consent)
 • consent_logs(user_id, video_id, decision ENUM('accept','decline'), ts, ua_hash, ip_hash, client_version, locale)  ← Retention 12 Monate
 
 GDPR/Privacy (consent_logs)
-• Legal basis: Art. 6(1)(c) (record-keeping obligations for consent) and Art. 6(1)(f) (legitimate interests: auditability, fraud/abuse prevention). Referenced in Privacy Policy (section “Consent Logs and Audit”).
+• Legal basis (final): Art. 6(1)(f) DSGVO (berechtigte Interessen: Auditierbarkeit, Betrugs-/Missbrauchsprävention). Für `consent_logs` wird aktuell nicht auf Art. 6(1)(c) gestützt. Referenz: `docs/privacy/privacy.md` (Abschnitt „Consent‑Logs und Audit“).
 • Data minimisation: store only `user_id`, `video_id`, `decision`, `ts`, `locale`, app `client_version`, and hashed identifiers (`ua_hash`, `ip_hash`). Do not store raw IPs or UAs.
-• Hashing controls: compute `ip_hash` and `ua_hash` via keyed HMAC with a server-managed, rotating pepper; document rotation cadence and emergency rotation procedure.
-• Identifiability risk: assess linkage (mosaic effect) across `user_id`/`ts`/`locale` with hashed identifiers; expected residual risk low with HMAC + RLS, but document mitigations (rate limits, access controls). Attach a short risk memo to the Privacy file set.
-• Necessity justification (`ip_hash`): required for audit defensibility (proof-of-decision uniqueness and abuse detection), rate limiting, and consent revocation traceability without storing raw IP.
-• Retention: 12 months justified for audit window; record in retention schedule. If not strictly required, reduce to 6 months; implement automatic TTL purge.
-• RLS policies: owner-based read of own records; only an `audit_role` (service-side) may read cross-user for compliance audits; no client cross-user access.
+• Hashing controls (final): `ip_hash`/`ua_hash` via HMAC‑SHA256 with server‑managed pepper. Rotation cadence: quartalsweise (alle 90 Tage). Emergency rotation: sofortige Pepper‑Erneuerung, Invalidierung der Alt‑Pepper, Backfill/Rehash „on write“ + opportunistisch bei Lesezugriffen; Details/Runbook: `docs/privacy/hmac_hashing_controls.md`.
+• Identifiability risk: linkage risk across `user_id`/`ts`/`locale` with hashed identifiers assessed as „low“ with HMAC + RLS + rate limiting. Short risk memo: `docs/privacy/consent_logs_risk_memo.md`.
+• Necessity justification (`ip_hash`): required for audit defensibility (proof‑of‑decision uniqueness and abuse detection), rate limiting, and consent revocation traceability without storing raw IP.
+• Retention (final): TTL = 12 Monate. Automatische Löschung via Scheduled Job (pg_cron/Edge Fn) mit täglichem Cleanup; Policy/SQL: `docs/privacy/consent_logs_ttl_policy.md`. Retention im Verzeichnis „Privacy“ dokumentiert (Schedule) und in App‑Einstellungen referenziert.
+• Consent revocation flow: UI (Settings → Datenschutz → Consent‑Management) bietet Widerruf so einfach wie Erteilung (Art. 7(3)). Events: `video_consent_shown`, `video_consent_accept`, `video_consent_reject`. DB‑Logik: nur INSERTs (kein DELETE), neuester Eintrag repräsentiert aktuellen Status; bestehende Logs bleiben unverändert (Audit‑Trail). Details: `docs/privacy/consent_revocation_flow.md` und `docs/runbooks/verify-consent-flow.md`.
+• RLS policies: owner‑based read of own records; nur ein `audit_role` (service‑seitig) darf cross‑user lesen für Compliance‑Audits; kein Client‑Zugriff auf fremde Datensätze.
 
 Ranking v1
 • score = 0.40*phase_match + 0.20*recency_decay + 0.15*editorial + 0.10*popularity + 0.10*affinity − 0.05*diversity_penalty
