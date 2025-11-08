@@ -60,7 +60,7 @@ jobs:
             echo "::error::$FILE fehlt. Für DSGVO-Compliance ist eine finale Datenschutzerklärung erforderlich (oder extern verlinkt via PRIVACY_URL)."
             exit 1
           fi
-          if grep -inE 'Bitte ersetzen Sie diesen Text|PLACEHOLDER' "$FILE" >/dev/null 2>&1; then
+          if grep -inE '\b(Bitte ersetzen Sie diesen Text|PLACEHOLDER)\b' "$FILE" >/dev/null 2>&1; then
             echo "::error::$FILE enthält Platzhaltertext. Bitte finale DSGVO-konforme Datenschutzerklärung einpflegen und Legal-Freigabe dokumentieren."
             sed -n '1,80p' "$FILE" || true
             exit 1

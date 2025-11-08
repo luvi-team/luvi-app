@@ -89,9 +89,18 @@ class ProdAppLinks extends AppLinksApi {
       }
     }
     // Block IPv6 local ranges
+    // - Validate IPv6 syntax strictly (reject malformed like ':::')
     // - fe80::/10 (link-local): first 16-bit group 0xFE80..0xFEBF
     // - fc00::/7 (unique local) — any first 16-bit group 0xFC00..0xFDFF
     if (host.contains(':')) {
+      // Strictly validate IPv6 host first. If malformed, reject early.
+      try {
+        // Throws FormatException on invalid IPv6.
+        Uri.parseIPv6Address(host);
+      } on FormatException {
+        return false;
+      }
+
       final firstGroup = host.split(':').firstWhere(
             (g) => g.isNotEmpty,
             orElse: () => '',
@@ -119,6 +128,10 @@ class ProdAppLinks extends AppLinksApi {
     final trimmed = effectiveValue.trim();
     final parsed = Uri.tryParse(trimmed);
     if (parsed == null) {
+      assert(() {
+        debugPrint('[AppLinks] Failed to parse configured URI: "$trimmed". Falling back to default.');
+        return true;
+      }());
       // Defensive: even if the configured default is invalid, never throw.
       final fallback = Uri.tryParse(defaultValue);
       if (fallback != null) {

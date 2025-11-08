@@ -9,6 +9,35 @@ import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/core/analytics/analytics.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
+// Known platform error codes (explicit, maintainable). Keep in sync with
+// platform/plugin release notes and project conventions.
+const Set<String> kAuthErrorCodes = {
+  'auth_error',
+  'authError',
+  'authorization_failed',
+  'authorizationFailed',
+  'sign_in_cancelled',
+  'sign_in_canceled',
+  'invalid_credentials',
+  'account_exists',
+};
+
+const Set<String> kPermissionErrorCodes = {
+  'permission_denied',
+  'permissionDenied',
+  'PERMISSION_DENIED',
+  'not_authorized',
+  'notAuthorized',
+};
+
+final List<RegExp> kAuthErrorCodePatterns = [
+  RegExp(r'^auth', caseSensitive: false),
+];
+
+final List<RegExp> kPermissionErrorCodePatterns = [
+  RegExp(r'permission', caseSensitive: false),
+];
+
 class ConsentButton extends ConsumerStatefulWidget {
   const ConsentButton({super.key});
 
@@ -33,10 +62,19 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
     }
     // Auth/permission errors (platform/channel level)
     if (error is PlatformException) {
-      // Check for auth-specific platform error codes
-      if (error.code.startsWith('auth') || error.code.contains('permission')) {
-        return 'auth_error';
+      final code = (error.code).trim();
+      if (code.isNotEmpty) {
+        // Explicit mappings take precedence
+        if (kAuthErrorCodes.contains(code) ||
+            kAuthErrorCodePatterns.any((p) => p.hasMatch(code))) {
+          return 'auth_error';
+        }
+        if (kPermissionErrorCodes.contains(code) ||
+            kPermissionErrorCodePatterns.any((p) => p.hasMatch(code))) {
+          return 'platform_error';
+        }
       }
+      // Unknown platform exception code
       return 'platform_error';
     }
     // Validation/format issues

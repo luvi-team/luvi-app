@@ -242,8 +242,8 @@
       },
       "button_text_on_button_bg": {
         "colors": "#030401 on #D9B18E",
-        "ratio": "4.5:1",
-        "wcag_level": "AA Pass",
+        "ratio": "10.4:1",
+        "wcag_level": "AAA",
         "note": "Black text on gold background provides sufficient contrast for accessibility (meets AA standard for normal text, exceeds AA Large requirement of 3:1)"
       }
     },

@@ -95,7 +95,7 @@ class _LoginButtonChild extends StatelessWidget {
         // keep key stable for AnimatedSwitcher
         key: const ValueKey('login_cta_label'),
         // non-const child due to localized string
-        child: Text(AuthStrings.loginCtaButton),
+        child: Text(AuthStrings.loginCta),
       );
     }
 

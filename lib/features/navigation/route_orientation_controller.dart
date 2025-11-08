@@ -12,7 +12,7 @@ typedef OrientationSetter = Future<void> Function(
 class RouteOrientationController {
   RouteOrientationController({
     required List<DeviceOrientation> defaultOrientations,
-    Map<String, List<DeviceOrientation>> routeOverrides = const {},
+    Map<String, List<DeviceOrientation>> routeOverrides = const <String, List<DeviceOrientation>>{},
     OrientationSetter? setter,
   })  : assert(defaultOrientations.isNotEmpty, 'defaultOrientations must not be empty'),
         assert(
@@ -21,11 +21,11 @@ class RouteOrientationController {
         ),
         defaultOrientations = List.unmodifiable(defaultOrientations),
         routeOverrides = Map.unmodifiable(
-          routeOverrides.map<String, List<DeviceOrientation>>(
-            (key, value) => MapEntry<String, List<DeviceOrientation>>(
-              key,
-              List<DeviceOrientation>.unmodifiable(value),
-            ),
+          routeOverrides.map(
+            (key, value) {
+              final coerced = List<DeviceOrientation>.from(value);
+              return MapEntry(key, List<DeviceOrientation>.unmodifiable(coerced));
+            },
           ),
         ),
         _setter = setter ?? SystemChrome.setPreferredOrientations;

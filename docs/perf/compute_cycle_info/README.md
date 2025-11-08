@@ -21,7 +21,7 @@ Example:
 {
   "timestamp": "2025-03-30T21:15:00Z",
   "device": { "model": "Apple M1", "os": "macOS 14.5", "cpu": "8-core", "memory": "16GB" },
-  "build": { "flutter": "3.35.4", "dart": "3.5.4", "mode": "release" },
+  "build": { "flutter": "3.35.5", "dart": "3.9.4", "mode": "release" },
   "warmup": 100,
   "samples": 10000,
   "p50": 8.7,
@@ -29,4 +29,3 @@ Example:
   "p99": 16.4,
   "deviations": []
 }
-

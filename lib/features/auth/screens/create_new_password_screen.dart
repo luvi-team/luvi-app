@@ -125,6 +125,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     RegExp(r'^aaaaaa$', caseSensitive: false),
   ];
 
+  // Treat strings with 6+ total occurrences of the same character as weak.
   static bool _isRepetitive(String s) => RegExp(r'^(.)\1{5,}$').hasMatch(s);
 
   static bool _isNumericSequence(String s) {

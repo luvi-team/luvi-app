@@ -6,14 +6,14 @@ Applies to: S1 and subsequent sprints until revision
 ## Purpose
 Deterministic computation of the current cycle phase and derived values for UI/ranking. Testable without PII overreach.
 
-- Performance (target P95 ≤ 50 ms): compute_cycle_info() from function entry to return, computation‑only (no network/DB I/O). Warm‑start measurement (JIT/caches warm). Baseline: mid‑range mobile/CPU (e.g., Apple M1/A14‑equivalent or Snapdragon 7xx), single thread, no concurrent load. Method: 10,000 invocations over a representative input set; discard the first 100 as warm‑up; compute P95 via `Stopwatch`/harness and document the sample count.
+- Performance (target P95 ≤ 5 ms, compute‑only): compute_cycle_info() from function entry to return, computation‑only (no network/DB I/O). Warm‑start measurement (JIT/caches warm). Baseline: mid‑range mobile/CPU (e.g., Apple A14/Snapdragon 7xx class) or equivalent laptop‑class core, single thread, no concurrent load. Method: 10,000 invocations over a representative input set; discard the first 100 as warm‑up; compute P95 via `Stopwatch`/harness and document the sample count. The target is strictly compute‑only; any platform/UI/IO overheads are excluded here and are covered by separate E2E instrumentation.
   - Baseline cadence: run baseline measurement (a) before merge of relevant changes, (b) after any performance‑affecting change to compute_cycle_info or its dependencies, and (c) on a scheduled nightly/weekly CI job on a stable runner.
-  - Baseline (reference; record and update here): example device "Apple M1 (8‑core, 16 GB), macOS 14, Flutter 3.35.4 release"; sample size `n=9,900` (after `warmup=100`); measured P95: < 1 ms (see latest artifact under `docs/perf/compute_cycle_info/`). If an artifact reports `0.0 ms`, treat it as a timer‑resolution artifact; rerun in release mode or with batched iterations to obtain a non‑zero value. If the measurement device/build differs from the reference, record the deviation in the artifact (see below).
+  - Baseline (reference; record and update here): example device "Apple M1 (8‑core, 16 GB), macOS 14, Flutter 3.35.4 release"; sample size `n=9,900` (after `warmup=100`); measured P95: < 1 ms (see latest artifact under `docs/perf/compute_cycle_info/`). If an artifact reports `0.0 ms`, treat it as a timer‑resolution artifact; rerun in release mode or with batched iterations to obtain a non‑zero value. If the measurement device/build differs from the reference, record the deviation in the artifact (see below). This measured compute‑only baseline (<1 ms) motivated lowering the target from 50 ms to 5 ms to better reflect the expected performance envelope on mid‑range profiles.
   - Instrumentation/Harness: Dart `Stopwatch` around compute only; script `tools/perf/compute_cycle_info_bench.dart`; warm‑up `100`, samples `10,000`; P95 computed from sorted durations at index `ceil(0.95*n)-1`. Reproduce locally: `dart run tools/perf/compute_cycle_info_bench.dart --samples 10000 --warmup 100 --json docs/perf/compute_cycle_info/<DATE>.json`.
   - Artifacts (commit required): commit the produced JSON under `docs/perf/compute_cycle_info/`.
     - Required fields: `timestamp`, `device` (model, OS, CPU, memory), `build` (Flutter/Dart versions, build mode), `warmup`, `samples`, `p50`, `p95`, `p99`, and `deviations` (from the reference device/build, if any).
     - Naming: `compute_cycle_info_<YYYY-MM-DD>_<device|runner>.json` (or CI‑provided run ID). One canonical latest artifact should live in this folder per runner/device profile.
-  - CI regression rule: job name "Performance CI / compute_cycle_info". Fail the job if measured `P95 > 60 ms` (slightly above the 50 ms target to avoid flakiness). The job uploads its raw JSON artifact and links to the committed baseline for traceability.
+  - CI regression rule: job name "Performance CI / compute_cycle_info". Fail the job if measured `P95 > 7 ms` (slightly above the 5 ms target to avoid flakiness). The job uploads its raw JSON artifact and links to the committed baseline for traceability.
 
 ## Inputs
 - lmp_date (string, ISO 8601 `YYYY-MM-DD`, local): First day of the last period. Required.
@@ -45,7 +45,7 @@ Deterministic computation of the current cycle phase and derived values for UI/r
    - Luteal: last `luteal_length_days` days of the cycle.
    - Ovulatory: ovulation day `ov_day = cycle_length_days - luteal_length_days`; then clamp: `ov_day ∈ [1, cycle_length_days]`. The 2‑day window is `[ov_day, min(ov_day+1, cycle_length_days)]`. Whether `day_in_cycle` falls into this window determines phase `ovulatory` (otherwise not).
      Examples: (a) `ov_day < 1` → clamp to 1 ⇒ window `[1, 2]`; (b) `ov_day = cycle_length_days` ⇒ window `[cycle_length_days, cycle_length_days]` (one day).
-     Overlap precedence: if `day_in_cycle` lies in the ovulatory window, set `phase = ovulatory` — ovulatory takes precedence over menstrual on overlap (e.g., when ovulatory day equals menstrual day N).
+     Overlap precedence: if `day_in_cycle` lies in both the menstrual window and the ovulatory window, set `phase = menstrual` — menstrual takes precedence over ovulatory on overlap (e.g., when ovulatory day equals menstrual day N). Note: precise ovulation classification on boundary cases may require external physiological confirmation (e.g., LH tests, BBT, cervical mucus); v1 remains deterministic and prioritizes menstrual.
    - Follicular: remainder between menstrual and ovulation windows.
 4. Derive `phase_window_start/end` from the phase and boundaries; both are calendar dates in `tz` and represent whole-day boundaries (inclusive start and inclusive end), independent of time-of-day. Compute `next_phase` and `next_phase_start` deterministically.
    - For the determined `phase`, compute `day_in_phase = (day_in_cycle - phase_start_day) + 1` (1‑based). Clamp `day_in_phase` to `[1, phase_length]`; populate the output field and add a note if a clamp was applied.
@@ -100,14 +100,15 @@ References: ACOG Patient Education (Ovulation/Menstrual Cycle); Wilcox AJ et a
 - Legacy migration: if legacy fields (e.g., `avg_cycle_length`) exist, precedence is explicit inputs > history.
 
 Input validation (after clamps, deterministic):
-- Invariants: `1 ≤ period_length_days ≤ cycle_length_days`, `1 ≤ luteal_length_days < cycle_length_days`.
-- If an invariant is not met after clamps, perform a minimal adjustment to restore it. Procedure (apply in this order and record one note per field adjusted):
+  - Invariants: `1 ≤ period_length_days ≤ cycle_length_days`, `1 ≤ luteal_length_days < cycle_length_days`.
+  - If an invariant is not met after clamps, perform a minimal adjustment to restore it. Procedure (apply in this order and record one note per field adjusted):
   - If `period_length_days ≥ cycle_length_days`, set `period_length_days = cycle_length_days - 1`.
   - If `luteal_length_days ≥ cycle_length_days`, set `luteal_length_days = cycle_length_days - 1`.
   - If `period_length_days < 1`, set `period_length_days = 1`.
   - If `luteal_length_days < 1`, set `luteal_length_days = 1`.
   After each change, append to `notes` an entry `"invariant_adjustment"` including the original and adjusted values, e.g. `"invariant_adjustment: period_length_days 12→11 (cycle_length_days=12)"`.
-  Example: inputs `cycle_length_days=12`, `period_length_days=12`, `luteal_length_days=14`. Adjust to `period_length_days=11`, `luteal_length_days=11` so that `period_length_days < cycle_length_days` and `luteal_length_days < cycle_length_days` hold; add two notes for the adjustments.
+  - Post‑clamp sum check (reserve ≥2 days for follicular/ovulatory): if `period_length_days + luteal_length_days ≥ cycle_length_days - 1`, perform a minimal adjustment by decrementing the larger of the two values (`period_length_days` or `luteal_length_days`) until `period_length_days + luteal_length_days ≤ cycle_length_days - 2`. Record one `"invariant_adjustment"` note for each field adjusted, including `original→adjusted` and the `cycle_length_days` context. This check runs after the per‑field clamps above to keep adjustments deterministic and minimal.
+  Example: inputs `cycle_length_days=12`, `period_length_days=12`, `luteal_length_days=14`. Adjust to `period_length_days=11`, `luteal_length_days=11` so that `period_length_days < cycle_length_days` and `luteal_length_days < cycle_length_days` hold; add two notes for the adjustments. If after clamps a case like `cycle_length_days=21`, `period_length_days=8`, `luteal_length_days=14` leaves `<2` days for the remainder, decrement the larger (`luteal_length_days` in this example) to `11` so that `8 + 11 = 19 = cycle_length_days - 2`.
 
 ## Test Cases (at minimum)
 Note: References to algorithm steps in brackets (e.g., [Step 2]). All outputs fully specified.
@@ -158,7 +159,7 @@ Note: References to algorithm steps in brackets (e.g., [Step 2]). All outputs fu
   Input: `lmp=2025-01-01`, `now=2025-01-05`, `cycle_length=21`, `period_length=5`, `luteal_length=16`.
   Normalized: no clamps (21/5/16).
   Derived: `ov_day=5`, window `[5,6]` (unusual, overlaps menstrual day 5); luteal starts day `6` [Steps 2–4].
-  Expected: `{ phase: ovulatory, day_in_cycle: 5, day_in_phase: 1, phase_window_start: 2025-01-05, phase_window_end: 2025-01-06, next_phase: luteal, next_phase_start: 2025-01-06, phase_confidence: 1.0, clamps_applied: false, notes: [] }`.
+  Expected: `{ phase: menstrual, day_in_cycle: 5, day_in_phase: 5, phase_window_start: 2025-01-01, phase_window_end: 2025-01-05, next_phase: follicular, next_phase_start: 2025-01-06, phase_confidence: 1.0, clamps_applied: false, notes: [] }`.
 
 - T11 Long cycle (35/10) — ovulatory day 1:
   Input: `lmp=2025-01-01`, `now=2025-01-25`, `cycle_length=35`, `period_length=5`, `luteal_length=10`.

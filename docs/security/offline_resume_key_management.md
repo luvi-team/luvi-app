@@ -19,7 +19,7 @@ Decisions
 
 Operational Notes
 - Key material never leaves the device. Server-side snapshots remain encrypted at transport (TLS) and are stored unencrypted on the server DB (server-side security via RLS and access controls). Local encryption is a defense-in-depth measure.
-- Error handling: Any failure to open with the current key triggers a single retry after a short delay. If still failing, treat as key loss: wipe local DB and rehydrate. During rekey/export, if an error occurs, abort the operation, retry once with the old key, and attempt rehydration from server backup if corruption is suspected. Fail closed with a clear remediation path if recovery is not possible (do not proceed with a partially rekeyed file).
+- Error handling: Any failure to open with the current key triggers a single retry after a short, explicitly defined delay. Use a shared constant across clients, e.g., `RETRY_DELAY_MS = 500`. Implementers on Flutter (iOS/Android) MUST reference the same config value to keep behavior consistent. If still failing after the one retry, treat as key loss: wipe local DB and rehydrate. During rekey/export, if an error occurs, abort the operation, retry once with the old key, and attempt rehydration from server backup if corruption is suspected. Fail closed with a clear remediation path if recovery is not possible (do not proceed with a partially rekeyed file).
 - Telemetry: Emit non-PII events for `resume_local_rekey_start|success|failure` and `resume_local_rehydrate_start|success|failure` with error-class only.
 
 Graceful degradation for low storage (deferral policy)

@@ -112,7 +112,7 @@ class AuthStrings {
   static String get loginHeadline => _l10n().authLoginHeadline;
   static String get loginSubhead => _l10n().authLoginSubhead;
   static String get loginCta => _l10n().authLoginCta;
-  static String get loginCtaButton => loginCta;
+
   static String get loginCtaLinkPrefix => _l10n().authLoginCtaLinkPrefix;
   static String get loginCtaLinkAction => _l10n().authLoginCtaLinkAction;
   static String get loginCtaLoadingSemantic =>

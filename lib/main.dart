@@ -93,14 +93,14 @@ class MyAppWrapper extends ConsumerWidget {
     // Rebuild MaterialApp (and thus router) when Supabase init state changes
     // so that refreshListenable attaches once the client is ready.
     // Emit a deterministic diagnostics signal for tests when an init error exists.
-    if (InitModeBridge.resolve() != InitMode.test) {
-      if (initState.configError || SupabaseService.lastInitializationError != null) {
-        try {
-          ref.read(initDiagnosticsProvider.notifier).recordError();
-        } catch (e) {
-          if (!kReleaseMode) {
-            debugPrint('[main] Failed to record init diagnostics: $e');
-          }
+    final isNotTest = InitModeBridge.resolve() != InitMode.test;
+    final hasError = initState.configError || SupabaseService.lastInitializationError != null;
+    if (isNotTest && hasError) {
+      try {
+        ref.read(initDiagnosticsProvider.notifier).recordError();
+      } catch (e) {
+        if (!kReleaseMode) {
+          debugPrint('[main] Failed to record init diagnostics: $e');
         }
       }
     }

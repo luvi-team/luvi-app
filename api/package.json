@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "ai": "^3.0.0",
-    "langfuse": "^3.38.5",
+    "langfuse": "^3.37.4",
     "zod": "^3.22.0"
   },
   "devDependencies": {

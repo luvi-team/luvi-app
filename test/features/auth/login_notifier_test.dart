@@ -8,15 +8,25 @@ class _FakeServerErrorLoginNotifier extends LoginNotifier {
   // Simulates server error after successful client-side validation
   @override
   Future<void> validateAndSubmit() async {
-    await super.validateAndSubmit();
-    final current = state.value;
-    if (current != null) {
-      state = AsyncData(
-        current.copyWith(
-          globalError: AuthStrings.errLoginUnavailable,
-        ),
-      );
+    try {
+      await super.validateAndSubmit();
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      return;
     }
+    final current = state.value;
+    if (current == null) {
+      state = AsyncError(
+        StateError('No current state after validation'),
+        StackTrace.current,
+      );
+      return;
+    }
+    state = AsyncData(
+      current.copyWith(
+        globalError: AuthStrings.errLoginUnavailable,
+      ),
+    );
   }
 }
 

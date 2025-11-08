@@ -9,9 +9,16 @@ import 'package:flutter/foundation.dart';
 class EmailValidator {
   const EmailValidator._();
 
+  // Permissive RFC 5322-inspired validator with explicit anchors and TLD bounds.
   static final RegExp _pattern = RegExp(
     r'^[A-Za-z0-9][A-Za-z0-9._%+-]*[A-Za-z0-9]@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*\.[A-Za-z]{2,63}$',
   );
 
-  static bool isValid(String value) => _pattern.hasMatch(value.trim());
+  static bool isValid(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return false;
+    // Disallow consecutive dots and ensure full-string match
+    return _pattern.hasMatch(trimmed) && !trimmed.contains('..');
+  }
 }
+
