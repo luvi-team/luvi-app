@@ -25,14 +25,23 @@ export function createLangfuse(): SafeLangfuse {
     });
 
     // Debug-Ausgabe aktivieren, falls verfügbar
-    try {
-      (lf as any).debug?.(true);
-    } catch {
-      // ignore optional debug support differences
-    }
-
-    return { safe: true, instance: lf };
+    // Option 1: Check if method exists with proper typing
+    if ('debug' in lf && typeof (lf as any).debug === 'function') {
+      try {
+        (lf as any).debug(true);
+      } catch (error) {
+        // Silently ignore - debug is optional
+      }
   } catch (error) {
+    // Defensiv: nie throwen in Edge-Handlern
+    console.error("Failed to initialize Langfuse:", {
+      error,
+      host,
+      hasPublicKey: !!pk,
+      hasSecretKey: !!sk,
+    });
+    return { safe: false, instance: undefined };
+  }
     // Defensiv: nie throwen in Edge-Handlern
     console.error("Failed to initialize Langfuse:", error);
     return { safe: false, instance: undefined };

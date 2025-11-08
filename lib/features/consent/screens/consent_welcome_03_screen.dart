@@ -14,7 +14,7 @@ class ConsentWelcome03Screen extends StatelessWidget {
   const ConsentWelcome03Screen({super.key});
 
   static const routeName = '/onboarding/w3';
-  // No special subtitle column width needed – W1/W2 use full width.
+  // Full width subtitle layout (consistent with other welcome screens)
 
   @override
   Widget build(BuildContext context) {

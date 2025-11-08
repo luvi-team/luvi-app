@@ -230,8 +230,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               gapBelowForgot: gapBelowForgot,
               socialGap: socialGap,
               socialBlockKey: _socialAuthKey,
-              onGoogle: () { _handleOAuthSignIn(supa.OAuthProvider.google); },
-              onApple: () { _handleOAuthSignIn(supa.OAuthProvider.apple); },
+              onGoogle: () => _handleOAuthSignIn(supa.OAuthProvider.google),
+              onApple: () => _handleOAuthSignIn(supa.OAuthProvider.apple),
             ),
             if (globalError != null) ...[
               const SizedBox(height: Spacing.m),

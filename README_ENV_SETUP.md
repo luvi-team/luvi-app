@@ -19,5 +19,5 @@ Resolution order inside the service: 1) `--dart-define` → 2) `.env` (`SUPABASE
 ## Notes
 - Do not commit real secrets. `.env.*` is ignored by `.gitignore` (only `.env.example` is tracked). If any real values were ever committed, rotate the credentials immediately and purge history.
 - For other environments, create corresponding files (e.g. `.env.staging`, `.env.production`) for local dev only, and pass the file name to `dotenv.load()`.
-- Sensitive data MUST NOT be stored in `SharedPreferences` or `.env` assets. Use platform-backed secure storage for secrets.
-- Note: `.env.*` files used with `flutter_dotenv` during local development are acceptable as they are not bundled into the production app when using `--dart-define`.
+- Sensitive data MUST NOT be bundled into production assets (e.g., `.env` files in asset bundles). Use platform-backed secure storage for secrets or pass via `--dart-define`.
+- Note: `.env.*` files with `flutter_dotenv` are acceptable for local development only, as they are not bundled when using `--dart-define` for production builds.

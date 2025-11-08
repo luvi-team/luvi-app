@@ -95,6 +95,9 @@ Map<String, Object?> _sanitizeMap(Map<String, Object?> input) {
 Object? _sanitizeValue(Object? value) {
   if (value == null) return null;
   if (value is Map) {
+    if (value is Map<String, Object?>) {
+      return _sanitizeMap(value);
+    }
     // Best-effort: convert to String keys, skip non-String keys
     final stringMap = <String, Object?>{};
     for (final entry in value.entries) {

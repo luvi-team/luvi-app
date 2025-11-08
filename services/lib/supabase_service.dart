@@ -348,8 +348,8 @@ class _SupabaseCredentials {
 
 @immutable
 class SupabaseValidationConfig {
-  const SupabaseValidationConfig({this.minAge = 10, this.maxAge = 100})
-    : assert(minAge > 0, 'minAge must be positive.'),
+  const SupabaseValidationConfig({this.minAge = 13, this.maxAge = 100})
+    : assert(minAge >= 13, 'minAge must be >= 13.'),
       assert(maxAge >= minAge, 'maxAge must be >= minAge.');
 
   final int minAge;

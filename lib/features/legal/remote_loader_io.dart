@@ -28,8 +28,11 @@ Future<String?> fetchRemoteMarkdown(
     // Return the actual body (including empty string) so callers can detect
     // empty-but-successful responses distinctly from errors.
     return result;
-  } on TimeoutException {
-    // Consider: logger.warning('Remote markdown fetch timed out: $uri');
+  } on Object catch (error, stackTrace) {
+    // Return null on any failure to keep caller contract consistent (nullable on error).
+    // Optionally log with context for diagnostics; avoid throwing to prevent mixed contracts.
+    stderr.writeln('fetchRemoteMarkdown failed for $uri: $error');
+    stderr.writeln(stackTrace);
     return null;
   } finally {
     // Always close the client to avoid resource leaks.

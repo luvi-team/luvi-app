@@ -88,7 +88,7 @@ void main() {
       final subtitleRect = tester.getRect(subtitleFinder);
       final ctaRect = tester.getRect(ctaFinder);
 
-      // Try to find password fields by their hint text
+      // Find password fields by their keys
       final field1Finder = find.byKey(const ValueKey('AuthPasswordField'));
       final field2Finder = find.byKey(const ValueKey('AuthConfirmPasswordField'));
 

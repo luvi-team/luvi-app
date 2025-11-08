@@ -1,14 +1,14 @@
 # Service Configuration Schema (Health)
 
-Status: Draft (MVP)
-Scope: Per‑service healthcheck thresholds, windows, and evaluation policy
+Status: Stable
+Scope: Per-service healthcheck thresholds, windows, and evaluation policy
 
 ## Purpose
-Define a minimal, validated schema for service‑specific health configuration. Overrides must be explicit and opt‑in; invalid overrides are rejected.
+Define a minimal, validated schema for service-specific health configuration. Overrides must be explicit and opt-in; invalid overrides are rejected.
 
 ## Schema (YAML)
 
-Top‑level keys: `service`, `health`.
+Top-level keys: `service`, `health`.
 
 ```yaml
 service: <string>               # Unique service identifier
@@ -30,7 +30,7 @@ health:
   evaluation:
     degraded_to_down_method: <enum>           # allowed: aggregated_last_two_failed (default); extensions require ADR; unknown values rejected
   aggregation:
-    latency_metric: <enum>                    # allowed: p95 (default), p50, max, ma_last_5m
+    latency_metric: <enum>                    # allowed: p95 (default), p50, max, moving_average_5m  # moving average over the last 5 minutes
 ```
 
 ### Validation rules
@@ -39,12 +39,12 @@ health:
 - All counters must be positive integers.
 - Durations must parse to finite values (e.g., `Xs`, `Xms`).
 - `evaluation.degraded_to_down_method` must be `aggregated_last_two_failed` unless explicitly extended via ADR; unknown values are rejected.
-- `aggregation.latency_metric` must be one of `p95 | p50 | max | ma_last_5m` (default `p95`). Any future extensions MUST follow the ADR process and be added to the allowed values list; unknown values are rejected.
+- `aggregation.latency_metric` must be one of `p95 | p50 | max | moving_average_5m` (default `p95`). Any future extensions MUST follow the ADR process and be added to the allowed values list; unknown values are rejected. The `moving_average_5m` option represents the moving average over the last 5 minutes.
 
 Note: `error_rate_degraded_threshold` and `error_rate_failed_threshold` are hard state-transition thresholds in the healthcheck state machine (e.g., 0.05 → degraded, 0.20 → failed). See docs/platform/healthcheck.md for details.
 
 ### Precedence and rollout
-- Precedence: per‑service overrides → org/global defaults → spec defaults.
+- Precedence: per-service overrides → org/global defaults → spec defaults.
 - CI enforces schema validation; invalid configs fail the build.
 - Rollout: managed via Settings UI (Settings → Health → Thresholds) or service registry/manifests. Changes are applied on next deploy or dynamic config reload if supported.
 

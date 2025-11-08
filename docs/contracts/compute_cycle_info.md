@@ -49,7 +49,17 @@ Deterministic computation of the current cycle phase and derived values for UI/r
    - Follicular: remainder between menstrual and ovulation windows.
 4. Derive `phase_window_start/end` from the phase and boundaries; both are calendar dates in `tz` and represent whole-day boundaries (inclusive start and inclusive end), independent of time-of-day. Compute `next_phase` and `next_phase_start` deterministically.
    - For the determined `phase`, compute `day_in_phase = (day_in_cycle - phase_start_day) + 1` (1‑based). Clamp `day_in_phase` to `[1, phase_length]`; populate the output field and add a note if a clamp was applied.
-5. Clamps: set inputs outside allowed ranges to their bounds; set `clamps_applied = true` and populate `notes`.
+   5. Clamps: set inputs outside allowed ranges to their bounds; set `clamps_applied = true` and populate `notes`.
+
+### Phase Window Formulas (calendar‑day, tz‑normalized)
+- All additions are calendar‑day additions in the chosen timezone `tz` (date‑only arithmetic).
+- Let `ov_day = clamp(1, cycle_length_days, cycle_length_days - luteal_length_days)` (see Step 3 for precedence and clamping).
+- Menstrual: `[ lmp_date + 0d, lmp_date + (period_length_days - 1)d ]`.
+- Follicular: `[ lmp_date + period_length_days d, lmp_date + (ov_day - 1) d ]` (clamped to cycle bounds `1..cycle_length_days`).
+- Ovulatory: `[ lmp_date + (ov_day - 1) d, lmp_date + ov_day d ]` (clamped to cycle bounds; may be a 1‑day window if `ov_day = cycle_length_days`).
+- Luteal: `[ lmp_date + (cycle_length_days - luteal_length_days) d, lmp_date + (cycle_length_days - 1) d ]`.
+- `next_phase_start`: deterministically the calendar day after the current phase window end: `lmp_date + (end_day_in_cycle + 1) d`; wrap to `lmp_date + cycle_length_days d` when the next phase starts in the next cycle (i.e., if `end_day_in_cycle = cycle_length_days`).
+- Clamping: if any computed start/end lies outside `1..cycle_length_days`, clamp to this range and record a clamp note; the windows remain inclusive of both ends after clamping.
 
 ## Timezone & Date Boundaries
 - Principle: perform day arithmetic in the local user timezone `tz` (or the zone attached to inputs), never on raw UTC instants.

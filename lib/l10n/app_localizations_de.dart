@@ -528,8 +528,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String authErrWaitBeforeRetry(int seconds) {
-    final unit = seconds == 1 ? 'Sekunde' : 'Sekunden';
-    return 'Bitte warte $seconds $unit, bevor du es erneut versuchst.';
+    return intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      one: 'Bitte warte $seconds Sekunde, bevor du es erneut versuchst.',
+      other: 'Bitte warte $seconds Sekunden, bevor du es erneut versuchst.',
+    );
   }
 
   @override

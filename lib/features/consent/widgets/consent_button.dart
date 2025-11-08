@@ -24,7 +24,7 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
   /// Returns a safe, user-facing error category string.
   String _categorizeError(Object error) {
     // Network-related errors
-    if (error is SocketException || error is IOException) {
+    if (error is SocketException) {
       return 'network_error';
     }
     // Timeout
@@ -33,11 +33,11 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
     }
     // Auth/permission errors (platform/channel level)
     if (error is PlatformException) {
-      return 'auth_error';
-    }
-    // Auth/state errors (e.g., user not authenticated)
-    if (error is StateError && error.toString().toLowerCase().contains('auth')) {
-      return 'auth_state_error';
+      // Check for auth-specific platform error codes
+      if (error.code.startsWith('auth') || error.code.contains('permission')) {
+        return 'auth_error';
+      }
+      return 'platform_error';
     }
     // Validation/format issues
     if (error is FormatException) {

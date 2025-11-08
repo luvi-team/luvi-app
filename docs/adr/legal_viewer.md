@@ -17,7 +17,8 @@ Die App zeigt rechtlich verbindliche Texte (Privacy Policy, Terms) über einen M
     - `legal_viewer_failed`: Vollständiges Sentry-Event nur wenn Remote UND Lokal scheitern. Felder: `error_stack`, `retry_attempts`, `user_action` (auto_retry|manual_retry|abandon).
     - Mutual Exclusion: Beide Signale schließen sich pro Ladevorgang gegenseitig aus.
 - **Tests:** CI besitzt einen Smoke-Test-Satz, der Offline- und Fehlerpfade vollständig abdeckt:
-  - Dateien: Sowohl `docs/privacy/privacy.md` als auch `docs/privacy/terms.md` werden einzeln erzwungen (HTTP 503/Timeout), lokal gerendert und auf minimale Text-Fingerprints geprüft.
+  - Ziel der Smoke-Tests: die gebündelten Dateien unter `assets/legal/` (CI verwendet den gebauten/bündelten App‑Stand, nicht die Quell‑Ordner).
+  - Dateien: Sowohl `assets/legal/privacy.md` als auch `assets/legal/terms.md` werden einzeln erzwungen (HTTP 503/Timeout), lokal gerendert und auf minimale Text‑Fingerprints geprüft.
   - Retry-Semantik: Automatischer einmaliger Retry mit Backoff (z. B. 500–1000 ms, Timeout 5 s) wird simuliert; anschließend manueller Retry-Button wird angeboten und getestet.
   - UI-Fallbacks: Gelbes Offline-Banner vorhanden (persistent, non-blocking); bei Doppel‑Fehler (Remote+Lokal) wird das Fehlermodul mit Support-Hinweis angezeigt.
   - Sentry-Assertions: Breadcrumb `legal_viewer_fallback` bei Remote‑Fail + lokalem Erfolg; Event `legal_viewer_failed` nur bei Doppel‑Fail. Assertions prüfen Felder gemäß oben definierten Schemas.

@@ -135,7 +135,9 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   }
 
   /// Backward-compatible shim used by existing call sites and tests.
-  /// Performs client-side validation; network submission remains elsewhere.
+  /// Performs client-side validation only and completes synchronously.
+  /// Any network submission or remote auth flow is handled by
+  /// `login_submit_provider` to avoid mixing concerns.
   Future<void> validateAndSubmit() async {
     validate();
   }

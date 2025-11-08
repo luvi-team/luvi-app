@@ -177,10 +177,10 @@ Latency (default p95 across attempts):
   - `p50` (median across merged samples)
   - `p95` (default; across merged samples)
   - `max` (maximum across merged samples)
-  - `ma_last_5m` (moving average over last 5 minutes; requires backend support; if unsupported, fallback to `p95`).
+  - `moving_average_5m` (moving average over last 5 minutes; requires backend support; if unsupported, fallback to `p95`).
 
 Configuration knobs (per service):
-- `health.aggregation.latency_metric`: one of `p50 | p95 | max | ma_last_5m` (default: `p95`).
+- `health.aggregation.latency_metric`: one of `p50 | p95 | max | moving_average_5m` (default: `p95`).
 - Error‑rate method is fixed to `weighted_by_samples` for MVP and is not configurable; any future change must go through ADR and schema extension.
 
 Governance & compatibility:
@@ -223,7 +223,7 @@ health:
   evaluation:
     degraded_to_down_method: aggregated_last_two_failed   # opt‑in keys must validate against schema
   aggregation:
-    latency_metric: p95  # allowed: p50 | p95 (default) | max | ma_last_5m
+    latency_metric: p95  # allowed: p50 | p95 (default) | max | moving_average_5m
 ```
 
 Operators can apply overrides via the Settings UI (Settings → Health → Thresholds) referenced above, or by editing the service registry and CI deployment manifests that carry this configuration. Changes must pass schema validation before taking effect.

@@ -93,7 +93,13 @@ class UserStateService {
     final wroteLevel = await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
     if (!wroteLevel) {
       // Best-effort rollback; ignore rollback failure and surface original error
-      try { await prefs.remove(_keyHasCompletedOnboarding); } catch (_) {}
+      try {
+        await prefs.remove(_keyHasCompletedOnboarding);
+      } catch (e) {
+        // Best-effort log without depending on Flutter; keep service pure Dart.
+        // ignore: avoid_print
+        print('[UserStateService] Rollback failed during markOnboardingComplete: $e');
+      }
       throw StateError('Failed to persist fitness level');
     }
   }

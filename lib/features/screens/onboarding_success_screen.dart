@@ -10,6 +10,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/l10n/app_localizations_en.dart';
 import 'package:luvi_services/user_state_service.dart';
 
 class _SuccessBtnBusyNotifier extends Notifier<bool> {
@@ -40,7 +41,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     final spacing = OnboardingSpacing.of(context);
     final reduceMotion =
         mediaQuery.disableAnimations || mediaQuery.accessibleNavigation;
