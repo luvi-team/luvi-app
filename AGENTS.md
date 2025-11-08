@@ -15,7 +15,14 @@ Arbeitsweise
 - Acceptance pro Rolle: „Core + Role extension“ gemäß SSOT v1.1.
 - Antwortformat: verbindlich gemäß `docs/engineering/assistant-answer-format.md`.
 - CI-Pflegezyklus: Actions-Pinning (checkout/upload-artifact/github-script) quartalsweise prüfen/aktualisieren; siehe `context/agents/_actions_todo.md`.
-- Branch-Strategie: kurze Feature-Branches, Squash & Merge, Required Checks als Gate (Trunk‑Based, stabiler Main).
+ - Branch-Strategie: kurze Feature-Branches, Squash & Merge, Required Checks als Gate (Trunk‑Based, stabiler Main).
+
+Global Rules (Archon-first)
+- Vor jedem Coding: Archon-Tasks prüfen → Taskstatus pflegen (todo→doing→review→done).
+- RAG vor Implementierung (2–5 Stichworte, kurze Queries).
+- Dossiers zuerst lesen: Phase-Definitionen, Consent, Ranking.
+- PR: Dossier-Versionen/Links angeben.
+- Keine globalen ENV in Shell; Secrets in projekt-lokalen `.env`.
 
 Tooling (Flutter, Sandbox)
 - Für Codex CLI sind Flutter-Läufe über `scripts/flutter_codex.sh` auszuführen (Analyse/Tests).
@@ -51,3 +58,14 @@ Dual-Primary (Codex + Claude Code)
 
 Legacy (nur historisch)
 - .claude/agents/* = Vor Codex-Umstellung, nicht mehr operativ.
+
+Archon IDE Global Rules
+- MCP-Server prüfen; Archon als Primärsystem nutzen.
+- Task-Flow befolgen: `find_tasks` → `manage_task(status=doing)` → implementieren → `manage_task(status=review)` → `manage_task(status=done)`.
+- RAG-Workflow anwenden: `rag_get_available_sources` → `rag_search_knowledge_base(query, source_id?)`.
+- Tool-Referenz:
+  - `find_projects`
+  - `find_tasks`
+  - `manage_task`
+  - `rag_*`
+- Queries kurz halten: 2–5 Keywords, keine langen Sätze.
