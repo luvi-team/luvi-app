@@ -5,7 +5,17 @@ export type SafeLangfuse = { instance?: Langfuse; safe: boolean };
 export function createLangfuse(): SafeLangfuse {
   const pk = process.env.LANGFUSE_PUBLIC_KEY;
   const sk = process.env.LANGFUSE_SECRET_KEY;
-  const host = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
+  const rawHost = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
+  // Mitigation: enforce https and a clean base URL; fall back to default if invalid
+  let host = "https://cloud.langfuse.com";
+  try {
+    const parsed = new URL(rawHost);
+    if (parsed.protocol === "https:" && !parsed.username && !parsed.password) {
+      host = parsed.toString().replace(/\/$/, "");
+    }
+  } catch {
+    // ignore; keep default host
+  }
 
   if (!pk || !sk) {
     // Fallback: no ENV set -> stub so app doesn't crash
