@@ -6,6 +6,8 @@ import 'init_mode.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'init_exception.dart';
+
 class SupabaseService {
   static bool _initialized = false;
   // A single gate to ensure only the first caller performs initialization and
@@ -102,14 +104,18 @@ class SupabaseService {
       _initialized = false;
       _initializationError = error;
       _initializationStackTrace = stackTrace;
+      final wrappedError = SupabaseInitException(
+        'Failed to initialize Supabase',
+        originalError: error,
+      );
       final details = FlutterErrorDetails(
-        exception: error,
+        exception: wrappedError,
         stack: stackTrace,
         library: 'supabase_service',
         context: ErrorDescription('initializing Supabase'),
       );
       FlutterError.reportError(details);
-      rethrow;
+      throw wrappedError;
     }
   }
 
@@ -350,6 +356,7 @@ class _SupabaseCredentials {
 class SupabaseValidationConfig {
   const SupabaseValidationConfig({this.minAge = 13, this.maxAge = 100})
     : assert(minAge >= 13, 'minAge must be >= 13.'),
+      assert(maxAge <= 150, 'maxAge must be <= 150 (sanity check).'),
       assert(maxAge >= minAge, 'maxAge must be >= minAge.');
 
   final int minAge;

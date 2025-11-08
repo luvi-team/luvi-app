@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/init_mode.dart';
+import 'package:luvi_services/init_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'init_diagnostics.dart';
 
@@ -114,6 +115,14 @@ class SupabaseInitController extends Notifier<InitState> {
       _setState(state.copyWith(initialized: true, error: null, configError: false));
       return;
     } catch (error, stack) {
+      // Wrap in SupabaseInitException if not already wrapped
+      final wrappedError = error is SupabaseInitException
+          ? error
+          : SupabaseInitException(
+              'Initialization attempt $attempt failed',
+              originalError: error,
+            );
+
       // Check for specific error types that indicate configuration issues
       final isConfig = error is StateError ||
                        error is FormatException ||
@@ -124,7 +133,7 @@ class SupabaseInitController extends Notifier<InitState> {
       final isTest = InitModeBridge.resolve() == InitMode.test;
       if (!isTest) {
         final details = FlutterErrorDetails(
-          exception: error,
+          exception: wrappedError,
           stack: stack,
           library: 'supabase_init_controller',
           context: ErrorDescription('attempt $attempt of ${state.maxAttempts}'),

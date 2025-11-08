@@ -6,6 +6,7 @@ import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/features/navigation/route_orientation_controller.dart';
 import 'package:luvi_app/main.dart';
 import 'package:luvi_services/init_mode.dart';
+import 'package:luvi_services/init_exception.dart';
 import 'package:luvi_app/core/init/supabase_init_controller.dart';
 
 void main() {
@@ -47,16 +48,12 @@ void main() {
   });
 
   testWidgets('InitMode.prod shows init overlay', (tester) async {
-    // Capture only expected initialization errors and forward unexpected ones
-    // to avoid hiding legitimate failures.
+    // Capture only expected initialization errors (SupabaseInitException) and
+    // forward unexpected ones to avoid hiding legitimate failures.
     final prevOnError = FlutterError.onError;
     final recorded = <FlutterErrorDetails>[];
     FlutterError.onError = (details) {
-      final lib = details.library ?? '';
-      final context = details.context?.toDescription() ?? '';
-      final isExpectedInitError =
-          (lib.contains('supabase_service') && context.contains('initializing Supabase')) ||
-          (lib.contains('supabase_init_controller') && context.contains('attempt'));
+      final isExpectedInitError = details.exception is SupabaseInitException;
       if (isExpectedInitError) {
         recorded.add(details);
         return; // swallow expected init errors
@@ -105,14 +102,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
     }
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
-    // If any errors were recorded, verify they match the expected init context.
+    // If any errors were recorded, verify they are all SupabaseInitException.
     if (recorded.isNotEmpty) {
-      final allExpected = recorded.every((details) {
-        final lib = details.library ?? '';
-        final context = details.context?.toDescription() ?? '';
-        return (lib.contains('supabase_service') && context.contains('initializing Supabase')) ||
-               (lib.contains('supabase_init_controller') && context.contains('attempt'));
-      });
+      final allExpected = recorded.every((details) => details.exception is SupabaseInitException);
       expect(allExpected, isTrue, reason: 'Unexpected Flutter errors captured during prod init test');
     }
   });
