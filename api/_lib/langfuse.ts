@@ -8,7 +8,7 @@ export function createLangfuse(): SafeLangfuse {
   const host = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
 
   if (!pk || !sk) {
-    // Fallback: keine ENV gesetzt -> Stub, damit App nicht crasht
+    // Fallback: no ENV set -> stub so app doesn't crash
     return { safe: false, instance: undefined };
   }
 
@@ -17,33 +17,31 @@ export function createLangfuse(): SafeLangfuse {
       publicKey: pk,
       secretKey: sk,
       baseUrl: host,
-      // sofort senden & Kontext
+      // Send immediately & capture context
       flushAt: 1,
       flushInterval: 0,
       release: process.env.VERCEL_GIT_COMMIT_SHA,
       environment: process.env.VERCEL_ENV,
     });
 
-    // Debug-Ausgabe aktivieren, falls verfügbar
-    // Option 1: Check if method exists with proper typing
+    // Enable debug output if available (optional feature)
     if ('debug' in lf && typeof (lf as any).debug === 'function') {
       try {
         (lf as any).debug(true);
       } catch (error) {
         // Silently ignore - debug is optional
       }
+    }
+
+    return { safe: true, instance: lf };
   } catch (error) {
-    // Defensiv: nie throwen in Edge-Handlern
+    // Defensive: never throw in Edge handlers
     console.error("Failed to initialize Langfuse:", {
       error,
       host,
       hasPublicKey: !!pk,
       hasSecretKey: !!sk,
     });
-    return { safe: false, instance: undefined };
-  }
-    // Defensiv: nie throwen in Edge-Handlern
-    console.error("Failed to initialize Langfuse:", error);
     return { safe: false, instance: undefined };
   }
 }
