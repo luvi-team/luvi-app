@@ -209,8 +209,8 @@ health:
   thresholds:
     ok_lte: 250ms
     degraded_lte: 1200ms
-    error_rate_warn: 0.05   # 5%
-    error_rate_crit: 0.20   # 20%
+    error_rate_degraded_threshold: 0.05   # 5% → degraded
+    error_rate_failed_threshold: 0.20     # 20% → failed
   windows:
     consecutive_ok_for_recover_ok: 3
     consecutive_fail_for_degrade: 2

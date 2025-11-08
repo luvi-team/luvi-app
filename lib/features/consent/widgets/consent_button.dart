@@ -36,7 +36,7 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
       return 'auth_error';
     }
     // Auth/state errors (e.g., user not authenticated)
-    if (error is StateError && error.message.contains('auth')) {
+    if (error is StateError && error.toString().toLowerCase().contains('auth')) {
       return 'auth_state_error';
     }
     // Validation/format issues

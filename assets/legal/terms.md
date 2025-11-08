@@ -5,7 +5,7 @@ This is the offline fallback copy of the Terms of Service bundled with the app.
 If you are viewing this, the app could not load the latest online version. For
 the most up‑to‑date terms, please check the website when you are back online.
 
-Last updated: 2025‑11‑08
+Last updated: 2025-11-08
 
 ## Use of Service
 

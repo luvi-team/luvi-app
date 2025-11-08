@@ -16,8 +16,8 @@ health:
   thresholds:
     ok_lte: <duration>          # e.g., 250ms
     degraded_lte: <duration>    # e.g., 1200ms
-    error_rate_warn: <float>    # 0..1 (e.g., 0.05)
-    error_rate_crit: <float>    # 0..1 (e.g., 0.20)
+    error_rate_degraded_threshold: <float>  # 0..1 (e.g., 0.05)
+    error_rate_failed_threshold: <float>    # 0..1 (e.g., 0.20)
   windows:
     consecutive_ok_for_recover_ok: <int>      # default 3
     consecutive_fail_for_degrade: <int>       # default 2
@@ -35,11 +35,13 @@ health:
 
 ### Validation rules
 - `ok_lte < degraded_lte` (strict).
-- `0 ≤ error_rate_warn < error_rate_crit ≤ 1`.
+- `0 ≤ error_rate_degraded_threshold < error_rate_failed_threshold ≤ 1`.
 - All counters must be positive integers.
 - Durations must parse to finite values (e.g., `Xs`, `Xms`).
 - `evaluation.degraded_to_down_method` must be `aggregated_last_two_failed` unless explicitly extended via ADR; unknown values are rejected.
 - `aggregation.latency_metric` must be one of `p95 | p50 | max | ma_last_5m` (default `p95`). Any future extensions MUST follow the ADR process and be added to the allowed values list; unknown values are rejected.
+
+Note: `error_rate_degraded_threshold` and `error_rate_failed_threshold` are hard state-transition thresholds in the healthcheck state machine (e.g., 0.05 → degraded, 0.20 → failed). See docs/platform/healthcheck.md for details.
 
 ### Precedence and rollout
 - Precedence: per‑service overrides → org/global defaults → spec defaults.
@@ -54,8 +56,8 @@ health:
   thresholds:
     ok_lte: 250ms
     degraded_lte: 1200ms
-    error_rate_warn: 0.05
-    error_rate_crit: 0.20
+    error_rate_degraded_threshold: 0.05
+    error_rate_failed_threshold: 0.20
   windows:
     consecutive_ok_for_recover_ok: 3
     consecutive_fail_for_degrade: 2

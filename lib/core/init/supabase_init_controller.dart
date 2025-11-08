@@ -130,20 +130,6 @@ class SupabaseInitController extends Notifier<InitState> {
           context: ErrorDescription('attempt $attempt of ${state.maxAttempts}'),
         );
         FlutterError.reportError(details);
-        final handler = FlutterError.onError;
-        if (handler != null) {
-          handler(details);
-        }
-        scheduleMicrotask(() {
-          final h = FlutterError.onError;
-          if (h != null) h(details);
-        });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final h = FlutterError.onError;
-          if (h != null) {
-            h(details);
-          }
-        });
       }
       
       if (!isTest && !isConfig && state.hasAttemptsLeft && !_disposed) {

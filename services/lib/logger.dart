@@ -67,7 +67,7 @@ final RegExp _longHexPattern = RegExp(r'\b[0-9a-fA-F]{20,}\b');
 String _sanitizeForLog(String input) {
   var out = input;
   // Sanitize control characters to prevent log injection
-  out = out.replaceAll(RegExp(r'[\r\n\t\x00-\x1F\x7F]'), ' ');
+  out = out.replaceAll(RegExp(r'[\r\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]'), ' ');
   out = out.replaceAll(_emailPattern, '[redacted-email]');
   out = out.replaceAll(_uuidPattern, '[redacted-uuid]');
   out = out.replaceAllMapped(_bearerPattern, (m) => 'Bearer [redacted-token]');

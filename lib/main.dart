@@ -97,8 +97,10 @@ class MyAppWrapper extends ConsumerWidget {
       if (initState.configError || SupabaseService.lastInitializationError != null) {
         try {
           ref.read(initDiagnosticsProvider.notifier).recordError();
-        } catch (_) {
-          // ignore in production
+        } catch (e) {
+          if (!kReleaseMode) {
+            debugPrint('[main] Failed to record init diagnostics: $e');
+          }
         }
       }
     }

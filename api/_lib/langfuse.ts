@@ -1,6 +1,6 @@
 import { Langfuse } from "langfuse";
 
-type SafeLangfuse = { instance?: Langfuse; safe: boolean };
+export type SafeLangfuse = { instance?: Langfuse; safe: boolean };
 
 export function createLangfuse(): SafeLangfuse {
   const pk = process.env.LANGFUSE_PUBLIC_KEY;

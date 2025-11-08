@@ -5,11 +5,12 @@ import 'package:luvi_services/init_mode.dart';
 
 void main() {
   setUp(() {
+    final originalResolve = InitModeBridge.resolve;
     // Ensure Supabase is considered not initialized.
     SupabaseService.resetForTest();
     // Ensure cleanup even if a test fails.
     addTearDown(() {
-      InitModeBridge.resolve = () => InitMode.prod;
+      InitModeBridge.resolve = originalResolve;
     });
   });
 
