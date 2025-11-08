@@ -35,6 +35,7 @@ export function createLangfuse(): SafeLangfuse {
     });
 
     // Enable debug output if available (optional feature)
+    // Note: debug() may not be in official types, hence the type cast
     if ('debug' in lf && typeof (lf as any).debug === 'function') {
       try {
         (lf as any).debug(true);
