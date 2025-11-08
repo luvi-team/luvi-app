@@ -110,7 +110,7 @@ void _reportHandledError({
   if (kDebugMode) {
     try {
       final sanitized = _sanitizeError(error);
-      final suffix = sanitized == null ? '' : ': $sanitized';
+      final suffix = sanitized != null ? ': $sanitized' : ': ${error.toString()}';
       debugPrint(
         '[$tag] ${error.runtimeType}$suffix\n${_shortStackTrace(stackTrace)}',
       );

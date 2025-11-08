@@ -109,7 +109,7 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
     String name, {
     Map<String, Object?> properties = const <String, Object?>{},
   }) {
-    if (name.isEmpty) {
+    if (name.trim().isEmpty) {
       throw ArgumentError.value(name, 'name', 'Event name must not be empty');
     }
 

@@ -272,7 +272,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleOAuthSignIn(supa.OAuthProvider provider) async {
     if (_oauthLoading) return;
-    setState(() { _oauthLoading = true; });
+    setState(() => _oauthLoading = true);
     try {
       final redirect = AppLinks.oauthRedirectUri;
       await supa.Supabase.instance.client.auth.signInWithOAuth(
@@ -295,7 +295,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
     } finally {
       if (mounted) {
-        setState(() { _oauthLoading = false; });
+        setState(() => _oauthLoading = false);
       }
     }
   }

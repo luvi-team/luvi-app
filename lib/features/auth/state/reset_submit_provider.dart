@@ -17,7 +17,9 @@ class ResetSubmitNotifier extends AsyncNotifier<void> {
   }
 
   @override
-  FutureOr<void> build() {}
+  FutureOr<void> build() {
+    // No initialization needed; state is managed through submit().
+  }
 
   Future<void> submit(
     String email, {

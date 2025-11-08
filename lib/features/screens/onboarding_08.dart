@@ -86,7 +86,8 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.onboardingSuccessGenericError,
+              AppLocalizations.of(context)?.onboardingSuccessGenericError ?? 
+              'An error occurred. Please try again.',
             ),
           ),
         );

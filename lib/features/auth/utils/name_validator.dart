@@ -49,7 +49,7 @@ bool nonEmptyNameValidator(
   if (value == null) return false;
   final trimmed = value.trim();
   if (trimmed.isEmpty) return false;
-  final normalized = _normalizeToNfc(trimmed);
+  final normalized = _coalesceGraphemeClusters(trimmed);
   // Compare by user-perceived characters (grapheme clusters), not UTF-16 code units.
   final graphemeLength = normalized.characters.length;
   if (graphemeLength < minLength || graphemeLength > maxLength) {
@@ -66,8 +66,8 @@ bool nonEmptyNameValidator(
   return true;
 }
 
-String _normalizeToNfc(String input) {
-  // Use Characters to coalesce grapheme clusters and produce a stable sequence.
-  // Note: This approximates NFC for user-facing validation in this context.
+String _coalesceGraphemeClusters(String input) {
+  // Coalesce grapheme clusters to a stable sequence without performing Unicode NFC.
+  // This avoids counting surrogate pairs or combining sequences as multiple code units.
   return input.characters.toList().join();
 }

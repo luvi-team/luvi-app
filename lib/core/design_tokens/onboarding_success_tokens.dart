@@ -48,7 +48,7 @@ class OnboardingSuccessTokens {
     final tsf = textScaleFactor.clamp(0.5, 2.0);
     if (tsf != 1.0) {
       final factor = 1.0 - 0.10 * (tsf - 1.0); // 10% damp per +1.0 tsf
-      // Guard against negative/zero factors for extreme values
+      // Limit damping effect to ±20% to preserve visual balance
       final damp = factor.clamp(0.8, 1.2);
       scale = (scale * damp).clamp(_minScaleValue, _maxScaleValue);
       baselineOffset =

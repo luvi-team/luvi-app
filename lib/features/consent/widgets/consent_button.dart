@@ -71,7 +71,7 @@ class _ConsentButtonState extends ConsumerState<ConsentButton> {
         }
         if (kPermissionErrorCodes.contains(code) ||
             kPermissionErrorCodePatterns.any((p) => p.hasMatch(code))) {
-          return 'platform_error';
+          return 'permission_error';
         }
       }
       // Unknown platform exception code
