@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'privacy/sanitize.dart';
+
 /// Logging facade for the services package (data/domain layer).
 ///
 /// SECURITY NOTICE — DO NOT LOG PII
@@ -11,27 +13,27 @@ const String piiWarning = 'DO NOT LOG PII (emails, phones, tokens, sessions, add
 
 class Logger {
   const Logger();
-  void d(String message, {String? tag}) => _print(_format('D', _sanitizeForLog(message), tag: tag));
-  void i(String message, {String? tag}) => _print(_format('I', _sanitizeForLog(message), tag: tag));
+  void d(String message, {String? tag}) => _print(_format('D', sanitizeForLog(message), tag: tag));
+  void i(String message, {String? tag}) => _print(_format('I', sanitizeForLog(message), tag: tag));
   void w(String? message, {String? tag, Object? error, StackTrace? stack}) {
-    final sanitized = message != null ? _sanitizeForLog(message) : '';
+    final sanitized = message != null ? sanitizeForLog(message) : '';
     _printWithError('W', sanitized, tag: tag, error: error, stack: stack);
   }
 
   void e(String? message, {String? tag, Object? error, StackTrace? stack}) {
-    final sanitized = message != null ? _sanitizeForLog(message) : '';
+    final sanitized = message != null ? sanitizeForLog(message) : '';
     _printWithError('E', sanitized, tag: tag, error: error, stack: stack);
   }
 
   void _printWithError(String level, String message, {String? tag, Object? error, StackTrace? stack}) {
     final b = StringBuffer(_format(level, message, tag: tag));
     if (error != null) {
-      final errStr = _sanitizeForLog('$error');
+      final errStr = sanitizeForLog('$error');
       b.write('\n');
       b.write(errStr);
     }
     if (stack != null) {
-      final stStr = _sanitizeForLog(stack.toString());
+      final stStr = sanitizeForLog(stack.toString());
       b.write('\n');
       b.write(stStr);
     }
@@ -51,31 +53,3 @@ class Logger {
 }
 
 const log = Logger();
-
-// --- Lightweight sanitizer (services-local) ---
-
-final RegExp _emailPattern = RegExp(
-  r'([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})',
-  caseSensitive: false,
-);
-final RegExp _uuidPattern = RegExp(
-  r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b',
-);
-final RegExp _bearerPattern = RegExp(r'\b[Bb]earer\s+([A-Za-z0-9\-._~+/=]+)');
-final RegExp _longHexPattern = RegExp(r'\b[0-9a-fA-F]{20,}\b');
-
-String _sanitizeForLog(String input) {
-  var out = input;
-  // Sanitize control characters to prevent log injection
-  out = out.replaceAll(RegExp(r'[\r\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]'), ' ');
-  out = out.replaceAll(_emailPattern, '[redacted-email]');
-  out = out.replaceAll(_uuidPattern, '[redacted-uuid]');
-  out = out.replaceAllMapped(_bearerPattern, (m) => 'Bearer [redacted-token]');
-  out = out.replaceAll(_longHexPattern, '[redacted-hex]');
-  // Guard against excessively long lines.
-  const max = 4000; // conservative cap for logs
-  if (out.length > max) {
-    out = '${out.substring(0, max)}…';
-  }
-  return out;
-}
