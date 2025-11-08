@@ -1,6 +1,32 @@
 export const config = { runtime: "edge", regions: ["fra1"] };
 
 import { createLangfuse } from "../_lib/langfuse.js";
+import type { Langfuse } from "langfuse";
+
+// Extended Langfuse types for methods that may not be in official typings
+// Using subset instead of extends to avoid type conflicts with official API
+type LangfuseExtended = Langfuse & {
+  flushAsync?: () => Promise<void>;
+  shutdownAsync?: () => Promise<void>;
+};
+
+interface LangfuseTrace {
+  id?: string;
+  traceId?: string;
+  end?: () => void | Promise<void>;
+  getTraceUrl?: () => string;
+  generation: (options: {
+    name: string;
+    model: string;
+    input: string;
+    output: string;
+    usage: { promptTokens: number; completionTokens: number };
+  }) => LangfuseGeneration;
+}
+
+interface LangfuseGeneration {
+  end: () => void | Promise<void>;
+}
 
 export default async function handler(req: Request): Promise<Response> {
   void req;
@@ -20,12 +46,13 @@ export default async function handler(req: Request): Promise<Response> {
 
       await Promise.race([
         (async () => {
+          const extendedInstance = instance as LangfuseExtended;
           const trace = instance.trace({
             name: "trace-test",
             userId: "dev-check",
             input: { source: "manual-test" },
             metadata: { route: "/api/ai/trace-test", env: process.env.VERCEL_ENV ?? "unknown" },
-          });
+          }) as unknown as LangfuseTrace;
 
           const gen = trace.generation({
             name: "sample-generation",
@@ -37,30 +64,37 @@ export default async function handler(req: Request): Promise<Response> {
 
           await gen.end();
 
-          // Trace optional beenden (nicht alle Typen exportieren .end)
-          if ((trace as any)?.end) {
-            await (trace as any).end();
+          // End optional trace (not all types export .end)
+          if (trace.end) {
+            await trace.end();
           }
 
-          // Ausstehende Events senden
-          await (instance as any)?.flushAsync?.();
+          // Send pending events
+          if (extendedInstance.flushAsync) {
+            await extendedInstance.flushAsync();
+          }
 
-          // Projektgebundenen UI‑Pfad ermitteln (falls verfügbar)
+          // Resolve project-scoped UI path (if available)
           try {
-            const traceId: string | undefined = (trace as any)?.id ?? (trace as any)?.traceId;
-            if (traceId && (instance as any)?.api?.traceGet) {
-              const t = await (instance as any).api.traceGet(traceId);
+            const traceId = trace.id ?? trace.traceId;
+            const apiAny = extendedInstance as any; // API types vary by version
+            if (traceId && apiAny.api?.traceGet) {
+              const t = await apiAny.api.traceGet(traceId);
               const host = process.env.LANGFUSE_HOST ?? "https://cloud.langfuse.com";
               if (t?.htmlPath) uiUrl = host + t.htmlPath;
             }
           } catch (_) {
-            // uiUrl ist optional
+            // uiUrl is optional
           }
 
-          // Client ggf. schließen
-          await (instance as any)?.shutdownAsync?.();
+          // Close client if present
+          if (extendedInstance.shutdownAsync) {
+            await extendedInstance.shutdownAsync();
+          }
 
-          traceUrl = (trace as any)?.getTraceUrl?.();
+          if (trace.getTraceUrl) {
+            traceUrl = trace.getTraceUrl();
+          }
           posted = true;
         })(),
         timeoutPromise,
