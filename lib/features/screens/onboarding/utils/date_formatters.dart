@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Collection of lightweight date formatter helpers used across onboarding.
 @immutable
@@ -8,21 +9,7 @@ class DateFormatters {
 
   /// Formats a `date` using the provided `localeName` (or falls back to Intl's default locale).
   static String localizedDayMonthYear(DateTime date, {String? localeName}) {
-    final trimmed = localeName?.trim();
-
-    // Pragmatic BCP 47 language tag validation (RFC 5646-inspired, not exhaustive).
-    // Accepts common forms like:
-    // - 'de', 'en'
-    // - 'en-US', 'pt-BR'
-    // - 'zh-Hans', 'zh-Hant-TW'
-    // - with variants/extensions/private-use (e.g., 'sl-rozaj-biske', 'en-US-u-ca-buddhist', 'x-private')
-    // Note: Full BCP 47 ABNF (incl. grandfathered tags) is intentionally not implemented for MVP.
-    // Expose the same pattern via [kBcp47LocalePattern] for unit tests.
-    final localePattern = kBcp47LocalePattern;
-    final effectiveLocale =
-        (trimmed == null || trimmed.isEmpty || !localePattern.hasMatch(trimmed))
-            ? null
-            : trimmed;
+    final effectiveLocale = resolveSupportedLocale2(localeName);
 
     try {
       final formatter = DateFormat.yMMMMd(effectiveLocale);
@@ -43,26 +30,50 @@ class DateFormatters {
   }
 }
 
-/// Pragmatic BCP 47-like language tag validator used across the app.
+/// Resolve an incoming locale tag to a supported locale name or null.
 ///
-/// Note: This is not a full RFC implementation, but aligns with common cases
-/// and keeps extlang repetition at {0,2} to match RFC 5646 (extlang = 3ALPHA *2("-" 3ALPHA)).
-final RegExp kBcp47LocalePattern = RegExp(
-  r'^(?:'
-  r'x(?:-[A-Za-z0-9]{1,8})+' // private-use only
-  r'|'
-  r'(?:[A-Za-z]{2,8}(?:-[A-Za-z]{3}){0,2})' // language + optional extlang (max 2)
-  r'(?:-[A-Za-z]{4})?' // optional script
-  r'(?:-(?:[A-Za-z]{2}|\d{3}))?' // optional region
-  r'(?:-(?:\d[A-Za-z0-9]{3}|[A-Za-z0-9]{5,8}))*' // variants
-  r'(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z0-9]{2,8})+)*' // extensions
-  r'(?:-x(?:-[A-Za-z0-9]{1,8})+)?' // optional private-use tail
-  r')$'
-);
+/// - Trims input and canonicalizes via Intl.canonicalizedLocale.
+/// - Returns a locale name that matches one of `AppLocalizations.supportedLocales`
+///   by base language (e.g., `en-US`, `en_US`, `en-Latn` all map to `en`).
+/// - Returns null if input is empty, structurally unusable for our allowlist,
+///   or the language is not supported; DateFormat will then fall back to default locale.
+@visibleForTesting
+String? resolveSupportedLocale(String? tag) {
+  // Deprecated: keep symbol for backward compatibility; delegate to corrected resolver.
+  return resolveSupportedLocale2(tag);
+}
 
-/// Convenience helper for tests/callers to validate a tag.
-bool isLikelyBcp47LocaleTag(String? tag) {
+/// Corrected resolver (MVP) that replaces the old regex-based approach.
+/// Prefer this over `resolveSupportedLocale`.
+@visibleForTesting
+String? resolveSupportedLocale2(String? tag) {
   final trimmed = tag?.trim();
-  if (trimmed == null || trimmed.isEmpty) return false;
-  return kBcp47LocalePattern.hasMatch(trimmed);
+  if (trimmed == null || trimmed.isEmpty) return null;
+  if (trimmed.startsWith('-') ||
+      trimmed.startsWith('_') ||
+      trimmed.endsWith('-') ||
+      trimmed.endsWith('_') ||
+      trimmed.contains('--') ||
+      trimmed.contains('__')) {
+    return null;
+  }
+
+  final canonical = Intl.canonicalizedLocale(trimmed);
+  if (canonical.isEmpty) return null;
+
+  final sepIndex = canonical.indexOf(RegExp('[-_]'));
+  final baseLang = (sepIndex == -1)
+      ? canonical.toLowerCase()
+      : canonical.substring(0, sepIndex).toLowerCase();
+  if (!RegExp(r'^[A-Za-z]{2,8}$').hasMatch(baseLang)) {
+    return null;
+  }
+
+  final supported = AppLocalizations.supportedLocales
+      .map((l) => l.languageCode.toLowerCase())
+      .toSet();
+  if (supported.contains(baseLang)) {
+    return baseLang;
+  }
+  return null;
 }
