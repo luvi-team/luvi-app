@@ -697,11 +697,10 @@
   },
   "authErrWaitBeforeRetry": "Please wait {seconds, plural, one {# second} other {# seconds}} before retrying.",
   "@authErrWaitBeforeRetry": {
-    "description": "Snackbar/content message advising the user to wait a number of seconds before trying again.",
+    "description": "Snackbar/content message advising the user to wait a number of seconds before trying again. Uses ICU plural formatting at runtime: '{seconds, plural, one {# second} other {# seconds}}'.",
     "placeholders": {
-      "seconds": { 
-        "type": "int",
-        "format": "compact"
+      "seconds": {
+        "type": "int"
       }
     }
   },

@@ -833,11 +833,10 @@
   },
   "authErrWaitBeforeRetry": "Bitte warte {seconds, plural, one {# Sekunde} other {# Sekunden}}, bevor du es erneut versuchst.",
   "@authErrWaitBeforeRetry": {
-    "description": "Hinweistext, der die verbleibende Wartezeit bis zum nächsten Versuch kommuniziert.",
+    "description": "Hinweistext, der die verbleibende Wartezeit bis zum nächsten Versuch kommuniziert. Nutzt ICU-Plural-Formatierung zur Laufzeit: '{seconds, plural, one {# Sekunde} other {# Sekunden}}'.",
     "placeholders": {
       "seconds": {
-        "type": "int",
-        "format": "compact"
+        "type": "int"
       }
     }
   },

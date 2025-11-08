@@ -788,7 +788,7 @@ abstract class AppLocalizations {
   /// Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed.
   ///
   /// In en, this message translates to:
-  /// **'In '**
+  /// **'In'**
   String get welcome01TitlePrefix;
 
   /// Accented word for the consent welcome screen 1 title. Will be styled with the accent color.
@@ -1091,10 +1091,10 @@ abstract class AppLocalizations {
   /// **'We couldn\'t update your password.'**
   String get authPasswordUpdateError;
 
-  /// Snackbar/content message advising the user to wait a number of seconds before trying again.
+  /// Snackbar/content message advising the user to wait a number of seconds before trying again. Uses ICU plural formatting at runtime: '{seconds, plural, one {# second} other {# seconds}}'.
   ///
   /// In en, this message translates to:
-  /// **'Please wait {seconds} seconds before retrying.'**
+  /// **'Please wait {seconds, plural, one {# second} other {# seconds}} before retrying.'**
   String authErrWaitBeforeRetry(int seconds);
 
   /// Hint text for the email input field.
