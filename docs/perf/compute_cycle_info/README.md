@@ -8,8 +8,8 @@ Include at least one canonical latest artifact per runner/device profile. Use th
 
 Required JSON fields:
 - timestamp: ISO 8601
-- device: { model, os, cpu, memory }
-- build: { flutter, dart, mode }
+- device: { os, osVersion, model, cpu, arch }
+- build: { dart, mode }
 - warmup: number
 - samples: number
 - p50: number (ms)
@@ -20,8 +20,8 @@ Required JSON fields:
 Example:
 {
   "timestamp": "2025-03-30T21:15:00Z",
-  "device": { "model": "Apple M1", "os": "macOS 14.5", "cpu": "8-core", "memory": "16GB" },
-  "build": { "flutter": "3.35.5", "dart": "3.9.4", "mode": "release" },
+  "device": { "os": "macos", "osVersion": "Version 26.0.1 (Build 25A362)", "model": "Apple M1", "cpu": "8-core", "arch": "macos_arm64" },
+  "build": { "dart": "3.9.4", "mode": "release" },
   "warmup": 100,
   "samples": 10000,
   "p50": 8.7,
