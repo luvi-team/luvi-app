@@ -162,19 +162,19 @@ class _LegalViewerState extends State<LegalViewer> {
                   margin: const EdgeInsets.only(top: 8, left: 16, right: 16),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.amber.shade100,
+                    color: theme.colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.amber.shade800),
+                      Icon(Icons.info_outline, color: theme.colorScheme.onTertiaryContainer),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           l10n?.legalViewerFallbackBanner ??
                               'Remote unavailable — showing offline copy.',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.amber.shade900,
+                            color: theme.colorScheme.onTertiaryContainer,
                           ),
                         ),
                       ),

@@ -15,8 +15,7 @@ class Consent01Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paddingTop = MediaQuery.of(context).padding.top;
-    final l10n = AppLocalizations.of(context) ??
-        lookupAppLocalizations(AppLocalizations.supportedLocales.first);
+    final l10n = AppLocalizations.of(context);
 
     // Helper to convert Figma absolute Y (relative to frame 0..926) to Flutter
     // using the device safe area top as reference. Figma safe area top is 47.
@@ -76,7 +75,7 @@ class Consent01Screen extends StatelessWidget {
             height: Sizes.buttonHeight,
             child: ElevatedButton(
               onPressed: () => context.push(Consent02Screen.routeName),
-              child: Text(l10n.commonContinue),
+              child: Text(l10n?.commonContinue ?? 'Weiter'),
             ),
           ),
         ],

@@ -35,9 +35,9 @@ class ConsentWelcome03Screen extends StatelessWidget {
         text: TextSpan(
           style: titleStyle,
           children: [
-            TextSpan(text: l10n.welcome03TitleLine1),
+            TextSpan(text: l10n.welcome03TitleLine1.trim()),
             TextSpan(
-              text: l10n.welcome03TitleLine2,
+              text: l10n.welcome03TitleLine2.trim(),
               style: titleStyle?.copyWith(color: c.primary),
             ),
           ],
