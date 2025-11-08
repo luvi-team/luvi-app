@@ -81,7 +81,6 @@ class SocialAuthRow extends StatelessWidget {
   }
 }
 
-// Deprecated custom social button removed in favor of package-provided widgets.
 
 class _SocialDivider extends StatelessWidget {
   const _SocialDivider({

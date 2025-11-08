@@ -63,7 +63,7 @@ bool _containsSuspiciousPII(Map<String, Object?> properties) {
 
   // Whole-word pattern (start/end or separated by underscore/hyphen/space).
   final suspiciousWord = RegExp(
-    r'(^|[_\-\s])(email|e-mail|email_address|email_verified|phone|tel|telephone|mobile|address|street|city|zip|zipcode|postal|postcode|ssn|social_security(_number)?|dob|date_of_birth|birthdate|first_name|last_name|full_name|name|credit_card|card_number|cc_number|cvv|expiry)([_\-\s]|$)',
+    r'(^|[_\s-])(email|e-mail|email_address|email_verified|phone|tel|telephone|mobile|address|street|city|zip|zipcode|postal|postcode|ssn|social_security(_number)?|dob|date_of_birth|birthdate|first_name|last_name|full_name|name|credit_card|card_number|cc_number|cvv|expiry)([_\s-]|$)',
   );
 
   for (final rawKey in properties.keys) {
@@ -115,7 +115,7 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
 
     // Runtime guardrails (active in all build modes).
     if (!enabled) {
-      debugPrint('[analytics] DROPPED (disabled via config): "$name"');
+      // Silently drop when disabled; opt-out is intentional.
       return;
     }
 

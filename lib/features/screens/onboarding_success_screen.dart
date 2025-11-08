@@ -236,7 +236,17 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                   );
                 }
               } finally {
-                busyNotifier.setBusy(false);
+                try {
+                  busyNotifier.setBusy(false);
+                } on StateError catch (_) {
+                  // Provider may have been disposed while awaiting async work; ignore.
+                } catch (e) {
+                  // Suppress only disposal-related failures; log unexpected ones in debug.
+                  assert(() {
+                    debugPrint('Unexpected error clearing busy state: $e');
+                    return true;
+                  }());
+                }
               }
             },
       child: Text(l10n.commonStartNow),

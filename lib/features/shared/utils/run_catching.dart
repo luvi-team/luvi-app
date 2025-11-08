@@ -90,8 +90,8 @@ Future<T?> tryOrNullAsync<T>(
   }
 }
 
-String _shortStackTrace(StackTrace stackTrace) =>
-    stackTrace.toString().split('\n').take(3).join('\n');
+String _shortStackTrace(StackTrace stackTrace, {int maxLines = 5}) =>
+    stackTrace.toString().split('\n').take(maxLines).join('\n');
 
 void _reportHandledError({
   required Object error,

@@ -75,7 +75,7 @@ class _LegalViewerState extends State<LegalViewer> {
       try {
         final remote = await fetchRemoteMarkdown(
           remoteUri,
-          timeout: const Duration(seconds: 5),
+          timeout: const Duration(seconds: 10),
         );
         if (remote != null) {
           return _LegalDocData(content: remote, usedFallback: false);
