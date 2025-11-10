@@ -1,0 +1,58 @@
+name: Supabase DB Dry-Run
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  db-dry-run:
+    name: DB Push Dry-Run
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Detect changed migrations
+        id: changes
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
+        with:
+          filters: |
+            migrations:
+              - 'supabase/migrations/**'
+
+      - name: Setup Supabase CLI
+        if: ${{ steps.changes.outputs.migrations == 'true' && github.event_name == 'pull_request' }}
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Run dry-run (remote via DB URL)
+        if: ${{ steps.changes.outputs.migrations == 'true' && env.SUPABASE_DB_URL != '' }}
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          echo "Running supabase db push --dry-run against provided SUPABASE_DB_URL"
+          supabase db push --dry-run --db-url "$SUPABASE_DB_URL"
+
+      - name: Run dry-run (remote via project ref)
+        if: ${{ steps.changes.outputs.migrations == 'true' && env.SUPABASE_DB_URL == '' && env.SUPABASE_ACCESS_TOKEN != '' && env.SUPABASE_PROJECT_REF != '' }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -euo pipefail
+          echo "Linking to Supabase project $SUPABASE_PROJECT_REF"
+          # Auth via access token is picked up by the CLI from env
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" || true
+          supabase db push --dry-run
+
+      - name: No credentials available (skip)
+        if: ${{ steps.changes.outputs.migrations != 'true' || (env.SUPABASE_DB_URL == '' && (env.SUPABASE_ACCESS_TOKEN == '' || env.SUPABASE_PROJECT_REF == '')) }}
+        run: |
+          echo "No migration changes or Supabase credentials missing; skipping DB dry-run."
+          echo "Provide secrets SUPABASE_DB_URL or SUPABASE_ACCESS_TOKEN+SUPABASE_PROJECT_REF to enable this gate."
+

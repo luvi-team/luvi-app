@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-added-large-files
+  - repo: local
+    hooks:
+      - id: secrets-scan
+        name: secrets-scan (trufflehog report)
+        entry: scripts/secrets_scan.sh
+        language: system
+        pass_filenames: false
+
