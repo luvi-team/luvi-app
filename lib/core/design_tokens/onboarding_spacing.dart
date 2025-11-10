@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
 
+/// Base gap (px) between the success trophy and the title, shared with tokens.
+const double _kOnboardingSuccessTrophyToTitleGap = 24.0;
+
 /// Discrete spacing tokens for onboarding screens with gentle scaling.
 class OnboardingSpacing {
   const OnboardingSpacing._({
@@ -41,6 +44,13 @@ class OnboardingSpacing {
     required this.lastOptionToFootnote07,
     required this.footnoteToCta07,
     required this.ctaToHome07,
+    // ONB_08 specific spacing (analog zu Screen 7: 90px Rhythmus)
+    required this.headerToQuestion08,
+    required this.questionToFirstOption08,
+    required this.optionGap08,
+    required this.lastOptionToFootnote08,
+    required this.footnoteToCta08,
+    required this.ctaToHome08,
     // New tokens for header migration (question becomes header)
     required this.headerToDate,
     required this.headerToFirstCard,
@@ -48,6 +58,9 @@ class OnboardingSpacing {
     required this.headerToFirstOption05,
     required this.headerToFirstOption06,
     required this.headerToFirstOption07,
+    // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
+    required this.trophyToTitle,
+    required this.titleToButton,
   });
 
   final double horizontalPadding;
@@ -100,6 +113,14 @@ class OnboardingSpacing {
   final double footnoteToCta07;
   final double ctaToHome07;
 
+  // ONB_08 specific spacing (analog zu Screen 7: 90px Rhythmus)
+  final double headerToQuestion08;
+  final double questionToFirstOption08;
+  final double optionGap08;
+  final double lastOptionToFootnote08;
+  final double footnoteToCta08;
+  final double ctaToHome08;
+
   // New tokens for header migration (question becomes header)
   final double headerToDate;
   final double headerToFirstCard;
@@ -108,12 +129,17 @@ class OnboardingSpacing {
   final double headerToFirstOption06;
   final double headerToFirstOption07;
 
+  // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
+  final double trophyToTitle;
+  final double titleToButton;
+
   static const double _designHeight = 926.0;
   static OnboardingSpacing of(BuildContext context) {
     final media = MediaQuery.of(context);
     final heightRatio = media.size.height / _designHeight;
-    final textScaler = MediaQuery.textScalerOf(context)
-        .clamp(minScaleFactor: 1.0, maxScaleFactor: 2.0);
+    final textScaler = MediaQuery.textScalerOf(
+      context,
+    ).clamp(minScaleFactor: 1.0, maxScaleFactor: 2.0);
     final textScaleFactor = textScaler.scale(1.0);
 
     final heightScale = _interpolateHeight(heightRatio);
@@ -165,6 +191,13 @@ class OnboardingSpacing {
       lastOptionToFootnote07: _lastOptionToFootnote07 * effectiveHeightScale,
       footnoteToCta07: _footnoteToCta07 * effectiveHeightScale,
       ctaToHome07: _ctaToHome07 * effectiveHeightScale,
+      // ONB_08 specific spacing
+      headerToQuestion08: _headerToQuestion08 * effectiveHeightScale,
+      questionToFirstOption08: _questionToFirstOption08 * effectiveHeightScale,
+      optionGap08: _optionGap08,
+      lastOptionToFootnote08: _lastOptionToFootnote08 * effectiveHeightScale,
+      footnoteToCta08: _footnoteToCta08 * effectiveHeightScale,
+      ctaToHome08: _ctaToHome08 * effectiveHeightScale,
       // New tokens for header migration
       headerToDate: _headerToDate * effectiveHeightScale,
       headerToFirstCard: _headerToFirstCard * effectiveHeightScale,
@@ -172,6 +205,9 @@ class OnboardingSpacing {
       headerToFirstOption05: _headerToFirstOption05 * effectiveHeightScale,
       headerToFirstOption06: _headerToFirstOption06 * effectiveHeightScale,
       headerToFirstOption07: _headerToFirstOption07 * effectiveHeightScale,
+      // Success Screen specific spacing
+      trophyToTitle: _trophyToTitle * effectiveHeightScale,
+      titleToButton: _titleToButton * effectiveHeightScale,
     );
   }
 
@@ -196,7 +232,9 @@ class OnboardingSpacing {
         return scaleStart + (scaleEnd - scaleStart) * t;
       }
     }
-    throw StateError('Interpolation logic error: ratio $ratio should have been handled');
+    throw StateError(
+      'Interpolation logic error: ratio $ratio should have been handled',
+    );
   }
 
   static const double _headerToInstruction = 75.0;
@@ -218,10 +256,14 @@ class OnboardingSpacing {
 
   // ONB_04 vertical rhythm (tuned for visual balance with longer content)
   // Base rhythm: 59px; other values are intentional deviations for optical balance per Figma
-  static const double _rhythm04 = 59.0; // header→date, underline→callout baseline
-  static const double _dateToUnderline04 = 45.0; // tighter (-14px from rhythm) for date emphasis
-  static const double _calloutToCta04 = 48.0; // balanced (-11px from rhythm) before action
-  static const double _ctaToPicker04 = 84.0; // spacious (+25px from rhythm) for picker clearance
+  static const double _rhythm04 =
+      59.0; // header→date, underline→callout baseline
+  static const double _dateToUnderline04 =
+      45.0; // tighter (-14px from rhythm) for date emphasis
+  static const double _calloutToCta04 =
+      48.0; // balanced (-11px from rhythm) before action
+  static const double _ctaToPicker04 =
+      84.0; // spacious (+25px from rhythm) for picker clearance
 
   // ONB_05 specific spacing (from Figma audit ONB_05_measures.json)
   static const double _headerToQuestion05 = 42.0;
@@ -239,6 +281,9 @@ class OnboardingSpacing {
   static const double _calloutToCta06 = 48.0;
   static const double _ctaToHome06 = 48.0;
 
+  // Shared 90 px rhythm used across late-onboarding screens.
+  static const double _onbSharedRhythm90 = 90.0;
+
   // ONB_07 specific spacing (from Figma audit ONB_07_measures.json)
   // Header baseline (79) → Question (202) = 90 px (header-to-question rhythm)
   // Question → First Option (316 - 202 - 24) = 90 px
@@ -253,6 +298,15 @@ class OnboardingSpacing {
   static const double _footnoteToCta07 = 90.0;
   static const double _ctaToHome07 = 90.0;
 
+  // ONB_08 specific spacing (90px Rhythmus analog zu Screen 7)
+  // Konsistenter 90px-Rhythmus für visuelles Gleichgewicht
+  static const double _headerToQuestion08 = _onbSharedRhythm90;
+  static const double _questionToFirstOption08 = _onbSharedRhythm90;
+  static const double _optionGap08 = 24.0; // konsistent mit anderen Screens
+  static const double _lastOptionToFootnote08 = _onbSharedRhythm90;
+  static const double _footnoteToCta08 = _onbSharedRhythm90;
+  static const double _ctaToHome08 = _onbSharedRhythm90;
+
   // New tokens for header migration (question becomes header)
   // Conservative 60% of sum (headerToInstruction + instructionToDate/Content)
   static const double _headerToDate = 76.0; // ONB_02: (75+52)*0.6
@@ -261,4 +315,10 @@ class OnboardingSpacing {
   static const double _headerToFirstOption05 = 50.0; // ONB_05: (42+42)*0.6
   static const double _headerToFirstOption06 = 58.0; // ONB_06: (48+48)*0.6
   static const double _headerToFirstOption07 = 108.0; // ONB_07: (90+90)*0.6
+
+  // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
+  // Custom values (not aligned with existing rhythm tokens)
+  static const double _trophyToTitle =
+      _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px)
+  static const double _titleToButton = 66.0; // Title end → Button start
 }

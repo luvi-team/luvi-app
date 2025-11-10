@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:luvi_app/core/assets.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../core/design_tokens/sizes.dart';
 import '../../../core/design_tokens/spacing.dart';
 import 'dots_indicator.dart';
 
 class WelcomeShell extends StatelessWidget {
-  const WelcomeShell({
+  WelcomeShell({
     super.key,
     required this.hero,
     required this.heroAspect, // z.B. 438/619
@@ -15,9 +16,14 @@ class WelcomeShell extends StatelessWidget {
     this.subtitle,
     this.onNext,
     this.activeIndex,
-    this.waveAsset = Assets.consentWave,
+    String? waveAsset,
+    this.headerSpacing = 0,
+    this.primaryButtonLabel,
+    this.secondaryButtonLabel,
+    this.subtitleMaxWidth = double.infinity,
     this.bottomContent,
-  }) : assert(
+  }) : waveAsset = waveAsset ?? Assets.images.welcomeWave,
+       assert(
          bottomContent != null ||
              (title != null &&
                  subtitle != null &&
@@ -34,11 +40,14 @@ class WelcomeShell extends StatelessWidget {
   final VoidCallback? onNext;
   final int? activeIndex;
   final String waveAsset;
+  final double headerSpacing;
+  final String? primaryButtonLabel;
+  final String? secondaryButtonLabel;
+  final double subtitleMaxWidth;
   final Widget? bottomContent;
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context);
     // Inner Scaffold deliberately does not reuse the widget key to avoid GlobalKey clashes.
     return Scaffold(
       body: SafeArea(
@@ -70,7 +79,13 @@ class WelcomeShell extends StatelessWidget {
                   Spacing.l,
                   Spacing.l,
                 ),
-                child: bottomContent ?? _buildDefaultContent(t),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (headerSpacing > 0) SizedBox(height: headerSpacing),
+                    bottomContent ?? _buildDefaultContent(context),
+                  ],
+                ),
               ),
             ),
           ],
@@ -79,7 +94,16 @@ class WelcomeShell extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultContent(ThemeData theme) {
+  Widget _buildDefaultContent(BuildContext context) {
+    final theme = Theme.of(context);
+    final buttonLabel =
+        primaryButtonLabel ??
+        AppLocalizations.of(context)?.commonContinue ??
+        'Continue';
+    final skipLabel =
+        secondaryButtonLabel ??
+        AppLocalizations.of(context)?.commonSkip ??
+        'Skip';
     final children = <Widget>[];
 
     if (title != null) {
@@ -90,10 +114,16 @@ class WelcomeShell extends StatelessWidget {
     }
     if (subtitle != null) {
       children.add(
-        Text(
-          subtitle!,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium,
+        Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: subtitleMaxWidth),
+            child: Text(
+              subtitle!,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
         ),
       );
     }
@@ -110,7 +140,7 @@ class WelcomeShell extends StatelessWidget {
     }
     if (onNext != null) {
       children.add(
-        ElevatedButton(onPressed: onNext!, child: const Text('Weiter')),
+        ElevatedButton(onPressed: onNext!, child: Text(buttonLabel)),
       );
       children.add(const SizedBox(height: Spacing.m));
     }
@@ -120,7 +150,7 @@ class WelcomeShell extends StatelessWidget {
         onPressed: () {
           /* später: skip */
         },
-        child: const Text('Überspringen'),
+        child: Text(skipLabel),
       ),
     );
 

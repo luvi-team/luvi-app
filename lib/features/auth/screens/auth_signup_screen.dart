@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
@@ -18,6 +18,8 @@ const double _signupTopSpacer = Spacing.l + Spacing.xs;
 
 class AuthSignupScreen extends ConsumerStatefulWidget {
   const AuthSignupScreen({super.key});
+
+  static const String routeName = '/auth/signup';
 
   @override
   ConsumerState<AuthSignupScreen> createState() => _AuthSignupScreenState();
@@ -70,10 +72,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       );
 
       if (!mounted) return;
-      context.goNamed(
-        'verify',
-        queryParameters: const {'variant': 'email'},
-      );
+      context.goNamed('verify', queryParameters: const {'variant': 'email'});
     } on AuthException catch (error, stackTrace) {
       debugPrint('Signup failed (auth): ${error.message}\n$stackTrace');
       if (!mounted) return;
@@ -154,8 +153,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                 _errorMessage!,
                 key: const ValueKey('signup_error_message'),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
             ),
           ],
@@ -229,10 +228,7 @@ class _SignupFields extends StatelessWidget {
           scrollPadding: scrollPadding,
         ),
         const SizedBox(height: _signupInputGap),
-        _PhoneField(
-          controller: phoneController,
-          scrollPadding: scrollPadding,
-        ),
+        _PhoneField(controller: phoneController, scrollPadding: scrollPadding),
         const SizedBox(height: _signupInputGap),
         _EmailPasswordFields(
           emailController: emailController,
@@ -297,9 +293,7 @@ class _SignupCtaSection extends StatelessWidget {
                 ),
                 TextSpan(
                   text: AuthStrings.signupLinkAction,
-                  style: linkBaseStyle?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: linkBaseStyle?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -318,9 +312,9 @@ class _SignupButtonChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isLoading) {
-      return const Text(
+      return Text(
         AuthStrings.signupCta,
-        key: ValueKey('signup_cta_label'),
+        key: const ValueKey('signup_cta_label'),
       );
     }
 
@@ -379,10 +373,7 @@ class _NameFieldsRow extends StatelessWidget {
 }
 
 class _PhoneField extends StatelessWidget {
-  const _PhoneField({
-    required this.controller,
-    required this.scrollPadding,
-  });
+  const _PhoneField({required this.controller, required this.scrollPadding});
 
   final TextEditingController controller;
   final EdgeInsets scrollPadding;

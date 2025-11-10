@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../support/test_config.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
@@ -17,6 +18,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
+  TestConfig.ensureInitialized();
   setUpAll(() {
     // Register fallback values if needed in the future
   });
@@ -62,7 +64,10 @@ void main() {
     await tester.enterText(passwordField, 'wrongpw');
 
     // Tap the CTA button
-    final loginButton = find.widgetWithText(ElevatedButton, AuthStrings.loginCta);
+    final loginButton = find.widgetWithText(
+      ElevatedButton,
+      AuthStrings.loginCta,
+    );
     expect(loginButton, findsOneWidget);
 
     await tester.tap(loginButton);
@@ -131,58 +136,62 @@ void main() {
     expect(enabledBtn.onPressed, isNotNull);
   });
 
-  testWidgets('Global error banner clears on new input while field errors stay', (
-    tester,
-  ) async {
-    final view = tester.view;
-    view.physicalSize = const Size(1080, 2340);
-    view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      view.resetPhysicalSize();
-      view.resetDevicePixelRatio();
-    });
+  testWidgets(
+    'Global error banner clears on new input while field errors stay',
+    (tester) async {
+      final view = tester.view;
+      view.physicalSize = const Size(1080, 2340);
+      view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        view.resetPhysicalSize();
+        view.resetDevicePixelRatio();
+      });
 
-    final mockRepo = _MockAuthRepository();
-    when(
-      () => mockRepo.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      ),
-    ).thenThrow(AuthException('Please confirm your email.'));
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-        child: MaterialApp(
-          theme: AppTheme.buildAppTheme(),
-          home: const LoginScreen(),
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signInWithPassword(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
         ),
-      ),
-    );
+      ).thenThrow(AuthException('Please confirm your email.'));
 
-    final emailField = find.byType(TextField).at(0);
-    final passwordField = find.byType(TextField).at(1);
-    await tester.enterText(emailField, 'user@example.com');
-    await tester.enterText(passwordField, 'correctpw');
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
+          child: MaterialApp(
+            theme: AppTheme.buildAppTheme(),
+            home: const LoginScreen(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        ),
+      );
 
-    final loginButton = find.widgetWithText(ElevatedButton, AuthStrings.loginCta);
-    await tester.tap(loginButton);
-    await tester.pumpAndSettle();
+      final emailField = find.byType(TextField).at(0);
+      final passwordField = find.byType(TextField).at(1);
+      await tester.enterText(emailField, 'user@example.com');
+      await tester.enterText(passwordField, 'correctpw');
 
-    final confirmBanner = find.text(AuthStrings.errConfirmEmail);
-    expect(confirmBanner, findsOneWidget);
+      final loginButton = find.widgetWithText(
+        ElevatedButton,
+        AuthStrings.loginCta,
+      );
+      await tester.tap(loginButton);
+      await tester.pumpAndSettle();
 
-    await tester.enterText(emailField, 'user@example.com1');
-    await tester.pump();
+      final confirmBanner = find.text(AuthStrings.errConfirmEmail);
+      expect(confirmBanner, findsOneWidget);
 
-    expect(confirmBanner, findsNothing);
-    // Field errors remain untouched (stay null)
-    expect(find.text(AuthStrings.errEmailInvalid), findsNothing);
-    expect(find.text(AuthStrings.errPasswordInvalid), findsNothing);
-  });
+      await tester.enterText(emailField, 'user@example.com1');
+      await tester.pump();
+
+      expect(confirmBanner, findsNothing);
+      // Field errors remain untouched (stay null)
+      expect(find.text(AuthStrings.errEmailInvalid), findsNothing);
+      expect(find.text(AuthStrings.errPasswordInvalid), findsNothing);
+    },
+  );
 
   testWidgets('Global error banner clears when tapped', (tester) async {
     final view = tester.view;
@@ -219,7 +228,10 @@ void main() {
     await tester.enterText(emailField, 'user@example.com');
     await tester.enterText(passwordField, 'correctpw');
 
-    final loginButton = find.widgetWithText(ElevatedButton, AuthStrings.loginCta);
+    final loginButton = find.widgetWithText(
+      ElevatedButton,
+      AuthStrings.loginCta,
+    );
     await tester.tap(loginButton);
     await tester.pumpAndSettle();
 

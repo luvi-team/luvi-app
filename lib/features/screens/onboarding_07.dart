@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
-import 'package:luvi_app/features/screens/onboarding_06.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/features/widgets/onboarding/onboarding_header.dart';
+import 'package:luvi_app/features/screens/onboarding_06.dart';
+import 'package:luvi_app/features/screens/onboarding_08.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -30,8 +31,8 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
   }
 
   void _handleContinue() {
-    // Last onboarding step - navigate to heute screen
-    context.go(HeuteScreen.routeName);
+    // Navigate to next onboarding step (08)
+    context.push(Onboarding08Screen.routeName);
   }
 
   @override
@@ -50,7 +51,12 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: spacing.topPadding),
-              _buildHeader(textTheme, colorScheme),
+              OnboardingHeader(
+                title: AppLocalizations.of(context)!.onboarding07Title,
+                step: 7,
+                totalSteps: kOnboardingTotalSteps,
+                onBack: _handleBack,
+              ),
               SizedBox(height: spacing.headerToFirstOption07),
               _buildOptionList(spacing),
               SizedBox(height: spacing.lastOptionToFootnote07),
@@ -65,49 +71,14 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
     );
   }
 
-  Widget _buildHeader(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context)!;
-    final title = l10n.onboarding07Title;
-    const step = 7;
-    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
-    final stepFraction = l10n.onboardingStepFraction(step, 7);
-
-    return Row(
-      children: [
-        BackButtonCircle(
-          onPressed: () async {
-            final navigator = Navigator.of(context);
-            final didPop = await navigator.maybePop();
-            if (!mounted) return;
-            if (!didPop) {
-              context.go(Onboarding06Screen.routeName);
-            }
-          },
-          iconColor: colorScheme.onSurface,
-        ),
-        Expanded(
-          child: Semantics(
-            header: true,
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: textTheme.headlineMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: TypographyTokens.size24,
-                height: TypographyTokens.lineHeightRatio32on24,
-              ),
-            ),
-          ),
-        ),
-        Semantics(
-          label: stepSemantic,
-          child: Text(
-            stepFraction,
-            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
-          ),
-        ),
-      ],
-    );
+  void _handleBack() {
+    final navigator = Navigator.of(context);
+    navigator.maybePop().then((didPop) {
+      if (!mounted) return;
+      if (!didPop) {
+        context.go(Onboarding06Screen.routeName);
+      }
+    });
   }
 
   Widget _buildOptionList(OnboardingSpacing spacing) {
@@ -135,7 +106,11 @@ class _Onboarding07ScreenState extends State<Onboarding07Screen> {
             child: GoalCard(
               key: Key('onb_option_$index'),
               icon: ExcludeSemantics(
-                child: Icon(options[index].icon, size: iconSize, color: iconColor),
+                child: Icon(
+                  options[index].icon,
+                  size: iconSize,
+                  color: iconColor,
+                ),
               ),
               title: options[index].label,
               selected: _selected == index,

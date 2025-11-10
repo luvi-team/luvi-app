@@ -5,6 +5,8 @@
 **Codex CLI:** Nutzt AGENTS.md (nicht diese Datei). `/status` liest AGENTS.md automatisch.
 **Claude Code:** Nutzt diese Datei. Auto-Load aktiv. Folge "Claude Code Arbeitsablauf" unten.
 
+> Hinweis (Interop/Legacy): Einige ältere Links können veraltet sein. Maßgeblich sind die SSOT-Dateien unter `context/agents/*` und die Auto‑Role Map: `context/agents/_auto_role_map.md`.
+
 ---
 
 ## Quickstart / Where to start (SSOT)
@@ -35,20 +37,8 @@ Jede Antwort MUSS enthalten:
    - User-Intent verstehen: Feature? Fix? Refactor? Test?
 
 2. **Auto-Role (Keyword-Mapping)**
-   - **ui-frontend:** Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter
-   - **api-backend:** Edge Function, Service, API, Backend, Consent-Log, Webhook, Rate-Limit, Gateway
-   - **db-admin:** RLS, Migration, SQL, Supabase, Policy, Trigger, Database, Schema, Postgres
-   - **dataviz:** Chart, Dashboard, Visualization, Metric, Graph, Plot, Analytics, PostHog
-   - **qa-dsgvo:** Privacy, DSGVO, Review, Compliance, PII, Consent, GDPR, Data-Protection, Audit
-   - **Anwendung:**
-     - Match Keywords → Rolle wählen
-     - Mehrere Matches → Primär = höchste Priorität (siehe unten), sekundär erwähnen
-     - Kein Match → User fragen
-   - **Priorität bei Multi-Match:**
-     - P1 (höchste): db-admin (Security/RLS), qa-dsgvo (DSGVO/Privacy)
-     - P2 (mittel): api-backend (Backend-Logik)
-     - P3 (niedrig): ui-frontend, dataviz (UI/Visualization)
-     - Bei gleicher Priorität: Stärkstes Keyword-Match (explizit > implizit)
+   - Quelle (SSOT): `context/agents/_auto_role_map.md`
+   - Anwendung: Match Keywords → Rolle wählen; bei Mehrfach‑Match Prioritätsregeln aus SSOT anwenden; kein Match → User fragen.
    - **Ankündigen:** "Arbeite als [rolle] (erkannt: [keywords])"
    - **Checkpoint 1 (Pflicht):** Erste Zeile jeder Antwort:
      ```
@@ -63,7 +53,8 @@ Jede Antwort MUSS enthalten:
 4. **Compliance (SSOT Acceptance v1.1)**
    - `context/agents/_acceptance_v1.1.md` lesen (Core + Role Extensions)
    - DoD checken: `docs/definition-of-done.md`
-   - Required Checks: Flutter CI (analyze-test, privacy-gate), CodeRabbit
+   - Antwortformat (CLI): `docs/engineering/assistant-answer-format.md`
+   - Required Checks: Flutter CI (analyze-test, privacy-gate), CodeRabbit, Vercel Preview Health (200 OK)
 
 5. **MIWF (Make It Work First)**
    - `docs/engineering/field-guides/make-it-work-first.md` befolgen
@@ -88,6 +79,7 @@ Jede Antwort MUSS enthalten:
      - Plan: Mini-Plan (Why/What/How)
      - Run: Kleinste Schritte (erst erklären, dann Code)
      - Prove: `flutter analyze`, `flutter test`, RLS-Check, DSGVO-Note
+     - Hinweis (Traycer-Plan): Wende vor Run den Inline‑Self‑Check aus `docs/engineering/traycer/prompt-mini.md` an (Tests/RLS/Health/Privacy).
    - **Checkpoint 3 (Pflicht):** Nach Prove explizit bestätigen:
      ```
      ✅ Prove abgeschlossen
@@ -143,6 +135,7 @@ Jede Antwort MUSS enthalten:
 @context/ADR/0001-rag-first.md
 @context/ADR/0002-least-privilege-rls.md
 @context/ADR/0003-dev-tactics-miwf.md
+@context/ADR/0004-vercel-edge-gateway.md
 
 ## Rollen (Agenten-Dossiers als Governance)
 @context/agents/01-ui-frontend.md

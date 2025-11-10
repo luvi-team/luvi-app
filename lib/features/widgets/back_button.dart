@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 
 class BackButtonCircle extends StatelessWidget {
   const BackButtonCircle({
@@ -35,8 +35,7 @@ class BackButtonCircle extends StatelessWidget {
         : const RoundedRectangleBorder(borderRadius: BorderRadius.zero);
 
     final double hitSize = size < 44 ? 44 : size;
-    final double visualCandidate =
-        innerSize ?? (isCircular ? size - 4 : size);
+    final double visualCandidate = innerSize ?? (isCircular ? size - 4 : size);
     final double visualSize = visualCandidate < 0 ? 0 : visualCandidate;
     final double renderedSize = visualSize > hitSize ? hitSize : visualSize;
 
@@ -51,6 +50,7 @@ class BackButtonCircle extends StatelessWidget {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
+              splashFactory: NoSplash.splashFactory,
               onTap: onPressed,
               customBorder: shape,
               child: Center(

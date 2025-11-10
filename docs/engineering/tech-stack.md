@@ -2,6 +2,12 @@
 
 Projekt: FemTech Mobile (AT), DSGVO-first • Ziel: Solo-Dev-freundlich, skalierbar, EU-rechtskonform.
 
+## Required CI Checks
+- Flutter CI / analyze-test (pull_request)
+- Flutter CI / privacy-gate (pull_request)
+- CodeRabbit
+- Vercel Preview Health (200 OK)
+
 ## 1) Development Environment
 IDE: Cursor · Terminal: Warp (Workflows für Supabase/CI/API-Tests)
 
@@ -14,8 +20,7 @@ Code-Qualität:
 - Dart Code Metrics (DCM): lokal nutzbar; in CI informativ (non-blocking)
 - CodeRabbit (Lite): GitHub-App + IDE/CLI, line-by-line PR-Reviews; Required Check
 
-Required Checks (exakt):
-Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit
+Required Checks: siehe Abschnitt [Required CI Checks](#required-ci-checks).
 
 ## 2) Frontend (Flutter)
 Flutter 3.35.4 (Dart 3.9.0, in CI gepinnt)
@@ -29,13 +34,21 @@ DB: PostgreSQL + pgvector (semantische Suche/Empfehlungen)
 Edge Functions: Consent-Handling, Audit-Trail, Pseudonymisierung
 RLS: owner-based; kein service_role im Client/Terminal
 
+### API-Gateway (Vercel fra1)
+- Runtime: Edge (`export const config = { runtime: 'edge' }`), ESM-Imports mit `.js`
+- CORS: dynamische Allow-List; Health bewusst offen (Smoke-Test)
+- Logging: rekursive PII-Redaction (keine `user_id`/`email`/IP/Health-Felder)
+- Health-Proof: `/api/health` liefert 200 + JSON; Runbook `docs/runbooks/vercel-health-check.md`
+- Hosting-Region: `vercel.json` minimal → `{ "regions": ["fra1"] }`
+- Security: JWT-Verifikation am Gateway; API-Keys nur serverseitig
+
 ## 4) AI-Layer
 Router: Node Gateway mit Vercel AI SDK (Cost/Failover/Policy)
 Provider: OpenAI API (EU-Project, zero retention) · Claude via Bedrock (EU) · Gemini via Vertex (EU)
 Caching: Upstash Redis · Guards: Rate-Limit + Circuit-Breaker
 
 ## 5) Services & Infrastruktur
-Analytics: PostHog Cloud EU · Push: OneSignal (EU) · Crash: Sentry · CDN/Security: Cloudflare · CI/CD: GitHub Actions
+Analytics: PostHog Cloud EU · Push: OneSignal (EU) · Crash: Sentry · CDN/Security: Cloudflare · CI/CD: GitHub Actions + Vercel Deploys (Preview pro PR, Prod nach Merge)
 Consent: Web: Cookiebot · App: In-App-Consent + Supabase-Logging {version, ts}
 Documentation: Linear
 
@@ -55,4 +68,4 @@ Mehrkosten AI/DSGVO: ~€0,49 / Premium-User / Monat
 - Interop/Legacy: .claude/*, CLAUDE.md nur Referenz
 
 ## 9) Branch-Protection (Empfehlung)
-Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · CodeRabbit
+Required Checks: siehe Abschnitt [Required CI Checks](#required-ci-checks) (Gate)

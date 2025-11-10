@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
@@ -5,7 +7,6 @@ import 'package:luvi_app/features/widgets/back_button.dart';
 class CreateNewBackButtonOverlay extends StatelessWidget {
   const CreateNewBackButtonOverlay({
     super.key,
-    required this.safeTop,
     required this.onPressed,
     required this.backgroundColor,
     required this.iconColor,
@@ -13,7 +14,6 @@ class CreateNewBackButtonOverlay extends StatelessWidget {
     this.iconSize = 20,
   });
 
-  final double safeTop;
   final VoidCallback onPressed;
   final Color backgroundColor;
   final Color iconColor;
@@ -22,18 +22,31 @@ class CreateNewBackButtonOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      top: safeTop + AuthLayout.backButtonTopInset,
-      left: AuthLayout.horizontalPadding,
-      child: BackButtonCircle(
-        onPressed: onPressed,
-        size: size,
-        innerSize: size,
-        backgroundColor: backgroundColor,
-        iconColor: iconColor,
-        iconSize: iconSize,
+    final mediaQuery = MediaQuery.of(context);
+    final safeTop = mediaQuery.padding.top;
+    final extraTop = math.max(AuthLayout.figmaSafeTop - safeTop, 0);
+
+    return SafeArea(
+      top: true,
+      bottom: false,
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: AuthLayout.backButtonTopInset + extraTop,
+            left: AuthLayout.horizontalPadding,
+          ),
+          child: BackButtonCircle(
+            key: const ValueKey('backButtonCircle'),
+            onPressed: onPressed,
+            size: size,
+            innerSize: size,
+            backgroundColor: backgroundColor,
+            iconColor: iconColor,
+            iconSize: iconSize,
+          ),
+        ),
       ),
     );
   }
 }
-

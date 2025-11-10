@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 final Map<String, NumberFormat> _decimalPatternCache = <String, NumberFormat>{};
-NumberFormat _cachedDecimalPattern(String locale) =>
-    _decimalPatternCache.putIfAbsent(locale, () => NumberFormat.decimalPattern(locale));
+NumberFormat _cachedDecimalPattern(String locale) => _decimalPatternCache
+    .putIfAbsent(locale, () => NumberFormat.decimalPattern(locale));
 
 /// Value and unit presentation used by [StatsScroller] to render statistics.
 @immutable

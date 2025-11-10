@@ -27,17 +27,16 @@ class TrainingStatProps {
     Object? unit = _unset,
     List<double>? trend,
     Object? heartRateGlyphAsset = _unset,
-  }) =>
-      TrainingStatProps(
-        label: label ?? this.label,
-        value: value ?? this.value,
-        iconAssetPath: iconAssetPath ?? this.iconAssetPath,
-        unit: identical(unit, _unset) ? this.unit : unit as String?,
-        trend: trend == null ? this.trend : List.unmodifiable(trend),
-        heartRateGlyphAsset: identical(heartRateGlyphAsset, _unset)
-            ? this.heartRateGlyphAsset
-            : heartRateGlyphAsset as String?,
-      );
+  }) => TrainingStatProps(
+    label: label ?? this.label,
+    value: value ?? this.value,
+    iconAssetPath: iconAssetPath ?? this.iconAssetPath,
+    unit: identical(unit, _unset) ? this.unit : unit as String?,
+    trend: trend == null ? this.trend : List.unmodifiable(trend),
+    heartRateGlyphAsset: identical(heartRateGlyphAsset, _unset)
+        ? this.heartRateGlyphAsset
+        : heartRateGlyphAsset as String?,
+  );
 
   @override
   bool operator ==(Object other) {
@@ -53,11 +52,11 @@ class TrainingStatProps {
 
   @override
   int get hashCode => Object.hash(
-        label,
-        value,
-        iconAssetPath,
-        unit,
-        Object.hashAll(trend),
-        heartRateGlyphAsset,
-      );
+    label,
+    value,
+    iconAssetPath,
+    unit,
+    Object.hashAll(trend),
+    heartRateGlyphAsset,
+  );
 }

@@ -1,13 +1,15 @@
 import 'dart:async';
+import '../../support/test_config.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
+import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/routes.dart' as features;
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,6 +17,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
+  TestConfig.ensureInitialized();
   setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
   });
@@ -37,9 +40,8 @@ void main() {
   }
 
   Finder textFieldByHint(String hint) => find.byWidgetPredicate(
-        (widget) =>
-            widget is TextField && widget.decoration?.hintText == hint,
-      );
+    (widget) => widget is TextField && widget.decoration?.hintText == hint,
+  );
 
   group('AuthSignupScreen submit behaviour', () {
     late GoRouter router;
@@ -47,7 +49,7 @@ void main() {
     setUp(() {
       router = GoRouter(
         routes: features.featureRoutes,
-        initialLocation: '/auth/signup',
+        initialLocation: AuthSignupScreen.routeName,
       );
     });
 
@@ -63,9 +65,7 @@ void main() {
           password: any(named: 'password'),
           data: any(named: 'data'),
         ),
-      ).thenAnswer(
-        (_) async => AuthResponse(session: null, user: null),
-      );
+      ).thenAnswer((_) async => AuthResponse(session: null, user: null));
 
       await pumpSignupScreen(tester, mockRepo, router);
 
@@ -151,10 +151,7 @@ void main() {
       await tester.tap(buttonFinder);
       await tester.pump();
 
-      expect(
-        find.byKey(const ValueKey('signup_cta_loading')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const ValueKey('signup_cta_loading')), findsOneWidget);
 
       final loadingButton = tester.widget<ElevatedButton>(buttonFinder);
       expect(loadingButton.onPressed, isNull);
@@ -162,10 +159,7 @@ void main() {
       completer.complete(AuthResponse(session: null, user: null));
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const ValueKey('signup_cta_loading')),
-        findsNothing,
-      );
+      expect(find.byKey(const ValueKey('signup_cta_loading')), findsNothing);
     });
   });
 }

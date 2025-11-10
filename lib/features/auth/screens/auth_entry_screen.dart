@@ -6,6 +6,8 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/layout/auth_entry_layout.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
+import 'package:luvi_app/features/auth/screens/login_screen.dart';
 
 /// Entry screen shown after consent flow but before sign up/login.
 class AuthEntryScreen extends ConsumerWidget {
@@ -68,9 +70,7 @@ class _EntryTitle extends StatelessWidget {
       header: true,
       child: Text(
         AuthEntryScreen._titleText,
-        style: textTheme.headlineMedium?.copyWith(
-          color: colorScheme.onSurface,
-        ),
+        style: textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface),
         textAlign: TextAlign.center,
       ),
     );
@@ -91,9 +91,7 @@ class _EntrySubtitle extends StatelessWidget {
       maxLines: 1,
       softWrap: false,
       overflow: TextOverflow.ellipsis,
-      style: ds?.authEntrySubhead.copyWith(
-        color: colorScheme.onSurfaceVariant,
-      ),
+      style: ds?.authEntrySubhead.copyWith(color: colorScheme.onSurfaceVariant),
     );
   }
 }
@@ -105,10 +103,8 @@ class _EntryPrimaryCta extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       key: const ValueKey('auth_entry_register_cta'),
-      onPressed: () => context.push('/auth/signup'),
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(50),
-      ),
+      onPressed: () => context.push(AuthSignupScreen.routeName),
+      style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
       child: const Text('Registrieren'),
     );
   }
@@ -121,7 +117,7 @@ class _EntrySecondaryCta extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       key: const ValueKey('auth_entry_login_cta'),
-      onPressed: () => context.push('/auth/login'),
+      onPressed: () => context.push(LoginScreen.routeName),
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
         minimumSize: const Size.fromHeight(24),
@@ -138,8 +134,10 @@ class _BottomRestSpacer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final safeBottom = MediaQuery.of(context).padding.bottom;
-    final diff = (AuthEntryLayout.bottomRest - safeBottom - Spacing.l)
-        .clamp(0.0, AuthEntryLayout.bottomRest);
+    final diff = (AuthEntryLayout.bottomRest - safeBottom - Spacing.l).clamp(
+      0.0,
+      AuthEntryLayout.bottomRest,
+    );
     return SizedBox(height: diff);
   }
 }

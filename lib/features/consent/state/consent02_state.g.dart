@@ -6,21 +6,58 @@ part of 'consent02_state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(Consent02Notifier)
+const consent02Provider = Consent02NotifierProvider._();
+
+final class Consent02NotifierProvider
+    extends $NotifierProvider<Consent02Notifier, Consent02State> {
+  const Consent02NotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'consent02Provider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$consent02NotifierHash();
+
+  @$internal
+  @override
+  Consent02Notifier create() => Consent02Notifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Consent02State value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Consent02State>(value),
+    );
+  }
+}
+
 String _$consent02NotifierHash() => r'7500239d9ae6bd8417df06ccea74eae01712f826';
 
-/// See also [Consent02Notifier].
-@ProviderFor(Consent02Notifier)
-final consent02NotifierProvider =
-    AutoDisposeNotifierProvider<Consent02Notifier, Consent02State>.internal(
-      Consent02Notifier.new,
-      name: r'consent02NotifierProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$consent02NotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$Consent02Notifier = AutoDisposeNotifier<Consent02State>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$Consent02Notifier extends $Notifier<Consent02State> {
+  Consent02State build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<Consent02State, Consent02State>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Consent02State, Consent02State>,
+              Consent02State,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 
 class VerifyFooter extends StatelessWidget {
@@ -34,7 +34,7 @@ class VerifyFooter extends StatelessWidget {
           child: ElevatedButton(
             key: const ValueKey('verify_confirm_button'),
             onPressed: ctaEnabled ? onConfirm : null,
-            child: const Text(AuthStrings.verifyCta),
+            child: Text(AuthStrings.verifyCta),
           ),
         ),
         const SizedBox(height: AuthLayout.gapSection),

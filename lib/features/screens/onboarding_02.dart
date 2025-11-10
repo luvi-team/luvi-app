@@ -5,12 +5,12 @@ import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/core/utils/date_formatters.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/date_formatters.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/screens/onboarding_01.dart';
+import 'package:luvi_app/features/widgets/onboarding/onboarding_header.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding02: Birthday input screen
@@ -29,7 +29,13 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   late DateTime _date;
   bool _hasInteracted = false;
 
-  String get _formattedDate => DateFormatters.germanDayMonthYear(_date);
+  String get _formattedDate {
+    final localeName = Localizations.localeOf(context).toLanguageTag();
+    return DateFormatters.localizedDayMonthYear(
+      _date,
+      localeName: localeName,
+    );
+  }
 
   @override
   void initState() {
@@ -81,7 +87,12 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildHeader(),
+          OnboardingHeader(
+            title: AppLocalizations.of(context)!.onboarding02Title,
+            step: 2,
+            totalSteps: kOnboardingTotalSteps,
+            onBack: _handleBack,
+          ),
           SizedBox(height: spacing.headerToDate),
           _buildDateDisplay(),
           SizedBox(height: spacing.dateToUnderline),
@@ -96,55 +107,13 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     );
   }
 
-  Widget _buildHeader() {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-    final title = l10n.onboarding02Title;
-    const step = 2;
-    final stepSemantic = l10n.onboardingStepSemantic(step, 7);
-    final stepFraction = l10n.onboardingStepFraction(step, 7);
-
-    return Row(
-      children: [
-        BackButtonCircle(
-          onPressed: () {
-            final router = GoRouter.of(context);
-            if (router.canPop()) {
-              context.pop();
-            } else {
-              context.go(Onboarding01Screen.routeName);
-            }
-          },
-          iconColor: colorScheme.onSurface,
-        ),
-        Expanded(
-          child: Semantics(
-            header: true,
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              softWrap: true,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.headlineMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: TypographyTokens.size24,
-                height: TypographyTokens.lineHeightRatio32on24,
-              ),
-            ),
-          ),
-        ),
-        Semantics(
-          label: stepSemantic,
-          child: Text(
-            stepFraction,
-            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface),
-          ),
-        ),
-      ],
-    );
+  void _handleBack() {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      context.pop();
+    } else {
+      context.go(Onboarding01Screen.routeName);
+    }
   }
 
   Widget _buildDateDisplay() {
@@ -217,10 +186,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
             ),
             const SizedBox(width: Spacing.s),
             Expanded(
-              child: Text(
-                l10n.onboarding02CalloutBody,
-                style: baseTextStyle,
-              ),
+              child: Text(l10n.onboarding02CalloutBody, style: baseTextStyle),
             ),
           ],
         ),

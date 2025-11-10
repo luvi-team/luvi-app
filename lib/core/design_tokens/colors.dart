@@ -28,6 +28,10 @@ class DsColors {
   /// Figma: #6d6d6d
   static const Color subText2 = Color(0xFF6d6d6d);
 
+  /// Grayscale/500 (borders, secondary UI elements).
+  /// Figma: #696969
+  static const Color grayscale500 = Color(0xFF696969);
+
   /// Cycle phase: follicular dark (Follikelphase).
   /// Hex: #4169E1
   static const Color phaseFollicularDark = Color(0xFF4169E1);
@@ -48,13 +52,18 @@ class DsColors {
   /// Hex: #FFB9B9
   static const Color phaseMenstruation = Color(0xFFFFB9B9);
 
+  /// Dashboard wave overlay tint (30% opacity blush pink from Figma).
+  /// Hex: #FADCDC @ 0x4D alpha.
+  static const Color waveOverlayPink = Color(0x4DFADCDC);
+
   /// Primary text color.
   /// Hex: #030401
   static const Color textPrimary = grayscaleBlack;
 
   /// Secondary text color.
   /// Hex: #6D6D6D
- static const Color textSecondary = subText2;
+  static const Color textSecondary = subText2;
+
   /// Muted text color.
   /// Hex: #C5C7C9
   static const Color textMuted = Color(0xFFC5C7C9);
@@ -64,8 +73,8 @@ class DsColors {
   static const Color infoBackground = accentPurple;
 
   /// Neutral card background.
-  /// Hex: #F1F1F1
-  static const Color cardBackgroundNeutral = Color(0xFFF1F1F1);
+  /// Hex: #F7F7F8 (Figma Grayscale/100)
+  static const Color cardBackgroundNeutral = Color(0xFFF7F7F8);
 
   /// White surface token.
   /// Hex: #FFFFFF

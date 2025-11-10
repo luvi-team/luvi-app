@@ -10,6 +10,7 @@ Gilt verbindlich für alle Assistenten-Antworten in diesem Repo (Codex CLI-first
   - rollen-spezifisch gem. DoD (UI/DataViz inkl. Flutter-Tests; Backend/DB/QA ohne Flutter-Tests)
   - RLS/Consent (falls relevant) ✅
   - Sentry/PostHog Smoke (UI) ✅
+  - Vercel Health (Preview/Prod: `/api/health → 200`) ✅
   - CodeRabbit ✅
 - Undo/Backout – Befehle zur Rücknahme (nur als Code-Block, niemals ausführen)
 - Nächster minimaler Schritt – direkt folgend

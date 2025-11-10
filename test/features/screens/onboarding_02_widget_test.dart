@@ -9,8 +9,10 @@ import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   testWidgets(
     'renders title, handles back/re-navigation, and enables CTA after date picker interaction',
     (tester) async {

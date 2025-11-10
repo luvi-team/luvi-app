@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../support/test_config.dart';
 
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
@@ -14,15 +15,18 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
+  TestConfig.ensureInitialized();
   late _MockAuthRepository mockRepo;
 
   setUp(() {
     mockRepo = _MockAuthRepository();
     // Default behavior: throw invalid credentials to avoid real network
-    when(() => mockRepo.signInWithPassword(
-          email: any(named: 'email'),
-          password: any(named: 'password'),
-        )).thenThrow(AuthException('invalid credentials'));
+    when(
+      () => mockRepo.signInWithPassword(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenThrow(AuthException('invalid credentials'));
   });
 
   testWidgets('LoginScreen shows headline and button', (tester) async {
@@ -36,9 +40,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),
@@ -53,7 +55,9 @@ void main() {
     expect(find.text(AuthStrings.loginCta), findsOneWidget);
   });
 
-  testWidgets('CTA enabled before submit; disables on field errors', (tester) async {
+  testWidgets('CTA enabled before submit; disables on field errors', (
+    tester,
+  ) async {
     final view = tester.view;
     view.physicalSize = const Size(1080, 2340);
     view.devicePixelRatio = 1.0;
@@ -64,9 +68,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           home: const LoginScreen(),

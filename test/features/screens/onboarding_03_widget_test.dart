@@ -5,8 +5,10 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_03.dart';
 import 'package:luvi_app/features/screens/onboarding_04.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('selects a goal and navigates', (tester) async {
@@ -18,9 +20,8 @@ void main() {
         ),
         GoRoute(
           path: Onboarding04Screen.routeName,
-          builder: (context, state) => const Scaffold(
-            body: Text('Onboarding 04 (Stub)'),
-          ),
+          builder: (context, state) =>
+              const Scaffold(body: Text('Onboarding 04 (Stub)')),
         ),
       ],
       initialLocation: Onboarding03Screen.routeName,

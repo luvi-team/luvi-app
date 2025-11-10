@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
+import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/verify_footer.dart';
@@ -12,12 +12,11 @@ import 'package:luvi_app/features/auth/widgets/verify_header.dart';
 import 'package:luvi_app/features/auth/widgets/verify_otp_section.dart';
 import 'package:luvi_app/features/auth/widgets/verify_text_styles.dart';
 
-enum VerificationScreenVariant {
-  resetPassword,
-  emailConfirmation,
-}
+enum VerificationScreenVariant { resetPassword, emailConfirmation }
 
 class VerificationScreen extends StatefulWidget {
+  static const String routeName = '/auth/verify';
+
   const VerificationScreen({
     super.key,
     this.variant = VerificationScreenVariant.resetPassword,
@@ -42,7 +41,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
     final copy = _VariantCopy.fromVariant(widget.variant);
     final topSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.figmaHeaderTop,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
@@ -104,15 +102,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 
   void _onBackPressed(BuildContext context) {
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      router.pop();
     } else {
       context.goNamed('login');
     }
   }
 }
 
-class _VariantCopy {
+final class _VariantCopy {
   const _VariantCopy({
     required this.title,
     required this.subtitle,
@@ -125,14 +124,15 @@ class _VariantCopy {
   String get resend => AuthStrings.verifyResend;
 
   factory _VariantCopy.fromVariant(VerificationScreenVariant variant) {
+    // Achtung: Rückgaben absichtlich NICHT const, da AuthStrings runtime-lokalisiert sind.
     switch (variant) {
       case VerificationScreenVariant.emailConfirmation:
-        return const _VariantCopy(
+        return _VariantCopy(
           title: AuthStrings.verifyEmailTitle,
           subtitle: AuthStrings.verifyEmailSubtitle,
         );
       case VerificationScreenVariant.resetPassword:
-        return const _VariantCopy(
+        return _VariantCopy(
           title: AuthStrings.verifyResetTitle,
           subtitle: AuthStrings.verifyResetSubtitle,
         );

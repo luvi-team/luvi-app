@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 
 class GlobalErrorBanner extends StatelessWidget {
-  const GlobalErrorBanner({
-    super.key,
-    required this.message,
-    this.onTap,
-  });
+  const GlobalErrorBanner({super.key, required this.message, this.onTap});
 
   final String message;
   final VoidCallback? onTap;

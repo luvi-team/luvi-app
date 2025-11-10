@@ -1,0 +1,83 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
+
+import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/features/shared/utils/run_catching.dart';
+import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_services/user_state_service.dart';
+
+class SplashScreen extends ConsumerStatefulWidget {
+  const SplashScreen({super.key});
+
+  static const String routeName = '/splash';
+
+  @override
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  bool _hasNavigated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this)
+      ..addStatusListener(_handleAnimationStatus);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeStatusListener(_handleAnimationStatus);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Lottie.asset(
+          Assets.animations.splashScreen,
+          controller: _controller,
+          repeat: false,
+          frameRate: FrameRate.composition,
+          fit: BoxFit.contain,
+          onLoaded: (composition) {
+            _controller.duration = composition.duration;
+            _controller.forward(from: 0);
+          },
+        ),
+      ),
+    );
+  }
+
+  void _handleAnimationStatus(AnimationStatus status) {
+    if (status != AnimationStatus.completed || !mounted) return;
+    _navigateAfterAnimation();
+  }
+
+  Future<void> _navigateAfterAnimation() async {
+    if (_hasNavigated) return;
+    final userState = await tryOrNullAsync(
+      () => ref.read(userStateServiceProvider.future),
+      tag: 'userState',
+    );
+    if (!mounted) return;
+    if (_hasNavigated) return;
+    final isAuth = SupabaseService.isAuthenticated;
+    final hasSeenWelcome = userState?.hasSeenWelcome ?? false;
+    final nextRoute = !hasSeenWelcome
+        ? ConsentWelcome01Screen.routeName
+        : (isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName);
+    _hasNavigated = true;
+    context.go(nextRoute);
+  }
+}

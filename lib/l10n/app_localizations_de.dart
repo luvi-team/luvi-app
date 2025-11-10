@@ -81,9 +81,32 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonContinue => 'Weiter';
 
   @override
+  String get commonSkip => 'Überspringen';
+
+  @override
+  String get commonStartNow => 'Starte jetzt';
+
+  @override
   String dashboardGreeting(String name) {
     return 'Hey, $name 💜';
   }
+
+  @override
+  String get notificationsWithBadge => 'Benachrichtigungen – neue Hinweise verfügbar';
+
+  @override
+  String notificationsWithBadgeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Benachrichtigungen – $count neu',
+      one: 'Benachrichtigungen – $count neu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationsNoBadge => 'Benachrichtigungen';
 
   @override
   String get dashboardCategoriesTitle => 'Kategorien';
@@ -96,6 +119,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dashboardTrainingDataTitle => 'Deine Trainingsdaten';
+
+  @override
+  String get dashboardTrainingWeekTitle => 'Dein Training für diese Woche';
+
+  @override
+  String get dashboardTrainingWeekSubtitle => 'Erstellt von deinen LUVI-Expert:innen';
+
+  @override
+  String get dashboardRecommendationsTitle => 'Weitere Empfehlungen für dich';
+
+  @override
+  String get dashboardNutritionTitle => 'Ernährung & Biohacking';
+
+  @override
+  String get dashboardRegenerationTitle => 'Regeneration & Achtsamkeit';
 
   @override
   String get dashboardNavToday => 'Heute';
@@ -128,10 +166,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardViewAll => 'Alle';
 
   @override
+  String get dashboardViewMore => 'Mehr sehen';
+
+  @override
+  String get trainingCompleted => 'Erledigt';
+
+  @override
+  String get nutritionRecommendation => 'Ernährungsempfehlung';
+
+  @override
+  String get regenerationRecommendation => 'Regenerationsempfehlung';
+
+  @override
   String get dashboardLuviSyncTitle => 'Luvi Sync Journal';
 
   @override
   String get dashboardLuviSyncPlaceholder => 'Luvi Sync Journal Inhalte folgen bald.';
+
+  @override
+  String get trainingsOverviewStubPlaceholder => 'Trainingsübersicht folgt bald';
+
+  @override
+  String get trainingsOverviewStubSemantics => 'Trainingsübersicht in Vorbereitung. Tippe auf Zurück, um zur vorherigen Ansicht zu wechseln.';
 
   @override
   String get workoutTitle => 'Workout';
@@ -143,7 +199,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dashboardHeroCtaMore => 'Mehr';
 
   @override
-  String get dashboardRecommendationsEmpty => 'Keine Empfehlungen verfügbar';
+  String get dashboardRecommendationsEmpty => 'Für diese Phase liegen noch keine Empfehlungen vor.';
 
   @override
   String get topRecommendation => 'Top-Empfehlung';
@@ -166,8 +222,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get cycleInlineCalendarLabelDefault =>
-      'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
+  String get cycleInlineCalendarLabelDefault => 'Zykluskalender. Zur Zyklusübersicht wechseln. Nur zur Orientierung – kein medizinisches Vorhersage- oder Diagnosetool.';
 
   @override
   String get cyclePhaseMenstruation => 'Menstruation';
@@ -273,4 +328,250 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cycleTipBodyLuteal => 'Wechsle auf ruhige Kraft- oder Mobility-Einheiten. Zusätzliche Pausen helfen dir, das Energielevel zu halten.';
+
+  @override
+  String get onboarding08Title => 'Wie fit fühlst du dich?';
+
+  @override
+  String get onboarding08OptionsSemantic => 'Fitnesslevel auswählen';
+
+  @override
+  String get onboarding08OptBeginner => 'Ich fange gerade erst an';
+
+  @override
+  String get onboarding08OptOccasional => 'Trainiere ab und zu';
+
+  @override
+  String get onboarding08OptFit => 'Fühle mich ziemlich fit';
+
+  @override
+  String get onboarding08OptUnknown => 'Weiß ich nicht';
+
+  @override
+  String get onboarding08Footnote => 'Kein Stress - wir finden deinen perfekten Einstieg!';
+
+  @override
+  String get onboardingSuccessTitle => 'Du bist startklar!';
+
+  @override
+  String get welcome01Subtitle => 'Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.';
+
+  @override
+  String get welcome01TitlePrefix => 'Im ';
+
+  @override
+  String get welcome01TitleAccent => 'Einklang';
+
+  @override
+  String get welcome01TitleSuffixLine1 => ' mit deinem\n';
+
+  @override
+  String get welcome01TitleSuffixLine2 => 'Körper';
+
+  @override
+  String get welcome01PrimaryCta => 'Weiter';
+
+  @override
+  String get welcome02TitleLine1 => 'Von Expert:innen für dich\n';
+
+  @override
+  String get welcome02TitleLine2 => 'jeden Monat neu';
+
+  @override
+  String get welcome02Subtitle => 'Echte Personalisierung statt Standard‑Pläne. Automatisch angepasst an deine Fortschritte, Zyklusphase und individuellen Ziele.';
+
+  @override
+  String get welcome03TitleLine1 => 'Dein perfekter Tag\n';
+
+  @override
+  String get welcome03TitleLine2 => 'beginnt hier';
+
+  @override
+  String get welcome03Subtitle => 'LUVI Sync: Dein täglicher Game‑Changer. Verstehe das \'Warum\' hinter deinen Hormonen. Wissenschaftlich fundiert.';
+
+  @override
+  String get consent02Title => 'Deine Gesundheit,\ndeine Entscheidung!';
+
+  @override
+  String get consent02CardHealth => 'Ich bin damit einverstanden, dass LUVI meine persönlichen Gesundheitsdaten verarbeitet, damit LUVI ihre Funktionen bereitstellen kann.';
+
+  @override
+  String get consent02CardTermsPrefix => 'Ich erkläre mich mit der ';
+
+  @override
+  String get consent02LinkPrivacyLabel => 'Datenschutzerklärung';
+
+  @override
+  String get consent02LinkConjunction => ' sowie den ';
+
+  @override
+  String get consent02LinkTermsLabel => 'Nutzungsbedingungen';
+
+  @override
+  String get consent02LinkSuffix => ' einverstanden.';
+
+  @override
+  String get consent02CardAiJournal => 'Ich bin damit einverstanden, dass LUVI künstliche Intelligenz nutzt, um meine Trainings-, Ernährungs- und Regenerationsempfehlungen in einem personalisierten Journal für mich zusammenzufassen.';
+
+  @override
+  String get consent02CardAnalytics => 'Ich bin damit einverstanden, dass pseudonymisierte Nutzungs- und Gerätedaten zu Analysezwecken verarbeitet werden, damit LUVI Stabilität und Benutzerfreundlichkeit verbessern kann.*';
+
+  @override
+  String get consent02CardMarketing => 'Ich stimme zu, dass LUVI meine persönlichen Daten und Nutzungsdaten verarbeitet, um mir personalisierte Empfehlungen zu relevanten LUVI-Inhalten und Informationen zu Angeboten per In-App-Hinweisen, E-Mail und/oder Push-Mitteilungen zuzusenden.*';
+
+  @override
+  String get consent02CardModelTraining => 'Ich willige ein, dass pseudonymisierte Nutzungs- und Gesundheitsdaten zur Qualitätssicherung und Verbesserung von Empfehlungen verwendet werden (z. B. Überprüfung der Genauigkeit von Zyklusvorhersagen).*';
+
+  @override
+  String get consent02LinkError => 'Link konnte nicht geöffnet werden';
+
+  @override
+  String get consent02RevokeHint => 'Deine Zustimmung kannst du jederzeit in der App oder unter hello@getluvi.com widerrufen.';
+
+  @override
+  String get consent02AcceptAll => 'Alle akzeptieren';
+
+  @override
+  String get consent02DeselectAll => 'Alle abwählen';
+
+  @override
+  String get consent02SemanticSelected => 'Ausgewählt';
+
+  @override
+  String get consent02SemanticUnselected => 'Nicht ausgewählt';
+
+  @override
+  String get authLoginHeadline => 'Willkommen zurück 💜';
+
+  @override
+  String get authLoginSubhead => 'Schön, dass du da bist.';
+
+  @override
+  String get authLoginCta => 'Anmelden';
+
+  @override
+  String get authLoginCtaLoadingSemantic => 'Anmeldung läuft';
+
+  @override
+  String get authLoginCtaLinkPrefix => 'Neu bei LUVI? ';
+
+  @override
+  String get authLoginCtaLinkAction => 'Starte hier';
+
+  @override
+  String get authLoginForgot => 'Passwort vergessen?';
+
+  @override
+  String get authLoginSocialDivider => 'Oder melde dich an mit';
+
+  @override
+  String get authErrEmailInvalid => 'Ups, bitte E-Mail überprüfen';
+
+  @override
+  String get authErrPasswordInvalid => 'Ups, bitte Passwort überprüfen';
+
+  @override
+  String get authErrConfirmEmail => 'Bitte E-Mail bestätigen (Link erneut senden?)';
+
+  @override
+  String get authInvalidCredentials => 'E-Mail oder Passwort ist falsch.';
+
+  @override
+  String get authErrLoginUnavailable => 'Login derzeit nicht möglich.';
+
+  @override
+  String get authEmailHint => 'Deine E-Mail';
+
+  @override
+  String get authPasswordHint => 'Dein Passwort';
+
+  @override
+  String get authSignupTitle => 'Deine Reise beginnt hier 💜';
+
+  @override
+  String get authSignupSubtitle => 'Schnell registrieren - dann geht\'s los.';
+
+  @override
+  String get authSignupCta => 'Registrieren';
+
+  @override
+  String get authSignupCtaLoadingSemantic => 'Registrierung läuft';
+
+  @override
+  String get authSignupLinkPrefix => 'Schon dabei? ';
+
+  @override
+  String get authSignupLinkAction => 'Anmelden';
+
+  @override
+  String get authSignupHintFirstName => 'Dein Vorname';
+
+  @override
+  String get authSignupHintLastName => 'Dein Nachname';
+
+  @override
+  String get authSignupHintPhone => 'Deine Telefonnummer';
+
+  @override
+  String get authSignupMissingFields => 'Bitte E-Mail und Passwort eingeben.';
+
+  @override
+  String get authSignupGenericError => 'Registrierung gerade nicht möglich. Bitte später erneut versuchen.';
+
+  @override
+  String get authForgotTitle => 'Passwort vergessen? 💜';
+
+  @override
+  String get authForgotSubtitle => 'E-Mail eingeben für Link.';
+
+  @override
+  String get authForgotCta => 'Weiter';
+
+  @override
+  String get authBackSemantic => 'Zurück';
+
+  @override
+  String get authSuccessPwdTitle => 'Geschafft!';
+
+  @override
+  String get authSuccessPwdSubtitle => 'Neues Passwort gespeichert.';
+
+  @override
+  String get authSuccessForgotTitle => 'E-Mail gesendet!';
+
+  @override
+  String get authSuccessForgotSubtitle => 'Bitte Postfach prüfen.';
+
+  @override
+  String get authSuccessCta => 'Fertig';
+
+  @override
+  String get authCreateNewHint1 => 'Neues Passwort';
+
+  @override
+  String get authCreateNewHint2 => 'Neues Passwort bestätigen';
+
+  @override
+  String get authCreateNewCta => 'Speichern';
+
+  @override
+  String get authVerifyResetTitle => 'Code eingeben 💜';
+
+  @override
+  String get authVerifyResetSubtitle => 'Gerade an deine E-Mail gesendet.';
+
+  @override
+  String get authVerifyEmailTitle => 'E-Mail bestätigen 💜';
+
+  @override
+  String get authVerifyEmailSubtitle => 'Code eingeben';
+
+  @override
+  String get authVerifyCta => 'Bestätigen';
+
+  @override
+  String get authVerifyHelper => 'Nichts angekommen?';
+
+  @override
+  String get authVerifyResend => 'Erneut senden';
 }

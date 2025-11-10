@@ -1,11 +1,27 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/core/utils/date_formatters.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:luvi_app/features/screens/onboarding/utils/date_formatters.dart';
 
 void main() {
-  test('germanDayMonthYear renders 5 Mai 2002', () {
+  setUpAll(() async {
+    await initializeDateFormatting('de');
+    await initializeDateFormatting('en');
+  });
+  test('localizedDayMonthYear respects provided locale', () {
     expect(
-      DateFormatters.germanDayMonthYear(DateTime(2002, 5, 5)),
-      '5 Mai 2002',
+      DateFormatters.localizedDayMonthYear(
+        DateTime(2002, 5, 5),
+        localeName: 'de',
+      ),
+      '5. Mai 2002',
+    );
+
+    expect(
+      DateFormatters.localizedDayMonthYear(
+        DateTime(2002, 5, 5),
+        localeName: 'en',
+      ),
+      'May 5, 2002',
     );
   });
 }

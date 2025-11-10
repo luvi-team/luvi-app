@@ -3,22 +3,20 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/core/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
+import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
+import 'package:luvi_app/features/screens/heute_screen.dart';
 
-enum SuccessVariant {
-  passwordSaved,
-  forgotEmailSent,
-}
+enum SuccessVariant { passwordSaved, forgotEmailSent }
 
 class SuccessScreen extends StatelessWidget {
-  const SuccessScreen({
-    super.key,
-    this.variant = SuccessVariant.passwordSaved,
-  });
+  static const String passwordSuccessRouteName = '/auth/password/success';
+  static const String forgotEmailSentRouteName = '/auth/forgot/sent';
+
+  const SuccessScreen({super.key, this.variant = SuccessVariant.passwordSaved});
 
   final SuccessVariant variant;
 
@@ -30,7 +28,6 @@ class SuccessScreen extends StatelessWidget {
         AuthLayout.hPadding40 - AuthLayout.horizontalPadding;
 
     final topSpacing = topOffsetFromSafeArea(
-      context,
       AuthLayout.iconTopSuccess,
       figmaSafeTop: AuthLayout.figmaSafeTop,
     );
@@ -49,8 +46,9 @@ class SuccessScreen extends StatelessWidget {
       color: tokens.grayscale500,
     );
 
-    final resolvedHorizontalPadding =
-        horizontalPadding > 0 ? horizontalPadding : 0.0;
+    final resolvedHorizontalPadding = horizontalPadding > 0
+        ? horizontalPadding
+        : 0.0;
 
     late final String titleText;
     late final String subtitleText;
@@ -95,7 +93,7 @@ class SuccessScreen extends StatelessWidget {
       ),
       bottomNavigationBar: AuthBottomCta(
         child: _BottomCta(
-          onPressed: () => context.go('/heute'),
+          onPressed: () => context.go(HeuteScreen.routeName),
           isLoading: false,
         ),
       ),
@@ -147,21 +145,14 @@ class _SuccessCopy extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: Spacing.xs),
-        Text(
-          subtitleText,
-          style: subtitleStyle,
-          textAlign: TextAlign.center,
-        ),
+        Text(subtitleText, style: subtitleStyle, textAlign: TextAlign.center),
       ],
     );
   }
 }
 
 class _BottomCta extends StatelessWidget {
-  const _BottomCta({
-    required this.onPressed,
-    required this.isLoading,
-  });
+  const _BottomCta({required this.onPressed, required this.isLoading});
 
   final VoidCallback onPressed;
   final bool isLoading;
@@ -174,7 +165,7 @@ class _BottomCta extends StatelessWidget {
       child: ElevatedButton(
         key: const ValueKey('success_cta_button'),
         onPressed: onPressed,
-        child: const Text(AuthStrings.successCta),
+        child: Text(AuthStrings.successCta),
       ),
     );
   }
@@ -198,16 +189,9 @@ class _SuccessIcon extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
       alignment: Alignment.center,
-      child: Icon(
-        Icons.check,
-        size: iconSize,
-        color: iconColor,
-      ),
+      child: Icon(Icons.check, size: iconSize, color: iconColor),
     );
   }
 }

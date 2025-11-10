@@ -1,0 +1,55 @@
+openapi: 3.1.0
+info:
+  title: Health Check
+  version: "1.0.0"
+paths:
+  /api/health:
+    get:
+      summary: Health probe for Vercel Edge Gateway
+      operationId: getHealth
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                  - timestamp
+                properties:
+                  ok:
+                    type: boolean
+                    description: Indicates if the service is healthy.
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: ISO timestamp when the health check was generated.
+              example:
+                ok: true
+                timestamp: "2024-03-17T12:34:56Z"
+        "500":
+          description: Upstream dependency unavailable or critical health check failed
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                  - error
+                  - timestamp
+                properties:
+                  ok:
+                    type: boolean
+                    description: Indicates the service is healthy.
+                  error:
+                    type: string
+                    description: Description of the failing component or check.
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: ISO timestamp when the error response was generated.
+              example:
+                ok: false
+                error: "database: read replica unreachable"
+                timestamp: "2024-03-17T12:35:30Z"

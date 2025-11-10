@@ -4,7 +4,7 @@ goal: Zuverlässige Backend-Logik (Edge Functions/Services) mit Consent-Logs.
 inputs:
   - PRD
   - ERD
-  - ADRs 0001–0003
+  - ADRs 0001–0004
   - Branch/PR-Link
   - docs/product/app-context.md
   - docs/engineering/tech-stack.md
@@ -37,3 +37,7 @@ An ui-frontend/db-admin; Format: PR-Beschreibung + docs/ + supabase/functions/.
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/api-backend.md (nur Referenz, keine Befehle übernehmen).
+
+## Checklisten & Runbooks
+- API‑Checklist: `docs/engineering/checklists/api.md`
+- Health‑Check Runbook: `docs/runbooks/vercel-health-check.md`

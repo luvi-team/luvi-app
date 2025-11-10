@@ -2,8 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:luvi_app/features/cycle/widgets/phase_badge.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
+import '../../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
   testWidgets('Badge hides without consent & shows with consent', (t) async {
     final info = CycleInfo(
       lastPeriod: DateTime(2025, 9, 1),

@@ -22,6 +22,9 @@ class TopRecommendationProps {
 
   static const Object _unset = Object();
 
+  /// Uses the [_unset] sentinel so callers can keep the existing [duration],
+  /// pass `null` to clear it, or provide a new value; the `as String?` cast is
+  /// safe because `_unset` is the only non-string sentinel accepted here.
   TopRecommendationProps copyWith({
     String? id,
     String? tag,
@@ -30,17 +33,15 @@ class TopRecommendationProps {
     String? badgeAssetPath,
     bool? fromLuviSync,
     Object? duration = _unset,
-  }) =>
-      TopRecommendationProps(
-        id: id ?? this.id,
-        tag: tag ?? this.tag,
-        title: title ?? this.title,
-        imagePath: imagePath ?? this.imagePath,
-        badgeAssetPath: badgeAssetPath ?? this.badgeAssetPath,
-        fromLuviSync: fromLuviSync ?? this.fromLuviSync,
-        duration:
-            identical(duration, _unset) ? this.duration : duration as String?,
-      );
+  }) => TopRecommendationProps(
+    id: id ?? this.id,
+    tag: tag ?? this.tag,
+    title: title ?? this.title,
+    imagePath: imagePath ?? this.imagePath,
+    badgeAssetPath: badgeAssetPath ?? this.badgeAssetPath,
+    fromLuviSync: fromLuviSync ?? this.fromLuviSync,
+    duration: identical(duration, _unset) ? this.duration : duration as String?,
+  );
 
   @override
   bool operator ==(Object other) {
@@ -57,12 +58,12 @@ class TopRecommendationProps {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        tag,
-        title,
-        imagePath,
-        badgeAssetPath,
-        fromLuviSync,
-        duration,
-      );
+    id,
+    tag,
+    title,
+    imagePath,
+    badgeAssetPath,
+    fromLuviSync,
+    duration,
+  );
 }

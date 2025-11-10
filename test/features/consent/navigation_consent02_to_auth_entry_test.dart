@@ -3,8 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
+import 'package:luvi_app/features/consent/routes.dart';
 import 'package:luvi_app/features/routes.dart';
+import 'package:luvi_services/user_state_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../support/test_config.dart';
 
 class _PreselectedConsent02Notifier extends Consent02Notifier {
   @override
@@ -17,6 +22,7 @@ class _PreselectedConsent02Notifier extends Consent02Notifier {
 }
 
 void main() {
+  TestConfig.ensureInitialized();
   testWidgets('Consent02 forwards to /auth/entry (AuthEntry screen)', (
     tester,
   ) async {
@@ -30,18 +36,24 @@ void main() {
 
     final router = GoRouter(
       routes: featureRoutes,
-      initialLocation: '/consent/02',
+      initialLocation: ConsentRoutes.consent02,
     );
 
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          consent02NotifierProvider.overrideWith(
-            _PreselectedConsent02Notifier.new,
+          consent02Provider.overrideWith(_PreselectedConsent02Notifier.new),
+          userStateServiceProvider.overrideWith(
+            (ref) async => UserStateService(prefs: prefs),
           ),
         ],
         child: MaterialApp.router(
           theme: AppTheme.buildAppTheme(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           routerConfig: router,
         ),
       ),

@@ -1,6 +1,9 @@
 /// Shared constants for onboarding flows.
 const double kOnboardingPickerHeight = 198.0;
 
+/// Total number of onboarding steps (screens 1-8)
+const int kOnboardingTotalSteps = 8;
+
 /// Oldest supported birth year for onboarding date pickers.
 const int kOnboardingMinBirthYear = 1900;
 

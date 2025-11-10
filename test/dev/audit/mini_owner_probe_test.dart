@@ -1,8 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class FakeViewPadding implements ViewPadding {
   const FakeViewPadding({
@@ -29,6 +31,14 @@ void main() {
     setUp(() {
       testWidget = MaterialApp(
         theme: AppTheme.buildAppTheme(),
+        locale: const Locale('de'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         home: const CreateNewPasswordScreen(),
       );
     });
@@ -44,7 +54,7 @@ void main() {
       final testWindow = tester.binding.window;
       testWindow.viewInsetsTestValue = FakeViewPadding(bottom: keyboardHeight);
       testWindow.paddingTestValue = const FakeViewPadding(
-        top: 47,  // iPhone SafeTop
+        top: 47, // iPhone SafeTop
         bottom: 34, // iPhone SafeBottom
       );
 
@@ -61,11 +71,13 @@ void main() {
       }
 
       // Find widgets by specific finders
-      final backButtonFinder = find.byType(Container).first; // BackButtonCircle inner
+      final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
       final subtitleFinder = find.text('Mach es stark.');
-      final passwordFieldFinder = find.text('Neues Passwort').first;
-      final confirmFieldFinder = find.text('Neues Passwort bestätigen').first;
-      final ctaFinder = find.byType(ElevatedButton);
+      final passwordFieldFinder = find.byKey(const Key('AuthPasswordField'));
+      final confirmFieldFinder = find.byKey(
+        const Key('AuthConfirmPasswordField'),
+      );
+      final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 
       // Get positions
       final backButtonRect = tester.getRect(backButtonFinder);
@@ -89,29 +101,53 @@ void main() {
 
     testWidgets('K0 - Baseline', (tester) async {
       final m = await quickMeasure(tester, keyboardHeight: 0);
-      print('- K0:   gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      print(
+        '- K0:   gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
     });
 
     testWidgets('K300/F1 - Keyboard + Field 1', (tester) async {
-      final m = await quickMeasure(tester, keyboardHeight: 300, focusFieldIndex: 0);
-      print('- K300/F1: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      final m = await quickMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 0,
+      );
+      print(
+        '- K300/F1: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
     });
 
     testWidgets('K300/F2 - Keyboard + Field 2', (tester) async {
-      final m = await quickMeasure(tester, keyboardHeight: 300, focusFieldIndex: 1);
-      print('- K300/F2: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}');
+      final m = await quickMeasure(
+        tester,
+        keyboardHeight: 300,
+        focusFieldIndex: 1,
+      );
+      print(
+        '- K300/F2: gap=${m['gap']?.toStringAsFixed(0)}, backButtonY=${m['backButtonY']?.toStringAsFixed(0)}, headerTop=${m['headerTop']?.toStringAsFixed(0)}',
+      );
 
       // Ampel evaluation
       final gap = m['gap'] as double;
       final backButtonY = m['backButtonY'] as double;
       final headerTop = m['headerTop'] as double;
 
-      final gapColor = gap >= 24 ? 'green' : gap >= 16 ? 'yellow' : 'red';
-      final visibilityColor = (backButtonY >= 47 && headerTop >= 47) ? 'green' : 'red';
-
+      final gapColor = gap >= 24
+          ? 'green'
+          : gap >= 16
+          ? 'yellow'
+          : 'red';
+      const safeTop = 47;
+      const backInset = 12;
+      final visibilityColor =
+          (backButtonY >= (safeTop + backInset) && headerTop >= safeTop)
+          ? 'green'
+          : 'red';
       print('');
       print('SUMMARY:');
-      print('- BottomOwner: double-reserve'); // includeBottomReserve=true + Footer SafeArea
+      print(
+        '- BottomOwner: double-reserve',
+      ); // includeBottomReserve=true + Footer SafeArea
       print('- Gap(K300/F1,F2): $gapColor (${gap.toStringAsFixed(0)}px)');
       print('- Header/Back visibility(K300): $visibilityColor');
     });

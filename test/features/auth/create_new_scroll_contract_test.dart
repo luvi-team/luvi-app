@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
+import '../../support/test_config.dart';
 
 void main() {
-  testWidgets('confirm field and CTA remain visible with keyboard inset', (tester) async {
+  TestConfig.ensureInitialized();
+  testWidgets('confirm field and CTA remain visible with keyboard inset', (
+    tester,
+  ) async {
     final view = tester.view;
     view.physicalSize = const Size(1080, 2340);
     view.devicePixelRatio = 1.0;

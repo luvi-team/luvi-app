@@ -6,6 +6,36 @@ import '../design_tokens/colors.dart';
 import '../design_tokens/typography.dart';
 import '../design_tokens/spacing.dart';
 import '../design_tokens/sizes.dart';
+import '../design_tokens/dashboard_typography_tokens.dart';
+import '../design_tokens/divider_tokens.dart';
+
+List<double> _lerpDoubleList(List<double> a, List<double> b, double t) {
+  final minLength = a.length < b.length ? a.length : b.length;
+  final result = <double>[];
+  for (var i = 0; i < minLength; i++) {
+    result.add(lerpDouble(a[i], b[i], t) ?? a[i]);
+  }
+  if (a.length > minLength) {
+    result.addAll(a.sublist(minLength));
+  } else if (b.length > minLength) {
+    result.addAll(b.sublist(minLength));
+  }
+  return result;
+}
+
+List<Color> _lerpColorList(List<Color> a, List<Color> b, double t) {
+  final minLength = a.length < b.length ? a.length : b.length;
+  final result = <Color>[];
+  for (var i = 0; i < minLength; i++) {
+    result.add(Color.lerp(a[i], b[i], t) ?? a[i]);
+  }
+  if (a.length > minLength) {
+    result.addAll(a.sublist(minLength));
+  } else if (b.length > minLength) {
+    result.addAll(b.sublist(minLength));
+  }
+  return result;
+}
 
 /// Minimal theme scaffold for the LUVI app.
 /// This is a placeholder for future design system implementation.
@@ -79,10 +109,16 @@ class AppTheme {
         DsTokens.light,
         TextColorTokens.light,
         SurfaceColorTokens.light,
+        DashboardLayoutTokens.light,
         CyclePhaseTokens.light,
         CalendarRadiusTokens.light,
         ShadowTokens.light,
         GlassTokens.light,
+        WorkoutCardTypographyTokens.light,
+        WorkoutCardOverlayTokens.light,
+        RecommendationCardOverlayTokens.light,
+        DashboardTypographyTokens.light,
+        DividerTokens.light,
       ],
     );
   }
@@ -324,16 +360,26 @@ class SurfaceColorTokens extends ThemeExtension<SurfaceColorTokens> {
     required this.infoBackground,
     required this.cardBackgroundNeutral,
     required this.white,
+    required this.waveOverlayPink,
+    required this.waveOverlayBeige,
   });
 
   final Color infoBackground;
   final Color cardBackgroundNeutral;
   final Color white;
+  final Color waveOverlayPink;
+  // Beige tint for recommendations section wave (Figma spec #D9B18E @ 15%).
+  final Color waveOverlayBeige;
 
   static const SurfaceColorTokens light = SurfaceColorTokens(
     infoBackground: DsColors.infoBackground,
     cardBackgroundNeutral: DsColors.cardBackgroundNeutral,
     white: DsColors.white,
+    waveOverlayPink: DsColors
+        .waveOverlayPink, // TODO(theme-dark): adjust for dark theme variant.
+    waveOverlayBeige: Color(
+      0x26D9B18E,
+    ), // Beige wave tint at 15% opacity (Figma spec #D9B18E @ 15%)
   );
 
   @override
@@ -341,10 +387,14 @@ class SurfaceColorTokens extends ThemeExtension<SurfaceColorTokens> {
     Color? infoBackground,
     Color? cardBackgroundNeutral,
     Color? white,
+    Color? waveOverlayPink,
+    Color? waveOverlayBeige,
   }) => SurfaceColorTokens(
     infoBackground: infoBackground ?? this.infoBackground,
     cardBackgroundNeutral: cardBackgroundNeutral ?? this.cardBackgroundNeutral,
     white: white ?? this.white,
+    waveOverlayPink: waveOverlayPink ?? this.waveOverlayPink,
+    waveOverlayBeige: waveOverlayBeige ?? this.waveOverlayBeige,
   );
 
   @override
@@ -357,6 +407,83 @@ class SurfaceColorTokens extends ThemeExtension<SurfaceColorTokens> {
           Color.lerp(cardBackgroundNeutral, other.cardBackgroundNeutral, t) ??
           cardBackgroundNeutral,
       white: Color.lerp(white, other.white, t) ?? white,
+      waveOverlayPink:
+          Color.lerp(waveOverlayPink, other.waveOverlayPink, t) ??
+          waveOverlayPink,
+      waveOverlayBeige:
+          Color.lerp(waveOverlayBeige, other.waveOverlayBeige, t) ??
+          waveOverlayBeige,
+    );
+  }
+}
+
+@immutable
+class DashboardLayoutTokens extends ThemeExtension<DashboardLayoutTokens> {
+  const DashboardLayoutTokens({
+    required this.waveHeightPx,
+    required this.heroHorizontalMarginPx,
+    required this.calendarToWaveGapPx,
+    required this.heroToSectionGapPx,
+    required this.waveAmplitudePink,
+  });
+
+  final double waveHeightPx;
+  final double heroHorizontalMarginPx;
+  final double calendarToWaveGapPx;
+  final double heroToSectionGapPx;
+  // Pink wave amplitude above hero card (Figma audit Phase 1)
+  final double waveAmplitudePink;
+
+  static const DashboardLayoutTokens light = DashboardLayoutTokens(
+    // Audit node 68672:7392 → hero frame y=216, h=249. Wave overlay height derived as 249 - 21 gap = 228 px.
+    waveHeightPx: 228,
+    // Audit spacing observedValues 21px hero workout frame margins (docs/audits/DASHBOARD_figma_audit_v2.json).
+    heroHorizontalMarginPx: 21,
+    // Calendar (node 68672:7364) bottom at y=195 vs hero top y=216 → 21 px gap filled by wave overlay.
+    calendarToWaveGapPx: 21,
+    // Audit observed main vertical gap between hero bottom and first section title.
+    heroToSectionGapPx: 42,
+    // Pink wave curved lip height (Figma node 68721:7519, reduced from 24px to 22px per audit)
+    waveAmplitudePink: 22.0,
+  );
+
+  @override
+  DashboardLayoutTokens copyWith({
+    double? waveHeightPx,
+    double? heroHorizontalMarginPx,
+    double? calendarToWaveGapPx,
+    double? heroToSectionGapPx,
+    double? waveAmplitudePink,
+  }) => DashboardLayoutTokens(
+    waveHeightPx: waveHeightPx ?? this.waveHeightPx,
+    heroHorizontalMarginPx:
+        heroHorizontalMarginPx ?? this.heroHorizontalMarginPx,
+    calendarToWaveGapPx: calendarToWaveGapPx ?? this.calendarToWaveGapPx,
+    heroToSectionGapPx: heroToSectionGapPx ?? this.heroToSectionGapPx,
+    waveAmplitudePink: waveAmplitudePink ?? this.waveAmplitudePink,
+  );
+
+  @override
+  DashboardLayoutTokens lerp(
+    ThemeExtension<DashboardLayoutTokens>? other,
+    double t,
+  ) {
+    if (other is! DashboardLayoutTokens) return this;
+    return DashboardLayoutTokens(
+      waveHeightPx:
+          lerpDouble(waveHeightPx, other.waveHeightPx, t) ?? waveHeightPx,
+      heroHorizontalMarginPx:
+          lerpDouble(heroHorizontalMarginPx, other.heroHorizontalMarginPx, t) ??
+          heroHorizontalMarginPx,
+      calendarToWaveGapPx:
+          lerpDouble(calendarToWaveGapPx, other.calendarToWaveGapPx, t) ??
+          calendarToWaveGapPx,
+      heroToSectionGapPx:
+          lerpDouble(heroToSectionGapPx, other.heroToSectionGapPx, t) ??
+          heroToSectionGapPx,
+      waveAmplitudePink:
+          lerpDouble(waveAmplitudePink, other.waveAmplitudePink, t) ??
+          waveAmplitudePink,
     );
   }
 }
@@ -491,32 +618,65 @@ class CalendarRadiusTokens extends ThemeExtension<CalendarRadiusTokens> {
 
 @immutable
 class ShadowTokens extends ThemeExtension<ShadowTokens> {
-  const ShadowTokens({required this.heroDrop, required this.tileDrop});
+  const ShadowTokens({
+    required this.heroDrop,
+    required this.tileDrop,
+    required this.heroCardDrop,
+    required this.heroCalloutTextShadow,
+  });
 
   final BoxShadow heroDrop;
   final BoxShadow tileDrop;
+
+  /// Desktop/web fallback that mirrors Material elevation 4 used on mobile.
+  final BoxShadow heroCardDrop;
+  // Text-shadow for hero card callout text (Figma audit Phase 1)
+  final Shadow heroCalloutTextShadow;
 
   static const ShadowTokens light = ShadowTokens(
     heroDrop: BoxShadow(
       offset: Offset(0, 4),
       blurRadius: 4,
       spreadRadius: 0,
-      color: Color(0x40000000),
+      color: Color(
+        0x20000000,
+      ), // 12.5% alpha (reduced from 25% for subtler shadows)
+    ),
+    heroCardDrop: BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 4,
+      spreadRadius: 0,
+      color: Color(0x40000000), // 25% alpha to match hero card spec
     ),
     tileDrop: BoxShadow(
       offset: Offset(0, 4),
       blurRadius: 4,
       spreadRadius: 0,
-      color: Color(0x40000000),
+      color: Color(
+        0x20000000,
+      ), // 12.5% alpha (reduced from 25% for subtler shadows)
+    ),
+    heroCalloutTextShadow: Shadow(
+      offset: Offset(0, 4),
+      blurRadius: 4,
+      color: Color(
+        0x20000000,
+      ), // 12.5% alpha (reduced from 25% for subtler shadows)
     ),
   );
 
   @override
-  ShadowTokens copyWith({BoxShadow? heroDrop, BoxShadow? tileDrop}) =>
-      ShadowTokens(
-        heroDrop: heroDrop ?? this.heroDrop,
-        tileDrop: tileDrop ?? this.tileDrop,
-      );
+  ShadowTokens copyWith({
+    BoxShadow? heroDrop,
+    BoxShadow? tileDrop,
+    BoxShadow? heroCardDrop,
+    Shadow? heroCalloutTextShadow,
+  }) => ShadowTokens(
+    heroDrop: heroDrop ?? this.heroDrop,
+    tileDrop: tileDrop ?? this.tileDrop,
+    heroCardDrop: heroCardDrop ?? this.heroCardDrop,
+    heroCalloutTextShadow: heroCalloutTextShadow ?? this.heroCalloutTextShadow,
+  );
 
   @override
   ShadowTokens lerp(ThemeExtension<ShadowTokens>? other, double t) {
@@ -524,6 +684,11 @@ class ShadowTokens extends ThemeExtension<ShadowTokens> {
     return ShadowTokens(
       heroDrop: BoxShadow.lerp(heroDrop, other.heroDrop, t) ?? heroDrop,
       tileDrop: BoxShadow.lerp(tileDrop, other.tileDrop, t) ?? tileDrop,
+      heroCardDrop:
+          BoxShadow.lerp(heroCardDrop, other.heroCardDrop, t) ?? heroCardDrop,
+      heroCalloutTextShadow:
+          Shadow.lerp(heroCalloutTextShadow, other.heroCalloutTextShadow, t) ??
+          heroCalloutTextShadow,
     );
   }
 }
@@ -561,6 +726,205 @@ class GlassTokens extends ThemeExtension<GlassTokens> {
       background: Color.lerp(background, other.background, t) ?? background,
       border: BorderSide.lerp(border, other.border, t),
       blur: lerpDouble(blur, other.blur, t) ?? blur,
+    );
+  }
+}
+
+@immutable
+class WorkoutCardTypographyTokens
+    extends ThemeExtension<WorkoutCardTypographyTokens> {
+  const WorkoutCardTypographyTokens({
+    required this.titleStyle,
+    required this.subtitleStyle,
+    required this.durationStyle,
+    required this.sectionSubtitleStyle,
+  });
+
+  final TextStyle titleStyle;
+  final TextStyle subtitleStyle;
+  final TextStyle durationStyle;
+  final TextStyle sectionSubtitleStyle;
+
+  static const WorkoutCardTypographyTokens light = WorkoutCardTypographyTokens(
+    // Requires PlayfairDisplay-Bold, Figtree-Regular, and Figtree-Italic fonts in pubspec.
+    titleStyle: TextStyle(
+      fontFamily: FontFamilies.playfairDisplay,
+      fontWeight: FontWeight.w700,
+      fontSize: 24,
+      height: 32 / 24,
+    ),
+    subtitleStyle: TextStyle(
+      fontFamily: FontFamilies.figtree,
+      fontWeight: FontWeight.w400,
+      fontSize: 16,
+      height: 24 / 16,
+    ),
+    durationStyle: TextStyle(
+      fontFamily: FontFamilies.figtree,
+      fontWeight: FontWeight.w400,
+      fontSize: 12,
+      height: 24 / 12,
+      color: Color(0x99FFFFFF),
+    ),
+    sectionSubtitleStyle: TextStyle(
+      fontFamily: FontFamilies.figtree,
+      fontWeight: FontWeight.w400,
+      fontSize: 16,
+      height: 24 / 16,
+      fontStyle: FontStyle.italic,
+      color: Color(0xFF696969),
+    ),
+  );
+
+  @override
+  WorkoutCardTypographyTokens copyWith({
+    TextStyle? titleStyle,
+    TextStyle? subtitleStyle,
+    TextStyle? durationStyle,
+    TextStyle? sectionSubtitleStyle,
+  }) => WorkoutCardTypographyTokens(
+    titleStyle: titleStyle ?? this.titleStyle,
+    subtitleStyle: subtitleStyle ?? this.subtitleStyle,
+    durationStyle: durationStyle ?? this.durationStyle,
+    sectionSubtitleStyle: sectionSubtitleStyle ?? this.sectionSubtitleStyle,
+  );
+
+  @override
+  WorkoutCardTypographyTokens lerp(
+    ThemeExtension<WorkoutCardTypographyTokens>? other,
+    double t,
+  ) {
+    if (other is! WorkoutCardTypographyTokens) return this;
+    return WorkoutCardTypographyTokens(
+      titleStyle: TextStyle.lerp(titleStyle, other.titleStyle, t) ?? titleStyle,
+      subtitleStyle:
+          TextStyle.lerp(subtitleStyle, other.subtitleStyle, t) ??
+          subtitleStyle,
+      durationStyle:
+          TextStyle.lerp(durationStyle, other.durationStyle, t) ??
+          durationStyle,
+      sectionSubtitleStyle:
+          TextStyle.lerp(sectionSubtitleStyle, other.sectionSubtitleStyle, t) ??
+          sectionSubtitleStyle,
+    );
+  }
+}
+
+@immutable
+class WorkoutCardOverlayTokens
+    extends ThemeExtension<WorkoutCardOverlayTokens> {
+  const WorkoutCardOverlayTokens({
+    required this.begin,
+    required this.end,
+    required this.stops,
+    required this.colors,
+  });
+
+  final Alignment begin;
+  final Alignment end;
+  final List<double> stops;
+  final List<Color> colors;
+
+  static const WorkoutCardOverlayTokens light = WorkoutCardOverlayTokens(
+    begin: Alignment.bottomCenter,
+    end: Alignment.topCenter,
+    stops: [0.0, 0.8],
+    colors: [Color(0xCC1A1A1A), Color(0x001A1A1A)],
+  );
+
+  LinearGradient get gradient =>
+      LinearGradient(begin: begin, end: end, stops: stops, colors: colors);
+
+  @override
+  WorkoutCardOverlayTokens copyWith({
+    Alignment? begin,
+    Alignment? end,
+    List<double>? stops,
+    List<Color>? colors,
+  }) => WorkoutCardOverlayTokens(
+    begin: begin ?? this.begin,
+    end: end ?? this.end,
+    stops: stops ?? this.stops,
+    colors: colors ?? this.colors,
+  );
+
+  @override
+  WorkoutCardOverlayTokens lerp(
+    ThemeExtension<WorkoutCardOverlayTokens>? other,
+    double t,
+  ) {
+    if (other is! WorkoutCardOverlayTokens) return this;
+    final Alignment? lerpedBegin = Alignment.lerp(begin, other.begin, t);
+    final Alignment? lerpedEnd = Alignment.lerp(end, other.end, t);
+
+    final List<double> lerpedStops = _lerpDoubleList(stops, other.stops, t);
+    final List<Color> lerpedColors = _lerpColorList(colors, other.colors, t);
+
+    return WorkoutCardOverlayTokens(
+      begin: lerpedBegin ?? begin,
+      end: lerpedEnd ?? end,
+      stops: lerpedStops,
+      colors: lerpedColors,
+    );
+  }
+}
+
+@immutable
+class RecommendationCardOverlayTokens
+    extends ThemeExtension<RecommendationCardOverlayTokens> {
+  const RecommendationCardOverlayTokens({
+    required this.begin,
+    required this.end,
+    required this.stops,
+    required this.colors,
+  });
+
+  final Alignment begin;
+  final Alignment end;
+  final List<double> stops;
+  final List<Color> colors;
+
+  static const RecommendationCardOverlayTokens light =
+      RecommendationCardOverlayTokens(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: [0.4991, 0.9105],
+        colors: [Color(0x001A1A1A), Color(0xCC1A1A1A)],
+      );
+
+  LinearGradient get gradient =>
+      LinearGradient(begin: begin, end: end, stops: stops, colors: colors);
+
+  @override
+  RecommendationCardOverlayTokens copyWith({
+    Alignment? begin,
+    Alignment? end,
+    List<double>? stops,
+    List<Color>? colors,
+  }) => RecommendationCardOverlayTokens(
+    begin: begin ?? this.begin,
+    end: end ?? this.end,
+    stops: stops ?? this.stops,
+    colors: colors ?? this.colors,
+  );
+
+  @override
+  RecommendationCardOverlayTokens lerp(
+    ThemeExtension<RecommendationCardOverlayTokens>? other,
+    double t,
+  ) {
+    if (other is! RecommendationCardOverlayTokens) return this;
+    final Alignment? lerpedBegin = Alignment.lerp(begin, other.begin, t);
+    final Alignment? lerpedEnd = Alignment.lerp(end, other.end, t);
+
+    final List<double> lerpedStops = _lerpDoubleList(stops, other.stops, t);
+    final List<Color> lerpedColors = _lerpColorList(colors, other.colors, t);
+
+    return RecommendationCardOverlayTokens(
+      begin: lerpedBegin ?? begin,
+      end: lerpedEnd ?? end,
+      stops: lerpedStops,
+      colors: lerpedColors,
     );
   }
 }

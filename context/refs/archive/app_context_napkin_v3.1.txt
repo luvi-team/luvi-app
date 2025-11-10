@@ -1,0 +1,198 @@
+Konzept für eine holistische FemTech-App
+
+Dieses Dokument beschreibt das Konzept für eine holistische FemTech-App, die personalisierte Empfehlungen in den Bereichen Training, Ernährung, Regeneration und Achtsamkeit bietet. Besonderer Wert wird auf den Datenschutz und die Einhaltung der DSGVO gelegt. Die App soll Nutzerinnen durch ihren Zyklus begleiten und ihnen helfen, ihr Wohlbefinden zu steigern.
+
+
+Ziel & Haltung
+
+Die App soll eine holistische Lösung für Frauen sein, die personalisierte Empfehlungen für Training, Ernährung sowie Regeneration und Achtsamkeit bietet.
+Dabei steht der Datenschutz im Vordergrund (DSGVO-first).
+
+Consent & Datenschutz (vor Nutzung)
+
+Vor der Nutzung der App ist eine explizite Einwilligung der Nutzerin erforderlich. Diese Einwilligung umfasst:
+
+Zwecke der Datenerhebung und -verarbeitung: Klare und verständliche Beschreibung, wofür die Daten verwendet werden.
+
+Datentypen: Auflistung der Datentypen, die erhoben werden (z.B. Zyklusdaten, Trainingsdaten, Ernährungsdaten, Wearable-Daten).
+
+Rechte der Nutzerin: Information über die Rechte der Nutzerin (z.B. Recht auf Auskunft, Berichtigung, Löschung, Widerspruch).
+
+Optionale AI-Nutzung: Klare Erklärung, dass die Nutzung von KI-Funktionen optional ist und nur mit expliziter Einwilligung erfolgt.
+
+Vollständige Privacy Policy & AGB: Die vollständige Datenschutzerklärung und die Allgemeinen Geschäftsbedingungen müssen jederzeit einsehbar sein.
+
+
+Off-Flow → Onboarding
+
+Der Onboarding-Prozess soll reibungslos und benutzerfreundlich gestaltet sein:
+
+Splash Screen: Kurze Einführung in die App.
+
+Welcome Screens: Vorstellung der wichtigsten Funktionen und Vorteile der App.
+
+Login/Signup: Sichere Authentifizierung (z.B. OAuth). 2-Faktor-Authentifizierung (2FA) soll später implementiert werden.
+
+Consent: Einholung der expliziten Einwilligung (siehe oben).
+
+Onboarding: Erfassung der grundlegenden Zyklusdaten (Länge, Periodendauer, LMP, Alter).
+
+
+Navigation
+
+Die App soll eine intuitive Navigation bieten:
+
+Dashboard (Übersicht): Zentrale Anlaufstelle mit Sektionen für Training, Ernährung, Regeneration und Achtsamkeit.
+
+Eigenständige Screens:
+
+Zyklus: Zyklusbezogene Informationen und Funktionen.
+
+LUVI Sync (Tägliches Journal/Briefing): Personalisierte Empfehlungen basierend auf KI-Analyse.
+
+Puls (Leistungsbezogene Daten): Detaillierte Informationen zu Trainingsdaten und Wearable-Integrationen.
+
+Profil (Einstellungen): Verwaltung des Profils und der Einstellungen.
+
+
+Dashboard-Sektionen
+
+Die Dashboard-Sektionen sollen übersichtlich und informativ gestaltet sein:
+
+Überschrift + Zyklusphase + NotificationsIcon: Klare Kennzeichnung der Sektion und des aktuellen Zyklusstatus.
+
+Zykluskalender: Navigation zum Zyklusscreen.
+
+LUVI Sync Herobild + Text + Navigation zu LUVI Sync:
+
+Täglich von KI generiertes Journal/Briefing über den heutigen Tag:
+
+Training, Ernährung, Regeneration, Achtsamkeit > immer mit einer "Top Empfehlung" mit klassichem LUVI Sync Yin-Yang Icon
+
+Wearable-Datenintegration: Infos zum Schlaf, Regeneration usw.
+
+Infos über aktuellen Zyklusstand (evtl. präziser bei Wearable-Daten).
+
+Evtl. Infos über Wetter, Verkehr, Kleidungsempfehlung.
+
+Evtl. später Kalendersync für detailliertere Infos zum Alltag.
+
+Evtl. später "News"-Bereich für frauenrelevante Nachrichten.
+
+
+Kategorien:
+
+Workout:
+
+"Deine Top-Empfehlung" (basierend auf LUVI Sync Briefing, mit LUVI Sync Yin-Yang Icon).
+
+Klick auf "Top Empfehlung" > Workout Screen mit Übungsanleitung, Videos, Sätze/Wh.
+
+Trainingslevelanpassung (leicht/mittel/schwer).
+
+Optional "AI Trainer": Alternative Übungsvorschläge bei Einschränkungen.
+
+"Weitere Trainings" (horizontaler Scroll Screen) basierend auf Zyklusstand.
+
+Ernährung:
+
+"Deine Top-Empfehlung" (basierend auf LUVI Sync Briefing, z.B. "mehr Eiweiß").
+
+"Mehr Kategorien":
+
+Nahrungsergänzungsmittel-Tipps
+
+Makronährstoff-Tipps
+Evtl. Ernährungstagebuch
+
+Evtl. optionale KI Q&A
+
+Regeneration:
+
+"Deine Top-Empfehlung" (basierend auf LUVI Sync Briefing).
+
+"Mehr Kategorien":
+
+Schlaftipps (präziser durch Wearable-Daten).
+
+Evtl. Tipps zur Sauna/Eisbaden.
+
+Evtl. Tipps zur Intensitätssteuerung des Workouts (bei Wearable-Integration).
+
+Achtsamkeit:
+
+"Deine Top-Empfehlung" (basierend auf LUVI Sync Briefing).
+
+"Mehr Kategorien":
+
+Achtsamkeitsübungen
+
+Atemtraining
+
+Meditation
+
+Journaling (evtl. mit KI als "Gesprächspartner")
+
+
+Deine Trainingsdaten:
+
+Bei Wearable-Integration:
+
+Vorschau auf:
+
+Puls (live)
+
+Verbrannte Energie (kcal) (live)
+
+Schritte (heute) (live)
+
+Klick auf Fenster > Navigation zu Puls (Statistik Screen).
+
+
+i (Informationsfenster):
+
+Kurzer Infotext über aktuelle Zyklusphase + weitere Infos (täglich aktualisiert bei Wearable-Daten, sonst zyklusphasenbezogen).
+
+Beispiel: Follikelphase > "Du bist heute in der Follikelphase. Aufgrund des erhöhten Progesterons hast du mehr Energie. Beste Zeit für ein intensiveres Training."
+
+
+Weitere Screens
+
+Zyklus: Zykluskalender, Zyklusverlauf (der letzten Zyklen), Tipps/Erklärungen zu den Zyklusphasen, usw.
+
+LUVI Sync: Täglich von KI generiertes Journal/Briefing über den heutigen Tag:
+
+Training, Ernährung, Regeneration, Achtsamkeit > immer mit einer "Top Empfehlung" mit klassichem LUVI Sync Yin-Yang Icon
+Wearable-Datenintegration: Infos zum Schlaf, Regeneration usw.
+
+Infos über aktuellen Zyklusstand (evtl. präziser bei Wearable-Daten).
+
+Evtl. Infos über Wetter, Verkehr, Kleidungsempfehlung.
+
+Evtl. später Kalendersync für detailliertere Infos zum Alltag.
+
+Evtl. später "News"-Bereich für frauenrelevante Nachrichten.
+
+Evtl. später Austausch/Content, Beiträge/Blog/Video-Uploads.
+
+Puls: Verlauf/Trends zu Zyklus, Schlaf, Aktivität, Tracking (Schlaf, Puls, HRV, Aktivität; Wearable-Integrationen vorgesehen).
+
+Profil: Profilinfos, Einstellungen, Zyklusanpassung, usw.
+
+
+AI-Personalisierung (Opt-in)
+
+Die Nutzung von KI zur Personalisierung erfolgt nur mit expliziter Einwilligung der Nutzerin. Die KI kann für folgende Zwecke eingesetzt werden:
+
+Analysen
+
+Trends/Prognosen
+
+
+Monetarisierung
+
+Die App wird als Freemium-Modell angeboten:
+
+7-Tage-Testversion
+
+Danach Paywall für Premium-Funktionen

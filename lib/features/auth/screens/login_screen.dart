@@ -14,6 +14,8 @@ import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
+  static const String routeName = '/auth/login';
+
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
@@ -26,17 +28,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    final s = ref.read(loginProvider);
-    if (_emailController.text != s.email) {
+    final loginNotifier = ref.read(loginProvider.notifier);
+    final initialState = loginNotifier.currentState;
+    if (_emailController.text != initialState.email) {
       _emailController.value = _emailController.value.copyWith(
-        text: s.email,
-        selection: TextSelection.collapsed(offset: s.email.length),
+        text: initialState.email,
+        selection: TextSelection.collapsed(offset: initialState.email.length),
       );
     }
-    if (_passwordController.text != s.password) {
+    if (_passwordController.text != initialState.password) {
       _passwordController.value = _passwordController.value.copyWith(
-        text: s.password,
-        selection: TextSelection.collapsed(offset: s.password.length),
+        text: initialState.password,
+        selection: TextSelection.collapsed(
+          offset: initialState.password.length,
+        ),
       );
     }
   }
@@ -50,19 +55,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final errors = ref.watch(
-      loginProvider.select(
-        (state) => (state.emailError, state.passwordError, state.globalError),
-      ),
-    );
-    final emailError = errors.$1;
-    final passwordError = errors.$2;
-    final globalError = errors.$3;
+    final loginAsync = ref.watch(loginProvider);
+    final loginState = loginAsync.value ?? LoginState.initial();
+    final emailError = loginState.emailError;
+    final passwordError = loginState.passwordError;
+    final globalError = loginState.globalError;
     final submitState = ref.watch(loginSubmitProvider);
     final isLoading = submitState.isLoading;
     final hasValidationError = emailError != null || passwordError != null;
 
-    void submit() => ref.read(loginSubmitProvider.notifier).submit(
+    void submit() => ref
+        .read(loginSubmitProvider.notifier)
+        .submit(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
@@ -101,12 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(
-                Spacing.l,
-                0,
-                Spacing.l,
-                safeBottom,
-              ),
+              padding: EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, safeBottom),
               child: LoginCtaSection(
                 onSubmit: submit,
                 onSignup: () => context.goNamed('signup'),
@@ -177,8 +176,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _onEmailChanged(String value) {
     final notifier = ref.read(loginProvider.notifier);
     notifier.setEmail(value);
-    final state = ref.read(loginProvider);
-    if (state.globalError != null) {
+    final state = ref.read(loginProvider).value;
+    if (state?.globalError != null) {
       notifier.clearGlobalError();
     }
   }
@@ -186,8 +185,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _onPasswordChanged(String value) {
     final notifier = ref.read(loginProvider.notifier);
     notifier.setPassword(value);
-    final state = ref.read(loginProvider);
-    if (state.globalError != null) {
+    final state = ref.read(loginProvider).value;
+    if (state?.globalError != null) {
       notifier.clearGlobalError();
     }
   }
@@ -195,5 +194,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _toggleObscurePassword() {
     setState(() => _obscurePassword = !_obscurePassword);
   }
-
 }

@@ -14,32 +14,32 @@ class WorkoutDetailStubScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final titleStyle = theme.textTheme.titleMedium?.copyWith(
-      fontFamily: FontFamilies.figtree,
-      fontSize: TypographyTokens.size20,
-      fontWeight: FontWeight.w600,
-    ) ?? const TextStyle(
-      fontFamily: FontFamilies.figtree,
-      fontSize: TypographyTokens.size20,
-      fontWeight: FontWeight.w600,
-    );
+    final titleStyle =
+        theme.textTheme.titleMedium?.copyWith(
+          fontFamily: FontFamilies.figtree,
+          fontSize: TypographyTokens.size20,
+          fontWeight: FontWeight.w600,
+        ) ??
+        const TextStyle(
+          fontFamily: FontFamilies.figtree,
+          fontSize: TypographyTokens.size20,
+          fontWeight: FontWeight.w600,
+        );
 
-    final bodyStyle = (theme.textTheme.bodyMedium ?? const TextStyle()).copyWith(
-      fontFamily: FontFamilies.figtree,
-      fontWeight: FontWeight.w400,
-      fontSize: TypographyTokens.size16,
-      height: TypographyTokens.lineHeightRatio24on16,
-    );
+    final bodyStyle = (theme.textTheme.bodyMedium ?? const TextStyle())
+        .copyWith(
+          fontFamily: FontFamilies.figtree,
+          fontWeight: FontWeight.w400,
+          fontSize: TypographyTokens.size16,
+          height: TypographyTokens.lineHeightRatio24on16,
+        );
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
-        title: Text(
-          l10n.workoutTitle,
-          style: titleStyle,
-        ),
+        title: Text(l10n.workoutTitle, style: titleStyle),
       ),
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Center(

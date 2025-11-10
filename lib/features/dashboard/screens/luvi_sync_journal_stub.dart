@@ -20,11 +20,12 @@ class LuviSyncJournalStubScreen extends StatelessWidget {
       fontWeight: FontWeight.w600,
     );
 
-    final bodyStyle = (theme.textTheme.bodyMedium ?? const TextStyle()).copyWith(
-      fontFamily: FontFamilies.figtree,
-      fontSize: TypographyTokens.size16,
-      height: TypographyTokens.lineHeightRatio24on16,
-    );
+    final bodyStyle = (theme.textTheme.bodyMedium ?? const TextStyle())
+        .copyWith(
+          fontFamily: FontFamilies.figtree,
+          fontSize: TypographyTokens.size16,
+          height: TypographyTokens.lineHeightRatio24on16,
+        );
 
     return Scaffold(
       appBar: AppBar(
