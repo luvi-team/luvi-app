@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
-      group: db-dry-run-${{ github.ref }}
+      group: db-dry-run-${{ github.workflow }}-${{ github.ref_name }}
       cancel-in-progress: true
     permissions:
       contents: read
@@ -40,4 +40,8 @@ jobs:
 
       - name: Skip (no migration changes or no creds)
         if: ${{ steps.changes.outputs.migrations != 'true' || (secrets.SUPABASE_DB_URL_DEV == '' && (secrets.SUPABASE_PROJECT_REF_DEV == '' || secrets.SUPABASE_DB_PASSWORD_DEV == '')) }}
-        run: echo "No migration changes or missing secrets — skipping DB dry-run."
+        run: |
+          echo "DB dry-run skipped:"
+          echo "- migrations changed: ${{ steps.changes.outputs.migrations }}"
+          echo "- has DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV != '' }}"
+          echo "- has link creds:  ${{ secrets.SUPABASE_PROJECT_REF_DEV != '' && secrets.SUPABASE_DB_PASSWORD_DEV != '' }}"
