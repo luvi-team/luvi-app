@@ -1,0 +1,44 @@
+name: Supabase DB Dry-Run
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  db-dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            migrations:
+              - 'supabase/migrations/**'
+
+      - if: ${{ steps.changes.outputs.migrations == 'true' }}
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Dry-run via DB URL (preferred)
+        if: ${{ steps.changes.outputs.migrations == 'true' && secrets.SUPABASE_DB_URL_DEV != '' }}
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL_DEV }}
+        run: supabase db push --dry-run --db-url "$SUPABASE_DB_URL"
+
+      - name: Dry-run via project link (fallback)
+        if: ${{ steps.changes.outputs.migrations == 'true' && (secrets.SUPABASE_DB_URL_DEV == '') }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF:  ${{ secrets.SUPABASE_PROJECT_REF_DEV }}
+          SUPABASE_DB_PASSWORD:  ${{ secrets.SUPABASE_DB_PASSWORD_DEV }}
+        run: |
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          supabase db push --dry-run --linked
+
+      - name: Skip (no migration changes or no creds)
+        if: ${{ steps.changes.outputs.migrations != 'true' && (secrets.SUPABASE_DB_URL_DEV == '') }}
+        run: echo "No migration changes or missing secrets — skipping."
+
