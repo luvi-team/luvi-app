@@ -17,6 +17,13 @@ samples, guidance on mobile development, and a full API reference.
 
 Note: Dieses Projekt verwendet `flutter_dotenv`; lokale Entwicklung nutzt `.env.development` (siehe `.env.example` als Vorlage).
 
+## SSOT/Quickstart
+
+- App‑Kontext: `docs/product/app-context.md:1`
+- Tech‑Stack: `docs/engineering/tech-stack.md:1`
+- Roadmap: `docs/product/roadmap.md:1`
+- Gold‑Standard Workflow (inkl. „Praktische Anleitung · Ultra‑Slim“): `docs/engineering/gold-standard-workflow.md:62`
+
 ## Database Security (RLS)
 
 ### Row Level Security (RLS) Implementation

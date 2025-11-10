@@ -15,6 +15,9 @@ Arbeitsweise
 - Antwortformat: verbindlich gemäß `docs/engineering/assistant-answer-format.md`.
 - CI-Pflegezyklus: Actions-Pinning (checkout/upload-artifact/github-script) quartalsweise prüfen/aktualisieren; siehe `context/agents/_actions_todo.md`.
 
+Quickstart (SSOT)
+- Einstieg/Links siehe `README.md:1` → App‑Kontext, Tech‑Stack, Roadmap, Gold‑Standard (inkl. „Praktische Anleitung · Ultra‑Slim“)
+
 Rollenwahl
 - Default: Auto-Role (ankündigen). Misch-Tasks: `role: …` (Primärrolle zuerst).
 
