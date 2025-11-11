@@ -8,10 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    # PAT for supabase link fallback (Only used when DB_URL_DEV is empty).
     env:
       SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
       SUPABASE_PROJECT_REF_DEV: ${{ secrets.SUPABASE_PROJECT_REF_DEV }}
       SUPABASE_DB_PASSWORD_DEV: ${{ secrets.SUPABASE_DB_PASSWORD_DEV }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +33,7 @@ jobs:
         env:
           SUPABASE_PROJECT_REF: ${{ env.SUPABASE_PROJECT_REF_DEV }}
           SUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD_DEV }}
+          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
         run: |
           supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
           supabase db push --linked
