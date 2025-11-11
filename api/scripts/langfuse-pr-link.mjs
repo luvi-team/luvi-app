@@ -24,7 +24,17 @@ try {
   if (u.protocol === 'https:' && !u.username && !u.password) {
     host = u.toString().replace(/\/$/, '');
   }
-} catch {}
+} catch (err) {
+  const safeHost =
+    typeof rawHost === 'string'
+      ? rawHost.replace(/\/\/[^@]+@/, '//***@')
+      : String(rawHost);
+  console.warn(
+    'WARN: LANGFUSE host validation failed for "%s": %s',
+    safeHost,
+    err?.message || err
+  );
+}
 
 try {
   const lf = new Langfuse({
@@ -79,4 +89,3 @@ try {
   console.log('SKIP: failed to create Langfuse trace:', e?.message || String(e));
   // non-blocking
 }
-
