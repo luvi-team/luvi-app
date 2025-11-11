@@ -13,13 +13,18 @@ printf '  - %s\n' "${REQUIRED_CHECKS[@]}"
 for branch in "${BRANCHES[@]}"; do
   echo "[branch-protection] updating protection rules for $branch"
 
+  check_fields=()
+  for check in "${REQUIRED_CHECKS[@]}"; do
+    check_fields+=(-f "required_status_checks.checks[][context]=$check")
+  done
+
   gh api \
     --method PUT \
     -H "Accept: application/vnd.github+json" \
     "/repos/$REPO/branches/$branch/protection" \
     -f required_status_checks.strict=true \
     -f required_status_checks.enforcement_level=everyone \
-    $(printf -- "-f required_status_checks.checks[][context]=%s " "${REQUIRED_CHECKS[@]}") \
+    "${check_fields[@]}" \
     -f enforce_admins=true \
     -f required_pull_request_reviews.required_approving_review_count=1 \
     -F required_pull_request_reviews.dismiss_stale_reviews=true \

@@ -29,7 +29,7 @@ jobs:
         run: supabase db push --db-url "$SUPABASE_DB_URL"
 
       - name: Apply via project link (fallback)
-        if: ${{ env.SUPABASE_DB_URL_DEV == '' && env.SUPABASE_PROJECT_REF_DEV != '' && env.SUPABASE_DB_PASSWORD_DEV != '' }}
+        if: ${{ env.SUPABASE_DB_URL_DEV == '' && env.SUPABASE_PROJECT_REF_DEV != '' && env.SUPABASE_DB_PASSWORD_DEV != '' && env.SUPABASE_ACCESS_TOKEN != '' }}
         env:
           SUPABASE_PROJECT_REF: ${{ env.SUPABASE_PROJECT_REF_DEV }}
           SUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD_DEV }}
@@ -39,9 +39,10 @@ jobs:
           supabase db push --linked
 
       - name: Fail (missing Supabase credentials)
-        if: ${{ env.SUPABASE_DB_URL_DEV == '' && (env.SUPABASE_PROJECT_REF_DEV == '' || env.SUPABASE_DB_PASSWORD_DEV == '') }}
+        if: ${{ env.SUPABASE_DB_URL_DEV == '' && (env.SUPABASE_PROJECT_REF_DEV == '' || env.SUPABASE_DB_PASSWORD_DEV == '' || env.SUPABASE_ACCESS_TOKEN == '') }}
         run: |
           echo "Supabase DB apply skipped: DB URL missing and link credentials incomplete."
           echo "- has project ref:  ${{ env.SUPABASE_PROJECT_REF_DEV != '' }}"
           echo "- has db password:  ${{ env.SUPABASE_DB_PASSWORD_DEV != '' }}"
+          echo "- has access token: ${{ env.SUPABASE_ACCESS_TOKEN != '' }}"
           exit 1
