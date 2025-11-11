@@ -69,12 +69,14 @@ try {
   // Try to get UI URL
   let uiUrl;
   const anyLf = /** @type {any} */ (lf);
+  const traceId = trace.id ?? trace.traceId;
   try {
-    if (anyLf.api?.traceGet && (trace.id || trace.traceId)) {
-      const t = await anyLf.api.traceGet(trace.id ?? trace.traceId);
-      if (t?.htmlPath) uiUrl = host + t.htmlPath;
+    if (typeof lf.getTraceUrl === 'function' && traceId) {
+      uiUrl = await lf.getTraceUrl(traceId);
     }
-  } catch {}
+  } catch {
+    uiUrl = undefined;
+  }
 
   if (typeof anyLf.flushAsync === 'function') {
     await anyLf.flushAsync();
