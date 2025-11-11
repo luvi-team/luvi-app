@@ -7,6 +7,7 @@ const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
 interface ConsentPayload {
   version: string
   scopes: string[]
+  user_id?: string
 }
 
 serve(async (req) => {
@@ -62,19 +63,42 @@ serve(async (req) => {
       }
     })
 
+    const { data: authData, error: authError } = await supabase.auth.getUser()
+    if (authError || !authData?.user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    if (body.user_id && body.user_id !== authData.user.id) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden: user mismatch' }),
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
     const { error } = await supabase
       .from('consents')
       .insert({
+        user_id: authData.user.id,
         version: body.version,
         scopes: body.scopes
       })
 
     if (error) {
       console.error('Database error:', error)
+      const status = (error as { code?: string }).code ? 403 : 400
       return new Response(
-        JSON.stringify({ error: 'Failed to log consent' }),
+        JSON.stringify({ error: error.message }),
         { 
-          status: 500,
+          status,
           headers: { 'Content-Type': 'application/json' }
         }
       )
@@ -83,7 +107,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ ok: true }),
       { 
-        status: 200,
+        status: 201,
         headers: { 'Content-Type': 'application/json' }
       }
     )

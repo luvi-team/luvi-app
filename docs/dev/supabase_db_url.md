@@ -1,3 +1,4 @@
+# Supabase DB URLs
 Supabase DB URLs benötigen percent-encodete Passwörter, sobald Sonderzeichen vorkommen.
 Encoden lokal: `node scripts/urlencode_password.mjs '<PLAINTEXT>'` und die Ausgabe unverändert übernehmen.
 DB-URL-Template: `postgres://<user>:<encoded-password>@<host>:<port>/<database>?sslmode=require`.

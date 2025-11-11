@@ -13,7 +13,7 @@ if [[ "${CODEX_USE_REAL_HOME:-0}" != "1" ]]; then
   export PUB_CACHE="$REPO_ROOT/.tooling/pub-cache"
 fi
 
-mkdir -p "$HOME" "$PUB_CACHE" || true
+mkdir -p "$HOME" "$PUB_CACHE"
 
 # Prefer repo-local Flutter SDK if present
 if [[ -d "$REPO_ROOT/.tooling/flutter-sdk/bin" ]]; then
@@ -38,8 +38,13 @@ case "$cmd" in
     ;;
   test)
     # Ensure -j 1 unless explicitly provided
-    ARGS=("$@")
-    if [[ " ${ARGS[*]} " != *" -j "* ]]; then
+    ARGS=()
+    if (($# > 0)); then
+      ARGS=("$@")
+    fi
+    if ((${#ARGS[@]} == 0)); then
+      ARGS=("-j" "1")
+    elif [[ " ${ARGS[*]} " != *" -j "* ]]; then
       ARGS=("-j" "1" "${ARGS[@]}")
     fi
     set -x
@@ -51,4 +56,3 @@ case "$cmd" in
     exit 2
     ;;
 esac
-
