@@ -160,3 +160,4 @@ api/node_modules/
 !.config/README.md
 .home_overrides/
 .local_flutter/
+.tooling/
