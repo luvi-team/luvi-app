@@ -1,28 +1,27 @@
 # Privacy Review — 20251110133500_log_consent_guard_owner.sql
 
 ## Change
-Härtung der `public.log_consent_if_allowed(...)` Funktion:
-- Erzwingt Owner‑Match: `IF p_user_id <> auth.uid() THEN RAISE EXCEPTION ... '42501'`
-- Keine Änderung der Datenschemata; Security‑Invoker bleibt erhalten
+Harden the `public.log_consent_if_allowed(...)` function:
+- Enforce owner match: `IF p_user_id <> auth.uid() THEN RAISE EXCEPTION ... '42501'`.
+- No schema changes; the security invoker context stays as-is.
 
 ## Data Impact
-- Keine neuen Felder/Tabellen; Schreibpfad bleibt auf `public.consents`
-- Fehlercode 42501 bei falschem Owner statt stiller Ablehnung → klareres Verhalten
+- No new tables or fields; writes continue to target `public.consents`.
+- Caller now receives `42501` for mismatched owners instead of a silent denial, giving clearer signals.
 
 ## Purpose / Risk
-- Hardening: Explizites Verbot fremder Writes, verkleinert Fehlkonfigurations‑Risiko
-- Keine Erhöhung des Datenschutzrisikos; eher Reduktion
+- Hardening: explicitly blocks cross-user writes, shrinking misconfiguration risk.
+- No added privacy risk; enforcement strictly reduces possible exposure.
 
 ## RLS / Access Control
-- RLS bleibt aktiv; Funktion schreibt weiterhin unter RLS (Invoker)
-- Owner‑Check verhindert Missbrauch selbst bei fehlerhaften Caller‑Parametern
+- RLS remains enabled; the function still executes with invoker security.
+- The owner check prevents misuse even when callers pass incorrect `p_user_id`.
 
-## DPIA/DSGVO
-- Kein neuer Verarbeitungsvorgang, keine neuen Empfänger
+## DPIA / GDPR
+- No new processing purpose or recipients introduced.
 
 ## Evidence
-- Unit/Smoke: erwarteter 42501 bei `p_user_id != auth.uid()`; OK bei Match
+- Unit/smoke tests: expect `42501` when `p_user_id != auth.uid()`; happy path remains green.
 
 ## Result
-✅ Privacy‑neutral (Zugriffshärtung, klarere Fehlersemantik).
-
+✅ Privacy-neutral access hardening with clearer failure semantics.

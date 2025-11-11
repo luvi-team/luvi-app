@@ -82,7 +82,7 @@ Vorgehen:
 3) BMAD-Template: Business (Ziel + DSGVO-Impact) · Modellierung (Daten/Flows) · Architektur (Screens/Services/DB + RLS) · DoD
 4) In PR-Body oder separate Datei einfügen
 5) BMAD an Codex / Claude posten → Umsetzung starten
-6) Archon (MCP): Relevantes Dossier (Phase, Consent, Ranking) kurz aktualisieren und im PR verlinken
+6) Archon (MCP) — interner Orchestrierungsagent/Tool für Phase · Consent · Ranking: `context/agents/archon.md` mit den drei Feldern (aktueller Status, Consent-Quelle, Ranking/Entscheid) aktualisieren und Link in der PR-Beschreibung angeben
 
 #### 1.2 Runbook nutzen (bei Problemen)
 Wann: Troubleshooting (z. B. RLS-Fail, Edge-Function 500, Consent-Bug)
@@ -119,6 +119,13 @@ Vorgehen:
 | Prove             | Nach Code                | 5–10 Min | Self-Check → DSGVO-Review → Sign-off                         |
 | Langfuse-Trace    | Nach Code (bei AI-Touch) | 1–2 Min  | Trace öffnen → Link + Notiz (Token/Kosten, Latenz) in PR     |
 | Supabase MCP      | Bei DB-Änderungen        | 5–10 Min | `describe/plan` in Staging → Migration per PR/CI             |
+
+### Error Handling
+- `flutter analyze` fails → lokal `flutter analyze` ausführen, Null-Safety/Typfehler fixen, erneut laufen lassen und Output kurz im PR verlinken; Einträge auf 1–2 Schritte beschränken.
+- RLS-Check fails → `docs/runbooks/debug-rls-policy.md` öffnen, `supabase db describe/plan` gegen Staging laufen lassen, Policies mit Sample-User testen und Log im PR notieren.
+- Migration conflicts / CI failures → Dry-Run via `./scripts/db_dry_run.sh`, bei Bedarf Migration neu schneiden und Review-Link dokumentieren; Details siehe `docs/runbooks/debug-rls-policy.md`.
+- Health-Gate / Preview 200 NOK → `docs/runbooks/vercel-health-check.md` befolgen, Preview & Prod `/api/health` erneut prüfen, Ergebnis-Link im PR hinterlegen.
+- If unsure or blocked → Logs/Commands an die passenden Runbooks anhängen (z. B. `docs/runbooks/verify-consent-flow.md`), Notiz in Codex/Slack posten und Component Owner pingen bevor eskaliert wird.
 
 ### 3) Praxis-Use-Case: M4 Cycle-Input
 Feature: Nutzerin gibt `cycle_length`, `period_length`, `lmp_date` ein · Impact: High (Gesundheitsdaten)
