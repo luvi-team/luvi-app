@@ -1,7 +1,10 @@
-# MCP Setup für Supabase
+# MCP Setup (read-only, dev)
 
-1. Kopiere `mcp/supabase.mcp.json.example` nach `~/.mcp/supabase.mcp.json` (oder den MCP-Config-Pfad deines Editors/Agents, z. B. Claude Code oder Cursor) und aktiviere ihn dort.
-2. Verbindung ist read-only und auf `database,docs` limitiert; nutze sie nur gegen das `luvi-dev`-Projekt (`project_ref=cwloioweaqvhibuzdwpi`).
-3. Erlaubte Calls: `list_tables`, `list_migrations`, `list_extensions`, `execute_sql` (nur `SELECT`/`EXPLAIN`). Siehe `context/ADR/0002-least-privilege-rls.md` (Least-Privilege RLS) als Begründung für die Read-Only-Restriktion.
-4. Schreibende Tools oder Prod-Instanzen sind untersagt – keine `INSERT/UPDATE/DELETE`, kein Zugriff auf andere Supabase-Projekte.
-5. Bei Unsicherheiten erst intern rückfragen; Config-Datei niemals ins Repo committen.
+1. **Lokale Config anlegen (außerhalb des Repos):** Kopiere `mcp/supabase.mcp.json.example` nach `~/.mcp/supabase.json` (oder den MCP-Config-Pfad deines Agents) und passe sie lokal an. **Keine Secrets committen.**
+2. **Scope:** Die Verbindung ist read-only gegen **`luvi-dev`** (`project_ref=cwloioweaqvhibuzdwpi`) und auf die Features `database,docs` limitiert.
+3. **Erlaubt vs. verboten:**  
+   - Erlaubt: Schema lesen (`describe_*`), SQL erklären (`explain_sql`), Migrations planen/dry-run (`plan_migration`, `run_migration_dry_run`).  
+   - Verboten: jegliche Writes (`execute_sql_write`, `run_migration`), Prod-Verknüpfungen und andere Supabase-Projekte.  
+   - Grundlage: `context/ADR/0002-least-privilege-rls.md` (Least-Privilege RLS).
+4. **Working Agreement:** MCP liefert nur Hinweise. Jede DB-Änderung läuft über **PR → Supabase DB Dry-Run → Apply (dev) → RLS-Smoke**. Prod wird nie direkt via MCP angefasst.
+5. Bei Unsicherheiten intern rückfragen; Config-Dateien bleiben lokal.

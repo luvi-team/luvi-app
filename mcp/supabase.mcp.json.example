@@ -4,5 +4,22 @@
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=cwloioweaqvhibuzdwpi&read_only=1&features=database,docs"
     }
-  }
+  },
+  "policy": {
+    "project": "luvi-dev",
+    "mode": "read_only",
+    "allow": [
+      "describe_schema",
+      "describe_table",
+      "explain_sql",
+      "plan_migration",
+      "run_migration_dry_run"
+    ],
+    "deny": [
+      "execute_sql_write",
+      "run_migration",
+      "link_prod"
+    ]
+  },
+  "notes": "This is an example. Create your local config outside the repo (e.g. ~/.mcp/supabase.json) and NEVER commit secrets."
 }
