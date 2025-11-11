@@ -16,6 +16,9 @@ Arbeitsweise
 - CI-Pflegezyklus: Actions-Pinning (checkout/upload-artifact/github-script) quartalsweise prüfen/aktualisieren; siehe `context/agents/_actions_todo.md`.
 - Branch-Strategie: kurze Feature-Branches, Squash & Merge, Required Checks als Gate (Trunk‑Based, stabiler Main).
 
+Quickstart (SSOT)
+- Einstieg/Links siehe `README.md:1` → App‑Kontext, Tech‑Stack, Roadmap, Gold‑Standard (inkl. „Praktische Anleitung · Ultra‑Slim“)
+
 Rollenwahl
 - Default: Auto-Role (ankündigen). Misch-Tasks: `role: …` (Primärrolle zuerst).
 - Auto-Role Map (SSOT): `context/agents/_auto_role_map.md`

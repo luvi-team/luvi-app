@@ -50,6 +50,12 @@ Siehe `docs/engineering/assistant-answer-format.md`.
 - 0003 MIWF
  - 0004 Edge Gateway (EU/fra1)
 
+## DB/AI Checks
+- [ ] Migrations vorhanden? → Supabase DB Dry-Run grün
+- [ ] RLS Policies/FORCE RLS beachtet
+- [ ] (optional) Langfuse Trace Link eingefügt
+- Hinweis: Keine service_role im Client.
+
 ## RLS-Check
 - [ ] Policies 4x (SELECT/INSERT/UPDATE/DELETE)
 - [ ] auth.uid()

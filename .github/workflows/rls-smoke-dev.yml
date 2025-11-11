@@ -1,0 +1,29 @@
+name: RLS Smoke (luvi-dev)
+on:
+  push:
+    branches: [develop]
+    paths:
+      - supabase/**
+      - supabase/tests/rls_smoke.sql
+      - .github/workflows/rls-smoke-dev.yml
+  workflow_dispatch:
+
+jobs:
+  rls-smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install psql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client-15
+      - name: Run smoke SQL
+        if: ${{ env.SUPABASE_DB_URL_DEV != '' }}
+        env:
+          SUPABASE_DB_URL: ${{ env.SUPABASE_DB_URL_DEV }}
+        run: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke.sql
+      - name: Skip (no DB URL)
+        if: ${{ env.SUPABASE_DB_URL_DEV == '' }}
+        run: echo "No SUPABASE_DB_URL_DEV; skipping smoke."
