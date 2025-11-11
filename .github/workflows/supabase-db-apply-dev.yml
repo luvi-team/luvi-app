@@ -1,0 +1,36 @@
+name: Supabase DB Apply (dev)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  apply-dev:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
+      SUPABASE_PROJECT_REF_DEV: ${{ secrets.SUPABASE_PROJECT_REF_DEV }}
+      SUPABASE_DB_PASSWORD_DEV: ${{ secrets.SUPABASE_DB_PASSWORD_DEV }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Apply via DB URL (preferred)
+        if: ${{ env.SUPABASE_DB_URL_DEV != '' }}
+        env:
+          SUPABASE_DB_URL: ${{ env.SUPABASE_DB_URL_DEV }}
+        run: supabase db push --db-url "$SUPABASE_DB_URL"
+
+      - name: Apply via project link (fallback)
+        if: ${{ env.SUPABASE_DB_URL_DEV == '' && env.SUPABASE_PROJECT_REF_DEV != '' && env.SUPABASE_DB_PASSWORD_DEV != '' }}
+        env:
+          SUPABASE_PROJECT_REF: ${{ env.SUPABASE_PROJECT_REF_DEV }}
+          SUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD_DEV }}
+        run: |
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          supabase db push --linked
