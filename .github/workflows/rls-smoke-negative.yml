@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install psql client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client-15
 
       - name: Run negative smoke SQL
         if: ${{ env.SUPABASE_DB_URL_DEV != '' }}

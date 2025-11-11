@@ -2,6 +2,10 @@ name: RLS Smoke (luvi-dev)
 on:
   push:
     branches: [develop]
+    paths:
+      - supabase/**
+      - supabase/tests/rls_smoke.sql
+      - .github/workflows/rls-smoke-dev.yml
   workflow_dispatch:
 
 jobs:
@@ -12,9 +16,9 @@ jobs:
     env:
       SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install psql client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client-15
       - name: Run smoke SQL
         if: ${{ env.SUPABASE_DB_URL_DEV != '' }}
         env:

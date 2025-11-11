@@ -15,11 +15,16 @@ jobs:
       contents: read
       pull-requests: read
 
+    # Wartung: checkout@v4, dorny/paths-filter@v3 und supabase/setup-cli@v1 quartalsweise (Jan/Apr/Jul/Okt)
+    # auf Security-Fixes prüfen; Review-Datum + Versionen unter
+    # `docs/engineering/maintenance-log.md#github-actions-pin-review` dokumentieren und bei Freigabe aktualisieren.
+
     # Map secrets -> env (damit wir sie in if: als env.* benutzen können)
     env:
       SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
       SUPABASE_PROJECT_REF_DEV: ${{ secrets.SUPABASE_PROJECT_REF_DEV }}
       SUPABASE_DB_PASSWORD_DEV: ${{ secrets.SUPABASE_DB_PASSWORD_DEV }}
+      # Token shared across environments; Secret intentionally ohne *_DEV.
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
     steps:
@@ -35,7 +40,16 @@ jobs:
       - if: ${{ steps.changes.outputs.migrations == 'true' }}
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: v1.180.3 # Keep in sync mit Apply-Workflow; quartalsweise prüfen.
+
+      - name: Check fallback credentials
+        if: ${{ steps.changes.outputs.migrations == 'true' && env.SUPABASE_DB_URL_DEV == '' && (env.SUPABASE_PROJECT_REF_DEV == '' || env.SUPABASE_DB_PASSWORD_DEV == '' || env.SUPABASE_ACCESS_TOKEN == '') }}
+        run: |
+          echo "Supabase DB dry-run fallback benötigt SUPABASE_PROJECT_REF_DEV, SUPABASE_DB_PASSWORD_DEV und SUPABASE_ACCESS_TOKEN."
+          echo "- has project ref:    ${{ env.SUPABASE_PROJECT_REF_DEV != '' }}"
+          echo "- has db password:    ${{ env.SUPABASE_DB_PASSWORD_DEV != '' }}"
+          echo "- has access token:   ${{ env.SUPABASE_ACCESS_TOKEN != '' }}"
+          exit 1
 
       - name: Dry-run (wrapper)
         if: ${{ steps.changes.outputs.migrations == 'true' && (env.SUPABASE_DB_URL_DEV != '' || (env.SUPABASE_PROJECT_REF_DEV != '' && env.SUPABASE_DB_PASSWORD_DEV != '')) }}

@@ -18,7 +18,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: v1.180.3 # Pinned; review quarterly per context/agents/_actions_todo.md
 
       - name: Apply via DB URL (preferred)
         if: ${{ env.SUPABASE_DB_URL_DEV != '' }}
@@ -34,3 +34,11 @@ jobs:
         run: |
           supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
           supabase db push --linked
+
+      - name: Fail (missing Supabase credentials)
+        if: ${{ env.SUPABASE_DB_URL_DEV == '' && (env.SUPABASE_PROJECT_REF_DEV == '' || env.SUPABASE_DB_PASSWORD_DEV == '') }}
+        run: |
+          echo "Supabase DB apply skipped: DB URL missing and link credentials incomplete."
+          echo "- has project ref:  ${{ env.SUPABASE_PROJECT_REF_DEV != '' }}"
+          echo "- has db password:  ${{ env.SUPABASE_DB_PASSWORD_DEV != '' }}"
+          exit 1
