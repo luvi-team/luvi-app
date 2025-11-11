@@ -40,7 +40,7 @@ jobs:
       - if: ${{ steps.changes.outputs.migrations == 'true' }}
         uses: supabase/setup-cli@v1
         with:
-          version: v1.180.3 # Keep in sync mit Apply-Workflow; quartalsweise prüfen.
+          version: v2.54.11 # Keep in sync mit Apply-Workflow; quartalsweise prüfen.
 
       - name: Check fallback credentials
         if: ${{ steps.changes.outputs.migrations == 'true' && env.SUPABASE_DB_URL_DEV == '' && (env.SUPABASE_PROJECT_REF_DEV == '' || env.SUPABASE_DB_PASSWORD_DEV == '' || env.SUPABASE_ACCESS_TOKEN == '') }}

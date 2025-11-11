@@ -18,7 +18,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: v1.180.3 # Pinned; review quarterly per context/agents/_actions_todo.md
+          version: v2.54.11 # Pinned; review quarterly per context/agents/_actions_todo.md
 
       - name: Apply via DB URL (preferred)
         if: ${{ env.SUPABASE_DB_URL_DEV != '' }}
