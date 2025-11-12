@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: 2.58.5
+          version: 2.54.11
       - name: Apply via DB URL (preferred)
         if: ${{ env.SUPABASE_DB_URL_DEV != '' }}
         env:
