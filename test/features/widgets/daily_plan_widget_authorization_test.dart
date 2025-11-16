@@ -284,15 +284,12 @@ void main() {
       tester,
     ) async {
 
-      when(
-        repository.fetchMyDailyPlans,
-      ).thenAnswer((invocation) async => const <DailyPlan>[]);
+      when(() => repository.fetchMyDailyPlans()).thenAnswer(
+        (invocation) async => const <DailyPlan>[],
+      );
 
-      when(
-        () => repository.createDailyPlan(
-          title: any(named: 'title'),
-        ),
-      ).thenAnswer((invocation) async {
+      when(() => repository.createDailyPlan(title: any(named: 'title')))
+          .thenAnswer((invocation) async {
         final title = invocation.namedArguments[#title] as String;
         return DailyPlan(id: 'created-$title', ownerId: userId, title: title);
       });
@@ -314,13 +311,12 @@ void main() {
 
     testWidgets('creation errors surface in status banner', (tester) async {
 
-      when(
-        repository.fetchMyDailyPlans,
-      ).thenAnswer((invocation) async => const <DailyPlan>[]);
+      when(() => repository.fetchMyDailyPlans()).thenAnswer(
+        (invocation) async => const <DailyPlan>[],
+      );
 
-      when(
-        () => repository.createDailyPlan(title: any(named: 'title')),
-      ).thenThrow(const AuthorizationException('RLS policy enforced'));
+      when(() => repository.createDailyPlan(title: any(named: 'title')))
+          .thenThrow(const AuthorizationException('RLS policy enforced'));
 
       await pumpHarness(tester, repository: repository);
       await tester.pumpAndSettle();
