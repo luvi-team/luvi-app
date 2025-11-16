@@ -1,71 +1,146 @@
-# Tech-Stack Slim v2.1
+# Tech-Stack · FemTech App (DSGVO-first) — MVP+
 
-Projekt: FemTech Mobile (AT), DSGVO-first • Ziel: Solo-Dev-freundlich, skalierbar, EU-rechtskonform.
+**Ziel:** Solo-Dev-freundlicher, skalierbarer, EU-konformer Stack für iOS-first (Flutter).
 
-## Required CI Checks
-- Flutter CI / analyze-test (pull_request)
-- Flutter CI / privacy-gate (pull_request)
-- CodeRabbit
-- Vercel Preview Health (200 OK)
+---
+
+## 0) Leitgedanke
+- SQL-first, Edge-nah, Privacy by Design (EU-Residency, PII-Redaction, Consent-Logs).
+- Vibe-Coding mit starken Agents (Claude Code + Codex), Wissens-SSOT (Archon) und LLM-Observability (Langfuse).
+- CI-geführte Änderungen: Alles Schreibende per PR/Migration + CodeRabbit-Gate + Preview-Health (200) vor Merge.
+
+---
 
 ## 1) Development Environment
-IDE: Cursor · Terminal: Warp (Workflows für Supabase/CI/API-Tests)
 
-AI-Coding:
-- Codex CLI (Terminal-basiert; schnelle Fixes, CI/Refactor, Checklist-Diffs). Auto-Rolle standardmäßig; bei Misch-Tasks role: … explizit.
-- Claude Code (Multi-File, Refactoring, Migrationen, RLS-Policies, Tests; Interop/Legacy wenn .claude/* referenziert wird).
+### 1.1 IDE & Workstation
+- Cursor IDE (Repo-Explorer, minimale Bearbeitung)
+  - Funktion: Projekt/Repo-Navigation.
+  - Warum: Bewährt im Flow; Haupt-Editing via Terminal-Clients.
 
-Code-Qualität:
-- flutter_lints (Basis)
-- Dart Code Metrics (DCM): lokal nutzbar; in CI informativ (non-blocking)
-- CodeRabbit (Lite): GitHub-App + IDE/CLI, line-by-line PR-Reviews; Required Check
+- Terminal
+  - Funktion: Shell für Builds, Tests, CI-Tasks.
 
-Required Checks: siehe Abschnitt [Required CI Checks](#required-ci-checks).
+### 1.2 AI-Coding (Primary & Review)
+- Claude Code
+  - Funktion: Agentischer Code-Assistent (Skills/Sub-Agents).
 
-## 2) Frontend (Flutter)
-Flutter 3.35.4 (Dart 3.9.0, in CI gepinnt)
-State: Riverpod 3 · Nav: GoRouter
-UI: Figma NovaHealth → Dualite (Figma→Flutter)
-Health: Flutter Health Package (Apple Health/Google Fit/Wearables)
+- Codex / GPT-5 High — (Plan & Review)
+  - Funktion: Zweitmeinung & Planung: liest Diffs von Claude Code, schreibt Review-Hinweise/Design-Notes.
+  - Einsatz: Vor-Review lokal, dann formales PR-Review via CodeRabbit.
+
+- CodeRabbit (lokal + CI-Gate)
+  - Funktion: Lokales Pre-PR-Review + GitHub-App als Required Check.
+  - Einsatz: Qualitäts-/Security-Gate vor Merge.
+
+### 1.3 Archon — MCP-Wissens/Task „SSOT“
+- Funktion: Single-Source-of-Truth für Dossiers/Policies/Runbooks; via MCP direkt in AI-Tools abrufbar.
+- Warum: Stabiler Agent-Kontext, weniger Prompt-Drift, reproduzierbare Ergebnisse.
+- Einsatz:
+  - `context/`-Dossiers: Phase-Logik, Consent-Texte, Ranking-Heuristiken, AGENTS.md
+  - Direkt in Claude Code/Codex konsumierbar (MCP-Bridge).
+
+### 1.4 Projekt-Orchestrierung (Baseline): Traycer
+- Funktion: Orchestrierung von Arbeitsphasen & Prompts (z. B. Planungs-/Review-Gerüst, BMAD/PRP-Abläufe).
+- Warum: Strukturierter Solo-Dev-Prozess, klare Gates & Artefakte.
+- Einsatz: Feature-Planung, Review-Skripte, Release-Checklisten.
+
+---
+
+## 2) Frontend (Mobile)
+
+- Flutter 3.35 / Dart 3.9 (CI-gepinnt)
+  - Funktion: Cross-platform UI; iOS-first Rollout.
+  - Warum: Beste Time-to-Market im bestehenden Setup.
+
+- State & Navigation: Riverpod 3, GoRouter
+  - Einsatz: Home/„Heute in der Phase“, Stream, Coach, Profil.
+
+- Health-Integration (Baseline-Roadmap): HealthKit-Anbindung
+
+---
 
 ## 3) Backend & Daten
-Supabase (EU/Frankfurt): Postgres + Auth + Storage + Realtime
-DB: PostgreSQL + pgvector (semantische Suche/Empfehlungen)
-Edge Functions: Consent-Handling, Audit-Trail, Pseudonymisierung
-RLS: owner-based; kein service_role im Client/Terminal
 
-### API-Gateway (Vercel fra1)
-- Runtime: Edge (`export const config = { runtime: 'edge' }`), ESM-Imports mit `.js`
-- CORS: dynamische Allow-List; Health bewusst offen (Smoke-Test)
-- Logging: rekursive PII-Redaction (keine `user_id`/`email`/IP/Health-Felder)
-- Health-Proof: `/api/health` liefert 200 + JSON; Runbook `docs/runbooks/vercel-health-check.md`
-- Hosting-Region: `vercel.json` minimal → `{ "regions": ["fra1"] }`
-- Security: JWT-Verifikation am Gateway; API-Keys nur serverseitig
+### 3.1 Supabase (EU/Frankfurt) — Postgres + Auth + Storage + Realtime
+- Funktion: Verwaltete Postgres-Plattform (RLS), plus Auth/Storage/Realtime.
+- Einsatz:
+  - `pgvector` für semantische Suche/Empfehlungen im Stream
+  - Auth (Abo-Gates), Storage (Metadaten), Consent-Logs
+- EU-Residency: Rechenzentrum DE; keine `service_role` im Client.
+
+### 3.2 Supabase MCP (Dev-only, read-only)  ← NEU / explizit
+- Zweck: LLM-Assistenten (Claude/Codex) können Schema lesen / erklären / Migrationspläne vorschlagen.
+- Guardrails: Keine Prod-Writes. DB-Änderungen nur via Migrations-PR → CI-Dry-Run → Apply (Dev) → RLS-Smoke.
+- Setup-Hinweis: `docs/dev/mcp_setup.md` (Claude Code via OAuth, Codex via command-Server; PAT lokal, `chmod 600`).
+
+### 3.3 API-Gateway: Vercel Edge (`region: 'fra1'`)
+- Funktion: Edge-Functions nahe den EU-Usern/DBs; CORS/Rate-Limit/PII-Redaction.
+- Routen: `/api/health` (200 + timestamp), `/api/ai/*`, Webhooks.
+- Quality Gate: Vercel Preview Health (200 OK) als Required Check vor Merge/Promotion.
+
+---
 
 ## 4) AI-Layer
-Router: Node Gateway mit Vercel AI SDK (Cost/Failover/Policy)
-Provider: OpenAI API (EU-Project, zero retention) · Claude via Bedrock (EU) · Gemini via Vertex (EU)
-Caching: Upstash Redis · Guards: Rate-Limit + Circuit-Breaker
+
+### 4.1 Router: Vercel AI SDK (Multi-Provider)
+- Funktion: Abstraktion + Retry/Circuit-Breaker; OpenAI EU, Claude via Bedrock EU, Gemini/Vertex EU.
+- Einsatz: Semantische Suche, „Heute in der Phase“, Playlist-Vorschläge.
+
+### 4.2 Cache: Redis
+- Funktion: Key-Value-Cache für Ergebnislisten/Prompt-Antworten.
+- Einsatz: Schneller App-Start, Kostensenkung.
+
+### 4.3 Langfuse — LLM Observability
+- Funktion: End-to-End-Tracing: Prompt → Antwort, Token/Kosten, Latenzen, Tool-Calls, Evals.
+- Warum: „Cannot skip“ — zentrale Qualität & Kostenkontrolle.
+- Einsatz: Monitoring & Debug für alle `/api/ai/*`-Calls; Prompt-Tuning, Budget-Kontrolle.
+
+---
 
 ## 5) Services & Infrastruktur
-Analytics: PostHog Cloud EU · Push: OneSignal (EU) · Crash: Sentry · CDN/Security: Cloudflare · CI/CD: GitHub Actions + Vercel Deploys (Preview pro PR, Prod nach Merge)
-Consent: Web: Cookiebot · App: In-App-Consent + Supabase-Logging {version, ts}
-Documentation: Linear
 
-## 6) Compliance
-DSFA/DPIA: einmalig (Updates bei größeren Änderungen)
-Datenflüsse: EU-Regionen (OpenAI EU / Bedrock EU / Vertex EU)
-DSAR: Export/Delete-Pfad; Audit-/Consent-Logs vorhanden
+- Analytics: PostHog (EU)
+- Push: OneSignal (DPA/SCCs)
+- Crash/Performance: Sentry
+- CI/CD: GitHub Actions + Vercel (PR-Previews, Prod-Deploy on merge)
 
-## 7) Kosten-Leitplanken
-Ø KI-Request: ~0,6 ct (ohne Cache); mit Cache ~0,2 ct
-Mehrkosten AI/DSGVO: ~€0,49 / Premium-User / Monat
+### 5.1 Newsletter (Baseline, wieder explizit)
+- Tool (z. B. Brevo, DOI)
+  - Funktion: Versand von Transaktions-/Marketing-Mails mit Double-Opt-In.
+  - Einsatz: Onboarding-Sequenzen, Feature-Updates, „Coach startet“-Mails.
+  - Hinweis: SPF/DKIM/DMARC, Abmeldelogik & Consent-Status mit Supabase verknüpfen.
 
-## 8) Agenten-Governance (aktualisiert)
-- AGENTS.md (Root) → Dossiers
-- Header-Schema: role, goal, inputs, outputs, acceptance, acceptance_version: 1.1
-- SSOT Acceptance: context/agents/_acceptance_v1.1.md
-- Interop/Legacy: .claude/*, CLAUDE.md nur Referenz
+---
 
-## 9) Branch-Protection (Empfehlung)
-Required Checks: siehe Abschnitt [Required CI Checks](#required-ci-checks) (Gate)
+## 6) Compliance & Governance
+- DSFA/DPIA (Initial); EU-Residency über alle Kern-Dienste (Supabase DE, Vercel `fra1`, EU-Regionen der AI-Provider).
+- Consent-Logs (App), PII-Redaction im Gateway, `/api/health` als Betriebsnachweis.
+- Agenten-Governance: `AGENTS.md` + Dossiers (Archon SSOT).
+- Review-Gates: lokales CodeRabbit → CI CodeRabbit (required) → Preview Health 200 → Merge.
+
+---
+
+## 7) Kosten-Leitplanken (Baseline)
+- Ø LLM-Call ~0,6 ct (ohne Cache) / ~0,2 ct (mit Cache).
+
+---
+
+## 8) Tool-Matrix (Herkunft & Zweck)
+
+| Tool/Komponente                 | Kategorie         | Status             | Funktion/Kernnutzen                                  | Herkunft |
+|---------------------------------|-------------------|--------------------|------------------------------------------------------|---------|
+| Claude Code                     | Dev-AI            | Bestätigt          | Agentisches Coding (daily driver)                    | Video   |
+| Archon (MCP)                    | Knowledge/SSOT    | Neu                | Dossiers/Policies + MCP-Bridge für AI-Kontext        | Video   |
+| Langfuse                        | LLM Observability | Neu                | Traces/Costs/Latency/Evals                           | Video   |
+| Supabase (EU) + pgvector        | DB/Auth           | Beibehalten        | SQL + Vektor + RLS                                   | Baseline|
+| Supabase MCP (Dev-only, RO)     | DB-Ops via MCP    | Neu (User-Wunsch)  | AI-gestützte Schema/Plan-Ops mit Guardrails          | Anfrage |
+| Vercel Edge (fra1)              | API/Edge          | Beibehalten        | `/api/health`, `/api/ai/*`, Previews                 | Baseline|
+| Vercel Preview Health 200       | QA/Gate           | Reaktiviert        | Required Check auf PR-Preview-Erreichbarkeit         | Baseline|
+| Redis                           | Cache             | Beibehalten        | Schnelle Feeds, geringere Kosten                     | Baseline|
+| PostHog (EU)                    | Analytics         | Beibehalten        | Events/Funnel/Retention                              | Baseline|
+| Sentry                          | Crash/Perf        | Beibehalten        | Stabilitäts-Monitoring                               | Baseline|
+| GitHub Actions + CodeRabbit     | CI/QA             | Beibehalten        | Build/Test + PR-Review (required)                    | Baseline|
+| Traycer                         | Orchestrierung    | Beibehalten        | Plan/Review-Flows, Prompt-Gerüste                    | Baseline|
+| Newsletter (Brevo/DOI)          | Comms             | Wieder aufgenommen | Opt-in Mailversand, Onboarding/Updates               | Baseline|
+| Flutter (iOS-first)             | App-UI            | Beibehalten        | UI-Implementierung, Time-to-Market                   | Baseline|

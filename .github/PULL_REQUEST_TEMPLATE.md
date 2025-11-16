@@ -55,6 +55,7 @@ Siehe `docs/engineering/assistant-answer-format.md`.
 - [ ] Migrations vorhanden? → Supabase DB Dry-Run grün
 - [ ] RLS Policies/FORCE RLS beachtet
 - [ ] (optional) Langfuse Trace Link eingefügt
+- [ ] (optional) MCP-Quelle/Trace verlinkt, falls Migrationsvorschlag aus MCP stammt
 - Hinweis: Keine service_role im Client.
 
 ## RLS-Check
