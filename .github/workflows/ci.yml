@@ -33,6 +33,43 @@ jobs:
       - run: flutter pub run dart_code_metrics:metrics analyze lib --disable-sunset-warning || true
       - run: flutter test --no-pub
 
+  log-consent-contract:
+    name: Edge Contract / log_consent
+    if: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.44.4
+
+      - name: Export optional overrides for log_consent tests
+        env:
+          LOG_CONSENT_FUNCTION_URL_SECRET: ${{ secrets.LOG_CONSENT_FUNCTION_URL }}
+          LOG_CONSENT_TEST_EMAIL_SECRET: ${{ secrets.LOG_CONSENT_TEST_EMAIL }}
+          LOG_CONSENT_TEST_PASSWORD_SECRET: ${{ secrets.LOG_CONSENT_TEST_PASSWORD }}
+        run: |
+          if [ -n "$LOG_CONSENT_FUNCTION_URL_SECRET" ]; then
+            echo "LOG_CONSENT_FUNCTION_URL=$LOG_CONSENT_FUNCTION_URL_SECRET" >> "$GITHUB_ENV"
+          fi
+          if [ -n "$LOG_CONSENT_TEST_EMAIL_SECRET" ]; then
+            echo "LOG_CONSENT_TEST_EMAIL=$LOG_CONSENT_TEST_EMAIL_SECRET" >> "$GITHUB_ENV"
+          fi
+          if [ -n "$LOG_CONSENT_TEST_PASSWORD_SECRET" ]; then
+            echo "LOG_CONSENT_TEST_PASSWORD=$LOG_CONSENT_TEST_PASSWORD_SECRET" >> "$GITHUB_ENV"
+          fi
+
+      - name: Run log_consent contract tests
+        run: deno test --allow-env --allow-net --allow-read supabase/tests/log_consent.test.ts
+
   privacy-gate:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
