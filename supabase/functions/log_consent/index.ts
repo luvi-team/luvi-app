@@ -7,6 +7,13 @@ const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 // If not provided, we fall back to an unsalted SHA-256 hash to avoid logging PII
 // while keeping metrics functional in lower environments.
 const CONSENT_METRIC_SALT = Deno.env.get("CONSENT_METRIC_SALT");
+// Pepper for UA/IP hashing (HMAC-SHA256). Defaults to CONSENT_METRIC_SALT so
+// that environments with a single secret keep a consistent pseudonymization
+// story while still avoiding raw IP/UA in logs.
+const CONSENT_HASH_PEPPER = Deno.env.get("CONSENT_HASH_PEPPER") ??
+  CONSENT_METRIC_SALT ??
+  "";
+const CONSENT_HASH_VERSION = CONSENT_HASH_PEPPER ? "hmac_v1" : "sha256_v0";
 // Observability & protection controls (overridable via env, safe defaults)
 const RATE_LIMIT_WINDOW_SEC = parseInt(
   Deno.env.get("CONSENT_RATE_LIMIT_WINDOW_SEC") ?? "60",
@@ -99,6 +106,60 @@ async function sha256Hex(message: string): Promise<string> {
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function getClientIp(req: Request): string | undefined {
+  const headers = req.headers;
+  const xff = headers.get("x-forwarded-for");
+  if (xff) {
+    const first = xff.split(",")[0]?.trim();
+    if (first) return first;
+  }
+  const realIp = headers.get("x-real-ip");
+  if (realIp && realIp.trim().length > 0) {
+    return realIp.trim();
+  }
+  const cf = headers.get("cf-connecting-ip");
+  if (cf && cf.trim().length > 0) {
+    return cf.trim();
+  }
+  return undefined;
+}
+
+// Normalize IP to a coarser CIDR-style representation before hashing.
+// - IPv4: truncate to /24 (zero out last octet)
+// - IPv6: approximate /64 by keeping the first 4 hextets
+function normalizeIpForHash(ip: string | undefined | null): string | undefined {
+  if (!ip) return undefined;
+  const trimmed = ip.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.includes(":")) {
+    const parts = trimmed.split(":");
+    const prefix = parts.slice(0, 4).join(":");
+    return `${prefix}::`;
+  }
+  const parts = trimmed.split(".");
+  if (parts.length === 4) {
+    return `${parts[0]}.${parts[1]}.${parts[2]}.0`;
+  }
+  return trimmed;
+}
+
+function normalizeUserAgent(ua: string | undefined | null): string | undefined {
+  if (!ua) return undefined;
+  const trimmed = ua.trim();
+  if (!trimmed) return undefined;
+  return trimmed.replace(/\s+/g, " ");
+}
+
+async function computePseudonymousHash(
+  input: string | undefined | null,
+): Promise<string | null> {
+  if (!input) return null;
+  if (CONSENT_HASH_PEPPER) {
+    return await hmacSha256Hex(CONSENT_HASH_PEPPER, input);
+  }
+  return await sha256Hex(input);
+}
+
 function logMetric(
   requestId: string,
   outcome: MetricOutcome,
@@ -185,8 +246,20 @@ function validateScopes(raw: unknown): { valid: string[]; invalid: unknown[] } {
 serve(async (req) => {
   const started = Date.now();
   const requestId = getRequestId(req);
+  const clientIp = getClientIp(req);
+  const ipForHash = normalizeIpForHash(clientIp);
+  const uaForHash = normalizeUserAgent(req.headers.get("user-agent"));
+  const [ipHash, uaHash] = await Promise.all([
+    computePseudonymousHash(ipForHash),
+    computePseudonymousHash(uaForHash),
+  ]);
   if (req.method !== "POST") {
-    logMetric(requestId, "method_not_allowed", { method: req.method });
+    logMetric(requestId, "method_not_allowed", {
+      method: req.method,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
@@ -195,7 +268,12 @@ serve(async (req) => {
 
   const authorization = req.headers.get("Authorization");
   if (!authorization) {
-    logMetric(requestId, "unauthorized", { reason: "missing_authorization" });
+    logMetric(requestId, "unauthorized", {
+      reason: "missing_authorization",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
     return new Response(JSON.stringify({ error: "Missing Authorization header" }), {
       status: 401,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
@@ -207,20 +285,29 @@ serve(async (req) => {
     body = await req.json();
   } catch (error) {
     console.error("Invalid request body parse error", error instanceof Error ? error.message : "parse_failed");
-    logMetric(requestId, "invalid", { reason: "invalid_json" });
+    logMetric(requestId, "invalid", {
+      reason: "invalid_json",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
     return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
   }
-
   const policyVersion = typeof body.policy_version === "string"
     ? body.policy_version
     : typeof body.version === "string"
     ? body.version
     : undefined;
   if (!policyVersion) {
-    logMetric(requestId, "invalid", { reason: "missing_policy_version" });
+    logMetric(requestId, "invalid", {
+      reason: "missing_policy_version",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
     return new Response(JSON.stringify({ error: "policy_version is required" }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
@@ -229,7 +316,12 @@ serve(async (req) => {
 
   const rawScopes = body.scopes;
   if (!rawScopes || (Array.isArray(rawScopes) && rawScopes.length === 0)) {
-    logMetric(requestId, "invalid", { reason: "missing_scopes" });
+    logMetric(requestId, "invalid", {
+      reason: "missing_scopes",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
     return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
@@ -241,7 +333,13 @@ serve(async (req) => {
   );
 
   if (invalidScopes.length > 0) {
-    logMetric(requestId, "invalid", { reason: "invalid_scopes", invalidScopes });
+    logMetric(requestId, "invalid", {
+      reason: "invalid_scopes",
+      invalidScopes,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
     return new Response(JSON.stringify({ error: "Invalid scopes provided", invalidScopes }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
@@ -258,9 +356,12 @@ serve(async (req) => {
 
   const { data: userResult, error: authError } = await supabase.auth.getUser();
   if (authError || !userResult?.user) {
-    logMetric(requestId, "unauthorized", { 
+    logMetric(requestId, "unauthorized", {
       reason: "auth_failed",
-      code: authError?.code ?? "unknown"
+      code: authError?.code ?? "unknown",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
     });
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
@@ -301,6 +402,9 @@ serve(async (req) => {
       where: "consent_rpc",
       code: rpcError?.code ?? "unknown",
       consent_id_hash: consentIdHash,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
       duration_ms: elapsed,
       rpc_latency_ms: rpcDuration,
     });
@@ -318,6 +422,9 @@ serve(async (req) => {
       consent_id_hash: consentIdHash,
       window_sec: RATE_LIMIT_WINDOW_SEC,
       max: RATE_LIMIT_MAX_REQUESTS,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
       duration_ms: elapsed,
       rpc_latency_ms: rpcDuration,
     });
@@ -347,6 +454,9 @@ serve(async (req) => {
     version: payload.version,
     source: typeof body.source === "string" ? body.source : null,
     appVersion: typeof body.appVersion === "string" ? body.appVersion : null,
+    ip_hash: ipHash,
+    ua_hash: uaHash,
+    hash_version: CONSENT_HASH_VERSION,
   });
 
   // Audit (info-level): minimal, structured log that confirms consent was recorded.

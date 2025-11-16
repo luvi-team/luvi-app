@@ -8,7 +8,10 @@ import { Langfuse } from 'langfuse';
 
 const pk = process.env.LANGFUSE_PUBLIC_KEY;
 const sk = process.env.LANGFUSE_SECRET_KEY;
-const rawHost = process.env.LANGFUSE_HOST ?? 'https://cloud.langfuse.com';
+const rawHost =
+  process.env.LANGFUSE_BASE_URL ||
+  process.env.LANGFUSE_HOST ||
+  'https://cloud.langfuse.com';
 
 if (!pk || !sk) {
   console.log('SKIP: LANGFUSE_PUBLIC_KEY/SECRET_KEY not configured.');
@@ -21,7 +24,17 @@ try {
   if (u.protocol === 'https:' && !u.username && !u.password) {
     host = u.toString().replace(/\/$/, '');
   }
-} catch {}
+} catch (err) {
+  const safeHost =
+    typeof rawHost === 'string'
+      ? rawHost.replace(/\/\/[^@]+@/, '//***@')
+      : String(rawHost);
+  console.warn(
+    'WARN: LANGFUSE host validation failed for "%s": %s',
+    safeHost,
+    err?.message || err
+  );
+}
 
 try {
   const lf = new Langfuse({
@@ -56,12 +69,14 @@ try {
   // Try to get UI URL
   let uiUrl;
   const anyLf = /** @type {any} */ (lf);
+  const traceId = trace.id ?? trace.traceId;
   try {
-    if (anyLf.api?.traceGet && (trace.id || trace.traceId)) {
-      const t = await anyLf.api.traceGet(trace.id ?? trace.traceId);
-      if (t?.htmlPath) uiUrl = host + t.htmlPath;
+    if (typeof lf.getTraceUrl === 'function' && traceId) {
+      uiUrl = await lf.getTraceUrl(traceId);
     }
-  } catch {}
+  } catch {
+    uiUrl = undefined;
+  }
 
   if (typeof anyLf.flushAsync === 'function') {
     await anyLf.flushAsync();
@@ -76,4 +91,3 @@ try {
   console.log('SKIP: failed to create Langfuse trace:', e?.message || String(e));
   // non-blocking
 }
-

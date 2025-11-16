@@ -71,6 +71,7 @@ void main() {
       }
 
       // Find widgets
+
       final headerFinder = find.byKey(const ValueKey('create_new_title'));
       final passwordFieldFinder = find.byKey(const ValueKey('AuthPasswordField'));
       final confirmFieldFinder = find.byKey(

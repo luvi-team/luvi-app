@@ -97,7 +97,7 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   }
 
   /// Performs client-side validation only.
-  /// 
+  ///
   /// Server-side submission is handled separately by login_submit_provider.
   void validate() {
     try {
@@ -120,15 +120,16 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
         pErr = AuthStrings.errPasswordInvalid;
       }
 
-      state = AsyncData(current.copyWith(
-        email: trimmedEmail,
-        password: trimmedPassword,
-        emailError: eErr,
-        passwordError: pErr,
-        globalError: (eErr == null && pErr == null)
-            ? null
-            : current.globalError,
-      ));
+      state = AsyncData(
+        current.copyWith(
+          email: trimmedEmail,
+          password: trimmedPassword,
+          emailError: eErr,
+          passwordError: pErr,
+          globalError:
+              (eErr == null && pErr == null) ? null : current.globalError,
+        ),
+      );
     } catch (e, st) {
       state = AsyncError(e, st);
     }
@@ -148,7 +149,8 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
 }
 
 // Screen-scoped form state; dispose automatically when screen is gone.
-final loginProvider = AsyncNotifierProvider.autoDispose<LoginNotifier, LoginState>(
+final loginProvider =
+    AsyncNotifierProvider.autoDispose<LoginNotifier, LoginState>(
   LoginNotifier.new,
   name: 'loginProvider',
 );

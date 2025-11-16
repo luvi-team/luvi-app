@@ -239,11 +239,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             onPressed: (_isLoading || _isBackoffActive)
                 ? null
                 : () async {
-                  // Button is disabled when loading or backoff is active;
-                  // no additional defensive check is required here.
                     final newPw = _newPasswordController.text.trim();
                     final confirmPw = _confirmPasswordController.text.trim();
-                    final validationErrorMsg = _validatePassword(newPw, confirmPw, l10n);
+                    final validationErrorMsg =
+                        _validatePassword(newPw, confirmPw, l10n);
                     if (validationErrorMsg != null) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -262,7 +261,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                         const Duration(seconds: 30),
                       );
                       if (!context.mounted) return;
-                      // Success: reset backoff tracking
                       setState(() {
                         _consecutiveFailures = 0;
                         _lastFailureAt = null;
@@ -272,17 +270,14 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                         SuccessScreen.passwordSavedRouteName,
                       );
                     } on supa.AuthException catch (error) {
-                      // Log only error type to avoid leaking PII.
                       debugPrint('[auth.updatePassword] ${error.runtimeType}');
                       if (!context.mounted) return;
                       _handlePasswordUpdateFailure(context, l10n);
                     } on TimeoutException catch (error) {
-                      // Log only error type to avoid leaking PII.
                       debugPrint('[auth.updatePassword] ${error.runtimeType}');
                       if (!context.mounted) return;
                       _handlePasswordUpdateFailure(context, l10n);
                     } catch (error) {
-                      // Log only error type to avoid leaking PII.
                       debugPrint('[auth.updatePassword] ${error.runtimeType}');
                       if (!context.mounted) return;
                       _handlePasswordUpdateFailure(context, l10n);

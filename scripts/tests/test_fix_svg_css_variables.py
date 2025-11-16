@@ -90,6 +90,5 @@ class FixSvgCssVariablesTests(unittest.TestCase):
     # Nested var fallback is retained as-is (skipped)
     self.assertIn('fill="var(--fill-b, var(--nested, #00ff00))"', rewritten)
 
-
 if __name__ == "__main__":
   unittest.main()

@@ -8,7 +8,6 @@ export 'package:luvi_app/features/consent/model/consent_types.dart'
     show ConsentScope, kRequiredConsentScopes;
 
 part 'consent02_state.g.dart';
-
 @immutable
 class Consent02State {
   final Map<ConsentScope, bool> choices;

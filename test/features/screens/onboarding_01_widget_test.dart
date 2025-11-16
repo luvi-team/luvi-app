@@ -46,6 +46,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final screenContext = tester.element(find.byType(Onboarding01Screen));
+
       final l10n = AppLocalizations.of(screenContext);
       expect(l10n, isNotNull, reason: 'AppLocalizations not initialized');
       final stepText = l10n!.onboardingStepFraction(1, kOnboardingTotalSteps);

@@ -16,7 +16,6 @@ Widget buildLocalizedApp({
   final appLocale = locale ?? const Locale('de');
   final supportedLocales = AppLocalizations.supportedLocales;
   final delegates = AppLocalizations.localizationsDelegates;
-
   if (router != null) {
     return MaterialApp.router(
       theme: appTheme,
@@ -26,12 +25,10 @@ Widget buildLocalizedApp({
       localizationsDelegates: delegates,
     );
   }
-
   assert(
     home != null,
     'Either provide a home widget or a router configuration.',
   );
-
   return MaterialApp(
     theme: appTheme,
     home: home!,

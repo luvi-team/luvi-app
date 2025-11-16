@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,7 +14,6 @@ import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../support/test_config.dart';
-// (duplicate imports removed)
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 

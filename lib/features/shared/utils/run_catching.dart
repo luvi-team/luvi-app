@@ -110,7 +110,8 @@ void _reportHandledError({
   if (kDebugMode) {
     try {
       final sanitized = _sanitizeError(error);
-      final suffix = sanitized != null ? ': $sanitized' : ': ${error.toString()}';
+      final suffix =
+          sanitized != null ? ': $sanitized' : ': ${error.toString()}';
       debugPrint(
         '[$tag] ${error.runtimeType}$suffix\n${_shortStackTrace(stackTrace)}',
       );
@@ -124,7 +125,8 @@ String? _sanitizeError(Object error) {
   final raw = error.toString();
 
   // Sanitize control characters to prevent log injection
-  String sanitized = raw.replaceAll(RegExp(r'[\r\n\t\x00-\x1F\x7F]'), ' ');
+  String sanitized =
+      raw.replaceAll(RegExp(r'[\r\n\t\x00-\x1F\x7F]'), ' ');
 
   bool changedForPii = false;
 

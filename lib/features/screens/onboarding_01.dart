@@ -79,6 +79,8 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
                 const SizedBox(height: Spacing.m),
                 OnboardingHeader(
                   title: AppLocalizations.of(context)!.onboarding01Title,
+                  semanticsLabel:
+                      AppLocalizations.of(context)!.onboarding01Title,
                   step: 1,
                   totalSteps: kOnboardingTotalSteps,
                   onBack: _handleBack,

@@ -14,6 +14,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
+
             home: const Consent02Screen(appLinks: TestConfig.defaultAppLinks),
             locale: const Locale('de'),
             supportedLocales: AppLocalizations.supportedLocales,
@@ -30,6 +31,7 @@ void main() {
       // Tap required cards via deterministic keys
       final health = find.byKey(const Key('consent02_card_required_health'));
       final terms = find.byKey(const Key('consent02_card_required_terms'));
+
       // AI Journal is optional now
       final list = find.byType(Scrollable);
       expect(health, findsOneWidget);
@@ -42,10 +44,12 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(terms);
       await tester.pumpAndSettle();
+
       // Weiter should now be enabled
       expect(tester.widget<ElevatedButton>(weiter).onPressed, isNotNull);
 
       // Tap "Alle akzeptieren" to select all optional scopes
+
       final allAcceptFinder = find.byKey(
         const Key('consent02_btn_toggle_optional'),
       );
@@ -57,6 +61,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Button switches to "Alle abwählen" with active handler for clearing selections
+
       final toggleButtonAfter = tester.widget<ElevatedButton>(allAcceptFinder);
       expect(toggleButtonAfter.onPressed, isNotNull);
       expect(find.text('Alle abwählen'), findsOneWidget);

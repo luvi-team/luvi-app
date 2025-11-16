@@ -6,6 +6,7 @@ import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/l10n/app_localizations_de.dart';
 import 'package:luvi_services/init_mode.dart';
+
 import 'test_app_links.dart';
 
 /// Centralized configuration for test-specific feature flags used by tests.
@@ -50,3 +51,4 @@ class TestConfig {
     });
   }
 }
+

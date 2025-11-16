@@ -35,6 +35,7 @@ void main() {
         textScaleFactor: 1.0,
       );
 
+
       expect(config.scale, closeTo(OnboardingSuccessTokens.minScale, 1e-9));
       expect(config.baselineOffset, closeTo(OnboardingSuccessTokens.minBaselineOffset, 1e-9));
     });
@@ -44,6 +45,7 @@ void main() {
         viewHeight: 2400,
         textScaleFactor: 1.0,
       );
+
 
       expect(config.scale, closeTo(OnboardingSuccessTokens.maxScale, 1e-9));
       expect(config.baselineOffset, closeTo(OnboardingSuccessTokens.maxBaselineOffset, 1e-9));

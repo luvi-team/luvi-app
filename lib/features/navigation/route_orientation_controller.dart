@@ -12,9 +12,13 @@ typedef OrientationSetter = Future<void> Function(
 class RouteOrientationController {
   RouteOrientationController({
     required List<DeviceOrientation> defaultOrientations,
-    Map<String, List<DeviceOrientation>> routeOverrides = const <String, List<DeviceOrientation>>{},
+    Map<String, List<DeviceOrientation>> routeOverrides =
+        const <String, List<DeviceOrientation>>{},
     OrientationSetter? setter,
-  })  : assert(defaultOrientations.isNotEmpty, 'defaultOrientations must not be empty'),
+  })  : assert(
+          defaultOrientations.isNotEmpty,
+          'defaultOrientations must not be empty',
+        ),
         assert(
           routeOverrides.values.every((list) => list.isNotEmpty),
           'All orientation lists in routeOverrides must be non-empty',
@@ -24,7 +28,10 @@ class RouteOrientationController {
           routeOverrides.map(
             (key, value) {
               final coerced = List<DeviceOrientation>.from(value);
-              return MapEntry(key, List<DeviceOrientation>.unmodifiable(coerced));
+              return MapEntry(
+                key,
+                List<DeviceOrientation>.unmodifiable(coerced),
+              );
             },
           ),
         ),

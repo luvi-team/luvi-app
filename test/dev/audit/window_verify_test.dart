@@ -83,6 +83,7 @@ void main() {
 
       // Find widgets
       final backButtonFinder = find.byType(BackButtonCircle);
+
       // Use a stable key instead of hard-coded localized text
       final headerFinder = find.byKey(const Key('create_new_title'));
       final confirmFieldFinder = find.byKey(

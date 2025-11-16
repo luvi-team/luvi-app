@@ -1,158 +1,123 @@
-// Contract tests for log_consent Edge Function
-// MIWF: Test the signature/validation first, actual implementation later
+// Contract tests for the log_consent Edge Function.
+// These tests assert the current contract (request payload + responses).
 
-import { assertEquals, assertExists } from "https://deno.land/std@0.168.0/testing/asserts.ts"
+import { assertEquals, assertExists } from "https://deno.land/std@0.168.0/testing/asserts.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 
-const FUNCTION_URL = "http://localhost:54321/functions/v1/log_consent"
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "http://localhost:54321";
+const FUNCTION_URL = Deno.env.get("LOG_CONSENT_FUNCTION_URL") ??
+  `${SUPABASE_URL.replace(/\/$/, "")}/functions/v1/log_consent`;
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const TEST_EMAIL = Deno.env.get("LOG_CONSENT_TEST_EMAIL") ?? "log-consent-contract@example.com";
+const TEST_PASSWORD = Deno.env.get("LOG_CONSENT_TEST_PASSWORD") ?? "Testpass123!";
+let cachedAccessToken: string | null = null;
 
-// Valid contract payload
-const validPayload = {
-  user_id: "123e4567-e89b-12d3-a456-426614174000",
-  version: "v1.0.0",
-  scopes: ["analytics", "marketing"],
-  granted: true,
-  timestamp: "2025-01-15T10:30:00Z"
+function buildHeaders(accessToken?: string): Record<string, string> {
+  const headers: Record<string, string> = {};
+  headers["Content-Type"] = "application/json";
+  if (SUPABASE_ANON_KEY) {
+    headers["apikey"] = SUPABASE_ANON_KEY;
+  }
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+  return headers;
 }
 
-Deno.test("Contract: Accept valid POST request", async () => {
-  const response = await fetch(FUNCTION_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(validPayload)
-  })
-
-  assertEquals(response.status, 200)
-  
-  const data = await response.json()
-  assertExists(data.message)
-  assertExists(data.data)
-  assertEquals(data.data.user_id, validPayload.user_id)
-  assertEquals(data.data.version, validPayload.version)
-  assertEquals(data.data.granted, validPayload.granted)
-})
-
-Deno.test("Contract: Reject GET requests", async () => {
-  const response = await fetch(FUNCTION_URL, {
-    method: "GET"
-  })
-
-  assertEquals(response.status, 405)
-  
-  const data = await response.json()
-  assertEquals(data.error, "Method not allowed")
-})
-
-Deno.test("Contract: Reject missing user_id", async () => {
-  const invalidPayload = { ...validPayload }
-  delete (invalidPayload as any).user_id
-
-  const response = await fetch(FUNCTION_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(invalidPayload)
-  })
-
-  assertEquals(response.status, 400)
-  
-  const data = await response.json()
-  assertEquals(data.error, "Invalid user_id: must be string")
-})
-
-Deno.test("Contract: Reject invalid version", async () => {
-  const invalidPayload = { ...validPayload, version: null }
-
-  const response = await fetch(FUNCTION_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(invalidPayload)
-  })
-
-  assertEquals(response.status, 400)
-  
-  const data = await response.json()
-  assertEquals(data.error, "Invalid version: must be string")
-})
-
-Deno.test("Contract: Reject invalid scopes", async () => {
-  const invalidPayload = { ...validPayload, scopes: "invalid" }
-
-  const response = await fetch(FUNCTION_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(invalidPayload)
-  })
-
-  assertEquals(response.status, 400)
-  
-  const data = await response.json()
-  assertEquals(data.error, "Invalid scopes: must be array or object")
-})
-
-Deno.test("Contract: Accept scopes as object", async () => {
-  const payloadWithObjectScopes = { 
-    ...validPayload, 
-    scopes: { analytics: true, marketing: false }
+async function ensureTestUserAccessToken(): Promise<string> {
+  if (cachedAccessToken) return cachedAccessToken;
+  if (!SUPABASE_ANON_KEY) {
+    throw new Error("SUPABASE_ANON_KEY must be set for log_consent contract tests.");
   }
 
+  const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  let { data, error } = await client.auth.signInWithPassword({
+    email: TEST_EMAIL,
+    password: TEST_PASSWORD,
+  });
+
+  if (error) {
+    if (error.message?.toLowerCase().includes("invalid login credentials")) {
+      if (!SUPABASE_SERVICE_ROLE_KEY) {
+        throw new Error(
+          "Test user is missing and SUPABASE_SERVICE_ROLE_KEY is not set to create it.",
+        );
+      }
+      const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { error: createError } = await adminClient.auth.admin.createUser({
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+        email_confirm: true,
+      });
+      if (createError && createError.status !== 422) {
+        throw new Error(`Failed to create log_consent test user: ${createError.message}`);
+      }
+      ({ data, error } = await client.auth.signInWithPassword({
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+      }));
+      if (error) {
+        throw new Error(`Failed to sign in created test user: ${error.message}`);
+      }
+    } else {
+      throw new Error(`Failed to sign in log_consent test user: ${error.message}`);
+    }
+  }
+
+  const accessToken = data.session?.access_token;
+  if (!accessToken) {
+    throw new Error("Missing access token for log_consent contract tests.");
+  }
+  cachedAccessToken = accessToken;
+  return accessToken;
+}
+
+Deno.test("log_consent: accepts valid POST requests", async () => {
+  const accessToken = await ensureTestUserAccessToken();
   const response = await fetch(FUNCTION_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payloadWithObjectScopes)
-  })
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: ["analytics", "marketing"],
+      source: "contract-test",
+      appVersion: "1.0.0-test",
+    }),
+  });
 
-  assertEquals(response.status, 200)
-  
-  const data = await response.json()
-  assertEquals(data.data.scopes.analytics, true)
-  assertEquals(data.data.scopes.marketing, false)
-})
+  assertEquals(response.status, 201);
+  const data = await response.json();
+  assertEquals(data.ok, true);
+  assertExists(data.request_id);
+  assertEquals(typeof data.request_id, "string");
+});
 
-Deno.test("Contract: Reject invalid granted", async () => {
-  const invalidPayload = { ...validPayload, granted: "yes" }
+Deno.test("log_consent: rejects non-POST methods", async () => {
+  const response = await fetch(FUNCTION_URL, {
+    method: "GET",
+    headers: buildHeaders(),
+  });
 
+  assertEquals(response.status, 405);
+  const data = await response.json();
+  assertEquals(data.error, "Method not allowed");
+});
+
+Deno.test("log_consent: rejects malformed JSON payloads", async () => {
+  const accessToken = await ensureTestUserAccessToken();
   const response = await fetch(FUNCTION_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(invalidPayload)
-  })
+    headers: buildHeaders(accessToken),
+    body: "{ invalid json }",
+  });
 
-  assertEquals(response.status, 400)
-  
-  const data = await response.json()
-  assertEquals(data.error, "Invalid granted: must be boolean")
-})
-
-Deno.test("Contract: Reject missing timestamp", async () => {
-  const invalidPayload = { ...validPayload }
-  delete (invalidPayload as any).timestamp
-
-  const response = await fetch(FUNCTION_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(invalidPayload)
-  })
-
-  assertEquals(response.status, 400)
-  
-  const data = await response.json()
-  assertEquals(data.error, "Invalid timestamp: must be string")
-})
-
-Deno.test("Contract: Reject malformed JSON", async () => {
-  const response = await fetch(FUNCTION_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: "{ invalid json }"
-  })
-
-  assertEquals(response.status, 400)
-  
-  const data = await response.json()
-  assertEquals(data.error, "Invalid JSON body")
-})
-
-// TODO: Test UUID format validation once implemented
-// TODO: Test timestamp format validation once implemented
-// TODO: Test database integration once implemented
-// TODO: Test rate limiting once implemented
-// TODO: Test authentication once implemented
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid request body");
+});

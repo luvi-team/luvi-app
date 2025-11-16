@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'logger.dart';
-import 'init_mode.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'init_exception.dart';
+import 'init_mode.dart';
+import 'logger.dart';
 
 class SupabaseService {
   static bool _initialized = false;
@@ -178,7 +178,6 @@ class SupabaseService {
 
   /// Upsert cycle data for the current user
   ///
-  ///
   /// Timezone handling for [lastPeriod]: this method interprets the provided
   /// DateTime as a calendar date in the user's local timezone and normalizes
   /// it to a UTC date-only value (YYYY-MM-DD). The time-of-day and timezone
@@ -269,8 +268,12 @@ class SupabaseService {
     try {
       await dotenv.load(fileName: envFile);
     } catch (error, stackTrace) {
-      log.e('Failed to load Supabase environment', tag: 'supabase_service',
-          error: error, stack: stackTrace);
+      log.e(
+        'Failed to load Supabase environment',
+        tag: 'supabase_service',
+        error: error,
+        stack: stackTrace,
+      );
       // In tests, don't crash app initialization; proceed with offline UI.
       final isTest = InitModeBridge.resolve() == InitMode.test;
       if (!isTest) {
@@ -287,9 +290,10 @@ class SupabaseService {
     const defineAnon = String.fromEnvironment('SUPABASE_ANON_KEY');
 
     // 2) Fallback to dotenv (local dev only) with legacy key support
-    final envUrl = dotenv.maybeGet('SUPABASE_URL') ?? dotenv.maybeGet('SUPA_URL');
-    final envAnon =
-        dotenv.maybeGet('SUPABASE_ANON_KEY') ?? dotenv.maybeGet('SUPA_ANON_KEY');
+    final envUrl =
+        dotenv.maybeGet('SUPABASE_URL') ?? dotenv.maybeGet('SUPA_URL');
+    final envAnon = dotenv.maybeGet('SUPABASE_ANON_KEY') ??
+        dotenv.maybeGet('SUPA_ANON_KEY');
 
     final url = (defineUrl.isNotEmpty ? defineUrl : envUrl);
     final anon = (defineAnon.isNotEmpty ? defineAnon : envAnon);
@@ -355,9 +359,9 @@ class _SupabaseCredentials {
 @immutable
 class SupabaseValidationConfig {
   const SupabaseValidationConfig({this.minAge = 13, this.maxAge = 100})
-    : assert(minAge >= 13, 'minAge must be >= 13.'),
-      assert(maxAge <= 150, 'maxAge must be <= 150 (sanity check).'),
-      assert(maxAge >= minAge, 'maxAge must be >= minAge.');
+      : assert(minAge >= 13, 'minAge must be >= 13.'),
+        assert(maxAge <= 150, 'maxAge must be <= 150 (sanity check).'),
+        assert(maxAge >= minAge, 'maxAge must be >= minAge.');
 
   final int minAge;
   final int maxAge;

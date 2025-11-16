@@ -1,0 +1,48 @@
+name: Supabase DB Apply (dev)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  apply-dev:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    # PAT for supabase link fallback (Only used when DB_URL_DEV is empty).
+    env:
+      SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
+      SUPABASE_PROJECT_REF_DEV: ${{ secrets.SUPABASE_PROJECT_REF_DEV }}
+      SUPABASE_DB_PASSWORD_DEV: ${{ secrets.SUPABASE_DB_PASSWORD_DEV }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.54.11 # Pinned; review quarterly per context/agents/_actions_todo.md
+
+      - name: Apply via DB URL (preferred)
+        if: ${{ env.SUPABASE_DB_URL_DEV != '' }}
+        env:
+          SUPABASE_DB_URL: ${{ env.SUPABASE_DB_URL_DEV }}
+        run: supabase db push --db-url "$SUPABASE_DB_URL"
+
+      - name: Apply via project link (fallback)
+        if: ${{ env.SUPABASE_DB_URL_DEV == '' && env.SUPABASE_PROJECT_REF_DEV != '' && env.SUPABASE_DB_PASSWORD_DEV != '' && env.SUPABASE_ACCESS_TOKEN != '' }}
+        env:
+          SUPABASE_PROJECT_REF: ${{ env.SUPABASE_PROJECT_REF_DEV }}
+          SUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD_DEV }}
+          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          supabase db push --linked
+
+      - name: Fail (missing Supabase credentials)
+        if: ${{ env.SUPABASE_DB_URL_DEV == '' && (env.SUPABASE_PROJECT_REF_DEV == '' || env.SUPABASE_DB_PASSWORD_DEV == '' || env.SUPABASE_ACCESS_TOKEN == '') }}
+        run: |
+          echo "Supabase DB apply skipped: DB URL missing and link credentials incomplete."
+          echo "- has project ref:  ${{ env.SUPABASE_PROJECT_REF_DEV != '' }}"
+          echo "- has db password:  ${{ env.SUPABASE_DB_PASSWORD_DEV != '' }}"
+          echo "- has access token: ${{ env.SUPABASE_ACCESS_TOKEN != '' }}"
+          exit 1

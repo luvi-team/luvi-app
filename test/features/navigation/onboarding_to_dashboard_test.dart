@@ -6,6 +6,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_08.dart';
 
+
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
@@ -27,6 +28,7 @@ void main() {
         ),
         GoRoute(
           path: Onboarding08Screen.routeName,
+
           builder: (context, state) {
             navigatedPath = Onboarding08Screen.routeName;
             return const Scaffold(body: Text('Onboarding 08 (Stub)'));

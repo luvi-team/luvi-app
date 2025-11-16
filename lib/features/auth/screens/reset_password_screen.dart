@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
@@ -137,7 +138,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                             state.email,
                             onSuccess: () async {
                               if (!context.mounted) return;
-                              context.goNamed('forgot_sent');
+                              context.goNamed(
+                                SuccessScreen.forgotEmailSentRouteName,
+                              );
                             },
                           );
                     }

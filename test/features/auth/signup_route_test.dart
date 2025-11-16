@@ -8,6 +8,7 @@ import 'package:luvi_app/features/routes.dart' as features;
 import '../../support/test_config.dart';
 
 void main() {
+
   TestConfig.ensureInitialized();
   test('featureRoutes contains signup route path', () {
     final route = features.featureRoutes.firstWhere(

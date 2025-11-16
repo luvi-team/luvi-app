@@ -24,8 +24,10 @@ class LinkTextPart {
     this.bold = false,
     this.color,
     this.semanticsLabel,
-  }) : assert(onTap == null || text.isNotEmpty,
-            'Tappable parts must have visible text for accessibility and usability');
+  }) : assert(
+          onTap == null || text.isNotEmpty,
+          'Tappable parts must have visible text for accessibility and usability',
+        );
 }
 
 /// Inline rich text renderer that keeps semantics and analytics wiring consistent.
@@ -33,9 +35,11 @@ class LinkText extends StatelessWidget {
   final TextStyle style;
   final List<LinkTextPart> parts;
   final double minTapTargetSize;
+
   /// Horizontal padding (per side) to expand the tap target of inline links.
   /// Keep small to avoid overlapping adjacent link targets in dense text.
   final double horizontalTouchPadding;
+
   /// When true, the horizontal hit rect may overflow beyond the text bounds
   /// by [horizontalTouchPadding]. When false, the hit rect is clipped to the
   /// inline box width (no horizontal overflow), reducing overlap risk.
@@ -55,8 +59,11 @@ class LinkText extends StatelessWidget {
     this.minTapTargetSize = _kMinTapSize,
     this.horizontalTouchPadding = _kDefaultHorizontalTouchPadding,
     this.allowHorizontalOverflowHitRect = false,
-  }) : assert(minTapTargetSize >= 0, 'minTapTargetSize must be non-negative'),
-       assert(horizontalTouchPadding >= 0, 'horizontalTouchPadding must be non-negative');
+  })  : assert(minTapTargetSize >= 0, 'minTapTargetSize must be non-negative'),
+        assert(
+          horizontalTouchPadding >= 0,
+          'horizontalTouchPadding must be non-negative',
+        );
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +77,8 @@ class LinkText extends StatelessWidget {
           final partStyle = part.bold
               ? resolvedBaseStyle.copyWith(fontWeight: FontWeight.w700)
               : resolvedBaseStyle;
-          final styledPartWithColor = part.color != null 
-              ? partStyle.copyWith(color: part.color)
-              : partStyle;
+          final styledPartWithColor =
+              part.color != null ? partStyle.copyWith(color: part.color) : partStyle;
           if (part.onTap == null) {
             return TextSpan(text: part.text, style: styledPartWithColor);
           }
@@ -116,8 +122,11 @@ class _LinkTextTapTarget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fontSize = style.fontSize ?? DefaultTextStyle.of(context).style.fontSize ?? 14.0;
-    final baseHeightFactor = style.height ?? DefaultTextStyle.of(context).style.height ?? 1.0;
+    final defaultStyle = DefaultTextStyle.of(context).style;
+    final resolvedStyle = defaultStyle.merge(style);
+    final fallbackFontSize = defaultStyle.fontSize ?? 14.0;
+    final fontSize = resolvedStyle.fontSize ?? fallbackFontSize;
+    final baseHeightFactor = resolvedStyle.height ?? defaultStyle.height ?? 1.0;
     final lineHeight = fontSize * baseHeightFactor;
     final verticalPadding = math.max(
       0.0,
@@ -131,16 +140,19 @@ class _LinkTextTapTarget extends StatelessWidget {
     double innerHorizontalPadding = 0.0;
     if (!allowHorizontalOverflowHitRect) {
       final textPainter = TextPainter(
-        text: TextSpan(text: text, style: style),
+        text: TextSpan(text: text, style: resolvedStyle),
         textDirection: Directionality.of(context),
         maxLines: 1,
       )..layout(maxWidth: double.infinity);
       final measuredWidth = textPainter.width;
-      final neededHalf = math.max(0.0, (minTapTargetSize - measuredWidth) / 2.0);
+      final neededHalf =
+          math.max(0.0, (minTapTargetSize - measuredWidth) / 2.0);
       // Also respect the configured touch padding as a lower bound inside
       // the inline box when overflow is disabled.
-      innerHorizontalPadding = math.max(neededHalf, horizontalTouchPadding);
+      innerHorizontalPadding =
+          math.max(neededHalf, horizontalTouchPadding);
     }
+
     final content = Stack(
       clipBehavior: Clip.none,
       children: [
@@ -155,7 +167,7 @@ class _LinkTextTapTarget extends StatelessWidget {
           ),
         ),
         ExcludeSemantics(
-          child: Text(text, style: style),
+          child: Text(text, style: resolvedStyle),
         ),
       ],
     );
@@ -229,9 +241,8 @@ class _LinkTapRegionState extends State<_LinkTapRegion> {
             curve: Curves.easeOut,
             decoration: BoxDecoration(
               color: _hovered && !_focused ? hoverColor : null,
-              border: _focused
-                  ? Border.all(color: focusColor, width: 2.0)
-                  : null,
+              border:
+                  _focused ? Border.all(color: focusColor, width: 2.0) : null,
               borderRadius: const BorderRadius.all(Radius.circular(4.0)),
             ),
             child: const SizedBox.expand(),

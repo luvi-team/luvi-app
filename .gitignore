@@ -112,7 +112,6 @@ app.*.symbols
 **/.DS_Store
 # Supabase temp files
 supabase/.temp/
-supabase/functions/
 supabase/logs/
 # macOS junk
 # Supabase temp

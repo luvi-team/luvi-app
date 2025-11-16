@@ -14,6 +14,7 @@ void main() {
       expect(FitnessLevel.fromSelectionIndex(0), FitnessLevel.beginner);
       expect(FitnessLevel.fromSelectionIndex(1), FitnessLevel.occasional);
       expect(FitnessLevel.fromSelectionIndex(2), FitnessLevel.fit);
+
       expect(() => FitnessLevel.fromSelectionIndex(3), throwsRangeError);
     });
 
@@ -21,6 +22,7 @@ void main() {
       expect(FitnessLevel.selectionIndexFor(FitnessLevel.beginner), 0);
       expect(FitnessLevel.selectionIndexFor(FitnessLevel.occasional), 1);
       expect(FitnessLevel.selectionIndexFor(FitnessLevel.fit), 2);
+
       expect(FitnessLevel.selectionIndexFor(FitnessLevel.unknown), isNull);
       expect(FitnessLevel.selectionIndexFor(null), isNull);
     });
@@ -117,11 +119,13 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final first = UserStateService(prefs: prefs);
       await first.markWelcomeSeen();
+
       await first.setFitnessLevel(FitnessLevel.beginner);
 
       final second = UserStateService(prefs: prefs);
       expect(second.hasSeenWelcome, isTrue);
       expect(second.hasCompletedOnboarding, isFalse);
+
       expect(second.fitnessLevel, FitnessLevel.beginner);
     });
   });

@@ -98,6 +98,7 @@ void main() {
       await tester.pumpWidget(await buildApp(router));
       await tester.pumpAndSettle();
 
+
       final screenContext = tester.element(
         find.byType(OnboardingSuccessScreen),
       );
@@ -111,6 +112,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Dashboard'), findsOneWidget);
+
       final currentUri = router.routeInformationProvider.value.uri.toString();
       expect(currentUri, HeuteScreen.routeName);
     });
@@ -230,6 +232,7 @@ void main() {
 
       final context = tester.element(find.byType(OnboardingSuccessScreen));
       final spacing = OnboardingSpacing.of(context);
+
 
       // From updated spec: trophyToTitle = 28px, titleToButton = design token value
       expect(spacing.trophyToTitle, OnboardingSuccessTokens.gapToTitle);

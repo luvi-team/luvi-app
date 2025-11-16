@@ -9,6 +9,14 @@
 
 ---
 
+## Quickstart / Where to start (SSOT)
+- App‑Kontext: `docs/product/app-context.md:1`
+- Tech‑Stack: `docs/engineering/tech-stack.md:1`
+- Roadmap: `docs/product/roadmap.md:1`
+- Gold‑Standard Workflow (inkl. „Praktische Anleitung · Ultra‑Slim“): `docs/engineering/gold-standard-workflow.md:62`
+
+---
+
 ## Claude Code Arbeitsablauf (immer befolgen bei Claude Code Sessions)
 
 **KRITISCHE REGEL: Checkpoints sind PFLICHT, nicht optional.**

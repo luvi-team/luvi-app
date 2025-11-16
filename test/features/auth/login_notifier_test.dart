@@ -5,6 +5,7 @@ import 'package:luvi_app/features/auth/state/login_state.dart';
 import '../../support/test_config.dart';
 
 class _FakeServerErrorLoginNotifier extends LoginNotifier {
+
   // Simulates server error after successful client-side validation
   @override
   Future<void> validateAndSubmit() async {
@@ -43,6 +44,7 @@ void main() {
     await notifier.validateAndSubmit();
 
     final state = notifier.debugState();
+
     expect(state.emailError, AuthStrings.errEmailInvalid);
     expect(state.passwordError, AuthStrings.errPasswordInvalid);
     expect(state.isValid, isFalse);
@@ -53,6 +55,7 @@ void main() {
     addTearDown(container.dispose);
     final notifier = container.read(loginProvider.notifier);
     await container.read(loginProvider.future);
+
 
     notifier.setEmail('ab@b.com');
     notifier.setPassword('secret88');
@@ -71,6 +74,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('');
+
     notifier.setPassword('secret88');
     await notifier.validateAndSubmit();
 
@@ -92,6 +96,7 @@ void main() {
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);
+
     expect(state.passwordError, AuthStrings.errPasswordEmpty);
     expect(state.isValid, isFalse);
   });
@@ -103,6 +108,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('test@');
+
     notifier.setPassword('secret88');
     await notifier.validateAndSubmit();
 
@@ -128,6 +134,7 @@ void main() {
     expect(state.isValid, isFalse);
   });
 
+
   test('validateAndSubmit valid for password length 8', () async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
@@ -135,6 +142,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
+
     notifier.setPassword('12345678');
     await notifier.validateAndSubmit();
 
@@ -155,6 +163,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
+
     notifier.setPassword('12345678');
     await notifier.validateAndSubmit();
 

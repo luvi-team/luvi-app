@@ -7,12 +7,12 @@ import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/shared/utils/run_catching.dart';
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/link_text.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 
 import 'consent_01_screen.dart';
@@ -26,8 +26,8 @@ class _ConsentBtnBusyNotifier extends Notifier<bool> {
 
 final _consentBtnBusyProvider =
     NotifierProvider.autoDispose<_ConsentBtnBusyNotifier, bool>(
-      _ConsentBtnBusyNotifier.new,
-    );
+  _ConsentBtnBusyNotifier.new,
+);
 
 class Consent02Screen extends ConsumerWidget {
   /// Requires explicit [appLinks] to make the dependency visible and testable.
@@ -58,7 +58,7 @@ class Consent02Screen extends ConsumerWidget {
         scope: ConsentScope.terms,
         trailing: _buildLinkTrailing(context, l10n),
       ),
-      // AI Journal is optional (opt-in)
+      // Optional consents
       ConsentChoiceListItem(
         body: l10n.consent02CardAnalytics,
         scope: ConsentScope.analytics,
@@ -205,12 +205,12 @@ TextStyle _consentBodyTextStyle(ThemeData theme) {
   final colorScheme = theme.colorScheme;
   final base = textTheme.bodyMedium ?? const TextStyle();
   return base.copyWith(
-        color: colorScheme.onSurface,
-        fontSize: 16,
-        height: 1.5,
-        fontWeight: FontWeight.w400,
-        fontFamily: FontFamilies.figtree,
-      );
+    color: colorScheme.onSurface,
+    fontSize: 16,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    fontFamily: FontFamilies.figtree,
+  );
 }
 
 class _ConsentTopBar extends StatelessWidget {
@@ -309,8 +309,8 @@ class ConsentChoiceList extends StatelessWidget {
 
 class ConsentChoiceListItem {
   final Key? key;
-  final ConsentScope scope;
   final String body;
+  final ConsentScope scope;
   final InlineSpan? trailing;
 
   const ConsentChoiceListItem({
@@ -449,16 +449,16 @@ class _ConsentFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           l10n.consent02RevokeHint,
           textAlign: TextAlign.center,
-          style: textTheme.bodySmall?.copyWith(
+          style: theme.textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurface,
             fontSize: 14,
             height: 1.28,
@@ -479,10 +479,14 @@ class _ConsentFooter extends StatelessWidget {
         ),
         const SizedBox(height: ConsentSpacing.footerPrimaryToSecondaryCta),
         SizedBox(
-          width: double.infinity,
+          height: Sizes.buttonHeight,
           child: ElevatedButton(
             key: const Key('consent02_btn_next'),
             onPressed: nextEnabled ? onNext : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+            ),
             child: Text(l10n.commonContinue),
           ),
         ),

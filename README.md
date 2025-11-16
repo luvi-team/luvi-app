@@ -52,10 +52,10 @@ Note: Dieses Projekt verwendet `flutter_dotenv`; lokale Entwicklung nutzt `.env.
 
 ## Vercel Backend (Hybrid)
 
-1. **Hybrid-Architektur:** Supabase übernimmt Auth, CRUD und Realtime (mit RLS), während Vercel die KI-Endpunkte, Webhooks und Cron-Jobs ausführt.
-2. **Setup:** Repository mit Vercel verknüpfen, `VERCEL_API_URL` in der Umgebung setzen; AI-Schlüssel folgen später über die Vercel-Konfiguration.
-3. **Development:** `cd api && npm install && npm test && vercel dev` – der Health-Check steht unter `/api/health` bereit.
-4. **Weiterführend:** Siehe `api/README.md` für Details zu Logging, CORS und DSGVO-Vorgaben.
+- App‑Kontext: `docs/product/app-context.md:1`
+- Tech‑Stack: `docs/engineering/tech-stack.md:1`
+- Roadmap: `docs/product/roadmap.md:1`
+- Gold‑Standard Workflow (inkl. „Praktische Anleitung · Ultra‑Slim“): `docs/engineering/gold-standard-workflow.md:62`
 
 ## Database Security (RLS)
 

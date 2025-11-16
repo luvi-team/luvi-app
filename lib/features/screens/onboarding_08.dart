@@ -81,13 +81,18 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
       }
     } catch (e, stack) {
       // Log error and optionally show user feedback
-      log.e('onboarding08_persist_failed', tag: 'onboarding08', error: e, stack: stack);
+      log.e(
+        'onboarding08_persist_failed',
+        tag: 'onboarding08',
+        error: e,
+        stack: stack,
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)?.onboardingSuccessGenericError ?? 
-              'An error occurred. Please try again.',
+              AppLocalizations.of(context)?.onboardingSuccessGenericError ??
+                  'An error occurred. Please try again.',
             ),
           ),
         );

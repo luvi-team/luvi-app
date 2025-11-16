@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +17,7 @@ class DailyPlan {
   final String id;
   final String ownerId;
   final String title;
+
 
   @override
   bool operator ==(Object other) {
@@ -55,6 +57,7 @@ final dailyPlanRepositoryProvider = Provider<DailyPlanRepository>((ref) {
     'dailyPlanRepositoryProvider must be overridden in tests.',
   );
 });
+
 
 class CreationStatusNotifier extends AsyncNotifier<String?> {
   @override
@@ -97,6 +100,7 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final plansAsync = ref.watch(userScopedDailyPlansProvider);
+
     final creationStatus = ref.watch(creationStatusProvider).value;
 
     return MaterialApp(
@@ -133,6 +137,7 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
                 },
                 loading: () => const Center(child: Text('Loading...')),
                 error: (error, _) => Center(
+
                   child: Text('Error: $error', key: const Key('error_message')),
                 ),
               ),
@@ -145,6 +150,7 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
                   final controller = ref.read(
                     dailyPlanCreationControllerProvider,
                   );
+
                   final statusNotifier = ref.read(creationStatusProvider.notifier);
                   var statusMessage = 'Creation failed';
 
@@ -152,6 +158,7 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
                     final plan = await controller.createPlan(
                       title: 'Morning Routine',
                     );
+
                     statusMessage = 'Created plan for ${plan.ownerId}';
                   } on AuthorizationException catch (e) {
                     statusMessage = 'Creation blocked: ${e.message}';
@@ -205,6 +212,7 @@ void main() {
     testWidgets('renders plans scoped to the authenticated user', (
       tester,
     ) async {
+
       when(() => repository.fetchMyDailyPlans()).thenAnswer(
         (invocation) async => [
           const DailyPlan(
@@ -214,6 +222,7 @@ void main() {
           ),
         ],
       );
+
 
       await pumpHarness(tester, repository: repository);
 
@@ -225,12 +234,14 @@ void main() {
       expect(find.text('owner: $userId'), findsOneWidget);
       expect(find.text('No plans available'), findsNothing);
 
+
       verify(() => repository.fetchMyDailyPlans()).called(1);
     });
 
     testWidgets('renders empty state when repository returns no plans', (
       tester,
     ) async {
+
       when(
         () => repository.fetchMyDailyPlans(),
       ).thenAnswer((invocation) async => const <DailyPlan>[]);
@@ -272,6 +283,7 @@ void main() {
     testWidgets('create plan button calls repository without owner override', (
       tester,
     ) async {
+
       when(
         repository.fetchMyDailyPlans,
       ).thenAnswer((invocation) async => const <DailyPlan>[]);
@@ -289,6 +301,7 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('create_plan_button')));
+
       await tester.pump();
       await tester.pumpAndSettle();
 
@@ -300,6 +313,7 @@ void main() {
     });
 
     testWidgets('creation errors surface in status banner', (tester) async {
+
       when(
         repository.fetchMyDailyPlans,
       ).thenAnswer((invocation) async => const <DailyPlan>[]);
@@ -312,6 +326,7 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('create_plan_button')));
+
       await tester.pump();
       await tester.pumpAndSettle();
 
@@ -321,6 +336,7 @@ void main() {
       );
 
       verify(
+
         () => repository.createDailyPlan(title: 'Morning Routine'),
       ).called(1);
     });

@@ -898,7 +898,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Terms of Service'**
   String get termsOfServiceTitle;
-
   /// Suffix appended after the terms links sentence.
   ///
   /// In en, this message translates to:
@@ -1018,7 +1017,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in with Google'**
   String get authLoginSocialGoogle;
-
   /// Validation error shown when the email is malformed.
   ///
   /// In en, this message translates to:
@@ -1060,7 +1058,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter your password.'**
   String get authErrPasswordEmpty;
-
   /// Error displayed when the user's email has not been confirmed.
   ///
   /// In en, this message translates to:
@@ -1096,7 +1093,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please wait {seconds, plural, one {# second} other {# seconds}} before retrying.'**
   String authErrWaitBeforeRetry(int seconds);
-
   /// Hint text for the email input field.
   ///
   /// In en, this message translates to:
@@ -1240,7 +1236,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Make it strong.'**
   String get authCreateNewSubtitle;
-
   /// Hint text for the new password input.
   ///
   /// In en, this message translates to:

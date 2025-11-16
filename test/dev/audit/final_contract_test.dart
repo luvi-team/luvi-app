@@ -71,6 +71,7 @@ void main() {
       }
 
       // Find widgets
+
       final backButtonFinder = find.byKey(const Key('backButtonCircle'));
       final confirmFieldFinder = find.byKey(
         const Key('AuthConfirmPasswordField'),

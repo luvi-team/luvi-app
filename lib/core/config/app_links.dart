@@ -7,14 +7,13 @@ import 'package:url_launcher/url_launcher.dart';
 /// Shared app link constants (non-instance based)
 class AppLinks {
   AppLinks._(); // Private constructor prevents instantiation
-  
+
   // OAuth redirect URI used for mobile deep linking. Configurable via --dart-define.
   static const String oauthRedirectUri = String.fromEnvironment(
     'OAUTH_REDIRECT_URI',
     defaultValue: 'luvi://auth-callback',
   );
 }
-
 /// Defines the API for retrieving legal link configuration (privacy/terms) and
 /// validating whether configured URLs meet production requirements.
 abstract class AppLinksApi {
@@ -45,6 +44,10 @@ class ProdAppLinks extends AppLinksApi {
   static const _rawPrivacyUrl = String.fromEnvironment('PRIVACY_URL');
   static const _rawTermsUrl = String.fromEnvironment('TERMS_URL');
   static final Uri _sentinelUri = Uri.parse(_sentinelUrl);
+  static final String _sentinelScheme =
+      _sentinelUri.scheme.trim().toLowerCase();
+  static final String _sentinelHost = _sentinelUri.host.trim().toLowerCase();
+  static final String _sentinelPath = _sentinelUri.path.trim().toLowerCase();
 
   static final Uri _privacyPolicy = _parseConfiguredUri(
     rawValue: _rawPrivacyUrl,
@@ -62,12 +65,22 @@ class ProdAppLinks extends AppLinksApi {
   Uri get termsOfService => _termsOfService;
 
   @override
+  bool get hasValidPrivacy => isConfiguredUrl(privacyPolicy);
+
+  @override
+  bool get hasValidTerms => isConfiguredUrl(termsOfService);
+
+  @override
   bool isConfiguredUrl(Uri? uri) {
     if (uri == null) return false;
     if (uri == _sentinelUri) return false;
 
     final scheme = uri.scheme.trim().toLowerCase();
     final host = uri.host.trim().toLowerCase();
+    final path = uri.path.trim().toLowerCase();
+    final isSentinelMatch =
+        scheme == _sentinelScheme && host == _sentinelHost && path == _sentinelPath;
+    if (isSentinelMatch) return false;
     if (scheme.isEmpty || host.isEmpty) return false;
 
     if (scheme != 'https') return false;

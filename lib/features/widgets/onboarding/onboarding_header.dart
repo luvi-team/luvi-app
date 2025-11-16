@@ -16,19 +16,19 @@ class OnboardingHeader extends StatelessWidget {
     required this.onBack,
     this.semanticsLabel,
     this.centerTitle = true,
-  }) : assert(
-         title.trim().isNotEmpty,
-         'title must not be empty or whitespace.',
-       ),
-       assert(
-         totalSteps >= 1,
-         'totalSteps must be at least 1, but received $totalSteps.',
-       ),
-       assert(step >= 1, 'step must be at least 1, but received $step.'),
-       assert(
-         step <= totalSteps,
-         'step $step cannot exceed totalSteps $totalSteps.',
-       );
+  })  : assert(
+          title.trim().isNotEmpty,
+          'title must not be empty or whitespace.',
+        ),
+        assert(
+          totalSteps >= 1,
+          'totalSteps must be at least 1, but received $totalSteps.',
+        ),
+        assert(step >= 1, 'step must be at least 1, but received $step.'),
+        assert(
+          step <= totalSteps,
+          'step $step cannot exceed totalSteps $totalSteps.',
+        );
 
   final String title;
   final int step;
@@ -52,7 +52,7 @@ class OnboardingHeader extends StatelessWidget {
       text: TextSpan(text: stepFraction, style: stepTextStyle),
       textDirection: Directionality.of(context),
     )..layout();
-    
+
     // Measure width, then dispose
     final stepWidth = stepPainter.width;
     stepPainter.dispose();

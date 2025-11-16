@@ -45,6 +45,9 @@ Tooling (Flutter, Sandbox)
   - Keine Schreibzugriffe außerhalb des Repos; HOME/PUB_CACHE sind auf `.tooling/*` gesetzt.
   - Optional eskalieren: `CODEX_USE_REAL_HOME=1` ist für Tests nicht erforderlich und soll nicht genutzt werden.
 
+Quickstart (SSOT)
+- Einstieg/Links siehe `README.md:1` → App‑Kontext, Tech‑Stack, Roadmap, Gold‑Standard (inkl. „Praktische Anleitung · Ultra‑Slim“)
+
 Rollenwahl
 - Default: Auto-Role (ankündigen). Misch-Tasks: `role: …` (Primärrolle zuerst).
 - Auto-Role Map (SSOT): `context/agents/_auto_role_map.md`

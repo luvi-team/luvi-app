@@ -248,4 +248,4 @@ KPIs (MVP)
 72-H PLAN (angepasst)
 Tag 1: Consent-Flow ergänzen (Externe Inhalte Hinweis), feature_flags.dart & analytics.dart final; Health 200; Home „Heute“-Placeholder.
 Tag 2: Supabase Tabellen: channel, video, video_phase, video_tags, user_event, consent_logs; Seed Import (30–50 Videos); Stream-List & Karten.
-Tag 3: IFrame + CMP-Overlays (Long/Short, DE/EN inkl. „Cookies/Local Storage"); Player-Screen; Events play/25/50/95; „Weiter ansehen" Basis.
+Tag 3: IFrame + CMP-Overlays (Long/Short, DE/EN inkl. „Cookies/Local Storage\"); Player-Screen; Events play/25/50/95; „Weiter ansehen\" Basis.

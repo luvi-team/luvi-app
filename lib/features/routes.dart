@@ -44,7 +44,6 @@ const String _consentPathPrefix = '$_consentRootPath/';
 class OnboardingRoutes {
   static const done = '/onboarding/done';
 }
-
 // Route helpers for readability and maintainability. These are pure functions
 // so they can be unit-tested easily by passing a location string.
 bool _isOnboardingRoute(String location) {

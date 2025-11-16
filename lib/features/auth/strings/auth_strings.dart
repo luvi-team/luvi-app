@@ -105,13 +105,14 @@ class AuthStrings {
 
     // Fallback was already attempted in the loop above; if we reach here, rethrow
     throw FlutterError(
-      'AppLocalizations lookup failed for locale "$currentTag" and all fallback candidates including en.'
+      'AppLocalizations lookup failed for locale "$currentTag" and all fallback candidates including en.',
     );
   }
 
   static String get loginHeadline => _l10n().authLoginHeadline;
   static String get loginSubhead => _l10n().authLoginSubhead;
   static String get loginCta => _l10n().authLoginCta;
+  static String get loginCtaButton => loginCta;
 
   static String get loginCtaLinkPrefix => _l10n().authLoginCtaLinkPrefix;
   static String get loginCtaLinkAction => _l10n().authLoginCtaLinkAction;
@@ -132,18 +133,21 @@ class AuthStrings {
         ? l.authErrPasswordTooShort
         : l.authErrPasswordInvalid;
   }
+
   static String get errPasswordMissingTypes {
     final l = _l10n();
     return l.hasGranularPasswordErrors
         ? l.authErrPasswordMissingTypes
         : l.authErrPasswordInvalid;
   }
+
   static String get errPasswordCommonWeak {
     final l = _l10n();
     return l.hasGranularPasswordErrors
         ? l.authErrPasswordCommonWeak
         : l.authErrPasswordInvalid;
   }
+
   static String get errConfirmEmail => _l10n().authErrConfirmEmail;
   static String get invalidCredentials => _l10n().authInvalidCredentials;
   static String get errLoginUnavailable => _l10n().authErrLoginUnavailable;

@@ -58,7 +58,6 @@
 - Classification criteria: Streamers = width OR height > 20px; Dots = width AND height ≤ 20px
 
 Note: Confetti element colors are placeholders pending verification against the source Figma node. Document status remains "Specs Pending" until these values are confirmed or replaced with verified tokens.
-
 **Region criteria (relative to viewport center x=214px):**
 - Left: x < 160
 - Center: 160 ≤ x ≤ 268
@@ -104,7 +103,6 @@ Note: Confetti element colors are placeholders pending verification against the 
 #### Dots (42 total)
 
 Note: All dot color entries below are placeholders pending Figma verification. Each color value is marked implicitly as [TODO: VERIFY].
-
 1. **Dot 01** (Node 68597:8112) - Position: x=59.76px, y=349.06px - Size: 8.86px × 8.59px - Color: #FFEB3B (yellow, placeholder - not verified from Figma) - Region: Left
 2. **Dot 02** (Node 68597:8115) - Position: x=260.19px, y=309.57px - Size: 8.88px × 8.64px - Color: #FFFF00 (yellow, placeholder - not verified from Figma) - Region: Center
 3. **Dot 03** (Node 68597:8118) - Position: x=325.84px, y=326.09px - Size: 8.79px × 8.86px - Color: #B19CD9 (purple, placeholder - not verified from Figma) - Region: Right

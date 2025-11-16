@@ -36,6 +36,7 @@ void main() {
       notifier.toggle(ConsentScope.terms);
       expect(container.read(consent02Provider).requiredAccepted, isFalse);
 
+
       // Terms + health -> now true (AI journal is optional)
       notifier.toggle(ConsentScope.health_processing);
       expect(container.read(consent02Provider).requiredAccepted, isTrue);

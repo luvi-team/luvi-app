@@ -20,7 +20,6 @@ class OnboardingSuccessTokens {
   /// Target gap (in px) between the title and the button.
   /// Canonical: `OnboardingSpacing._titleToButton`.
   static const double titleToButton = 66.0;
-
   /// Responsive config for the celebration animation based on viewport height.
   static OnboardingSuccessIllustrationConfig celebrationConfig({
     required double viewHeight,
@@ -29,7 +28,7 @@ class OnboardingSuccessTokens {
     assert(viewHeight > 0, 'viewHeight must be > 0');
     assert(textScaleFactor > 0, 'textScaleFactor must be > 0');
     assert(_maxViewportHeight > _minViewportHeight,
-      'Invalid viewport height range configuration');
+        'Invalid viewport height range configuration');
     final effectiveHeight = viewHeight
         .clamp(_minViewportHeight, _maxViewportHeight)
         .toDouble();
@@ -92,7 +91,6 @@ class OnboardingSuccessIllustrationConfig {
 
   final double scale;
   final double baselineOffset;
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

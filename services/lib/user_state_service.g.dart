@@ -38,7 +38,8 @@ final class UserStateServiceProvider
   @override
   $FutureProviderElement<UserStateService> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) =>
+      $FutureProviderElement(pointer);
 
   @override
   FutureOr<UserStateService> create(Ref ref) {
@@ -46,4 +47,6 @@ final class UserStateServiceProvider
   }
 }
 
-String _$userStateServiceHash() => r'1022a470551cac63bb421131337e4c4c71c9ee85';
+String _$userStateServiceHash() =>
+    r'1022a470551cac63bb421131337e4c4c71c9ee85';
+

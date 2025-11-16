@@ -71,6 +71,7 @@ void main() {
       }
 
       // Find widgets
+
       final backButtonFinder = find.byKey(const Key('backButtonCircle'));
       final subtitleFinder = find.byKey(const Key('create_new_subtitle'));
       final confirmFieldFinder = find.byKey(

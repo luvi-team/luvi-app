@@ -32,6 +32,7 @@ void main() {
     expect(find.text(l10n.consent02Title), findsOneWidget);
     final scrollable = find.byType(Scrollable);
     expect(find.text(l10n.consent02CardHealth), findsOneWidget);
+
     // Verify the terms card (with links) exists before scrolling
     expect(find.byKey(const Key('consent02_card_required_terms')), findsOneWidget);
     // Then scroll to reveal the AI journal optional card
@@ -48,6 +49,7 @@ void main() {
       find.widgetWithText(ElevatedButton, l10n.consent02AcceptAll),
       findsOneWidget,
     );
+
   });
 
   testWidgets('Consent footer button height matches elevated button theme', (
@@ -77,6 +79,7 @@ void main() {
         ?.resolve({})
         ?.height;
 
+
     expect(minHeight, isNotNull, reason: 'Theme elevatedButtonTheme.style.minimumSize.height should be defined');
     final buttonSize = tester.getSize(buttonFinder);
     expect(buttonSize.height, greaterThanOrEqualTo(minHeight!));
@@ -98,6 +101,7 @@ void main() {
         ),
       ),
     );
+
     await tester.pumpAndSettle();
 
     final screenContext = tester.element(find.byType(Consent02Screen));
@@ -110,6 +114,7 @@ void main() {
     expect(bulkButtonFinder, findsOneWidget);
 
     await tester.tap(bulkButtonFinder);
+
     await tester.pumpAndSettle();
 
     expect(

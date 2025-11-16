@@ -144,7 +144,6 @@ def main():
         level=logging.INFO,
         format='%(levelname)s: %(message)s'
     )
-
     if len(sys.argv) != 2:
         print("Usage: python3 fix_svg_css_variables.py <path-to-svg-file>")
         print("\nExample:")
