@@ -113,6 +113,7 @@ app.*.symbols
 # Supabase temp files
 supabase/.temp/
 supabase/logs/
+supabase/.branches/
 # macOS junk
 # Supabase temp
 # Local-only folder at repo root (if intended)

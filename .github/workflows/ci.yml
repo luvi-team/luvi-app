@@ -43,16 +43,16 @@ jobs:
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
-      - if: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' }}
+      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
 
-      - if: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' }}
+      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
         name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.44.4
 
-      - if: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' }}
+      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
         name: Export optional overrides for log_consent tests
         env:
           LOG_CONSENT_FUNCTION_URL_SECRET: ${{ secrets.LOG_CONSENT_FUNCTION_URL }}
@@ -69,11 +69,11 @@ jobs:
             echo "LOG_CONSENT_TEST_PASSWORD=$LOG_CONSENT_TEST_PASSWORD_SECRET" >> "$GITHUB_ENV"
           fi
 
-      - if: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' }}
+      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
         name: Run log_consent contract tests
         run: deno test --allow-env --allow-net --allow-read supabase/tests/log_consent.test.ts
 
-      - if: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_ANON_KEY != '' }}
+      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
         name: Run log_consent SSOT scope test
         run: deno test --allow-read supabase/functions/log_consent/consent_scopes_ssot.test.ts
 
