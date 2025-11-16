@@ -30,7 +30,7 @@ class ConsentService {
 
     final status = response.status;
     final responseBody = _asJsonMap(response.data);
-    final requestId = responseBody?['request_id'] as String?;
+    final requestId = responseBody?['request_id']?.toString();
 
     final isSuccessStatus = status >= 200 && status < 300;
     if (!isSuccessStatus) {
@@ -51,8 +51,9 @@ class ConsentService {
     }
 
     if (responseBody == null || responseBody['ok'] != true) {
+      final payloadDiagnostics = _payloadDiagnostics(response.data);
       log.w(
-        'log_consent returned unexpected payload (status=$status, ok=${responseBody?['ok']})',
+        'log_consent returned unexpected payload (status=$status, ok=${responseBody?['ok']}, payload=$payloadDiagnostics)',
         tag: _logTag,
       );
       throw ConsentException(
@@ -75,6 +76,14 @@ class ConsentService {
       return data.map((key, value) => MapEntry(key.toString(), value));
     }
     return null;
+  }
+
+  String _payloadDiagnostics(dynamic payload) {
+    if (payload == null) return 'type=null, preview=null';
+    final preview = payload.toString();
+    final truncatedPreview =
+        preview.length <= 200 ? preview : '${preview.substring(0, 200)}...';
+    return 'type=${payload.runtimeType}, preview=$truncatedPreview';
   }
 }
 

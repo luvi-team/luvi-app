@@ -68,6 +68,7 @@
   - `pgvector` für semantische Suche/Empfehlungen im Stream
   - Auth (Abo-Gates), Storage (Metadaten), Consent-Logs
 - EU-Residency: Rechenzentrum DE; keine `service_role` im Client.
+- Consent-Scopes (IDs + Pflicht-Flags) werden zentral in `config/consent_scopes.json` gepflegt; Flutter/Deno-Tests stellen sicher, dass `ConsentScope` und `VALID_SCOPES` synchron bleiben (siehe `docs/privacy/consent_scopes.md`).
 
 ### 3.2 Supabase MCP (Dev-only, read-only)  ← NEU / explizit
 - Zweck: LLM-Assistenten (Claude/Codex) können Schema lesen / erklären / Migrationspläne vorschlagen.

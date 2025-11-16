@@ -20,10 +20,11 @@ void main() {
 
     // Create router with both routes
     final router = GoRouter(
-      initialLocation: '/auth/password/success',
+      initialLocation: SuccessScreen.passwordSavedRoutePath,
       routes: [
         GoRoute(
-          path: '/auth/password/success',
+          path: SuccessScreen.passwordSavedRoutePath,
+          name: SuccessScreen.passwordSavedRouteName,
           builder: (context, state) => const SuccessScreen(),
         ),
         GoRoute(

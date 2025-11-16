@@ -31,10 +31,12 @@ if (isNaN(RATE_LIMIT_MAX_REQUESTS) || RATE_LIMIT_MAX_REQUESTS <= 0 || RATE_LIMIT
 // point to your alerting system (e.g. Slack incoming webhook, Log Ingest, etc.).
 const ALERT_WEBHOOK_URL = Deno.env.get("CONSENT_ALERT_WEBHOOK_URL");
 // Sample alerts to avoid flooding (0.0–1.0). Default: 0.1 (10%).
-const ALERT_SAMPLE_RATE = Math.max(
-  0,
-  Math.min(1, Number(Deno.env.get("CONSENT_ALERT_SAMPLE_RATE") ?? 0.1)),
-);
+const rawAlertSampleRate = Deno.env.get("CONSENT_ALERT_SAMPLE_RATE");
+const parsedAlertSampleRate = Number(rawAlertSampleRate ?? "0.1");
+if (!Number.isFinite(parsedAlertSampleRate)) {
+  throw new Error("CONSENT_ALERT_SAMPLE_RATE must be a finite number between 0 and 1");
+}
+const ALERT_SAMPLE_RATE = Math.max(0, Math.min(1, parsedAlertSampleRate));
 
 if (!SUPABASE_URL) {
   throw new Error("Missing required environment variable: SUPABASE_URL must be set");
@@ -42,14 +44,16 @@ if (!SUPABASE_URL) {
 if (!SUPABASE_ANON_KEY) {
   throw new Error("Missing required environment variable: SUPABASE_ANON_KEY must be set");
 }
-// Canonical scopes list: keep in sync with client/shared config. Source of truth to be centralized
+// Canonical scopes list: keep in sync with client/shared config (see lib/features/consent/model/consent_types.dart).
 // TODO: Move to env (CONSENT_VALID_SCOPES), shared config module, or DB table to avoid drift.
-const VALID_SCOPES = [
-  "health",
+// Diese Liste muss zu `config/consent_scopes.json` passen; Deno-Tests prüfen die IDs.
+export const VALID_SCOPES = [
+  "terms",
+  "health_processing",
+  "ai_journal",
   "analytics",
   "marketing",
-  "ai_journal",
-  "terms",
+  "model_training",
 ] as const;
 
 interface ConsentRequestPayload {
@@ -225,8 +229,7 @@ async function maybeAlert(
   }
 }
 
-function validateScopes(raw: unknown): { valid: string[]; invalid: unknown[] } {
-  if (!Array.isArray(raw)) return { valid: [], invalid: [] };
+function validateScopes(raw: unknown[]): { valid: string[]; invalid: unknown[] } {
   const invalid: unknown[] = [];
   const valid: string[] = [];
   for (const scope of raw) {
@@ -243,7 +246,8 @@ function validateScopes(raw: unknown): { valid: string[]; invalid: unknown[] } {
   return { valid, invalid };
 }
 
-serve(async (req) => {
+if (import.meta.main) {
+  serve(async (req) => {
   const started = Date.now();
   const requestId = getRequestId(req);
   const clientIp = getClientIp(req);
@@ -315,7 +319,52 @@ serve(async (req) => {
   }
 
   const rawScopes = body.scopes;
-  if (!rawScopes || (Array.isArray(rawScopes) && rawScopes.length === 0)) {
+  if (rawScopes == null) {
+    logMetric(requestId, "invalid", {
+      reason: "missing_scopes",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  let normalizedScopes: unknown[];
+  if (Array.isArray(rawScopes)) {
+    normalizedScopes = rawScopes;
+  } else if (
+    typeof rawScopes === "object" &&
+    rawScopes !== null &&
+    !Array.isArray(rawScopes)
+  ) {
+    const scopeMap = rawScopes as Record<string, unknown>;
+    normalizedScopes = Object.keys(scopeMap).filter((key) =>
+      Boolean(scopeMap[key])
+    );
+  } else {
+    logMetric(requestId, "invalid", {
+      reason: "invalid_scopes_type",
+      providedType: typeof rawScopes,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(
+      JSON.stringify({ error: "scopes must be provided as an array or object of enabled flags" }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Request-Id": requestId,
+        },
+      },
+    );
+  }
+
+  if (normalizedScopes.length === 0) {
     logMetric(requestId, "invalid", {
       reason: "missing_scopes",
       ip_hash: ipHash,
@@ -329,7 +378,7 @@ serve(async (req) => {
   }
 
   const { valid: validatedScopes, invalid: invalidScopes } = validateScopes(
-    rawScopes,
+    normalizedScopes,
   );
 
   if (invalidScopes.length > 0) {
@@ -475,4 +524,5 @@ serve(async (req) => {
     status: 201,
     headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
   });
-});
+  });
+}

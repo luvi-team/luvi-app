@@ -9,3 +9,7 @@
 4. Mini-Plan schreiben (Ziele, 3–5 Schritte, Acceptance).
 5. Plan in Archon als Projekt-Notiz verlinken.
 
+## PR-Check: Consent & Privacy
+- Wenn Consent-Scopes geändert wurden: Ist `config/consent_scopes.json` angepasst?
+- Passen `ConsentScope`/`kRequiredConsentScopes` (Flutter) und `VALID_SCOPES` (log_consent) zur JSON?
+- Sind die SSOT-Tests grün (`test/features/consent/consent_scopes_ssot_test.dart` via Flutter + der Deno-Test)?
