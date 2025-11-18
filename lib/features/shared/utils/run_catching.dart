@@ -24,6 +24,7 @@ final RegExp _prefixedTokenPattern = RegExp(
   r'\b(?:id|token|session|trace|request|user|auth|ref)[-_:= ]*([A-Fa-f0-9]{16,})\b',
   caseSensitive: false,
 );
+final RegExp _controlCharPattern = RegExp(r'[\r\n\t\x00-\x1F\x7F]');
 
 /// Lightweight wrappers for non-critical work where errors may be safely ignored
 /// once observed. Prefer normal try/catch for critical paths or when callers must
@@ -124,26 +125,28 @@ void _reportHandledError({
 String? _sanitizeError(Object error) {
   final raw = error.toString();
 
-  // Sanitize control characters to prevent log injection
-  String sanitized =
-      raw.replaceAll(RegExp(r'[\r\n\t\x00-\x1F\x7F]'), ' ');
+  String sanitized = raw;
+  var changed = false;
 
-  bool changedForPii = false;
+  if (_controlCharPattern.hasMatch(sanitized)) {
+    sanitized = sanitized.replaceAll(_controlCharPattern, ' ');
+    changed = true;
+  }
 
   if (_emailPattern.hasMatch(sanitized)) {
     sanitized = sanitized.replaceAll(_emailPattern, '[redacted-email]');
-    changedForPii = true;
+    changed = true;
   }
 
   if (_uuidPattern.hasMatch(sanitized)) {
     sanitized = sanitized.replaceAll(_uuidPattern, '[redacted-uuid]');
-    changedForPii = true;
+    changed = true;
   }
 
   sanitized = sanitized.replaceAllMapped(_phoneCandidatePattern, (match) {
     final candidate = match.group(0)!;
     if (_isPiiPhone(candidate)) {
-      changedForPii = true;
+      changed = true;
       return '[redacted-phone]';
     }
     return candidate;
@@ -153,15 +156,13 @@ String? _sanitizeError(Object error) {
     sanitized = sanitized.replaceAllMapped(_prefixedTokenPattern, (match) {
       final fullMatch = match.group(0)!;
       final identifier = match.group(1)!;
-      changedForPii = true;
+      changed = true;
       // Keep the descriptive prefix while masking the sensitive identifier.
       return fullMatch.replaceFirst(identifier, '[redacted-id]');
     });
   }
 
-  // Only return a string when we actually redacted PII; otherwise report null
-  // so callers can decide to log the original error message.
-  return changedForPii ? sanitized : null;
+  return changed ? sanitized : null;
 }
 
 @visibleForTesting

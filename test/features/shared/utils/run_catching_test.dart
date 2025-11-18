@@ -75,6 +75,17 @@ void main() {
       expect(sanitized, isNull);
     });
 
+    test('strips control characters even without PII', () {
+      final sanitized =
+          debugSanitizeError('Line 1\r\nLine 2\twith tabs and newline');
+      expect(sanitized, isNotNull);
+      expect(sanitized, isNot(contains('\r')));
+      expect(sanitized, isNot(contains('\n')));
+      expect(sanitized, isNot(contains('\t')));
+      expect(sanitized, contains('Line 1'));
+      expect(sanitized, contains('Line 2'));
+    });
+
     test('redacts exactly 10-digit phone numbers (boundary)', () {
       final sanitized = debugSanitizeError('Call 1234567890');
       expect(sanitized, contains('[redacted-phone]'));
@@ -205,4 +216,3 @@ void main() {
     });
   });
 }
-
