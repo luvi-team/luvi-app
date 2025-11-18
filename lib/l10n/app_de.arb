@@ -102,9 +102,36 @@
   "@onboarding04CalloutSuffix": {
     "description": "Suffix text displayed after the emphasized part of the onboarding 04 callout."
   },
+  "initBannerConfigError": "Konfigurationsfehler: Supabase-Zugangsdaten ungültig. App läuft offline.",
+  "@initBannerConfigError": {
+    "description": "Fehlerbanner, wenn Supabase-Zugangsdaten während der Initialisierung ungültig sind.",
+    "placeholders": {}
+  },
+  "initBannerConnecting": "Verbindung zum Server… (Versuch {attempts}/{maxAttempts})",
+  "@initBannerConnecting": {
+    "description": "Status-Text, während die App Supabase neu initialisiert.",
+    "placeholders": {
+      "attempts": {
+        "type": "int",
+        "description": "Aktuelle Anzahl der Versuche."
+      },
+      "maxAttempts": {
+        "type": "int",
+        "description": "Maximal zulässige Versuchsanzahl."
+      }
+    }
+  },
+  "initBannerRetry": "Erneut versuchen",
+  "@initBannerRetry": {
+    "description": "CTA-Beschriftung zum erneuten Starten der Supabase-Initialisierung."
+  },
   "documentLoadError": "Dokument konnte nicht geladen werden.",
   "@documentLoadError": {
     "description": "Allgemeine Fehlermeldung, wenn ein rechtliches oder Markdown-Dokument nicht geladen werden kann."
+  },
+  "legalViewerLoadingLabel": "Dokument wird geladen",
+  "@legalViewerLoadingLabel": {
+    "description": "Semantik-Label, das beim Laden eines Rechtsdokuments angekündigt wird."
   },
   "legalViewerFallbackBanner": "Remote nicht verfügbar — Offline-Kopie wird angezeigt.",
   "@legalViewerFallbackBanner": {
@@ -847,5 +874,9 @@
   "consentSnackbarError": "Wir konnten deine Einwilligung nicht speichern. Bitte versuche es erneut.",
   "@consentSnackbarError": {
     "description": "Snackbar-Fehlertext bei gescheiterter Einwilligungsprotokollierung. Keine technischen Details anzeigen."
+  },
+  "consentSnackbarRateLimited": "Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.",
+  "@consentSnackbarRateLimited": {
+    "description": "Snackbar-Hinweis bei Rate-Limit-Blockierungen während des Consent-Loggings."
   }
 }

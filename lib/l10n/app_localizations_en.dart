@@ -78,7 +78,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboarding04CalloutSuffix => '. A rough estimate is enough to get started.';
 
   @override
+  String get initBannerConfigError => 'Configuration error: Supabase credentials invalid. App is running offline.';
+
+  @override
+  String initBannerConnecting(int attempts, int maxAttempts) {
+    return 'Connecting to server… (attempt $attempts/$maxAttempts)';
+  }
+
+  @override
+  String get initBannerRetry => 'Retry';
+
+  @override
   String get documentLoadError => 'Failed to load document.';
+
+  @override
+  String get legalViewerLoadingLabel => 'Loading document';
 
   @override
   String get legalViewerFallbackBanner => 'Remote unavailable — showing offline copy.';
@@ -644,4 +658,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consentSnackbarError => 'We couldn\'t save your consent. Please try again.';
+
+  @override
+  String get consentSnackbarRateLimited => 'Too many requests right now. Please wait a moment and try again.';
 }

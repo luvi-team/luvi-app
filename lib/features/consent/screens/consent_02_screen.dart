@@ -8,7 +8,9 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
+import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
+import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/link_text.dart';
@@ -113,17 +115,20 @@ class Consent02Screen extends ConsumerWidget {
                     );
                     busyNotifier.setBusy(true);
                     try {
-                      Object? markError;
+                      final consentService = ref.read(consentServiceProvider);
+                      final scopes = _scopeIdsFor(state);
+                      await consentService.accept(
+                        version: ConsentConfig.currentVersion,
+                        scopes: scopes,
+                      );
 
+                      Object? markError;
                       final userState = await tryOrNullAsync(
                         () => ref.read(userStateServiceProvider.future),
                         tag: 'userState',
                       );
 
                       if (userState != null) {
-                        // Two-phase approach: (1) retrieve service if available, then
-                        // (2) mark seen; errors are captured and surfaced via snackbar.
-                        // Only attempt to mark when a user state exists. Capture any error.
                         await tryOrNullAsync(
                           () async {
                             await userState.markWelcomeSeen();
@@ -138,20 +143,26 @@ class Consent02Screen extends ConsumerWidget {
                       if (!context.mounted) return;
 
                       if (markError != null) {
-                        final l = AppLocalizations.of(context);
-                        final msg = l?.consentSnackbarError ??
-                            'Failed to save your choice. Please try again.';
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(msg)),
+                        _showConsentErrorSnackbar(
+                          context,
+                          l10n.consentSnackbarError,
                         );
-                        // Do not navigate on failure; allow user to retry.
                         return;
                       }
 
-                      if (!context.mounted) return;
-
-                      // Navigate only when marking succeeded or there was nothing to mark (no userState).
                       context.go(AuthEntryScreen.routeName);
+                    } on ConsentException catch (error) {
+                      if (!context.mounted) return;
+                      final message = error.code == 'rate_limit'
+                          ? l10n.consentSnackbarRateLimited
+                          : l10n.consentSnackbarError;
+                      _showConsentErrorSnackbar(context, message);
+                    } catch (_) {
+                      if (!context.mounted) return;
+                      _showConsentErrorSnackbar(
+                        context,
+                        l10n.consentSnackbarError,
+                      );
                     } finally {
                       busyNotifier.setBusy(false);
                     }
@@ -493,4 +504,19 @@ class _ConsentFooter extends StatelessWidget {
       ],
     );
   }
+}
+
+List<String> _scopeIdsFor(Consent02State state) {
+  final choices = state.choices;
+  return [
+    for (final scope in ConsentScope.values)
+      if (kRequiredConsentScopes.contains(scope) || choices[scope] == true)
+        scope.name,
+  ];
+}
+
+void _showConsentErrorSnackbar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message)),
+  );
 }

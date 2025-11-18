@@ -78,7 +78,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding04CalloutSuffix => '. Eine ungefähre Schätzung reicht für den Start völlig aus.';
 
   @override
+  String get initBannerConfigError => 'Konfigurationsfehler: Supabase-Zugangsdaten ungültig. App läuft offline.';
+
+  @override
+  String initBannerConnecting(int attempts, int maxAttempts) {
+    return 'Verbindung zum Server… (Versuch $attempts/$maxAttempts)';
+  }
+
+  @override
+  String get initBannerRetry => 'Erneut versuchen';
+
+  @override
   String get documentLoadError => 'Dokument konnte nicht geladen werden.';
+
+  @override
+  String get legalViewerLoadingLabel => 'Dokument wird geladen';
 
   @override
   String get legalViewerFallbackBanner => 'Remote nicht verfügbar — Offline-Kopie wird angezeigt.';
@@ -644,4 +658,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentSnackbarError => 'Wir konnten deine Einwilligung nicht speichern. Bitte versuche es erneut.';
+
+  @override
+  String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
 }

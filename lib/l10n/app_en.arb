@@ -102,9 +102,36 @@
   "@onboarding04CalloutSuffix": {
     "description": "Suffix text displayed after the emphasized part of the onboarding 04 callout."
   },
+  "initBannerConfigError": "Configuration error: Supabase credentials invalid. App is running offline.",
+  "@initBannerConfigError": {
+    "description": "Error banner shown when Supabase credentials are invalid during initialization.",
+    "placeholders": {}
+  },
+  "initBannerConnecting": "Connecting to server… (attempt {attempts}/{maxAttempts})",
+  "@initBannerConnecting": {
+    "description": "Status text shown while the app retries Supabase initialization.",
+    "placeholders": {
+      "attempts": {
+        "type": "int",
+        "description": "Current retry attempt number."
+      },
+      "maxAttempts": {
+        "type": "int",
+        "description": "Maximum allowed attempts before giving up."
+      }
+    }
+  },
+  "initBannerRetry": "Retry",
+  "@initBannerRetry": {
+    "description": "CTA label for retrying Supabase initialization." 
+  },
   "documentLoadError": "Failed to load document.",
   "@documentLoadError": {
     "description": "Generic error shown when a legal or markdown document cannot be loaded."
+  },
+  "legalViewerLoadingLabel": "Loading document",
+  "@legalViewerLoadingLabel": {
+    "description": "Semantics label announced while a legal document is loading."
   },
   "legalViewerFallbackBanner": "Remote unavailable — showing offline copy.",
   "@legalViewerFallbackBanner": {
@@ -847,5 +874,9 @@
   "consentSnackbarError": "We couldn't save your consent. Please try again.",
   "@consentSnackbarError": {
     "description": "Snackbar text shown when consent logging fails. No error details are exposed."
+  },
+  "consentSnackbarRateLimited": "Too many requests right now. Please wait a moment and try again.",
+  "@consentSnackbarRateLimited": {
+    "description": "Snackbar text shown when consent logging is rate limited."
   }
 }

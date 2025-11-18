@@ -221,11 +221,35 @@ abstract class AppLocalizations {
   /// **'. A rough estimate is enough to get started.'**
   String get onboarding04CalloutSuffix;
 
+  /// Error banner shown when Supabase credentials are invalid during initialization.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration error: Supabase credentials invalid. App is running offline.'**
+  String get initBannerConfigError;
+
+  /// Status text shown while the app retries Supabase initialization.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to server… (attempt {attempts}/{maxAttempts})'**
+  String initBannerConnecting(int attempts, int maxAttempts);
+
+  /// CTA label for retrying Supabase initialization.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get initBannerRetry;
+
   /// Generic error shown when a legal or markdown document cannot be loaded.
   ///
   /// In en, this message translates to:
   /// **'Failed to load document.'**
   String get documentLoadError;
+
+  /// Semantics label announced while a legal document is loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading document'**
+  String get legalViewerLoadingLabel;
 
   /// Banner text shown when remote legal document could not be fetched and app displays bundled offline copy.
   ///
@@ -1312,6 +1336,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t save your consent. Please try again.'**
   String get consentSnackbarError;
+
+  /// Snackbar text shown when consent logging is rate limited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests right now. Please wait a moment and try again.'**
+  String get consentSnackbarRateLimited;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
