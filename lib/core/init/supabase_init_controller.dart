@@ -112,6 +112,13 @@ class SupabaseInitController extends Notifier<InitState> {
           'Ensure supabaseEnvFileProvider is overridden correctly before app bootstrap.',
         );
       }
+      final configError = StateError('Supabase env config missing or invalid');
+      _setState(
+        state.copyWith(
+          configError: true,
+          error: configError,
+        ),
+      );
       return;
     }
     if (SupabaseService.isInitialized) {

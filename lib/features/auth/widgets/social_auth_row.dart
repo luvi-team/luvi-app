@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -24,7 +25,10 @@ class SocialAuthRow extends StatelessWidget {
     final textTheme = theme.textTheme;
     // Collect enabled provider buttons (Apple-first per Apple HIG)
     final buttons = <Widget>[];
-    if (FeatureFlags.enableAppleSignIn) {
+    final appleSignInSupported =
+        FeatureFlags.enableAppleSignIn &&
+        (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS);
+    if (appleSignInSupported) {
       buttons.add(
         SizedBox(
           width: double.infinity,

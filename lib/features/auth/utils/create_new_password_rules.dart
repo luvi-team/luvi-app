@@ -123,7 +123,8 @@ Duration computePasswordBackoffDelay(int consecutiveFailures) {
     return Duration.zero;
   }
   final multiplier = 1 << consecutiveFailures;
-  final seconds =
+  final clampedSeconds =
       (_kBackoffBaseSeconds * multiplier).clamp(0, _kBackoffMaxSeconds);
+  final seconds = clampedSeconds.toInt();
   return Duration(seconds: seconds);
 }

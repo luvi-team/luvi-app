@@ -190,6 +190,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _pendingSocialMeasurement = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pendingSocialMeasurement = false;
+      if (!mounted) {
+        return;
+      }
       _measureSocialBlock();
     });
   }

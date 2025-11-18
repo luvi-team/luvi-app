@@ -93,6 +93,50 @@ void main() {
     );
 
     testWidgets(
+      'treats empty remote response as failure and loads asset fallback',
+      (tester) async {
+        final appLinks = _TestAppLinks(privacyPolicy: remoteUri);
+        final breadcrumbEvents = <String>[];
+        final requested = <Uri>[];
+
+        Future<String?> emptyFetcher(
+          Uri uri, {
+          Duration timeout = const Duration(seconds: 10),
+        }) async {
+          requested.add(uri);
+          return '   ';
+        }
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: LegalViewer.asset(
+              assetPath,
+              title: 'Privacy',
+              appLinks: appLinks,
+              assetBundle: _FakeAssetBundle(assets: const {
+                assetPath: 'Asset fallback body',
+              }),
+              remoteMarkdownFetcher: emptyFetcher,
+              debugBreadcrumbHook: (event, {required data}) {
+                breadcrumbEvents.add(event);
+                expect(data['assetPath'], assetPath);
+                expect(data['remoteUri'], remoteUri.toString());
+              },
+            ),
+          ),
+        );
+
+        await tester.pump();
+        await tester.pumpAndSettle();
+
+        expect(find.textContaining('Asset fallback body'), findsOneWidget);
+        expect(find.text(fallbackBanner), findsOneWidget);
+        expect(breadcrumbEvents, contains('legal_viewer_fallback'));
+        expect(requested, equals([remoteUri]));
+      },
+    );
+
+    testWidgets(
       'surfaces error text when both remote and asset fail and exposes telemetry hook',
       (tester) async {
         final appLinks = _TestAppLinks(privacyPolicy: remoteUri);

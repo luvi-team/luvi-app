@@ -73,8 +73,8 @@ class _LegalViewerState extends State<LegalViewer> {
   @override
   void initState() {
     super.initState();
-     _remoteFetcher = widget.remoteMarkdownFetcher ?? fetchRemoteMarkdown;
-     _assetBundle = widget.assetBundle ?? rootBundle;
+    _remoteFetcher = widget.remoteMarkdownFetcher ?? fetchRemoteMarkdown;
+    _assetBundle = widget.assetBundle ?? rootBundle;
     _remoteUri = _deriveRemoteUri(widget.assetPath);
     _documentFuture = _loadDocumentWithFallback(
       assetPath: widget.assetPath,
@@ -112,30 +112,22 @@ class _LegalViewerState extends State<LegalViewer> {
           timeout: const Duration(seconds: 10),
         );
         if (remote != null) {
-          return _LegalDocData(content: remote, usedFallback: false);
+          final trimmed = remote.trim();
+          if (trimmed.isNotEmpty) {
+            return _LegalDocData(content: remote, usedFallback: false);
+          }
         }
+        _recordRemoteFallback(
+          assetPath: assetPath,
+          remoteUri: remoteUri,
+          reason: remote == null ? 'null_response' : 'empty_response',
+        );
       } catch (error, stack) {
-        log.w(
-          'Remote legal load failed; falling back to asset. uri=$remoteUri',
-          tag: 'legal_viewer',
+        _recordRemoteFallback(
+          assetPath: assetPath,
+          remoteUri: remoteUri,
           error: error,
           stack: stack,
-        );
-        Telemetry.maybeBreadcrumb(
-          'legal_viewer_fallback',
-          data: {
-            'assetPath': assetPath,
-            'remoteUri': remoteUri.toString(),
-            'platform': kIsWeb ? 'web' : 'io',
-          },
-        );
-        widget.debugBreadcrumbHook?.call(
-          'legal_viewer_fallback',
-          data: {
-            'assetPath': assetPath,
-            'remoteUri': remoteUri.toString(),
-            'platform': kIsWeb ? 'web' : 'io',
-          },
         );
       }
     }
@@ -172,6 +164,35 @@ class _LegalViewerState extends State<LegalViewer> {
       );
       rethrow;
     }
+  }
+
+  void _recordRemoteFallback({
+    required String assetPath,
+    required Uri remoteUri,
+    Object? error,
+    StackTrace? stack,
+    String? reason,
+  }) {
+    final suffix = reason != null ? ' (reason: $reason)' : '';
+    log.w(
+      'Remote legal load failed$suffix; falling back to asset. uri=$remoteUri',
+      tag: 'legal_viewer',
+      error: error,
+      stack: stack,
+    );
+    final data = <String, Object?>{
+      'assetPath': assetPath,
+      'remoteUri': remoteUri.toString(),
+      'platform': kIsWeb ? 'web' : 'io',
+    };
+    Telemetry.maybeBreadcrumb(
+      'legal_viewer_fallback',
+      data: data,
+    );
+    widget.debugBreadcrumbHook?.call(
+      'legal_viewer_fallback',
+      data: data,
+    );
   }
 
   @override

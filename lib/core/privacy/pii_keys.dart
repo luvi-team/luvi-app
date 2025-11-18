@@ -7,6 +7,9 @@ class PiiKeys {
   const PiiKeys._();
 
   /// Lowercased key names that should always be treated as sensitive.
+  ///
+  /// These are exact-key matches. [_wordPatternTokens] feed a regex for
+  /// partial/word-based heuristics to catch compound keys.
   static const Set<String> suspiciousKeyNames = {
     'access_token',
     'address',
@@ -36,18 +39,21 @@ class PiiKeys {
     'filepath',
     'first_name',
     'firstname',
+    'last_name',
     'full_name',
     'fullname',
     'gender',
     'imei',
     'ip',
     'ip_address',
+    'ip-address',
     'lat',
     'latitude',
     'lng',
     'location',
     'longitude',
     'mac_address',
+    'mac-address',
     'mobile',
     'name',
     'path',
@@ -75,12 +81,17 @@ class PiiKeys {
     'zipcode',
   };
 
-  /// Whole-word detection pattern for suspicious key fragments (underscore,
-  /// hyphen, or whitespace separated).
+  /// Whole-word detection pattern for suspicious key fragments, using custom
+  /// token boundaries so underscores/hyphens remain part of the token.
+  static final String _wordPatternAlternation =
+      _wordPatternTokens.map(RegExp.escape).join('|');
+
   static final RegExp suspiciousWordPattern = RegExp(
-    '(^|[_\\s-])(${_wordPatternTokens.join('|')})([_\\s-]|\$)',
+    '(?<![A-Za-z0-9])($_wordPatternAlternation)(?![A-Za-z0-9])',
+    caseSensitive: false,
   );
 
+  /// Tokens used to construct [suspiciousWordPattern] for partial matches.
   static const List<String> _wordPatternTokens = [
     'email',
     'e-mail',
@@ -112,5 +123,20 @@ class PiiKeys {
     'cc_number',
     'cvv',
     'expiry',
+    'password',
+    'token',
+    'session',
+    'session_id',
+    'api_key',
+    'access_token',
+    'refresh_token',
+    'secret',
+    'authorization',
+    'user_id',
+    'device_id',
+    'ip_address',
+    'ip-address',
+    'mac_address',
+    'mac-address',
   ];
 }

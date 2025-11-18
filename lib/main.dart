@@ -103,6 +103,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   void initState() {
     super.initState();
     _routerRefreshNotifier.ensureSupabaseListener();
+    _listenForInitDiagnostics();
   }
 
   @override
@@ -143,7 +144,6 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    _listenForInitDiagnostics();
     final initState = ref.watch(supabaseInitControllerProvider);
     _routerRefreshNotifier.ensureSupabaseListener();
 
@@ -151,7 +151,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   }
 
   void _listenForInitDiagnostics() {
-    ref.listen<InitState>(
+    ref.listenManual<InitState>(
       supabaseInitControllerProvider,
       (previous, next) {
         final shouldRecord = _shouldRecordInitDiagnostics(previous, next);
