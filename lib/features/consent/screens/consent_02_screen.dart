@@ -113,6 +113,9 @@ class Consent02Screen extends ConsumerWidget {
                     final busyNotifier = ref.read(
                       _consentBtnBusyProvider.notifier,
                     );
+                    if (ref.read(_consentBtnBusyProvider)) {
+                      return;
+                    }
                     busyNotifier.setBusy(true);
                     try {
                       final consentService = ref.read(consentServiceProvider);
@@ -405,28 +408,35 @@ class _ConsentChoiceCard extends StatelessWidget {
                         ? semanticSelectedLabel
                         : semanticUnselectedLabel,
                     selected: selected,
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: colorScheme.outline,
-                          width: 2,
+                    child: SizedBox(
+                      width: Sizes.touchTargetMin,
+                      height: Sizes.touchTargetMin,
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colorScheme.outline,
+                              width: 2,
+                            ),
+                            color: Colors.transparent,
+                          ),
+                          alignment: Alignment.center,
+                          child: selected
+                              ? Container(
+                                  width: 14,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: colorScheme.primary,
+                                  ),
+                                )
+                              : null,
                         ),
-                        color: Colors.transparent,
                       ),
-                      alignment: Alignment.center,
-                      child: selected
-                          ? Container(
-                              width: 14,
-                              height: 14,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: colorScheme.primary,
-                              ),
-                            )
-                          : null,
                     ),
                   ),
                 ],
