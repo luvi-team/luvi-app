@@ -1,6 +1,6 @@
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show AssetBundle, rootBundle;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:luvi_app/core/analytics/telemetry.dart';
 import 'package:luvi_app/core/config/app_links.dart';
@@ -12,16 +12,46 @@ import 'remote_loader_base.dart'
     if (dart.library.io) 'remote_loader_io.dart'
     if (dart.library.html) 'remote_loader_web.dart';
 
+typedef RemoteMarkdownFetcher = Future<String?> Function(
+  Uri uri, {
+  Duration timeout,
+});
+
+typedef LegalViewerBreadcrumbHook = void Function(
+  String event, {
+  required Map<String, Object?> data,
+});
+
+typedef LegalViewerExceptionHook = void Function(
+  String event, {
+  required Object error,
+  required StackTrace stack,
+  required Map<String, Object?> data,
+});
+
 class LegalViewer extends StatefulWidget {
   final String assetPath;
   final String title;
   final AppLinksApi appLinks;
+  final RemoteMarkdownFetcher? remoteMarkdownFetcher;
+  final AssetBundle? assetBundle;
+
+  /// Optional diagnostics hooks used in widget tests to observe telemetry paths.
+  @visibleForTesting
+  final LegalViewerBreadcrumbHook? debugBreadcrumbHook;
+
+  @visibleForTesting
+  final LegalViewerExceptionHook? debugExceptionHook;
 
   const LegalViewer.asset(
     this.assetPath, {
     super.key,
     required this.title,
     this.appLinks = const ProdAppLinks(),
+    this.remoteMarkdownFetcher,
+    this.assetBundle,
+    this.debugBreadcrumbHook,
+    this.debugExceptionHook,
   });
 
   @override
@@ -37,10 +67,14 @@ class _LegalDocData {
 class _LegalViewerState extends State<LegalViewer> {
   late final Future<_LegalDocData> _documentFuture;
   Uri? _remoteUri; // Derived from asset path if available
+  late final RemoteMarkdownFetcher _remoteFetcher;
+  late final AssetBundle _assetBundle;
 
   @override
   void initState() {
     super.initState();
+     _remoteFetcher = widget.remoteMarkdownFetcher ?? fetchRemoteMarkdown;
+     _assetBundle = widget.assetBundle ?? rootBundle;
     _remoteUri = _deriveRemoteUri(widget.assetPath);
     _documentFuture = _loadDocumentWithFallback(
       assetPath: widget.assetPath,
@@ -73,7 +107,7 @@ class _LegalViewerState extends State<LegalViewer> {
     // Try remote-first when a valid remoteUri is available and platform allows it
     if (remoteUri != null) {
       try {
-        final remote = await fetchRemoteMarkdown(
+        final remote = await _remoteFetcher(
           remoteUri,
           timeout: const Duration(seconds: 10),
         );
@@ -95,12 +129,20 @@ class _LegalViewerState extends State<LegalViewer> {
             'platform': kIsWeb ? 'web' : 'io',
           },
         );
+        widget.debugBreadcrumbHook?.call(
+          'legal_viewer_fallback',
+          data: {
+            'assetPath': assetPath,
+            'remoteUri': remoteUri.toString(),
+            'platform': kIsWeb ? 'web' : 'io',
+          },
+        );
       }
     }
 
     // Fallback to bundled asset content
     try {
-      final asset = await rootBundle.loadString(assetPath);
+      final asset = await _assetBundle.loadString(assetPath);
       return _LegalDocData(content: asset, usedFallback: remoteUri != null);
     } catch (error, stack) {
       // Both remote and local failed → bubble up as error for UI error view
@@ -111,6 +153,15 @@ class _LegalViewerState extends State<LegalViewer> {
         stack: stack,
       );
       Telemetry.maybeCaptureException(
+        'legal_viewer_failed',
+        error: error,
+        stack: stack,
+        data: {
+          'assetPath': assetPath,
+          'remoteUri': remoteUri?.toString(),
+        },
+      );
+      widget.debugExceptionHook?.call(
         'legal_viewer_failed',
         error: error,
         stack: stack,

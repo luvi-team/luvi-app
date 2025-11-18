@@ -13,6 +13,7 @@ import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart
 import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
+import 'package:luvi_app/features/navigation/route_names.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {
@@ -151,7 +152,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   static const double _backButtonSize = AuthLayout.backButtonSize;
 
   // Extracted password validation for readability and reuse.
-  String? _validatePassword(
+  String? _validatePasswordInput(
     String newPw,
     String confirmPw,
     AppLocalizations l10n,
@@ -185,6 +186,71 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       return l10n.authErrPasswordCommonWeak;
     }
     return null; // valid
+  }
+
+  Future<void> _onCreatePasswordPressed(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
+    final newPw = _newPasswordController.text.trim();
+    final confirmPw = _confirmPasswordController.text.trim();
+    final validationErrorMsg =
+        _validatePasswordInput(newPw, confirmPw, l10n);
+    if (validationErrorMsg != null) {
+      if (!context.mounted) return;
+      _showValidationError(context, validationErrorMsg);
+      return;
+    }
+
+    await _runPasswordUpdate(context, l10n, newPw);
+  }
+
+  void _showValidationError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _runPasswordUpdate(
+    BuildContext context,
+    AppLocalizations l10n,
+    String newPassword,
+  ) async {
+    setState(() => _isLoading = true);
+    try {
+      await supa.Supabase.instance.client.auth
+          .updateUser(
+        supa.UserAttributes(password: newPassword),
+      )
+          .timeout(
+        const Duration(seconds: 30),
+      );
+      if (!context.mounted) return;
+      setState(() {
+        _consecutiveFailures = 0;
+        _lastFailureAt = null;
+      });
+      _backoffTicker?.cancel();
+      context.goNamed(
+        SuccessScreen.passwordSavedRouteName,
+      );
+    } on supa.AuthException catch (error) {
+      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+      if (!context.mounted) return;
+      _handlePasswordUpdateFailure(context, l10n);
+    } on TimeoutException catch (error) {
+      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+      if (!context.mounted) return;
+      _handlePasswordUpdateFailure(context, l10n);
+    } catch (error) {
+      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+      if (!context.mounted) return;
+      _handlePasswordUpdateFailure(context, l10n);
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
   @override
   void dispose() {
@@ -234,59 +300,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         child: SizedBox(
           height: Sizes.buttonHeight,
           width: double.infinity,
-          child: ElevatedButton(
+            child: ElevatedButton(
             key: const ValueKey('create_new_cta_button'),
             onPressed: (_isLoading || _isBackoffActive)
                 ? null
-                : () async {
-                    final newPw = _newPasswordController.text.trim();
-                    final confirmPw = _confirmPasswordController.text.trim();
-                    final validationErrorMsg =
-                        _validatePassword(newPw, confirmPw, l10n);
-                    if (validationErrorMsg != null) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(validationErrorMsg)),
-                      );
-                      return;
-                    }
-
-                    setState(() => _isLoading = true);
-                    try {
-                      await supa.Supabase.instance.client.auth
-                          .updateUser(
-                        supa.UserAttributes(password: newPw),
-                      )
-                          .timeout(
-                        const Duration(seconds: 30),
-                      );
-                      if (!context.mounted) return;
-                      setState(() {
-                        _consecutiveFailures = 0;
-                        _lastFailureAt = null;
-                      });
-                      _backoffTicker?.cancel();
-                      context.goNamed(
-                        SuccessScreen.passwordSavedRouteName,
-                      );
-                    } on supa.AuthException catch (error) {
-                      debugPrint('[auth.updatePassword] ${error.runtimeType}');
-                      if (!context.mounted) return;
-                      _handlePasswordUpdateFailure(context, l10n);
-                    } on TimeoutException catch (error) {
-                      debugPrint('[auth.updatePassword] ${error.runtimeType}');
-                      if (!context.mounted) return;
-                      _handlePasswordUpdateFailure(context, l10n);
-                    } catch (error) {
-                      debugPrint('[auth.updatePassword] ${error.runtimeType}');
-                      if (!context.mounted) return;
-                      _handlePasswordUpdateFailure(context, l10n);
-                    } finally {
-                      if (mounted) {
-                        setState(() => _isLoading = false);
-                      }
-                    }
-                  },
+                : () => _onCreatePasswordPressed(context, l10n),
             child: _isLoading
                 ? const SizedBox(
                     width: 16,
@@ -398,7 +416,7 @@ class _CreateNewBody extends StatelessWidget {
             if (router.canPop()) {
               router.pop();
             } else {
-              context.goNamed('login');
+              context.goNamed(RouteNames.login);
             }
           },
           backgroundColor: backgroundColor,

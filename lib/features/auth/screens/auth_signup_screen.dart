@@ -11,6 +11,7 @@ import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
+import 'package:luvi_app/features/navigation/route_names.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 const double _signupInputGap = Spacing.s + Spacing.xs; // 20
@@ -121,7 +122,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       bottomNavigationBar: AuthBottomCta(
         topPadding: AuthLayout.inputToCta,
         child: _SignupCtaSection(
-          onLoginPressed: () => context.goNamed('login'),
+          onLoginPressed: () => context.goNamed(RouteNames.login),
           onSignupPressed: _handleSignup,
           isLoading: _isSubmitting,
         ),

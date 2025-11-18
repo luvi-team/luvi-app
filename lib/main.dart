@@ -73,9 +73,46 @@ class MyAppWrapper extends ConsumerWidget {
   const MyAppWrapper({required this.orientationController, super.key});
   final RouteOrientationController orientationController;
 
+  bool _shouldRecordInitDiagnostics(InitState? previous, InitState next) {
+    final prevHadError =
+        previous != null && (previous.configError || previous.error != null);
+    final nextHasError = _hasInitError(next);
+    if (!nextHasError) {
+      return false;
+    }
+    return !prevHadError;
+  }
+
+  bool _hasInitError(InitState state) {
+    return state.configError ||
+        state.error != null ||
+        SupabaseService.lastInitializationError != null;
+  }
+
+  void _recordInitDiagnostics(WidgetRef ref) {
+    final isNotTest = InitModeBridge.resolve() != InitMode.test;
+    if (!isNotTest) return;
+    try {
+      ref.read(initDiagnosticsProvider.notifier).recordError();
+    } catch (e) {
+      if (!kReleaseMode) {
+        debugPrint('[main] Failed to record init diagnostics: $e');
+      }
+    }
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<InitState>(
+      supabaseInitControllerProvider,
+      (previous, next) {
+        final shouldRecord = _shouldRecordInitDiagnostics(previous, next);
+        if (shouldRecord) {
+          _recordInitDiagnostics(ref);
+        }
+      },
+    );
     // In production the bridge defaults to prod; tests override via setter.
     // Watch the init state to rebuild when it changes
     // The Notifier's build() method triggers initialization automatically
@@ -92,18 +129,6 @@ class MyAppWrapper extends ConsumerWidget {
 
     // Rebuild MaterialApp (and thus router) when Supabase init state changes
     // so that refreshListenable attaches once the client is ready.
-    // Emit a deterministic diagnostics signal for tests when an init error exists.
-    final isNotTest = InitModeBridge.resolve() != InitMode.test;
-    final hasError = initState.configError || SupabaseService.lastInitializationError != null;
-    if (isNotTest && hasError) {
-      try {
-        ref.read(initDiagnosticsProvider.notifier).recordError();
-      } catch (e) {
-        if (!kReleaseMode) {
-          debugPrint('[main] Failed to record init diagnostics: $e');
-        }
-      }
-    }
     return MaterialApp.router(
           title: 'LUVI',
           theme: AppTheme.buildAppTheme(),
@@ -155,7 +180,6 @@ class MyAppWrapper extends ConsumerWidget {
       observers: [orientationController.navigatorObserver],
     );
   }
-
 }
 
 /// Wrapper that observes locale changes from Localizations and resets the
@@ -202,9 +226,11 @@ class _InitBanner extends ConsumerWidget {
     final attempts = initState.attempts;
     final maxAttempts = initState.maxAttempts;
     final isConfig = initState.configError;
+    final l10n = AppLocalizations.of(context) ??
+        lookupAppLocalizations(AppLocalizations.supportedLocales.first);
     final message = isConfig
-        ? 'Configuration error: Supabase credentials invalid. App is running offline.'
-        : 'Connecting to server… (attempt $attempts/$maxAttempts)';
+        ? l10n.initBannerConfigError
+        : l10n.initBannerConnecting(attempts, maxAttempts);
 
     return Material(
       color: Colors.transparent,
@@ -239,7 +265,7 @@ class _InitBanner extends ConsumerWidget {
                   onPressed: () {
                     ref.read(supabaseInitControllerProvider.notifier).retryNow();
                   },
-                  child: const Text('Retry'),
+                  child: Text(l10n.initBannerRetry),
                 ),
             ],
           ),

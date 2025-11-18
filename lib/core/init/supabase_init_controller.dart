@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/init_mode.dart';
@@ -70,6 +71,7 @@ class SupabaseInitController extends Notifier<InitState> {
   Timer? _retryTimer;
   bool _disposed = false;
   String? _envFile;
+  bool _missingEnvWarningLogged = false;
   static final _random = math.Random();
 
   void ensureInitialized({required String envFile}) {
@@ -102,7 +104,16 @@ class SupabaseInitController extends Notifier<InitState> {
   }
 
   Future<void> _attemptInit() async {
-    if (_envFile == null) return;
+    if (_envFile == null) {
+      if (!_missingEnvWarningLogged) {
+        _missingEnvWarningLogged = true;
+        _diagnosticsDebugLog(
+          'SupabaseInitController._attemptInit invoked without envFile. '
+          'Ensure supabaseEnvFileProvider is overridden correctly before app bootstrap.',
+        );
+      }
+      return;
+    }
     if (SupabaseService.isInitialized) {
       _setState(state.copyWith(initialized: true, error: null, configError: false));
       return;
@@ -161,14 +172,35 @@ class SupabaseInitController extends Notifier<InitState> {
       // Deterministic test signal
       try {
         ref.read(initDiagnosticsProvider.notifier).recordError();
-      } catch (_) {
-        // ignore: avoid_catches_without_on_clauses
+      } catch (error, stackTrace) {
+        _diagnosticsDebugLog(
+          'SupabaseInitController failed to record init diagnostics: $error',
+          stackTrace,
+        );
       }
     }
   }
 
   void _setState(InitState value) {
     state = value;
+  }
+
+  void _diagnosticsDebugLog(String message, [StackTrace? stackTrace]) {
+    var loggedViaAssert = false;
+    assert(() {
+      debugPrint(message);
+      if (stackTrace != null) {
+        debugPrint(stackTrace.toString());
+      }
+      loggedViaAssert = true;
+      return true;
+    }());
+    if (!kReleaseMode && !loggedViaAssert) {
+      debugPrint(message);
+      if (stackTrace != null) {
+        debugPrint(stackTrace.toString());
+      }
+    }
   }
 
   /// Testing-only helper that clears internal state so a fresh initialization
@@ -182,6 +214,7 @@ class SupabaseInitController extends Notifier<InitState> {
     _envFile = null;
     _started = false;
     _disposed = false;
+    _missingEnvWarningLogged = false;
   }
 
   void disposeController() {

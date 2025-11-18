@@ -32,6 +32,7 @@ import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/features/navigation/route_names.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
@@ -174,7 +175,7 @@ final List<GoRoute> featureRoutes = [
   ),
   GoRoute(
     path: LoginScreen.routeName,
-    name: 'login',
+    name: RouteNames.login,
     builder: (context, state) => const LoginScreen(),
   ),
   GoRoute(
