@@ -3,13 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/features/legal/legal_viewer.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 void main() {
+  final l10n =
+      lookupAppLocalizations(AppLocalizations.supportedLocales.first);
   group('LegalViewer', () {
     const assetPath = 'assets/legal/privacy.md';
     final remoteUri = Uri.parse('https://legal.luvi.app/privacy');
-    const fallbackBanner = 'Remote unavailable — showing offline copy.';
-    const errorText = 'Document could not be loaded.';
+    final fallbackBanner = l10n.legalViewerFallbackBanner;
+    final errorText = l10n.documentLoadError;
 
     testWidgets(
       'renders remote markdown when fetch succeeds',

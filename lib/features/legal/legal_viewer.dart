@@ -181,7 +181,8 @@ class _LegalViewerState extends State<LegalViewer> {
       body: FutureBuilder<_LegalDocData>(
         future: _documentFuture,
         builder: (context, snap) {
-          final l10n = AppLocalizations.of(context);
+          final l10n = AppLocalizations.of(context) ??
+              lookupAppLocalizations(AppLocalizations.supportedLocales.first);
           if (snap.hasError) {
             // Log the underlying error for diagnostics
             log.e(
@@ -190,14 +191,14 @@ class _LegalViewerState extends State<LegalViewer> {
               error: snap.error!,
               stack: snap.stackTrace,
             );
-            final message =
-                l10n?.documentLoadError ?? 'Document could not be loaded.';
-            return Center(child: Text(message));
+            return Center(
+              child: Text(l10n.documentLoadError),
+            );
           }
           if (!snap.hasData) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(
-                semanticsLabel: 'Loading document',
+                semanticsLabel: l10n.legalViewerLoadingLabel,
               ),
             );
           }
@@ -207,8 +208,7 @@ class _LegalViewerState extends State<LegalViewer> {
           if (doc.usedFallback) {
             children.add(
               Semantics(
-                label: l10n?.legalViewerFallbackBanner ??
-                    'Remote unavailable — showing offline copy.',
+                label: l10n.legalViewerFallbackBanner,
                 child: Container(
                   margin: const EdgeInsets.only(top: 8, left: 16, right: 16),
                   padding: const EdgeInsets.all(12),
@@ -222,8 +222,7 @@ class _LegalViewerState extends State<LegalViewer> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          l10n?.legalViewerFallbackBanner ??
-                              'Remote unavailable — showing offline copy.',
+                          l10n.legalViewerFallbackBanner,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onTertiaryContainer,
                           ),
