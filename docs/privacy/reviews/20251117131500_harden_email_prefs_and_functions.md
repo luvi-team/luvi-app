@@ -1,9 +1,8 @@
 # Privacy Review — 20251117131500_harden_email_prefs_and_functions
 
 ## Change
-- Pin `search_path` für optionale Helfer-/Archon-Funktionen via DO-Block mit `pg_proc`/`pg_namespace`-Check.
-- Aktualisiere `email_preferences`-Policies, um `(user_id = (SELECT auth.uid()))` zu nutzen.
-- Entferne fehlerhafte `ALTER POLICY email_prefs_*`-Statements auf nicht existierende Policies.
+- Pin `search_path` für optionale Helfer-/Archon-Funktionen via DO-Block mit `IF EXISTS`-Checks.
+- Aktualisiere die vier `email_preferences`-Policies, um `(user_id = (SELECT auth.uid()))` zu nutzen.
 - Ergänze `IF NOT EXISTS`-Index für `public.archon_tasks(parent_task_id)`.
 
 ## Data Impact
@@ -26,4 +25,3 @@
 
 ## Result
 - ✅ Privacy- und sicherheitsfördernde Migration; keine weiteren Maßnahmen erforderlich.
-
