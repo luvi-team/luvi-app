@@ -13,6 +13,7 @@ import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart
 import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
+import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
 import 'package:luvi_app/features/navigation/route_names.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -48,11 +49,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   int get _backoffRemainingSeconds {
     if (_consecutiveFailures <= 0 || _lastFailureAt == null) return 0;
-    const baseDelaySecs = 2; // starting backoff window
-    const maxDelaySecs = 60; // cap to keep UX reasonable
-    final multiplier = 1 << _consecutiveFailures; // 2^attempts
-    final delaySecs = (baseDelaySecs * multiplier).clamp(0, maxDelaySecs);
-    final end = _lastFailureAt!.add(Duration(seconds: delaySecs));
+    final delay = computePasswordBackoffDelay(_consecutiveFailures);
+    final end = _lastFailureAt!.add(delay);
     final now = DateTime.now();
     final remaining = end.difference(now).inSeconds;
     return remaining > 0 ? remaining : 0;
@@ -95,97 +93,24 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     );
   }
 
-  // Common weak password patterns extracted for reuse and testability
-  static final List<RegExp> _commonWeakPatterns = <RegExp>[
-    // Dictionary-like base words
-    RegExp(r'^password\d*$', caseSensitive: false),
-    RegExp(r'^qwerty\d*$', caseSensitive: false),
-    RegExp(r'^letmein\d*$', caseSensitive: false),
-    RegExp(r'^welcome\d*$', caseSensitive: false),
-    RegExp(r'^admin\d*$', caseSensitive: false),
-    RegExp(r'^monkey\d*$', caseSensitive: false),
-    RegExp(r'^dragon\d*$', caseSensitive: false),
-    RegExp(r'^zxcvbn\d*$', caseSensitive: false),
-    RegExp(r'^asdfgh\d*$', caseSensitive: false),
-    RegExp(r'^iloveyou\d*$', caseSensitive: false),
-    RegExp(r'^abc123$', caseSensitive: false),
-    RegExp(r'^abcdef$', caseSensitive: false),
-
-    // Numeric sequences and common variants
-    RegExp(r'^123456(7|78|789)?$'), // 123456 / 1234567 / 12345678 / 123456789
-    RegExp(r'^654321$'),
-    RegExp(r'^12345$'),
-    RegExp(r'^123123$'),
-    RegExp(r'^password1$|^password123$', caseSensitive: false),
-    RegExp(r'^qwerty123$', caseSensitive: false),
-
-    // Repetitive digit shortcuts
-    RegExp(r'^000000$'),
-    RegExp(r'^111111$'),
-    RegExp(r'^222222$'),
-    RegExp(r'^aaaaaa$', caseSensitive: false),
-  ];
-
-  // Treat strings with 6+ total occurrences of the same character as weak.
-  static bool _isRepetitive(String s) => RegExp(r'^(.)\1{5,}$').hasMatch(s);
-
-  static bool _isNumericSequence(String s) {
-    if (!RegExp(r'^\d+$').hasMatch(s)) return false;
-    if (s.length < 5) return false; // ignore very short sequences
-    final codes = s.codeUnits;
-    var asc = true;
-    var desc = true;
-    for (var i = 1; i < codes.length; i++) {
-      if (codes[i] != codes[i - 1] + 1) asc = false;
-      if (codes[i] != codes[i - 1] - 1) desc = false;
-      if (!asc && !desc) break;
-    }
-    return asc || desc;
-  }
-
-  static bool _isRepeatedBlock(String s) {
-    // Detect repeated subpatterns like 121212, 123123
-    final re = RegExp(r'^(.{2,})\1+$');
-    return re.hasMatch(s);
-  }
-
   static const double _backButtonSize = AuthLayout.backButtonSize;
 
-  // Extracted password validation for readability and reuse.
-  String? _validatePasswordInput(
-    String newPw,
-    String confirmPw,
+  String? _validationMessageFor(
+    AuthPasswordValidationError error,
     AppLocalizations l10n,
   ) {
-    if (newPw.isEmpty || confirmPw.isEmpty) {
-      return l10n.authErrPasswordInvalid;
+    switch (error) {
+      case AuthPasswordValidationError.emptyFields:
+        return l10n.authErrPasswordInvalid;
+      case AuthPasswordValidationError.mismatch:
+        return l10n.authPasswordMismatchError;
+      case AuthPasswordValidationError.tooShort:
+        return l10n.authErrPasswordTooShort;
+      case AuthPasswordValidationError.missingTypes:
+        return l10n.authErrPasswordMissingTypes;
+      case AuthPasswordValidationError.commonWeak:
+        return l10n.authErrPasswordCommonWeak;
     }
-    if (newPw != confirmPw) {
-      return l10n.authPasswordMismatchError;
-    }
-    final pw = newPw;
-    final hasMinLen = pw.length >= 8;
-    final hasLetter = RegExp(r"[A-Za-z]").hasMatch(pw);
-    final hasNumber = RegExp(r"\d").hasMatch(pw);
-    final hasSpecial = RegExp(
-      r'[!@#\$%\^&*()_\+\-=\{\}\[\]:;,.<>/?`~|\\]',
-    ).hasMatch(pw);
-    final trimmed = pw.trim();
-    final isCommonWeak = _commonWeakPatterns.any((r) => r.hasMatch(trimmed)) ||
-        _isRepetitive(trimmed) ||
-        _isNumericSequence(trimmed) ||
-        _isRepeatedBlock(trimmed);
-
-    if (!hasMinLen) {
-      return l10n.authErrPasswordTooShort;
-    }
-    if (!(hasLetter && hasNumber && hasSpecial)) {
-      return l10n.authErrPasswordMissingTypes;
-    }
-    if (isCommonWeak) {
-      return l10n.authErrPasswordCommonWeak;
-    }
-    return null; // valid
   }
 
   Future<void> _onCreatePasswordPressed(
@@ -194,11 +119,13 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   ) async {
     final newPw = _newPasswordController.text.trim();
     final confirmPw = _confirmPasswordController.text.trim();
-    final validationErrorMsg =
-        _validatePasswordInput(newPw, confirmPw, l10n);
-    if (validationErrorMsg != null) {
+    final validation = validateNewPassword(newPw, confirmPw);
+    if (!validation.isValid && validation.error != null) {
       if (!context.mounted) return;
-      _showValidationError(context, validationErrorMsg);
+      final message = _validationMessageFor(validation.error!, l10n);
+      if (message != null) {
+        _showValidationError(context, message);
+      }
       return;
     }
 
