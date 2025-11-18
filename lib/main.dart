@@ -69,9 +69,48 @@ void main() async {
   );
 }
 
-class MyAppWrapper extends ConsumerWidget {
+class MyAppWrapper extends ConsumerStatefulWidget {
   const MyAppWrapper({required this.orientationController, super.key});
   final RouteOrientationController orientationController;
+
+  @override
+  ConsumerState<MyAppWrapper> createState() => _MyAppWrapperState();
+}
+
+class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
+  late final _RouterRefreshNotifier _routerRefreshNotifier =
+      _RouterRefreshNotifier();
+  late final GoRouter _router = _createRouter(_initialLocation);
+
+  String get _initialLocation => kReleaseMode
+      ? SplashScreen.routeName
+      : const String.fromEnvironment(
+          'INITIAL_LOCATION',
+          defaultValue: SplashScreen.routeName,
+        );
+
+  GoRouter _createRouter(String initialLocation) {
+    return GoRouter(
+      routes: routes.featureRoutes,
+      initialLocation: initialLocation,
+      redirect: routes.supabaseRedirect,
+      refreshListenable: _routerRefreshNotifier,
+      observers: [widget.orientationController.navigatorObserver],
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _routerRefreshNotifier.ensureSupabaseListener();
+  }
+
+  @override
+  void dispose() {
+    _router.dispose();
+    _routerRefreshNotifier.dispose();
+    super.dispose();
+  }
 
   bool _shouldRecordInitDiagnostics(InitState? previous, InitState next) {
     final prevHadError =
@@ -103,7 +142,7 @@ class MyAppWrapper extends ConsumerWidget {
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     ref.listen<InitState>(
       supabaseInitControllerProvider,
       (previous, next) {
@@ -117,15 +156,7 @@ class MyAppWrapper extends ConsumerWidget {
     // Watch the init state to rebuild when it changes
     // The Notifier's build() method triggers initialization automatically
     final initState = ref.watch(supabaseInitControllerProvider);
-
-    // Allow overriding the initial route in development via --dart-define
-    // Example: flutter run --dart-define=INITIAL_LOCATION=/onboarding/01
-    final initialLocation = kReleaseMode
-        ? SplashScreen.routeName
-        : const String.fromEnvironment(
-            'INITIAL_LOCATION',
-            defaultValue: SplashScreen.routeName,
-          );
+    _routerRefreshNotifier.ensureSupabaseListener();
 
     // Rebuild MaterialApp (and thus router) when Supabase init state changes
     // so that refreshListenable attaches once the client is ready.
@@ -139,7 +170,7 @@ class MyAppWrapper extends ConsumerWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          routerConfig: _buildRouter(initialLocation),
+          routerConfig: _router,
           builder: (context, child) {
             final shouldShowBanner = InitModeBridge.resolve() != InitMode.test &&
                 !SupabaseService.isInitialized;
@@ -166,20 +197,6 @@ class MyAppWrapper extends ConsumerWidget {
         );
   }
 
-  GoRouter _buildRouter(String initialLocation) {
-    final refresh = SupabaseService.isInitialized
-        ? luvi_refresh.GoRouterRefreshStream(
-            SupabaseService.client.auth.onAuthStateChange,
-          )
-        : null;
-    return GoRouter(
-      routes: routes.featureRoutes,
-      initialLocation: initialLocation,
-      redirect: routes.supabaseRedirect,
-      refreshListenable: refresh,
-      observers: [orientationController.navigatorObserver],
-    );
-  }
 }
 
 /// Wrapper that observes locale changes from Localizations and resets the
@@ -272,6 +289,33 @@ class _InitBanner extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+class _RouterRefreshNotifier extends ChangeNotifier {
+  luvi_refresh.GoRouterRefreshStream? _authRefresh;
+
+  void ensureSupabaseListener() {
+    if (_authRefresh != null || !SupabaseService.isInitialized) {
+      return;
+    }
+    final refresh = luvi_refresh.GoRouterRefreshStream(
+      SupabaseService.client.auth.onAuthStateChange,
+    )..addListener(_handleAuthChange);
+    _authRefresh = refresh;
+    // Trigger an initial router refresh since Supabase became available.
+    notifyListeners();
+  }
+
+  void _handleAuthChange() {
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _authRefresh?.removeListener(_handleAuthChange);
+    _authRefresh?.dispose();
+    super.dispose();
   }
 }
 
