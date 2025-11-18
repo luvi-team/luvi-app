@@ -118,18 +118,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             Expanded(
               child: LayoutBuilder(
-                builder: (context, constraints) => _buildScrollableBody(
-                  context: context,
-                  constraints: constraints,
-                  fieldScrollPadding: fieldScrollPadding,
-                  safeBottom: safeBottom,
-                  gapBelowForgot: gapBelowForgot,
-                  socialGap: socialGap,
-                  globalError: globalError,
-                  emailError: emailError,
-                  passwordError: passwordError,
-                  onSubmit: submit,
-                ),
+                builder: (context, constraints) {
+                  final config = _LoginScrollConfig(
+                    constraints: constraints,
+                    fieldScrollPadding: fieldScrollPadding,
+                    safeBottom: safeBottom,
+                    gapBelowForgot: gapBelowForgot,
+                    socialGap: socialGap,
+                    globalError: globalError,
+                    emailError: emailError,
+                    passwordError: passwordError,
+                  );
+                  return _LoginScrollableBody(
+                    config: config,
+                    emailController: _emailController,
+                    passwordController: _passwordController,
+                    obscurePassword: _obscurePassword,
+                    socialAuthKey: _socialAuthKey,
+                    onEmailChanged: _onEmailChanged,
+                    onPasswordChanged: _onPasswordChanged,
+                    onToggleObscure: _toggleObscurePassword,
+                    onForgotPassword: () => context.goNamed('forgot'),
+                    onSubmit: submit,
+                    onGoogle: () =>
+                        _handleOAuthSignIn(supa.OAuthProvider.google),
+                    onApple: () =>
+                        _handleOAuthSignIn(supa.OAuthProvider.apple),
+                    onClearGlobalError: () =>
+                        ref.read(loginProvider.notifier).clearGlobalError(),
+                  );
+                },
               ),
             ),
             Padding(
@@ -193,61 +211,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  Widget _buildScrollableBody({
-    required BuildContext context,
-    required BoxConstraints constraints,
-    required EdgeInsets fieldScrollPadding,
-    required double safeBottom,
-    required double gapBelowForgot,
-    required double socialGap,
-    required String? globalError,
-    required String? emailError,
-    required String? passwordError,
-    required VoidCallback onSubmit,
-  }) {
-    return SingleChildScrollView(
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      padding: EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, safeBottom),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: constraints.maxHeight),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            LoginHeaderSection(
-              emailController: _emailController,
-              passwordController: _passwordController,
-              emailError: emailError,
-              passwordError: passwordError,
-              obscurePassword: _obscurePassword,
-              fieldScrollPadding: fieldScrollPadding,
-              onEmailChanged: _onEmailChanged,
-              onPasswordChanged: _onPasswordChanged,
-              onToggleObscure: _toggleObscurePassword,
-              onForgotPassword: () => context.goNamed('forgot'),
-              onSubmit: onSubmit,
-            ),
-            LoginFormSection(
-              gapBelowForgot: gapBelowForgot,
-              socialGap: socialGap,
-              socialBlockKey: _socialAuthKey,
-              onGoogle: () => _handleOAuthSignIn(supa.OAuthProvider.google),
-              onApple: () => _handleOAuthSignIn(supa.OAuthProvider.apple),
-            ),
-            if (globalError != null) ...[
-              const SizedBox(height: Spacing.m),
-              GlobalErrorBanner(
-                message: globalError,
-                onTap: () =>
-                    ref.read(loginProvider.notifier).clearGlobalError(),
-              ),
-            ],
-            const SizedBox(height: AuthLayout.ctaTopAfterCopy),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _onEmailChanged(String value) {
     final notifier = ref.read(loginProvider.notifier);
     notifier.setEmail(value);
@@ -299,4 +262,102 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     }
   }
+}
+
+class _LoginScrollableBody extends StatelessWidget {
+  final _LoginScrollConfig config;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final bool obscurePassword;
+  final GlobalKey socialAuthKey;
+  final ValueChanged<String> onEmailChanged;
+  final ValueChanged<String> onPasswordChanged;
+  final VoidCallback onToggleObscure;
+  final VoidCallback onForgotPassword;
+  final VoidCallback onSubmit;
+  final VoidCallback onGoogle;
+  final VoidCallback onApple;
+  final VoidCallback onClearGlobalError;
+
+  const _LoginScrollableBody({
+    required this.config,
+    required this.emailController,
+    required this.passwordController,
+    required this.obscurePassword,
+    required this.socialAuthKey,
+    required this.onEmailChanged,
+    required this.onPasswordChanged,
+    required this.onToggleObscure,
+    required this.onForgotPassword,
+    required this.onSubmit,
+    required this.onGoogle,
+    required this.onApple,
+    required this.onClearGlobalError,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, config.safeBottom),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: config.constraints.maxHeight),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            LoginHeaderSection(
+              emailController: emailController,
+              passwordController: passwordController,
+              emailError: config.emailError,
+              passwordError: config.passwordError,
+              obscurePassword: obscurePassword,
+              fieldScrollPadding: config.fieldScrollPadding,
+              onEmailChanged: onEmailChanged,
+              onPasswordChanged: onPasswordChanged,
+              onToggleObscure: onToggleObscure,
+              onForgotPassword: onForgotPassword,
+              onSubmit: onSubmit,
+            ),
+            LoginFormSection(
+              gapBelowForgot: config.gapBelowForgot,
+              socialGap: config.socialGap,
+              socialBlockKey: socialAuthKey,
+              onGoogle: onGoogle,
+              onApple: onApple,
+            ),
+            if (config.globalError != null) ...[
+              const SizedBox(height: Spacing.m),
+              GlobalErrorBanner(
+                message: config.globalError!,
+                onTap: onClearGlobalError,
+              ),
+            ],
+            const SizedBox(height: AuthLayout.ctaTopAfterCopy),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoginScrollConfig {
+  final BoxConstraints constraints;
+  final EdgeInsets fieldScrollPadding;
+  final double safeBottom;
+  final double gapBelowForgot;
+  final double socialGap;
+  final String? globalError;
+  final String? emailError;
+  final String? passwordError;
+
+  const _LoginScrollConfig({
+    required this.constraints,
+    required this.fieldScrollPadding,
+    required this.safeBottom,
+    required this.gapBelowForgot,
+    required this.socialGap,
+    required this.globalError,
+    required this.emailError,
+    required this.passwordError,
+  });
 }

@@ -143,6 +143,14 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    _listenForInitDiagnostics();
+    final initState = ref.watch(supabaseInitControllerProvider);
+    _routerRefreshNotifier.ensureSupabaseListener();
+
+    return _buildMaterialApp(initState);
+  }
+
+  void _listenForInitDiagnostics() {
     ref.listen<InitState>(
       supabaseInitControllerProvider,
       (previous, next) {
@@ -152,49 +160,49 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         }
       },
     );
-    // In production the bridge defaults to prod; tests override via setter.
-    // Watch the init state to rebuild when it changes
-    // The Notifier's build() method triggers initialization automatically
-    final initState = ref.watch(supabaseInitControllerProvider);
-    _routerRefreshNotifier.ensureSupabaseListener();
+  }
 
-    // Rebuild MaterialApp (and thus router) when Supabase init state changes
-    // so that refreshListenable attaches once the client is ready.
+  Widget _buildMaterialApp(InitState initState) {
     return MaterialApp.router(
-          title: 'LUVI',
-          theme: AppTheme.buildAppTheme(),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          routerConfig: _router,
-          builder: (context, child) {
-            final shouldShowBanner = InitModeBridge.resolve() != InitMode.test &&
-                !SupabaseService.isInitialized;
-            final content = shouldShowBanner
-                ? Stack(
-                    alignment: Alignment.topLeft,
-                    children: [
-                      child ?? const SizedBox.shrink(),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SafeArea(
-                          minimum: const EdgeInsets.all(12),
-                          child: _InitBanner(
-                            initState: initState,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : child ?? const SizedBox.shrink();
+      title: 'LUVI',
+      theme: AppTheme.buildAppTheme(),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      routerConfig: _router,
+      builder: (context, child) =>
+          _wrapWithInitBanner(context, child, initState),
+    );
+  }
 
-            return LocaleChangeCacheReset(child: content);
-          },
-        );
+  Widget _wrapWithInitBanner(
+    BuildContext context,
+    Widget? child,
+    InitState initState,
+  ) {
+    final shouldShowBanner =
+        InitModeBridge.resolve() != InitMode.test && !SupabaseService.isInitialized;
+    final content = shouldShowBanner
+        ? Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              child ?? const SizedBox.shrink(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: SafeArea(
+                  minimum: const EdgeInsets.all(12),
+                  child: _InitBanner(initState: initState),
+                ),
+              ),
+            ],
+          )
+        : child ?? const SizedBox.shrink();
+
+    return LocaleChangeCacheReset(child: content);
   }
 
 }

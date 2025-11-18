@@ -40,15 +40,37 @@ class Consent02Screen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final state = ref.watch(consent02Provider);
     final notifier = ref.read(consent02Provider.notifier);
     final l10n = AppLocalizations.of(context)!;
-    final selectedLabel = l10n.consent02SemanticSelected;
-    final unselectedLabel = l10n.consent02SemanticUnselected;
     final isNextBusy = ref.watch(_consentBtnBusyProvider);
-    final items = [
+    final items = _buildConsentItems(context, l10n);
+    final footer = _ConsentFooter(
+      key: const Key('consent02_footer'),
+      l10n: l10n,
+      onSelectAll: notifier.selectAllOptional,
+      onClearAll: notifier.clearAllOptional,
+      allOptionalSelected: state.allOptionalSelected,
+      onNext: () async => _handleNext(context, ref, state, l10n),
+      nextEnabled: state.requiredAccepted && !isNextBusy,
+    );
+
+    return _Consent02Layout(
+      title: l10n.consent02Title,
+      items: items,
+      selectedLabel: l10n.consent02SemanticSelected,
+      unselectedLabel: l10n.consent02SemanticUnselected,
+      isSelected: (scope) => state.choices[scope] == true,
+      onToggle: notifier.toggle,
+      footer: footer,
+    );
+  }
+
+  List<ConsentChoiceListItem> _buildConsentItems(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    return [
       ConsentChoiceListItem(
         key: const Key('consent02_card_required_health'),
         body: l10n.consent02CardHealth,
@@ -60,7 +82,6 @@ class Consent02Screen extends ConsumerWidget {
         scope: ConsentScope.terms,
         trailing: _buildLinkTrailing(context, l10n),
       ),
-      // Optional consents
       ConsentChoiceListItem(
         body: l10n.consent02CardAnalytics,
         scope: ConsentScope.analytics,
@@ -79,105 +100,71 @@ class Consent02Screen extends ConsumerWidget {
         scope: ConsentScope.ai_journal,
       ),
     ];
+  }
 
-    return Scaffold(
-      body: Column(
-        children: [
-          _ConsentTopBar(title: l10n.consent02Title),
-          // MIDDLE zone: scrollable cards constrained between TOP and BOTTOM
-          Expanded(
-            child: ConsentChoiceList(
-              items: items,
-              isSelected: (scope) => state.choices[scope] == true,
-              onToggle: notifier.toggle,
-              semanticSelectedLabel: selectedLabel,
-              semanticUnselectedLabel: unselectedLabel,
-            ),
-          ),
+  Future<void> _handleNext(
+    BuildContext context,
+    WidgetRef ref,
+    Consent02State state,
+    AppLocalizations l10n,
+  ) async {
+    final busyNotifier = ref.read(_consentBtnBusyProvider.notifier);
+    if (ref.read(_consentBtnBusyProvider)) {
+      return;
+    }
+    busyNotifier.setBusy(true);
+    try {
+      final consentService = ref.read(consentServiceProvider);
+      final scopes = _scopeIdsFor(state);
+      await consentService.accept(
+        version: ConsentConfig.currentVersion,
+        scopes: scopes,
+      );
 
-          // BOTTOM zone: sticky CTA
-          Material(
-            color: colorScheme.surface,
-            elevation: 2,
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: ConsentSpacing.footerPadding,
-                child: _ConsentFooter(
-                  key: const Key('consent02_footer'),
-                  l10n: l10n,
-                  onSelectAll: notifier.selectAllOptional,
-                  onClearAll: notifier.clearAllOptional,
-                  allOptionalSelected: state.allOptionalSelected,
-                  onNext: () async {
-                    final busyNotifier = ref.read(
-                      _consentBtnBusyProvider.notifier,
-                    );
-                    if (ref.read(_consentBtnBusyProvider)) {
-                      return;
-                    }
-                    busyNotifier.setBusy(true);
-                    try {
-                      final consentService = ref.read(consentServiceProvider);
-                      final scopes = _scopeIdsFor(state);
-                      await consentService.accept(
-                        version: ConsentConfig.currentVersion,
-                        scopes: scopes,
-                      );
+      Object? markError;
+      final userState = await tryOrNullAsync(
+        () => ref.read(userStateServiceProvider.future),
+        tag: 'userState',
+      );
 
-                      Object? markError;
-                      final userState = await tryOrNullAsync(
-                        () => ref.read(userStateServiceProvider.future),
-                        tag: 'userState',
-                      );
+      if (userState != null) {
+        await tryOrNullAsync(
+          () async {
+            await userState.markWelcomeSeen();
+          },
+          tag: 'markWelcomeSeen',
+          onError: (error, stack) {
+            markError = error;
+          },
+        );
+      }
 
-                      if (userState != null) {
-                        await tryOrNullAsync(
-                          () async {
-                            await userState.markWelcomeSeen();
-                          },
-                          tag: 'markWelcomeSeen',
-                          onError: (error, stack) {
-                            markError = error;
-                          },
-                        );
-                      }
+      if (!context.mounted) return;
 
-                      if (!context.mounted) return;
+      if (markError != null) {
+        _showConsentErrorSnackbar(
+          context,
+          l10n.consentSnackbarError,
+        );
+        return;
+      }
 
-                      if (markError != null) {
-                        _showConsentErrorSnackbar(
-                          context,
-                          l10n.consentSnackbarError,
-                        );
-                        return;
-                      }
-
-                      context.go(AuthEntryScreen.routeName);
-                    } on ConsentException catch (error) {
-                      if (!context.mounted) return;
-                      final message = error.code == 'rate_limit'
-                          ? l10n.consentSnackbarRateLimited
-                          : l10n.consentSnackbarError;
-                      _showConsentErrorSnackbar(context, message);
-                    } catch (_) {
-                      if (!context.mounted) return;
-                      _showConsentErrorSnackbar(
-                        context,
-                        l10n.consentSnackbarError,
-                      );
-                    } finally {
-                      busyNotifier.setBusy(false);
-                    }
-                  },
-                  nextEnabled: state.requiredAccepted && !isNextBusy,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+      context.go(AuthEntryScreen.routeName);
+    } on ConsentException catch (error) {
+      if (!context.mounted) return;
+      final message = error.code == 'rate_limit'
+          ? l10n.consentSnackbarRateLimited
+          : l10n.consentSnackbarError;
+      _showConsentErrorSnackbar(context, message);
+    } catch (_) {
+      if (!context.mounted) return;
+      _showConsentErrorSnackbar(
+        context,
+        l10n.consentSnackbarError,
+      );
+    } finally {
+      busyNotifier.setBusy(false);
+    }
   }
 
   InlineSpan _buildLinkTrailing(BuildContext context, AppLocalizations l10n) {
@@ -317,6 +304,58 @@ class ConsentChoiceList extends StatelessWidget {
       },
       separatorBuilder: (context, index) =>
           const SizedBox(height: ConsentSpacing.cardGap),
+    );
+  }
+}
+
+class _Consent02Layout extends StatelessWidget {
+  final String title;
+  final List<ConsentChoiceListItem> items;
+  final bool Function(ConsentScope scope) isSelected;
+  final ValueChanged<ConsentScope> onToggle;
+  final String selectedLabel;
+  final String unselectedLabel;
+  final Widget footer;
+
+  const _Consent02Layout({
+    required this.title,
+    required this.items,
+    required this.isSelected,
+    required this.onToggle,
+    required this.selectedLabel,
+    required this.unselectedLabel,
+    required this.footer,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Scaffold(
+      body: Column(
+        children: [
+          _ConsentTopBar(title: title),
+          Expanded(
+            child: ConsentChoiceList(
+              items: items,
+              isSelected: isSelected,
+              onToggle: onToggle,
+              semanticSelectedLabel: selectedLabel,
+              semanticUnselectedLabel: unselectedLabel,
+            ),
+          ),
+          Material(
+            color: colorScheme.surface,
+            elevation: 2,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: ConsentSpacing.footerPadding,
+                child: footer,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
