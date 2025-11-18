@@ -78,60 +78,73 @@ class ProdAppLinks extends AppLinksApi {
     final scheme = uri.scheme.trim().toLowerCase();
     final host = uri.host.trim().toLowerCase();
     final path = uri.path.trim().toLowerCase();
-    final isSentinelMatch =
-        scheme == _sentinelScheme && host == _sentinelHost && path == _sentinelPath;
-    if (isSentinelMatch) return false;
-    if (scheme.isEmpty || host.isEmpty) return false;
+    if (_matchesSentinel(scheme, host, path)) return false;
+    if (!_isValidScheme(scheme) || host.isEmpty) return false;
+    if (_isProhibitedHost(host)) return false;
+    if (_isPrivateIpv4(host)) return false;
+    if (_isLocalIpv6(host)) return false;
+    return true;
+  }
 
-    if (scheme != 'https') return false;
+  static bool _matchesSentinel(String scheme, String host, String path) {
+    return scheme == _sentinelScheme &&
+        host == _sentinelHost &&
+        path == _sentinelPath;
+  }
+
+  static bool _isValidScheme(String scheme) => scheme == 'https';
+
+  static bool _isProhibitedHost(String host) {
+    if (host.isEmpty) return true;
     const prohibitedExactHosts = {'example.com', 'localhost', '::1', '0.0.0.0'};
     if (prohibitedExactHosts.contains(host)) {
-      return false;
+      return true;
     }
-    if (host.startsWith('127.')) return false;
-    // Block private IPv4 ranges
-    if (host.startsWith('10.')) return false;
-    if (host.startsWith('192.168.')) return false;
-    if (host.startsWith('169.254.')) return false;
-    // Block 172.16.0.0/12 (172.16.x.x through 172.31.x.x)
+    if (host.endsWith('.local') || host.endsWith('.localhost')) return true;
+    return false;
+  }
+
+  static bool _isPrivateIpv4(String host) {
+    if (host.startsWith('127.')) return true;
+    if (host.startsWith('10.')) return true;
+    if (host.startsWith('192.168.')) return true;
+    if (host.startsWith('169.254.')) return true;
     final parts = host.split('.');
     if (parts.length >= 2 && parts[0] == '172') {
       final second = int.tryParse(parts[1]);
       if (second != null && second >= 16 && second <= 31) {
-        return false;
+        return true;
       }
     }
-    // Block IPv6 local ranges
-    // - Validate IPv6 syntax strictly (reject malformed like ':::')
-    // - fe80::/10 (link-local): first 16-bit group 0xFE80..0xFEBF
-    // - fc00::/7 (unique local) — any first 16-bit group 0xFC00..0xFDFF
-    if (host.contains(':')) {
-      // Strictly validate IPv6 host first. If malformed, reject early.
-      try {
-        // Throws FormatException on invalid IPv6.
-        Uri.parseIPv6Address(host);
-      } on FormatException {
-        return false;
-      }
+    return false;
+  }
 
-      final firstGroup = host.split(':').firstWhere(
-            (g) => g.isNotEmpty,
-            orElse: () => '',
-          );
-      final head = int.tryParse(firstGroup, radix: 16);
-      if (head != null) {
-        // fe80::/10 → 0xFE80..0xFEBF
-        if (head >= 0xFE80 && head <= 0xFEBF) {
-          return false;
-        }
-        // fc00::/7 → 0xFC00..0xFDFF
-        if (head >= 0xFC00 && head <= 0xFDFF) {
-          return false;
-        }
-      }
+  static bool _isLocalIpv6(String host) {
+    if (!host.contains(':')) {
+      return false;
     }
-    if (host.endsWith('.local') || host.endsWith('.localhost')) return false;
-    return true;
+
+    try {
+      Uri.parseIPv6Address(host);
+    } on FormatException {
+      return true;
+    }
+
+    final firstGroup = host.split(':').firstWhere(
+          (segment) => segment.isNotEmpty,
+          orElse: () => '',
+        );
+    final head = int.tryParse(firstGroup, radix: 16);
+    if (head == null) {
+      return false;
+    }
+    if (head >= 0xFE80 && head <= 0xFEBF) {
+      return true;
+    }
+    if (head >= 0xFC00 && head <= 0xFDFF) {
+      return true;
+    }
+    return false;
   }
   static Uri _parseConfiguredUri({
     required String rawValue,

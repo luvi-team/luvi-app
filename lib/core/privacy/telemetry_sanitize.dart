@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:luvi_app/core/privacy/pii_keys.dart';
 import 'package:luvi_app/core/privacy/sanitize.dart' as log_sanitize;
 
 /// Sanitizes arbitrary telemetry properties by:
@@ -22,59 +23,9 @@ enum TelemetryDateSanitization { day, hour, redacted, hash }
 const TelemetryDateSanitization _dateSanitization =
     TelemetryDateSanitization.day;
 
+
 // Common sensitive keys; match in a case-insensitive manner.
-const Set<String> _sensitiveKeys = {
-  'email',
-  'name',
-  'first_name',
-  'firstname',
-  'last_name',
-  'lastname',
-  'full_name',
-  'phone',
-  'phone_number',
-  'user',
-  'user_id',
-  'userid',
-  'session',
-  'session_id',
-  'token',
-  'auth',
-  'authorization',
-  'password',
-  'secret',
-  'ssn',
-  'social_security',
-  'address',
-  'billing_address',
-  'ip',
-  'ip_address',
-  'credit_card',
-  'card_number',
-  'path',
-  'file',
-  'filepath',
-  'birthday',
-  'birthdate',
-  'dob',
-  'date_of_birth',
-  'age',
-  'gender',
-  'location',
-  'latitude',
-  'longitude',
-  'lat',
-  'lng',
-  'coordinates',
-  'device_id',
-  'imei',
-  'mac_address',
-  'api_key',
-  'access_token',
-  'refresh_token',
-  'cvv',
-  'expiry',
-};
+const Set<String> _sensitiveKeys = PiiKeys.suspiciousKeyNames;
 
 Map<String, Object?> _sanitizeMap(Map<String, Object?> input) {
   final out = <String, Object?>{};

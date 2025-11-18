@@ -8,20 +8,25 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/widgets/dashboard/wearable_connect_card.dart';
 
-const double _cardGap = Spacing.m; // 16px between stat cards
-const double _cardPadding =
-    16; // Reduced from 20 to fit content in 159px height
-const double _iconCircleDiameter = 29.5;
-const double _iconSize = 18;
-// HR glyph positioning (Figma node 68589:7675, anchored to bottom for overflow-free layout)
-const double _hrGlyphLeft = 50;
-const double _hrGlyphBottom = 36;
-const double _hrGlyphWidth = 101;
-const double _hrGlyphHeight = 35;
-const double _valueAreaHeight = 58;
-const double _labelToValueGap = 10; // Space between label block and value block
-const int _labelWrapThreshold = 12;
-const double _stepsValueAlignmentX = 0.25;
+/// Layout constants pulled from the dashboard stats Figma spec.
+class StatsScrollerLayout {
+  const StatsScrollerLayout._();
+
+  static const double cardGap = Spacing.m;
+  static const double cardPaddingValue = 16;
+  static const EdgeInsets cardPadding = EdgeInsets.all(cardPaddingValue);
+  static const double iconCircleDiameter = 29.5;
+  static const double iconSize = 18;
+  static const double hrGlyphLeft = 50;
+  static const double hrGlyphBottom = 36;
+  static const double hrGlyphWidth = 101;
+  static const double hrGlyphHeight = 35;
+  static const double valueAreaHeight = 58;
+  static const double labelToValueGap = 10;
+  static const int labelWrapThreshold = 12;
+  static const double stepsValueAlignmentX = 0.25;
+}
+
 const TextHeightBehavior _valueHeightBehavior = TextHeightBehavior(
   applyHeightToFirstAscent: false,
   applyHeightToLastDescent: false,
@@ -35,7 +40,8 @@ const TextHeightBehavior _unitHeightBehavior = TextHeightBehavior(
 String _formatStatLabel(String rawLabel) {
   final trimmed = rawLabel.trim();
   final words = trimmed.split(RegExp(r'\s+'));
-  if (words.length == 2 && trimmed.length > _labelWrapThreshold) {
+  if (words.length == 2 &&
+      trimmed.length > StatsScrollerLayout.labelWrapThreshold) {
     return '${words.first}\n${words.last}';
   }
   return trimmed;
@@ -81,7 +87,8 @@ class StatsScroller extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         clipBehavior: Clip.none,
         itemCount: trainingStats.length,
-        separatorBuilder: (context, index) => const SizedBox(width: _cardGap),
+        separatorBuilder: (context, index) =>
+            const SizedBox(width: StatsScrollerLayout.cardGap),
         itemBuilder: (context, index) =>
             _TrainingStatCard(data: trainingStats[index]),
       ),
@@ -189,7 +196,7 @@ class _TrainingStatCard extends StatelessWidget {
 
   Widget _buildCenteredValue(String value, TextStyle valueStyle) {
     return Align(
-      alignment: Alignment(_stepsValueAlignmentX, -1),
+      alignment: Alignment(StatsScrollerLayout.stepsValueAlignmentX, -1),
       child: Padding(
         padding: const EdgeInsets.only(left: 8),
         child: Text(
@@ -207,12 +214,13 @@ class _TrainingStatCard extends StatelessWidget {
       return null;
     }
     return Positioned(
-      left: _hrGlyphLeft,
-      bottom: _hrGlyphBottom - _cardPadding,
+      left: StatsScrollerLayout.hrGlyphLeft,
+      bottom:
+          StatsScrollerLayout.hrGlyphBottom - StatsScrollerLayout.cardPaddingValue,
       child: SvgPicture.asset(
         asset,
-        width: _hrGlyphWidth,
-        height: _hrGlyphHeight,
+        width: StatsScrollerLayout.hrGlyphWidth,
+        height: StatsScrollerLayout.hrGlyphHeight,
         excludeFromSemantics: true,
       ),
     );
@@ -248,7 +256,7 @@ class _TrainingStatCard extends StatelessWidget {
             width: 1,
           ),
         ),
-        padding: const EdgeInsets.all(_cardPadding),
+        padding: StatsScrollerLayout.cardPadding,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -288,9 +296,9 @@ class _TrainingStatCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: _labelToValueGap),
+                const SizedBox(height: StatsScrollerLayout.labelToValueGap),
                 SizedBox(
-                  height: _valueAreaHeight,
+                  height: StatsScrollerLayout.valueAreaHeight,
                   child: _buildValueGroup(valueColor, titleColor),
                 ),
               ],
@@ -311,14 +319,14 @@ class _IconBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: _iconCircleDiameter,
-      height: _iconCircleDiameter,
+      width: StatsScrollerLayout.iconCircleDiameter,
+      height: StatsScrollerLayout.iconCircleDiameter,
       decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
       alignment: Alignment.center,
       child: SvgPicture.asset(
         assetPath,
-        width: _iconSize,
-        height: _iconSize,
+        width: StatsScrollerLayout.iconSize,
+        height: StatsScrollerLayout.iconSize,
         excludeFromSemantics: true,
         colorFilter: const ColorFilter.mode(Color(0xFF1C1411), BlendMode.srcIn),
       ),

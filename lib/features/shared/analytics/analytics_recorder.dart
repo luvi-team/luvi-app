@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/core/privacy/pii_keys.dart';
 
 /// Lightweight analytics recorder contract so UI flows can emit structured
 /// events while allowing tests to override the implementation.
@@ -49,58 +50,12 @@ bool _containsSuspiciousPII(Map<String, Object?> properties) {
     'customer_email_count',
   };
 
-  // Exact suspicious keys and common variations.
-  const suspiciousExact = <String>{
-    'email',
-    'email_address',
-    'e-mail',
-    'emailverified',
-    'email_verified',
-    'phone',
-    'phone_number',
-    'phonenumber',
-    'tel',
-    'telephone',
-    'mobile',
-    'name',
-    'first_name',
-    'firstname',
-    'last_name',
-    'lastname',
-    'full_name',
-    'fullname',
-    'address',
-    'street',
-    'city',
-    'zip',
-    'zipcode',
-    'postal',
-    'postcode',
-    'ssn',
-    'social_security',
-    'social_security_number',
-    'dob',
-    'date_of_birth',
-    'birthdate',
-    'birthday',
-    'credit_card',
-    'card_number',
-    'cc_number',
-    'cvv',
-    'expiry',
-  };
-
-  // Whole-word pattern (start/end or separated by underscore/hyphen/space).
-  final suspiciousWord = RegExp(
-    r'(^|[_\s-])(email|e-mail|email_address|email_verified|phone|tel|telephone|mobile|address|street|city|zip|zipcode|postal|postcode|ssn|social_security(_number)?|dob|date_of_birth|birthdate|first_name|last_name|full_name|name|credit_card|card_number|cc_number|cvv|expiry)([_\s-]|$)',
-  );
-
   for (final rawKey in properties.keys) {
     final k = rawKey.trim().toLowerCase();
     if (k.isEmpty) continue;
     if (safeAllowlist.contains(k)) continue;
-    if (suspiciousExact.contains(k)) return true;
-    if (suspiciousWord.hasMatch(k)) return true;
+    if (PiiKeys.suspiciousKeyNames.contains(k)) return true;
+    if (PiiKeys.suspiciousWordPattern.hasMatch(k)) return true;
   }
   return false;
 }
