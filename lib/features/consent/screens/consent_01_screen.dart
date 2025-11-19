@@ -71,7 +71,7 @@ class _ConsentIntroHeader extends StatelessWidget {
           right: 51, // 428 - 52 - 325 ≈ 51
           top: _y(110),
           child: Text(
-            'Lass uns LUVI\nauf dich abstimmen',
+            l10n.consent01IntroTitle,
             textAlign: TextAlign.center,
             style: textTheme.headlineMedium?.copyWith(
               color: colorScheme.onSurface,
@@ -83,7 +83,7 @@ class _ConsentIntroHeader extends StatelessWidget {
           top: _y(218),
           width: 384,
           child: Text(
-            'Du entscheidest, was du teilen möchtest. Je mehr wir über dich wissen, desto besser können wir dich unterstützen.',
+            l10n.consent01IntroBody,
             textAlign: TextAlign.center,
             style: textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurface,

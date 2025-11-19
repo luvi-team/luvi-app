@@ -875,6 +875,18 @@ abstract class AppLocalizations {
   /// **'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.'**
   String get welcome03Subtitle;
 
+  /// Headline copy shown on the consent 01 screen intro hero. Preserve the explicit newline escape '\n'.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s tailor LUVI\nto you'**
+  String get consent01IntroTitle;
+
+  /// Body text displayed below the consent 01 intro hero.
+  ///
+  /// In en, this message translates to:
+  /// **'You decide what to share. The more we know about you, the better we can support you.'**
+  String get consent01IntroBody;
+
   /// Headline shown on the consent 02 screen. Contains an explicit "\n" line break that must be preserved in every translation.
   ///
   /// In en, this message translates to:

@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/dashboard/widgets/category_chip.dart';
 import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
@@ -13,7 +13,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 
-import '../../support/test_config.dart';
+import '../../../support/test_config.dart';
 
 class _ViewportConfig {
   const _ViewportConfig({

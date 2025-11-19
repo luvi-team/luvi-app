@@ -108,11 +108,11 @@ void _reportHandledError({
 
   if (kDebugMode) {
     try {
-      final sanitized = _sanitizeError(error);
+      final sanitized = sanitizeError(error) ?? error.runtimeType;
       log.w(
         'run_catching_handled_error',
         tag: tag,
-        error: sanitized ?? error,
+        error: sanitized,
         stack: stackTrace,
       );
     } catch (_) {

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/screens/heute_layout_utils.dart';
+import 'package:luvi_app/features/dashboard/utils/heute_layout_utils.dart';
 
 void main() {
   group('compressFirstRowWidths', () {

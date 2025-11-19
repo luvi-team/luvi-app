@@ -9,7 +9,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/l10n/app_localizations_en.dart';
 import 'package:luvi_services/user_state_service.dart';

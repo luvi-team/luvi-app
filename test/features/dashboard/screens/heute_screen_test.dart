@@ -5,10 +5,10 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/widgets/weekly_training_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-import '../../support/test_config.dart';
+import '../../../support/test_config.dart';
 
 void main() {
   setUpAll(() async {

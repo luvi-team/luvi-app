@@ -22,7 +22,7 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_06.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_07.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_08.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';

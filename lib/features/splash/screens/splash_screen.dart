@@ -9,7 +9,7 @@ import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
+import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_app/core/logging/logger.dart';

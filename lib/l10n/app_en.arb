@@ -562,6 +562,14 @@
   "@welcome03Subtitle": {
     "description": "Subtitle copy for consent welcome screen 3 (below the title). Prepared for future migration away from hardcoded strings."
   },
+  "consent01IntroTitle": "Let's tailor LUVI\nto you",
+  "@consent01IntroTitle": {
+    "description": "Headline copy shown on the consent 01 screen intro hero. Preserve the explicit newline escape '\\n'."
+  },
+  "consent01IntroBody": "You decide what to share. The more we know about you, the better we can support you.",
+  "@consent01IntroBody": {
+    "description": "Body text displayed below the consent 01 intro hero."
+  },
   "consent02Title": "Your health,\nyour decision!",
   "@consent02Title": {
     "description": "Headline shown on the consent 02 screen. Contains an explicit \"\\n\" line break that must be preserved in every translation."

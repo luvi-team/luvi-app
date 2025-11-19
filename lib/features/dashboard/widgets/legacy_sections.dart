@@ -13,7 +13,7 @@ import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
-import 'package:luvi_app/features/screens/heute_layout_utils.dart';
+import 'package:luvi_app/features/dashboard/utils/heute_layout_utils.dart';
 import 'package:luvi_app/features/dashboard/widgets/category_chip.dart';
 import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/section_header.dart';
