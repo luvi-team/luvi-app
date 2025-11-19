@@ -26,13 +26,10 @@ class RouteOrientationController {
         defaultOrientations = List.unmodifiable(defaultOrientations),
         routeOverrides = Map.unmodifiable(
           routeOverrides.map(
-            (key, value) {
-              final coerced = List<DeviceOrientation>.from(value);
-              return MapEntry(
+            (key, value) => MapEntry(
                 key,
-                List<DeviceOrientation>.unmodifiable(coerced),
-              );
-            },
+                List<DeviceOrientation>.unmodifiable(value),
+            ),
           ),
         ),
         _setter = setter ?? SystemChrome.setPreferredOrientations;
@@ -45,6 +42,9 @@ class RouteOrientationController {
 
   final OrientationSetter _setter;
 
+  /// Navigator observer that applies orientation overrides as routes change.
+  /// Must be registered with the app's `Navigator`/`MaterialApp` so callbacks
+  /// fire (e.g. `MaterialApp(navigatorObservers: [controller.navigatorObserver], ...)`).
   late final NavigatorObserver navigatorObserver =
       _RouteOrientationObserver(this);
 
