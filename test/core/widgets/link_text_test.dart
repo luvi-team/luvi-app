@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/widgets/link_text.dart';
+import 'package:luvi_app/core/widgets/link_text.dart';
 
 void main() {
   testWidgets('LinkText exposes accessible hit target and semantics', (tester) async {

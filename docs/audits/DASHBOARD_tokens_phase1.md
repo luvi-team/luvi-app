@@ -51,10 +51,10 @@
   - **Color:** rgba(0,0,0,0.25) → `Color(0x40000000)`
 
 ### Current Implementation
-- **Border:** `lib/features/widgets/hero_sync_preview.dart:37-48`
+- **Border:** `lib/features/dashboard/widgets/hero_sync_preview.dart:37-48`
   - Uses `CalendarRadiusTokens.cardLarge` (24.0) ✅ **MATCH**
   - Border defined implicitly via Container decoration
-- **Shadow:** `lib/features/widgets/hero_sync_preview.dart:39` + `lib/core/theme/app_theme.dart:584-589`
+- **Shadow:** `lib/features/dashboard/widgets/hero_sync_preview.dart:39` + `lib/core/theme/app_theme.dart:584-589`
   ```dart
   final shadowTokens = Theme.of(context).extension<ShadowTokens>();
   // ShadowTokens.light.heroDrop:
@@ -102,7 +102,7 @@ boxShadow: [ShadowTokens.light.heroDrop] // Already matches Figma
   - "Wir starten heute ruhig..." (Figtree Regular 14)
 
 ### Current Implementation
-- **File:** `lib/features/widgets/hero_sync_preview.dart:135-159` (estimated, not visible in limit=100)
+- **File:** `lib/features/dashboard/widgets/hero_sync_preview.dart:135-159` (estimated, not visible in limit=100)
 - **Status:** ❌ **NO TEXT-SHADOW**
 - **Evidence:** Current implementation uses `TextStyle` without `shadows` property
 
@@ -176,7 +176,7 @@ static const Shadow heroCalloutTextShadow = Shadow(
   - **CSS:** `font-family: 'Figtree:Italic', sans-serif; font-style: italic; font-size: 16px; color: #696969;`
 
 ### Current Implementation
-- **Section Title:** `lib/features/widgets/section_header.dart:14-18` (estimated, uses hardcoded TextStyle)
+- **Section Title:** `lib/features/dashboard/widgets/section_header.dart:14-18` (estimated, uses hardcoded TextStyle)
   - Current: Figtree 20 w600 (from deltas_v2.md:41)
   - **Mismatch:** Weight 600 vs Figma 400
 - **Section Subtitle:** `lib/features/screens/heute_screen.dart` (inline style, deltas_v2.md:50)
@@ -499,5 +499,5 @@ const _contentPadding = 14.0; // ✅ Matches visual estimate
 - **Codebase Files:**
   - `lib/core/theme/app_theme.dart` (token definitions)
   - `lib/features/screens/heute_screen.dart` (wave amplitude constant)
-  - `lib/features/widgets/hero_sync_preview.dart` (hero card implementation)
+  - `lib/features/dashboard/widgets/hero_sync_preview.dart` (hero card implementation)
   - `lib/features/dashboard/widgets/weekly_training_card.dart` (workout card)

@@ -10,13 +10,13 @@ import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
 import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
-import 'package:luvi_app/features/widgets/dashboard/cycle_tip_card.dart';
-import 'package:luvi_app/features/widgets/dashboard/stats_scroller.dart';
-import 'package:luvi_app/features/widgets/dashboard/top_recommendation_tile.dart';
+import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
+import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
+import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
 import 'package:luvi_app/features/screens/heute_layout_utils.dart';
-import 'package:luvi_app/features/widgets/category_chip.dart';
-import 'package:luvi_app/features/widgets/recommendation_card.dart';
-import 'package:luvi_app/features/widgets/section_header.dart';
+import 'package:luvi_app/features/dashboard/widgets/category_chip.dart';
+import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
+import 'package:luvi_app/features/dashboard/widgets/section_header.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class LegacySections extends StatelessWidget {

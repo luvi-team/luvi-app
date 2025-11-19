@@ -5,7 +5,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/domain/weekly_training_props.dart';
-import 'package:luvi_app/features/widgets/dashboard/weekly_training_card.dart';
+import 'package:luvi_app/features/dashboard/widgets/weekly_training_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class WeeklyTrainingSection extends StatelessWidget {

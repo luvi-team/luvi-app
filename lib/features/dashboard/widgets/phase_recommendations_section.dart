@@ -7,8 +7,8 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
-import 'package:luvi_app/features/widgets/painters/wave_painter.dart';
-import 'package:luvi_app/features/widgets/recommendation_card.dart';
+import 'package:luvi_app/features/dashboard/widgets/painters/wave_painter.dart';
+import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class PhaseRecommendationsSection extends StatelessWidget {

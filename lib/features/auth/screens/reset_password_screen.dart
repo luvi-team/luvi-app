@@ -12,7 +12,7 @@ import 'package:luvi_app/features/auth/state/reset_password_state.dart';
 import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {

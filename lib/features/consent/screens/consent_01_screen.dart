@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../core/design_tokens/sizes.dart';
 import 'consent_02_screen.dart';
@@ -136,4 +136,4 @@ class _Collage extends StatelessWidget {
   }
 }
 
-// BackButtonCircle moved to lib/features/widgets/back_button.dart
+// BackButtonCircle moved to lib/core/widgets/back_button.dart

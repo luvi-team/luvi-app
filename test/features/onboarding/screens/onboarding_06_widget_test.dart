@@ -5,7 +5,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_07.dart';
-import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import '../../../support/test_config.dart';

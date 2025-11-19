@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../support/test_config.dart';
+import '../../../support/test_config.dart';
 
 class DailyPlan {
   const DailyPlan({

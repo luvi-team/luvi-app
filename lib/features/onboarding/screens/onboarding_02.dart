@@ -9,7 +9,7 @@ import 'package:luvi_app/features/onboarding/utils/date_formatters.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
-import 'package:luvi_app/features/widgets/onboarding/onboarding_header.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_03.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 

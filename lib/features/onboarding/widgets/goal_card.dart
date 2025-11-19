@@ -3,7 +3,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/widgets/custom_radio_check.dart';
+import 'package:luvi_app/features/onboarding/widgets/custom_radio_check.dart';
 
 /// Goal card widget for onboarding multi-select screen.
 ///

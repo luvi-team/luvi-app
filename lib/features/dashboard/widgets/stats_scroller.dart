@@ -6,7 +6,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
-import 'package:luvi_app/features/widgets/dashboard/wearable_connect_card.dart';
+import 'package:luvi_app/features/dashboard/widgets/wearable_connect_card.dart';
 
 /// Layout constants pulled from the dashboard stats Figma spec.
 class StatsScrollerLayout {

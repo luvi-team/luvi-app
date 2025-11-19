@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/widgets/bottom_nav_dock.dart';
+import 'package:luvi_app/features/dashboard/widgets/bottom_nav_dock.dart';
 import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
-import '../../support/test_config.dart';
+import '../../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();

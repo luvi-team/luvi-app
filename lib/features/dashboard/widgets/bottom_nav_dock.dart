@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/widgets/painters/bottom_wave_border_painter.dart';
+import 'package:luvi_app/features/dashboard/widgets/painters/bottom_wave_border_painter.dart';
 import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 
 /// Bottom navigation dock with violet wave top-border and center cutout.

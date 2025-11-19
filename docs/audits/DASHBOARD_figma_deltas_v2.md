@@ -204,7 +204,7 @@ class ShadowTokens {
 - **Priority:** 🔴 HIGH
 
 ### ❌ No Image Card Component
-**Closest Match:** `GoalCard` (lib/features/widgets/goal_card.dart:17) - has title/selected but **no image/gradient**
+**Closest Match:** `GoalCard` (lib/features/onboarding/widgets/goal_card.dart:17) - has title/selected but **no image/gradient**
 
 **Required:** `ImageCard` widget with:
 - Image background (NetworkImage or AssetImage)

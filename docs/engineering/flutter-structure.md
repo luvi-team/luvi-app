@@ -7,10 +7,10 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
   - `design_tokens/**`, `theme/**`, optional `config/**` (App-Links, Feature-Flags), `utils/**` für generische Hilfen.
   - Keine Feature-spezifischen Widgets, Strings oder Services im Core.
 - **lib/features/** beherbergt jede Domäne (auth, consent, onboarding …) inklusive `data/`, `domain/`, `state/`, `widgets/`, `screens/`.
-- Shared Widgets in `features/widgets/`:
-  - Plattformweit (über mehrere Features hinweg): `features/widgets/`; nur dann hier ablegen, wenn der Baustein wirklich plattformweit genutzt wird – sonst Feature-lokal halten.
-  - Feature-Familie-weit (z. B. über alle Onboarding-Screens): `features/widgets/onboarding/` (z. B. `features/widgets/onboarding/onboarding_header.dart`).
-  - Screen-spezifisch: `features/<feature>/widgets/` (nur in diesem Feature genutzt).
+- Shared Widgets:
+  - Plattformweit (über mehrere Features hinweg): `core/widgets/` (z. B. `core/widgets/back_button.dart`). Nur dort ablegen, wenn der Baustein wirklich überall genutzt wird – sonst Feature-lokal halten.
+  - Feature-Familie-weit (z. B. über alle Onboarding-Screens): `features/<feature>/widgets/` (z. B. `features/onboarding/widgets/onboarding_header.dart`).
+  - Screen-spezifisch: Unterordner im jeweiligen Feature (`features/<feature>/widgets/`) organisieren; kein zentrales `features/widgets/` mehr verwenden.
 
 ## 2. Services
 - Produktive Services leben in der lokalen Package-Workspace `services/` (aktuelles Package: `luvi_services`).
@@ -30,7 +30,7 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 
 ## 5. Tests
 - Spiegelung: `test/features/<feature>/…` entspricht `lib/features/<feature>/…`.
-- Neue Widgets erhalten gezielte Tests (z. B. `test/features/widgets/onboarding/onboarding_header_test.dart`) statt Sammel-Widgettests.
+- Neue Widgets erhalten gezielte Tests (z. B. `test/features/onboarding/widgets/onboarding_header_test.dart`) statt Sammel-Widgettests.
 - Dev-/Audit-Tests bleiben unter `test/dev/**` und sind per Analyzer ausgeschlossen.
 
 ## 6. Review-Checkliste (jede Änderung)
