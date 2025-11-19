@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
 import 'package:luvi_app/features/dashboard/widgets/weekly_training_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
@@ -140,6 +141,7 @@ void main() {
     testWidgets('renders horizontal list with 3 recommendation cards', (
       tester,
     ) async {
+      final fixtureState = HeuteFixtures.defaultState();
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.buildAppTheme(),
@@ -152,18 +154,28 @@ void main() {
       await tester.pumpAndSettle();
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));
       await tester.pumpAndSettle();
+      final ctx = tester.element(find.byType(HeuteScreen));
+      final loc = AppLocalizations.of(ctx)!;
 
       // Check that the 3 recommendation titles are present
       if (!TestConfig.featureDashboardV2) {
-        // V1: Recommendations visible
-        expect(find.text('Beine & Po'), findsOneWidget);
-        expect(find.text('Rücken & Schulter'), findsOneWidget);
-        expect(find.text('Ganzkörper'), findsOneWidget);
+        // V1: Recommendations visible (3 cards from fixture)
+        expect(
+          find.byType(RecommendationCard),
+          findsNWidgets(fixtureState.recommendations.length),
+        );
       } else {
-        // V2: Recommendations hidden (scrolled to y=600, would see if visible)
-        expect(find.text('Beine & Po'), findsNothing);
-        expect(find.text('Rücken & Schulter'), findsNothing);
-        expect(find.text('Ganzkörper'), findsNothing);
+        // V2: Phase-specific recommendation section is rendered instead.
+        expect(find.text(loc.dashboardRecommendationsTitle), findsOneWidget);
+        expect(find.text(loc.dashboardNutritionTitle), findsOneWidget);
+        expect(find.text(loc.dashboardRegenerationTitle), findsOneWidget);
+        final expectedRecommendationCards =
+            fixtureState.nutritionRecommendations.length +
+            fixtureState.regenerationRecommendations.length;
+        expect(
+          find.byType(RecommendationCard),
+          findsNWidgets(expectedRecommendationCards),
+        );
       }
     });
 

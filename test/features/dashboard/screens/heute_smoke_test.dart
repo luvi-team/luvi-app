@@ -8,7 +8,8 @@ import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/dashboard/widgets/category_chip.dart';
 import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart';
-import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
+import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart'
+    show iconSizeCompensated;
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
@@ -300,10 +301,6 @@ void main() {
       await _pumpHeuteScreen(tester);
 
       // Verify hero sync preview is present and shows CTA label "Mehr"
-      expect(
-        find.byKey(const Key('dashboard_hero_sync_preview')),
-        findsOneWidget,
-      );
       expect(
         find.byKey(const Key('dashboard_hero_sync_preview')),
         findsOneWidget,

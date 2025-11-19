@@ -376,6 +376,9 @@ class _HeuteScreenState extends State<HeuteScreen> {
           setState(() {
             _activeTabIndex = 4;
           });
+          if (!mounted) {
+            return;
+          }
           context.go(LuviSyncJournalStubScreen.route);
         },
       ),
