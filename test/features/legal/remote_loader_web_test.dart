@@ -13,10 +13,6 @@ import 'package:luvi_app/features/legal/remote_loader_web.dart';
 void main() {
   final uri = Uri.parse('https://example.com/legal.md');
 
-  setUp(() {
-    debugResetBrowserClientFactory();
-  });
-
   tearDown(() {
     debugResetBrowserClientFactory();
   });

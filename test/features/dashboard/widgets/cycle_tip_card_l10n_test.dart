@@ -44,6 +44,7 @@ void main() {
             home: Scaffold(body: CycleTipCard(phase: phase)),
           ),
         );
+        await tester.pumpAndSettle();
 
         final ctx = tester.element(find.byType(CycleTipCard));
         final l10n = AppLocalizations.of(ctx)!;
