@@ -7,8 +7,8 @@ const int kOnboardingTotalSteps = 8;
 /// Oldest supported birth year for onboarding date pickers.
 const int kOnboardingMinBirthYear = 1900;
 
-/// Latest supported birth year for onboarding date pickers.
-final int kOnboardingMaxBirthYear = DateTime.now().year;
+/// Returns the latest supported birth year for onboarding date pickers.
+int get kOnboardingMaxBirthYear => DateTime.now().year;
 
 /// Maximum number of years back a period start can be selected.
 const int kOnboardingPeriodStartMaxYearsBack = 2;

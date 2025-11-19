@@ -44,7 +44,7 @@ void main() {
       // CTA initially disabled
       final cta = find.byKey(const Key('onb_cta'));
       expect(cta, findsOneWidget);
-      expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNull);
+      expect(tester.widget<ElevatedButton>(cta).onPressed, isNull);
 
       // Tap first option
       final firstOption = find.byKey(const Key('onb_option_0'));
@@ -53,7 +53,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // CTA enabled & navigates
-      expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNotNull);
+      expect(tester.widget<ElevatedButton>(cta).onPressed, isNotNull);
       await tester.ensureVisible(cta);
       await tester.tap(cta);
       await tester.pumpAndSettle();

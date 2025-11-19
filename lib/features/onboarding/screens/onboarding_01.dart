@@ -46,7 +46,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   void _handleContinue() {
-    // push statt go: Back-Stack bewahren (Konsistenz mit 02–07)
+    // Use push instead of go to preserve back stack (consistent with screens 02-07)
     context.push(Onboarding02Screen.routeName);
   }
 

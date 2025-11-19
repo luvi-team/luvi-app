@@ -65,7 +65,7 @@ String? resolveSupportedLocale2(String? tag) {
   final baseLang = (sepIndex == -1)
       ? canonical.toLowerCase()
       : canonical.substring(0, sepIndex).toLowerCase();
-  if (!RegExp(r'^[A-Za-z]{2,8}$').hasMatch(baseLang)) {
+  if (!RegExp(r'^[a-z]{2,8}$').hasMatch(baseLang)) {
     return null;
   }
 
