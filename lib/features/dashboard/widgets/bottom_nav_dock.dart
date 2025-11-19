@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/widgets/painters/bottom_wave_border_painter.dart';
@@ -40,6 +40,18 @@ class BottomNavDock extends StatelessWidget {
   Widget build(BuildContext context) {
     final dsTokens = Theme.of(context).extension<DsTokens>();
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    if (dsTokens == null) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: FlutterError(
+            'BottomNavDock: DsTokens theme extension not found. '
+            'Ensure DsTokens is registered in app_theme.dart extensions list.',
+          ),
+          library: 'dashboard',
+          context: ErrorDescription('building BottomNavDock'),
+        ),
+      );
+    }
     // Kodex: Use colorScheme.surface (not Colors.white) for dark-mode compatibility
     final effectiveBackgroundColor = backgroundColor ?? colorScheme.surface;
     // Safe fallback if theme extension is not registered (visible in release builds)

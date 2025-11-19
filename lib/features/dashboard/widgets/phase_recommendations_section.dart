@@ -173,7 +173,7 @@ class PhaseRecommendationsSection extends StatelessWidget {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: recommendations.length,
-            physics: const BouncingScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             clipBehavior: Clip.hardEdge,
             padding: EdgeInsets.zero,
             separatorBuilder: (context, index) => SizedBox(

@@ -36,12 +36,9 @@ void main() {
     expect(targetSize.height, greaterThanOrEqualTo(43.5));
     expect(targetSize.width, greaterThanOrEqualTo(43.5));
 
-    final tapFinder = find.descendant(
-      of: find.byType(LinkText),
-      matching: find.byType(GestureDetector),
-    );
-    final gesture = tester.widget<GestureDetector>(tapFinder);
-    gesture.onTap?.call();
+    final linkFinder = find.bySemanticsLabel('Open legal document');
+    await tester.tap(linkFinder);
+    await tester.pumpAndSettle();
     expect(tapped, isTrue);
 
     final semanticsNode =

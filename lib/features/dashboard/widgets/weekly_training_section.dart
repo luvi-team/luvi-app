@@ -24,22 +24,22 @@ class WeeklyTrainingSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final typographyTokens = theme.extension<WorkoutCardTypographyTokens>();
 
-    const titleStyle = TextStyle(
+    final titleStyle = TextStyle(
       fontFamily: FontFamilies.figtree,
       fontSize: 20,
       fontWeight: FontWeight.w400,
       height: 24 / 20,
-      color: Color(0xFF030401),
+      color: theme.colorScheme.onSurface,
     );
     final subtitleStyle =
         typographyTokens?.sectionSubtitleStyle ??
-        const TextStyle(
+        TextStyle(
           fontFamily: FontFamilies.figtree,
           fontWeight: FontWeight.w400,
           fontSize: 16,
           height: 24 / 16,
           fontStyle: FontStyle.italic,
-          color: Color(0x99030401),
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
         );
 
     final peekPadding = math.min(60.0, _weeklyTrainingCardWidth(context) * 0.2);

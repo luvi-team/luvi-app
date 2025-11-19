@@ -12,21 +12,46 @@ void main() {
     testWidgets('renders localized headline and body per phase (de)', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.buildAppTheme(),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('de'),
-          home: const Scaffold(body: CycleTipCard(phase: Phase.luteal)),
+      final selectors = <Phase, ({
+        String Function(AppLocalizations) headline,
+        String Function(AppLocalizations) body,
+      })>{
+        Phase.menstruation: (
+          headline: (l10n) => l10n.cycleTipHeadlineMenstruation,
+          body: (l10n) => l10n.cycleTipBodyMenstruation,
         ),
-      );
+        Phase.follicular: (
+          headline: (l10n) => l10n.cycleTipHeadlineFollicular,
+          body: (l10n) => l10n.cycleTipBodyFollicular,
+        ),
+        Phase.ovulation: (
+          headline: (l10n) => l10n.cycleTipHeadlineOvulation,
+          body: (l10n) => l10n.cycleTipBodyOvulation,
+        ),
+        Phase.luteal: (
+          headline: (l10n) => l10n.cycleTipHeadlineLuteal,
+          body: (l10n) => l10n.cycleTipBodyLuteal,
+        ),
+      };
 
-      final ctx = tester.element(find.byType(CycleTipCard));
-      final l10n = AppLocalizations.of(ctx)!;
+      for (final phase in Phase.values) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.buildAppTheme(),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('de'),
+            home: Scaffold(body: CycleTipCard(phase: phase)),
+          ),
+        );
 
-      expect(find.text(l10n.cycleTipHeadlineLuteal), findsOneWidget);
-      expect(find.text(l10n.cycleTipBodyLuteal), findsOneWidget);
+        final ctx = tester.element(find.byType(CycleTipCard));
+        final l10n = AppLocalizations.of(ctx)!;
+        final expected = selectors[phase]!;
+
+        expect(find.text(expected.headline(l10n)), findsOneWidget);
+        expect(find.text(expected.body(l10n)), findsOneWidget);
+      }
     });
   });
 }

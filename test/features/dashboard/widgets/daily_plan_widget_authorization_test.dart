@@ -254,7 +254,7 @@ void main() {
 
       expect(find.text('No plans available'), findsOneWidget);
 
-      verify(repository.fetchMyDailyPlans).called(1);
+      verify(() => repository.fetchMyDailyPlans()).called(1);
     });
 
     testWidgets('surfaces authorization errors from repository', (

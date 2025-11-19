@@ -43,7 +43,9 @@ class LegacySections extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    assert(l10n != null, 'AppLocalizations must be initialized');
+    if (l10n == null) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

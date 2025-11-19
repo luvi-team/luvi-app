@@ -37,9 +37,11 @@ const TextHeightBehavior _unitHeightBehavior = TextHeightBehavior(
 );
 
 /// Ensures multi-word stat labels (e.g. "Verbrannte Energie") wrap like the Figma spec.
+final RegExp _whitespacePattern = RegExp(r'\s+');
+
 String _formatStatLabel(String rawLabel) {
   final trimmed = rawLabel.trim();
-  final words = trimmed.split(RegExp(r'\s+'));
+  final words = trimmed.split(_whitespacePattern);
   if (words.length == 2 &&
       trimmed.length > StatsScrollerLayout.labelWrapThreshold) {
     return '${words.first}\n${words.last}';
