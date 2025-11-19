@@ -1,8 +1,10 @@
+
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/legacy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
 import '../../support/test_config.dart';
 
 class DailyPlan {
@@ -15,6 +17,24 @@ class DailyPlan {
   final String id;
   final String ownerId;
   final String title;
+
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is DailyPlan &&
+        other.id == id &&
+        other.ownerId == ownerId &&
+        other.title == title;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, ownerId, title);
+
+  @override
+  String toString() => 'DailyPlan(id: $id, ownerId: $ownerId, title: $title)';
 }
 
 class AuthorizationException implements Exception {
@@ -38,15 +58,24 @@ final dailyPlanRepositoryProvider = Provider<DailyPlanRepository>((ref) {
   );
 });
 
-final creationStatusProvider =
-    StateProvider.autoDispose<String?>((ref) => null);
 
-final userScopedDailyPlansProvider = FutureProvider<List<DailyPlan>>((
-  ref,
-) async {
-  final repository = ref.watch(dailyPlanRepositoryProvider);
-  return repository.fetchMyDailyPlans();
-});
+class CreationStatusNotifier extends AsyncNotifier<String?> {
+  @override
+  FutureOr<String?> build() => null;
+
+  void set(String? value) => state = AsyncData(value);
+}
+
+final creationStatusProvider =
+    AsyncNotifierProvider.autoDispose<CreationStatusNotifier, String?>(
+  CreationStatusNotifier.new,
+);
+
+final userScopedDailyPlansProvider =
+    FutureProvider.autoDispose<List<DailyPlan>>((ref) async {
+      final repository = ref.watch(dailyPlanRepositoryProvider);
+      return repository.fetchMyDailyPlans();
+    });
 
 class DailyPlanCreationController {
   DailyPlanCreationController({required DailyPlanRepository repository})
@@ -71,7 +100,8 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final plansAsync = ref.watch(userScopedDailyPlansProvider);
-    final creationStatus = ref.watch(creationStatusProvider);
+
+    final creationStatus = ref.watch(creationStatusProvider).value;
 
     return MaterialApp(
       home: Scaffold(
@@ -107,10 +137,8 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
                 },
                 loading: () => const Center(child: Text('Loading...')),
                 error: (error, _) => Center(
-                  child: Text(
-                    'Error: $error',
-                    key: const Key('error_message'),
-                  ),
+
+                  child: Text('Error: $error', key: const Key('error_message')),
                 ),
               ),
             ),
@@ -123,15 +151,21 @@ class DailyPlanAuthorizationHarness extends ConsumerWidget {
                     dailyPlanCreationControllerProvider,
                   );
 
+                  final statusNotifier = ref.read(creationStatusProvider.notifier);
+                  var statusMessage = 'Creation failed';
+
                   try {
                     final plan = await controller.createPlan(
                       title: 'Morning Routine',
                     );
-                    ref.read(creationStatusProvider.notifier).state =
-                        'Created plan for ${plan.ownerId}';
+
+                    statusMessage = 'Created plan for ${plan.ownerId}';
                   } on AuthorizationException catch (e) {
-                    ref.read(creationStatusProvider.notifier).state =
-                        'Creation blocked: ${e.message}';
+                    statusMessage = 'Creation blocked: ${e.message}';
+                  } catch (error) {
+                    statusMessage = 'Creation failed: $error';
+                  } finally {
+                    statusNotifier.set(statusMessage);
                   }
                 },
                 child: const Text('Create Plan'),
@@ -178,7 +212,8 @@ void main() {
     testWidgets('renders plans scoped to the authenticated user', (
       tester,
     ) async {
-      when(repository.fetchMyDailyPlans).thenAnswer(
+
+      when(() => repository.fetchMyDailyPlans()).thenAnswer(
         (invocation) async => [
           const DailyPlan(
             id: 'plan-1',
@@ -188,14 +223,6 @@ void main() {
         ],
       );
 
-      when(
-        () => repository.createDailyPlan(
-          title: any(named: 'title'),
-        ),
-      ).thenAnswer((invocation) async {
-        final title = invocation.namedArguments[#title] as String;
-        return DailyPlan(id: 'created-$title', ownerId: userId, title: title);
-      });
 
       await pumpHarness(tester, repository: repository);
 
@@ -207,24 +234,17 @@ void main() {
       expect(find.text('owner: $userId'), findsOneWidget);
       expect(find.text('No plans available'), findsNothing);
 
-      verify(repository.fetchMyDailyPlans).called(1);
+
+      verify(() => repository.fetchMyDailyPlans()).called(1);
     });
 
     testWidgets('renders empty state when repository returns no plans', (
       tester,
     ) async {
-      when(repository.fetchMyDailyPlans).thenAnswer(
-        (invocation) async => const <DailyPlan>[],
-      );
 
       when(
-        () => repository.createDailyPlan(
-          title: any(named: 'title'),
-        ),
-      ).thenAnswer((invocation) async {
-        final title = invocation.namedArguments[#title] as String;
-        return DailyPlan(id: 'created-$title', ownerId: userId, title: title);
-      });
+        () => repository.fetchMyDailyPlans(),
+      ).thenAnswer((invocation) async => const <DailyPlan>[]);
 
       await pumpHarness(tester, repository: repository);
 
@@ -263,15 +283,13 @@ void main() {
     testWidgets('create plan button calls repository without owner override', (
       tester,
     ) async {
-      when(repository.fetchMyDailyPlans).thenAnswer(
+
+      when(() => repository.fetchMyDailyPlans()).thenAnswer(
         (invocation) async => const <DailyPlan>[],
       );
 
-      when(
-        () => repository.createDailyPlan(
-          title: any(named: 'title'),
-        ),
-      ).thenAnswer((invocation) async {
+      when(() => repository.createDailyPlan(title: any(named: 'title')))
+          .thenAnswer((invocation) async {
         final title = invocation.namedArguments[#title] as String;
         return DailyPlan(id: 'created-$title', ownerId: userId, title: title);
       });
@@ -280,35 +298,32 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('create_plan_button')));
+
+      await tester.pump();
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Created plan for $userId'),
-        findsOneWidget,
-      );
+      expect(find.text('Created plan for $userId'), findsOneWidget);
 
       verify(
-        () => repository.createDailyPlan(
-          title: 'Morning Routine',
-        ),
+        () => repository.createDailyPlan(title: 'Morning Routine'),
       ).called(1);
     });
 
     testWidgets('creation errors surface in status banner', (tester) async {
-      when(repository.fetchMyDailyPlans).thenAnswer(
+
+      when(() => repository.fetchMyDailyPlans()).thenAnswer(
         (invocation) async => const <DailyPlan>[],
       );
 
-      when(
-        () => repository.createDailyPlan(
-          title: any(named: 'title'),
-        ),
-      ).thenThrow(const AuthorizationException('RLS policy enforced'));
+      when(() => repository.createDailyPlan(title: any(named: 'title')))
+          .thenThrow(const AuthorizationException('RLS policy enforced'));
 
       await pumpHarness(tester, repository: repository);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('create_plan_button')));
+
+      await tester.pump();
       await tester.pumpAndSettle();
 
       expect(
@@ -317,9 +332,8 @@ void main() {
       );
 
       verify(
-        () => repository.createDailyPlan(
-          title: 'Morning Routine',
-        ),
+
+        () => repository.createDailyPlan(title: 'Morning Routine'),
       ).called(1);
     });
   });

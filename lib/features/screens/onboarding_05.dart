@@ -71,13 +71,11 @@ class _Onboarding05ScreenState extends State<Onboarding05Screen> {
   }
 
   void _handleBack() {
-    final navigator = Navigator.of(context);
-    navigator.maybePop().then((didPop) {
-      if (!mounted) return;
-      if (!didPop) {
-        context.go(Onboarding04Screen.routeName);
-      }
-    });
+    if (GoRouter.of(context).canPop()) {
+      context.pop();
+    } else {
+      context.go(Onboarding04Screen.routeName);
+    }
   }
 
   Widget _buildOptionList(OnboardingSpacing spacing) {

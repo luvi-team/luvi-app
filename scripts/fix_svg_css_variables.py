@@ -20,10 +20,9 @@ The script will:
 5. Print statistics (variables found, variables replaced)
 
 Exit codes:
-    0: Success
+    0: Success (either fixed variables or already clean)
     1: File not found
     2: Invalid file format (not SVG)
-    3: No changes needed (no CSS variables found)
     4: Partial fixes applied
 """
 
@@ -76,7 +75,14 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
     def replace_css_var(match):
         fallback_color = match.group(1).strip()
         # Skip replacement if fallback fails to parse cleanly to avoid corrupting content.
-        if not fallback_color or fallback_color.startswith('var('):
+        if not fallback_color or 'var(' in fallback_color:
+            logger.warning(
+                "Skipping CSS var replacement in '%s' at offset %d: fallback='%s', raw='%s'",
+                svg_file,
+                match.start(),
+                fallback_color or '<empty>',
+                match.group(0),
+            )
             return match.group(0)
         return fallback_color
 
@@ -90,24 +96,54 @@ def fix_svg_css_variables(svg_path: str) -> tuple[int, int]:
 
     try:
         if temp_path.exists():
-            temp_path.unlink()
+            temp_path.unlink()  # Let OSError propagate if cleanup fails
 
         temp_path.write_text(fixed_content, encoding='utf-8')
         temp_path.replace(svg_file)
-    except Exception as exc:  # pragma: no cover - defensive logging
+    except PermissionError as error:  # pragma: no cover - defensive logging
+        logger.error(
+            "Permission denied while updating SVG '%s' using temp file '%s': %s",
+            svg_file,
+            temp_path,
+            error,
+            exc_info=True,
+        )
+        raise
+    except OSError as error:  # pragma: no cover - defensive logging
+        logger.error(
+            "OS error while updating SVG '%s' using temp file '%s': %s",
+            svg_file,
+            temp_path,
+            error,
+            exc_info=True,
+        )
+        raise
+    except Exception:  # pragma: no cover - defensive logging
         logger.exception(
-            "Failed to atomically update SVG '%s' using temp file '%s'",
+            "Unexpected failure while atomically updating SVG '%s' via temp file '%s'",
             svg_file,
             temp_path,
         )
+        raise
+    finally:
         if temp_path.exists():
-            temp_path.unlink()
-        raise exc
+            try:
+                temp_path.unlink()
+            except OSError as cleanup_error:  # pragma: no cover - defensive logging
+                logger.warning(
+                    "Failed to remove temporary SVG '%s' during cleanup: %s",
+                    temp_path,
+                    cleanup_error,
+                )
 
     return (variables_found, variables_replaced)
 
 
 def main():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(levelname)s: %(message)s'
+    )
     if len(sys.argv) != 2:
         print("Usage: python3 fix_svg_css_variables.py <path-to-svg-file>")
         print("\nExample:")
@@ -122,7 +158,8 @@ def main():
         if found == 0:
             print(f"✅ No CSS variables found in {svg_path}")
             print("   File is already compatible with flutter_svg.")
-            sys.exit(3)
+            # No-op is a success: return 0 for clean files
+            sys.exit(0)
 
         if replaced == found:
             print(f"✅ Fixed SVG: {svg_path}")

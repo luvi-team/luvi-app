@@ -90,9 +90,13 @@ _Phase _phaseForDate({
   int lutealLength = 13,
   int ovulationWindowDays = 2,
 }) {
-  // Normalize to day-only comparison (ignore time)
-  final start = DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day);
-  final q = DateTime(date.year, date.month, date.day);
+  // Preserve the original calendar date regardless of time zone by
+  // extracting year/month/day from the provided DateTime and constructing
+  // a UTC date-only value. This avoids shifting days when inputs are UTC.
+  DateTime dateOnlyUtc(DateTime dt) => DateTime.utc(dt.year, dt.month, dt.day);
+
+  final start = dateOnlyUtc(lastPeriod);
+  final q = dateOnlyUtc(date);
   final diff = q.difference(start).inDays;
 
   // Calculate 1-based cycle day (wrap negatives cyclically)

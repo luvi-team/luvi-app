@@ -1,0 +1,66 @@
+name: Langfuse Trace (PR Comment)
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  langfuse-trace:
+    name: Create Trace and Comment
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps (api)
+        working-directory: api
+        run: npm ci --no-audit --no-fund
+
+      - name: Create Langfuse trace
+        id: trace
+        working-directory: api
+        env:
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_HOST: ${{ secrets.LANGFUSE_HOST }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          node scripts/langfuse-pr-link.mjs | tee /tmp/langfuse.out
+          if grep -q '^TRACE_UI_URL=' /tmp/langfuse.out; then
+            echo "trace_url=$(grep '^TRACE_UI_URL=' /tmp/langfuse.out | cut -d= -f2-)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment trace link on PR
+        if: ${{ steps.trace.outputs.trace_url != '' }}
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const url = core.getInput('trace_url', { required: false }) || '${{ steps.trace.outputs.trace_url }}';
+            if (!url) return core.info('No trace URL; skipping comment.');
+            const body = [
+              'Langfuse Trace created (non-blocking):',
+              '',
+              `- Deep Link: ${url}`,
+              `- Commit: ${{ github.sha }}`,
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+      - name: No secrets available (skip)
+        if: ${{ steps.trace.outputs.trace_url == '' }}
+        run: echo "Langfuse keys not configured; skipping PR comment."

@@ -13,7 +13,8 @@ void main() {
       initialLocation: ConsentRoutes.consent01,
       routes: [
         GoRoute(
-          path: Consent01Screen.routeName,
+
+          path: ConsentRoutes.consent01,
           builder: (context, state) => const Consent01Screen(),
         ),
         GoRoute(

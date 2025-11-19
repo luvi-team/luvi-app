@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'support/test_config.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  TestConfig.ensureInitialized();
 
   group('Asset smoke tests', () {
     test('loads onboarding success trophy image', () async {
@@ -13,15 +14,15 @@ void main() {
       expect(data.lengthInBytes, greaterThan(0));
     });
 
-    test('loads onboarding success confetti animation', () async {
+    test('loads onboarding success celebration animation', () async {
       final jsonString = await rootBundle.loadString(
         Assets.animations.onboardingSuccessCelebration,
       );
       expect(jsonString, isNotEmpty);
 
-      final dynamic decoded = jsonDecode(jsonString);
+      final decoded = jsonDecode(jsonString);
       expect(decoded, isA<Map<String, dynamic>>());
-      expect((decoded as Map<String, dynamic>).isNotEmpty, isTrue);
+      expect(decoded, isNotEmpty);
     });
   });
 }

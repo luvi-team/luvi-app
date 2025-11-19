@@ -7,7 +7,7 @@
 - **Figma URL:** https://www.figma.com/design/iQthMdxpCbl6afzXxvzqlt/Nova-Health-UI-%E2%80%93-Working-Copy?node-id=68597-8050&m=dev
 - **Generated:** 2025-10-22
 - **Auditor:** Claude Code (ui-frontend)
-- **Status:** Specs Complete
+- **Status:** Specs Pending
 
 ---
 
@@ -46,6 +46,8 @@
 - **Grouping:** Part of trophy group
 
 ### Konfetti (Confetti)
+
+⚠️ WARNING: All confetti colors (lines 71-145) are placeholders pending Figma verification. Do not use in production implementation.
 - **Total Count:** 47 elements (5 streamers + 42 dots)
 - **Layer-Typ:** Vector (all SVG)
 - **Export Note:** All confetti elements are part of a single SVG group (node `68597:8099`), making this ideal for single-asset export.
@@ -55,6 +57,7 @@
 - Exact Figma analysis: 5 streamers, 42 dots
 - Classification criteria: Streamers = width OR height > 20px; Dots = width AND height ≤ 20px
 
+Note: Confetti element colors are placeholders pending verification against the source Figma node. Document status remains "Specs Pending" until these values are confirmed or replaced with verified tokens.
 **Region criteria (relative to viewport center x=214px):**
 - Left: x < 160
 - Center: 160 ≤ x ≤ 268
@@ -66,39 +69,40 @@
    - Position: x=55px, y=358.28px
    - Size: 86.46px × 26.45px
    - Shape: Curved path
-   - Color: #896CFE (purple, placeholder - not verified from Figma)
+   - Color: #896CFE (purple, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Left
 
 2. **Streamer 02** (Node 68597:8103)
    - Position: x=241.88px, y=271.23px
    - Size: 65.88px × 63.91px
    - Shape: Curved path
-   - Color: #7B68EE (purple, placeholder - not verified from Figma)
+   - Color: #7B68EE (purple, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Center
 
 3. **Streamer 03** (Node 68597:8106)
    - Position: x=280.93px, y=351.44px
    - Size: 81.95px × 41.75px
    - Shape: Curved path
-   - Color: #6A5ACD (blue, placeholder - not verified from Figma)
+   - Color: #6A5ACD (blue, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Right
 
 4. **Streamer 04** (Node 68597:8109)
    - Position: x=104.61px, y=273.27px
    - Size: 58.11px × 61.59px
    - Shape: Curved path
-   - Color: #896CFE (purple, placeholder - not verified from Figma)
+   - Color: #896CFE (purple, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Left
 
 5. **Streamer 05** (Node 68597:8193)
    - Position: x=179.81px, y=244px
    - Size: 27.55px × 86.19px
    - Shape: Curved path
-   - Color: #7B68EE (purple, placeholder - not verified from Figma)
+   - Color: #7B68EE (purple, placeholder - not verified from Figma) [TODO: VERIFY]
    - Region: Center
 
 #### Dots (42 total)
 
+Note: All dot color entries below are placeholders pending Figma verification. Each color value is marked implicitly as [TODO: VERIFY].
 1. **Dot 01** (Node 68597:8112) - Position: x=59.76px, y=349.06px - Size: 8.86px × 8.59px - Color: #FFEB3B (yellow, placeholder - not verified from Figma) - Region: Left
 2. **Dot 02** (Node 68597:8115) - Position: x=260.19px, y=309.57px - Size: 8.88px × 8.64px - Color: #FFFF00 (yellow, placeholder - not verified from Figma) - Region: Center
 3. **Dot 03** (Node 68597:8118) - Position: x=325.84px, y=326.09px - Size: 8.79px × 8.86px - Color: #B19CD9 (purple, placeholder - not verified from Figma) - Region: Right
@@ -367,9 +371,9 @@ Trophy besteht ausschließlich aus Vektor-Shapes (Body mit Gradient, Henkel, Ste
 
 #### Button-Text auf Button-BG
 - **Farben:** #030401 (Button Text, Black) auf #D9B18E (Button BG, Gold)
-- **Kontrast-Ratio:** 4.5:1
-- **WCAG-Level:** AA (≥4.5:1 for normal text, ≥3:1 for large text) ✓ Pass
-- **Note:** Black text on gold background provides sufficient contrast for accessibility.
+- **Kontrast-Ratio:** 10.41:1
+- **WCAG-Level:** AAA (≥7:1 for normal text, ≥4.5:1 for large text) ✓ Pass
+- **Note:** Black text on gold background provides high contrast; exceeds AA and AAA requirements.
 
 ### Tap-Targets
 #### Button
@@ -408,7 +412,7 @@ Trophy besteht ausschließlich aus Vektor-Shapes (Body mit Gradient, Henkel, Ste
    - **Entspricht bestehendem Token:** ❌ Keine Übereinstimmung
    - **Empfehlung:** Nicht als Token definieren (Button in centered column, kein fixer bottom spacing)
 
-**Status:** Tokens `trophyToTitle` (24px) und `titleToButton` (66px) sind implementiert und werden im Screen verwendet. Hinweis: Der Wert wurde von 28px (Figma) auf 24px (Implementierung) angepasst - siehe Begründung in [ggf. ADR oder Issue-Referenz].
+**Status:** Tokens `trophyToTitle` (24px) und `titleToButton` (66px) sind implementiert und werden im Screen verwendet. Hinweis: Der Wert wurde von 28px (Figma) auf 24px (Implementierung) angepasst - siehe Begründung in [ADR-0006](../../context/ADR/0006-onboarding-success-spacing.md).
 
 ### Layout-Strategie
 1. **Screen verwendet vertikales Centering:** ✅ Yes (Flutter-Implementierung verwendet `Column` mit `MainAxisAlignment.center`)
@@ -420,7 +424,7 @@ Trophy besteht ausschließlich aus Vektor-Shapes (Body mit Gradient, Henkel, Ste
 4. **Action Required:** Prüfe `lib/l10n/app_de.arb` und verwende für UI denselben Token
 
 ### Accessibility Summary
-1. **Button contrast (4.5:1) passes WCAG AA**
+1. **Button contrast (10.41:1) passes WCAG AAA**
    - Black text (#030401) on gold background (#D9B18E)
    - Sufficient contrast for large bold text (20px/700)
 2. **Title contrast (21:1) passes WCAG AAA**
@@ -447,7 +451,7 @@ Alle Punkte erfüllt:
 - [x] A11y: Kontrast-Ratios berechnet, Tap-Targets verifiziert
 - [x] Notes: Besonderheiten dokumentiert
 
-**Status:** ✓ Complete (All values filled from Figma)
+**Status:** ⚠ Partial (Confetti colors pending Figma verification; all other values verified)
 
 ---
 
@@ -456,5 +460,5 @@ Alle Punkte erfüllt:
 - **2025-10-22 (Final):** Values filled from Figma node `68597-8050` via MCP (Claude Code ui-frontend agent)
   - Trophy: 308×300px, SVG, no raster effects → Export: SVG
   - Spacing: 28px (Trophy→Title), 66px (Title→Button) → New tokens required
-  - Kontrast: Button text color corrected to black (#030401) → 4.5:1 contrast, WCAG AA Pass
+  - Kontrast: Button text color corrected to black (#030401) → 10.41:1 contrast, WCAG AAA Pass
   - Text-Korrektur: Button-Text fehlt Apostroph in Figma ("Los gehts!" → "Los geht's!")

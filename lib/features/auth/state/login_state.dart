@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/validation/email_validator.dart';
 
 class LoginState {
   final String email;
@@ -45,7 +47,9 @@ class LoginState {
 }
 
 class LoginNotifier extends AsyncNotifier<LoginState> {
-  static final RegExp _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+  // Client-side sanity guard; server-side validation stays authoritative.
+  static const int _kMinPasswordLength = 8;
+  static const Object _noChange = Object();
 
   @override
   FutureOr<LoginState> build() => LoginState.initial();
@@ -54,82 +58,99 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
 
   LoginState get currentState => _current();
 
-  void setEmail(String value) {
-    final current = _current();
-    state = AsyncData(
-      current.copyWith(
-        email: value,
-        emailError: current.emailError,
-        passwordError: current.passwordError,
-        globalError: current.globalError,
-      ),
-    );
-  }
+  void setEmail(String value) => updateState(email: value);
 
-  void setPassword(String value) {
-    final current = _current();
-    state = AsyncData(
-      current.copyWith(
-        password: value,
-        emailError: current.emailError,
-        passwordError: current.passwordError,
-        globalError: current.globalError,
-      ),
-    );
-  }
+  void setPassword(String value) => updateState(password: value);
 
-  void clearGlobalError() {
-    final current = _current();
-    state = AsyncData(current.copyWith(globalError: null));
-  }
+  void clearGlobalError() => updateState(globalError: null);
+
+  void setGlobalError(String message) => updateState(globalError: message);
 
   /// Eine (1) kanonische Variante inkl. globalError – kompatibel zu Provider/Tests.
   void updateState({
     String? email,
     String? password,
-    String? emailError,
-    String? passwordError,
-    String? globalError,
+    Object? emailError = _noChange,
+    Object? passwordError = _noChange,
+    Object? globalError = _noChange,
   }) {
-    final current = _current();
+    // Preserve any existing data even when state is loading/errored.
+    final preserved = state.maybeWhen(
+      data: (d) => d,
+      orElse: () => state.value ?? LoginState.initial(),
+    );
     state = AsyncData(
-      current.copyWith(
-        email: email ?? current.email,
-        password: password ?? current.password,
-        emailError: emailError,
-        passwordError: passwordError,
-        globalError: globalError,
+      preserved.copyWith(
+        email: email ?? preserved.email,
+        password: password ?? preserved.password,
+        emailError: identical(emailError, _noChange)
+            ? preserved.emailError
+            : emailError as String?,
+        passwordError: identical(passwordError, _noChange)
+            ? preserved.passwordError
+            : passwordError as String?,
+        globalError: identical(globalError, _noChange)
+            ? preserved.globalError
+            : globalError as String?,
       ),
     );
   }
 
-  /// MIWF: einfache Client-Validierung; Server-Submit passiert im Submit-Provider.
-  Future<void> validateAndSubmit() async {
-    state = await AsyncValue.guard(() async {
+  /// Performs client-side validation only.
+  ///
+  /// Server-side submission is handled separately by login_submit_provider.
+  void validate() {
+    try {
       final current = _current();
+      final trimmedEmail = current.email.trim();
+      final trimmedPassword = current.password.trim();
 
       String? eErr;
       String? pErr;
 
-      if (!_emailRegex.hasMatch(current.email)) {
+      if (trimmedEmail.isEmpty) {
+        eErr = AuthStrings.errEmailEmpty;
+      } else if (!EmailValidator.isValid(trimmedEmail)) {
         eErr = AuthStrings.errEmailInvalid;
       }
-      if (current.password.length < 6) {
+
+      if (trimmedPassword.isEmpty) {
+        pErr = AuthStrings.errPasswordEmpty;
+      } else if (trimmedPassword.length < _kMinPasswordLength) {
         pErr = AuthStrings.errPasswordInvalid;
       }
 
-      return current.copyWith(
-        emailError: eErr,
-        passwordError: pErr,
-        globalError: null,
+      state = AsyncData(
+        current.copyWith(
+          email: trimmedEmail,
+          password: trimmedPassword,
+          emailError: eErr,
+          passwordError: pErr,
+          globalError:
+              (eErr == null && pErr == null) ? null : current.globalError,
+        ),
       );
-    });
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 
-  /// Hilfsmethode für Tests, um synchronen Zugriff zu vereinfachen.
+  /// Backward-compatible shim used by existing call sites and tests.
+  /// Performs client-side validation only and completes synchronously.
+  /// Any network submission or remote auth flow is handled by
+  /// `login_submit_provider` to avoid mixing concerns.
+  Future<void> validateAndSubmit() async {
+    validate();
+  }
+
+  @visibleForTesting
+  /// Helper method for tests to simplify synchronous access.
   LoginState debugState() => _current();
 }
 
-final loginProvider = AsyncNotifierProvider<LoginNotifier, LoginState>(
+// Screen-scoped form state; dispose automatically when screen is gone.
+final loginProvider =
+    AsyncNotifierProvider.autoDispose<LoginNotifier, LoginState>(
   LoginNotifier.new,
+  name: 'loginProvider',
 );

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/routes.dart' as features;
 import '../../support/test_config.dart';
 
@@ -13,7 +14,7 @@ void main() {
   ) async {
     final router = GoRouter(
       routes: features.featureRoutes,
-      initialLocation: '/auth/password/success',
+      initialLocation: SuccessScreen.passwordSavedRoutePath,
     );
     addTearDown(router.dispose);
 

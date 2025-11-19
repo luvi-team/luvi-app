@@ -52,8 +52,8 @@ python3 scripts/fix_svg_css_variables.py assets/images/onboarding/onboarding_suc
 Das Script:
 - Findet alle `var(--fill-N, FARBE)` Patterns
 - Ersetzt sie durch die Fallback-Farbe (`FARBE`)
-- Verwendet eine temporäre Datei `<datei>.svg.tmp` für atomare Ersetzung
-- Überschreibt die Originaldatei ohne automatisches Backup – lege vor dem Lauf manuell eine Kopie an, wenn du die Figma-Version behalten möchtest
+- Schreibt in eine temporäre Datei `<datei>.svg.tmp`, dann ersetzt atomar das Original.
+- Überschreibt die Originaldatei ohne automatisches Backup – Empfehlung: vor dem Lauf manuell eine Kopie anlegen, wenn du die Figma-Version behalten möchtest
 - Gibt Statistik aus (gefundene/ersetzte CSS-Variablen)
 
 ### Schritt 3: Verifizieren
@@ -114,8 +114,9 @@ Das Script:
 **Symptom:** `grep "var(--"` zeigt noch Treffer
 **Lösung:** Script-Output prüfen; bei Regex-Edge-Case manuell ersetzen:
 - Häufige Fälle: verschachtelte `var(--token, var(--fallback))`, vendor-prefixed Fallbacks (`-webkit-`, `-moz-`), oder Tokens mit Kommentaren am Zeilenende.
-- Öffne das SVG im Editor oder nutze `rg "var\\(--" <datei>.svg`, finde z. B. `fill="var(--fill-4, #FBC343)"` und ersetze den gesamten Ausdruck durch `fill="#FBC343"`.
-- Für mehrere Vorkommen helfen Befehle wie `sed -E 's/var\\(--fill-4, ([^)]*)\)/\1/g' asset.svg`; kompakte Regex-Referenz: https://www.regular-expressions.info/quickstart.html
+- Öffne das SVG im Editor oder nutze `rg "var\\(--" <datei>.svg`, finde z. B. `fill="var(--fill-4, #FBC343)"` und ersetze den gesamten Ausdruck durch `fill="#FBC343"`.
+- Für mehrere Vorkommen kannst du den Python-Script anpassen oder manuell mit einem Editor mehrfach suchen/ersetzen
+- Hinweis: Verwende das mitgelieferte Python-Script `scripts/fix_svg_css_variables.py` oder die oben dokumentierte plattformübergreifende Methode. Einfache `sed`-One-Liner sind nicht zuverlässig, da sie verschachtelte Klammern (z. B. `rgb(...)`/`rgba(...)`) nicht korrekt parsen und dadurch SVGs beschädigen können.
 
 ## Checkliste (Asset-Integration)
 
@@ -136,4 +137,5 @@ Das Script:
 
 ## Changelog
 
-- 2025-10-22: Initial version (Onboarding Success Trophy Fix)
+Hinweis: Die Datumsangaben beziehen sich auf tatsächliche Erstellung/Änderungen; der erste Eintrag ist das ursprüngliche Veröffentlichungsdatum.
+- 2025-11-06: Initial version (Onboarding Success Trophy Fix)

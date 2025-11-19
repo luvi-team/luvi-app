@@ -2,15 +2,33 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
 /// Provides localized auth strings while keeping the existing static API surface
-/// for legacy callers. Strings resolve against [AppLocalizations] and can be
-/// overridden in tests via [debugOverrideLocalizations].
+/// for legacy callers.
+///
+/// Cache behavior and safety
+/// - Strings resolve against [AppLocalizations] and are cached per locale tag.
+/// - By default, the current tag is derived from `PlatformDispatcher.instance.locale`.
+/// - To avoid external cache invalidation and ensure consistency with
+///   `Localizations.localeOf(context)`, production code SHOULD install a locale
+///   resolver via [setLocaleResolver] at app startup (e.g., in the root widget).
+/// - The cache re-resolves automatically when the resolver's tag changes.
+/// - Tests can still override via [debugOverrideLocalizations].
+///
+/// In debug mode, when a tag change is detected, a diagnostic is printed to
+/// help catch stale cache coordination issues early during development.
 class AuthStrings {
   AuthStrings._();
 
   static AppLocalizations? _debugOverride;
   static ui.Locale? Function()? _resolver;
+  // Cache is accessed only on Flutter's main isolate. This class assumes
+  // single-threaded access from the UI thread; no explicit locking is used.
+  // Cache is invalidated on locale change by the app root (see MyAppWrapper
+  // builder/LocaleChangeCacheReset in main.dart) or via debugResetCache().
+  static AppLocalizations? _cachedL10n;
+  static String? _cachedTag;
 
   @visibleForTesting
   static void debugOverrideLocalizations(AppLocalizations? override) {
@@ -22,6 +40,30 @@ class AuthStrings {
     _resolver = resolver;
   }
 
+  /// Installs a locale resolver used to derive the current locale.
+  ///
+  /// Recommended: pass a closure that resolves to `Localizations.localeOf(context)`
+  /// from your app root, so that cache invalidation is driven by the real
+  /// widget tree locale rather than the platform locale.
+  static void setLocaleResolver(ui.Locale Function() resolver) {
+    _resolver = resolver;
+  }
+
+  @visibleForTesting
+  static void debugResetCache() {
+    // Delegate to the public API to ensure consistent behavior in tests.
+    resetCache();
+  }
+
+  /// Public API to clear the cached localization instance.
+  ///
+  /// Use this in production code when locale changes (e.g., after
+  /// Localizations updates) to ensure freshly resolved strings.
+  static void resetCache() {
+    _cachedL10n = null;
+    _cachedTag = null;
+  }
+
   static AppLocalizations _l10n() {
     if (_debugOverride != null) {
       return _debugOverride!;
@@ -29,7 +71,22 @@ class AuthStrings {
 
     final resolvedLocale =
         _resolver?.call() ?? ui.PlatformDispatcher.instance.locale;
-    const fallbackLocale = ui.Locale.fromSubtags(languageCode: 'de');
+    final currentTag = resolvedLocale.toLanguageTag();
+    final cached = _cachedL10n;
+    if (cached != null && _cachedTag == currentTag) {
+      return cached;
+    }
+    assert(() {
+      // In debug builds, surface when cache is considered stale.
+      if (_cachedTag != null && _cachedTag != currentTag) {
+        debugPrint(
+          '[AuthStrings] Locale tag changed from "$_cachedTag" to "$currentTag". '
+          'Re-resolving AppLocalizations.',
+        );
+      }
+      return true;
+    }());
+    const fallbackLocale = ui.Locale.fromSubtags(languageCode: 'en');
 
     for (final candidate in <ui.Locale>[
       resolvedLocale,
@@ -37,30 +94,65 @@ class AuthStrings {
       fallbackLocale,
     ]) {
       try {
-        return lookupAppLocalizations(candidate);
+        final l10n = lookupAppLocalizations(candidate);
+        _cachedL10n = l10n;
+        _cachedTag = currentTag;
+        return l10n;
       } on FlutterError {
         continue;
       }
     }
 
-    return lookupAppLocalizations(fallbackLocale);
+    // Fallback was already attempted in the loop above; if we reach here, rethrow
+    throw FlutterError(
+      'AppLocalizations lookup failed for locale "$currentTag" and all fallback candidates including en.',
+    );
   }
 
   static String get loginHeadline => _l10n().authLoginHeadline;
   static String get loginSubhead => _l10n().authLoginSubhead;
   static String get loginCta => _l10n().authLoginCta;
   static String get loginCtaButton => loginCta;
+
   static String get loginCtaLinkPrefix => _l10n().authLoginCtaLinkPrefix;
   static String get loginCtaLinkAction => _l10n().authLoginCtaLinkAction;
   static String get loginCtaLoadingSemantic =>
       _l10n().authLoginCtaLoadingSemantic;
   static String get loginForgot => _l10n().authLoginForgot;
   static String get loginSocialDivider => _l10n().authLoginSocialDivider;
+  static String get loginSocialGoogle => _l10n().authLoginSocialGoogle;
   static String get errEmailInvalid => _l10n().authErrEmailInvalid;
+  static String get errEmailEmpty => _l10n().authErrEmailEmpty;
   static String get errPasswordInvalid => _l10n().authErrPasswordInvalid;
+  static String get errPasswordEmpty => _l10n().authErrPasswordEmpty;
+  // More granular password validation errors with graceful fallback to the
+  // generic password error when the specific localization is not available yet.
+  static String get errPasswordTooShort {
+    final l = _l10n();
+    return l.hasGranularPasswordErrors
+        ? l.authErrPasswordTooShort
+        : l.authErrPasswordInvalid;
+  }
+
+  static String get errPasswordMissingTypes {
+    final l = _l10n();
+    return l.hasGranularPasswordErrors
+        ? l.authErrPasswordMissingTypes
+        : l.authErrPasswordInvalid;
+  }
+
+  static String get errPasswordCommonWeak {
+    final l = _l10n();
+    return l.hasGranularPasswordErrors
+        ? l.authErrPasswordCommonWeak
+        : l.authErrPasswordInvalid;
+  }
+
   static String get errConfirmEmail => _l10n().authErrConfirmEmail;
   static String get invalidCredentials => _l10n().authInvalidCredentials;
   static String get errLoginUnavailable => _l10n().authErrLoginUnavailable;
+  static String get passwordMismatchError => _l10n().authPasswordMismatchError;
+  static String get passwordUpdateError => _l10n().authPasswordUpdateError;
   static String get emailHint => _l10n().authEmailHint;
   static String get passwordHint => _l10n().authPasswordHint;
   static String get signupTitle => _l10n().authSignupTitle;
@@ -87,6 +179,8 @@ class AuthStrings {
   static String get createNewHint1 => _l10n().authCreateNewHint1;
   static String get createNewHint2 => _l10n().authCreateNewHint2;
   static String get createNewCta => _l10n().authCreateNewCta;
+  static String get createNewTitle => _l10n().authCreateNewTitle;
+  static String get createNewSubtitle => _l10n().authCreateNewSubtitle;
   static String get verifyResetTitle => _l10n().authVerifyResetTitle;
   static String get verifyResetSubtitle => _l10n().authVerifyResetSubtitle;
   static String get verifyEmailTitle => _l10n().authVerifyEmailTitle;

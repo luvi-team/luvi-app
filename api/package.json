@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "ai": "^3.0.0",
-    "langfuse": "^3.0.0",
+    "langfuse": "^3.38.6",
     "zod": "^3.22.0"
   },
   "devDependencies": {
@@ -29,5 +29,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "overrides": {
+    "langfuse-core": "^3.38.6"
   }
 }

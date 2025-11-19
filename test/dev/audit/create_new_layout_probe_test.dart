@@ -78,8 +78,9 @@ void main() {
 
       // Find key widgets and their positions
       final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
-      final titleFinder = find.text('Neues Passwort erstellen 💜');
-      final subtitleFinder = find.text('Mach es stark.');
+
+      final titleFinder = find.byKey(const ValueKey('create_new_title'));
+      final subtitleFinder = find.byKey(const ValueKey('create_new_subtitle'));
       final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 
       // Get Y positions
@@ -88,9 +89,10 @@ void main() {
       final subtitleRect = tester.getRect(subtitleFinder);
       final ctaRect = tester.getRect(ctaFinder);
 
-      // Try to find password fields by their hint text
-      final field1Finder = find.byKey(const Key('AuthPasswordField'));
-      final field2Finder = find.byKey(const Key('AuthConfirmPasswordField'));
+
+      // Find password fields by their keys
+      final field1Finder = find.byKey(const ValueKey('AuthPasswordField'));
+      final field2Finder = find.byKey(const ValueKey('AuthConfirmPasswordField'));
 
       final field1Rect = tester.getRect(field1Finder);
       final field2Rect = tester.getRect(field2Finder);

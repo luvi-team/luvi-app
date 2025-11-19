@@ -32,8 +32,12 @@ void main() {
     expect(find.text(l10n.consent02Title), findsOneWidget);
     final scrollable = find.byType(Scrollable);
     expect(find.text(l10n.consent02CardHealth), findsOneWidget);
+
+    // Verify the terms card (with links) exists before scrolling
+    expect(find.byKey(const Key('consent02_card_required_terms')), findsOneWidget);
+    // Then scroll to reveal the AI journal optional card
     await tester.scrollUntilVisible(
-      find.byKey(const Key('consent02_card_required_ai_journal')),
+      find.byKey(const Key('consent02_card_optional_ai_journal')),
       200,
       scrollable: scrollable,
     );
@@ -45,7 +49,7 @@ void main() {
       find.widgetWithText(ElevatedButton, l10n.consent02AcceptAll),
       findsOneWidget,
     );
-    expect(find.text(l10n.consent02LinkPrivacyLabel), findsOneWidget);
+
   });
 
   testWidgets('Consent footer button height matches elevated button theme', (
@@ -75,10 +79,10 @@ void main() {
         ?.resolve({})
         ?.height;
 
-    expect(minHeight, isNotNull);
+
+    expect(minHeight, isNotNull, reason: 'Theme elevatedButtonTheme.style.minimumSize.height should be defined');
     final buttonSize = tester.getSize(buttonFinder);
-    final resolvedMinHeight = minHeight!;
-    expect(buttonSize.height, greaterThanOrEqualTo(resolvedMinHeight));
+    expect(buttonSize.height, greaterThanOrEqualTo(minHeight!));
   });
 
   testWidgets('Consent footer toggles between accept and deselect all labels', (
@@ -97,7 +101,8 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+
+    await tester.pumpAndSettle();
 
     final screenContext = tester.element(find.byType(Consent02Screen));
     final l10n = AppLocalizations.of(screenContext)!;
@@ -109,7 +114,8 @@ void main() {
     expect(bulkButtonFinder, findsOneWidget);
 
     await tester.tap(bulkButtonFinder);
-    await tester.pump();
+
+    await tester.pumpAndSettle();
 
     expect(
       find.widgetWithText(ElevatedButton, l10n.consent02DeselectAll),

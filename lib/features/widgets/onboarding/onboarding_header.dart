@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -15,19 +16,19 @@ class OnboardingHeader extends StatelessWidget {
     required this.onBack,
     this.semanticsLabel,
     this.centerTitle = true,
-  }) : assert(
-         title.trim().isNotEmpty,
-         'title must not be empty or whitespace.',
-       ),
-       assert(
-         totalSteps >= 1,
-         'totalSteps must be at least 1, but received $totalSteps.',
-       ),
-       assert(step >= 1, 'step must be at least 1, but received $step.'),
-       assert(
-         step <= totalSteps,
-         'step $step cannot exceed totalSteps $totalSteps.',
-       );
+  })  : assert(
+          title.trim().isNotEmpty,
+          'title must not be empty or whitespace.',
+        ),
+        assert(
+          totalSteps >= 1,
+          'totalSteps must be at least 1, but received $totalSteps.',
+        ),
+        assert(step >= 1, 'step must be at least 1, but received $step.'),
+        assert(
+          step <= totalSteps,
+          'step $step cannot exceed totalSteps $totalSteps.',
+        );
 
   final String title;
   final int step;
@@ -41,12 +42,9 @@ class OnboardingHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final stepSemantic =
-        l10n?.onboardingStepSemantic(step, totalSteps) ??
-        'Step $step of $totalSteps';
-    final stepFraction =
-        l10n?.onboardingStepFraction(step, totalSteps) ?? '$step/$totalSteps';
+    final l10n = AppLocalizations.of(context)!;
+    final stepSemantic = l10n.onboardingStepSemantic(step, totalSteps);
+    final stepFraction = l10n.onboardingStepFraction(step, totalSteps);
     final stepTextStyle = textTheme.bodySmall?.copyWith(
       color: colorScheme.onSurface,
     );
@@ -55,11 +53,15 @@ class OnboardingHeader extends StatelessWidget {
       textDirection: Directionality.of(context),
     )..layout();
 
+    // Measure width, then dispose
+    final stepWidth = stepPainter.width;
+    stepPainter.dispose();
+
     final showBackButton = step > 1;
-    const double backButtonHitSize = 44;
+    const double backButtonHitSize = Sizes.touchTargetMin;
     const double interSlotSpacing = Spacing.s;
     final double reservedLeft = backButtonHitSize + interSlotSpacing;
-    final double reservedRight = interSlotSpacing + stepPainter.width;
+    final double reservedRight = interSlotSpacing + stepWidth;
     final double centeredPadding = math.max(reservedLeft, reservedRight);
     final EdgeInsets titlePadding = centerTitle
         ? EdgeInsets.symmetric(horizontal: centeredPadding)
@@ -93,6 +95,7 @@ class OnboardingHeader extends StatelessWidget {
                 BackButtonCircle(
                   onPressed: onBack,
                   iconColor: colorScheme.onSurface,
+                  semanticLabel: l10n.authBackSemantic,
                 )
               else
                 const SizedBox(

@@ -3,7 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../../support/test_app.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
+
+import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import '../../../support/test_config.dart';
 
 void main() {
@@ -11,24 +15,29 @@ void main() {
 
   testWidgets('WelcomeShell shows title semantics and wave', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      buildLocalizedApp(
         theme: AppTheme.buildAppTheme(),
-        home: WelcomeShell(
-          hero: const SizedBox(), // asset-free for test stability
-          title: const Text('Dein Zyklus ist deine\nSuperkraft.'),
-          subtitle:
-              'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
-          onNext: () {},
-          heroAspect: 438 / 619,
-          waveHeightPx: 413,
-          waveAsset: Assets.images.welcomeWave,
-          activeIndex: 0,
-        ),
+
+        home: const ConsentWelcome01Screen(),
       ),
     );
 
-    // Title present
-    expect(find.textContaining('Dein Zyklus'), findsOneWidget);
+    await tester.pumpAndSettle();
+
+    final shellContext = tester.element(find.byType(WelcomeShell));
+    final l10n = AppLocalizations.of(shellContext)!;
+    final richFinder = find.descendant(
+      of: find.byType(WelcomeShell),
+      matching: find.byType(RichText),
+    );
+    // Ensure at least one RichText descendant exists before accessing .first
+    expect(richFinder, findsWidgets);
+    final richTitle = tester.widget<RichText>(richFinder.first);
+    final plainText = richTitle.text.toPlainText();
+    expect(plainText, contains(l10n.welcome01TitlePrefix.trim()));
+    expect(plainText, contains(l10n.welcome01TitleAccent.trim()));
+    expect(plainText, contains(l10n.welcome01TitleSuffixLine1.trim()));
+    expect(plainText, contains(l10n.welcome01TitleSuffixLine2.trim()));
 
     // Wave SVG present and asset path verified
     final svgFinder = find.byType(SvgPicture);

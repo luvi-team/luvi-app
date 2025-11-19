@@ -1,12 +1,22 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'init_exception.dart';
+import 'init_mode.dart';
+import 'logger.dart';
+
 class SupabaseService {
   static bool _initialized = false;
-  static Future<void>? _initFuture;
+  // A single gate to ensure only the first caller performs initialization and
+  // others await the same Future. This avoids non-atomic check-then-assign races.
+  static Completer<void>? _initCompleter;
+  // Serialize the check + assign of _initCompleter so only one caller
+  // creates/assigns the gate at a time. Avoids duplicate initialization
+  // under concurrent callers.
+  static final _AsyncLock _initLock = _AsyncLock();
   static Object? _initializationError;
   static StackTrace? _initializationStackTrace;
   static SupabaseValidationConfig _validationConfig =
@@ -28,10 +38,32 @@ class SupabaseService {
   /// Attempt to load environment configuration and initialize Supabase.
   static Future<void> tryInitialize({String envFile = '.env.development'}) {
     if (_initialized) return Future.value();
-    final existing = _initFuture;
-    if (existing != null) return existing;
-    _initFuture = _performInitializeAndCache(envFile);
-    return _initFuture!;
+
+    // Serialize check+assign so only one caller creates the gate; others
+    // will either see the existing gate or wait briefly for this section.
+    return _initLock.synchronized<void>(() {
+      if (_initialized) return Future.value();
+
+      final existingGate = _initCompleter;
+      if (existingGate != null) return existingGate.future;
+
+      // Create the shared gate and kick off initialization exactly once.
+      final gate = _initCompleter = Completer<void>();
+      _performInitializeAndCache(envFile).then<void>((_) {
+        if (!gate.isCompleted) gate.complete();
+      }).catchError((Object error, StackTrace stack) async {
+        // Clear the shared completer inside the lock to avoid races.
+        await _initLock.synchronized<void>(() {
+          _initCompleter = null;
+          return Future<void>.value();
+        });
+        // Propagate the error to all awaiters outside the lock.
+        if (!gate.isCompleted) {
+          gate.completeError(error, stack);
+        }
+      });
+      return gate.future;
+    });
   }
 
   static void configure({SupabaseValidationConfig? validationConfig}) {
@@ -43,7 +75,7 @@ class SupabaseService {
   @visibleForTesting
   static void resetForTest() {
     _initialized = false;
-    _initFuture = null;
+    _initCompleter = null;
     _initializationError = null;
     _initializationStackTrace = null;
     _validationConfig = const SupabaseValidationConfig();
@@ -52,6 +84,17 @@ class SupabaseService {
   }
 
   static Future<void> _performInitializeAndCache(String envFile) async {
+    // Resolve test-mode at the start and short-circuit: in tests we operate
+    // without an initialized Supabase singleton and keep [_initialized] false
+    // so callers avoid touching `Supabase.instance`.
+    final bool isTest = InitModeBridge.resolve() == InitMode.test;
+    if (isTest) {
+      _initialized = false;
+      _initializationError = null;
+      _initializationStackTrace = null;
+      return;
+    }
+
     try {
       await _performInitialize(envFile: envFile);
       _initialized = true;
@@ -61,20 +104,25 @@ class SupabaseService {
       _initialized = false;
       _initializationError = error;
       _initializationStackTrace = stackTrace;
-      _initFuture = null;
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: error,
-          stack: stackTrace,
-          library: 'supabase_service',
-          context: ErrorDescription('initializing Supabase'),
-        ),
+      final wrappedError = SupabaseInitException(
+        'Failed to initialize Supabase',
+        originalError: error,
       );
-      rethrow;
+      final details = FlutterErrorDetails(
+        exception: wrappedError,
+        stack: stackTrace,
+        library: 'supabase_service',
+        context: ErrorDescription('initializing Supabase'),
+      );
+      FlutterError.reportError(details);
+      throw wrappedError;
     }
   }
 
   static Future<void> _performInitialize({required String envFile}) async {
+    // Load .env for local development as a fallback only. For production,
+    // prefer passing credentials via --dart-define. _resolveCredentials()
+    // will read from compile-time defines first and fall back to dotenv.
     await _loadEnvironment(envFile);
     final credentials = _resolveCredentials(envFile);
     await _initializeSupabase(credentials);
@@ -82,11 +130,11 @@ class SupabaseService {
 
   /// Check if user is authenticated
   static bool get isAuthenticated =>
-      _initialized && Supabase.instance.client.auth.currentUser != null;
+      _initialized && client.auth.currentUser != null;
 
   /// Get current user
   static User? get currentUser =>
-      _initialized ? Supabase.instance.client.auth.currentUser : null;
+      _initialized ? client.auth.currentUser : null;
 
   /// Initialize Supabase from environment variables
   static Future<void> initializeFromEnv({
@@ -129,6 +177,12 @@ class SupabaseService {
   }
 
   /// Upsert cycle data for the current user
+  ///
+  /// Timezone handling for [lastPeriod]: this method interprets the provided
+  /// DateTime as a calendar date in the user's local timezone and normalizes
+  /// it to a UTC date-only value (YYYY-MM-DD). The time-of-day and timezone
+  /// offset of the input are ignored to avoid accidental date shifts when
+  /// converting between local and UTC.
   static Future<Map<String, dynamic>?> upsertCycleData({
     required int cycleLength,
     required int periodDuration,
@@ -146,6 +200,13 @@ class SupabaseService {
         'must be positive',
       );
     }
+    if (periodDuration > cycleLength) {
+      throw ArgumentError.value(
+        periodDuration,
+        'periodDuration',
+        'cannot exceed cycle length',
+      );
+    }
     final ageConfig = _validationConfig;
     if (age < ageConfig.minAge || age > ageConfig.maxAge) {
       throw ArgumentError.value(
@@ -154,9 +215,21 @@ class SupabaseService {
         'must be between ${ageConfig.minAge} and ${ageConfig.maxAge}',
       );
     }
-    final normalizedLastPeriod = lastPeriod.toUtc();
-    final nowUtc = DateTime.now().toUtc();
-    if (normalizedLastPeriod.isAfter(nowUtc)) {
+    // Normalize to date-only, preserving the user's local calendar date.
+    final lpLocal = lastPeriod.toLocal();
+    final lastPeriodDate = DateTime.utc(
+      lpLocal.year,
+      lpLocal.month,
+      lpLocal.day,
+    );
+    // Compare against today's local calendar date, normalized similarly.
+    final nowLocal = DateTime.now();
+    final nowDate = DateTime.utc(
+      nowLocal.year,
+      nowLocal.month,
+      nowLocal.day,
+    );
+    if (lastPeriodDate.isAfter(nowDate)) {
       throw ArgumentError.value(
         lastPeriod,
         'lastPeriod',
@@ -167,7 +240,9 @@ class SupabaseService {
       'user_id': user.id,
       'cycle_length': cycleLength,
       'period_duration': periodDuration,
-      'last_period': _formatIsoDate(normalizedLastPeriod),
+      // Persist as an ISO date (YYYY-MM-DD) based on the normalized
+      // date-only value to avoid timezone-induced shifts.
+      'last_period': _formatIsoDate(lastPeriodDate),
       'age': age,
     };
     final row = await client
@@ -192,21 +267,36 @@ class SupabaseService {
   static Future<void> _loadEnvironment(String envFile) async {
     try {
       await dotenv.load(fileName: envFile);
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(
-        StateError(
-          'Failed to load Supabase environment from "$envFile": $error',
-        ),
-        stackTrace,
+    } catch (error, stackTrace) {
+      log.e(
+        'Failed to load Supabase environment',
+        tag: 'supabase_service',
+        error: error,
+        stack: stackTrace,
       );
+      // In tests, don't crash app initialization; proceed with offline UI.
+      final isTest = InitModeBridge.resolve() == InitMode.test;
+      if (!isTest) {
+        throw StateError(
+          'Failed to load Supabase environment from "$envFile": $error',
+        );
+      }
     }
   }
 
   static _SupabaseCredentials _resolveCredentials(String envFile) {
-    final url = dotenv.maybeGet('SUPABASE_URL') ?? dotenv.maybeGet('SUPA_URL');
-    final anon =
-        dotenv.maybeGet('SUPABASE_ANON_KEY') ??
+    // 1) Prefer compile-time --dart-define values (not stored in assets)
+    const defineUrl = String.fromEnvironment('SUPABASE_URL');
+    const defineAnon = String.fromEnvironment('SUPABASE_ANON_KEY');
+
+    // 2) Fallback to dotenv (local dev only) with legacy key support
+    final envUrl =
+        dotenv.maybeGet('SUPABASE_URL') ?? dotenv.maybeGet('SUPA_URL');
+    final envAnon = dotenv.maybeGet('SUPABASE_ANON_KEY') ??
         dotenv.maybeGet('SUPA_ANON_KEY');
+
+    final url = (defineUrl.isNotEmpty ? defineUrl : envUrl);
+    final anon = (defineAnon.isNotEmpty ? defineAnon : envAnon);
 
     final missing = <String>[];
     if (url == null || url.isEmpty) {
@@ -255,11 +345,7 @@ class SupabaseService {
   }
 
   static String _formatIsoDate(DateTime date) {
-    final utc = date.toUtc();
-    final year = utc.year.toString().padLeft(4, '0');
-    final month = utc.month.toString().padLeft(2, '0');
-    final day = utc.day.toString().padLeft(2, '0');
-    return '$year-$month-$day';
+    return date.toUtc().toIso8601String().split('T').first;
   }
 }
 
@@ -272,10 +358,23 @@ class _SupabaseCredentials {
 
 @immutable
 class SupabaseValidationConfig {
-  const SupabaseValidationConfig({this.minAge = 10, this.maxAge = 100})
-    : assert(minAge > 0, 'minAge must be positive.'),
-      assert(maxAge >= minAge, 'maxAge must be >= minAge.');
+  const SupabaseValidationConfig({this.minAge = 13, this.maxAge = 100})
+      : assert(minAge >= 13, 'minAge must be >= 13.'),
+        assert(maxAge <= 150, 'maxAge must be <= 150 (sanity check).'),
+        assert(maxAge >= minAge, 'maxAge must be >= minAge.');
 
   final int minAge;
   final int maxAge;
+}
+
+/// Minimal async lock to serialize critical sections without external deps.
+class _AsyncLock {
+  Future<void> _tail = Future<void>.value();
+
+  Future<T> synchronized<T>(FutureOr<T> Function() action) {
+    final next = _tail.then((_) => Future<T>.sync(action));
+    // Ensure subsequent callers chain after this action completes (success or error).
+    _tail = next.then((_) {}, onError: (_) {});
+    return next;
+  }
 }

@@ -1,124 +1,528 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
-const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+// Salt used to pseudonymize consent/user identifiers in metrics logs.
+// If not provided, we fall back to an unsalted SHA-256 hash to avoid logging PII
+// while keeping metrics functional in lower environments.
+const CONSENT_METRIC_SALT = Deno.env.get("CONSENT_METRIC_SALT");
+// Pepper for UA/IP hashing (HMAC-SHA256). Defaults to CONSENT_METRIC_SALT so
+// that environments with a single secret keep a consistent pseudonymization
+// story while still avoiding raw IP/UA in logs.
+const CONSENT_HASH_PEPPER = Deno.env.get("CONSENT_HASH_PEPPER") ??
+  CONSENT_METRIC_SALT ??
+  "";
+const CONSENT_HASH_VERSION = CONSENT_HASH_PEPPER ? "hmac_v1" : "sha256_v0";
+// Observability & protection controls (overridable via env, safe defaults)
+const RATE_LIMIT_WINDOW_SEC = parseInt(
+  Deno.env.get("CONSENT_RATE_LIMIT_WINDOW_SEC") ?? "60",
+);
+if (isNaN(RATE_LIMIT_WINDOW_SEC) || RATE_LIMIT_WINDOW_SEC <= 0 || RATE_LIMIT_WINDOW_SEC > 3600) {
+  throw new Error("CONSENT_RATE_LIMIT_WINDOW_SEC must be between 1 and 3600");
+}
+const RATE_LIMIT_MAX_REQUESTS = parseInt(
+  Deno.env.get("CONSENT_RATE_LIMIT_MAX_REQUESTS") ?? "20",
+);
+if (isNaN(RATE_LIMIT_MAX_REQUESTS) || RATE_LIMIT_MAX_REQUESTS <= 0 || RATE_LIMIT_MAX_REQUESTS > 1000) {
+  throw new Error("CONSENT_RATE_LIMIT_MAX_REQUESTS must be between 1 and 1000");
+}
+// Optional webhook to raise alerts on notable events (errors/spikes). This should
+// point to your alerting system (e.g. Slack incoming webhook, Log Ingest, etc.).
+const ALERT_WEBHOOK_URL = Deno.env.get("CONSENT_ALERT_WEBHOOK_URL");
+// Sample alerts to avoid flooding (0.0–1.0). Default: 0.1 (10%).
+const rawAlertSampleRate = Deno.env.get("CONSENT_ALERT_SAMPLE_RATE");
+const parsedAlertSampleRate = Number(rawAlertSampleRate ?? "0.1");
+if (!Number.isFinite(parsedAlertSampleRate)) {
+  throw new Error("CONSENT_ALERT_SAMPLE_RATE must be a finite number between 0 and 1");
+}
+const ALERT_SAMPLE_RATE = Math.max(0, Math.min(1, parsedAlertSampleRate));
 
-interface ConsentPayload {
-  version: string
-  scopes: string[]
-  user_id?: string
+if (!SUPABASE_URL) {
+  throw new Error("Missing required environment variable: SUPABASE_URL must be set");
+}
+if (!SUPABASE_ANON_KEY) {
+  throw new Error("Missing required environment variable: SUPABASE_ANON_KEY must be set");
+}
+// Canonical scopes list: keep in sync with client/shared config (see lib/features/consent/model/consent_types.dart).
+// TODO: Move to env (CONSENT_VALID_SCOPES), shared config module, or DB table to avoid drift.
+// Diese Liste muss zu `config/consent_scopes.json` passen; Deno-Tests prüfen die IDs.
+export const VALID_SCOPES = [
+  "terms",
+  "health_processing",
+  "ai_journal",
+  "analytics",
+  "marketing",
+  "model_training",
+] as const;
+
+interface ConsentRequestPayload {
+  policy_version?: unknown;
+  version?: unknown;
+  scopes?: unknown;
+  source?: unknown;
+  appVersion?: unknown;
 }
 
-serve(async (req) => {
-  if (req.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ error: 'Method not allowed' }),
-      { 
-        status: 405,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+function getRequestId(req: Request): string {
+  const headers = req.headers;
+  const candidates = [
+    "x-request-id",
+    "x-cf-ray",
+    "x-amzn-trace-id",
+    "x-correlation-id",
+  ];
+  for (const h of candidates) {
+    const v = headers.get(h);
+    if (v && v.length > 0) return v;
   }
-
   try {
-    const body: ConsentPayload = await req.json()
-    
-    if (!body.version || typeof body.version !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'Invalid version: must be string' }),
-        { 
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    if (!body.scopes || !Array.isArray(body.scopes) || body.scopes.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid scopes: must be non-empty array' }),
-        { 
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    const authorization = req.headers.get('Authorization')
-    if (!authorization) {
-      return new Response(
-        JSON.stringify({ error: 'Missing Authorization header' }),
-        { 
-          status: 401,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: {
-        headers: {
-          Authorization: authorization
-        }
-      }
-    })
-
-    const { data: authData, error: authError } = await supabase.auth.getUser()
-    if (authError || !authData?.user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        {
-          status: 401,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    if (body.user_id && body.user_id !== authData.user.id) {
-      return new Response(
-        JSON.stringify({ error: 'Forbidden: user mismatch' }),
-        {
-          status: 403,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    const { error } = await supabase
-      .from('consents')
-      .insert({
-        user_id: authData.user.id,
-        version: body.version,
-        scopes: body.scopes
-      })
-
-    if (error) {
-      console.error('Database error:', error)
-      const status = (error as { code?: string }).code ? 403 : 400
-      return new Response(
-        JSON.stringify({ error: error.message }),
-        { 
-          status,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    return new Response(
-      JSON.stringify({ ok: true }),
-      { 
-        status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
-
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ error: 'Invalid request body' }),
-      { 
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    )
+    return crypto.randomUUID();
+  } catch {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   }
-})
+}
+
+type MetricOutcome =
+  | "success"
+  | "rate_limited"
+  | "invalid"
+  | "unauthorized"
+  | "error"
+  | "method_not_allowed";
+
+async function hmacSha256Hex(key: string, message: string): Promise<string> {
+  const enc = new TextEncoder();
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(key),
+    { name: "HMAC", hash: { name: "SHA-256" } },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", cryptoKey, enc.encode(message));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Hex(message: string): Promise<string> {
+  const enc = new TextEncoder();
+  const digest = await crypto.subtle.digest("SHA-256", enc.encode(message));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function getClientIp(req: Request): string | undefined {
+  const headers = req.headers;
+  const xff = headers.get("x-forwarded-for");
+  if (xff) {
+    const first = xff.split(",")[0]?.trim();
+    if (first) return first;
+  }
+  const realIp = headers.get("x-real-ip");
+  if (realIp && realIp.trim().length > 0) {
+    return realIp.trim();
+  }
+  const cf = headers.get("cf-connecting-ip");
+  if (cf && cf.trim().length > 0) {
+    return cf.trim();
+  }
+  return undefined;
+}
+
+// Normalize IP to a coarser CIDR-style representation before hashing.
+// - IPv4: truncate to /24 (zero out last octet)
+// - IPv6: approximate /64 by keeping the first 4 hextets
+function normalizeIpForHash(ip: string | undefined | null): string | undefined {
+  if (!ip) return undefined;
+  const trimmed = ip.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.includes(":")) {
+    const parts = trimmed.split(":");
+    const prefix = parts.slice(0, 4).join(":");
+    return `${prefix}::`;
+  }
+  const parts = trimmed.split(".");
+  if (parts.length === 4) {
+    return `${parts[0]}.${parts[1]}.${parts[2]}.0`;
+  }
+  return trimmed;
+}
+
+function normalizeUserAgent(ua: string | undefined | null): string | undefined {
+  if (!ua) return undefined;
+  const trimmed = ua.trim();
+  if (!trimmed) return undefined;
+  return trimmed.replace(/\s+/g, " ");
+}
+
+async function computePseudonymousHash(
+  input: string | undefined | null,
+): Promise<string | null> {
+  if (!input) return null;
+  if (CONSENT_HASH_PEPPER) {
+    return await hmacSha256Hex(CONSENT_HASH_PEPPER, input);
+  }
+  return await sha256Hex(input);
+}
+
+function logMetric(
+  requestId: string,
+  outcome: MetricOutcome,
+  extra: Record<string, unknown> = {},
+) {
+  const entry = {
+    ts: new Date().toISOString(),
+    request_id: requestId,
+    event: "consent_log",
+    outcome,
+    ...extra,
+  };
+  // Basic severity routing for log drains / alerts.
+  const severity =
+    outcome === "success" ? "info" :
+    outcome === "error" ? "error" :
+    "warning";
+  const line = JSON.stringify({ severity, ...entry });
+  if (severity === "error") console.error(line);
+  else if (severity === "warning") console.warn(line);
+  else console.log(line);
+}
+
+
+
+
+
+async function maybeAlert(
+  requestId: string,
+  outcome: MetricOutcome,
+  payload: Record<string, unknown>,
+) {
+  if (!ALERT_WEBHOOK_URL) return;
+  // Only alert for notable non-success outcomes; sample to limit volume.
+  if (outcome === "success") return;
+  if (Math.random() > ALERT_SAMPLE_RATE) return;
+  const body = {
+    ts: new Date().toISOString(),
+    request_id: requestId,
+    endpoint: "log_consent",
+    outcome,
+    ...payload,
+  };
+  try {
+    await fetch(ALERT_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(5000), // 5 second timeout
+    });
+  } catch (e) {
+    // Swallow to avoid affecting the main path; still log for forensics.
+    console.warn(
+      JSON.stringify({
+        severity: "warning",
+        ts: new Date().toISOString(),
+        event: "consent_alert_failed",
+        request_id: requestId,
+        reason: "webhook_failed",
+        message: (e as Error)?.message ?? String(e),
+      }),
+    );
+  }
+}
+
+function validateScopes(raw: unknown[]): { valid: string[]; invalid: unknown[] } {
+  const invalid: unknown[] = [];
+  const valid: string[] = [];
+  for (const scope of raw) {
+    if (typeof scope !== "string") {
+      invalid.push(scope);
+      continue;
+    }
+    if (!(VALID_SCOPES as readonly string[]).includes(scope)) {
+      invalid.push(scope);
+      continue;
+    }
+    valid.push(scope);
+  }
+  return { valid, invalid };
+}
+
+if (import.meta.main) {
+  serve(async (req) => {
+  const started = Date.now();
+  const requestId = getRequestId(req);
+  const clientIp = getClientIp(req);
+  const ipForHash = normalizeIpForHash(clientIp);
+  const uaForHash = normalizeUserAgent(req.headers.get("user-agent"));
+  const [ipHash, uaHash] = await Promise.all([
+    computePseudonymousHash(ipForHash),
+    computePseudonymousHash(uaForHash),
+  ]);
+  if (req.method !== "POST") {
+    logMetric(requestId, "method_not_allowed", {
+      method: req.method,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  const authorization = req.headers.get("Authorization");
+  if (!authorization) {
+    logMetric(requestId, "unauthorized", {
+      reason: "missing_authorization",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "Missing Authorization header" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  let body: ConsentRequestPayload = {};
+  try {
+    body = await req.json();
+  } catch (error) {
+    console.error("Invalid request body parse error", error instanceof Error ? error.message : "parse_failed");
+    logMetric(requestId, "invalid", {
+      reason: "invalid_json",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "Invalid request body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+  const policyVersion = typeof body.policy_version === "string"
+    ? body.policy_version
+    : typeof body.version === "string"
+    ? body.version
+    : undefined;
+  if (!policyVersion) {
+    logMetric(requestId, "invalid", {
+      reason: "missing_policy_version",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "policy_version is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  const rawScopes = body.scopes;
+  if (rawScopes == null) {
+    logMetric(requestId, "invalid", {
+      reason: "missing_scopes",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  let normalizedScopes: unknown[];
+  if (Array.isArray(rawScopes)) {
+    normalizedScopes = rawScopes;
+  } else if (
+    typeof rawScopes === "object" &&
+    rawScopes !== null &&
+    !Array.isArray(rawScopes)
+  ) {
+    const scopeMap = rawScopes as Record<string, unknown>;
+    normalizedScopes = Object.keys(scopeMap).filter((key) =>
+      Boolean(scopeMap[key])
+    );
+  } else {
+    logMetric(requestId, "invalid", {
+      reason: "invalid_scopes_type",
+      providedType: typeof rawScopes,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(
+      JSON.stringify({ error: "scopes must be provided as an array or object of enabled flags" }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Request-Id": requestId,
+        },
+      },
+    );
+  }
+
+  if (normalizedScopes.length === 0) {
+    logMetric(requestId, "invalid", {
+      reason: "missing_scopes",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  const { valid: validatedScopes, invalid: invalidScopes } = validateScopes(
+    normalizedScopes,
+  );
+
+  if (invalidScopes.length > 0) {
+    logMetric(requestId, "invalid", {
+      reason: "invalid_scopes",
+      invalidScopes,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "Invalid scopes provided", invalidScopes }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: {
+      headers: {
+        Authorization: authorization,
+      },
+    },
+  });
+
+  const { data: userResult, error: authError } = await supabase.auth.getUser();
+  if (authError || !userResult?.user) {
+    logMetric(requestId, "unauthorized", {
+      reason: "auth_failed",
+      code: authError?.code ?? "unknown",
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  const payload = {
+    user_id: userResult.user.id,
+    version: policyVersion,
+    scopes: validatedScopes,
+  } as const;
+
+  // Compute a deterministic pseudonym for metrics: prefer HMAC(user_id, salt)
+  // and fall back to plain SHA-256 when salt is not provided (lower envs).
+  const consentIdHash = CONSENT_METRIC_SALT
+    ? await hmacSha256Hex(CONSENT_METRIC_SALT, payload.user_id)
+    : await sha256Hex(payload.user_id);
+
+  // Atomic rate-limit check + insert wrapped in a per-user advisory lock via RPC
+  const t0Rpc = Date.now();
+  const { data: allowed, error: rpcError } = await supabase.rpc(
+    "log_consent_if_allowed",
+    {
+      p_user_id: payload.user_id,
+      p_version: payload.version,
+      p_scopes: payload.scopes,
+      p_window_sec: RATE_LIMIT_WINDOW_SEC,
+      p_max_requests: RATE_LIMIT_MAX_REQUESTS,
+    },
+  );
+  const rpcDuration = Date.now() - t0Rpc;
+
+  if (rpcError) {
+    console.error("consent_rpc_failed", rpcError?.code ?? "unknown");
+    const elapsed = Date.now() - started;
+    logMetric(requestId, "error", {
+      where: "consent_rpc",
+      code: rpcError?.code ?? "unknown",
+      consent_id_hash: consentIdHash,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+      duration_ms: elapsed,
+      rpc_latency_ms: rpcDuration,
+    });
+    // Fire-and-forget: do not block response path on alert delivery
+    maybeAlert(requestId, "error", { where: "consent_rpc" });
+    return new Response(JSON.stringify({ error: "Failed to log consent" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+    });
+  }
+
+  if (allowed === false) {
+    const elapsed = Date.now() - started;
+    logMetric(requestId, "rate_limited", {
+      consent_id_hash: consentIdHash,
+      window_sec: RATE_LIMIT_WINDOW_SEC,
+      max: RATE_LIMIT_MAX_REQUESTS,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+      duration_ms: elapsed,
+      rpc_latency_ms: rpcDuration,
+    });
+    // Fire-and-forget: do not block response path on alert delivery
+    maybeAlert(requestId, "rate_limited", {
+      consent_id_hash: consentIdHash,
+      window_sec: RATE_LIMIT_WINDOW_SEC,
+    });
+    return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
+      status: 429,
+      headers: {
+        "Content-Type": "application/json",
+        "Retry-After": `${RATE_LIMIT_WINDOW_SEC}`,
+        "X-RateLimit-Limit": `${RATE_LIMIT_MAX_REQUESTS}`,
+        "X-RateLimit-Remaining": "0",
+        "X-Request-Id": requestId,
+      },
+    });
+  }
+
+  const elapsed = Date.now() - started;
+  logMetric(requestId, "success", {
+    consent_id_hash: consentIdHash,
+    scopes_count: payload.scopes.length,
+    duration_ms: elapsed,
+    rpc_latency_ms: rpcDuration,
+    version: payload.version,
+    source: typeof body.source === "string" ? body.source : null,
+    appVersion: typeof body.appVersion === "string" ? body.appVersion : null,
+    ip_hash: ipHash,
+    ua_hash: uaHash,
+    hash_version: CONSENT_HASH_VERSION,
+  });
+
+  // Audit (info-level): minimal, structured log that confirms consent was recorded.
+  // Do not log full scopes or other sensitive data.
+  try {
+    console.info("consent_recorded", {
+      consent_id_hash: consentIdHash,
+      version: payload.version,
+      scope_count: payload.scopes.length,
+    });
+  } catch (_) {
+    // Ignore logging failures to avoid impacting the response path
+  }
+
+  return new Response(JSON.stringify({ ok: true, request_id: requestId }), {
+    status: 201,
+    headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+  });
+  });
+}

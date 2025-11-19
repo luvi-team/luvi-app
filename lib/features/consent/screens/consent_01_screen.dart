@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../core/design_tokens/sizes.dart';
 import 'consent_02_screen.dart';
 import 'consent_welcome_03_screen.dart';
@@ -14,6 +15,7 @@ class Consent01Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paddingTop = MediaQuery.of(context).padding.top;
+    final l10n = AppLocalizations.of(context);
 
     // Helper to convert Figma absolute Y (relative to frame 0..926) to Flutter
     // using the device safe area top as reference. Figma safe area top is 47.
@@ -25,9 +27,12 @@ class Consent01Screen extends StatelessWidget {
           // Back button (44pt hitbox, 40px visual circle)
           Positioned(
             left: ConsentSpacing.pageHorizontal,
-            top: y(47 + ConsentSpacing.topBarSafeAreaOffset),
+            top: paddingTop + ConsentSpacing.topBarSafeAreaOffset,
             child: BackButtonCircle(
               onPressed: () => context.go(ConsentWelcome03Screen.routeName),
+              semanticLabel:
+                  AppLocalizations.of(context)?.authBackSemantic ??
+                      MaterialLocalizations.of(context).backButtonTooltip,
             ),
           ),
 
@@ -70,7 +75,7 @@ class Consent01Screen extends StatelessWidget {
             height: Sizes.buttonHeight,
             child: ElevatedButton(
               onPressed: () => context.push(Consent02Screen.routeName),
-              child: const Text('Weiter'),
+              child: Text(l10n?.commonContinue ?? 'Weiter'),
             ),
           ),
         ],

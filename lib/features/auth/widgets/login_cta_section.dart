@@ -91,9 +91,11 @@ class _LoginButtonChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isLoading) {
-      return Text(
-        AuthStrings.loginCtaButton,
+      return KeyedSubtree(
+        // keep key stable for AnimatedSwitcher
         key: const ValueKey('login_cta_label'),
+        // non-const child due to localized string
+        child: Text(AuthStrings.loginCta),
       );
     }
 

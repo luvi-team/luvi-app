@@ -11,6 +11,7 @@ import 'package:luvi_app/features/auth/widgets/verify_footer.dart';
 import 'package:luvi_app/features/auth/widgets/verify_header.dart';
 import 'package:luvi_app/features/auth/widgets/verify_otp_section.dart';
 import 'package:luvi_app/features/auth/widgets/verify_text_styles.dart';
+import 'package:luvi_app/features/auth/screens/login_screen.dart';
 
 enum VerificationScreenVariant { resetPassword, emailConfirmation }
 
@@ -106,7 +107,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     if (router.canPop()) {
       router.pop();
     } else {
-      context.goNamed('login');
+      context.go(LoginScreen.routeName);
     }
   }
 }
@@ -124,7 +125,7 @@ final class _VariantCopy {
   String get resend => AuthStrings.verifyResend;
 
   factory _VariantCopy.fromVariant(VerificationScreenVariant variant) {
-    // Achtung: Rückgaben absichtlich NICHT const, da AuthStrings runtime-lokalisiert sind.
+    // Note: Returns intentionally NOT const, since AuthStrings are runtime-localized.
     switch (variant) {
       case VerificationScreenVariant.emailConfirmation:
         return _VariantCopy(

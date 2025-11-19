@@ -3,6 +3,7 @@ class Sizes {
   static const double radiusM = 12.0; // default medium radius
   static const double radiusL = 20.0; // cards / collage tiles
   static const double buttonHeight = 50.0; // Figma: Button H=50
+  static const double touchTargetMin = 44.0; // iOS HIG / WCAG minimum tap target
 
   /// Icon size 24 px (Figma: Goal card icon)
   static const double iconM = 24.0;

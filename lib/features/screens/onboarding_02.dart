@@ -29,7 +29,7 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   late DateTime _date;
   bool _hasInteracted = false;
 
-  String get _formattedDate {
+  String _formattedDate(BuildContext context) {
     final localeName = Localizations.localeOf(context).toLanguageTag();
     return DateFormatters.localizedDayMonthYear(
       _date,
@@ -122,10 +122,11 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     final textTheme = theme.textTheme;
 
     final l10n = AppLocalizations.of(context)!;
+    final formatted = _formattedDate(context);
     return Semantics(
-      label: l10n.selectedDateLabel(_formattedDate),
+      label: l10n.selectedDateLabel(formatted),
       child: Text(
-        _formattedDate,
+        formatted,
         style: textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface),
         textAlign: TextAlign.center,
       ),

@@ -4,10 +4,15 @@ A new Flutter project.
 
 ## App-Kontext (SSOT)
 
-Der aktuelle, bereinigte App‑Kontext ist hier abgelegt:
-- context/refs/app_context_v3.2.md:1
+Primäre Quelle im Repo:
+Hinweis: ":1" kennzeichnet die Startzeile (Zeile 1) des Dokuments.
+- docs/product/app-context.md:1
+
+Roadmap (SSOT):
+- docs/product/roadmap.md:1
 
 Archiv (älter):
+- context/refs/app_context_v3.2.md:1
 - context/refs/archive/app_context_napkin_v3.1.txt:1
 
 ## Getting Started
@@ -25,7 +30,27 @@ samples, guidance on mobile development, and a full API reference.
 
 Note: Dieses Projekt verwendet `flutter_dotenv`; lokale Entwicklung nutzt `.env.development` (siehe `.env.example` als Vorlage).
 
-## SSOT/Quickstart
+## Flutter Tooling (Codex CLI)
+
+- Standardisierte Aufrufe über Wrapper: `scripts/flutter_codex.sh`
+  - Analyze: `scripts/flutter_codex.sh analyze`
+  - Tests: `scripts/flutter_codex.sh test -j 1` (Loopback-Socket kann eine Sandbox-Genehmigung erfordern)
+  - Version: `scripts/flutter_codex.sh --version`
+- Optional für Builds/Signing/Performance:
+  - WARNUNG: `CODEX_USE_REAL_HOME=1` ist ausschließlich für lokale Entwicklung gedacht und darf NIEMALS in CI verwendet werden.
+    - Risiken: Sicherheitsprobleme (Zugriff/Leak auf echte Credentials & Schlüssel in `~/.gradle`, `~/.cocoapods`, `~/.pub-cache`) und fehlende Reproduzierbarkeit.
+    - Lokales Beispiel (sicherer): `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh build` nur auf deinem Dev‑Rechner; im Zweifel vorher temporäre Test-Accounts/Creds nutzen.
+    - Empfehlung (Guard): In `scripts/flutter_codex.sh` einen Runtime‑Check ergänzen, der bei gesetztem `CODEX_USE_REAL_HOME` in CI abbricht oder laut warnt (erkenne gängige CI‑Variablen wie `CI`, `GITHUB_ACTIONS`, `BUILD_NUMBER`, `VERCEL`, `CODESPACES`).
+  - `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh <cmd>` nutzt das echte `$HOME`/Standard‑Caches (z. B. `~/.gradle`, `~/.cocoapods`).
+- Make‑Shortcuts:
+  - `make analyze`
+  - `make test`
+  - `make flutter-version`
+  - `make format` (Check only)
+  - `make format-apply`
+  - `make fix`
+
+## Vercel Backend (Hybrid)
 
 - App‑Kontext: `docs/product/app-context.md:1`
 - Tech‑Stack: `docs/engineering/tech-stack.md:1`
@@ -65,3 +90,9 @@ Widget tests verify RLS enforcement:
 ```bash
 flutter test test/widgets/daily_plan_rls_test.dart
 ```
+
+## Init Mode (Tests vs Prod)
+
+- The app uses an InitMode to control initialization behavior (prod/test). The default is `prod` via `initModeProvider`.
+- Services access the mode via a small bridge bound in `main.dart`. In widget tests, override with `ProviderScope(overrides: [initModeProvider.overrideWithValue(InitMode.test)])` to run offline without retries/overlays.
+- Tests that require a logically initialized client should inject fakes via Provider overrides instead of hitting real network.

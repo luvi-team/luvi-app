@@ -8,6 +8,7 @@ import 'package:luvi_app/features/screens/onboarding_05.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/features/consent/widgets/localized_builder.dart';
 
 /// Onboarding06: Cycle length single-select screen
 /// Figma: 06_Onboarding (Zyklusdauer)
@@ -22,16 +23,13 @@ class Onboarding06Screen extends StatefulWidget {
 }
 
 class _Onboarding06ScreenState extends State<Onboarding06Screen> {
-  static List<String> _cycleLengthOptions(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return [
-      l10n?.cycleLengthShort ?? 'Kurz (alle 21-23 Tage)',
-      l10n?.cycleLengthLonger ?? 'Etwas länger (alle 24-26 Tage)',
-      l10n?.cycleLengthStandard ?? 'Standard (alle 27-30 Tage)',
-      l10n?.cycleLengthLong ?? 'Länger (alle 31-35 Tage)',
-      l10n?.cycleLengthVeryLong ?? 'Sehr lang (36+ Tage)',
-    ];
-  }
+  static List<String> _cycleLengthOptions(AppLocalizations l10n) => [
+        l10n.cycleLengthShort,
+        l10n.cycleLengthLonger,
+        l10n.cycleLengthStandard,
+        l10n.cycleLengthLong,
+        l10n.cycleLengthVeryLong,
+      ];
 
   int? _selected;
 
@@ -55,27 +53,28 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: LocalizedBuilder(
+          builder: (ctx, l10n) => SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: spacing.topPadding),
                 OnboardingHeader(
-                  title: AppLocalizations.of(context)?.onboarding06Question ??
-                      'Wie lange dauert dein Zyklus normalerweise?',
+                  title: l10n.onboarding06Question,
                   step: 6,
                   totalSteps: kOnboardingTotalSteps,
                   onBack: _handleBack,
                 ),
                 SizedBox(height: spacing.headerToFirstOption06),
-              _buildOptionList(spacing),
-              SizedBox(height: spacing.lastOptionToCallout06),
-              _buildCallout(textTheme, colorScheme),
-              SizedBox(height: spacing.calloutToCta06),
-              _buildCta(),
-              SizedBox(height: spacing.ctaToHome06),
-            ],
+                _buildOptionList(spacing, l10n),
+                SizedBox(height: spacing.lastOptionToCallout06),
+                _buildCallout(textTheme, colorScheme, l10n),
+                SizedBox(height: spacing.calloutToCta06),
+                _buildCta(l10n),
+                SizedBox(height: spacing.ctaToHome06),
+              ],
+            ),
           ),
         ),
       ),
@@ -91,11 +90,10 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     }
   }
 
-  Widget _buildOptionList(OnboardingSpacing spacing) {
-    final options = _cycleLengthOptions(context);
-    final l10n = AppLocalizations.of(context);
+  Widget _buildOptionList(OnboardingSpacing spacing, AppLocalizations l10n) {
+    final options = _cycleLengthOptions(l10n);
     return Semantics(
-      label: l10n?.onboarding06OptionsSemantic ?? 'Zykluslänge auswählen',
+      label: l10n.onboarding06OptionsSemantic,
       child: Column(
         children: List.generate(
           options.length,
@@ -115,11 +113,10 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     );
   }
 
-  Widget _buildCallout(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context);
+  Widget _buildCallout(
+      TextTheme textTheme, ColorScheme colorScheme, AppLocalizations l10n) {
     return Text(
-      l10n?.onboarding06Callout ??
-          'Jeder Zyklus ist einzigartig - wie du auch!',
+      l10n.onboarding06Callout,
       style: textTheme.bodyMedium?.copyWith(
         color: colorScheme.onSurface,
         fontSize: TypographyTokens.size16,
@@ -129,9 +126,8 @@ class _Onboarding06ScreenState extends State<Onboarding06Screen> {
     );
   }
 
-  Widget _buildCta() {
-    final l10n = AppLocalizations.of(context);
-    final ctaLabel = l10n?.commonContinue ?? 'Weiter';
+  Widget _buildCta(AppLocalizations l10n) {
+    final ctaLabel = l10n.commonContinue;
     return Semantics(
       label: ctaLabel,
       button: true,

@@ -221,6 +221,42 @@ abstract class AppLocalizations {
   /// **'. A rough estimate is enough to get started.'**
   String get onboarding04CalloutSuffix;
 
+  /// Error banner shown when Supabase credentials are invalid during initialization.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration error: Supabase credentials invalid. App is running offline.'**
+  String get initBannerConfigError;
+
+  /// Status text shown while the app retries Supabase initialization.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to server… (attempt {attempts}/{maxAttempts})'**
+  String initBannerConnecting(int attempts, int maxAttempts);
+
+  /// CTA label for retrying Supabase initialization.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get initBannerRetry;
+
+  /// Generic error shown when a legal or markdown document cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load document.'**
+  String get documentLoadError;
+
+  /// Semantics label announced while a legal document is loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading document'**
+  String get legalViewerLoadingLabel;
+
+  /// Banner text shown when remote legal document could not be fetched and app displays bundled offline copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote unavailable — showing offline copy.'**
+  String get legalViewerFallbackBanner;
+
   /// Label for primary continue CTA buttons.
   ///
   /// In en, this message translates to:
@@ -749,16 +785,34 @@ abstract class AppLocalizations {
   /// **'You\'re ready to go!'**
   String get onboardingSuccessTitle;
 
+  /// Error shown when user state is unavailable while finalizing onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t complete onboarding. Please try again.'**
+  String get onboardingSuccessStateUnavailable;
+
+  /// Generic error SnackBar on onboarding success screen when an unexpected failure occurs.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get onboardingSuccessGenericError;
+
   /// Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings.
   ///
   /// In en, this message translates to:
   /// **'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.'**
   String get welcome01Subtitle;
 
+  /// Combined title prefix + accent with translatable order/spacing.
+  ///
+  /// In en, this message translates to:
+  /// **'{prefix} {accent}'**
+  String welcome01Title(String prefix, String accent);
+
   /// Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed.
   ///
   /// In en, this message translates to:
-  /// **'In '**
+  /// **'In'**
   String get welcome01TitlePrefix;
 
   /// Accented word for the consent welcome screen 1 title. Will be styled with the accent color.
@@ -856,6 +910,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Terms of Service'**
   String get consent02LinkTermsLabel;
+
+  /// Title shown in the in-app viewer when opening the privacy policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyTitle;
+
+  /// Title shown in the in-app viewer when opening the terms of service.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfServiceTitle;
 
   /// Suffix appended after the terms links sentence.
   ///
@@ -971,6 +1037,12 @@ abstract class AppLocalizations {
   /// **'Or continue with'**
   String get authLoginSocialDivider;
 
+  /// Button text for Google sign-in (social auth button).
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get authLoginSocialGoogle;
+
   /// Validation error shown when the email is malformed.
   ///
   /// In en, this message translates to:
@@ -982,6 +1054,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please double-check your password.'**
   String get authErrPasswordInvalid;
+
+  /// Validation error when the password is too short.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password is too short.'**
+  String get authErrPasswordTooShort;
+
+  /// Validation error when the password is missing required character types.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password must include letters, numbers, and special characters.'**
+  String get authErrPasswordMissingTypes;
+
+  /// Validation error when the password is common or weak.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password is too common or weak.'**
+  String get authErrPasswordCommonWeak;
+
+  /// Validation error shown when the email field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email.'**
+  String get authErrEmailEmpty;
+
+  /// Validation error shown when the password field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password.'**
+  String get authErrPasswordEmpty;
 
   /// Error displayed when the user's email has not been confirmed.
   ///
@@ -1000,6 +1102,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login is currently unavailable.'**
   String get authErrLoginUnavailable;
+
+  /// Error shown when the entered passwords differ.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get authPasswordMismatchError;
+
+  /// Error shown when the password update request fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t update your password.'**
+  String get authPasswordUpdateError;
+
+  /// Snackbar/content message advising the user to wait a number of seconds before trying again. Uses ICU plural formatting at runtime: '{seconds, plural, one {# second} other {# seconds}}'.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait {seconds, plural, one {# second} other {# seconds}} before retrying.'**
+  String authErrWaitBeforeRetry(int seconds);
 
   /// Hint text for the email input field.
   ///
@@ -1133,6 +1253,18 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get authSuccessCta;
 
+  /// Headline for the create-new-password screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new password 💜'**
+  String get authCreateNewTitle;
+
+  /// Subtitle for the create-new-password screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Make it strong.'**
+  String get authCreateNewSubtitle;
+
   /// Hint text for the new password input.
   ///
   /// In en, this message translates to:
@@ -1192,6 +1324,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resend'**
   String get authVerifyResend;
+
+  /// Snackbar text shown when consent was successfully recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent accepted'**
+  String get consentSnackbarAccepted;
+
+  /// Snackbar text shown when consent logging fails. No error details are exposed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t save your consent. Please try again.'**
+  String get consentSnackbarError;
+
+  /// Snackbar text shown when consent logging is rate limited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests right now. Please wait a moment and try again.'**
+  String get consentSnackbarRateLimited;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

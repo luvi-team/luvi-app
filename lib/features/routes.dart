@@ -29,7 +29,10 @@ import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart
 import 'package:luvi_app/features/screens/splash/splash_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_services/user_state_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/features/navigation/route_names.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
@@ -41,6 +44,27 @@ const String _consentPathPrefix = '$_consentRootPath/';
 
 class OnboardingRoutes {
   static const done = '/onboarding/done';
+}
+// Route helpers for readability and maintainability. These are pure functions
+// so they can be unit-tested easily by passing a location string.
+bool _isOnboardingRoute(String location) {
+  // Onboarding covers the core steps (o1–o8, success, done),
+  // but explicitly excludes the welcome intro screens under /onboarding/w.
+  final isOnboardingRoot =
+      location == _onboardingRootPath ||
+      location.startsWith('$_onboardingRootPath/');
+  if (!isOnboardingRoot) return false;
+  // Exclude welcome routes to avoid overlap with _isWelcomeRoute
+  return !location.startsWith(_welcomeRootPath);
+}
+
+bool _isWelcomeRoute(String location) {
+  return location.startsWith(_welcomeRootPath);
+}
+
+bool _isConsentRoute(String location) {
+  return location == _consentRootPath ||
+      location.startsWith(_consentPathPrefix);
 }
 
 final List<GoRoute> featureRoutes = [
@@ -72,7 +96,12 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: Consent02Screen.routeName,
     name: 'consent02',
-    builder: (context, state) => const Consent02Screen(),
+    builder: (context, state) {
+      // Obtain AppLinks via Riverpod to enable DI and testing.
+      final container = ProviderScope.containerOf(context, listen: false);
+      final appLinks = container.read(appLinksProvider);
+      return Consent02Screen(appLinks: appLinks);
+    },
   ),
   GoRoute(
     path: Onboarding01Screen.routeName,
@@ -117,15 +146,20 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: OnboardingSuccessScreen.routeName,
     name: 'onboarding_success',
-    builder: (ctx, st) {
+    redirect: (ctx, st) {
       final extra = st.extra;
-      if (extra is! FitnessLevel) {
-        throw ArgumentError(
-          'OnboardingSuccessScreen requires a FitnessLevel extra. '
-          'Received ${extra.runtimeType}.',
-        );
+      if (extra is FitnessLevel) {
+        return null; // ok
       }
-      return OnboardingSuccessScreen(fitnessLevel: extra);
+      return Onboarding01Screen.routeName;
+    },
+    builder: (ctx, st) {
+      final fitnessLevel = st.extra;
+      if (fitnessLevel is! FitnessLevel) {
+        // Should never happen due to redirect, but defensive programming
+        throw StateError('OnboardingSuccessScreen requires FitnessLevel');
+      }
+      return OnboardingSuccessScreen(fitnessLevel: fitnessLevel);
     },
   ),
   GoRoute(
@@ -141,7 +175,7 @@ final List<GoRoute> featureRoutes = [
   ),
   GoRoute(
     path: LoginScreen.routeName,
-    name: 'login',
+    name: RouteNames.login,
     builder: (context, state) => const LoginScreen(),
   ),
   GoRoute(
@@ -150,19 +184,21 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const ResetPasswordScreen(),
   ),
   GoRoute(
-    path: SuccessScreen.forgotEmailSentRouteName,
-    name: 'forgot_sent',
+    path: SuccessScreen.forgotEmailSentRoutePath,
+    name: SuccessScreen.forgotEmailSentRouteName,
     builder: (context, state) =>
         const SuccessScreen(variant: SuccessVariant.forgotEmailSent),
   ),
   GoRoute(
     path: CreateNewPasswordScreen.routeName,
     name: 'password_new',
-    builder: (context, state) => const CreateNewPasswordScreen(),
+    builder: (context, state) => const CreateNewPasswordScreen(
+      key: ValueKey('auth_create_new_screen'),
+    ),
   ),
   GoRoute(
-    path: SuccessScreen.passwordSuccessRouteName,
-    name: 'password_success',
+    path: SuccessScreen.passwordSavedRoutePath,
+    name: SuccessScreen.passwordSavedRouteName,
     builder: (context, state) => const SuccessScreen(),
   ),
   GoRoute(
@@ -216,7 +252,6 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
     'ALLOW_ONBOARDING_DEV',
     defaultValue: false,
   );
-  final allowOnboardingBypass = allowOnboardingDev;
   // Enable via --dart-define=ALLOW_ONBOARDING_DEV=true (false by default).
 
   final isInitialized = SupabaseService.isInitialized;
@@ -224,13 +259,9 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   final isAuthEntry = state.matchedLocation.startsWith(
     AuthEntryScreen.routeName,
   );
-  final isOnboarding =
-      state.matchedLocation == _onboardingRootPath ||
-      state.matchedLocation.startsWith('$_onboardingRootPath/');
-  final isWelcome = state.matchedLocation.startsWith(_welcomeRootPath);
-  final isConsent =
-      state.matchedLocation == _consentRootPath ||
-      state.matchedLocation.startsWith(_consentPathPrefix);
+  final isOnboarding = _isOnboardingRoute(state.matchedLocation);
+  final isWelcome = _isWelcomeRoute(state.matchedLocation);
+  final isConsent = _isConsentRoute(state.matchedLocation);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
   final session = isInitialized
@@ -242,7 +273,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   }
 
   // Dev-only bypass to allow opening onboarding without auth
-  if (allowOnboardingBypass && isOnboarding) {
+  if (allowOnboardingDev && !kReleaseMode && isOnboarding) {
     return null;
   }
 

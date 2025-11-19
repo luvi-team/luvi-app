@@ -10,6 +10,7 @@ import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/shared/analytics/analytics_recorder.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -30,10 +31,13 @@ class Onboarding08Screen extends ConsumerStatefulWidget {
 class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
   int? _selected;
   bool _isSaving = false;
+  // Sequence token to ensure only the latest background persist runs
+  int _bgPersistRequestId = 0;
 
   @override
   void initState() {
     super.initState();
+    // Preload any saved selection for a smoother UX.
     unawaited(_loadInitialSelection());
   }
 
@@ -41,8 +45,13 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     setState(() {
       _selected = index;
     });
+    // Persist immediately on selection for better UX and to satisfy contract
+    // expected by widget tests. Analytics is recorded on CTA.
     final level = FitnessLevel.fromSelectionIndex(index);
-    unawaited(_persistSelection(level));
+    // Increase request id to invalidate any in-flight background persists
+    final requestId = ++_bgPersistRequestId;
+    // Persist in the background ensuring only the latest selection is applied
+    _persistInBackground(level, requestId);
   }
 
   Future<void> _handleContinue() async {
@@ -57,7 +66,7 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
     });
 
     try {
-      await _persistSelection(level);
+      await _persistSelection(level).timeout(const Duration(seconds: 10));
       ref
           .read(analyticsRecorderProvider)
           .recordEvent(
@@ -70,13 +79,29 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
       if (mounted) {
         context.go(OnboardingSuccessScreen.routeName, extra: level);
       }
+    } catch (e, stack) {
+      // Log error and optionally show user feedback
+      log.e(
+        'onboarding08_persist_failed',
+        tag: 'onboarding08',
+        error: e,
+        stack: stack,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)?.onboardingSuccessGenericError ??
+                  'An error occurred. Please try again.',
+            ),
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
           _isSaving = false;
         });
-      } else {
-        _isSaving = false;
       }
     }
   }
@@ -191,23 +216,43 @@ class _Onboarding08ScreenState extends ConsumerState<Onboarding08Screen> {
       () => ref.read(userStateServiceProvider.future),
       tag: 'userState',
     );
-    final savedSelection = userState?.fitnessLevel;
+    if (userState == null) {
+      // Failed to load user state for initial selection (logged via tryOrNullAsync)
+      return;
+    }
+    final savedSelection = userState.fitnessLevel;
     final index = FitnessLevel.selectionIndexFor(savedSelection);
     if (!mounted || index == null) return;
-    setState(() {
-      _selected = index;
-    });
+    if (_selected == null) {
+      setState(() {
+        _selected = index;
+      });
+    }
   }
 
   Future<void> _persistSelection(FitnessLevel level) async {
-    final userState = await tryOrNullAsync(
-      () => ref.read(userStateServiceProvider.future),
-      tag: 'userState',
-    );
-    if (userState == null) return;
-    await tryOrNullAsync(
-      () => userState.setFitnessLevel(level),
-      tag: 'userState.setFitnessLevel',
-    );
+    final userState = await ref.read(userStateServiceProvider.future);
+    await userState.setFitnessLevel(level);
+  }
+
+  /// Fire-and-forget persistence with cancellation by sequence token so that
+  /// rapid taps only persist the latest choice. Keeps UX non-blocking and
+  /// still satisfies tests expecting quick persistence.
+  Future<void> _persistInBackground(FitnessLevel level, int requestId) async {
+    try {
+      // Abort if a newer selection was made
+      if (requestId != _bgPersistRequestId) return;
+      final userState = await ref.read(userStateServiceProvider.future);
+      // Re-check right before writing to avoid out-of-order saves
+      if (requestId != _bgPersistRequestId) return;
+      await userState.setFitnessLevel(level);
+    } catch (e, stack) {
+      log.w(
+        'onboarding08_immediate_persist_failed',
+        tag: 'onboarding08',
+        error: e,
+        stack: stack,
+      );
+    }
   }
 }

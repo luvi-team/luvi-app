@@ -242,9 +242,9 @@
       },
       "button_text_on_button_bg": {
         "colors": "#030401 on #D9B18E",
-        "ratio": "4.5:1",
-        "wcag_level": "AA Pass",
-        "note": "Black text on gold background provides sufficient contrast for accessibility (meets AA standard for normal text, exceeds AA Large requirement of 3:1)"
+        "ratio": "10.4:1",
+        "wcag_level": "AAA",
+        "note": "Black text (#030401) on gold (#D9B18E) has ~10.4:1 contrast and meets WCAG AAA for normal text (well above AA threshold 4.5:1)."
       }
     },
     "tap_targets": {
@@ -272,7 +272,7 @@
     "Action Required: Add new tokens `trophyToTitle` (28px) and `titleToButton` (66px) in onboarding_spacing.dart",
     "Screen uses absolute positioning in Figma; recommend MainAxisAlignment.center in Flutter for better responsiveness",
     "Button text in Figma: 'Los gehts!' (missing apostrophe); correct German: 'Los geht's!' → CHECK l10n/app_de.arb",
-    "Button contrast (4.5:1) passes WCAG AA with black text (#030401) on gold background (#D9B18E)"
+    "Button contrast (~10.4:1) passes WCAG AAA with black text (#030401) on gold background (#D9B18E)"
   ],
   "metadata": {
     "generated": "2025-10-22",

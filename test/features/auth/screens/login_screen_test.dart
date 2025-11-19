@@ -87,8 +87,8 @@ void main() {
     await tester.tap(button);
     await tester.pump();
 
-    expect(find.text(AuthStrings.errEmailInvalid), findsOneWidget);
-    expect(find.text(AuthStrings.errPasswordInvalid), findsOneWidget);
+    expect(find.text(AuthStrings.errEmailEmpty), findsOneWidget);
+    expect(find.text(AuthStrings.errPasswordEmpty), findsOneWidget);
     expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
   });
 }

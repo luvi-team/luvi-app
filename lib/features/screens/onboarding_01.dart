@@ -5,6 +5,7 @@ import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/onboarding/onboarding_header.dart';
+import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/screens/onboarding_02.dart';
 import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -49,6 +50,16 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     context.push(Onboarding02Screen.routeName);
   }
 
+  void _handleBack() {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      context.pop();
+    } else {
+      // Fallback to auth entry when no back stack is available
+      context.go(AuthEntryScreen.routeName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -72,10 +83,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
                       AppLocalizations.of(context)!.onboarding01Title,
                   step: 1,
                   totalSteps: kOnboardingTotalSteps,
-                  onBack: () {
-                    final navigator = Navigator.of(context);
-                    navigator.maybePop();
-                  },
+                  onBack: _handleBack,
                 ),
                 SizedBox(height: spacing.headerToInstruction01),
                 _buildInstruction(textTheme, colorScheme),

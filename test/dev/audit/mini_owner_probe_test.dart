@@ -72,10 +72,11 @@ void main() {
 
       // Find widgets by specific finders
       final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
-      final subtitleFinder = find.text('Mach es stark.');
-      final passwordFieldFinder = find.byKey(const Key('AuthPasswordField'));
+
+      final subtitleFinder = find.byKey(const ValueKey('create_new_subtitle'));
+      final passwordFieldFinder = find.byKey(const ValueKey('AuthPasswordField'));
       final confirmFieldFinder = find.byKey(
-        const Key('AuthConfirmPasswordField'),
+        const ValueKey('AuthConfirmPasswordField'),
       );
       final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 

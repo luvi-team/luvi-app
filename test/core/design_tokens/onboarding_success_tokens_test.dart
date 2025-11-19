@@ -35,8 +35,9 @@ void main() {
         textScaleFactor: 1.0,
       );
 
-      expect(config.scale, OnboardingSuccessTokens.minScale);
-      expect(config.baselineOffset, OnboardingSuccessTokens.minBaselineOffset);
+
+      expect(config.scale, closeTo(OnboardingSuccessTokens.minScale, 1e-9));
+      expect(config.baselineOffset, closeTo(OnboardingSuccessTokens.minBaselineOffset, 1e-9));
     });
 
     test('clamps values above maximum viewport height', () {
@@ -45,8 +46,9 @@ void main() {
         textScaleFactor: 1.0,
       );
 
-      expect(config.scale, OnboardingSuccessTokens.maxScale);
-      expect(config.baselineOffset, OnboardingSuccessTokens.maxBaselineOffset);
+
+      expect(config.scale, closeTo(OnboardingSuccessTokens.maxScale, 1e-9));
+      expect(config.baselineOffset, closeTo(OnboardingSuccessTokens.maxBaselineOffset, 1e-9));
     });
 
     test('is monotonic for scale/baseline when height increases', () {

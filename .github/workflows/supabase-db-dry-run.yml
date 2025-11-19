@@ -1,4 +1,5 @@
 name: Supabase DB Dry-Run
+
 on:
   pull_request:
     branches: [main, develop]

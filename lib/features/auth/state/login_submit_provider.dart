@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -16,12 +16,37 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     }
 
     final loginNotifier = ref.read(loginProvider.notifier);
+    // validateAndSubmit performs local (synchronous) validation only and does not
+    // perform any network calls. However, the provider may still be in a loading
+    // or error state due to concurrent updates (e.g. other auth flows) — handle safely.
     await loginNotifier.validateAndSubmit();
 
-    final loginState = ref.read(loginProvider).value ?? LoginState.initial();
+    final loginAsync = ref.read(loginProvider);
+    if (loginAsync.isLoading) {
+      // Provider still loading (concurrent update); return early to avoid duplicate submission.
+      state = const AsyncData(null);
+      return;
+    }
+    if (loginAsync.hasError) {
+      // Provider has an error (unexpected for local validation); surface a global error
+      loginNotifier.setGlobalError(AuthStrings.errLoginUnavailable);
+      state = const AsyncData(null);
+      return;
+    }
+    final loginState = loginAsync.maybeWhen(
+      data: (d) => d,
+      orElse: () => null,
+    );
+    if (loginState == null) {
+      // Defensive: no data available; treat as temporarily unavailable.
+      loginNotifier.setGlobalError(AuthStrings.errLoginUnavailable);
+      state = const AsyncData(null);
+      return;
+    }
     final hasLocalErrors =
         loginState.emailError != null || loginState.passwordError != null;
-
+    // If local validation reported errors, do not hit the network.
+    // Keep the existing field errors intact for clear UX.
     if (hasLocalErrors) {
       state = const AsyncData(null);
       return;
@@ -89,7 +114,9 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
   }
 }
 
+// Screen-scoped submit state; dispose when no longer listened to.
 final loginSubmitProvider =
     AsyncNotifierProvider.autoDispose<LoginSubmitNotifier, void>(
-      LoginSubmitNotifier.new,
-    );
+  LoginSubmitNotifier.new,
+  name: 'loginSubmitProvider',
+);

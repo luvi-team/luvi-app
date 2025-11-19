@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+
+import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/consent/routes.dart';
 import '../../../support/test_config.dart';
 
@@ -63,8 +64,8 @@ void main() {
       expect(find.text(loc.commonContinue), findsOneWidget);
       expect(find.text('Überspringen'), findsNothing);
 
-      // Back button by semantics label
-      expect(find.bySemanticsLabel(AuthStrings.backSemantic), findsOneWidget);
+      // Back button presence (decoupled from auth strings)
+      expect(find.byType(BackButtonCircle), findsOneWidget);
     });
 
     testWidgets('collage tiles have correct absolute positions and sizes', (
@@ -85,7 +86,7 @@ void main() {
     ) async {
       await tester.pumpWidget(createTestApp());
 
-      final backSemantics = find.bySemanticsLabel(AuthStrings.backSemantic);
+      final backSemantics = find.byType(BackButtonCircle);
       expect(backSemantics, findsOneWidget);
 
       // Hitbox 44x44
@@ -97,7 +98,7 @@ void main() {
     testWidgets('back button navigates to onboarding w3', (tester) async {
       await tester.pumpWidget(createTestApp());
 
-      await tester.tap(find.bySemanticsLabel(AuthStrings.backSemantic));
+      await tester.tap(find.byType(BackButtonCircle));
       await tester.pumpAndSettle();
 
       expect(find.text('Onboarding W3'), findsOneWidget);

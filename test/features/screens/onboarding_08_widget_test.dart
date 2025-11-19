@@ -53,6 +53,8 @@ void main() {
   Future<void> pumpRouter(
     WidgetTester tester, {
     required GoRouter router,
+
+    Locale locale = const Locale('de'),
   }) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -65,7 +67,8 @@ void main() {
         child: MaterialApp.router(
           theme: AppTheme.buildAppTheme(),
           routerConfig: router,
-          locale: const Locale('de'),
+
+          locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
@@ -140,9 +143,10 @@ void main() {
 
       await pumpRouter(tester, router: router);
 
-      expect(find.text('Wie fit fühlst du dich?'), findsOneWidget);
+
       final screenContext = tester.element(find.byType(Onboarding08Screen));
       final l10n = AppLocalizations.of(screenContext)!;
+      expect(find.text(l10n.onboarding08Title), findsOneWidget);
       expect(
         find.text(l10n.onboardingStepFraction(8, kOnboardingTotalSteps)),
         findsOneWidget,

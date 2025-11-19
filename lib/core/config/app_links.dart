@@ -1,3 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/features/legal/legal_viewer.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+/// Shared app link constants (non-instance based)
+class AppLinks {
+  AppLinks._(); // Private constructor prevents instantiation
+
+  // OAuth redirect URI used for mobile deep linking. Configurable via --dart-define.
+  static const String oauthRedirectUri = String.fromEnvironment(
+    'OAUTH_REDIRECT_URI',
+    defaultValue: 'luvi://auth-callback',
+  );
+}
 /// Defines the API for retrieving legal link configuration (privacy/terms) and
 /// validating whether configured URLs meet production requirements.
 abstract class AppLinksApi {
@@ -21,7 +37,7 @@ abstract class AppLinksApi {
 
 /// Production implementation that reads URLs from --dart-define values and
 /// enforces validation without any test-specific bypasses.
-class ProdAppLinks implements AppLinksApi {
+class ProdAppLinks extends AppLinksApi {
   const ProdAppLinks();
 
   static const _sentinelUrl = 'about:blank';
@@ -62,26 +78,74 @@ class ProdAppLinks implements AppLinksApi {
     final scheme = uri.scheme.trim().toLowerCase();
     final host = uri.host.trim().toLowerCase();
     final path = uri.path.trim().toLowerCase();
-    final isSentinelMatch =
-        scheme == _sentinelScheme && host == _sentinelHost && path == _sentinelPath;
-    if (isSentinelMatch) return false;
-    if (scheme.isEmpty || host.isEmpty) return false;
-
-    if (scheme != 'https') return false;
-    const prohibitedExactHosts = {
-      'example.com',
-      'localhost',
-      '::1',
-      '0.0.0.0',
-    };
-    if (prohibitedExactHosts.contains(host)) {
-      return false;
-    }
-    if (host.startsWith('127.')) return false;
-    if (host.endsWith('.local') || host.endsWith('.localhost')) return false;
+    if (_matchesSentinel(scheme, host, path)) return false;
+    if (!_isValidScheme(scheme) || host.isEmpty) return false;
+    if (_isProhibitedHost(host)) return false;
+    if (_isPrivateIpv4(host)) return false;
+    if (_isLocalIpv6(host)) return false;
     return true;
   }
 
+  static bool _matchesSentinel(String scheme, String host, String path) {
+    return scheme == _sentinelScheme &&
+        host == _sentinelHost &&
+        path == _sentinelPath;
+  }
+
+  static bool _isValidScheme(String scheme) => scheme == 'https';
+
+  static bool _isProhibitedHost(String host) {
+    if (host.isEmpty) return true;
+    const prohibitedExactHosts = {'example.com', 'localhost', '::1', '0.0.0.0'};
+    if (prohibitedExactHosts.contains(host)) {
+      return true;
+    }
+    if (host.endsWith('.local') || host.endsWith('.localhost')) return true;
+    return false;
+  }
+
+  static bool _isPrivateIpv4(String host) {
+    if (host.startsWith('127.')) return true;
+    if (host.startsWith('10.')) return true;
+    if (host.startsWith('192.168.')) return true;
+    if (host.startsWith('169.254.')) return true;
+    final parts = host.split('.');
+    if (parts.length >= 2 && parts[0] == '172') {
+      final second = int.tryParse(parts[1]);
+      if (second != null && second >= 16 && second <= 31) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static bool _isLocalIpv6(String host) {
+    if (!host.contains(':')) {
+      return false;
+    }
+
+    try {
+      Uri.parseIPv6Address(host);
+    } on FormatException {
+      return true;
+    }
+
+    final firstGroup = host.split(':').firstWhere(
+          (segment) => segment.isNotEmpty,
+          orElse: () => '',
+        );
+    final head = int.tryParse(firstGroup, radix: 16);
+    if (head == null) {
+      return false;
+    }
+    if (head >= 0xFE80 && head <= 0xFEBF) {
+      return true;
+    }
+    if (head >= 0xFC00 && head <= 0xFDFF) {
+      return true;
+    }
+    return false;
+  }
   static Uri _parseConfiguredUri({
     required String rawValue,
     required String defaultValue,
@@ -90,8 +154,95 @@ class ProdAppLinks implements AppLinksApi {
     final trimmed = effectiveValue.trim();
     final parsed = Uri.tryParse(trimmed);
     if (parsed == null) {
-      return Uri.parse(defaultValue);
+      assert(() {
+        debugPrint('[AppLinks] Failed to parse configured URI: "$trimmed". Falling back to default.');
+        return true;
+      }());
+      // Defensive: even if the configured default is invalid, never throw.
+      final fallback = Uri.tryParse(defaultValue);
+      if (fallback != null) {
+        return fallback;
+      }
+      // Last-resort safe URI that always parses.
+      return Uri.parse(_sentinelUrl);
     }
     return parsed;
   }
+}
+
+/// Riverpod provider for [AppLinksApi].
+///
+/// Defaults to [ProdAppLinks] but can be overridden in tests or
+/// higher in the widget tree for custom environments.
+final appLinksProvider = Provider<AppLinksApi>((ref) => const ProdAppLinks());
+
+/// Opens a legal link externally when valid, otherwise falls back to
+/// an in-app Markdown viewer bundled with the app.
+Future<void> openPrivacy(
+  BuildContext context, {
+  AppLinksApi appLinks = const ProdAppLinks(),
+  String? title,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final resolvedTitle =
+      title ?? l10n?.privacyPolicyTitle ?? 'Privacy Policy';
+  await _openLegal(
+    context,
+    uri: appLinks.privacyPolicy,
+    isValid: appLinks.hasValidPrivacy,
+    fallbackAsset: 'assets/legal/privacy.md',
+    title: resolvedTitle,
+    appLinks: appLinks,
+  );
+}
+
+/// Opens a legal link externally when valid, otherwise falls back to
+/// an in-app Markdown viewer bundled with the app.
+Future<void> openTerms(
+  BuildContext context, {
+  AppLinksApi appLinks = const ProdAppLinks(),
+  String? title,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final resolvedTitle =
+      title ?? l10n?.termsOfServiceTitle ?? 'Terms of Service';
+  await _openLegal(
+    context,
+    uri: appLinks.termsOfService,
+    isValid: appLinks.hasValidTerms,
+    fallbackAsset: 'assets/legal/terms.md',
+    title: resolvedTitle,
+    appLinks: appLinks,
+  );
+}
+
+Future<void> _openLegal(
+  BuildContext context, {
+  required Uri uri,
+  required bool isValid,
+  required String fallbackAsset,
+  required String title,
+  required AppLinksApi appLinks,
+}) async {
+  // Try external if valid; if it throws or returns false, fall back to in-app
+  if (isValid) {
+    try {
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (ok) return;
+    } catch (error, stackTrace) {
+      debugPrint('[links] launchUrl failed for $uri: $error\n$stackTrace');
+      // proceed to fallback
+    }
+  }
+  if (!context.mounted) return;
+  // Fallback to in-app Markdown viewer
+  await Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => LegalViewer.asset(
+        fallbackAsset,
+        title: title,
+        appLinks: appLinks,
+      ),
+    ),
+  );
 }

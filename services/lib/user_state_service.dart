@@ -11,13 +11,14 @@ enum FitnessLevel {
   beginner,
   occasional,
   fit,
+  /// Sentinel value indicating an invalid or unset fitness level.
+  /// Not selectable by users; excluded from selection order.
   unknown;
 
   static const List<FitnessLevel> _selectionOrder = [
     FitnessLevel.beginner,
     FitnessLevel.occasional,
     FitnessLevel.fit,
-    FitnessLevel.unknown,
   ];
 
   static FitnessLevel fromSelectionIndex(int index) {
@@ -43,12 +44,11 @@ enum FitnessLevel {
     if (raw == null || raw.isEmpty) {
       return null;
     }
-    for (final level in FitnessLevel.values) {
-      if (level.name == raw) {
-        return level;
-      }
+    try {
+      return FitnessLevel.values.byName(raw);
+    } on ArgumentError {
+      return null;
     }
-    return null;
   }
 }
 
@@ -59,6 +59,14 @@ class UserStateService {
 
   bool get hasSeenWelcome => prefs.getBool(_keyHasSeenWelcome) ?? false;
 
+  /// Returns whether the welcome has been seen, or null if the key is absent
+  /// (unknown state). Useful for callers that want to treat "unknown"
+  /// differently from an explicit false.
+  bool? get hasSeenWelcomeOrNull {
+    if (!prefs.containsKey(_keyHasSeenWelcome)) return null;
+    return prefs.getBool(_keyHasSeenWelcome);
+  }
+
   bool get hasCompletedOnboarding =>
       prefs.getBool(_keyHasCompletedOnboarding) ?? false;
 
@@ -66,28 +74,94 @@ class UserStateService {
       FitnessLevel.tryParse(prefs.getString(_keyFitnessLevel));
 
   Future<void> markWelcomeSeen() async {
-    await prefs.setBool(_keyHasSeenWelcome, true);
+    final success = await prefs.setBool(_keyHasSeenWelcome, true);
+    if (!success) {
+      throw StateError('Failed to persist welcome seen flag');
+    }
   }
 
   Future<void> markOnboardingComplete({
     required FitnessLevel fitnessLevel,
   }) async {
-    await Future.wait([
-      prefs.setBool(_keyHasCompletedOnboarding, true),
-      prefs.setString(_keyFitnessLevel, fitnessLevel.name),
-    ]);
+    // Write completion flag first, then persist fitness level. If the second
+    // write fails, best-effort rollback the flag to avoid a partially
+    // completed onboarding state.
+    final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
+    if (!wroteFlag) {
+      throw StateError('Failed to persist onboarding completion flag');
+    }
+
+    try {
+      final wroteLevel =
+          await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
+      if (!wroteLevel) {
+        // Best-effort rollback; ignore rollback failure and surface original error
+        try {
+          await prefs.remove(_keyHasCompletedOnboarding);
+        } catch (e) {
+          // Best-effort log without depending on Flutter; keep service pure Dart.
+          // ignore: avoid_print
+          print(
+            '[UserStateService] Rollback failed during markOnboardingComplete: $e',
+          );
+        }
+        throw StateError('Failed to persist fitness level');
+      }
+    } catch (e) {
+      // Rollback on exception as well
+      try {
+        await prefs.remove(_keyHasCompletedOnboarding);
+      } catch (rollbackErr) {
+        // Best-effort log without depending on Flutter; keep service pure Dart.
+        // ignore: avoid_print
+        print(
+          '[UserStateService] Rollback failed during markOnboardingComplete: $rollbackErr',
+        );
+      }
+      // Rethrow original error (preserve type if StateError, otherwise wrap)
+      if (e is StateError) {
+        rethrow;
+      } else {
+        throw StateError('Failed to persist fitness level: $e');
+      }
+    }
   }
 
   Future<void> setFitnessLevel(FitnessLevel level) async {
-    await prefs.setString(_keyFitnessLevel, level.name);
+    final success = await prefs.setString(_keyFitnessLevel, level.name);
+    if (!success) {
+      throw StateError('Failed to persist fitness level');
+    }
   }
 
   Future<void> reset() async {
-    await Future.wait([
-      prefs.remove(_keyHasSeenWelcome),
-      prefs.remove(_keyHasCompletedOnboarding),
-      prefs.remove(_keyFitnessLevel),
-    ]);
+    // Perform removals sequentially to avoid masking failures that can occur
+    // when running in parallel. This is best-effort: if any removal fails,
+    // previously removed keys are not rolled back (SharedPreferences has no
+    // transactional API). We attempt all removals and then throw with the
+    // list of failed keys so the caller can decide to retry or surface an
+    // error to the user.
+    final failures = <String>[];
+    Future<void> removeKey(String key) async {
+      try {
+        final ok = await prefs.remove(key);
+        if (!ok) {
+          failures.add(key);
+        }
+      } on Exception {
+        failures.add(key);
+      }
+    }
+
+    await removeKey(_keyHasSeenWelcome);
+    await removeKey(_keyHasCompletedOnboarding);
+    await removeKey(_keyFitnessLevel);
+
+    if (failures.isNotEmpty) {
+      throw StateError(
+        'Failed to clear user state keys: ${failures.join(', ')}',
+      );
+    }
   }
 }
 

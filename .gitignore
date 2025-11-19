@@ -112,8 +112,8 @@ app.*.symbols
 **/.DS_Store
 # Supabase temp files
 supabase/.temp/
-supabase/functions/
 supabase/logs/
+supabase/.branches/
 # macOS junk
 # Supabase temp
 # Local-only folder at repo root (if intended)
@@ -160,4 +160,17 @@ api/node_modules/
 !.config/README.md
 .home_overrides/
 .local_flutter/
+
+# OAuth/Apple secrets
+*.p8
+apple_client_secret.txt
+apple-siware/
+
+# OAuth/Google secrets
+client_secret_*.json
+google_oauth_*
+*_client_secret.json
+*.secrets.json
+
+# Local tooling (Flutter SDK cache)
 .tooling/

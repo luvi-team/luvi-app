@@ -7,7 +7,7 @@ part of 'user_state_service.dart';
 // **************************************************************************
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
+// ignore_for_file: type=lint, invalid_use_of_internal_member
 
 @ProviderFor(userStateService)
 const userStateServiceProvider = UserStateServiceProvider._();
@@ -38,7 +38,8 @@ final class UserStateServiceProvider
   @override
   $FutureProviderElement<UserStateService> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) =>
+      $FutureProviderElement(pointer);
 
   @override
   FutureOr<UserStateService> create(Ref ref) {
@@ -46,4 +47,6 @@ final class UserStateServiceProvider
   }
 }
 
-String _$userStateServiceHash() => r'29460d76b3f195a73efe8bef14fb1c1e77c2353c';
+String _$userStateServiceHash() =>
+    r'1022a470551cac63bb421131337e4c4c71c9ee85';
+

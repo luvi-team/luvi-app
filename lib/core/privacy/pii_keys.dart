@@ -1,0 +1,142 @@
+/// Central registry of PII-ish key names used by telemetry/analytics sanitizers.
+///
+/// Keeping this list in one place avoids drift between different privacy
+/// filters. Only add keys that have a high likelihood of containing sensitive
+/// user information.
+class PiiKeys {
+  const PiiKeys._();
+
+  /// Lowercased key names that should always be treated as sensitive.
+  ///
+  /// These are exact-key matches. [_wordPatternTokens] feed a regex for
+  /// partial/word-based heuristics to catch compound keys.
+  static const Set<String> suspiciousKeyNames = {
+    'access_token',
+    'address',
+    'age',
+    'api_key',
+    'auth',
+    'authorization',
+    'billing_address',
+    'birthdate',
+    'birthday',
+    'card_number',
+    'cc_number',
+    'city',
+    'coordinates',
+    'credit_card',
+    'cvv',
+    'date_of_birth',
+    'device_id',
+    'dob',
+    'e-mail',
+    'email',
+    'email_address',
+    'email_verified',
+    'emailverified',
+    'expiry',
+    'file',
+    'filepath',
+    'first_name',
+    'firstname',
+    'last_name',
+    'full_name',
+    'fullname',
+    'gender',
+    'imei',
+    'ip',
+    'ip_address',
+    'ip-address',
+    'lat',
+    'latitude',
+    'lng',
+    'location',
+    'longitude',
+    'mac_address',
+    'mac-address',
+    'mobile',
+    'name',
+    'path',
+    'password',
+    'phone',
+    'phone_number',
+    'phonenumber',
+    'postal',
+    'postcode',
+    'refresh_token',
+    'secret',
+    'session',
+    'session_id',
+    'social_security',
+    'social_security_number',
+    'ssn',
+    'street',
+    'tel',
+    'telephone',
+    'token',
+    'user',
+    'user_id',
+    'userid',
+    'zip',
+    'zipcode',
+  };
+
+  /// Whole-word detection pattern for suspicious key fragments, using custom
+  /// token boundaries so underscores/hyphens remain part of the token.
+  static final String _wordPatternAlternation =
+      _wordPatternTokens.map(RegExp.escape).join('|');
+
+  static final RegExp suspiciousWordPattern = RegExp(
+    '(?<![A-Za-z0-9])($_wordPatternAlternation)(?![A-Za-z0-9])',
+    caseSensitive: false,
+  );
+
+  /// Tokens used to construct [suspiciousWordPattern] for partial matches.
+  static const List<String> _wordPatternTokens = [
+    'email',
+    'e-mail',
+    'email_address',
+    'email_verified',
+    'phone',
+    'tel',
+    'telephone',
+    'mobile',
+    'address',
+    'street',
+    'city',
+    'zip',
+    'zipcode',
+    'postal',
+    'postcode',
+    'ssn',
+    'social_security',
+    'social_security_number',
+    'dob',
+    'date_of_birth',
+    'birthdate',
+    'first_name',
+    'last_name',
+    'full_name',
+    'name',
+    'credit_card',
+    'card_number',
+    'cc_number',
+    'cvv',
+    'expiry',
+    'password',
+    'token',
+    'session',
+    'session_id',
+    'api_key',
+    'access_token',
+    'refresh_token',
+    'secret',
+    'authorization',
+    'user_id',
+    'device_id',
+    'ip_address',
+    'ip-address',
+    'mac_address',
+    'mac-address',
+  ];
+}

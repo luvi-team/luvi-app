@@ -3,7 +3,10 @@ import 'dart:ui' as ui;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/l10n/app_localizations_de.dart';
+import 'package:luvi_services/init_mode.dart';
+
 import 'test_app_links.dart';
 
 /// Centralized configuration for test-specific feature flags used by tests.
@@ -11,11 +14,11 @@ class TestConfig {
   TestConfig._();
 
   /// Ensures shared test-only configuration (feature flags, localized strings) is initialized.
-  static void ensureInitialized() {
+  static void ensureInitialized({AppLocalizations? locale}) {
     TestWidgetsFlutterBinding.ensureInitialized();
-    AuthStrings.debugOverrideLocalizations(AppLocalizationsDe());
-    AuthStrings.overrideResolver(() => ui.PlatformDispatcher.instance.locale);
-    _registerCleanup();
+    // Register suite-scoped localization overrides and cleanup. Overrides are
+    // applied in setUpAll to avoid double-initialization; see _registerSuiteLifecycle().
+    _registerSuiteLifecycle();
   }
 
   /// Preferred test bootstrap to configure shared bindings and test-only overrides.
@@ -33,20 +36,19 @@ class TestConfig {
   /// Flutter tests to toggle the exercised code paths.
   static bool get featureDashboardV2 => FeatureFlags.featureDashboardV2;
 
-  static bool _cleanupRegistered = false;
-
-  static void _registerCleanup() {
-    if (_cleanupRegistered) {
-      return;
-    }
-    _cleanupRegistered = true;
-    setUp(() {
+  static void _registerSuiteLifecycle() {
+    // Apply overrides once per test file and clean them up once after all tests.
+    setUpAll(() {
+      // Force test InitMode globally for this suite unless explicitly overridden
+      // via Provider override in individual tests.
+      InitModeBridge.resolve = () => InitMode.test;
       AuthStrings.debugOverrideLocalizations(AppLocalizationsDe());
       AuthStrings.overrideResolver(() => ui.PlatformDispatcher.instance.locale);
-      addTearDown(() {
-        AuthStrings.debugOverrideLocalizations(null);
-        AuthStrings.overrideResolver(null);
-      });
+    });
+    tearDownAll(() {
+      AuthStrings.debugOverrideLocalizations(null);
+      AuthStrings.overrideResolver(null);
     });
   }
 }
+

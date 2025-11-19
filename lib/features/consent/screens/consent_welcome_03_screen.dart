@@ -8,32 +8,22 @@ import '../widgets/welcome_shell.dart';
 import 'consent_01_screen.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../widgets/localized_builder.dart';
 
 class ConsentWelcome03Screen extends StatelessWidget {
   const ConsentWelcome03Screen({super.key});
 
   static const routeName = '/onboarding/w3';
-  // Keine spezielle Subtitle-Spaltenbreite notwendig – W1/W2 nutzen volle Breite.
+  // Full width subtitle layout (consistent with other welcome screens)
 
   @override
   Widget build(BuildContext context) {
-    final maybeL10n = AppLocalizations.of(context);
-    if (maybeL10n == null) {
-      return Localizations.override(
-        context: context,
-        delegates: AppLocalizations.localizationsDelegates,
-        locale: AppLocalizations.supportedLocales.first,
-        child: Builder(builder: _buildLocalizedContent),
-      );
-    }
-
-    return _buildLocalizedContent(context);
+    return LocalizedBuilder(builder: _buildLocalizedContent);
   }
 
-  Widget _buildLocalizedContent(BuildContext context) {
+  Widget _buildLocalizedContent(BuildContext context, AppLocalizations l10n) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
     final titleStyle = t.headlineMedium?.copyWith(
       fontSize: TypographyTokens.size28,
       height: TypographyTokens.lineHeightRatio36on28,
@@ -45,9 +35,9 @@ class ConsentWelcome03Screen extends StatelessWidget {
         text: TextSpan(
           style: titleStyle,
           children: [
-            TextSpan(text: l10n.welcome03TitleLine1),
+            TextSpan(text: l10n.welcome03TitleLine1.trim()),
             TextSpan(
-              text: l10n.welcome03TitleLine2,
+              text: l10n.welcome03TitleLine2.trim(),
               style: titleStyle?.copyWith(color: c.primary),
             ),
           ],

@@ -29,12 +29,30 @@ class AuthLayout {
   static const double ctaLinkGapError =
       29; // Link gap when validation error shown
   /// Reserve below form when keyboard shows:
-  /// button (50) + double vertical spacing (2×24) + social block (~160) +
-  /// signup link gap (≈31). safeBottom gets added at the call site.
-  static const double socialBlockReserveApprox = 160;
-  // TODO(ui): Measure actual social block height and replace approximation.
-  static const double inlineCtaReserveLoginApprox =
-      Sizes.buttonHeight + Spacing.l * 2 + socialBlockReserveApprox + Spacing.m;
+  /// button (50) + double vertical spacing (2×24) + dynamically measured
+  /// social block height + signup link gap (≈31). `safeBottom` gets added at
+  /// the call site.
+  static const double socialBlockReserveFallback = 180;
+  /// Calculates the reserved vertical space for the inline CTA on the login
+  /// screen. Formula:
+  /// - `Sizes.buttonHeight`: height of the primary button.
+  /// - `Spacing.l * 2`: two vertical gaps around the button (top and bottom).
+  /// - `socialBlockHeight`: measured height of the social login block below.
+  /// - `Spacing.m`: small gap for the link row (e.g., sign‑up link).
+  ///
+  /// Notes:
+  /// - The caller should add the platform `safeBottom` inset separately.
+  /// - When the measured social block height is unavailable, use
+  ///   `socialBlockReserveFallback` as a conservative default.
+  static double inlineCtaReserveLogin(double? socialBlockHeight) {
+    assert(
+      socialBlockHeight == null || socialBlockHeight >= 0,
+      'socialBlockHeight must be non-negative when provided. Got: $socialBlockHeight',
+    );
+    // Use fallback when height is not yet measured (null)
+    final measured = socialBlockHeight ?? socialBlockReserveFallback;
+    return Sizes.buttonHeight + Spacing.l * 2 + measured + Spacing.m;
+  }
   static const double backButtonSize = 40;
   static const double backIconSize = 20.0;
   static const double otpFieldSize = 51;

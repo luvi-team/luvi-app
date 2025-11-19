@@ -1,58 +1,74 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Flutter wrapper for Codex CLI: sandboxed HOME/PUB_CACHE, telemetry off,
-# and default --no-pub for analyze/test. Supports optional real HOME via env
-# CODEX_USE_REAL_HOME=1.
+# Flutter wrapper for Codex CLI in sandboxed environments.
+# - Uses workspace-local HOME and PUB_CACHE to avoid forbidden writes
+# - Suppresses analytics/telemetry writes
+# - Defaults to --no-pub for analyze/test unless explicitly overridden
 
-SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-REPO_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+FLUTTER_BIN="${REPO_ROOT}/.local_flutter/bin/flutter"
+DART_BIN="${REPO_ROOT}/.local_flutter/bin/dart"
+USE_REAL_HOME="${CODEX_USE_REAL_HOME:-0}"
 
-if [[ "${CODEX_USE_REAL_HOME:-0}" != "1" ]]; then
-  export HOME="$REPO_ROOT/.tooling/home"
-  export PUB_CACHE="$REPO_ROOT/.tooling/pub-cache"
+if [[ ! -x "${FLUTTER_BIN}" ]]; then
+  echo "[flutter_codex] Error: ${FLUTTER_BIN} not found or not executable." >&2
+  echo "[flutter_codex] Ensure the vendored Flutter SDK exists at .local_flutter." >&2
+  exit 127
 fi
 
-mkdir -p "$HOME" "$PUB_CACHE"
-
-# Prefer repo-local Flutter SDK if present
-if [[ -d "$REPO_ROOT/.tooling/flutter-sdk/bin" ]]; then
-  export PATH="$REPO_ROOT/.tooling/flutter-sdk/bin:$PATH"
+# HOME/PUB_CACHE handling
+if [[ "${USE_REAL_HOME}" == "1" || "${USE_REAL_HOME}" == "true" ]]; then
+  # Use real HOME and default pub cache (useful for signed builds / global caches)
+  : # no-op, keep existing HOME and PUB_CACHE
+else
+  # Workspace-local tool dirs to avoid forbidden writes in sandboxed environments
+  mkdir -p "${REPO_ROOT}/.tooling/home" "${REPO_ROOT}/.tooling/pub-cache"
+  export HOME="${REPO_ROOT}/.tooling/home"
+  export PUB_CACHE="${REPO_ROOT}/.tooling/pub-cache"
 fi
+export FLUTTER_SUPPRESS_ANALYTICS=1
+export DART_SUPPRESS_ANALYTICS=1
 
-# Suppress analytics/prompts
-export FLUTTER_SUPPRESS_ANALYTICS="true"
-export CI="true"
+# Build and run command; inject --no-pub by default for analyze/test
+run_cmd() {
+  local subcmd="$1"; shift || true
+  local -a cmd
 
-if [[ $# -lt 1 ]]; then
-  echo "Usage: scripts/flutter_codex.sh {analyze|test} [args...]" >&2
-  exit 2
-fi
+  if [[ "${subcmd}" == "dart" ]]; then
+    cmd=("${DART_BIN}")
+  else
+    cmd=("${FLUTTER_BIN}" "${subcmd}")
+  fi
 
-cmd="$1"; shift || true
-
-case "$cmd" in
-  analyze)
-    set -x
-    flutter analyze --no-pub "$@"
-    ;;
-  test)
-    # Ensure -j 1 unless explicitly provided
-    ARGS=()
-    if (($# > 0)); then
-      ARGS=("$@")
+  if [[ "${subcmd}" == "analyze" || "${subcmd}" == "test" ]]; then
+    local have_pub_flag=0
+    if [[ $# -gt 0 ]]; then
+      for a in "$@"; do
+        case "${a}" in
+          --no-pub|--pub|--offline)
+            have_pub_flag=1
+            ;;
+        esac
+      done
     fi
-    if ((${#ARGS[@]} == 0)); then
-      ARGS=("-j" "1")
-    elif [[ " ${ARGS[*]} " != *" -j "* ]]; then
-      ARGS=("-j" "1" "${ARGS[@]}")
+    if [[ ${have_pub_flag} -eq 0 ]]; then
+      cmd+=("--no-pub")
     fi
-    set -x
-    flutter test --no-pub "${ARGS[@]}"
-    ;;
-  *)
-    echo "Unknown command: $cmd" >&2
-    echo "Usage: scripts/flutter_codex.sh {analyze|test} [args...]" >&2
-    exit 2
-    ;;
-esac
+  fi
+
+  # Append remaining args and exec
+  if [[ $# -gt 0 ]]; then
+    cmd+=("$@")
+  fi
+  exec "${cmd[@]}"
+}
+
+if [[ "$#" -eq 0 ]]; then
+  # Show version to verify toolchain works in this environment
+  exec "${FLUTTER_BIN}" --version
+else
+  subcmd="$1"; shift || true
+  run_cmd "${subcmd}" "$@"
+fi

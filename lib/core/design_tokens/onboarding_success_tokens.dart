@@ -14,8 +14,12 @@ class OnboardingSuccessTokens {
 
   /// Target gap (in px) between the trophy illustration and the title.
   /// Canonical: `OnboardingSpacing._kOnboardingSuccessTrophyToTitleGap`.
+  /// Per ADR-0006, we standardize on 24px (8px grid) instead of Figma's 28px.
   static const double gapToTitle = 24.0;
 
+  /// Target gap (in px) between the title and the button.
+  /// Canonical: `OnboardingSpacing._titleToButton`.
+  static const double titleToButton = 66.0;
   /// Responsive config for the celebration animation based on viewport height.
   static OnboardingSuccessIllustrationConfig celebrationConfig({
     required double viewHeight,
@@ -23,18 +27,32 @@ class OnboardingSuccessTokens {
   }) {
     assert(viewHeight > 0, 'viewHeight must be > 0');
     assert(textScaleFactor > 0, 'textScaleFactor must be > 0');
-    final effectiveHeight = (viewHeight / textScaleFactor)
+    assert(_maxViewportHeight > _minViewportHeight,
+        'Invalid viewport height range configuration');
+    final effectiveHeight = viewHeight
         .clamp(_minViewportHeight, _maxViewportHeight)
         .toDouble();
-    final t =
-        (effectiveHeight - _minViewportHeight) /
-        (_maxViewportHeight - _minViewportHeight);
-    final scale = lerpDouble(_minScaleValue, _maxScaleValue, t)!;
-    final baselineOffset = lerpDouble(
+    final denom = (_maxViewportHeight - _minViewportHeight);
+    final tRaw = (effectiveHeight - _minViewportHeight) / denom;
+    final t = tRaw.clamp(0.0, 1.0);
+    var scale = lerpDouble(_minScaleValue, _maxScaleValue, t)!;
+    var baselineOffset = lerpDouble(
       _minBaselineOffset,
       _maxBaselineOffset,
       t,
     )!;
+    // Reduce illustration scale and baseline offset for increased
+    // textScaleFactor to preserve layout balance (larger text ⇒
+    // slightly smaller illustration/offset). Keep effect gentle.
+    final tsf = textScaleFactor.clamp(0.5, 2.0);
+    if (tsf != 1.0) {
+      final factor = 1.0 - 0.10 * (tsf - 1.0); // 10% damp per +1.0 tsf
+      // Limit damping effect to ±20% to preserve visual balance
+      final damp = factor.clamp(0.8, 1.2);
+      scale = (scale * damp).clamp(_minScaleValue, _maxScaleValue);
+      baselineOffset =
+          (baselineOffset * damp).clamp(_minBaselineOffset, _maxBaselineOffset);
+    }
     final config = OnboardingSuccessIllustrationConfig(
       scale: scale,
       baselineOffset: baselineOffset,
@@ -65,7 +83,6 @@ class OnboardingSuccessTokens {
   static double get maxBaselineOffset => _maxBaselineOffset;
 }
 
-/// Immutable config describing how the celebration illustration should render.
 class OnboardingSuccessIllustrationConfig {
   const OnboardingSuccessIllustrationConfig({
     required this.scale,
@@ -74,4 +91,14 @@ class OnboardingSuccessIllustrationConfig {
 
   final double scale;
   final double baselineOffset;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OnboardingSuccessIllustrationConfig &&
+          runtimeType == other.runtimeType &&
+          scale == other.scale &&
+          baselineOffset == other.baselineOffset;
+
+  @override
+  int get hashCode => Object.hash(scale, baselineOffset);
 }

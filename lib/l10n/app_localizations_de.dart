@@ -78,13 +78,33 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding04CalloutSuffix => '. Eine ungefähre Schätzung reicht für den Start völlig aus.';
 
   @override
+  String get initBannerConfigError => 'Konfigurationsfehler: Supabase-Zugangsdaten ungültig. App läuft offline.';
+
+  @override
+  String initBannerConnecting(int attempts, int maxAttempts) {
+    return 'Verbindung zum Server… (Versuch $attempts/$maxAttempts)';
+  }
+
+  @override
+  String get initBannerRetry => 'Erneut versuchen';
+
+  @override
+  String get documentLoadError => 'Dokument konnte nicht geladen werden.';
+
+  @override
+  String get legalViewerLoadingLabel => 'Dokument wird geladen';
+
+  @override
+  String get legalViewerFallbackBanner => 'Remote nicht verfügbar — Offline-Kopie wird angezeigt.';
+
+  @override
   String get commonContinue => 'Weiter';
 
   @override
   String get commonSkip => 'Überspringen';
 
   @override
-  String get commonStartNow => 'Starte jetzt';
+  String get commonStartNow => 'Los geht\'s!';
 
   @override
   String dashboardGreeting(String name) {
@@ -354,10 +374,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingSuccessTitle => 'Du bist startklar!';
 
   @override
+  String get onboardingSuccessStateUnavailable => 'Onboarding konnte nicht abgeschlossen werden. Bitte versuche es erneut.';
+
+  @override
+  String get onboardingSuccessGenericError => 'Etwas ist schiefgelaufen. Bitte versuche es erneut.';
+
+  @override
   String get welcome01Subtitle => 'Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.';
 
   @override
-  String get welcome01TitlePrefix => 'Im ';
+  String welcome01Title(String prefix, String accent) {
+    return '$prefix $accent';
+  }
+
+  @override
+  String get welcome01TitlePrefix => 'Im';
 
   @override
   String get welcome01TitleAccent => 'Einklang';
@@ -408,6 +439,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consent02LinkTermsLabel => 'Nutzungsbedingungen';
 
   @override
+  String get privacyPolicyTitle => 'Datenschutzerklärung';
+
+  @override
+  String get termsOfServiceTitle => 'Nutzungsbedingungen';
+
+  @override
   String get consent02LinkSuffix => ' einverstanden.';
 
   @override
@@ -450,34 +487,69 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authLoginCta => 'Anmelden';
 
   @override
-  String get authLoginCtaLoadingSemantic => 'Anmeldung läuft';
+  String get authLoginCtaLoadingSemantic => 'Wird angemeldet';
 
   @override
   String get authLoginCtaLinkPrefix => 'Neu bei LUVI? ';
 
   @override
-  String get authLoginCtaLinkAction => 'Starte hier';
+  String get authLoginCtaLinkAction => 'Hier starten';
 
   @override
   String get authLoginForgot => 'Passwort vergessen?';
 
   @override
-  String get authLoginSocialDivider => 'Oder melde dich an mit';
+  String get authLoginSocialDivider => 'Oder weiter mit';
 
   @override
-  String get authErrEmailInvalid => 'Ups, bitte E-Mail überprüfen';
+  String get authLoginSocialGoogle => 'Mit Google anmelden';
 
   @override
-  String get authErrPasswordInvalid => 'Ups, bitte Passwort überprüfen';
+  String get authErrEmailInvalid => 'Bitte überprüfe deine E-Mail.';
 
   @override
-  String get authErrConfirmEmail => 'Bitte E-Mail bestätigen (Link erneut senden?)';
+  String get authErrPasswordInvalid => 'Bitte überprüfe dein Passwort.';
+
+  @override
+  String get authErrPasswordTooShort => 'Dein Passwort ist zu kurz.';
+
+  @override
+  String get authErrPasswordMissingTypes => 'Dein Passwort muss Buchstaben, Zahlen und Sonderzeichen enthalten.';
+
+  @override
+  String get authErrPasswordCommonWeak => 'Dein Passwort ist zu häufig oder zu schwach.';
+
+  @override
+  String get authErrEmailEmpty => 'Bitte gib deine E-Mail ein.';
+
+  @override
+  String get authErrPasswordEmpty => 'Bitte gib dein Passwort ein.';
+
+  @override
+  String get authErrConfirmEmail => 'Bitte bestätige deine E-Mail (Link erneut senden?).';
 
   @override
   String get authInvalidCredentials => 'E-Mail oder Passwort ist falsch.';
 
   @override
-  String get authErrLoginUnavailable => 'Login derzeit nicht möglich.';
+  String get authErrLoginUnavailable => 'Anmeldung ist derzeit nicht verfügbar.';
+
+  @override
+  String get authPasswordMismatchError => 'Passwörter stimmen nicht überein.';
+
+  @override
+  String get authPasswordUpdateError => 'Wir konnten dein Passwort nicht aktualisieren.';
+
+  @override
+  String authErrWaitBeforeRetry(int seconds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: '# Sekunden',
+      one: '# Sekunde',
+    );
+    return 'Bitte warte $_temp0, bevor du es erneut versuchst.';
+  }
 
   @override
   String get authEmailHint => 'Deine E-Mail';
@@ -489,16 +561,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSignupTitle => 'Deine Reise beginnt hier 💜';
 
   @override
-  String get authSignupSubtitle => 'Schnell registrieren - dann geht\'s los.';
+  String get authSignupSubtitle => 'Schnell registrieren und loslegen.';
 
   @override
   String get authSignupCta => 'Registrieren';
 
   @override
-  String get authSignupCtaLoadingSemantic => 'Registrierung läuft';
+  String get authSignupCtaLoadingSemantic => 'Wird registriert';
 
   @override
-  String get authSignupLinkPrefix => 'Schon dabei? ';
+  String get authSignupLinkPrefix => 'Schon ein Konto? ';
 
   @override
   String get authSignupLinkAction => 'Anmelden';
@@ -516,13 +588,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSignupMissingFields => 'Bitte E-Mail und Passwort eingeben.';
 
   @override
-  String get authSignupGenericError => 'Registrierung gerade nicht möglich. Bitte später erneut versuchen.';
+  String get authSignupGenericError => 'Registrierung ist gerade nicht verfügbar. Bitte später erneut versuchen.';
 
   @override
   String get authForgotTitle => 'Passwort vergessen? 💜';
 
   @override
-  String get authForgotSubtitle => 'E-Mail eingeben für Link.';
+  String get authForgotSubtitle => 'Gib deine E-Mail ein, um den Reset-Link zu erhalten.';
 
   @override
   String get authForgotCta => 'Weiter';
@@ -534,16 +606,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSuccessPwdTitle => 'Geschafft!';
 
   @override
-  String get authSuccessPwdSubtitle => 'Neues Passwort gespeichert.';
+  String get authSuccessPwdSubtitle => 'Dein neues Passwort wurde gespeichert.';
 
   @override
   String get authSuccessForgotTitle => 'E-Mail gesendet!';
 
   @override
-  String get authSuccessForgotSubtitle => 'Bitte Postfach prüfen.';
+  String get authSuccessForgotSubtitle => 'Bitte prüfe deinen Posteingang.';
 
   @override
   String get authSuccessCta => 'Fertig';
+
+  @override
+  String get authCreateNewTitle => 'Neues Passwort erstellen 💜';
+
+  @override
+  String get authCreateNewSubtitle => 'Mach es stark.';
 
   @override
   String get authCreateNewHint1 => 'Neues Passwort';
@@ -558,7 +636,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authVerifyResetTitle => 'Code eingeben 💜';
 
   @override
-  String get authVerifyResetSubtitle => 'Gerade an deine E-Mail gesendet.';
+  String get authVerifyResetSubtitle => 'Wir haben ihn gerade an deine E-Mail gesendet.';
 
   @override
   String get authVerifyEmailTitle => 'E-Mail bestätigen 💜';
@@ -570,8 +648,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authVerifyCta => 'Bestätigen';
 
   @override
-  String get authVerifyHelper => 'Nichts angekommen?';
+  String get authVerifyHelper => 'Nichts erhalten?';
 
   @override
   String get authVerifyResend => 'Erneut senden';
+
+  @override
+  String get consentSnackbarAccepted => 'Einwilligung akzeptiert';
+
+  @override
+  String get consentSnackbarError => 'Wir konnten deine Einwilligung nicht speichern. Bitte versuche es erneut.';
+
+  @override
+  String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
 }

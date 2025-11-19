@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/shared/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
@@ -11,6 +13,7 @@ import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   static const String routeName = '/auth/forgot';
@@ -48,9 +51,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final theme = Theme.of(context);
     final state = ref.watch(resetPasswordProvider);
     final submitState = ref.watch(resetSubmitProvider);
-    final errorText = state.error == null
-        ? null
-        : AuthStrings.errEmailInvalid;
+    final errorText = state.error != null ? AuthStrings.errEmailInvalid : null;
     if (_emailController.text != state.email) {
       _emailController.value = _emailController.value.copyWith(
         text: state.email,
@@ -93,13 +94,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               if (router.canPop()) {
                 router.pop();
               } else {
-                context.goNamed('login');
+                context.go(LoginScreen.routeName);
               }
             },
             size: AuthLayout.backButtonSize,
             innerSize: AuthLayout.backButtonSize,
             backgroundColor: theme.colorScheme.primary,
             iconColor: theme.colorScheme.onSurface,
+            semanticLabel:
+                AppLocalizations.of(context)?.authBackSemantic ?? 'Back',
           ),
           const SizedBox(height: AuthLayout.backButtonToTitle),
           Text(
@@ -135,7 +138,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                             state.email,
                             onSuccess: () async {
                               if (!context.mounted) return;
-                              context.goNamed('forgot_sent');
+                              context.goNamed(
+                                SuccessScreen.forgotEmailSentRouteName,
+                              );
                             },
                           );
                     }

@@ -24,7 +24,7 @@ Assets & Resources
 - **Format-Wahl (Runbook: `docs/runbooks/svg-export-from-figma.md`):**
   - Einfache Icons/Logos (< 10 Pfade): SVG (nach CSS-Variable-Fix via `scripts/fix_svg_css_variables.py`)
   - Komplexe Illustrationen (> 20 Elemente): PNG (@1x/@2x/@3x) für pixel-perfect Match
-  - Faustregel: Bei Unsicherheit → PNG (MIWF)
+  - Faustregel: Bei Unsicherheit → PNG (MIWF: "Make it work first" – siehe `docs/engineering/field-guides/make-it-work-first.md`)
 - Alle Assets in `pubspec.yaml` registriert; Pfade via `Assets`-Klasse (typo-safe, siehe `lib/core/design_tokens/assets.dart`).
 - Bilder in passender Größe (keine 4K-Assets für 100×100 UI); PNGs für mehrfache Auflösungen (@1x/@2x/@3x).
 - SVG-Nutzung: Vorsichtig bei komplexen Grafiken (Performance-Impact + Koordinaten-Probleme); Alternativen: PNG.

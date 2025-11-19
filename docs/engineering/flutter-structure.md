@@ -7,8 +7,10 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
   - `design_tokens/**`, `theme/**`, optional `config/**` (App-Links, Feature-Flags), `utils/**` für generische Hilfen.
   - Keine Feature-spezifischen Widgets, Strings oder Services im Core.
 - **lib/features/** beherbergt jede Domäne (auth, consent, onboarding …) inklusive `data/`, `domain/`, `state/`, `widgets/`, `screens/`.
-- Shared Widgets (z. B. `features/widgets/`) müssen plattformweit genutzt werden; sonst Feature-lokal halten.
-- Onboarding-weite Bausteine (z. B. `features/widgets/onboarding/onboarding_header.dart`) liegen im globalen Widgets-Pfad; screenspezifische Varianten bleiben weiterhin unter `features/onboarding/`.
+- Shared Widgets in `features/widgets/`:
+  - Plattformweit (über mehrere Features hinweg): `features/widgets/`; nur dann hier ablegen, wenn der Baustein wirklich plattformweit genutzt wird – sonst Feature-lokal halten.
+  - Feature-Familie-weit (z. B. über alle Onboarding-Screens): `features/widgets/onboarding/` (z. B. `features/widgets/onboarding/onboarding_header.dart`).
+  - Screen-spezifisch: `features/<feature>/widgets/` (nur in diesem Feature genutzt).
 
 ## 2. Services
 - Produktive Services leben in der lokalen Package-Workspace `services/` (aktuelles Package: `luvi_services`).

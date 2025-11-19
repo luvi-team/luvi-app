@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-/// Base gap (px) between the success trophy and the title, shared with tokens.
+/// Base gap (px) between the success trophy and the title.
+/// Per ADR-0006 we standardize on 24px (8px grid), superseding the 28px
+/// measurement in docs/audits/ONB_SUCCESS_measures.json.
 const double _kOnboardingSuccessTrophyToTitleGap = 24.0;
 
 /// Discrete spacing tokens for onboarding screens with gentle scaling.
@@ -44,7 +46,7 @@ class OnboardingSpacing {
     required this.lastOptionToFootnote07,
     required this.footnoteToCta07,
     required this.ctaToHome07,
-    // ONB_08 specific spacing (analog zu Screen 7: 90px Rhythmus)
+    // ONB_08 specific spacing (same rhythm as Screen 7: 90px)
     required this.headerToQuestion08,
     required this.questionToFirstOption08,
     required this.optionGap08,
@@ -113,7 +115,7 @@ class OnboardingSpacing {
   final double footnoteToCta07;
   final double ctaToHome07;
 
-  // ONB_08 specific spacing (analog zu Screen 7: 90px Rhythmus)
+  // ONB_08 specific spacing (same rhythm as Screen 7: 90px)
   final double headerToQuestion08;
   final double questionToFirstOption08;
   final double optionGap08;
@@ -281,7 +283,7 @@ class OnboardingSpacing {
   static const double _calloutToCta06 = 48.0;
   static const double _ctaToHome06 = 48.0;
 
-  // Shared 90 px rhythm used across late-onboarding screens.
+  // Shared 90 px rhythm used across late-onboarding screens (ONB_07, ONB_08).
   static const double _onbSharedRhythm90 = 90.0;
 
   // ONB_07 specific spacing (from Figma audit ONB_07_measures.json)
@@ -298,11 +300,11 @@ class OnboardingSpacing {
   static const double _footnoteToCta07 = 90.0;
   static const double _ctaToHome07 = 90.0;
 
-  // ONB_08 specific spacing (90px Rhythmus analog zu Screen 7)
-  // Konsistenter 90px-Rhythmus für visuelles Gleichgewicht
+  // ONB_08 specific spacing (90px rhythm analogous to Screen 7)
+  // Consistent 90px rhythm for visual balance
   static const double _headerToQuestion08 = _onbSharedRhythm90;
   static const double _questionToFirstOption08 = _onbSharedRhythm90;
-  static const double _optionGap08 = 24.0; // konsistent mit anderen Screens
+  static const double _optionGap08 = 24.0; // consistent with other screens
   static const double _lastOptionToFootnote08 = _onbSharedRhythm90;
   static const double _footnoteToCta08 = _onbSharedRhythm90;
   static const double _ctaToHome08 = _onbSharedRhythm90;
@@ -317,8 +319,8 @@ class OnboardingSpacing {
   static const double _headerToFirstOption07 = 108.0; // ONB_07: (90+90)*0.6
 
   // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
-  // Custom values (not aligned with existing rhythm tokens)
+  // Custom values (not aligned mit bestehenden Rhythmus-Tokens)
   static const double _trophyToTitle =
-      _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px)
+      _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px per ADR-0006)
   static const double _titleToButton = 66.0; // Title end → Button start
 }

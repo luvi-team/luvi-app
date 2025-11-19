@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/screens/onboarding_07.dart';
 import 'package:luvi_app/features/screens/onboarding_08.dart';
-import 'package:luvi_app/features/screens/heute_screen.dart';
+
+
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
@@ -27,16 +28,10 @@ void main() {
         ),
         GoRoute(
           path: Onboarding08Screen.routeName,
+
           builder: (context, state) {
             navigatedPath = Onboarding08Screen.routeName;
             return const Scaffold(body: Text('Onboarding 08 (Stub)'));
-          },
-        ),
-        GoRoute(
-          path: HeuteScreen.routeName,
-          builder: (context, state) {
-            navigatedPath = HeuteScreen.routeName;
-            return const HeuteScreen();
           },
         ),
       ],

@@ -78,6 +78,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboarding04CalloutSuffix => '. A rough estimate is enough to get started.';
 
   @override
+  String get initBannerConfigError => 'Configuration error: Supabase credentials invalid. App is running offline.';
+
+  @override
+  String initBannerConnecting(int attempts, int maxAttempts) {
+    return 'Connecting to server… (attempt $attempts/$maxAttempts)';
+  }
+
+  @override
+  String get initBannerRetry => 'Retry';
+
+  @override
+  String get documentLoadError => 'Failed to load document.';
+
+  @override
+  String get legalViewerLoadingLabel => 'Loading document';
+
+  @override
+  String get legalViewerFallbackBanner => 'Remote unavailable — showing offline copy.';
+
+  @override
   String get commonContinue => 'Continue';
 
   @override
@@ -354,10 +374,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingSuccessTitle => 'You\'re ready to go!';
 
   @override
+  String get onboardingSuccessStateUnavailable => 'We couldn\'t complete onboarding. Please try again.';
+
+  @override
+  String get onboardingSuccessGenericError => 'Something went wrong. Please try again.';
+
+  @override
   String get welcome01Subtitle => 'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.';
 
   @override
-  String get welcome01TitlePrefix => 'In ';
+  String welcome01Title(String prefix, String accent) {
+    return '$prefix $accent';
+  }
+
+  @override
+  String get welcome01TitlePrefix => 'In';
 
   @override
   String get welcome01TitleAccent => 'harmony';
@@ -406,6 +437,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consent02LinkTermsLabel => 'Terms of Service';
+
+  @override
+  String get privacyPolicyTitle => 'Privacy Policy';
+
+  @override
+  String get termsOfServiceTitle => 'Terms of Service';
 
   @override
   String get consent02LinkSuffix => '.';
@@ -465,10 +502,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLoginSocialDivider => 'Or continue with';
 
   @override
+  String get authLoginSocialGoogle => 'Sign in with Google';
+
+  @override
   String get authErrEmailInvalid => 'Please double-check your email.';
 
   @override
   String get authErrPasswordInvalid => 'Please double-check your password.';
+
+  @override
+  String get authErrPasswordTooShort => 'Your password is too short.';
+
+  @override
+  String get authErrPasswordMissingTypes => 'Your password must include letters, numbers, and special characters.';
+
+  @override
+  String get authErrPasswordCommonWeak => 'Your password is too common or weak.';
+
+  @override
+  String get authErrEmailEmpty => 'Please enter your email.';
+
+  @override
+  String get authErrPasswordEmpty => 'Please enter your password.';
 
   @override
   String get authErrConfirmEmail => 'Please verify your email (resend the link?).';
@@ -478,6 +533,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authErrLoginUnavailable => 'Login is currently unavailable.';
+
+  @override
+  String get authPasswordMismatchError => 'Passwords do not match.';
+
+  @override
+  String get authPasswordUpdateError => 'We couldn\'t update your password.';
+
+  @override
+  String authErrWaitBeforeRetry(int seconds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: '# seconds',
+      one: '# second',
+    );
+    return 'Please wait $_temp0 before retrying.';
+  }
 
   @override
   String get authEmailHint => 'Your email';
@@ -546,6 +618,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSuccessCta => 'Done';
 
   @override
+  String get authCreateNewTitle => 'Create a new password 💜';
+
+  @override
+  String get authCreateNewSubtitle => 'Make it strong.';
+
+  @override
   String get authCreateNewHint1 => 'New password';
 
   @override
@@ -574,4 +652,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authVerifyResend => 'Resend';
+
+  @override
+  String get consentSnackbarAccepted => 'Consent accepted';
+
+  @override
+  String get consentSnackbarError => 'We couldn\'t save your consent. Please try again.';
+
+  @override
+  String get consentSnackbarRateLimited => 'Too many requests right now. Please wait a moment and try again.';
 }

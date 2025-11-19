@@ -10,6 +10,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/shared/utils/run_catching.dart';
 import 'package:luvi_app/features/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/l10n/app_localizations_en.dart';
 import 'package:luvi_services/user_state_service.dart';
 
 class _SuccessBtnBusyNotifier extends Notifier<bool> {
@@ -40,7 +41,7 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     final spacing = OnboardingSpacing.of(context);
     final reduceMotion =
         mediaQuery.disableAnimations || mediaQuery.accessibleNavigation;
@@ -192,9 +193,6 @@ class OnboardingSuccessScreen extends ConsumerWidget {
       onPressed: isBusy
           ? null
           : () async {
-              if (ref.read(_successBtnBusyProvider)) {
-                return;
-              }
               final busyNotifier = ref.read(_successBtnBusyProvider.notifier);
               busyNotifier.setBusy(true);
               try {
@@ -202,20 +200,53 @@ class OnboardingSuccessScreen extends ConsumerWidget {
                   () => ref.read(userStateServiceProvider.future),
                   tag: 'userState',
                 );
-                try {
-                  await userState?.markOnboardingComplete(
-                    fitnessLevel: fitnessLevel,
-                  );
-                } catch (error, stackTrace) {
+                if (userState == null) {
                   debugPrint(
-                    'markOnboardingComplete failed: $error\n$stackTrace',
+                    'Cannot complete onboarding: user state service unavailable',
                   );
+                  busyNotifier.setBusy(false);
+                  if (context.mounted) {
+                    final cs = Theme.of(context).colorScheme;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: cs.error,
+                        content: Text(l10n.onboardingSuccessStateUnavailable),
+                      ),
+                    );
+                  }
+                  return;
                 }
+                await userState.markOnboardingComplete(
+                  fitnessLevel: fitnessLevel,
+                );
                 if (context.mounted) {
                   context.go(HeuteScreen.routeName);
                 }
+              } catch (error, stackTrace) {
+                debugPrint(
+                  'markOnboardingComplete failed: $error\n$stackTrace',
+                );
+                if (context.mounted) {
+                  final cs = Theme.of(context).colorScheme;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: cs.error,
+                      content: Text(l10n.onboardingSuccessGenericError),
+                    ),
+                  );
+                }
               } finally {
-                busyNotifier.setBusy(false);
+                try {
+                  busyNotifier.setBusy(false);
+                } on StateError catch (_) {
+                  // Provider may have been disposed while awaiting async work; ignore.
+                } catch (e) {
+                  // Suppress only disposal-related failures; log unexpected ones in debug.
+                  assert(() {
+                    debugPrint('Unexpected error clearing busy state: $e');
+                    return true;
+                  }());
+                }
               }
             },
       child: Text(l10n.commonStartNow),
