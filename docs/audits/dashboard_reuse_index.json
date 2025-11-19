@@ -18,7 +18,7 @@
     {
       "name": "Spacing.l",
       "path": "lib/core/design_tokens/spacing.dart:2",
-      "evidence": ["lib/features/screens/onboarding_01.dart:66"]
+      "evidence": ["lib/features/onboarding/screens/onboarding_01.dart:66"]
     },
     {
       "name": "Spacing.goalCardVertical",
@@ -35,7 +35,7 @@
     {
       "name": "GoalCard",
       "path": "lib/features/widgets/goal_card.dart:17",
-      "evidence": ["lib/features/screens/onboarding_03.dart:164", "lib/features/screens/onboarding_05.dart:133"]
+      "evidence": ["lib/features/onboarding/screens/onboarding_03.dart:164", "lib/features/onboarding/screens/onboarding_05.dart:133"]
     },
     {
       "name": "WelcomeShell",
@@ -45,7 +45,7 @@
     {
       "name": "BackButtonCircle",
       "path": "lib/features/widgets/back_button.dart:5",
-      "evidence": ["lib/features/screens/onboarding_02.dart:111", "lib/features/consent/screens/consent_02_screen.dart:197"]
+      "evidence": ["lib/features/onboarding/screens/onboarding_02.dart:111", "lib/features/consent/screens/consent_02_screen.dart:197"]
     },
     {
       "name": "AuthBottomCta",
@@ -71,7 +71,7 @@
     },
     {
       "name": "Onboarding goal Column",
-      "path": "lib/features/screens/onboarding_03.dart:157",
+      "path": "lib/features/onboarding/screens/onboarding_03.dart:157",
       "evidence": ["spacing.cardGap", "GoalCard builder"]
     },
     {
@@ -81,7 +81,7 @@
     },
     {
       "name": "Onboarding date picker stack",
-      "path": "lib/features/screens/onboarding_02.dart:248",
+      "path": "lib/features/onboarding/screens/onboarding_02.dart:248",
       "evidence": ["Positioned CupertinoDatePicker", "kOnboardingPickerHeight"]
     }
   ],

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/screens/onboarding_05.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_05.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import '../../support/test_config.dart';
+import '../../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:luvi_app/features/screens/onboarding/utils/date_formatters.dart';
+import 'package:luvi_app/features/onboarding/utils/date_formatters.dart';
 
 void main() {
   setUpAll(() async {

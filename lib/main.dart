@@ -11,7 +11,7 @@ import 'core/config/app_links.dart';
 import 'core/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'core/navigation/routes.dart' as routes;
-import 'features/screens/splash/splash_screen.dart';
+import 'features/splash/screens/splash_screen.dart';
 import 'core/init/supabase_init_controller.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'core/init/init_mode.dart' show initModeProvider;

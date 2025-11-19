@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
-import 'package:luvi_app/features/screens/onboarding_07.dart';
-import 'package:luvi_app/features/screens/onboarding_08.dart';
-import 'package:luvi_app/features/screens/onboarding_success_screen.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_07.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_08.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/shared/analytics/analytics_recorder.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
@@ -14,7 +14,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../support/test_config.dart';
+import '../../../support/test_config.dart';
 
 class _AnalyticsEvent {
   _AnalyticsEvent(this.name, Map<String, Object?> properties)

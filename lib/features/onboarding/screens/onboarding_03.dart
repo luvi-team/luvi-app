@@ -3,10 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/widgets/onboarding/onboarding_header.dart';
-import 'package:luvi_app/features/screens/onboarding_02.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
 import 'package:luvi_app/features/widgets/goal_card.dart';
-import 'package:luvi_app/features/screens/onboarding_04.dart';
-import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_04.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding03: Goals multi-select screen

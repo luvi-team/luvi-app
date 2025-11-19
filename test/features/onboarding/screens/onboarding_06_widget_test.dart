@@ -2,102 +2,101 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/screens/onboarding_06.dart';
-import 'package:luvi_app/features/screens/onboarding_07.dart';
-import 'package:luvi_app/features/screens/onboarding_08.dart';
-import 'package:luvi_app/features/screens/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_05.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_06.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_07.dart';
 import 'package:luvi_app/features/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import '../../support/test_config.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
+import '../../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
 
-  group('Onboarding07Screen', () {
-    testWidgets('option tap enables CTA and navigates to screen 08', (
-      tester,
-    ) async {
+  group('Onboarding06Screen', () {
+    testWidgets('option tap enables CTA and navigates forward', (tester) async {
       final router = GoRouter(
         routes: [
           GoRoute(
-            path: Onboarding07Screen.routeName,
-            builder: (context, state) => const Onboarding07Screen(),
+            path: Onboarding06Screen.routeName,
+            builder: (context, state) => const Onboarding06Screen(),
           ),
           GoRoute(
-            path: Onboarding08Screen.routeName,
+            path: Onboarding07Screen.routeName,
             builder: (context, state) =>
-                const Scaffold(body: Text('Onboarding 08')),
+                const Scaffold(body: Text('Onboarding 07 (Stub)')),
           ),
         ],
-        initialLocation: Onboarding07Screen.routeName,
+        initialLocation: Onboarding06Screen.routeName,
       );
 
       await tester.pumpWidget(
         MaterialApp.router(
           theme: AppTheme.buildAppTheme(),
           routerConfig: router,
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('de'),
         ),
       );
       await tester.pumpAndSettle();
 
+      // CTA initially disabled
       final cta = find.byKey(const Key('onb_cta'));
       expect(cta, findsOneWidget);
-      // initially disabled
       expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNull);
 
-      // tap first option
+      // Tap first option
       final firstOption = find.byKey(const Key('onb_option_0'));
       expect(firstOption, findsOneWidget);
       await tester.tap(firstOption);
       await tester.pumpAndSettle();
 
-      // enabled & navigates to Screen 08
+      // CTA enabled & navigates
       expect(tester.widget<ButtonStyleButton>(cta).onPressed, isNotNull);
       await tester.ensureVisible(cta);
       await tester.tap(cta);
       await tester.pumpAndSettle();
-      // Verify Screen 08 stub content is visible
-      expect(find.text('Onboarding 08'), findsOneWidget);
+      expect(find.text('Onboarding 07 (Stub)'), findsOneWidget);
     });
 
-    testWidgets('back button navigates to 06 when canPop is false', (
+    testWidgets('back button navigates to 05 when canPop is false', (
       tester,
     ) async {
       final router = GoRouter(
         routes: [
           GoRoute(
-            path: Onboarding06Screen.routeName,
+            path: Onboarding05Screen.routeName,
             builder: (context, state) =>
-                const Scaffold(body: Text('Onboarding 06')),
+                const Scaffold(body: Text('Onboarding 05')),
           ),
           GoRoute(
-            path: Onboarding07Screen.routeName,
-            builder: (context, state) => const Onboarding07Screen(),
+            path: Onboarding06Screen.routeName,
+            builder: (context, state) => const Onboarding06Screen(),
           ),
         ],
-        initialLocation: Onboarding07Screen.routeName,
+        initialLocation: Onboarding06Screen.routeName,
       );
 
       await tester.pumpWidget(
         MaterialApp.router(
           theme: AppTheme.buildAppTheme(),
           routerConfig: router,
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('de'),
         ),
       );
       await tester.pumpAndSettle();
 
-      // Verify 07 rendered
-      expect(find.textContaining('Wie ist dein Zyklus so?'), findsOneWidget);
-      final screenContext = tester.element(find.byType(Onboarding07Screen));
+      // Verify 06 rendered
+      expect(find.textContaining('Wie lange dauert dein'), findsOneWidget);
+      final screenContext = tester.element(find.byType(Onboarding06Screen));
       final l10n = AppLocalizations.of(screenContext)!;
-      final stepText = l10n.onboardingStepFraction(7, kOnboardingTotalSteps);
-      expect(find.text(stepText), findsOneWidget);
+      expect(
+        find.text(l10n.onboardingStepFraction(6, kOnboardingTotalSteps)),
+        findsOneWidget,
+      );
 
       // Tap back button
       final backButton = find.byType(BackButtonCircle);
@@ -105,8 +104,8 @@ void main() {
       await tester.tap(backButton);
       await tester.pumpAndSettle();
 
-      // Should navigate to 06 (fallback when canPop=false)
-      expect(find.text('Onboarding 06'), findsOneWidget);
+      // Should navigate to 05 (fallback when canPop=false)
+      expect(find.text('Onboarding 05'), findsOneWidget);
     });
   });
 }
