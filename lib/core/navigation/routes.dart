@@ -47,22 +47,22 @@ class OnboardingRoutes {
 }
 // Route helpers for readability and maintainability. These are pure functions
 // so they can be unit-tested easily by passing a location string.
-bool _isOnboardingRoute(String location) {
+bool isOnboardingRoute(String location) {
   // Onboarding covers the core steps (o1–o8, success, done),
   // but explicitly excludes the welcome intro screens under /onboarding/w.
   final isOnboardingRoot =
       location == _onboardingRootPath ||
       location.startsWith('$_onboardingRootPath/');
   if (!isOnboardingRoot) return false;
-  // Exclude welcome routes to avoid overlap with _isWelcomeRoute
+  // Exclude welcome routes to avoid overlap with isWelcomeRoute
   return !location.startsWith(_welcomeRootPath);
 }
 
-bool _isWelcomeRoute(String location) {
+bool isWelcomeRoute(String location) {
   return location.startsWith(_welcomeRootPath);
 }
 
-bool _isConsentRoute(String location) {
+bool isConsentRoute(String location) {
   return location == _consentRootPath ||
       location.startsWith(_consentPathPrefix);
 }
@@ -259,9 +259,9 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   final isAuthEntry = state.matchedLocation.startsWith(
     AuthEntryScreen.routeName,
   );
-  final isOnboarding = _isOnboardingRoute(state.matchedLocation);
-  final isWelcome = _isWelcomeRoute(state.matchedLocation);
-  final isConsent = _isConsentRoute(state.matchedLocation);
+  final isOnboarding = isOnboardingRoute(state.matchedLocation);
+  final isWelcome = isWelcomeRoute(state.matchedLocation);
+  final isConsent = isConsentRoute(state.matchedLocation);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
   final session = isInitialized

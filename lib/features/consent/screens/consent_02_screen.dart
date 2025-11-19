@@ -6,6 +6,7 @@ import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
@@ -108,62 +109,31 @@ class Consent02Screen extends ConsumerWidget {
     Consent02State state,
     AppLocalizations l10n,
   ) async {
-    final busyNotifier = ref.read(_consentBtnBusyProvider.notifier);
-    if (ref.read(_consentBtnBusyProvider)) {
+    if (!_acquireBusy(ref)) {
       return;
     }
-    busyNotifier.setBusy(true);
     try {
-      final consentService = ref.read(consentServiceProvider);
-      final scopes = _scopeIdsFor(state);
-      await consentService.accept(
-        version: ConsentConfig.currentVersion,
-        scopes: scopes,
-      );
-
-      Object? markError;
-      final userState = await tryOrNullAsync(
-        () => ref.read(userStateServiceProvider.future),
-        tag: 'userState',
-      );
-
-      if (userState != null) {
-        await tryOrNullAsync(
-          () async {
-            await userState.markWelcomeSeen();
-          },
-          tag: 'markWelcomeSeen',
-          onError: (error, stack) {
-            markError = error;
-          },
-        );
-      }
-
-      if (!context.mounted) return;
-
-      if (markError != null) {
-        _showConsentErrorSnackbar(
-          context,
-          l10n.consentSnackbarError,
-        );
+      final scopes = _computeScopes(state);
+      await _acceptConsent(ref, scopes);
+      final welcomeMarked = await _markWelcomeSeen(ref);
+      if (!welcomeMarked) {
+        if (!context.mounted) return;
+        _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
         return;
       }
-
-      context.go(AuthEntryScreen.routeName);
+      if (!context.mounted) return;
+      _navigateToAuthEntry(context);
     } on ConsentException catch (error) {
       if (!context.mounted) return;
       final message = error.code == 'rate_limit'
           ? l10n.consentSnackbarRateLimited
           : l10n.consentSnackbarError;
       _showConsentErrorSnackbar(context, message);
-    } catch (_) {
+    } catch (error, stackTrace) {
       if (!context.mounted) return;
-      _showConsentErrorSnackbar(
-        context,
-        l10n.consentSnackbarError,
-      );
+      _reportUnexpectedConsentError(error, stackTrace, context, l10n);
     } finally {
-      busyNotifier.setBusy(false);
+      _releaseBusy(ref);
     }
   }
 
@@ -510,6 +480,25 @@ class _ConsentFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final disabledBg = colorScheme.onSurface.withValues(alpha: 0.12);
+    final disabledFg = colorScheme.onSurface.withValues(alpha: 0.38);
+    final baseStyle = ElevatedButton.styleFrom(
+      minimumSize: const Size.fromHeight(Sizes.buttonHeight),
+    );
+    final buttonStyle = baseStyle.copyWith(
+      backgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return disabledBg;
+        }
+        return colorScheme.primary;
+      }),
+      foregroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return disabledFg;
+        }
+        return colorScheme.onPrimary;
+      }),
+    );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -543,10 +532,7 @@ class _ConsentFooter extends StatelessWidget {
           child: ElevatedButton(
             key: const Key('consent02_btn_next'),
             onPressed: nextEnabled ? onNext : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              foregroundColor: colorScheme.onPrimary,
-            ),
+            style: buttonStyle,
             child: Text(l10n.commonContinue),
           ),
         ),
@@ -568,4 +554,69 @@ void _showConsentErrorSnackbar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(content: Text(message)),
   );
+}
+
+bool _acquireBusy(WidgetRef ref) {
+  if (ref.read(_consentBtnBusyProvider)) {
+    return false;
+  }
+  ref.read(_consentBtnBusyProvider.notifier).setBusy(true);
+  return true;
+}
+
+void _releaseBusy(WidgetRef ref) {
+  try {
+    ref.read(_consentBtnBusyProvider.notifier).setBusy(false);
+  } on StateError catch (_) {
+    // Provider may be disposed if the widget unmounted mid-flight.
+  }
+}
+
+List<String> _computeScopes(Consent02State state) => _scopeIdsFor(state);
+
+Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
+  final consentService = ref.read(consentServiceProvider);
+  return consentService.accept(
+    version: ConsentConfig.currentVersion,
+    scopes: scopes,
+  );
+}
+
+Future<bool> _markWelcomeSeen(WidgetRef ref) async {
+  final userState = await tryOrNullAsync(
+    () => ref.read(userStateServiceProvider.future),
+    tag: 'userState',
+  );
+  if (userState == null) {
+    return false;
+  }
+
+  var markFailed = false;
+  await tryOrNullAsync(
+    () => userState.markWelcomeSeen(),
+    tag: 'markWelcomeSeen',
+    onError: (error, stackTrace) {
+      markFailed = true;
+    },
+  );
+
+  return !markFailed;
+}
+
+void _navigateToAuthEntry(BuildContext context) {
+  context.go(AuthEntryScreen.routeName);
+}
+
+void _reportUnexpectedConsentError(
+  Object error,
+  StackTrace stackTrace,
+  BuildContext context,
+  AppLocalizations l10n,
+) {
+  log.e(
+    'consent_next_unexpected',
+    error: sanitizeError(error) ?? error.runtimeType,
+    stack: stackTrace,
+  );
+  _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
 }

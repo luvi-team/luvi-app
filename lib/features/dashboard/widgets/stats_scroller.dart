@@ -103,10 +103,87 @@ class _TrainingStatCard extends StatelessWidget {
 
   final TrainingStatProps data;
 
-  static final NumberFormat _formatter = NumberFormat.decimalPattern('de_DE');
+  static NumberFormat? _cachedFormatter;
+  static Locale? _cachedLocale;
 
-  Widget _buildValueGroup(Color valueColor, Color titleColor) {
-    final formattedValue = _formatter.format(data.value);
+  NumberFormat _numberFormatter(BuildContext context) {
+    final locale =
+        Localizations.maybeLocaleOf(context) ??
+        WidgetsBinding.instance.platformDispatcher.locale;
+    if (_cachedFormatter == null || _cachedLocale != locale) {
+      _cachedLocale = locale;
+      _cachedFormatter = NumberFormat.decimalPattern(locale.toLanguageTag());
+    }
+    return _cachedFormatter!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTokens = theme.extension<TextColorTokens>();
+    final dsTokens = theme.extension<DsTokens>();
+    final surfaceTokens = theme.extension<SurfaceColorTokens>();
+    final titleColor = textTokens?.secondary ?? const Color(0xFF6D6D6D);
+    final valueColor = textTokens?.primary ?? const Color(0xFF030401);
+    final badgeFill =
+        dsTokens?.color.icon.badge.goldCircle ?? const Color(0xFFD9B18E);
+    final formattedLabel = _formatStatLabel(data.label);
+    final labelMaxLines = formattedLabel.contains('\n') ? 2 : 1;
+    final cardSurface =
+        surfaceTokens?.cardBackgroundNeutral ??
+        dsTokens?.cardSurface ??
+        DsColors.cardBackgroundNeutral;
+    final formattedValue = _numberFormatter(context).format(data.value);
+    final valueGroup = _TrainingStatValueGroup(
+      data: data,
+      formattedValue: formattedValue,
+      valueColor: valueColor,
+      titleColor: titleColor,
+    );
+
+    return RepaintBoundary(
+      child: _TrainingCardSurface(
+        cardSurface: cardSurface,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _TrainingCardHeader(
+                  label: formattedLabel,
+                  labelMaxLines: labelMaxLines,
+                  iconAssetPath: data.iconAssetPath,
+                  titleColor: titleColor,
+                  badgeFill: badgeFill,
+                ),
+                const SizedBox(height: StatsScrollerLayout.labelToValueGap),
+                _TrainingCardValueArea(child: valueGroup),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TrainingStatValueGroup extends StatelessWidget {
+  const _TrainingStatValueGroup({
+    required this.data,
+    required this.formattedValue,
+    required this.valueColor,
+    required this.titleColor,
+  });
+
+  final TrainingStatProps data;
+  final String formattedValue;
+  final Color valueColor;
+  final Color titleColor;
+
+  @override
+  Widget build(BuildContext context) {
     final valueStyle = TextStyle(
       fontFamily: FontFamilies.playfairDisplay,
       fontSize: TypographyTokens.size28,
@@ -133,10 +210,10 @@ class _TrainingStatCard extends StatelessWidget {
     }
 
     if (data.unit == null) {
-      return _buildCenteredValue(formattedValue, valueStyle);
+      return _buildCenteredValue(valueStyle);
     }
 
-    return _buildInlineValue(formattedValue, data.unit!, valueStyle, unitStyle);
+    return _buildInlineValue(data.unit!, valueStyle, unitStyle);
   }
 
   Widget _buildStackedValue(
@@ -178,7 +255,6 @@ class _TrainingStatCard extends StatelessWidget {
   }
 
   Widget _buildInlineValue(
-    String value,
     String unit,
     TextStyle valueStyle,
     TextStyle unitStyle,
@@ -188,7 +264,7 @@ class _TrainingStatCard extends StatelessWidget {
       child: RichText(
         textHeightBehavior: _valueHeightBehavior,
         text: TextSpan(
-          text: value,
+          text: formattedValue,
           style: valueStyle,
           children: [TextSpan(text: ' $unit', style: unitStyle)],
         ),
@@ -196,13 +272,13 @@ class _TrainingStatCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCenteredValue(String value, TextStyle valueStyle) {
+  Widget _buildCenteredValue(TextStyle valueStyle) {
     return Align(
       alignment: Alignment(StatsScrollerLayout.stepsValueAlignmentX, -1),
       child: Padding(
         padding: const EdgeInsets.only(left: 8),
         child: Text(
-          value,
+          formattedValue,
           style: valueStyle,
           textHeightBehavior: _valueHeightBehavior,
         ),
@@ -224,89 +300,6 @@ class _TrainingStatCard extends StatelessWidget {
         width: StatsScrollerLayout.hrGlyphWidth,
         height: StatsScrollerLayout.hrGlyphHeight,
         excludeFromSemantics: true,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTokens = Theme.of(context).extension<TextColorTokens>();
-    final dsTokens = Theme.of(context).extension<DsTokens>();
-    final surfaceTokens = Theme.of(context).extension<SurfaceColorTokens>();
-
-    final titleColor = textTokens?.secondary ?? const Color(0xFF6D6D6D);
-    final valueColor = textTokens?.primary ?? const Color(0xFF030401);
-    final badgeFill =
-        dsTokens?.color.icon.badge.goldCircle ?? const Color(0xFFD9B18E);
-    final formattedLabel = _formatStatLabel(data.label);
-    final labelMaxLines = formattedLabel.contains('\n') ? 2 : 1;
-    final Color cardSurface =
-        surfaceTokens?.cardBackgroundNeutral ??
-        dsTokens?.cardSurface ??
-        DsColors.cardBackgroundNeutral;
-
-    return RepaintBoundary(
-      child: Container(
-        key: const Key('stats_card_container'),
-        width: kStatsCardWidth,
-        height: kStatsCardHeight,
-        decoration: BoxDecoration(
-          color: cardSurface,
-          borderRadius: BorderRadius.circular(kStatsCardRadius),
-          border: Border.all(
-            color: const Color(0x1A000000), // Figma: 1dp @ 10% black
-            width: 1,
-          ),
-        ),
-        padding: StatsScrollerLayout.cardPadding,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height:
-                      TypographyTokens.size14 *
-                      TypographyTokens.lineHeightRatio24on14 *
-                      2,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          formattedLabel,
-                          maxLines: labelMaxLines,
-                          overflow: labelMaxLines == 1
-                              ? TextOverflow.ellipsis
-                              : TextOverflow.visible,
-                          softWrap: labelMaxLines > 1,
-                          style: TextStyle(
-                            fontFamily: FontFamilies.figtree,
-                            fontSize: TypographyTokens.size14,
-                            height: TypographyTokens.lineHeightRatio24on14,
-                            fontWeight: FontWeight.w500,
-                            color: titleColor,
-                          ),
-                        ),
-                      ),
-                      _IconBadge(
-                        assetPath: data.iconAssetPath,
-                        backgroundColor: badgeFill,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: StatsScrollerLayout.labelToValueGap),
-                SizedBox(
-                  height: StatsScrollerLayout.valueAreaHeight,
-                  child: _buildValueGroup(valueColor, titleColor),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -332,6 +325,100 @@ class _IconBadge extends StatelessWidget {
         excludeFromSemantics: true,
         colorFilter: const ColorFilter.mode(Color(0xFF1C1411), BlendMode.srcIn),
       ),
+    );
+  }
+}
+
+class _TrainingCardSurface extends StatelessWidget {
+  const _TrainingCardSurface({
+    required this.cardSurface,
+    required this.child,
+  });
+
+  final Color cardSurface;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('stats_card_container'),
+      width: kStatsCardWidth,
+      height: kStatsCardHeight,
+      decoration: BoxDecoration(
+        color: cardSurface,
+        borderRadius: BorderRadius.circular(kStatsCardRadius),
+        border: Border.all(
+          color: const Color(0x1A000000), // Figma: 1dp @ 10% black
+          width: 1,
+        ),
+      ),
+      padding: StatsScrollerLayout.cardPadding,
+      child: child,
+    );
+  }
+}
+
+class _TrainingCardHeader extends StatelessWidget {
+  const _TrainingCardHeader({
+    required this.label,
+    required this.labelMaxLines,
+    required this.iconAssetPath,
+    required this.titleColor,
+    required this.badgeFill,
+  });
+
+  final String label;
+  final int labelMaxLines;
+  final String iconAssetPath;
+  final Color titleColor;
+  final Color badgeFill;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: TypographyTokens.size14 *
+          TypographyTokens.lineHeightRatio24on14 *
+          2,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              maxLines: labelMaxLines,
+              overflow: labelMaxLines == 1
+                  ? TextOverflow.ellipsis
+                  : TextOverflow.visible,
+              softWrap: labelMaxLines > 1,
+              style: TextStyle(
+                fontFamily: FontFamilies.figtree,
+                fontSize: TypographyTokens.size14,
+                height: TypographyTokens.lineHeightRatio24on14,
+                fontWeight: FontWeight.w500,
+                color: titleColor,
+              ),
+            ),
+          ),
+          _IconBadge(
+            assetPath: iconAssetPath,
+            backgroundColor: badgeFill,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TrainingCardValueArea extends StatelessWidget {
+  const _TrainingCardValueArea({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: StatsScrollerLayout.valueAreaHeight,
+      child: child,
     );
   }
 }

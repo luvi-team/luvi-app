@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 
 /// Category chip for Dashboard: Column layout (icon above label).
 /// from DASHBOARD_spec.json $.categories.chips (60×92, icon 60×60, label below, gap 8px)
@@ -103,8 +105,10 @@ class CategoryChip extends StatelessWidget {
                         height: 32,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {
-                          debugPrint(
-                            'CategoryChip: failed to load SVG $iconPath. Error: $error',
+                          log.w(
+                            'dashboard_category_chip_icon_failed',
+                            error: sanitizeError(error) ?? error.runtimeType,
+                            stack: stackTrace,
                           );
                           return const SizedBox(
                             width: 32,

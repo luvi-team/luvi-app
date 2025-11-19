@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Collection of lightweight date formatter helpers used across onboarding.
@@ -16,10 +18,11 @@ class DateFormatters {
       return formatter.format(date);
     } catch (e, stackTrace) {
       // On any failure, fall back to a safe, locale-agnostic ISO-like format.
-      debugPrint('DateFormatters.localizedDayMonthYear fallback: $e');
-      if (kDebugMode) {
-        debugPrintStack(stackTrace: stackTrace, label: 'DateFormat error');
-      }
+      log.w(
+        'date_formatters_localized_day_month_year_fallback',
+        error: sanitizeError(e) ?? e.runtimeType,
+        stack: stackTrace,
+      );
       try {
         final iso = date.toIso8601String();
         return iso.length >= 10 ? iso.substring(0, 10) : iso;

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/privacy/pii_keys.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 
 /// Lightweight analytics recorder contract so UI flows can emit structured
 /// events while allowing tests to override the implementation.
@@ -106,8 +108,10 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
     // Block events that appear to include PII-like keys; log and return early.
     if (_containsSuspiciousPII(properties)) {
       final keys = properties.keys.join(', ');
-      debugPrint(
-        '[analytics] BLOCKED (PII suspected): "$name" — offending keys among: $keys',
+      log.w(
+        'analytics_event_blocked_pii',
+        tag: 'analytics',
+        error: 'name="$name" offending keys: $keys',
       );
       return;
     }
@@ -115,14 +119,19 @@ class DebugAnalyticsRecorder implements AnalyticsRecorder {
     if (kDebugMode) {
       final keys = properties.keys.join(', ');
       final suffix = properties.isEmpty ? '' : ' (keys: $keys)';
-      debugPrint('[analytics] $name$suffix');
+      log.d('[analytics] $name$suffix', tag: 'analytics');
     }
 
     if (backend != null) {
       try {
         backend!(name, properties);
       } catch (error, stackTrace) {
-        debugPrint('[analytics] Backend error: $error\n$stackTrace');
+        log.e(
+          'analytics_backend_failed',
+          tag: 'analytics',
+          error: sanitizeError(error) ?? error.runtimeType,
+          stack: stackTrace,
+        );
       }
     }
   }

@@ -27,33 +27,11 @@ class Logger {
   void i(String? message, {String? tag}) =>
       _print(_format('I', sanitizeForLog(message ?? ''), tag: tag));
 
-  void w(String? message, {String? tag, Object? error, StackTrace? stack}) {
-    final lines = StringBuffer(_format('W', sanitizeForLog(message ?? ''), tag: tag));
-    if (error != null) {
-      lines.write('\n');
-      lines.write(sanitizeForLog('$error'));
-    }
-    if (stack != null) {
-      lines.write('\n');
-      // Stack traces rarely hold PII, but sanitize defensively to avoid
-      // leaking embedded messages from exception toString().
-      lines.write(sanitizeForLog(stack.toString()));
-    }
-    _print(lines.toString());
-  }
+  void w(String? message, {String? tag, Object? error, StackTrace? stack}) =>
+      _printStructured('W', message, tag: tag, error: error, stack: stack);
 
-  void e(String? message, {String? tag, Object? error, StackTrace? stack}) {
-    final lines = StringBuffer(_format('E', sanitizeForLog(message ?? ''), tag: tag));
-    if (error != null) {
-      lines.write('\n');
-      lines.write(sanitizeForLog('$error'));
-    }
-    if (stack != null) {
-      lines.write('\n');
-      lines.write(sanitizeForLog(stack.toString()));
-    }
-    _print(lines.toString());
-  }
+  void e(String? message, {String? tag, Object? error, StackTrace? stack}) =>
+      _printStructured('E', message, tag: tag, error: error, stack: stack);
 
   // Print indirection: kept intentionally as a seam for testing and potential
   // output redirection (e.g., capture logs in tests or swap sink in the future).
@@ -66,6 +44,52 @@ class Logger {
   String _format(String level, String message, {String? tag}) {
     final tagPart = (tag == null || tag.isEmpty) ? '' : ' [$tag]';
     return '[$level]$tagPart $message';
+  }
+
+  void _printStructured(
+    String level,
+    String? message, {
+    String? tag,
+    Object? error,
+    StackTrace? stack,
+  }) {
+    final buffer =
+        StringBuffer(_format(level, sanitizeForLog(message ?? ''), tag: tag));
+    final sanitizedError = _sanitizeError(error);
+    if (sanitizedError != null && sanitizedError.isNotEmpty) {
+      buffer
+        ..write('\n')
+        ..write(sanitizedError);
+    }
+    final sanitizedStack = _sanitizeStack(stack);
+    if (sanitizedStack != null && sanitizedStack.isNotEmpty) {
+      buffer
+        ..write('\n')
+        ..write(sanitizedStack);
+    }
+    _print(buffer.toString());
+  }
+
+  String? _sanitizeError(Object? error) {
+    if (error == null) return null;
+    return sanitizeForLog(error is String ? error : '$error');
+  }
+
+  String? _sanitizeStack(StackTrace? stack) {
+    if (stack == null) return null;
+    final raw = stack.toString();
+    if (raw.isEmpty) return '';
+    final sanitized = sanitizeForLog(raw);
+    if (!kReleaseMode) {
+      return sanitized;
+    }
+    const maxReleaseLines = 12;
+    final lines = sanitized.split('\n');
+    if (lines.length <= maxReleaseLines) {
+      return sanitized;
+    }
+    final truncated = lines.take(maxReleaseLines).join('\n');
+    return '$truncated\n[stack trimmed]';
   }
 }
 

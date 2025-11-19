@@ -40,6 +40,230 @@ double waveBottomRevealForWidth(
   return math.min(reveal, heroToSectionGap);
 }
 
+class _HeuteAppBar extends StatelessWidget {
+  const _HeuteAppBar({
+    required this.userName,
+    required this.currentPhase,
+    required this.hasNotifications,
+  });
+
+  final String userName;
+  final Phase currentPhase;
+  final bool hasNotifications;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+      sliver: SliverToBoxAdapter(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: Spacing.m),
+            HeuteHeader(
+              userName: userName,
+              currentPhase: currentPhase,
+              hasNotifications: hasNotifications,
+            ),
+            const SizedBox(height: Spacing.m),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeuteSliverHeader extends StatelessWidget {
+  const _HeuteSliverHeader({
+    required this.calendar,
+    required this.waveOverlay,
+  });
+
+  final Widget calendar;
+  final Widget waveOverlay;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverList(
+      delegate: SliverChildListDelegate(
+        [
+          calendar,
+          waveOverlay,
+        ],
+      ),
+    );
+  }
+}
+
+class _HeuteStatsSection extends StatelessWidget {
+  const _HeuteStatsSection({
+    required this.isDashboardV2Enabled,
+    required this.postWaveTopGap,
+    required this.state,
+    required this.currentPhase,
+    required this.selectedCategory,
+    required this.onCategoryTap,
+    required this.onTrainingTap,
+  });
+
+  final bool isDashboardV2Enabled;
+  final double postWaveTopGap;
+  final HeuteFixtureState state;
+  final Phase currentPhase;
+  final Category selectedCategory;
+  final ValueChanged<Category> onCategoryTap;
+  final ValueChanged<String> onTrainingTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isDashboardV2Enabled) {
+      return SliverToBoxAdapter(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: postWaveTopGap),
+            Padding(
+              padding: const EdgeInsets.only(right: Spacing.l),
+              child: WeeklyTrainingSection(
+                trainings: state.weeklyTrainings,
+                onTrainingTap: onTrainingTap,
+              ),
+            ),
+            const SizedBox(height: Spacing.m),
+          ],
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+      sliver: SliverToBoxAdapter(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: postWaveTopGap),
+            LegacySections(
+              categories: state.categories,
+              selectedCategory: selectedCategory,
+              onCategoryTap: onCategoryTap,
+              topRecommendation: state.topRecommendation,
+              recommendations: state.recommendations,
+              trainingStats: state.trainingStats,
+              isWearableConnected: state.wearable.connected,
+              currentPhase: currentPhase,
+            ),
+            const SizedBox(height: Spacing.m),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeuteRecommendationSection extends StatelessWidget {
+  const _HeuteRecommendationSection({
+    required this.isDashboardV2Enabled,
+    required this.state,
+    required this.waveSurface,
+  });
+
+  final bool isDashboardV2Enabled;
+  final HeuteFixtureState state;
+  final Color waveSurface;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (isDashboardV2Enabled)
+            PhaseRecommendationsSection(
+              nutritionRecommendations: state.nutritionRecommendations,
+              regenerationRecommendations: state.regenerationRecommendations,
+            ),
+          ColoredBox(
+            color: waveSurface,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [SizedBox(height: scrollStopPadding(context))],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeuteBottomDock extends StatelessWidget {
+  const _HeuteBottomDock({
+    required this.l10n,
+    required this.activeTabIndex,
+    required this.onTabSelected,
+    required this.onSyncTap,
+  });
+
+  final AppLocalizations l10n;
+  final int activeTabIndex;
+  final ValueChanged<int> onTabSelected;
+  final VoidCallback onSyncTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final tabs = [
+      DockTab(
+        iconPath: dash_assets.Assets.icons.navToday,
+        label: l10n.dashboardNavToday,
+        key: const Key('nav_today'),
+      ),
+      DockTab(
+        iconPath: dash_assets.Assets.icons.navCycle,
+        label: l10n.dashboardNavCycle,
+        key: const Key('nav_cycle'),
+      ),
+      DockTab(
+        iconPath: dash_assets.Assets.icons.navPulse,
+        label: l10n.dashboardNavPulse,
+        key: const Key('nav_pulse'),
+      ),
+      DockTab(
+        iconPath: dash_assets.Assets.icons.navProfile,
+        label: l10n.dashboardNavProfile,
+        key: const Key('nav_profile'),
+      ),
+    ];
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        BottomNavDock(
+          key: const Key('dashboard_dock_nav'),
+          activeIndex: activeTabIndex == 4 ? -1 : activeTabIndex,
+          onTabTap: onTabSelected,
+          tabs: tabs,
+        ),
+        Positioned(
+          bottom: syncButtonBottom,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: FloatingSyncButton(
+              key: const Key('floating_sync_button'),
+              iconPath: dash_assets.Assets.icons.navSync,
+              iconTight: false,
+              isActive: activeTabIndex == 4,
+              onTap: onSyncTap,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 double _waveBottomRevealFor(BuildContext context, double heroToSectionGap) {
   final double viewportWidth = MediaQuery.sizeOf(context).width;
   return waveBottomRevealForWidth(viewportWidth, heroToSectionGap);
@@ -126,110 +350,70 @@ class _HeuteScreenState extends State<HeuteScreen> {
         dsTokens?.cardSurface ??
         SurfaceColorTokens.light.waveOverlayBeige;
     final Color waveSurface = Color.alphaBlend(waveTint, Colors.white);
+    final Widget calendar = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+      child: _buildCalendar(weekView),
+    );
+    final Widget waveOverlay = _buildWaveOverlay(
+      context,
+      state,
+      heroToSectionGap,
+      bottomReveal,
+    );
 
     return Scaffold(
       extendBody: true,
       backgroundColor: const Color(0xFFFFFFFF),
-      bottomNavigationBar: _buildDockNavigation(l10n),
+      bottomNavigationBar: _HeuteBottomDock(
+        l10n: l10n,
+        activeTabIndex: _activeTabIndex,
+        onTabSelected: (index) {
+          setState(() {
+            _activeTabIndex = index;
+          });
+        },
+        onSyncTap: () {
+          setState(() {
+            _activeTabIndex = 4;
+          });
+          context.go(LuviSyncJournalStubScreen.route);
+        },
+      ),
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: Spacing.m),
-                    HeuteHeader(
-                      userName: state.header.userName,
-                      currentPhase: currentPhase,
-                      hasNotifications: state.bottomNav.hasNotifications,
-                    ),
-                    const SizedBox(height: Spacing.m),
-                  ],
-                ),
-              ),
+            _HeuteAppBar(
+              userName: state.header.userName,
+              currentPhase: currentPhase,
+              hasNotifications: state.bottomNav.hasNotifications,
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-                child: _buildCalendar(weekView),
-              ),
+            _HeuteSliverHeader(
+              calendar: calendar,
+              waveOverlay: waveOverlay,
             ),
-            SliverToBoxAdapter(
-              child: _buildWaveOverlay(context, state),
+            _HeuteStatsSection(
+              isDashboardV2Enabled: isDashboardV2Enabled,
+              postWaveTopGap: postWaveTopGap,
+              state: state,
+              currentPhase: currentPhase,
+              selectedCategory: _selectedCategory,
+              onCategoryTap: (category) {
+                if (_selectedCategory == category) {
+                  return;
+                }
+                setState(() {
+                  _selectedCategory = category;
+                });
+              },
+              onTrainingTap: (trainingId) =>
+                  context.push('/workout/$trainingId'),
             ),
-            if (isDashboardV2Enabled) ...[
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: postWaveTopGap),
-                    // Right-only padding: allows weekly training carousel to scroll from screen edge
-                    Padding(
-                      padding: const EdgeInsets.only(right: Spacing.l),
-                      child: WeeklyTrainingSection(
-                        trainings: state.weeklyTrainings,
-                        onTrainingTap: (trainingId) =>
-                            context.push('/workout/$trainingId'),
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.m),
-                  ],
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: PhaseRecommendationsSection(
-                  nutritionRecommendations: state.nutritionRecommendations,
-                  regenerationRecommendations:
-                      state.regenerationRecommendations,
-                ),
-              ),
-            ] else ...[
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(height: postWaveTopGap),
-                      LegacySections(
-                        categories: state.categories,
-                        selectedCategory: _selectedCategory,
-                        onCategoryTap: (category) {
-                          if (_selectedCategory == category) {
-                            return;
-                          }
-                          setState(() {
-                            _selectedCategory = category;
-                          });
-                        },
-                        topRecommendation: state.topRecommendation,
-                        recommendations: state.recommendations,
-                        trainingStats: state.trainingStats,
-                        isWearableConnected: state.wearable.connected,
-                        currentPhase: currentPhase,
-                      ),
-                      const SizedBox(height: Spacing.m),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            SliverToBoxAdapter(
-              child: ColoredBox(
-                color: waveSurface,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [SizedBox(height: scrollStopPadding(context))],
-                  ),
-                ),
-              ),
+            _HeuteRecommendationSection(
+              isDashboardV2Enabled: isDashboardV2Enabled,
+              state: state,
+              waveSurface: waveSurface,
             ),
             SliverFillRemaining(
               hasScrollBody: false,
@@ -245,7 +429,12 @@ class _HeuteScreenState extends State<HeuteScreen> {
     return DashboardCalendar(view: weekView);
   }
 
-  Widget _buildWaveOverlay(BuildContext context, HeuteFixtureState state) {
+  Widget _buildWaveOverlay(
+    BuildContext context,
+    HeuteFixtureState state,
+    double heroToSectionGap,
+    double bottomReveal,
+  ) {
     final surface = Theme.of(context).extension<SurfaceColorTokens>();
     final layout = Theme.of(context).extension<DashboardLayoutTokens>();
     final Color waveColor =
@@ -254,9 +443,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
     final double heroMargin = layout?.heroHorizontalMarginPx ?? Spacing.l;
     final double calendarGap = layout?.calendarToWaveGapPx ?? Spacing.xs;
     assert(calendarGap >= 0);
-    final double heroToSectionGap = layout?.heroToSectionGapPx ?? 42;
     final double heroHeight = HeroSyncPreview.kContainerHeight;
-    final double bottomReveal = _waveBottomRevealFor(context, heroToSectionGap);
     final Color backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final double effectiveWaveHeight = math.max(
       waveHeight,
@@ -296,71 +483,4 @@ class _HeuteScreenState extends State<HeuteScreen> {
     );
   }
 
-  Widget _buildDockNavigation(AppLocalizations l10n) {
-    final tabs = [
-      DockTab(
-        iconPath: dash_assets.Assets.icons.navToday,
-        label: l10n.dashboardNavToday,
-        key: const Key('nav_today'),
-      ),
-      DockTab(
-        iconPath: dash_assets.Assets.icons.navCycle,
-        label: l10n.dashboardNavCycle,
-        key: const Key('nav_cycle'),
-      ),
-      DockTab(
-        iconPath: dash_assets.Assets.icons.navPulse,
-        label: l10n.dashboardNavPulse,
-        key: const Key('nav_pulse'),
-      ),
-      DockTab(
-        iconPath: dash_assets.Assets.icons.navProfile,
-        label: l10n.dashboardNavProfile,
-        key: const Key('nav_profile'),
-      ),
-    ];
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        // Dock bar with violet wave top-border (white bg, shadow)
-        BottomNavDock(
-          key: const Key('dashboard_dock_nav'),
-          activeIndex: _activeTabIndex == 4
-              ? -1
-              : _activeTabIndex, // When sync active (4), no dock tab is selected
-          onTabTap: (index) {
-            setState(() {
-              _activeTabIndex = index;
-            });
-          },
-          tabs: tabs,
-          // Kodex: height from tokens (96px, formula-based)
-        ),
-        // Floating sync button above center (index 4)
-        Positioned(
-          bottom:
-              syncButtonBottom, // Kodex: Formula from tokens = 96 - 38 - 9 = 49px
-          left: 0,
-          right: 0,
-          child: Center(
-            child: FloatingSyncButton(
-              key: const Key('floating_sync_button'),
-              iconPath: dash_assets.Assets.icons.navSync,
-              // Kodex: size and iconSize from tokens (64px, 42px)
-              // Current SVG has 3px padding (26/32 glyph). Compensate to keep 65% fill.
-              iconTight: false,
-              isActive: _activeTabIndex == 4, // Gold tint when sync is active
-              onTap: () {
-                setState(() {
-                  _activeTabIndex = 4; // Sync tab index
-                });
-                context.go(LuviSyncJournalStubScreen.route);
-              },
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }

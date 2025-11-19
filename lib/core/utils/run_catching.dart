@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 final RegExp _emailPattern = RegExp(
   r'([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})',
@@ -91,9 +92,6 @@ Future<T?> tryOrNullAsync<T>(
   }
 }
 
-String _shortStackTrace(StackTrace stackTrace, {int maxLines = 5}) =>
-    stackTrace.toString().split('\n').take(maxLines).join('\n');
-
 void _reportHandledError({
   required Object error,
   required StackTrace stackTrace,
@@ -111,13 +109,19 @@ void _reportHandledError({
   if (kDebugMode) {
     try {
       final sanitized = _sanitizeError(error);
-      final suffix =
-          sanitized != null ? ': $sanitized' : ': ${error.toString()}';
-      debugPrint(
-        '[$tag] ${error.runtimeType}$suffix\n${_shortStackTrace(stackTrace)}',
+      log.w(
+        'run_catching_handled_error',
+        tag: tag,
+        error: sanitized ?? error,
+        stack: stackTrace,
       );
     } catch (_) {
-      debugPrint('[$tag] ${error.runtimeType} (sanitization failed)');
+      log.w(
+        'run_catching_handled_error',
+        tag: tag,
+        error: error.runtimeType,
+        stack: stackTrace,
+      );
     }
   }
 }
@@ -167,6 +171,9 @@ String? _sanitizeError(Object error) {
 
 @visibleForTesting
 String? debugSanitizeError(Object error) => _sanitizeError(error);
+
+/// Public wrapper for sanitized error messages usable outside tests.
+String? sanitizeError(Object error) => _sanitizeError(error);
 
 bool _isPiiPhone(String candidate) {
   // Remove extension markers (e.g., "ext. 123") before counting digits so the

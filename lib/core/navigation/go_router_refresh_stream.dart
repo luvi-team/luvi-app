@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 
 /// Minimal replacement for go_router's GoRouterRefreshStream to avoid
 /// version-dependent API differences. Listens to a stream and notifies listeners
@@ -17,7 +19,11 @@ class GoRouterRefreshStream extends ChangeNotifier {
         _notifyIfNotDisposed();
       },
       onError: (Object error, StackTrace stackTrace) {
-        debugPrint('GoRouterRefreshStream stream error: $error\n$stackTrace');
+        log.w(
+          'go_router_refresh_stream_error',
+          error: sanitizeError(error) ?? error.runtimeType,
+          stack: stackTrace,
+        );
         onError?.call(error, stackTrace);
         if (!_isDisposed) dispose();
       },

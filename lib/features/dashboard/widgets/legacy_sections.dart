@@ -19,7 +19,7 @@ import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/section_header.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-class LegacySections extends StatelessWidget {
+class LegacySections extends StatefulWidget {
   const LegacySections({
     super.key,
     required this.categories,
@@ -40,6 +40,21 @@ class LegacySections extends StatelessWidget {
   final List<TrainingStatProps> trainingStats;
   final bool isWearableConnected;
   final Phase currentPhase;
+
+  @override
+  State<LegacySections> createState() => _LegacySectionsState();
+}
+
+class _LegacySectionsState extends State<LegacySections> {
+  final Map<String, double> _categoryWidthCache = {};
+
+  @override
+  void didUpdateWidget(covariant LegacySections oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.categories != widget.categories) {
+      _categoryWidthCache.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +78,13 @@ class LegacySections extends StatelessWidget {
         ),
         const SizedBox(height: Spacing.s),
         TopRecommendationTile(
-          workoutId: topRecommendation.id,
-          tag: topRecommendation.tag,
-          title: topRecommendation.title,
-          imagePath: topRecommendation.imagePath,
-          badgeAssetPath: topRecommendation.badgeAssetPath,
-          fromLuviSync: topRecommendation.fromLuviSync,
-          duration: topRecommendation.duration,
+          workoutId: widget.topRecommendation.id,
+          tag: widget.topRecommendation.tag,
+          title: widget.topRecommendation.title,
+          imagePath: widget.topRecommendation.imagePath,
+          badgeAssetPath: widget.topRecommendation.badgeAssetPath,
+          fromLuviSync: widget.topRecommendation.fromLuviSync,
+          duration: widget.topRecommendation.duration,
         ),
         const SizedBox(height: _sectionGapTight),
         SectionHeader(title: l10n.dashboardMoreTrainingsTitle),
@@ -83,11 +98,11 @@ class LegacySections extends StatelessWidget {
         const SizedBox(height: Spacing.s),
         StatsScroller(
           key: const Key('dashboard_training_stats_scroller'),
-          trainingStats: trainingStats,
-          isWearableConnected: isWearableConnected,
+          trainingStats: widget.trainingStats,
+          isWearableConnected: widget.isWearableConnected,
         ),
         const SizedBox(height: Spacing.m),
-        CycleTipCard(phase: currentPhase),
+        CycleTipCard(phase: widget.currentPhase),
       ],
     );
   }
@@ -96,17 +111,18 @@ class LegacySections extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final contentWidth = constraints.maxWidth;
-        if (categories.isEmpty) {
+        if (widget.categories.isEmpty) {
           return const SizedBox.shrink();
         }
 
         final textDirection = Directionality.of(context);
         final labels = [
-          for (final category in categories)
+          for (final category in widget.categories)
             _categoryLabel(l10n, category.category),
         ];
         final measuredWidths = _measureChipWidths(labels, textDirection);
-        final columnCount = math.min(categories.length, _categoriesColumns);
+        final columnCount =
+            math.min(widget.categories.length, _categoriesColumns);
         final resolvedWidths = compressFirstRowWidths(
           measured: measuredWidths,
           contentWidth: contentWidth,
@@ -136,7 +152,18 @@ class LegacySections extends StatelessWidget {
   }
 
   List<double> _measureChipWidths(List<String> labels, TextDirection dir) {
-    return [for (final label in labels) CategoryChip.measuredWidth(label, dir)];
+    return [for (final label in labels) _measureWidth(label, dir)];
+  }
+
+  double _measureWidth(String label, TextDirection dir) {
+    final cacheKey = '${dir.name}|$label';
+    final cached = _categoryWidthCache[cacheKey];
+    if (cached != null) {
+      return cached;
+    }
+    final width = CategoryChip.measuredWidth(label, dir);
+    _categoryWidthCache[cacheKey] = width;
+    return width;
   }
 
   Widget _buildCategoryWrap(
@@ -148,20 +175,22 @@ class LegacySections extends StatelessWidget {
       resolvedWidths.length >= labels.length,
       'Resolved widths (${resolvedWidths.length}) are fewer than labels (${labels.length}).',
     );
-    final columnCount = math.min(categories.length, _categoriesColumns);
+    final columnCount =
+        math.min(widget.categories.length, _categoriesColumns);
     return Wrap(
       key: const Key('dashboard_categories_grid'),
       spacing: columnCount > 1 ? gap : 0,
       runSpacing: 8,
       children: [
-        for (var i = 0; i < categories.length; i++)
+        for (var i = 0; i < widget.categories.length; i++)
           CategoryChip(
-            key: ValueKey(categories[i].category),
-            iconPath: categories[i].iconPath,
+            key: ValueKey(widget.categories[i].category),
+            iconPath: widget.categories[i].iconPath,
             label: labels[i],
-            isSelected: categories[i].category == selectedCategory,
+            isSelected:
+                widget.categories[i].category == widget.selectedCategory,
             width: resolvedWidths[i],
-            onTap: () => onCategoryTap(categories[i].category),
+            onTap: () => widget.onCategoryTap(widget.categories[i].category),
           ),
       ],
     );
@@ -169,7 +198,7 @@ class LegacySections extends StatelessWidget {
 
   Widget _buildRecommendations(BuildContext context, AppLocalizations l10n) {
     final textTokens = Theme.of(context).extension<TextColorTokens>();
-    if (recommendations.isEmpty) {
+    if (widget.recommendations.isEmpty) {
       final emptyTextColor =
           textTokens?.secondary ?? ColorTokens.recommendationTag;
       return SizedBox(
@@ -192,13 +221,13 @@ class LegacySections extends StatelessWidget {
       height: 180,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: recommendations.length,
+        itemCount: widget.recommendations.length,
         clipBehavior: Clip.hardEdge,
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.zero,
         separatorBuilder: (context, index) => const SizedBox(width: _gap16),
         itemBuilder: (context, index) {
-          final recommendation = recommendations[index];
+          final recommendation = widget.recommendations[index];
           return RecommendationCard(
             imagePath: recommendation.imagePath,
             tag: recommendation.tag,

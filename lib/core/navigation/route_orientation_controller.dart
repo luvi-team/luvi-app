@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:async' show Future, unawaited;
 // Removed unused 'meta' import to satisfy analyzer and avoid extra dependency.
 
 import 'package:flutter/services.dart';
@@ -59,67 +59,44 @@ class _RouteOrientationObserver extends NavigatorObserver {
 
   final RouteOrientationController _controller;
 
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPush(route, previousRoute);
-    final name = route.settings.name;
+  void _guardedApply(Route<dynamic>? route, String source) {
+    final routeName = route?.settings.name;
+    if (routeName == null) return;
     unawaited(
-      _controller.applyForRoute(name).catchError((error, stack) {
+      _controller.applyForRoute(routeName).catchError((error, stack) {
         FlutterError.reportError(FlutterErrorDetails(
           exception: error,
           stack: stack,
           library: 'route_orientation_controller',
-          context: ErrorDescription('applyForRoute(didPush, name=$name)'),
+          context: ErrorDescription(
+            'Failed to apply orientation for "$routeName" on $source',
+          ),
         ));
       }),
     );
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPush(route, previousRoute);
+    _guardedApply(route, 'push');
   }
 
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
-    final name = newRoute?.settings.name;
-    unawaited(
-      _controller.applyForRoute(name).catchError((error, stack) {
-        FlutterError.reportError(FlutterErrorDetails(
-          exception: error,
-          stack: stack,
-          library: 'route_orientation_controller',
-          context: ErrorDescription('applyForRoute(didReplace, name=$name)'),
-        ));
-      }),
-    );
+    _guardedApply(newRoute, 'replace');
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPop(route, previousRoute);
-    final name = previousRoute?.settings.name;
-    unawaited(
-      _controller.applyForRoute(name).catchError((error, stack) {
-        FlutterError.reportError(FlutterErrorDetails(
-          exception: error,
-          stack: stack,
-          library: 'route_orientation_controller',
-          context: ErrorDescription('applyForRoute(didPop, name=$name)'),
-        ));
-      }),
-    );
+    _guardedApply(previousRoute, 'pop');
   }
 
   @override
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didRemove(route, previousRoute);
-    final name = previousRoute?.settings.name;
-    unawaited(
-      _controller.applyForRoute(name).catchError((error, stack) {
-        FlutterError.reportError(FlutterErrorDetails(
-          exception: error,
-          stack: stack,
-          library: 'route_orientation_controller',
-          context: ErrorDescription('applyForRoute(didRemove, name=$name)'),
-        ));
-      }),
-    );
+    _guardedApply(previousRoute, 'remove');
   }
 }
