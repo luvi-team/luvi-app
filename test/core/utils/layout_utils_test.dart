@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/shared/utils/layout_utils.dart';
+import 'package:luvi_app/core/utils/layout_utils.dart';
 
 void main() {
   group('topOffsetFromSafeArea', () {

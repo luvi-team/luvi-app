@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:luvi_app/features/shared/analytics/analytics_recorder.dart';
+import 'package:luvi_app/core/analytics/analytics_recorder.dart';
 import 'package:luvi_app/core/privacy/telemetry_sanitize.dart'
     show sanitizeTelemetryData;
 

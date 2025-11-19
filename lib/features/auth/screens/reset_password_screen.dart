@@ -6,7 +6,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
-import 'package:luvi_app/features/shared/utils/layout_utils.dart';
+import 'package:luvi_app/core/utils/layout_utils.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/state/reset_password_state.dart';
 import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';

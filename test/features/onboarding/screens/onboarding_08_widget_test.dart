@@ -7,7 +7,7 @@ import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_07.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_08.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
-import 'package:luvi_app/features/shared/analytics/analytics_recorder.dart';
+import 'package:luvi_app/core/analytics/analytics_recorder.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/goal_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';

@@ -11,7 +11,7 @@ import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
-import 'package:luvi_app/features/shared/utils/run_catching.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/core/widgets/link_text.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';

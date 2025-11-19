@@ -4,7 +4,7 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 
 ## 1. Core vs. Features
 - **lib/core/** enthält ausschließlich plattformweite Tokens & Hilfen:
-  - `design_tokens/**`, `theme/**`, optional `config/**` (App-Links, Feature-Flags), `utils/**` für generische Hilfen.
+  - `design_tokens/**`, `theme/**`, optional `config/**` (App-Links, Feature-Flags), `utils/**` für generische Hilfen, `analytics/**` für globales Tracking & Recorder-Hooks.
   - Keine Feature-spezifischen Widgets, Strings oder Services im Core.
 - **lib/features/** beherbergt jede Domäne (auth, consent, onboarding …) inklusive `data/`, `domain/`, `state/`, `widgets/`, `screens/`.
 - Shared Widgets:

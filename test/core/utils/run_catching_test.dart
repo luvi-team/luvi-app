@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/shared/utils/run_catching.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
 
 void main() {
   group('debugSanitizeError', () {
