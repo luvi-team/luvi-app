@@ -11,7 +11,7 @@ import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
-import 'package:luvi_app/features/navigation/route_names.dart';
+import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 const double _signupInputGap = Spacing.s + Spacing.xs; // 20

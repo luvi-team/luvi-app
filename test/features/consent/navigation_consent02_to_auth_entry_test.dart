@@ -9,7 +9,7 @@ import 'package:luvi_app/features/consent/routes.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
-import 'package:luvi_app/features/routes.dart';
+import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 

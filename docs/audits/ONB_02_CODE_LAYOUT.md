@@ -31,7 +31,7 @@
 
 ## Navigation
 - Back: `IconButton` ruft `context.pop()` auf (`lib/features/screens/onboarding_02.dart:65`). Im Repo existiert das wiederverwendbare `BackButtonCircle` (`lib/features/widgets/back_button.dart:5`), hier jedoch nicht genutzt.
-- CTA: `ElevatedButton` triggert `context.push('/onboarding/03')` (`lib/features/screens/onboarding_02.dart:168`). Route `/onboarding/03` ist in `lib/features/routes.dart` nicht konfiguriert; Routing-Übergang verlässt aktuellen Stack über GoRouter.
+- CTA: `ElevatedButton` triggert `context.push('/onboarding/03')` (`lib/features/screens/onboarding_02.dart:168`). Route `/onboarding/03` ist in `lib/core/navigation/routes.dart` nicht konfiguriert; Routing-Übergang verlässt aktuellen Stack über GoRouter.
 
 ## Token-Nutzung & Abweichungen
 - Spacing: nutzt ausschließlich `Spacing`-Tokens (`Spacing.l`, `.m`, `.s`) für vertikale und horizontale Abstände (`lib/features/screens/onboarding_02.dart:54-190`).

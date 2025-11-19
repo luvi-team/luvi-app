@@ -26,7 +26,7 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 - Jede Screen-Klasse definiert `static const routeName`.
 - Cross-Screen Konstanten (z. B. Consent 01↔02) nutzen Feature-lokale Helper (`lib/features/consent/routes.dart`) statt bidirektionaler Imports.
 - Keine harten Pfad-Literale im Code oder Tests. Benutze `context.go(Screen.routeName)` bzw. `context.goNamed`.
-- `lib/features/routes.dart` importiert ausschließlich die Screen-Klassen und nutzt deren Konstante für `GoRoute.path`.
+- `lib/core/navigation/routes.dart` importiert ausschließlich die Screen-Klassen und nutzt deren Konstante für `GoRoute.path`.
 
 ## 5. Tests
 - Spiegelung: `test/features/<feature>/…` entspricht `lib/features/<feature>/…`.
@@ -36,7 +36,7 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 ## 6. Review-Checkliste (jede Änderung)
 1. Liegt der Code im richtigen Baum (core vs. features vs. services)?
 2. Gibt es neue Assets/Strings? → zentrale Datei/Feature-Strings aktualisieren.
-3. Wurden Routen erweitert? → `routeName` + `features/routes.dart` + Tests anpassen.
+3. Wurden Routen erweitert? → `routeName` + `core/navigation/routes.dart` + Tests anpassen.
 4. Services geändert? → `luvi_services` Package (Pubspec & Imports) updaten.
 5. Tests aktualisiert? → Spiegelpfad & gezielter Widget-Test vorhanden.
 

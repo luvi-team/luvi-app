@@ -14,7 +14,7 @@ import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
 import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
-import 'package:luvi_app/features/navigation/route_names.dart';
+import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {

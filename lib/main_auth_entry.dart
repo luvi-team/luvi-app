@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_theme.dart';
 import 'features/auth/screens/auth_entry_screen.dart';
-import 'features/routes.dart' as routes;
+import 'core/navigation/routes.dart' as routes;
 
 /// Preview entrypoint to boot directly into AuthEntryScreen without global redirects.
 void main() {

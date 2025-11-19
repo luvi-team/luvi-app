@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/routes.dart' as features;
+import 'package:luvi_app/core/navigation/routes.dart' as features;
 
 void main() {
   test('featureRoutes contains /auth/verify route', () {
