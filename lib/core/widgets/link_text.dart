@@ -166,8 +166,10 @@ class _LinkTextTapTarget extends StatelessWidget {
             semanticsLabel: semanticsLabel ?? text,
           ),
         ),
-        ExcludeSemantics(
-          child: Text(text, style: resolvedStyle),
+        IgnorePointer(
+          child: ExcludeSemantics(
+            child: Text(text, style: resolvedStyle),
+          ),
         ),
       ],
     );
@@ -219,7 +221,9 @@ class _LinkTapRegionState extends State<_LinkTapRegion> {
     return Semantics(
       label: widget.semanticsLabel,
       link: true,
-      excludeSemantics: true,
+      focusable: true,
+      focused: _focused,
+      onTap: widget.onTap,
       child: FocusableActionDetector(
         focusNode: _focusNode,
         mouseCursor: SystemMouseCursors.click,
