@@ -30,7 +30,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
         onDone?.call();
         if (!_isDisposed) dispose();
       },
-      cancelOnError: true,
+      cancelOnError: false,
     );
   }
 
