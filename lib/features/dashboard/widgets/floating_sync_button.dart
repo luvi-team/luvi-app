@@ -20,8 +20,8 @@ class FloatingSyncButton extends StatelessWidget {
   final String iconPath;
   final double size;
   final double iconSize;
-  final bool
-  iconTight; // whether the SVG glyph tightly fits its viewBox (no padding)
+  // Whether the SVG glyph tightly fits its viewBox (no padding)
+  final bool iconTight;
   final Color? backgroundColor;
   final bool isActive;
 

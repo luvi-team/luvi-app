@@ -232,6 +232,9 @@ final List<GoRoute> featureRoutes = [
     name: 'workout_detail_stub',
     builder: (context, state) {
       final id = state.pathParameters['id'] ?? 'unknown';
+      if (id == 'unknown') {
+        debugPrint('ERROR: WorkoutDetailStubScreen missing required id parameter');
+      }
       return WorkoutDetailStubScreen(workoutId: id);
     },
   ),

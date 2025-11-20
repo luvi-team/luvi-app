@@ -203,6 +203,7 @@ class _InfoCard extends StatelessWidget {
         !kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS);
+    // Desktop and other platforms use web-style rendering (Container with BoxDecoration)
 
     final backgroundColor = surfaceTokens?.white ?? const Color(0xFFFFFFFF);
     final borderSide = BorderSide(

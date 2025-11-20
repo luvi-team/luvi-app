@@ -61,6 +61,7 @@ class _RouteOrientationObserver extends NavigatorObserver {
 
   void _guardedApply(Route<dynamic>? route, String source) {
     final routeName = route?.settings.name;
+    // Skip unnamed routes - they inherit the current orientation
     if (routeName == null) return;
     unawaited(
       _controller.applyForRoute(routeName).catchError((error, stack) {

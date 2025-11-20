@@ -36,6 +36,11 @@ class BackButtonCircle extends StatelessWidget {
         ? const CircleBorder()
         : const RoundedRectangleBorder(borderRadius: BorderRadius.zero);
 
+    // Size calculations:
+    // 1. hitSize: enforce minimum touch target for accessibility
+    // 2. visualCandidate: desired visual size (defaults to size-4 for circular)
+    // 3. visualSize: ensure non-negative
+    // 4. renderedSize: visual size clamped to hit target bounds
     const double minHitSize = Sizes.touchTargetMin;
     final double hitSize = size < minHitSize ? minHitSize : size;
     final double visualCandidate = innerSize ?? (isCircular ? size - 4 : size);

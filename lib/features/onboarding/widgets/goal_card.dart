@@ -31,8 +31,10 @@ class GoalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dsTokens = theme.extension<DsTokens>()!;
-
+    final dsTokens = theme.extension<DsTokens>();
+    if (dsTokens == null) {
+      throw FlutterError('DsTokens extension not found in theme');
+    }
     return Semantics(
       label: title,
       checked: selected,
