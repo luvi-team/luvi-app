@@ -23,11 +23,11 @@ void main() {
       final ctx = tester.element(find.byType(HeuteScreen));
       final l10n = AppLocalizations.of(ctx)!;
       final ctaTextFinder = find.text(l10n.dashboardHeroCtaMore);
-      expect(ctaTextFinder, findsWidgets);
+      expect(ctaTextFinder, findsOneWidget);
 
       // Measure tappable hit area (outer SizedBox around CTA)
       final sizeCandidates = find.ancestor(
-        of: ctaTextFinder.first,
+        of: ctaTextFinder,
         matching: find.byType(SizedBox),
       );
       double maxHeight = 0;

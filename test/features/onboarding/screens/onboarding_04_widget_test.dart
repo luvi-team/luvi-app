@@ -56,7 +56,7 @@ void main() {
     );
     expect(pickerWidget.maximumDate!.year, currentYear);
 
-    // interact to enable
+    // Simulate scrolling the date picker to select a different date
     await tester.drag(picker, const Offset(0, -50));
     await tester.pumpAndSettle();
 

@@ -15,9 +15,6 @@ void main() {
   tearDown(FeatureFlags.resetOverrides);
 
   Future<void> runNavigationFlow(WidgetTester tester) async {
-    // Track navigation
-    String? navigatedPath;
-
     // Create router with both routes
     final router = GoRouter(
       initialLocation: SuccessScreen.passwordSavedRoutePath,
@@ -30,7 +27,6 @@ void main() {
         GoRoute(
           path: HeuteScreen.routeName,
           builder: (context, state) {
-            navigatedPath = HeuteScreen.routeName;
             return const HeuteScreen();
           },
         ),
@@ -61,10 +57,7 @@ void main() {
     await tester.tap(ctaButton);
     await tester.pumpAndSettle();
 
-    // Verify navigation to dashboard
-    expect(navigatedPath, HeuteScreen.routeName);
-
-    // Verify dashboard content is visible
+    // Verify dashboard content is visible (navigation succeeded)
     final heuteContext = tester.element(find.byType(HeuteScreen));
     final loc = AppLocalizations.of(heuteContext)!;
     if (TestConfig.featureDashboardV2) {
