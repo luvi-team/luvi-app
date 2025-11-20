@@ -5,7 +5,7 @@
 | --- | --- | --- | --- | --- |
 | lib/main.dart | Direct | `SupabaseService.tryInitialize` → `Supabase.initialize` | — | — |
 | lib/services/supabase_service.dart | Direct | `Supabase.initialize`; `client.auth.currentUser`; `client.auth.signOut`; `client.from('cycle_data').upsert/select`; `client.from('email_preferences').upsert/select` | `cycle_data`, `email_preferences` | test/cycle_api_supabase_test.dart (outside `test/features`, covers `cycle_data` contract) |
-| lib/features/routes.dart | Direct | `SupabaseService.client.auth.currentSession` inside `supabaseRedirect` guard | — | test/features/auth/create_new_route_test.dart; test/features/auth/forgot_route_test.dart; test/features/auth/success_route_test.dart |
+| lib/core/navigation/routes.dart | Direct | `SupabaseService.client.auth.currentSession` inside `supabaseRedirect` guard | — | test/features/auth/create_new_route_test.dart; test/features/auth/forgot_route_test.dart; test/features/auth/success_route_test.dart |
 | lib/features/auth/screens/auth_entry_screen.dart | None | None (UI only) | — | test/features/auth/auth_entry_screen_test.dart; test/features/auth/auth_entry_contract_test.dart |
 | lib/features/auth/screens/auth_signup_screen.dart | Missing | None (`onPressed` empty; expected `supabase.auth.signUp`) | — | test/features/auth/signup_widget_test.dart; test/features/auth/signup_route_test.dart; test/features/auth/signup_nav_widget_test.dart |
 | lib/features/auth/screens/create_new_password_screen.dart | Missing | None (`onPressed` empty; expected `supabase.auth.updateUser`) | — | test/features/auth/create_new_render_test.dart; test/features/auth/create_new_scroll_contract_test.dart |

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/navigation/route_orientation_controller.dart';
+import 'package:luvi_app/core/navigation/route_orientation_controller.dart';
 import 'package:luvi_app/main.dart';
 import 'support/test_config.dart';
 

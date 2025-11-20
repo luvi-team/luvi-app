@@ -2,16 +2,18 @@ import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'features/navigation/go_router_refresh_stream.dart' as luvi_refresh;
+import 'core/navigation/go_router_refresh_stream.dart' as luvi_refresh;
 import 'package:luvi_services/supabase_service.dart';
 import 'core/config/app_links.dart';
-import 'features/navigation/route_orientation_controller.dart';
+import 'core/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
-import 'features/routes.dart' as routes;
-import 'features/screens/splash/splash_screen.dart';
+import 'core/navigation/routes.dart' as routes;
+import 'features/splash/screens/splash_screen.dart';
 import 'core/init/supabase_init_controller.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'core/init/init_mode.dart' show initModeProvider;
@@ -49,7 +51,13 @@ void main() async {
           ? 'Legal links invalid. Provide PRIVACY_URL and TERMS_URL via --dart-define.'
           : 'Legal links invalid in debug/profile. Provide PRIVACY_URL and TERMS_URL via --dart-define.\n'
             'Example: flutter run --dart-define=PRIVACY_URL=https://… --dart-define=TERMS_URL=https://…';
-      if (!kReleaseMode) debugPrint(msg);
+      if (!kReleaseMode) {
+        log.e(
+          'legal_links_invalid',
+          tag: 'main',
+          error: msg,
+        );
+      }
       throw StateError(msg);
     }
   }
@@ -136,7 +144,11 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
       ref.read(initDiagnosticsProvider.notifier).recordError();
     } catch (e) {
       if (!kReleaseMode) {
-        debugPrint('[main] Failed to record init diagnostics: $e');
+        log.w(
+          'init_diagnostics_record_failed',
+          tag: 'main',
+          error: sanitizeError(e) ?? e.runtimeType,
+        );
       }
     }
   }

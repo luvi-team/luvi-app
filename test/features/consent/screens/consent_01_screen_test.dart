@@ -5,7 +5,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-import 'package:luvi_app/features/widgets/back_button.dart';
+import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/consent/routes.dart';
 import '../../../support/test_config.dart';
 

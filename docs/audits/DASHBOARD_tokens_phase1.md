@@ -12,7 +12,7 @@
 ### Figma Specs
 - **Node ID:** 68721:7520, 68721:7521, 68721:7522, 68721:7523 (wave SVG layers)
 - **Visual Analysis:** Pink/purple gradient wave overlay above hero card, curved lip extending ~20-24px vertically
-- **Current Implementation:** `lib/features/screens/heute_screen.dart:51`
+- **Current Implementation:** `lib/features/dashboard/screens/heute_screen.dart:51`
   ```dart
   const double _phaseRecoWaveAmplitude = 24.0; // Height of curved lip
   ```
@@ -51,10 +51,10 @@
   - **Color:** rgba(0,0,0,0.25) → `Color(0x40000000)`
 
 ### Current Implementation
-- **Border:** `lib/features/widgets/hero_sync_preview.dart:37-48`
+- **Border:** `lib/features/dashboard/widgets/hero_sync_preview.dart:37-48`
   - Uses `CalendarRadiusTokens.cardLarge` (24.0) ✅ **MATCH**
   - Border defined implicitly via Container decoration
-- **Shadow:** `lib/features/widgets/hero_sync_preview.dart:39` + `lib/core/theme/app_theme.dart:584-589`
+- **Shadow:** `lib/features/dashboard/widgets/hero_sync_preview.dart:39` + `lib/core/theme/app_theme.dart:584-589`
   ```dart
   final shadowTokens = Theme.of(context).extension<ShadowTokens>();
   // ShadowTokens.light.heroDrop:
@@ -102,7 +102,7 @@ boxShadow: [ShadowTokens.light.heroDrop] // Already matches Figma
   - "Wir starten heute ruhig..." (Figtree Regular 14)
 
 ### Current Implementation
-- **File:** `lib/features/widgets/hero_sync_preview.dart:135-159` (estimated, not visible in limit=100)
+- **File:** `lib/features/dashboard/widgets/hero_sync_preview.dart:135-159` (estimated, not visible in limit=100)
 - **Status:** ❌ **NO TEXT-SHADOW**
 - **Evidence:** Current implementation uses `TextStyle` without `shadows` property
 
@@ -176,10 +176,10 @@ static const Shadow heroCalloutTextShadow = Shadow(
   - **CSS:** `font-family: 'Figtree:Italic', sans-serif; font-style: italic; font-size: 16px; color: #696969;`
 
 ### Current Implementation
-- **Section Title:** `lib/features/widgets/section_header.dart:14-18` (estimated, uses hardcoded TextStyle)
+- **Section Title:** `lib/features/dashboard/widgets/section_header.dart:14-18` (estimated, uses hardcoded TextStyle)
   - Current: Figtree 20 w600 (from deltas_v2.md:41)
   - **Mismatch:** Weight 600 vs Figma 400
-- **Section Subtitle:** `lib/features/screens/heute_screen.dart` (inline style, deltas_v2.md:50)
+- **Section Subtitle:** `lib/features/dashboard/screens/heute_screen.dart` (inline style, deltas_v2.md:50)
   - Current: Figtree Italic 16/24 color 0x99030401 (opacity mismatch)
   - **Mismatch:** Color has alpha 0x99 (60%) vs Figma solid #696969
 
@@ -266,7 +266,7 @@ class DashboardTypographyTokens extends ThemeExtension<DashboardTypographyTokens
   - **Vertical Margin:** 12px top + 12px bottom (visual estimate from screenshot)
 
 ### Current Implementation
-- **File:** `lib/features/screens/heute_screen.dart:654` (estimated line from reference)
+- **File:** `lib/features/dashboard/screens/heute_screen.dart:654` (estimated line from reference)
 - **Status:** ❌ **NO DIVIDER**
 - **Evidence:** Current implementation uses `SizedBox(height: _subsectionGap)` (24px gap, no visual line)
 
@@ -498,6 +498,6 @@ const _contentPadding = 14.0; // ✅ Matches visual estimate
 - **Existing Audit:** `docs/audits/DASHBOARD_figma_deltas_v2.md`
 - **Codebase Files:**
   - `lib/core/theme/app_theme.dart` (token definitions)
-  - `lib/features/screens/heute_screen.dart` (wave amplitude constant)
-  - `lib/features/widgets/hero_sync_preview.dart` (hero card implementation)
+  - `lib/features/dashboard/screens/heute_screen.dart` (wave amplitude constant)
+  - `lib/features/dashboard/widgets/hero_sync_preview.dart` (hero card implementation)
   - `lib/features/dashboard/widgets/weekly_training_card.dart` (workout card)

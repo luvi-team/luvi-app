@@ -1,21 +1,23 @@
-import 'package:flutter/material.dart';
 import 'dart:async' show TimeoutException, Timer;
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/features/auth/screens/success_screen.dart';
+import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/utils/layout_utils.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/features/shared/utils/layout_utils.dart';
+import 'package:luvi_app/features/auth/screens/success_screen.dart';
+import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
+import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
-import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart';
-import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
 import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
-import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
-import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
-import 'package:luvi_app/features/navigation/route_names.dart';
+import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
+import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 class CreateNewPasswordScreen extends StatefulWidget {
   static const String routeName = '/auth/password/new';
@@ -161,16 +163,31 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       context.goNamed(
         SuccessScreen.passwordSavedRouteName,
       );
-    } on supa.AuthException catch (error) {
-      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+    } on supa.AuthException catch (error, stackTrace) {
+      log.w(
+        'auth_update_password_auth_exception',
+        tag: 'create_new_password',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
       if (!context.mounted) return;
       _handlePasswordUpdateFailure(context, l10n);
-    } on TimeoutException catch (error) {
-      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+    } on TimeoutException catch (error, stackTrace) {
+      log.w(
+        'auth_update_password_timeout',
+        tag: 'create_new_password',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
       if (!context.mounted) return;
       _handlePasswordUpdateFailure(context, l10n);
-    } catch (error) {
-      debugPrint('[auth.updatePassword] ${error.runtimeType}');
+    } catch (error, stackTrace) {
+      log.e(
+        'auth_update_password_unexpected',
+        tag: 'create_new_password',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
       if (!context.mounted) return;
       _handlePasswordUpdateFailure(context, l10n);
     } finally {

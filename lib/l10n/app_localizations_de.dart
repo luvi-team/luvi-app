@@ -421,6 +421,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get welcome03Subtitle => 'LUVI Sync: Dein täglicher Game‑Changer. Verstehe das \'Warum\' hinter deinen Hormonen. Wissenschaftlich fundiert.';
 
   @override
+  String get consent01IntroTitle => 'Lass uns LUVI\nauf dich abstimmen';
+
+  @override
+  String get consent01IntroBody => 'Du entscheidest, was du teilen möchtest. Je mehr wir über dich wissen, desto besser können wir dich unterstützen.';
+
+  @override
   String get consent02Title => 'Deine Gesundheit,\ndeine Entscheidung!';
 
   @override

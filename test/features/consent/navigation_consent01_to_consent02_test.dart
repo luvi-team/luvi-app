@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
 import 'package:luvi_app/features/consent/routes.dart';
+import '../../support/test_app.dart';
 import '../../support/test_config.dart';
 
 void main() {
@@ -38,9 +38,7 @@ void main() {
       ],
     );
 
-    await tester.pumpWidget(
-      MaterialApp.router(theme: AppTheme.buildAppTheme(), routerConfig: router),
-    );
+    await tester.pumpWidget(buildLocalizedApp(router: router));
 
     expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
     await tester.tap(find.widgetWithText(ElevatedButton, 'Weiter'));

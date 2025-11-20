@@ -135,7 +135,7 @@ Quelle: `lib/features/dashboard/data/fixtures/heute_fixtures.dart` (Zeilen 413-4
 
 ### 4.1 Geänderte Properties
 
-Datei: `lib/features/widgets/recommendation_card.dart`
+Datei: `lib/features/dashboard/widgets/recommendation_card.dart`
 
 | Zeile | Property | Alt | Neu | Diff | Commit |
 |-------|----------|-----|-----|------|--------|
@@ -363,7 +363,7 @@ Widget _buildDynamicTitle(String text) {
 - Tests: ~1 Stunde (Unit-Tests für verschiedene Text-Längen)
 - Edge-Case-Handling: ~1 Stunde (Dynamic Type Scaling, RTL-Support)
 
-**Precedent:** `lib/features/widgets/category_chip.dart` (Zeilen 43-46) nutzt TextPainter für Width-Measurement
+**Precedent:** `lib/features/dashboard/widgets/category_chip.dart` (Zeilen 43-46) nutzt TextPainter für Width-Measurement
 
 ### 6.2 Mehrsprachigkeit (Englisch, längere Wörter)
 
@@ -481,7 +481,7 @@ Widget _buildDynamicTitle(String text) {
 
 **Command:**
 ```bash
-flutter analyze lib/features/widgets/recommendation_card.dart
+flutter analyze lib/features/dashboard/widgets/recommendation_card.dart
 ```
 
 **Expected Output:**
@@ -555,7 +555,7 @@ testWidgets('RecommendationCard title has correct fontSize', (tester) async {
 
 ### 10.1 Source Code
 
-- **Widget:** `lib/features/widgets/recommendation_card.dart` (Zeilen 91-109)
+- **Widget:** `lib/features/dashboard/widgets/recommendation_card.dart` (Zeilen 91-109)
   - Titel: Zeilen 91-109 (fontSize 16, maxLines 3, height 24/16)
   - Subtitle: Zeilen 107-119 (fontSize 14, maxLines 1, unverändert)
 
@@ -579,7 +579,7 @@ testWidgets('RecommendationCard title has correct fontSize', (tester) async {
 
 ### 10.4 Precedents (TextPainter-Measurement)
 
-- **Category Chip:** `lib/features/widgets/category_chip.dart` (Zeilen 43-46)
+- **Category Chip:** `lib/features/dashboard/widgets/category_chip.dart` (Zeilen 43-46)
   ```dart
   final painter = TextPainter(
     text: TextSpan(text: label, style: TextStyle(fontSize: 12, ...)),
@@ -588,7 +588,7 @@ testWidgets('RecommendationCard title has correct fontSize', (tester) async {
   final width = painter.width + 20; // Padding
   ```
 
-- **Bottom Nav Dock:** `lib/features/widgets/bottom_nav_dock.dart` (Zeilen 128-131)
+- **Bottom Nav Dock:** `lib/features/dashboard/widgets/bottom_nav_dock.dart` (Zeilen 128-131)
   ```dart
   FittedBox(
     fit: BoxFit.scaleDown, // Proportionales Scaling bei Overflow

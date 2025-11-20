@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_services/init_exception.dart';
@@ -193,21 +194,14 @@ class SupabaseInitController extends Notifier<InitState> {
   }
 
   void _diagnosticsDebugLog(String message, [StackTrace? stackTrace]) {
-    var loggedViaAssert = false;
-    assert(() {
-      debugPrint(message);
-      if (stackTrace != null) {
-        debugPrint(stackTrace.toString());
-      }
-      loggedViaAssert = true;
-      return true;
-    }());
-    if (!kReleaseMode && !loggedViaAssert) {
-      debugPrint(message);
-      if (stackTrace != null) {
-        debugPrint(stackTrace.toString());
-      }
+    if (kReleaseMode) {
+      return;
     }
+    log.w(
+      'supabase_init_diagnostic',
+      error: message,
+      stack: stackTrace,
+    );
   }
 
   /// Testing-only helper that clears internal state so a fresh initialization

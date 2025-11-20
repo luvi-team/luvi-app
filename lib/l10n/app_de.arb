@@ -562,6 +562,14 @@
   "@onboardingSuccessGenericError": {
     "description": "Allgemeine Fehlermeldung (SnackBar) auf dem Onboarding-Erfolgsscreen."
   },
+  "consent01IntroTitle": "Lass uns LUVI\nauf dich abstimmen",
+  "@consent01IntroTitle": {
+    "description": "Headline copy shown on the consent 01 screen intro hero. Keep the newline escape '\\n' between the two lines."
+  },
+  "consent01IntroBody": "Du entscheidest, was du teilen möchtest. Je mehr wir über dich wissen, desto besser können wir dich unterstützen.",
+  "@consent01IntroBody": {
+    "description": "Body copy displayed underneath the consent 01 intro hero."
+  },
   "consent02Title": "Deine Gesundheit,\ndeine Entscheidung!",
   "@consent02Title": {
     "description": "Headline shown on the consent 02 screen. Translator note: keep the newline escape '\\n' between the two lines."

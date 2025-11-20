@@ -680,7 +680,7 @@
         "note": "DIFFERENT from baseline - baseline had 5-item pill with 'Start' label, this has icon-only nav",
         "fillStrategy": "Two-pass painter: theme surface fill below wave line, purple stroke on top",
         "underlayInteraction": "Mulde area (above wave line) is transparent, allowing beige underlay from Ticket 8 to show through. Nav area (below wave line) uses DsTokens.cardSurface / colorScheme.surface.",
-        "implementationFile": "lib/features/widgets/painters/bottom_wave_border_painter.dart",
+        "implementationFile": "lib/features/dashboard/widgets/painters/bottom_wave_border_painter.dart",
         "icons": [
           {"name": "Home", "node": "68674:7523", "position": "left"},
           {"name": "Heart", "node": "multiple", "position": "center-left"},
@@ -772,7 +772,7 @@
     "implementationNote": "Bottom nav icons normalized to 38px (largest measured size) for consistency and visibility. Token: tabIconSize in bottom_nav_tokens.dart. Heart icon (24px) is an outlier, likely center elevated button, not regular nav icon.",
     "reuseAssessment": {
       "note": "No existing icon component inventory found in reuse_inventory.md",
-      "recommendation": "Create centralized icon registry in lib/core/design_tokens/icons.dart or lib/features/widgets/app_icons.dart"
+      "recommendation": "Create centralized icon registry in lib/core/design_tokens/icons.dart or lib/core/widgets/app_icons.dart"
     }
   },
   "images": {
@@ -965,7 +965,7 @@
           "duration": "String",
           "onTap": "VoidCallback"
         },
-        "reuseOpportunities": "Partial - GoalCard (lib/features/widgets/goal_card.dart:17) has title/selected but no image/gradient",
+        "reuseOpportunities": "Partial - GoalCard (lib/features/onboarding/widgets/goal_card.dart:17) has title/selected but no image/gradient",
         "tokenDependencies": [
           "Playfair Display Bold 24/32 (H2 bold) - NEW",
           "Figtree Regular 16/24",

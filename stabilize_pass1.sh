@@ -80,7 +80,7 @@ flutter analyze
 
 echo ">>> Starte gezielte Tests (schneller Stabilitäts-Check)"
 flutter test --dart-define=FEATURE_DASHBOARD_V2=true test/features/widgets/dashboard/stats_scroller_test.dart || true
-flutter test --dart-define=FEATURE_DASHBOARD_V2=true test/features/screens/heute_smoke_test.dart || true
+flutter test --dart-define=FEATURE_DASHBOARD_V2=true test/features/dashboard/screens/heute_smoke_test.dart || true
 
 # 6) Commit (Pass 1)
 echo ">>> Committe Pass 1 (Stabilisierung)"

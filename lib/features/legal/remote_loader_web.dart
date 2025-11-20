@@ -1,6 +1,24 @@
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
+
+typedef BrowserClientFactory = http.Client Function();
+
+http.Client _defaultClientFactory() => BrowserClient();
+
+BrowserClientFactory _clientFactory = _defaultClientFactory;
+
+@visibleForTesting
+void debugOverrideBrowserClientFactory(BrowserClientFactory factory) {
+  _clientFactory = factory;
+}
+
+@visibleForTesting
+void debugResetBrowserClientFactory() {
+  _clientFactory = _defaultClientFactory;
+}
 
 /// Fetches remote markdown content from the given [uri].
 ///
@@ -12,7 +30,7 @@ Future<String?> fetchRemoteMarkdown(
   Uri uri, {
   Duration timeout = const Duration(seconds: 5),
 }) async {
-  final client = BrowserClient(); // withCredentials=false by default
+  final client = _clientFactory(); // withCredentials=false by default
   try {
     final http.Response resp = await client.get(uri).timeout(timeout);
     if (resp.statusCode ~/ 100 != 2) {

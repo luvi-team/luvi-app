@@ -5,7 +5,7 @@
 | Header | `userName: String`, `dateText: String`, `cyclePhaseText: String` | Top greeting + subline; mirrors Figma copy (`Hey, Anna`, `Heute, 28. Sept`, `Follikelphase`). |
 | Hero | `cycleProgressRatio: double (0..1)`, `heroCta: HeroCtaState` | Ratio drives progress ring + percent label; CTA text: `resumeActiveWorkout → "Zurück zum Training"`, `startNewWorkout → "Starte dein Training"`. |
 | Categories | `selectedCategory: Category` | Highlights chip in gold; later used to drive recommendation filter. |
-| Recommendations | `List<RecommendationProps>` | Cards rendered unter "Empfehlungen"; list wird category-aware sobald Backend angebunden. |
+| Recommendations | `List<Recommendation>` | Cards rendered unter "Empfehlungen"; list wird category-aware sobald Backend angebunden. |
 | Bottom-Nav | `selectedIndex: int`, `hasNotifications: bool?` | Index mappt auf Tab-Icons (`0 = Home`); optionaler Glocken-Indikator via `hasNotifications`. |
 
 ## Feld → Wirkung (Detail)

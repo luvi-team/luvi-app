@@ -199,4 +199,4 @@ Note: References to algorithm steps in brackets (e.g., [Step 2]). All outputs fu
 
 Implementation reference (recommended):
 - API: `lib/features/cycle/domain/cycle.dart:CycleInfo.phaseOn` (string phase) and `lib/features/cycle/domain/phase.dart:CycleInfoPhaseAdapter.phaseFor` (Phase enum adapter).
-- UI binding: `lib/features/screens/heute_screen.dart:HeuteScreen` (uses `weekViewFor` and `cycleInfo.phaseFor(...)`).
+- UI binding: `lib/features/dashboard/screens/heute_screen.dart:HeuteScreen` (uses `weekViewFor` and `cycleInfo.phaseFor(...)`).

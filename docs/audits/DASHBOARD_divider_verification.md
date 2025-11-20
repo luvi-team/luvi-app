@@ -78,7 +78,7 @@ static const DividerTokens light = DividerTokens(
 
 ### 3.2 Widget-Implementierung
 
-**Datei:** `lib/features/screens/heute_screen.dart`
+**Datei:** `lib/features/dashboard/screens/heute_screen.dart`
 **Methode:** `_buildPhaseRecommendationsWaveSection` (Zeilen 559-640)
 **Divider-Position:** Zeilen 612-623
 
@@ -374,9 +374,9 @@ final dividerTokens = Theme.of(context).extension<DividerTokens>();
 
 ### Codebase-Dateien
 - **Token-Definition:** `lib/core/design_tokens/divider_tokens.dart` (Zeilen 18-24)
-- **Widget-Implementierung:** `lib/features/screens/heute_screen.dart` (Zeilen 612-623)
+- **Widget-Implementierung:** `lib/features/dashboard/screens/heute_screen.dart` (Zeilen 612-623)
 - **Theme-Registrierung:** `lib/core/theme/app_theme.dart` (Zeile 92)
-- **Theme-Zugriff:** `lib/features/screens/heute_screen.dart` (Zeile 569)
+- **Theme-Zugriff:** `lib/features/dashboard/screens/heute_screen.dart` (Zeile 569)
 
 ### Governance-Dokumente
 - **DoD:** `docs/definition-of-done.md`

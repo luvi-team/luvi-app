@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/legal/legal_viewer.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -155,7 +157,10 @@ class ProdAppLinks extends AppLinksApi {
     final parsed = Uri.tryParse(trimmed);
     if (parsed == null) {
       assert(() {
-        debugPrint('[AppLinks] Failed to parse configured URI: "$trimmed". Falling back to default.');
+        log.w(
+          'app_links_parse_failed',
+          error: 'value="$trimmed"',
+        );
         return true;
       }());
       // Defensive: even if the configured default is invalid, never throw.
@@ -230,7 +235,12 @@ Future<void> _openLegal(
       final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (ok) return;
     } catch (error, stackTrace) {
-      debugPrint('[links] launchUrl failed for $uri: $error\n$stackTrace');
+      log.w(
+        'legal_link_launch_failed',
+        tag: 'legal_links',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
       // proceed to fallback
     }
   }

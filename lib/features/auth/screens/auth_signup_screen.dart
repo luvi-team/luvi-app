@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
 import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
@@ -11,7 +11,9 @@ import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
-import 'package:luvi_app/features/navigation/route_names.dart';
+import 'package:luvi_app/core/navigation/route_names.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
+import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 const double _signupInputGap = Spacing.s + Spacing.xs; // 20
@@ -75,7 +77,11 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       if (!mounted) return;
       context.goNamed('verify', queryParameters: const {'variant': 'email'});
     } on AuthException catch (error, stackTrace) {
-      debugPrint('Signup failed (auth): ${error.message}\n$stackTrace');
+      log.e(
+        'signup_failed_auth',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
       if (!mounted) return;
       final message = error.message;
       setState(() {
@@ -84,7 +90,11 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
             : AuthStrings.signupGenericError;
       });
     } catch (error, stackTrace) {
-      debugPrint('Signup failed: $error\n$stackTrace');
+      log.e(
+        'signup_failed',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
       if (!mounted) return;
       setState(() {
         _errorMessage = AuthStrings.signupGenericError;
