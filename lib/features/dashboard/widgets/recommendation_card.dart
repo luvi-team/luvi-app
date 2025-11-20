@@ -91,7 +91,9 @@ class RecommendationCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(Spacing.m),
+                  padding: const EdgeInsets.all(
+                    Spacing.recommendationCardPadding,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
