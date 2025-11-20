@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
@@ -233,7 +233,12 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) {
       final id = state.pathParameters['id'] ?? 'unknown';
       if (id == 'unknown') {
-        debugPrint('ERROR: WorkoutDetailStubScreen missing required id parameter');
+        // Redirect to a safe fallback or show an error state
+        return Scaffold(
+          body: Center(
+            child: Text('Invalid workout ID'),
+          ),
+        );
       }
       return WorkoutDetailStubScreen(workoutId: id);
     },

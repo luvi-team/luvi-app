@@ -7,14 +7,14 @@ void main() {
       final measured = [80.0, 90.0, 70.0, 60.0];
       final result = compressFirstRowWidths(
         measured: measured,
-        contentWidth: 260.0,
+        contentWidth: 280.0,
         columnCount: 4,
         minGap: 8.0,
         minWidth: 60.0,
       );
-      // 3 gaps → 24px, available items width = 236
+      // 3 gaps → 24px, available items width = 256 when content width = 280
       // total measured = 300, shrinkFactor ≈ 0.7866, applying minWidth=60.0
-      // When all items clamp to minWidth, minimum = 4*60 + 3*8 = 264px
+      // Minimum feasible width = 4*60 + 3*8 = 264px, so 280px content width leaves slack
       expect(result.length, 4);
 
       // Verify all widths respect minWidth
@@ -23,10 +23,9 @@ void main() {
       expect(result[2] >= 60.0, isTrue);
       expect(result[3] >= 60.0, isTrue);
 
-      // Verify total width respects minWidth constraint
-      // Realistic minimum when all items hit minWidth: (4 * 60) + (3 * 8) = 264px
       final totalWidth = result.reduce((a, b) => a + b) + (3 * 8.0);
-      expect(totalWidth, lessThanOrEqualTo(264.0));
+      // Verify the result respects the contentWidth constraint
+      expect(totalWidth, lessThanOrEqualTo(280.0));
     });
 
     test('returns original widths when they already fit', () {
@@ -39,6 +38,20 @@ void main() {
         minWidth: 60.0,
       );
       expect(result, measured);
+    });
+
+    test('throws when constraints cannot be satisfied', () {
+      final measured = [80.0, 90.0, 70.0, 60.0];
+      expect(
+        () => compressFirstRowWidths(
+          measured: measured,
+          contentWidth: 260.0,
+          columnCount: 4,
+          minGap: 8.0,
+          minWidth: 60.0,
+        ),
+        throwsArgumentError,
+      );
     });
   });
 }

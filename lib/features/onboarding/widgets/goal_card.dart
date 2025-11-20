@@ -33,7 +33,10 @@ class GoalCard extends StatelessWidget {
     final theme = Theme.of(context);
     final dsTokens = theme.extension<DsTokens>();
     if (dsTokens == null) {
-      throw FlutterError('DsTokens extension not found in theme');
+      throw FlutterError(
+        'DsTokens extension not found in theme. '
+        'Ensure DsTokens is registered via ThemeData.extensions in app_theme.dart'
+      );
     }
     return Semantics(
       label: title,
