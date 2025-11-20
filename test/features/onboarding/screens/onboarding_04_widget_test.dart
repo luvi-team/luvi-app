@@ -11,7 +11,6 @@ import '../../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  TestWidgetsFlutterBinding.ensureInitialized();
   testWidgets('picker interaction enables CTA and navigates', (tester) async {
     final router = GoRouter(
       routes: [

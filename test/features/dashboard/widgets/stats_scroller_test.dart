@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/widgets/stats_scroller.dart';
@@ -303,9 +304,38 @@ void main() {
       expect(find.text('Puls'), findsOneWidget);
       expect(find.text('Verbrannte\nEnergie'), findsOneWidget);
 
-      // Note: HR glyph verification is done via the conditional rendering logic.
-      // The glyph is only rendered when heartRateGlyphAsset != null.
-      // Detailed SVG asset verification would require additional test infrastructure.
+      final pulsCard = find.ancestor(
+        of: find.text('Puls'),
+        matching: find.byKey(const Key('stats_card_container')),
+      );
+      final energyCard = find.ancestor(
+        of: find.text('Verbrannte\nEnergie'),
+        matching: find.byKey(const Key('stats_card_container')),
+      );
+
+      expect(pulsCard, findsOneWidget);
+      expect(energyCard, findsOneWidget);
+
+      final pulsSvgFinder = find.descendant(
+        of: pulsCard,
+        matching: find.byType(SvgPicture),
+      );
+      final energySvgFinder = find.descendant(
+        of: energyCard,
+        matching: find.byType(SvgPicture),
+      );
+
+      expect(
+        pulsSvgFinder,
+        findsNWidgets(2),
+        reason:
+            'Puls card should render badge icon and heart rate glyph when provided',
+      );
+      expect(
+        energySvgFinder,
+        findsOneWidget,
+        reason: 'Energy card should only render the badge icon without glyph',
+      );
     });
 
     testWidgets('content is left-aligned', (tester) async {

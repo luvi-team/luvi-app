@@ -18,13 +18,14 @@ class Recommendation {
     String? tag,
     String? title,
     String? imagePath,
-    String? subtitle,
+    Object? subtitle = const _Unset(),
   }) {
     return Recommendation(
       tag: tag ?? this.tag,
       title: title ?? this.title,
       imagePath: imagePath ?? this.imagePath,
-      subtitle: subtitle ?? this.subtitle,
+      subtitle:
+          identical(subtitle, const _Unset()) ? this.subtitle : subtitle as String?,
     );
   }
 
@@ -45,3 +46,7 @@ class Recommendation {
 }
 
 typedef RecommendationProps = Recommendation;
+
+class _Unset {
+  const _Unset();
+}

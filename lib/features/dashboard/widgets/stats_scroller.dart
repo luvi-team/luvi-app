@@ -98,18 +98,11 @@ class _TrainingStatCard extends StatelessWidget {
 
   final TrainingStatProps data;
 
-  static NumberFormat? _cachedFormatter;
-  static Locale? _cachedLocale;
-
   NumberFormat _numberFormatter(BuildContext context) {
     final locale =
         Localizations.maybeLocaleOf(context) ??
         WidgetsBinding.instance.platformDispatcher.locale;
-    if (_cachedFormatter == null || _cachedLocale != locale) {
-      _cachedLocale = locale;
-      _cachedFormatter = NumberFormat.decimalPattern(locale.toLanguageTag());
-    }
-    return _cachedFormatter!;
+    return NumberFormat.decimalPattern(locale.toLanguageTag());
   }
 
   @override

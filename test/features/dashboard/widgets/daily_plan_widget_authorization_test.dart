@@ -336,5 +336,33 @@ void main() {
         () => repository.createDailyPlan(title: 'Morning Routine'),
       ).called(1);
     });
+
+    testWidgets('generic errors surface in status banner', (tester) async {
+
+      when(() => repository.fetchMyDailyPlans()).thenAnswer(
+        (invocation) async => const <DailyPlan>[],
+      );
+
+      when(() => repository.createDailyPlan(title: any(named: 'title')))
+          .thenThrow(Exception('Network error'));
+
+      await pumpHarness(tester, repository: repository);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('create_plan_button')));
+
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('Creation failed: Exception: Network error'),
+        findsOneWidget,
+      );
+
+      verify(
+
+        () => repository.createDailyPlan(title: 'Morning Routine'),
+      ).called(1);
+    });
   });
 }
