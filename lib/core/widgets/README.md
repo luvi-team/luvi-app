@@ -1,1 +1,3 @@
-BackButtonCircle uses AuthStrings.backSemantic for semantics. Consumers must import AuthStrings.
+# BackButtonCircle
+
+BackButtonCircle reads its semantic label from app localization (`AppLocalizations.of(context)?.authBackSemantic`). Provide localized strings via `AppLocalizations`; if you later switch to `AuthStrings`, update the widget to use `AuthStrings` and import it accordingly.

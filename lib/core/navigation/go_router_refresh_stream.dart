@@ -25,7 +25,6 @@ class GoRouterRefreshStream extends ChangeNotifier {
           stack: stackTrace,
         );
         onError?.call(error, stackTrace);
-        if (!_isDisposed) dispose();
       },
       onDone: () {
         onDone?.call();
