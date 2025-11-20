@@ -14,11 +14,19 @@ void main() {
       );
       // 3 gaps → 24px, available items width = 236
       // total measured = 300, shrinkFactor ≈ 0.7866, applying minWidth=60.0
+      // When all items clamp to minWidth, minimum = 4*60 + 3*8 = 264px
       expect(result.length, 4);
+
+      // Verify all widths respect minWidth
       expect(result[0] >= 60.0, isTrue);
       expect(result[1] >= 60.0, isTrue);
       expect(result[2] >= 60.0, isTrue);
       expect(result[3] >= 60.0, isTrue);
+
+      // Verify total width respects minWidth constraint
+      // Realistic minimum when all items hit minWidth: (4 * 60) + (3 * 8) = 264px
+      final totalWidth = result.reduce((a, b) => a + b) + (3 * 8.0);
+      expect(totalWidth, lessThanOrEqualTo(264.0));
     });
 
     test('returns original widths when they already fit', () {

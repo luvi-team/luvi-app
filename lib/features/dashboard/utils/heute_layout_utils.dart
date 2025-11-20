@@ -21,9 +21,38 @@ List<double> compressFirstRowWidths({
         .fold<double>(0, (sum, width) => sum + width);
     if (totalWidth > availableForItems) {
       final shrinkFactor = availableForItems / totalWidth;
+
+      // First pass: scale proportionally and clamp to minWidth
       for (var i = 0; i < columnCount; i++) {
         final scaledWidth = resolvedWidths[i] * shrinkFactor;
         resolvedWidths[i] = math.max(minWidth, scaledWidth);
+      }
+
+      // Second pass: check if clamping caused overflow
+      final clampedTotal = resolvedWidths
+          .take(columnCount)
+          .fold<double>(0, (sum, width) => sum + width);
+
+      if (clampedTotal > availableForItems) {
+        // Redistribute excess by further shrinking items above minWidth
+        final excess = clampedTotal - availableForItems;
+        final flexibleItems = <int>[];
+        double flexibleTotal = 0;
+
+        for (var i = 0; i < columnCount; i++) {
+          if (resolvedWidths[i] > minWidth) {
+            flexibleItems.add(i);
+            flexibleTotal += (resolvedWidths[i] - minWidth);
+          }
+        }
+
+        if (flexibleTotal > 0 && excess > 0) {
+          final reductionFactor = math.min(1.0, excess / flexibleTotal);
+          for (final i in flexibleItems) {
+            final reduction = (resolvedWidths[i] - minWidth) * reductionFactor;
+            resolvedWidths[i] = resolvedWidths[i] - reduction;
+          }
+        }
       }
     }
   }
