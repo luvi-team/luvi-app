@@ -3,6 +3,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
 import 'package:luvi_app/features/cycle/domain/date_utils.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
+import 'package:luvi_app/features/dashboard/domain/models/recommendation.dart';
 import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';
 import 'package:luvi_app/features/dashboard/domain/weekly_training_props.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
@@ -111,50 +112,6 @@ class CategoryProps {
 }
 
 @immutable
-class RecommendationProps {
-  const RecommendationProps({
-    required this.tag,
-    required this.title,
-    required this.imagePath,
-    this.subtitle,
-  });
-
-  final String tag;
-  final String title;
-  final String imagePath;
-  final String? subtitle;
-
-  RecommendationProps copyWith({
-    String? tag,
-    String? title,
-    String? imagePath,
-    String? subtitle,
-  }) {
-    return RecommendationProps(
-      tag: tag ?? this.tag,
-      title: title ?? this.title,
-      imagePath: imagePath ?? this.imagePath,
-      subtitle: subtitle ?? this.subtitle,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    return other is RecommendationProps &&
-        other.tag == tag &&
-        other.title == title &&
-        other.imagePath == imagePath &&
-        other.subtitle == subtitle;
-  }
-
-  @override
-  int get hashCode => Object.hash(tag, title, imagePath, subtitle);
-}
-
-@immutable
 class BottomNavProps {
   const BottomNavProps({
     required this.selectedIndex,
@@ -213,9 +170,9 @@ class HeuteFixtureState {
   final TopRecommendationProps topRecommendation;
   final List<WeeklyTrainingProps> weeklyTrainings;
   final List<CategoryProps> categories;
-  final List<RecommendationProps> recommendations;
-  final List<RecommendationProps> nutritionRecommendations;
-  final List<RecommendationProps> regenerationRecommendations;
+  final List<Recommendation> recommendations;
+  final List<Recommendation> nutritionRecommendations;
+  final List<Recommendation> regenerationRecommendations;
   final List<TrainingStatProps> trainingStats;
   final WearableProps wearable;
   final BottomNavProps bottomNav;
@@ -228,9 +185,9 @@ class HeuteFixtureState {
     TopRecommendationProps? topRecommendation,
     List<WeeklyTrainingProps>? weeklyTrainings,
     List<CategoryProps>? categories,
-    List<RecommendationProps>? recommendations,
-    List<RecommendationProps>? nutritionRecommendations,
-    List<RecommendationProps>? regenerationRecommendations,
+    List<Recommendation>? recommendations,
+    List<Recommendation>? nutritionRecommendations,
+    List<Recommendation>? regenerationRecommendations,
     List<TrainingStatProps>? trainingStats,
     WearableProps? wearable,
     BottomNavProps? bottomNav,
@@ -371,36 +328,36 @@ class HeuteFixtures {
         ),
       ],
       recommendations: [
-        RecommendationProps(
+        Recommendation(
           tag: 'Kraft',
           title: 'Beine & Po',
           imagePath: Assets.images.recoBeinePo,
         ),
-        RecommendationProps(
+        Recommendation(
           tag: 'Kraft',
           title: 'Rücken & Schulter',
           imagePath: Assets.images.recoRueckenSchulter,
         ),
-        RecommendationProps(
+        Recommendation(
           tag: 'Cardio',
           title: 'Ganzkörper',
           imagePath: Assets.images.recoGanzkoerper,
         ),
       ],
       nutritionRecommendations: [
-        RecommendationProps(
+        Recommendation(
           tag: 'Supplements',
           title: 'Vitamin C',
           subtitle: 'Stärke dein Immunsystem',
           imagePath: Assets.images.strawberry,
         ),
-        RecommendationProps(
+        Recommendation(
           tag: 'Makros',
           title: 'Protein-Power',
           subtitle: 'Optimale Nährstoffverteilung',
           imagePath: Assets.images.roteruebe,
         ),
-        RecommendationProps(
+        Recommendation(
           tag: 'Tagebuch',
           title: 'Ernährungstagebuch',
           subtitle: 'Tracke deine Mahlzeiten',
@@ -408,19 +365,19 @@ class HeuteFixtures {
         ),
       ],
       regenerationRecommendations: [
-        RecommendationProps(
+        Recommendation(
           tag: 'Achtsamkeit',
           title: 'Meditation',
           subtitle: 'Finde innere Ruhe',
           imagePath: Assets.images.meditation,
         ),
-        RecommendationProps(
+        Recommendation(
           tag: 'Beweglichkeit',
           title: 'Stretching',
           subtitle: 'Entspanne deine Muskeln',
           imagePath: Assets.images.stretching,
         ),
-        RecommendationProps(
+        Recommendation(
           tag: 'Beauty',
           title: 'Hautpflege',
           subtitle: 'Zyklusgerechte Pflege',

@@ -72,7 +72,7 @@ void main() {
           theme: AppTheme.buildAppTheme(),
           home: Scaffold(
             body: Padding(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               child: StatsScroller(
                 trainingStats: stats,
                 isWearableConnected: true,

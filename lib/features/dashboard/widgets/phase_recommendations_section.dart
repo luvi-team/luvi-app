@@ -6,7 +6,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
+import 'package:luvi_app/features/dashboard/domain/models/recommendation.dart';
 import 'package:luvi_app/features/dashboard/widgets/painters/wave_painter.dart';
 import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -18,8 +18,8 @@ class PhaseRecommendationsSection extends StatelessWidget {
     required this.regenerationRecommendations,
   });
 
-  final List<RecommendationProps> nutritionRecommendations;
-  final List<RecommendationProps> regenerationRecommendations;
+  final List<Recommendation> nutritionRecommendations;
+  final List<Recommendation> regenerationRecommendations;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +127,7 @@ class PhaseRecommendationsSection extends StatelessWidget {
   Widget _buildRecommendationSubsection({
     required BuildContext context,
     required String title,
-    required List<RecommendationProps> recommendations,
+    required List<Recommendation> recommendations,
     required double cardWidth,
     required double cardHeight,
     required String semanticPrefix,

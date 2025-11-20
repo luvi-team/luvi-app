@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
+import 'package:luvi_app/features/dashboard/domain/models/recommendation.dart';
 import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';
 import 'package:luvi_app/features/dashboard/domain/training_stat_props.dart';
 import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
@@ -36,7 +37,7 @@ class LegacySections extends StatefulWidget {
   final Category selectedCategory;
   final void Function(Category category) onCategoryTap;
   final TopRecommendationProps topRecommendation;
-  final List<RecommendationProps> recommendations;
+  final List<Recommendation> recommendations;
   final List<TrainingStatProps> trainingStats;
   final bool isWearableConnected;
   final Phase currentPhase;

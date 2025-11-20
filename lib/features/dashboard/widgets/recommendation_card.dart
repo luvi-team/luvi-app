@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -90,7 +91,7 @@ class RecommendationCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(Spacing.m),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,

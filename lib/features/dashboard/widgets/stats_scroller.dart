@@ -70,13 +70,8 @@ class StatsScroller extends StatelessWidget {
     if (_shouldShowFallback) {
       return SizedBox(
         height: kStatsCardHeight,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.zero,
-          physics: const BouncingScrollPhysics(),
-          children: const [
-            WearableConnectCard(key: Key('dashboard_wearable_connect_card')),
-          ],
+        child: const WearableConnectCard(
+          key: Key('dashboard_wearable_connect_card'),
         ),
       );
     }
