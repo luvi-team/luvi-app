@@ -119,6 +119,7 @@ class Consent02Screen extends ConsumerWidget {
       if (!welcomeMarked) {
         if (context.mounted) {
           _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
+          return;
         }
       }
       if (!context.mounted) return;
