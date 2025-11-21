@@ -117,9 +117,9 @@ class Consent02Screen extends ConsumerWidget {
       await _acceptConsent(ref, scopes);
       final welcomeMarked = await _markWelcomeSeen(ref);
       if (!welcomeMarked) {
-        if (!context.mounted) return;
-        _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
-        return;
+        if (context.mounted) {
+          _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
+        }
       }
       if (!context.mounted) return;
       _navigateToAuthEntry(context);
