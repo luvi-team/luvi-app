@@ -883,7 +883,7 @@
   "@consentSnackbarError": {
     "description": "Snackbar-Fehlertext bei gescheiterter Einwilligungsprotokollierung. Keine technischen Details anzeigen."
   },
-  "consent_error_saving_consent": "Wir konnten deine Einwilligung nicht speichern. Bitte versuche es erneut.",
+  "consent_error_saving_consent": "Wir konnten nicht alle deine Einstellungen speichern. Du kannst trotzdem fortfahren und es später erneut versuchen.",
   "@consent_error_saving_consent": {
     "description": "Snackbar-Hinweis, wenn das Markieren von Willkommen als gesehen nach erfolgreicher Einwilligung fehlschlägt. Navigation läuft weiter."
   },
