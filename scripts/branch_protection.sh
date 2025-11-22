@@ -4,7 +4,7 @@ set -euo pipefail
 
 REPO="${REPO:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
 BRANCHES=("main" "develop")
-REQUIRED_CHECKS=("Flutter CI / analyze-test" "Flutter CI / privacy-gate" "Supabase DB Dry-Run" "CodeRabbit")
+REQUIRED_CHECKS=("Flutter CI / analyze-test" "Flutter CI / privacy-gate" "Supabase DB Dry-Run" "Greptile Review")
 
 echo "[branch-protection] configuring repository: $REPO"
 echo "[branch-protection] required checks:"
