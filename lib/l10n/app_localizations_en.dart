@@ -666,5 +666,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentSnackbarError => 'We couldn\'t save your consent. Please try again.';
 
   @override
+  String get consentErrorSavingConsent => 'We couldn\'t save all your preferences. You can continue and try again later.';
+
+  @override
   String get consentSnackbarRateLimited => 'Too many requests right now. Please wait a moment and try again.';
 }

@@ -666,5 +666,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentSnackbarError => 'Wir konnten deine Einwilligung nicht speichern. Bitte versuche es erneut.';
 
   @override
+  String get consentErrorSavingConsent => 'Wir konnten nicht alle deine Einstellungen speichern. Du kannst trotzdem fortfahren und es später erneut versuchen.';
+
+  @override
   String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
 }

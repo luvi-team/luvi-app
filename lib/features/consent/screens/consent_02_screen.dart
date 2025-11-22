@@ -116,11 +116,17 @@ class Consent02Screen extends ConsumerWidget {
       final scopes = _computeScopes(state);
       await _acceptConsent(ref, scopes);
       final welcomeMarked = await _markWelcomeSeen(ref);
+
+      if (!context.mounted) return;
+
+      // Best-effort: consent is accepted; we warn but do not block navigation.
       if (!welcomeMarked) {
-        if (!context.mounted) return;
-        _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
-        return;
+        _showConsentErrorSnackbar(
+          context,
+          l10n.consentErrorSavingConsent,
+        );
       }
+
       if (!context.mounted) return;
       _navigateToAuthEntry(context);
     } on ConsentException catch (error) {
@@ -583,24 +589,19 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
 }
 
 Future<bool> _markWelcomeSeen(WidgetRef ref) async {
-  final userState = await tryOrNullAsync(
-    () => ref.read(userStateServiceProvider.future),
-    tag: 'userState',
-  );
-  if (userState == null) {
+  try {
+    final userState = await ref.read(userStateServiceProvider.future);
+    await userState.markWelcomeSeen();
+    return true;
+  } catch (error, stackTrace) {
+    log.e(
+      'consent_mark_welcome_failed',
+      tag: 'consent02',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
     return false;
   }
-
-  var markFailed = false;
-  await tryOrNullAsync(
-    () => userState.markWelcomeSeen(),
-    tag: 'markWelcomeSeen',
-    onError: (error, stackTrace) {
-      markFailed = true;
-    },
-  );
-
-  return !markFailed;
 }
 
 void _navigateToAuthEntry(BuildContext context) {

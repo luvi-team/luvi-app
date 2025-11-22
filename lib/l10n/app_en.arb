@@ -883,6 +883,10 @@
   "@consentSnackbarError": {
     "description": "Snackbar text shown when consent logging fails. No error details are exposed."
   },
+  "consentErrorSavingConsent": "We couldn't save all your preferences. You can continue and try again later.",
+  "@consentErrorSavingConsent": {
+    "description": "Snackbar text shown when marking welcome as seen fails after consent acceptance; navigation continues."
+  },
   "consentSnackbarRateLimited": "Too many requests right now. Please wait a moment and try again.",
   "@consentSnackbarRateLimited": {
     "description": "Snackbar text shown when consent logging is rate limited."
