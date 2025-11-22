@@ -20,6 +20,7 @@ import 'core/init/init_mode.dart' show initModeProvider;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 import 'core/init/init_diagnostics.dart';
 
+// TODO(arwin): Greptile status check smoke test
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Portrait-only as default app orientation during development and MVP.
