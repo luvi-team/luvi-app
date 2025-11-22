@@ -1349,11 +1349,11 @@ abstract class AppLocalizations {
   /// **'We couldn\'t save your consent. Please try again.'**
   String get consentSnackbarError;
 
-  /// Snackbar text shown when marking welcome as seen fails after consent acceptance. Navigation continues.
+  /// Snackbar text shown when marking welcome as seen fails after consent acceptance; navigation continues.
   ///
   /// In en, this message translates to:
   /// **'We couldn\'t save all your preferences. You can continue and try again later.'**
-  String get consent_error_saving_consent;
+  String get consentErrorSavingConsent;
 
   /// Snackbar text shown when consent logging is rate limited.
   ///
