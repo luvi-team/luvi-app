@@ -123,10 +123,11 @@ class Consent02Screen extends ConsumerWidget {
       if (!welcomeMarked) {
         _showConsentErrorSnackbar(
           context,
-          l10n.consent_error_saving_consent,
+          l10n.consentErrorSavingConsent,
         );
       }
 
+      if (!context.mounted) return;
       _navigateToAuthEntry(context);
     } on ConsentException catch (error) {
       if (!context.mounted) return;
