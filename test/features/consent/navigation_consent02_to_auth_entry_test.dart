@@ -102,6 +102,50 @@ void main() {
     expect(loginButton.onPressed, isNotNull);
   });
 
+  testWidgets(
+    'navigates to auth entry and shows best-effort snackbar when markWelcomeSeen fails',
+    (tester) async {
+      final consentService = _MockConsentService();
+      final userState = _MockUserStateService();
+
+      when(
+        () => consentService.accept(
+          version: ConsentConfig.currentVersion,
+          scopes: any(named: 'scopes'),
+        ),
+      ).thenAnswer((_) async {});
+      when(() => userState.markWelcomeSeen()).thenThrow(Exception('fail'));
+
+      await _pumpConsentScreen(
+        tester,
+        consentService: consentService,
+        userStateService: userState,
+      );
+
+      final screenContext = tester.element(find.byType(Consent02Screen));
+      final l10n = AppLocalizations.of(screenContext)!;
+
+      await tester.tap(find.byKey(const Key('consent02_btn_next')));
+      await tester.pumpAndSettle();
+
+      final consentCall = verify(
+        () => consentService.accept(
+          version: ConsentConfig.currentVersion,
+          scopes: captureAny(named: 'scopes'),
+        ),
+      );
+      consentCall.called(1);
+      final capturedScopes = consentCall.captured.single as List<String>;
+      expect(capturedScopes, _expectedScopeIds());
+
+      verify(() => userState.markWelcomeSeen()).called(1);
+
+      expect(find.text(l10n.consentErrorSavingConsent), findsOneWidget);
+      expect(find.byKey(const ValueKey('auth_entry_register_cta')), findsOneWidget);
+      expect(find.byKey(const ValueKey('auth_entry_login_cta')), findsOneWidget);
+    },
+  );
+
   testWidgets('Consent CTA shows rate-limit snackbar and blocks navigation', (
     tester,
   ) async {
