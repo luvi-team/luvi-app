@@ -44,7 +44,7 @@
 - 4.3 Observability  
   - Welche Events, Traces, Health-Checks müssen für diesen Sprint stehen?
 - 4.4 Weitere Gates  
-  - Spezifische Anforderungen an CodeRabbit, CI, ADR-Updates, Runbooks, Maintenance-Log.
+  - Spezifische Anforderungen an Greptile Review (Required Check), CI, ADR-Updates, Runbooks, Maintenance-Log (CodeRabbit optional lokal).
 
 > Hinweis: Nutze BMAD Global Kapitel 4 + `docs/engineering/checklists/*.md` und `docs/compliance/dsgvo_checklist.md`.
 

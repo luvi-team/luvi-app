@@ -11,7 +11,7 @@ Verifizierung der Segmentfarben im `CycleInlineCalendar` fehlt aktuell im Widget
    - Widget-Test liest die Debug-Daten aus und stellt sicher, dass Ovulation/Ovulation-Übergänge die spezifizierten Token-Farben mit korrekter Alpha-Komponente verwenden.
 2. **Golden / Pixel-Match Test:**
    - Ergänze einen Golden-Test mit `flutter_test`/`matchesGoldenFile`, der die Wochenansicht während der Ovulationsphase rendert.
-   - Dokumentiere Setup (z. B. `flutter test --update-goldens`) und Plattform-Pixelabweichungen, damit CodeRabbit & CI die Erwartungsdateien prüfen können.
+   - Dokumentiere Setup (z. B. `flutter test --update-goldens`) und Plattform-Pixelabweichungen, damit Greptile Review & CI (CodeRabbit optional) die Erwartungsdateien prüfen können.
 
 ### Acceptance Criteria
 - Entscheidung und Implementierung für eine der Optionen sind dokumentiert.

@@ -5,7 +5,7 @@ Die Claude-Agentenprinzipien wurden erfolgreich auf Codex übertragen. Alle Agen
 - 5 Agenten-Dossiers aktualisiert (`context/agents/01–05-*.md`)
   - Kopfblock ergänzt: `role, goal, inputs, outputs, acceptance, acceptance_version: 1.0`
   - Acceptance-Block enthält exakte Labels:
-    - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · CodeRabbit ✅
+    - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) ✅ · Flutter CI / privacy-gate (pull_request) ✅ · Greptile Review (Required Check) ✅ (CodeRabbit optional lokal)
     - DoD (Repo): flutter analyze ✅ · flutter test (≥1 Unit + ≥1 Widget) ✅ · ADRs gepflegt ✅ · DSGVO-Review aktualisiert ✅
     - Hinweis: DCM läuft CI-seitig non-blocking; Findings optional an Codex weitergeben
   - "Operativer Prompt" → "Operativer Modus (Codex CLI-first, .claude/* nur Referenz)"
@@ -19,7 +19,7 @@ Die Claude-Agentenprinzipien wurden erfolgreich auf Codex übertragen. Alle Agen
 ### Impact
 - Governance dauerhaft im Repo verankert → wirkt automatisch in neuen Codex-Sessions und PRs
 - Einheitliche Acceptance-Kriterien → keine Drift mehr zwischen Dossiers, CI und Merge-Gates
-- Reviewer & Tools (Codex, CodeRabbit, CI) arbeiten auf demselben Set an Regeln
+- Reviewer & Tools (Codex, Greptile Review, CI; CodeRabbit optional) arbeiten auf demselben Set an Regeln
 - Legacy bleibt transparent, stört aber den Workflow nicht
 
 ### Next Steps (optional)

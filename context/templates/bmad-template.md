@@ -178,7 +178,7 @@ await supabase
 - [ ] `flutter analyze` → 0 errors
 - [ ] `flutter test` → all tests passed
 - [ ] Privacy-Gate (falls DB-Touch) → grün
-- [ ] CodeRabbit → "0 blocking issues"
+- [ ] Greptile Review (Required Check) → "0 blocking issues" (CodeRabbit optional lokal)
 
 **DSGVO-Review (bei DSGVO-Impact = High):**
 - [ ] Privacy-Review erstellt: `docs/privacy/reviews/<branch>.md`
@@ -203,7 +203,7 @@ await supabase
 - [ ] **STOP:** Wenn Tests nicht grün → kein Merge (fix tests first!)
 - [ ] **STOP:** Wenn RLS-Check fails → lies `docs/runbooks/debug-rls-policy.md`
 - [ ] **STOP:** Wenn DSGVO-Impact = High, aber keine Privacy-Review → erstelle Review (Template: `context/templates/dsgvo-review-template.md`)
-- [ ] **STOP:** Wenn CodeRabbit "blocking issues" → fixe Issues ODER begründe Ignore im PR-Kommentar
+- [ ] **STOP:** Wenn Greptile Review "blocking issues" → fixe Issues ODER begründe Ignore im PR-Kommentar
 
 ---
 
@@ -216,8 +216,8 @@ await supabase
 - [ ] Branch-Protection Required Checks grün:
   - Flutter CI / analyze-test (pull_request)
   - Flutter CI / privacy-gate (pull_request)
-  - CodeRabbit
-- [ ] Review von @coderabbitai (Kommentar: `@coderabbitai review`)
+  - Greptile Review
+- [ ] (Optional) Lokales CodeRabbit-Review (`@coderabbitai review`) abgearbeitet
 - [ ] Alle PR-Kommentare "resolved"
 
 ### ⚠️ FINAL STOP
@@ -269,7 +269,7 @@ Onboarding-Screen → Cycle-Input-Form → cycleInputProvider (validate) → Sup
 - [x] RLS-Check: 4 Steps (siehe oben) → ✅ grün
 - [x] Privacy-Review: `docs/privacy/reviews/feat-m4-cycle-input.md`
 - [x] CI grün (analyze/test/privacy-gate)
-- [x] CodeRabbit: 0 blocking issues
+- [x] Greptile Review: 0 blocking issues (CodeRabbit optional lokal)
 
 **STOP-Kriterien:** Alle geprüft ✅ → Ready for Merge.
 

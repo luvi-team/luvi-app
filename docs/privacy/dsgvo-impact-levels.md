@@ -24,7 +24,7 @@
 
 **Erforderliche Checks:**
 - ✅ CI grün (flutter analyze/test)
-- ✅ CodeRabbit grün
+- ✅ Greptile Review grün (CodeRabbit optional lokal)
 - ⚠️ Kein RLS-Check erforderlich
 
 **Consent:**
@@ -48,7 +48,7 @@
 
 **Erforderliche Checks:**
 - ✅ CI grün (flutter analyze/test)
-- ✅ CodeRabbit grün
+- ✅ Greptile Review grün (CodeRabbit optional lokal)
 - ✅ RLS-Check (bestehende Policies prüfen: SELECT-Policy vorhanden?)
 - ✅ Consent-Scope verifizieren (User hat für Daten-Nutzung eingewilligt)
 - ⚠️ Keine neuen Migrations/Policies erforderlich
@@ -80,7 +80,7 @@
 
 **Erforderliche Checks:**
 - ✅ CI grün (flutter analyze/test)
-- ✅ CodeRabbit grün
+- ✅ Greptile Review grün (CodeRabbit optional lokal)
 - ✅ **RLS-Check (vollständig):**
   1. `SELECT relrowsecurity FROM pg_class WHERE relname='<table>';` → true
   2. `SELECT * FROM pg_policies WHERE tablename='<table>';` → 4 Policies (SELECT/INSERT/UPDATE/DELETE)
