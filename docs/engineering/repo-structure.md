@@ -2,30 +2,38 @@
 
 > Siehe zusätzlich `docs/engineering/flutter-structure.md` für verbindliche Flutter-spezifische Best Practices (Routen, Assets, Services, Tests).
 
-## Verzeichnisbaum (Soll)
+## Verzeichnisbaum (Soll / Ist)
 - lib/
-- core/
-  - design_tokens/
-  - theme/
-- features/
-  - consent/
-  - screens/
-  - widgets/
-  - state/
-  - routes.dart
-  - cycle/
-  - data/            (API/repo/data sources)
-  - domain/          (entities/models)
-  - widgets/         (PhaseBadge)
-- services/ — local sibling Dart package in this repository (`luvi_services`)
-  - Contains shared app services, e.g. `lib/user_state_service.dart`, `lib/supabase_service.dart`
-  - Consumed via a path dependency from the app `pubspec.yaml`
-- test/
+  - core/
+    - design_tokens/
+    - theme/
+    - config/
+    - navigation/
+    - analytics/
+    - privacy/
+    - utils/
+    - widgets/
   - features/
-    - consent/       (tests mirror the feature)
-- goldens/
-- widgets/
-- root tests (e.g., cycle tests, widget_test.dart)
+    - auth/
+    - consent/
+    - cycle/
+    - dashboard/
+    - legal/
+    - onboarding/
+    - splash/
+    - (jedes Feature inkl. `data/`, `domain/`, `state/`, `screens/`, `widgets/`, `utils/` nach Bedarf)
+  - l10n/
+- services/ — lokales Dart-Package (`luvi_services`)
+  - geteilte App-Services unter `services/lib/**`
+  - Konsumiert als Pfad-Dependency aus `pubspec.yaml`
+- test/
+  - core/            (spiegelt `lib/core/**`)
+  - features/        (spiegelt `lib/features/**`)
+  - services/        (Tests für `luvi_services`)
+  - l10n/
+  - support/         (Test-Helper, Mocks, Fixtures)
+  - dev/             (Audit-/Dev-Only-Tests)
+  - root tests (z. B. übergreifende Widget-/Integrationstests)
 
 ## Notizen
 - Optional-Legacy-Folder aufräumen, wenn obsolet
