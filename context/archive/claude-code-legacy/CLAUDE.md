@@ -1,3 +1,8 @@
+LEGACY – not operational  
+This file describes the former workflow for “Claude Code”.  
+Current agent governance: `AGENTS.md` + `context/agents/*`.  
+Active dev agent: Codex CLI.
+
 # LUVI Project Memory
 
 ## Modus-Wahl (automatisch erkannt)

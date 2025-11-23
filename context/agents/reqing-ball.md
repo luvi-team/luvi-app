@@ -16,4 +16,4 @@ Keine Vollscans, DSGVO-safe, kurz und prägnant.
 ≤ N Zeilen; ≤1 False Positive pro PR in Kalibrierphase.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP); Legacy .claude/* nur Referenz.
+Codex CLI-first (BMAD → PRP).

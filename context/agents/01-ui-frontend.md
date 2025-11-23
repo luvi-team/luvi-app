@@ -35,7 +35,7 @@ PR-Checks grün (flutter analyze/test), Widget-Tests, UI-Dokumentation unter doc
 An api-backend; Format: PR-Beschreibung + test/** + docs/**.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/ui-frontend.md (nur Referenz, keine Befehle übernehmen).
+Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
 
 ## Checklisten & Runbooks
 - UI‑Checklist: `docs/engineering/checklists/ui.md`

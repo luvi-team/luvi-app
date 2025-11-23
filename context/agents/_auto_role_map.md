@@ -1,8 +1,8 @@
 # Auto-Role Map (SSOT)
 
-Zentraler Keyword→Rollen‑Match für Auto‑Role in Codex CLI und Claude Code.
-Änderungen ausschließlich hier pflegen. Beide Einstiegspunkte (AGENTS.md, CLAUDE.md)
-verlinken auf diese Datei. Operativer Prozess: BMAD → PRP.
+Zentraler Keyword→Rollen‑Match für Auto‑Role in Codex CLI.
+Änderungen ausschließlich hier pflegen. Einstiegspunkt: AGENTS.md.
+Operativer Prozess: BMAD → PRP.
 
 ## Keyword‑Mapping
 - ui-frontend: Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter
@@ -22,5 +22,4 @@ verlinken auf diese Datei. Operativer Prozess: BMAD → PRP.
 - Mehrere Matches → Primär = höchste Priorität; sekundär erwähnen
 - Kein Match → User um Klarstellung bitten
 - Ankündigen (erste Zeile der Antwort, falls Rollenpflicht):
-  `🔵 Role: <rolle> | Keywords: [k1, k2, …]`
-
+  `[Role: <rolle> | Keywords: k1, k2, …]`

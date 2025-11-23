@@ -34,7 +34,7 @@ SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
 An api-backend/qa-dsgvo; Format: supabase/migrations/**.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/db-admin.md (nur Referenz, keine Befehle übernehmen).
+Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
 
 ## Checklisten & Runbooks
 - DB‑Checklist: `docs/engineering/checklists/db.md`

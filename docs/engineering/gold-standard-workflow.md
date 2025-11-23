@@ -102,10 +102,9 @@ Business (Ziele/DSGVO) → Modellierung (Flows/ERD, Tabellen/Policies) → Archi
 - Terminal: frei wählbar (**Warp entfernt**)  
 
 - **AI-Coding:**  
-  - **Claude Code (Primary, Video-Empfehlung):** Multi-File, Migrations, agentische Steps  
-  - **Codex/GPT5 High (Review & Plan):** Zweitmeinung vor PR; erzeugt MiniPlan/Tests  
+  - **Codex CLI (Primary):** Multi-File, Migrations, Planung (BMAD → PRP), Tests/Refactor
 
-- **Knowledge SSOT (neu, Video):** **Archon (MCP)** – Dossiers/Policies/Runbooks, MCP-abrufbar in Claude/Codex  
+- **Knowledge SSOT (neu, Video):** **Archon (MCP)** – Dossiers/Policies/Runbooks, MCP-abrufbar in Codex  
 - **LLM Observability (neu, Video):** **Langfuse** – Traces/Token/Kosten/Latenz/ToolCalls/Evals  
 - **DBOps (neu, Dev):** **Supabase MCP** – Staging + readonly→Review→CI; keine direkten ProdWrites  
 
@@ -179,7 +178,7 @@ Vorgehen:
 
 4) In PR-Body oder separate Datei einfügen  
 
-5) BMAD an Codex / Claude posten → Umsetzung starten
+5) BMAD an Codex posten → Umsetzung starten
 
 
 ### 1.2 Runbook nutzen (bei Problemen)
@@ -193,7 +192,7 @@ Vorgehen:
 
 1) Passendes Runbook öffnen (z. B. `docs/runbooks/debug-rls-policy.md`, `docs/runbooks/vercel-health-check.md`)  
 
-2) Kommandos ausführen → Output an Codex/Claude  
+2) Kommandos ausführen → Output an Codex  
 
 3) Fix anwenden → Redeploy (Preview)
 
@@ -223,7 +222,7 @@ Vorgehen:
 |----------------|-------------------------|-----------|-------------------------------------------------------|
 | Traycer-Plan   | Vor Code (Medium/High)  | 5–8 Min   | Plan/Phases → `docs/traycer/<ticket>.md`              |
 | BMAD           | Vor Code (Medium/High)  | 10–15 Min | Template ausfüllen → PR-Body/Datei                    |
-| Runbook        | Troubleshooting         | 3–5 Min   | Runbook öffnen → Commands → Output an Codex/Claude    |
+| Runbook        | Troubleshooting         | 3–5 Min   | Runbook öffnen → Commands → Output an Codex           |
 | Prove          | Nach Code               | 5–10 Min  | Self-Check → DSGVO-Review → Sign-off                  |
 
 
@@ -239,7 +238,7 @@ Feature: Nutzerin gibt `cycle_length`, `period_length`, `lmp_date` ein · Impact
 
 09:10 BMAD (10–12 Min)  
 
-09:25 Codex/Claude: Code + Migration (~20 Min)  
+09:25 Codex CLI: Code + Migration (~20 Min)  
 
 09:47 Runbook: RLS-Check (5 Min)  
 

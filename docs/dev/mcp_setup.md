@@ -1,36 +1,6 @@
 # MCP Setup (read-only, dev)
 
-## Für Claude Code (CLI-basiert, empfohlen)
-
-### 1. Supabase MCP Server hinzufügen
-```bash
-claude mcp add --transport http supabase https://mcp.supabase.com/mcp
-```
-
-### 2. Verifikation
-```bash
-claude mcp list
-# Sollte zeigen: supabase: https://mcp.supabase.com/mcp (HTTP) - ⚠ Needs authentication
-```
-
-### 3. Claude Code neu starten
-Beende Claude Code vollständig (Menü → Quit) und öffne es neu.
-
-### 4. OAuth-Authentifizierung (automatisch)
-Beim ersten Zugriff auf Supabase MCP (z.B. `/MCP` command):
-1. Browser-Fenster öffnet sich automatisch
-2. Login mit Supabase-Account
-3. Organization-Zugriff gewähren
-4. Projekt wählen (`luvi-dev`)
-
-**KEIN Access Token nötig!** OAuth-Flow läuft automatisch.
-
-### 5. Verifikation
-Nach Neustart: `/MCP` command → "supabase" sollte in der Liste erscheinen.
-
----
-
-## Für Codex CLI (URL-Parameter-basiert)
+## Einrichtung (Codex CLI)
 
 1. **Lokale Config anlegen (außerhalb des Repos):** Kopiere `mcp/supabase.mcp.json.example` nach `~/.mcp/config.json` und passe sie lokal an. **Keine Secrets committen.**
 
@@ -47,6 +17,8 @@ Nach Neustart: `/MCP` command → "supabase" sollte in der Liste erscheinen.
 ```
 
 **Hinweis:** Ersetze `${PROJECT_REF}` mit deinem Supabase Project Reference (z.B. `cwloioweaqvhibuzdwpi` für `luvi-dev`).
+
+3. **Verifikation:** Datei prüfen (`cat ~/.mcp/config.json`) und Codex CLI neu starten, sodass MCP geladen wird.
 
 ---
 
@@ -66,12 +38,6 @@ MCP liefert nur Hinweise. Jede DB-Änderung läuft über **PR → Supabase DB Dr
 
 ## Troubleshooting
 
-### Claude Code: "supabase" nicht in /MCP sichtbar
-1. ✅ Via CLI hinzugefügt? (`claude mcp add ...`)
-2. ✅ Claude Code neu gestartet? (vollständig beenden + neu öffnen)
-3. ✅ OAuth-Flow durchgeführt? (Browser-Fenster sollte sich automatisch öffnen)
-4. ✅ Verifikation: `claude mcp list` sollte "supabase" zeigen
-
 ### Codex CLI: Connection Error
 1. ✅ `~/.mcp/config.json` existiert?
 2. ✅ `project_ref` in URL korrekt? (Supabase Dashboard → Settings → API)
@@ -80,11 +46,6 @@ MCP liefert nur Hinweise. Jede DB-Änderung läuft über **PR → Supabase DB Dr
 ---
 
 ## Security & Best Practices
-
-### OAuth-Schutz (Claude Code)
-- ✅ **Keine Secrets im Repo:** MCP-Config via CLI (intern gespeichert in `~/.claude.json`)
-- ✅ **OAuth-Flow:** Browser-Login mit Supabase-Account (kein hardcoded Token)
-- ✅ **Read-only by design:** Keine destructive Operations möglich
 
 ### project_ref ist KEIN Secret
 - ℹ️ `project_ref` ist ein **öffentlicher Identifier** (wie eine URL)

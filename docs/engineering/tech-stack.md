@@ -7,7 +7,7 @@
 ## 0) Leitgedanke
 
 - **SQL-first**, **Edge-nah**, **Privacy by Design** (EU-Residency, PII-Redaction, Consent-Logs).
-- **Vibe-Coding** mit starken Agents (**Claude Code** + **Codex**), **Wissens-SSOT** (**Archon**) und **LLM-Observability** (**Langfuse**).
+- **Vibe-Coding** mit einem starken Agenten (**Codex CLI**), **Wissens-SSOT** (**Archon**) und **LLM-Observability** (**Langfuse**).
 - **CI-geführte Änderungen**: Alles Schreibende per **PR/Migration** + **Greptile-Review-Gate** (GitHub Required Check) + **Preview-Health (200)** vor Merge; Reptile nur noch lokal als optionaler Preflight.
 
 ---
@@ -27,12 +27,9 @@
 
 ### 1.2 AI-Coding (Primary & Review)
 
-- **Claude Code**  
-  **Funktion:** Agentischer Code-Assistent (Skills/Sub-Agents).  
-
-- **Codex / GPT-5 High — (Plan & Review)**  
-  **Funktion:** Zweitmeinung & Planung: liest Diffs von Claude Code, schreibt Review-Hinweise/Design-Notes.  
-  **Einsatz:** Vor-Review lokal, dann formales PR-Review via **Greptile Review** (Required Check); optional zusätzlicher lokaler CodeRabbit-Preflight vor dem Push (Details: `docs/engineering/ai-reviewer.md`).
+- **Codex CLI**  
+  **Funktion:** Primärer AI-Code-Assistent (Plan & Review, BMAD → PRP, Multi-File/Migrations).  
+  **Einsatz:** Daily Dev + Planung/Refactor; formales PR-Review via **Greptile Review** (Required Check); optional lokaler CodeRabbit-Preflight vor dem Push (Details: `docs/engineering/ai-reviewer.md`).
 
 - **CodeRabbit (nur lokal)**  
   **Funktion:** Lokales Pre-PR-Review (CLI/IDE).  
@@ -49,7 +46,7 @@
 - **Warum:** Stabiler Agent-Kontext, weniger Prompt-Drift, reproduzierbare Ergebnisse.  
 - **Einsatz:**  
   - `context/`-Dossiers: **Phase-Logik**, **Consent-Texte**, **Ranking-Heuristiken**, **AGENTS.md**  
-  - Direkt in **Claude Code**/**Codex** konsumierbar (MCP-Bridge).
+  - Direkt in **Codex** konsumierbar (MCP-Bridge).
 
 
 ### 1.4 Projekt-Orchestrierung (Baseline): Traycer
@@ -89,9 +86,9 @@
 
 ### 3.2 Supabase MCP (Dev-only, read-only)
 
-- **Zweck:** LLM-Assistenten (Claude/Codex) können **Schema lesen / erklären / Migrationspläne vorschlagen**.  
+- **Zweck:** LLM-Assistent (Codex) kann **Schema lesen / erklären / Migrationspläne vorschlagen**.  
 - **Guardrails:** **Keine Prod-Writes.** **DB-Änderungen nur via Migrations-PR → CI-Dry-Run → Apply (Dev) → RLS-Smoke.**  
-- **Setup-Hinweis:** `docs/dev/mcp_setup.md` (Claude Code via **OAuth**, Codex via **command-Server**; **PAT lokal**, `chmod 600`).
+- **Setup-Hinweis:** `docs/dev/mcp_setup.md` (Codex via **command-Server**; **PAT lokal**, `chmod 600`).
 
 
 ### 3.3 API-Gateway: Vercel Edge (`region: 'fra1'`)
@@ -150,7 +147,7 @@
 - **DSFA/DPIA (Initial)**; **EU-Residency** über alle Kern-Dienste (Supabase DE, Vercel `fra1`, EU-Regionen der AI-Provider).  
 - **Consent-Logs** (App), **PII-Redaction** im Gateway, **/api/health** als Betriebsnachweis.  
 - **Agenten-Governance:** `AGENTS.md` + Dossiers (Archon SSOT).  
-- **Review-Gates:** lokales Reptile (optional) → **Greptile Review** (Required Check im PR) → **Preview Health 200** → Merge.
+- **Review-Gates:** optional lokales CodeRabbit → **Greptile Review** (Required Check im PR) → **Preview Health 200** → Merge.
 
 
 ---
@@ -166,7 +163,7 @@
 
 | Tool/Komponente                 | Kategorie        | Status             | Funktion/Kernnutzen                                  | Herkunft   |
 |---------------------------------|------------------|--------------------|------------------------------------------------------|-----------|
-| **Claude Code**                 | Dev-AI           | Bestätigt          | Agentisches Coding (daily driver)                    | Video     |
+| **Codex CLI**                   | Dev-AI           | Bestätigt          | Agentisches Coding (daily driver)                    | Video     |
 | **Archon (MCP)**                | Knowledge/SSOT   | Neu                | Dossiers/Policies + MCP-Bridge für AI-Kontext        | Video     |
 | **Langfuse**                    | LLM Observability| Neu                | Traces/Costs/Latency/Evals                           | Video     |
 | **Supabase (EU) + pgvector**    | DB/Auth          | Beibehalten        | SQL + Vektor + RLS                                   | Baseline  |
