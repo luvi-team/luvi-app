@@ -36,7 +36,7 @@ Edge Functions/Services, Contract-Tests, Doku (docs/), Rate-Limits (nur bei exte
 An ui-frontend/db-admin; Format: PR-Beschreibung + docs/ + supabase/functions/.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/api-backend.md (nur Referenz, keine Befehle übernehmen).
+Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
 
 ## Checklisten & Runbooks
 - API‑Checklist: `docs/engineering/checklists/api.md`

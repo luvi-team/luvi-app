@@ -125,7 +125,7 @@ S0.5 — Foundation (Archon · Langfuse · Supabase MCP)   >erledigt!
 
 
 
-• Archon: Dossiers `context/` spiegeln; MCP-Verbindung zu Claude/Codex testen.  
+• Archon: Dossiers `context/` spiegeln; MCP-Verbindung zu Codex testen.  
 
 • Langfuse: Edge Middleware → Trace + userId + featureFlag.  
 

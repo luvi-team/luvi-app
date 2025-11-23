@@ -14,7 +14,7 @@ Index: AGENTS.md im Repo-Root verweist auf Dossiers & SSOT.
 - Artefakte: Draft-PR öffnen; context/debug/memory.md kurz aktualisieren.
 
 ## B) Kontext holen & Code-Vorschlag
-- In Codex arbeiten (CLI-first); Claude Code MCP nur falls Figma-MCP notwendig ist (Legacy/Interop).
+- In Codex arbeiten (CLI-first); Figma-MCP bei Bedarf über Codex (falls konfiguriert).
 - Tokenliste sichern, Figma-Frame/Node-Id referenzieren.
 - Task (role: ui-frontend): Figma-Frame importieren & token-aware abbilden.
 

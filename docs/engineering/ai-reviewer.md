@@ -10,7 +10,7 @@ It defines:
 - how AI reviews interact with linting, tests and health checks,
 - how to interpret and respond to AI review comments.
 
-It applies to **all contributors** and to all AI agents (Codex, Claude, etc.) working on this repository.
+It applies to **all contributors** using the Codex CLI workflow working on this repository.
 
 ---
 ## 2. Tools & Roles
@@ -62,7 +62,7 @@ Greptile is configured as follows (summarised – see Greptile dashboard for exa
   - Syntax and formatting are primarily enforced by `flutter analyze`, Dart/Flutter lints and formatters.  
   - Greptile should **avoid nitpicking** purely cosmetic issues that are already covered by linters.
 - **Custom context:** Greptile has access to:
-  - `AGENTS.md`, `CLAUDE.md` and this document (AI reviewer policy),
+  - `AGENTS.md` and this document (AI reviewer policy),
   - architecture & product context (App-Kontext, Tech-Stack, Gold-Standard),
   - DSGVO & RLS guidelines.
 - **Custom rules (high-level summary):**
@@ -175,7 +175,7 @@ After each PR:
 The goal is a reviewer that consistently surfaces **high-value issues** (bugs, risks, architectural smells) with minimal noise.
 
 ---
-## 8. For AI agents (Codex, Claude, etc.)
+## 8. For Codex CLI (sole agent)
 
 - When working on tasks related to code review, CI, branch protection, or development workflow, **always load this file** as part of your context.  
 - Treat this document as the **authoritative policy** for:

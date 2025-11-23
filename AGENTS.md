@@ -9,6 +9,12 @@ Governance
 - SSOT Acceptance v1.1 (Core + Role extensions): context/agents/_acceptance_v1.1.md
  - SSOT (Product): docs/product/app-context.md · docs/product/roadmap.md
 
+Empfohlene Lesereihenfolge (für neue Devs/Agents)
+1. `docs/product/app-context.md` – Was LUVI ist und für wen.
+2. `docs/product/roadmap.md` – Welche Sprints/Phasen es gibt.
+3. `docs/engineering/tech-stack.md` – Wie der Stack aufgebaut ist.
+4. `AGENTS.md` + `context/agents/*` – Rollen, Governance, DoD/Checks.
+
 Arbeitsweise
 - Codex CLI-first; BMAD → PRP (Plan → Run → Prove).
 - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check) · Vercel Preview Health (200 OK).
@@ -54,14 +60,17 @@ Rollenwahl
 - Auto-Role Map (SSOT): `context/agents/_auto_role_map.md`
 - Traycer (optional, Features): `docs/engineering/traycer/prompt-mini.md`
 
-Dual-Primary (Codex + Claude Code)
-- **Codex CLI:** Nutzt AGENTS.md (diese Datei). Auto-Role via `/status`.
-- **Claude Code:** Nutzt CLAUDE.md. Auto-Role gemäß SSOT‑Map: `context/agents/_auto_role_map.md`.
-- **Shared Governance:** Beide nutzen context/agents/* (Dossiers, DoD, ADRs, SSOT v1.1).
-- **Workflow:** Beide befolgen BMAD → PRP (Plan → Run → Prove).
+Codex-only
+- **Codex CLI:** einziger Dev-Agent, nutzt AGENTS.md (diese Datei). Auto-Role via `/status`.
+- Governance: context/agents/* (Dossiers, DoD, ADRs, SSOT v1.1).
+- Workflow: BMAD → PRP (Plan → Run → Prove).
+- Legacy: ehemalige Claude-Assets liegen archiviert unter `context/archive/claude-code-legacy/`.
 
-Legacy (nur historisch)
-- .claude/agents/* = Vor Codex-Umstellung, nicht mehr operativ.
+Work-Modes (informell, für Codex)
+- **High Impact** (DB/PII/AI/Security): volle BMAD/PRP-Ceremony, passende Tests, ggf. Privacy-Review/DSGVO-Check.
+- **Normale Features**: kurzer BMAD-Block und passende Tests, Traycer/BMAD nach Bedarf (kein Overkill für kleinere Stories).
+- **Micro-Tasks** (kleine UI-/Copy-Fixes, kein DB/PII): `flutter analyze` + betroffene Tests reichen; kein vollständiger BMAD-/Traycer-/Prove-Block erforderlich.
+  - Quick-Ref: High Impact → volle BMAD/PRP, ≥Unit+Widget tests, ggf. Privacy-Review/DSGVO; Normale Features → kurzer BMAD, passende Tests, Traycer nach Bedarf; Micro-Tasks → flutter analyze + affected tests.
 
 Archon IDE Global Rules
 - MCP-Server prüfen; Archon als Primärsystem nutzen.

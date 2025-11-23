@@ -36,7 +36,7 @@ Chart-Widgets, Tests, Doku (docs/), klare Achsen/Legenden.
 An ui-frontend/product; Format: PR-Beschreibung + docs/.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/dataviz.md (nur Referenz, keine Befehle übernehmen).
+Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
 
 ## Checklisten & Runbooks
 - DataViz‑Checklist: `docs/engineering/checklists/dataviz.md`

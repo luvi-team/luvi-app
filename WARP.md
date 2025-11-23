@@ -123,7 +123,7 @@ This project is currently using the default Flutter template with a simple count
 The project uses `flutter_lints` package for code analysis. The analyzer configuration is in `analysis_options.yaml` which includes the recommended Flutter lint rules.
 
 ### MCP Integration
-The project has MCP (Model Context Protocol) integration enabled with GitHub server configured in `.claude/settings.local.json`.
+The project has MCP (Model Context Protocol) integration enabled; Codex CLI consumes MCP. Legacy `.claude/settings.local.json` is archived under `context/archive/claude-code-legacy/.claude/`.
 
 ### Multi-platform Support
 The project is configured for all Flutter-supported platforms. Platform-specific configurations are in their respective directories.

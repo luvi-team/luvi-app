@@ -34,7 +34,7 @@ Privacy-Review unter docs/privacy/reviews/{id}.md, Kommentare im PR.
 An db-admin/ui-frontend; Format: Review-Report (docs/privacy/reviews/).
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates). Legacy/Interop: .claude/agents/qa-dsgvo.md (nur Referenz, keine Befehle übernehmen).
+Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
 
 ## Checklisten & Runbooks
 - Privacy‑Checklist: `docs/engineering/checklists/privacy.md`
