@@ -11,7 +11,8 @@ Governance
 
 Arbeitsweise
 - Codex CLI-first; BMAD → PRP (Plan → Run → Prove).
-- Required Checks (GitHub): Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check) · Vercel Preview Health (200 OK). (CodeRabbit optional lokal)
+- Required Checks (GitHub): Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check) · Vercel Preview Health (200 OK).
+- AI review setup (Greptile merge gate, optional local CodeRabbit) is defined in docs/engineering/ai-reviewer.md. If anything else contradicts it, ai-reviewer.md wins.
 - Acceptance pro Rolle: „Core + Role extension“ gemäß SSOT v1.1.
 - Antwortformat: verbindlich gemäß `docs/engineering/assistant-answer-format.md`.
 - CI-Pflegezyklus: Actions-Pinning (checkout/upload-artifact/github-script) quartalsweise prüfen/aktualisieren; siehe `context/agents/_actions_todo.md`.

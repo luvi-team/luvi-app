@@ -6,7 +6,7 @@ KONSTANTEN (für ALLE Sprints – unverändert aus deinen Standards)
 
 
 
-• DoD: CI grün (`flutter analyze`, `flutter test`) mit ≥ 1 Unit + ≥ 1 Widget je Story; DSGVO-Review pro datenrelevantem Task; ADRs gepflegt; Greptile Review grün (GitHub Required Check); optional lokales CodeRabbit-Review vor dem PR; `/api/health = 200`.  
+• DoD: CI grün (`flutter analyze`, `flutter test`) mit ≥ 1 Unit + ≥ 1 Widget je Story; DSGVO-Review pro datenrelevantem Task; ADRs gepflegt; Greptile Review grün (GitHub Required Check); optional lokales CodeRabbit-Review vor dem PR (lokaler Preflight, kein GitHub-Check); `/api/health = 200`.  
 
 
 
@@ -477,4 +477,3 @@ Teststrategie & Gates
 • Golden Tests für UI-Stabilität (Badges, Karten, Overlays).
 
 • Für AI-Features Link auf Langfuse-Trace im PR.
-

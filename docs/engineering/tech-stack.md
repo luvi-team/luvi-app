@@ -32,11 +32,11 @@
 
 - **Codex / GPT-5 High — (Plan & Review)**  
   **Funktion:** Zweitmeinung & Planung: liest Diffs von Claude Code, schreibt Review-Hinweise/Design-Notes.  
-  **Einsatz:** Vor-Review lokal, dann formales PR-Review via **Greptile Review** (Required Check); optional zusätzlicher lokaler Reptile-Check vor dem Push.
+  **Einsatz:** Vor-Review lokal, dann formales PR-Review via **Greptile Review** (Required Check); optional zusätzlicher lokaler CodeRabbit-Preflight vor dem Push (Details: `docs/engineering/ai-reviewer.md`).
 
-- **Reptile (nur lokal)**  
+- **CodeRabbit (nur lokal)**  
   **Funktion:** Lokales Pre-PR-Review (CLI/IDE).  
-  **Einsatz:** Optionales Qualitäts-/Security-Preflight vor dem Push; **kein GitHub-Required-Check mehr**.
+  **Einsatz:** Optionales Qualitäts-/Security-Preflight vor dem Push; **kein GitHub-Required-Check**, keine Branch-Protection. Siehe `docs/engineering/ai-reviewer.md`.
 
 - **Greptile (GitHub App)**  
   **Funktion:** AI-Code-Review im Pull Request mit GitHub-Statuscheck.  
@@ -132,7 +132,7 @@
 - **Analytics:** **PostHog (EU)**  
 - **Push:** **OneSignal** (DPA/SCCs)  
 - **Crash/Performance:** **Sentry**  
-- **CI/CD:** **GitHub Actions** + **Vercel** (PR-Previews, Prod-Deploy on merge) + **Greptile Review** (Required Check im PR; optional lokales Reptile-Review)
+- **CI/CD:** **GitHub Actions** + **Vercel** (PR-Previews, Prod-Deploy on merge) + **Greptile Review** (Required Check im PR; optional lokales CodeRabbit-Review als Preflight, kein GitHub-Check)
 
 
 ### 5.1 Newsletter (Baseline, wieder explizit)
@@ -176,7 +176,7 @@
 | **Redis**                       | Cache            | Beibehalten        | Schnelle Feeds, geringere Kosten                     | Baseline  |
 | **PostHog (EU)**                | Analytics        | Beibehalten        | Events/Funnel/Retention                              | Baseline  |
 | **Sentry**                      | Crash/Perf       | Beibehalten        | Stabilitäts-Monitoring                               | Baseline  |
-| **GitHub Actions + Greptile Review** | CI/QA        | Aktualisiert       | Build/Test + AI-PR-Review (Greptile Review als Required Check); optional lokales Reptile-Review | Baseline  |
+| **GitHub Actions + Greptile Review** | CI/QA        | Aktualisiert       | Build/Test + AI-PR-Review (Greptile Review als Required Check); optional lokales CodeRabbit-Preflight (kein GitHub-Check) | Baseline  |
 | **Traycer**                     | Orchestrierung   | Beibehalten        | Plan/Review-Flows, Prompt-Gerüste                    | Baseline  |
 | **Newsletter (Brevo/DOI)**      | Comms            | Wieder aufgenommen | Opt-in Mailversand, Onboarding/Updates               | Baseline  |
 | **Flutter (iOS-first)**         | App-UI           | Beibehalten        | UI-Implementierung, Time-to-Market                   | Baseline  |

@@ -27,7 +27,7 @@
 - **Definition of Done (D)**  
   Wann etwas „wirklich fertig“ ist: globale & rollen-spezifische
   Akzeptanzkriterien (CI, Tests, Privacy/DSGVO-Review, Health-Gates,
-  Greptile Review (Required Check), optionale lokale CodeRabbit-Reviews,
+  Greptile Review (Required Check), optionale lokale CodeRabbit-Reviews als Preflight (kein GitHub-Check, Details: `docs/engineering/ai-reviewer.md`),
   ADR-Pflege, Runbooks), wie sie in DoD-, Checklisten- und
   Governance-Dokumenten definiert sind.
 
@@ -275,7 +275,7 @@ TTL-Policies etc. gefüllt)*
   GitHub Actions orchestrieren `flutter analyze`/`flutter test`, Privacy-
   Gate, Preview-Health-Checks und weitere Pipelines. Greptile Review ist
   als Required Check vorgeschaltet; CodeRabbit wird nur noch lokal als
-  optionaler Preflight genutzt. Traycer dient als Plan-/Review-Softgate
+  optionaler Preflight genutzt (kein GitHub-Check; Policy siehe `docs/engineering/ai-reviewer.md`). Traycer dient als Plan-/Review-Softgate
   (Trial), Archon als zentraler MCP/SSOT für Agentenwissen.
 
 - **Supabase MCP (dev-only, read-only)**  
@@ -429,7 +429,7 @@ sowie im Gold-Standard-Workflow beschrieben ist:
 
 - **Reviews & Gates**
   - Greptile Review ist grün (GitHub Required Check).
-  - Optionale lokale CodeRabbit-Reviews vor dem PR sind abgearbeitet,
+  - Optionale lokale CodeRabbit-Reviews vor dem PR sind abgearbeitet (nur lokaler Preflight, kein CI-Gate),
     falls verwendet.
   - CI-Pipeline (GitHub Actions) ist grün (analyze/test/privacy-gate).
   - Preview-/Prod-Health-Checks (/api/health) entsprechen den
@@ -488,7 +488,7 @@ relevante Änderung erfüllt sein:
   - GitHub Actions: Analyze/Test, Privacy-Gate, Preview-Deploy.
   - Greptile Review: Pflicht-Review vor Merge (Required Check).
   - CodeRabbit: optionales lokales Preflight-Review vor dem PR
-    (CLI/IDE), kein GitHub Required Check mehr.
+    (CLI/IDE), kein GitHub Required Check mehr und kein Branch-Protection-Gate (Details: `docs/engineering/ai-reviewer.md`).
 
 - **Health & Observability**
   - `/api/health` muss in Preview/Prod den Statusanforderungen aus

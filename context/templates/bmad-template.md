@@ -178,7 +178,7 @@ await supabase
 - [ ] `flutter analyze` → 0 errors
 - [ ] `flutter test` → all tests passed
 - [ ] Privacy-Gate (falls DB-Touch) → grün
-- [ ] Greptile Review (Required Check) → "0 blocking issues" (CodeRabbit optional lokal)
+- [ ] Greptile Review (Required Check) → "0 blocking issues" (CodeRabbit optional lokal als Preflight; Details siehe `docs/engineering/ai-reviewer.md`)
 
 **DSGVO-Review (bei DSGVO-Impact = High):**
 - [ ] Privacy-Review erstellt: `docs/privacy/reviews/<branch>.md`
@@ -217,7 +217,7 @@ await supabase
   - Flutter CI / analyze-test (pull_request)
   - Flutter CI / privacy-gate (pull_request)
   - Greptile Review
-- [ ] (Optional) Lokales CodeRabbit-Review (`@coderabbitai review`) abgearbeitet
+- [ ] (Optional) Lokales CodeRabbit-Review (`@coderabbitai review`) abgearbeitet (nur lokaler Preflight, kein GitHub-Required-Check; Policy siehe `docs/engineering/ai-reviewer.md`)
 - [ ] Alle PR-Kommentare "resolved"
 
 ### ⚠️ FINAL STOP
