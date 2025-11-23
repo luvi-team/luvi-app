@@ -54,7 +54,8 @@ Jede Antwort MUSS enthalten:
    - `context/agents/_acceptance_v1.1.md` lesen (Core + Role Extensions)
    - DoD checken: `docs/definition-of-done.md`
    - Antwortformat (CLI): `docs/engineering/assistant-answer-format.md`
-   - Required Checks: Flutter CI (analyze-test, privacy-gate), Greptile Review (Required Check), Vercel Preview Health (200 OK) — CodeRabbit optional lokal
+   - Required Checks: Flutter CI (analyze-test, privacy-gate), Greptile Review (Required Check), Vercel Preview Health (200 OK) (Supabase DB Dry-Run if present)
+   - For details on how Greptile and CodeRabbit are used, see `docs/engineering/ai-reviewer.md` (SSOT for AI review).
 
 5. **MIWF (Make It Work First)**
    - `docs/engineering/field-guides/make-it-work-first.md` befolgen
@@ -97,7 +98,7 @@ Jede Antwort MUSS enthalten:
    - Req'ing Ball: max. 5 Gaps (priorisiert nach Severity: Critical > High > Medium > Low; Was/Warum/Wie, File:Line)
    - UI-Polisher: 5 Verbesserungen (Kontrast/Spacing/Typo/Tokens/States)
    - QA-DSGVO: Privacy-Impact (Low/Medium/High)
-   - Greptile Review: "0 blocking issues" vor Merge (CodeRabbit optional lokal)
+   - Optional local preflight: you may run a local CodeRabbit review and aim for "0 blocking issues" before opening a PR, but the only AI merge gate is Greptile Review.
 
 ---
 

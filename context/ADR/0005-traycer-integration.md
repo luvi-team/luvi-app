@@ -9,7 +9,7 @@ Wir wollen die Planungs- und Frühreview-Phase verbessern, ohne unsere bestehend
 
 ## Entscheidung
 - Traycer dient als Plan-/Frühreview-Soft-Gate (Plan → Umsetzen → Self-Check).
-- Greptile Review bleibt das PR-Gate (Required Check); Traycer ist nicht-blockierend und kein Required Check. (CodeRabbit optional lokal)
+- Greptile Review bleibt das PR-Gate (Required Check); Traycer ist nicht-blockierend und kein Required Check. CodeRabbit kann optional lokal als Preflight genutzt werden (kein GitHub-Check).
 - Nutzung nur mit Label `trial-traycer` (begrenzter Umfang, klare Auswertung).
 - Pläne werden im PR dokumentiert (Feld „Traycer-Plan (Link/Text)“).
 
@@ -27,13 +27,13 @@ Wir wollen die Planungs- und Frühreview-Phase verbessern, ohne unsere bestehend
 - Metriken: Nützliche Findings/PR, Iterationen/Story, Duplicate-Rate vs. Greptile/CodeRabbit (<20%).
 
 ## Nicht-Ziele
-- Keine Änderung der Required Checks.
+- Keine Änderung der Required Checks (Greptile Review bleibt einziges AI-bezogenes GitHub-Required-Check; CodeRabbit bleibt lokales Preflight-Tool).
 - Keine Speicherung von Secrets/PII in Traycer-Artefakten.
 
 ## Security/Privacy Impact
 - Traycer wird nur als Plan/Review-Artefakt genutzt, ohne produktive Datenverarbeitung.
 - Keine PII/Secrets in Artefakten; Verweise nur auf interne, DSGVO-konforme Quellen.
-- Keine Änderung an Auth/RLS/CI-Gates; Greptile Review/Privacy-Gate bleiben maßgeblich (CodeRabbit optional lokal).
+- Keine Änderung an Auth/RLS/CI-Gates; Greptile Review/Privacy-Gate bleiben maßgeblich. CodeRabbit bleibt ein optionales lokales Preflight-Tool (kein CI-Gate). Details zu Greptile/CodeRabbit: `docs/engineering/ai-reviewer.md`.
 
 ## Hinweis (Ablage)
 - Kanonischer Speicherort: `context/ADR/0005-traycer-integration.md`.
