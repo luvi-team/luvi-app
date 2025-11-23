@@ -26,7 +26,7 @@
 ## Konsistenz – Abgleich gegen Standard
 - Rollenabgleich: 5 Kern-Dossiers mappen auf {ui-frontend, api-backend, db-admin, qa-dsgvo, dataviz} ✅
 - Prozess/Governance: BMAD→PRP/DoD/Soft-Gates in Dossiers verankert (Operativer Modus) ✅
-- DoD/Required Checks: Exakte Labels hinterlegt (Flutter CI / analyze-test (pull_request), Flutter CI / privacy-gate (pull_request), CodeRabbit) ✅
+- DoD/Required Checks: Exakte Labels hinterlegt (Flutter CI / analyze-test (pull_request), Flutter CI / privacy-gate (pull_request), Greptile Review (Required Check)) ✅ (CodeRabbit optional lokal)
 - DCM: Hinweis non-blocking in Acceptance vorhanden ✅
 - SSOT: context/agents/_acceptance_v1.1.md (Version 1.1) vorhanden ✅
 
@@ -45,7 +45,7 @@
 ## Verifikation (Checks – Read-Only)
 - Rollenfelder: rg -n ^role:\s*(ui-frontend|api-backend|db-admin|qa-dsgvo|dataviz) context/agents
 - Acceptance-Version: rg -n ^acceptance_version:\s*1\.1 context/agents
-- Required-Labels: rg -n "Flutter CI / analyze-test \(pull_request\).*CodeRabbit" context/agents
+- Required-Labels: rg -n "Flutter CI / analyze-test \(pull_request\).*Greptile Review" context/agents
 - SSOT vorhanden: ls -l context/agents/_acceptance_v1.1.md
 - README Preamble & Pfade: sed -n '1,120p' context/agents/README.md
 - CLAUDE Legacy-Header: sed -n '1,20p' CLAUDE.md

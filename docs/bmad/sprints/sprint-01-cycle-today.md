@@ -105,7 +105,7 @@
   - Sentry überwacht Today-/Cycle-Flow (keine Crashes in Phase-Badge/Week-Strip/Save).  
   - Einfaches Dashboard/Log-Check: Anteil, der Today öffnet + vollständige CycleData hat; Plausibilitätsblick auf Eventzahlen.
 - 4.4 Weitere Gates  
-  - CodeRabbit grün; CI (analyze/test/privacy-gate) grün.  
+  - Greptile Review grün; CI (analyze/test/privacy-gate) grün. (CodeRabbit optional lokal)  
   - `/api/health` bleibt grün; keine Regression laut platform/healthcheck.  
   - ADR-0002 geprüft: RLS owner-based, kein `service_role` im Client.  
   - Docs/ADR-Updates prüfen, falls Logik/Verträge angepasst wurden.

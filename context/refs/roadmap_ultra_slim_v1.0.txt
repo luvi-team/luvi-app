@@ -6,7 +6,7 @@ Globale Invarianten (gelten für jeden Meilenstein)
 •	Tests/QA: mind. 1 Unit + 1 Widget (featurebezogen), DevTools-Perf-Check bei UI, Sentry aktiv, DSGVO-Checkliste gepflegt.  
 •	Daten/DSGVO: RLS owner-based, kein service_role im Client, Consent-Log {ts, version, scopes}, Audit-Trail via Edge Function.  
 •	DoD (immer): Feature nutzbar, Tests grün, Logs sichtbar, ADR/Docs aktualisiert.  
-•	Code-Qualität: flutter_lints aktiv; DCM als dev_dependency im CI (dart run dcm analyze || true); CodeRabbit-Reviews bei PRs.    
+•	Code-Qualität: flutter_lints aktiv; DCM als dev_dependency im CI (dart run dcm analyze || true); Greptile Review als Required Check, optional lokale CodeRabbit-Reviews.    
 •	CI/CD: Flutter-Version im Workflow gepinnt auf 3.35.4 (Dart 3.9.0).  
 •	Terminologie (vereinheitlicht): „Puls“ (statt „Statistics“); „LUVI Sync“ = tägliches (KI-)Briefing mit Top-Empfehlung je Bereich; „Profil“ als eigener Screen.  
  
@@ -30,4 +30,3 @@ Zyklus Minimal (Kalenderansicht, Verlauf, Phasenwissen) · LUVI Sync v1 (rules-b
 Sprints (2-Wochen-Raster, 1 Zeile)
 
 S0 Fundament • S1 Multi-Agent • S2 Modellierung • S3 Auth/Consent • S4 Core MVP (Zyklus Minimal + LUVI Sync v1 + Profil Minimal [+ ggf. Puls Live minimal]) • S5 AI • S6 Paywall • S7 Nutrition • S8 Mind • S9 Beta/Analytics • S10 Calendar • S11 Puls (Trends) • S12 Newsletter • S13+ Community/Wearables  
-

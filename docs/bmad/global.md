@@ -27,7 +27,8 @@
 - **Definition of Done (D)**  
   Wann etwas „wirklich fertig“ ist: globale & rollen-spezifische
   Akzeptanzkriterien (CI, Tests, Privacy/DSGVO-Review, Health-Gates,
-  CodeRabbit, ADR-Pflege, Runbooks), wie sie in DoD-, Checklisten- und
+  Greptile Review (Required Check), optionale lokale CodeRabbit-Reviews,
+  ADR-Pflege, Runbooks), wie sie in DoD-, Checklisten- und
   Governance-Dokumenten definiert sind.
 
 ---
@@ -272,8 +273,9 @@ TTL-Policies etc. gefüllt)*
 
 - **CI/CD & QA-Infrastruktur**  
   GitHub Actions orchestrieren `flutter analyze`/`flutter test`, Privacy-
-  Gate, Preview-Health-Checks und weitere Pipelines. CodeRabbit ist als
-  Required Check vorgeschaltet. Traycer dient als Plan-/Review-Softgate
+  Gate, Preview-Health-Checks und weitere Pipelines. Greptile Review ist
+  als Required Check vorgeschaltet; CodeRabbit wird nur noch lokal als
+  optionaler Preflight genutzt. Traycer dient als Plan-/Review-Softgate
   (Trial), Archon als zentraler MCP/SSOT für Agentenwissen.
 
 - **Supabase MCP (dev-only, read-only)**  
@@ -360,7 +362,8 @@ flutter-structure.md, platform/healthcheck.md, offline_resume_key_management.md)
   Sentry für Crash/Performance, Vercel Monitoring, OneSignal für Push
   (mit DPA/SCC-konformem Einsatz), Brevo für Newsletter/Comms mit DOI.
 - **CI/CD & QA:** GitHub Actions für Analyze/Test/Privacy-Gate/Preview-
-  Health, CodeRabbit als Required Check, Traycer als Plan-/Review-Softgate,
+  Health, Greptile Review als Required Check (GitHub App), optionale
+  lokale CodeRabbit-Reviews vor dem PR, Traycer als Plan-/Review-Softgate,
   Archon MCP als Wissens-SSOT; Runbooks und Checklisten sichern manuelle
   Prove-Schritte.
 - **Security & Compliance:** EU-only Regionen, strikte RLS/Least-
@@ -395,8 +398,8 @@ flutter-structure.md, platform/healthcheck.md, offline_resume_key_management.md)
 
 - **ADR-0005 – Traycer-Integration (Trial)**  
   Traycer dient als Plan-/Review-Softgate, um BMAD/PRP-Disziplin bei der
-  Story-Planung zu unterstützen. CodeRabbit, CI und Health-Gates bleiben
-  die einzigen „harten“ Mergeregulatoren.
+  Story-Planung zu unterstützen. Greptile Review, CI und Health-Gates
+  bleiben die einzigen „harten“ Mergeregulatoren.
 
 Diese Guards bilden das architektonische Geländer für neue Features:
 Sie stellen sicher, dass Implementierungen doc-getrieben, least-
@@ -425,7 +428,9 @@ sowie im Gold-Standard-Workflow beschrieben ist:
   - Wichtige Entscheidungen werden in passenden Dossiers/Docs verlinkt.
 
 - **Reviews & Gates**
-  - CodeRabbit-Review ist grün (Required Check).
+  - Greptile Review ist grün (GitHub Required Check).
+  - Optionale lokale CodeRabbit-Reviews vor dem PR sind abgearbeitet,
+    falls verwendet.
   - CI-Pipeline (GitHub Actions) ist grün (analyze/test/privacy-gate).
   - Preview-/Prod-Health-Checks (/api/health) entsprechen den
     Healthcheck-Spezifikationen.
@@ -481,7 +486,9 @@ relevante Änderung erfüllt sein:
 
 - **CI & Code-Review**
   - GitHub Actions: Analyze/Test, Privacy-Gate, Preview-Deploy.
-  - CodeRabbit: Pflicht-Review vor Merge.
+  - Greptile Review: Pflicht-Review vor Merge (Required Check).
+  - CodeRabbit: optionales lokales Preflight-Review vor dem PR
+    (CLI/IDE), kein GitHub Required Check mehr.
 
 - **Health & Observability**
   - `/api/health` muss in Preview/Prod den Statusanforderungen aus

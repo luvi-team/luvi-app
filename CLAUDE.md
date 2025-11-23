@@ -54,7 +54,7 @@ Jede Antwort MUSS enthalten:
    - `context/agents/_acceptance_v1.1.md` lesen (Core + Role Extensions)
    - DoD checken: `docs/definition-of-done.md`
    - Antwortformat (CLI): `docs/engineering/assistant-answer-format.md`
-   - Required Checks: Flutter CI (analyze-test, privacy-gate), CodeRabbit, Vercel Preview Health (200 OK)
+   - Required Checks: Flutter CI (analyze-test, privacy-gate), Greptile Review (Required Check), Vercel Preview Health (200 OK) — CodeRabbit optional lokal
 
 5. **MIWF (Make It Work First)**
    - `docs/engineering/field-guides/make-it-work-first.md` befolgen
@@ -97,7 +97,7 @@ Jede Antwort MUSS enthalten:
    - Req'ing Ball: max. 5 Gaps (priorisiert nach Severity: Critical > High > Medium > Low; Was/Warum/Wie, File:Line)
    - UI-Polisher: 5 Verbesserungen (Kontrast/Spacing/Typo/Tokens/States)
    - QA-DSGVO: Privacy-Impact (Low/Medium/High)
-   - CodeRabbit: "0 blocking issues" vor Merge
+   - Greptile Review: "0 blocking issues" vor Merge (CodeRabbit optional lokal)
 
 ---
 

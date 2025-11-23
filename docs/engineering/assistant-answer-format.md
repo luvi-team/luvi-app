@@ -11,7 +11,7 @@ Gilt verbindlich für alle Assistenten-Antworten in diesem Repo (Codex CLI-first
   - RLS/Consent (falls relevant) ✅
   - Sentry/PostHog Smoke (UI) ✅
   - Vercel Health (Preview/Prod: `/api/health → 200`) ✅
-  - CodeRabbit ✅
+  - Greptile Review (Required Check) ✅ · CodeRabbit optional lokal
 - Undo/Backout – Befehle zur Rücknahme (nur als Code-Block, niemals ausführen)
 - Nächster minimaler Schritt – direkt folgend
 - Stop-Kriterien – Security/Compliance-Verstöße, Pfad-Abweichungen
