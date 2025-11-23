@@ -70,6 +70,7 @@ Work-Modes (informell, für Codex)
 - **High Impact** (DB/PII/AI/Security): volle BMAD/PRP-Ceremony, passende Tests, ggf. Privacy-Review/DSGVO-Check.
 - **Normale Features**: kurzer BMAD-Block und passende Tests, Traycer/BMAD nach Bedarf (kein Overkill für kleinere Stories).
 - **Micro-Tasks** (kleine UI-/Copy-Fixes, kein DB/PII): `flutter analyze` + betroffene Tests reichen; kein vollständiger BMAD-/Traycer-/Prove-Block erforderlich.
+  - Quick-Ref: High Impact → volle BMAD/PRP, ≥Unit+Widget tests, ggf. Privacy-Review/DSGVO; Normale Features → kurzer BMAD, passende Tests, Traycer nach Bedarf; Micro-Tasks → flutter analyze + affected tests.
 
 Archon IDE Global Rules
 - MCP-Server prüfen; Archon als Primärsystem nutzen.

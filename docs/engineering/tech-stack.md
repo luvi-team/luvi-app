@@ -8,7 +8,7 @@
 
 - **SQL-first**, **Edge-nah**, **Privacy by Design** (EU-Residency, PII-Redaction, Consent-Logs).
 - **Vibe-Coding** mit einem starken Agenten (**Codex CLI**), **Wissens-SSOT** (**Archon**) und **LLM-Observability** (**Langfuse**).
-- **CI-geführte Änderungen**: Alles Schreibende per **PR/Migration** + **Greptile-Review-Gate** (GitHub Required Check) + **Preview-Health (200)** vor Merge; Reptile nur noch lokal als optionaler Preflight.
+- **CI-geführte Änderungen**: Alles Schreibende per **PR/Migration** + **Greptile-Review-Gate** (GitHub Required Check) + **Preview-Health (200)** vor Merge; CodeRabbit nur noch lokal als optionaler Preflight.
 
 ---
 
