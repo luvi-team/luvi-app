@@ -41,7 +41,7 @@ Version: 2025-10-15
 - DSGVO-Review aktualisiert; ADRs gepflegt  
 - PR-Template Pflichtfelder inkl. Babysitting-Level, AI pre/post Commit, RLS-Check  
 - Greptile Review grün (GitHub Required Check)  
-- (Optional) Lokale CodeRabbit-Reviews vor dem PR sind abgearbeitet  
+- (Optional) Lokale CodeRabbit-Reviews vor dem PR sind abgearbeitet (nur lokaler Preflight, kein GitHub-Check; Policy siehe `docs/engineering/ai-reviewer.md`)  
 - Traycer-Plan verlinkt; Traycer Self-Check; Privacy-Mode ON; keine PII/Secrets  
 - **Neu (Video): Archon aktualisiert** (Dossier/Policy, die Story betrifft, verlinkt)  
 - **Neu (Video): Langfuse verlinkt** (Trace-URL + kurze Notiz zu Token/Kosten & Latenz, falls `/api/ai/*` betroffen)  
@@ -68,10 +68,10 @@ Version: 2025-10-15
 
 | Rolle | Muss-Kriterien |
 |---|---|
-| UI/Frontend & DataViz | `flutter analyze` ✅ · ≥1 Unit + ≥1 Widget ✅ · Greptile Review ✅ (optional lokales CodeRabbit-Review) · ADR/DSGVO-Notiz ✅ |
-| API/Backend | `dart analyze` · `dart test` ✅ · Privacy-Gate bei DB-Touches ✅ · Vercel Health Preview/Prod ✅ · Greptile Review ✅ (optional lokales CodeRabbit-Review) · ADRs ✅ |
-| DB-Admin | Migrations & RLS/Trigger aktualisiert + dokumentiert ✅ · kein `service_role` im Client ✅ · Privacy-Gate ✅ · Greptile Review ✅ (optional lokales CodeRabbit-Review) · ADRs ✅ |
-| QA/DSGVO | Privacy-Review (`docs/privacy/reviews/*.md`) ✅ · Privacy-Gate ✅ · Vercel Health Preview/Prod ✅ · Greptile Review ✅ (optional lokales CodeRabbit-Review) · ADRs ✅ |
+| UI/Frontend & DataViz | `flutter analyze` ✅ · ≥1 Unit + ≥1 Widget ✅ · Greptile Review ✅ (optional lokales CodeRabbit-Review als Preflight, kein GitHub-Check) · ADR/DSGVO-Notiz ✅ |
+| API/Backend | `dart analyze` · `dart test` ✅ · Privacy-Gate bei DB-Touches ✅ · Vercel Health Preview/Prod ✅ · Greptile Review ✅ (optional lokales CodeRabbit-Review als Preflight, kein GitHub-Check) · ADRs ✅ |
+| DB-Admin | Migrations & RLS/Trigger aktualisiert + dokumentiert ✅ · kein `service_role` im Client ✅ · Privacy-Gate ✅ · Greptile Review ✅ (optional lokales CodeRabbit-Review als Preflight, kein GitHub-Check) · ADRs ✅ |
+| QA/DSGVO | Privacy-Review (`docs/privacy/reviews/*.md`) ✅ · Privacy-Gate ✅ · Vercel Health Preview/Prod ✅ · Greptile Review ✅ (optional lokales CodeRabbit-Review als Preflight, kein GitHub-Check) · ADRs ✅ |
 
 
 ## 6) Prozessrahmen
@@ -85,7 +85,7 @@ Business (Ziele/DSGVO) → Modellierung (Flows/ERD, Tabellen/Policies) → Archi
 
 **Plan** (Mini-Plan + Why/What/How) → **Run** (kleinste Schritte; erst erklären, dann ausführen) →    
 **Prove** (Lint/Tests/RLS/API-Checks; Diff; DSGVO-Notiz; **Langfuse-Link**, falls AI) → **Preview Health-Gate** (Vercel) →    
-**Ready for Review** (Greptile Review als Required Check; optional lokales CodeRabbit-Review davor).
+**Ready for Review** (Greptile Review als Required Check; optional lokales CodeRabbit-Review davor, nur lokal, kein GitHub-Check).
 
 
 ### Soft-Gates
@@ -110,7 +110,7 @@ Business (Ziele/DSGVO) → Modellierung (Flows/ERD, Tabellen/Policies) → Archi
 - **DBOps (neu, Dev):** **Supabase MCP** – Staging + readonly→Review→CI; keine direkten ProdWrites  
 
 - Deployment: Vercel (EU/fra1 Edge Functions) · Preview je PR · Prod nach grünem CI/Health  
-- CodeQualität: `flutter_lints` · DCM (findings ja, Gate nein) · Greptile (GitHub App, Required Check) · CodeRabbit CLI/IDE (optional lokal)  
+- CodeQualität: `flutter_lints` · DCM (findings ja, Gate nein) · Greptile (GitHub App, Required Check) · CodeRabbit CLI/IDE (optional lokal, Preflight-only; Details: `docs/engineering/ai-reviewer.md`)  
 - `.coderabbit.yaml`: `reviews.profile=assertive`, `auto_review.drafts=false`, `commit_status.enabled=true`  
 
 - BranchProtection: Require PR; Required Checks (analyzetest, privacygate, Greptile Review, **Vercel Preview Health**); Conversation resolution empfohlen
@@ -247,7 +247,7 @@ Feature: Nutzerin gibt `cycle_length`, `period_length`, `lmp_date` ein · Impact
 
 10:20 Prove: Self-Check (2–3 Min) + DSGVO-Review (8–10 Min) → Evidence ergänzen  
 
-10:45 PR → Greptile Review (Required Check) → Merge (optional: lokales CodeRabbit-Review vor dem PR)
+10:45 PR → Greptile Review (Required Check) → Merge (optional: lokales CodeRabbit-Review vor dem PR, kein GitHub-Check)
 
 
 Ergebnis: ~70–75 Min (davon ~30–35 Min du) · Vorher: ~120 Min → ≈ 40 % schneller, weniger Hotfix-Risiko ✅
@@ -270,7 +270,7 @@ M4 ≈ 30 Min Eigenaufwand · M5 ≈ 23 Min (–23 %) · M8 ≈ 18 Min → nahez
 - BMAD ausgefüllt (Business / Modellierung / Architektur / DoD)  
 - Traycer-Self-Check ✅ (Abweichungen dokumentiert)  
 - DSGVO-Review (falls High-Impact) mit Evidence  
-- Greptile Review grün · CI/Privacy-Gate grün · Merge (optional: lokales CodeRabbit-Review vor dem PR)
+- Greptile Review grün · CI/Privacy-Gate grün · Merge (optional: lokales CodeRabbit-Review vor dem PR, Preflight-only)
 
 
 ---

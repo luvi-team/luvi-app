@@ -33,11 +33,11 @@ Index: AGENTS.md im Repo-Root verweist auf Dossiers & SSOT.
 - Req’ing-Ball: max. 5 Gaps (Was/Warum/Wie, File:Line; „none“, wenn vollständig).
 - UI-Polisher: 5 konkrete Verbesserungen (Kontrast/Lesbarkeit, Spacing, Typo-Hierarchy, Token-Konformität, States).
 - QA-DSGVO: „Low – keine DB/PII, kein Tracking, kein Consent-Impact“.
-- Greptile Review: „0 blocking issues“ (Required Check); CodeRabbit (Lite) optional lokal.
+- Greptile Review: „0 blocking issues“ (Required Check); CodeRabbit (Lite) optional lokal als Preflight (kein GitHub-Check; Details: `docs/engineering/ai-reviewer.md`).
 
 ## F) CI & Merge (Einzeiler)
 - CI grün → Greptile Review grün → PR-Change-Report → Squash & Merge → Branch cleanup.
-- Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check). (CodeRabbit optional lokal)
+- Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check). (CodeRabbit optional lokal als Preflight, kein GitHub-Check)
 
 ## G) Memory aktualisieren
 - context/debug/memory.md (1–3 Zeilen: Fokus, Fix-Log, Lesson Learned).
@@ -55,4 +55,4 @@ Index: AGENTS.md im Repo-Root verweist auf Dossiers & SSOT.
 - Token-Mapping: kurzer Satz „Figma→Flutter Mapping“ im PR.
 
 ## Ergänzungen v1.3 (Sept 2025 • Add-ons)
-- DCM non-blocking in CI, Flutter-Version pinnen, Greptile Review als Required Check (CodeRabbit-Reviews optional lokal bei Ready for review).
+- DCM non-blocking in CI, Flutter-Version pinnen, Greptile Review als Required Check (CodeRabbit-Reviews optional lokal bei Ready for review, nur Preflight; Policy siehe `docs/engineering/ai-reviewer.md`).
