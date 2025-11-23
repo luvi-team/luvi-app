@@ -84,6 +84,16 @@ Greptile is configured as follows (summarised – see Greptile dashboard for exa
 
 Greptile reviews should be interpreted in this light: the focus is on **real defects, security/privacy risks and architectural smells**, not on personal preference for micro-style.
 
+### Maintainability & handover readiness
+
+In addition to correctness, security and privacy, Greptile is allowed to flag **maintainability issues** when they clearly harm readability or future changes. Examples include:
+
+- very long or deeply nested widgets/functions that are hard to understand at a glance,
+- obvious duplication of non-trivial logic across multiple places,
+- classes or functions that mix many responsibilities (e.g. data fetching, transformation and complex UI in one place).
+
+These comments should aim to **make the code easier to understand for future maintainers**, not enforce personal style preferences. Pure micro-style or “could be a one-liner” comments remain optional/nice-to-have.
+
 ---
 ## 4. CodeRabbit usage guidelines (local only)
 
@@ -173,4 +183,3 @@ The goal is a reviewer that consistently surfaces **high-value issues** (bugs, r
   - how CodeRabbit is used locally,  
   - which checks are required before merge.  
 - If other documents contradict this one, **this file wins** and the other docs should be updated.
-
