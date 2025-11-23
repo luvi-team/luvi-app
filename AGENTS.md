@@ -72,6 +72,14 @@ Work-Modes (informell, für Codex)
 - **Micro-Tasks** (kleine UI-/Copy-Fixes, kein DB/PII): `flutter analyze` + betroffene Tests reichen; kein vollständiger BMAD-/Traycer-/Prove-Block erforderlich.
   - Quick-Ref: High Impact → volle BMAD/PRP, ≥Unit+Widget tests, ggf. Privacy-Review/DSGVO; Normale Features → kurzer BMAD, passende Tests, Traycer nach Bedarf; Micro-Tasks → flutter analyze + affected tests.
 
+RAG-Nutzung & Fallback (für Codex)
+- Standard: Kontext zuerst über Archon/MCP laden (Dossiers & SSOTs), bevor du Code entwirfst oder Migrations vorschlägst.
+- Typische Beispiele:
+  - DB/Supabase: Supabase-Schema + ADR-0002 (Least-Privilege & RLS) + Tech-Stack (Backend/Infra).
+  - Privacy/Consent: Safety & Scope (v1.0), Consent-Texte (v1.1), App-Kontext (Datenschutz-Abschnitt).
+  - Feed/Ranking/Phase: App-Kontext (Pillars & Ziele), Phase-Definitionen (v1.1), Ranking-Heuristik (v1.1), Agents & Tools (Agent-Contracts).
+- Fallback: Wenn Archon/MCP nicht verfügbar ist, arbeite direkt mit den SSOT-Dokumenten im Repo (App-Kontext, Roadmap, Tech-Stack, Dossiers v1.x) und beschreibe im Plan kurz, welche Quellen du verwendet hast.
+
 Archon IDE Global Rules
 - MCP-Server prüfen; Archon als Primärsystem nutzen.
 - Task-Flow befolgen: `find_tasks` → `manage_task(status=doing)` → implementieren → `manage_task(status=review)` → `manage_task(status=done)`.
