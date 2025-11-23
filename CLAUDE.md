@@ -55,7 +55,7 @@ Jede Antwort MUSS enthalten:
    - DoD checken: `docs/definition-of-done.md`
    - Antwortformat (CLI): `docs/engineering/assistant-answer-format.md`
    - Required Checks: Flutter CI (analyze-test, privacy-gate), Greptile Review (Required Check), Vercel Preview Health (200 OK) (Supabase DB Dry-Run if present)
-   - For details on how Greptile and CodeRabbit are used, see `docs/engineering/ai-reviewer.md` (SSOT for AI review).
+   - Claude Code must follow `docs/engineering/ai-reviewer.md` for AI review (Greptile gate, local CodeRabbit preflight; SSOT for AI review).
 
 5. **MIWF (Make It Work First)**
    - `docs/engineering/field-guides/make-it-work-first.md` befolgen
