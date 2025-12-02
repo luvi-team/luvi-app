@@ -27,7 +27,7 @@ Die Claude-Agentenprinzipien wurden erfolgreich auf Codex übertragen. Alle Agen
 - Audit-Deliverables ergänzen (`_audit_report.md`, `_actions_todo.md`)
 - Regelmäßig Commit & Push, damit Governance konsistent in allen PRs greift
 
-### 2025-12-?? Dual-Agent-Reaktivierung
+### 2025-12-02 Dual-Agent-Reaktivierung
 - Governance auf Dual-Agent-Modell aktualisiert:
   - Claude Code = Primary-Agent für UI/Frontend & Dataviz (siehe `CLAUDE.md`).
   - Codex = Primary-Agent für Backend/DB/Privacy und technischer Reviewer für Claude-Code-PRs.

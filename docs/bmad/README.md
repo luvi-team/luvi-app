@@ -169,7 +169,8 @@ Traycer, Codex, Claude Code und andere Agents.
 ### 4.3 Claude Code (UI/Dataviz)
 
 - Nutzt BMAD Global + Sprint-BMAD identisch wie Codex, fokussiert auf Screens/Widgets/Charts inkl. BMAD-slim.
-- Führt `flutter analyze` + relevante Tests, beschreibt UI-spezifische DoD und erstellt PRs mit Handoff an Codex.
+- Führt `flutter analyze` + Tests gemäß UI/DataViz-DoD: **≥1 Unit-Test + ≥1 Widget-Test** pro relevantem Feature (siehe [`_acceptance_v1.1.md#role-extensions`](../../context/agents/_acceptance_v1.1.md#role-extensions)).
+- Erstellt PRs mit BMAD-slim-Zusammenfassung und Handoff an Codex.
 - Codex reviewed jede Änderung (Architektur, State, DSGVO) bevor CI/Greptile-Gates für Merge genutzt werden.
 
 ---
