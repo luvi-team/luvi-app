@@ -44,6 +44,11 @@ Claude Code implementiert Screens/Widgets/Navigation inkl. Tests und BMAD-slim, 
 - UI‑Checklist (generischer Spickzettel): `docs/engineering/checklists/ui.md`
 
 ## Micro-Tasks (minimaler Modus)
-- Beispiele: kleine Copy-/L10n-Anpassung via `lib/l10n/app_{de,en}.arb`, Abstandskorrektur mit `Spacing`/`OnboardingSpacing`/`ConsentSpacing`, Ersetzen eines hardcodierten `Text` durch `AppLocalizations`, Icon-Tausch oder Einsatz eines DS-Widgets (z. B. `BackButtonCircle`, `LinkText`), fehlendes `Semantics`-Label/Key ergänzen.
+- Beispiele:
+  - Kleine Copy-/L10n-Anpassung via `lib/l10n/app_{de,en}.arb`
+  - Abstandskorrektur mit `Spacing`/`OnboardingSpacing`/`ConsentSpacing`
+  - Ersetzen eines hardcodierten `Text` durch `AppLocalizations`
+  - Icon-Tausch oder Einsatz eines DS-Widgets (z. B. `BackButtonCircle`, `LinkText`)
+  - Fehlendes `Semantics`-Label/Key ergänzen
 - Mindest-Checks: `scripts/flutter_codex.sh analyze` ausführen und betroffene Widget-Tests (bestehende `test/features/...`) laufen lassen; kurze PR-Beschreibung inkl. Hinweis auf getestete Dateien, Referenz auf `_acceptance_v1.1.md` für die Gate-Liste.
 - Alles darüber hinaus (State-Änderungen, Navigation, neue Widgets) benötigt den regulären BMAD → PRP-Flow mit vollständigen Acceptance-Checks.

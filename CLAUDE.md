@@ -1,5 +1,40 @@
 # LUVI · Claude Code Governance – Frontend Primary
 
+---
+
+## Runtime-Minimum (Cheat-Sheet)
+
+> Dieses Minimum gilt für **jeden LUVI-UI-Task**. Details in den verlinkten Docs.
+
+### MUST-Regeln
+
+1. **Design Tokens:** Keine `Color(0xFF…)` oder Ad-hoc-Farben – nutze `DsColors`, `DsTokens`, `TextColorTokens` aus `lib/core/design_tokens/**`.
+2. **Spacing & Radii:** Verwende `Spacing`, `Sizes`, `OnboardingSpacing.of(context)`, `ConsentSpacing` – keine eigenen `EdgeInsets`/`BorderRadius`.
+3. **L10n first:** Alle User-Texte (inkl. Semantics-Labels) über `AppLocalizations.of(context)` – Keys in `app_de.arb` + `app_en.arb` pflegen.
+4. **Navigation:** GoRouter-Helfer nutzen (`context.goNamed(...)`, `RouteNames`) – niemals rohe Pfad-Strings oder `Navigator.push`.
+5. **A11y & Touch:** Interaktive Elemente brauchen `Semantics`-Label und Hitbox ≥ 44 dp (`Sizes.touchTargetMin`).
+6. **Widget-Tests:** Neue Screens/Komponenten → mindestens 1 Widget-Test unter `test/features/**` mit `buildTestApp`.
+7. **Privacy-Logging:** Nur `log`-Facade aus `lib/core/logging/logger.dart` (nutzt `sanitizeForLog`) – kein `print`/`debugPrint` mit PII.
+8. **Kein `service_role`:** Niemals im Client-Code verwenden.
+
+### Micro-Task-Modus
+
+- **Was zählt als Micro:** Copy/L10n-Fix, Spacing-Korrektur, Icon-Tausch, fehlendes Semantics-Label – kein State-/Backend-Impact.
+- **Minimal-Checks:** `scripts/flutter_codex.sh analyze` + betroffene Widget-Tests + kurze PR-Notiz.
+- **Codex-Review:** nur bei State-/Backend-Berührung nötig; sonst reichen CI-Gates.
+
+### Wann weitere Docs lesen?
+
+| Situation | Lies zusätzlich |
+|-----------|-----------------|
+| Neuer Screen / komplexes Widget | `docs/engineering/checklists/ui_claude_code.md` |
+| DataViz / Charts | `context/agents/04-dataviz.md` |
+| State-Änderung / Navigation-Flow | `context/agents/01-ui-frontend.md`, BMAD Global |
+| Unsicher bzgl. Gates / DoD | `context/agents/_acceptance_v1.1.md` |
+| Dual-Agent-Handoff | `AGENTS.md` (Agent-Binding, Work-Modes) |
+
+---
+
 ## 1. Scope & Role
 
 - **Agent:** Claude Code (Anthropic IDE/terminal agent)

@@ -13,7 +13,12 @@ Scope & Nutzung: Gilt ab Repo-Root rekursiv; Default Auto-Role; Misch-Tasks via 
 ## First 5 Minutes (Quickstart für Agents)
 
 - LUVI ist eine Flutter/Riverpod-App mit Supabase-Backend und eigenem Design System; dieses Repo bündelt UI-Screens, Services und Supabase-Migrationen.
-- Claude Code: Öffne `CLAUDE.md`, die UI-Checkliste (`docs/engineering/checklists/ui_claude_code.md`) sowie die Dossiers `context/agents/01-ui-frontend.md`/`04-dataviz.md`; scanne `lib/core/design_tokens`, `lib/core/theme`, `lib/core/widgets` und `lib/features/onboarding|dashboard|consent` für Patterns und führe `scripts/flutter_codex.sh analyze` plus `scripts/flutter_codex.sh test -j 1` aus (Details siehe BMAD & Acceptance).
+- Claude Code:
+  - Öffne `CLAUDE.md` und die UI-Checkliste (`docs/engineering/checklists/ui_claude_code.md`)
+  - Lies Dossiers: `context/agents/01-ui-frontend.md` und `04-dataviz.md`
+  - Scanne Code-Patterns: `lib/core/design_tokens`, `lib/core/theme`, `lib/core/widgets` und `lib/features/onboarding|dashboard|consent`
+  - Führe aus: `scripts/flutter_codex.sh analyze` und `scripts/flutter_codex.sh test -j 1`
+  - Details: siehe BMAD & Acceptance
 - Codex: Lies `AGENTS.md`, die Dossiers `context/agents/02-*`, `03-*`, `05-*`, BMAD (`docs/bmad/global.md`) und `context/agents/_acceptance_v1.1.md`; checke Backend-/Privacy-Code unter `lib/features/**/state|data|domain`, `services/lib/**` und `supabase/migrations`, beachte Required Checks (Flutter analyze-test, privacy-gate, Greptile, Vercel Health) und folge BMAD → PRP.
 
 Governance
