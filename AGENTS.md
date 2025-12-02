@@ -2,6 +2,12 @@
 
 Dies ist der Index für Codex (/status) und das Onboarding.
 
+Dieses Repo arbeitet mit zwei aktiven Dev-Agenten:
+- **Codex CLI** – Backend/API, Supabase/DB-Administration, Privacy/QA sowie technischer Reviewer.
+- **Claude Code** – UI-Frontend & Dataviz (Flutter Screens, Widgets, Charts) mit DSGVO-Awareness.
+
+Beide Agenten teilen dieselben SSOT-Quellen: `AGENTS.md`, `context/agents/*` inkl. `01–05`, `_acceptance_v1.1.md`, BMAD (`docs/bmad/global.md` + Sprint-BMADs), `docs/product/app-context.md`, `docs/product/roadmap.md`, `docs/engineering/assistant-answer-format.md`, `docs/engineering/ai-reviewer.md`.
+
 Scope & Nutzung: Gilt ab Repo-Root rekursiv; Default Auto-Role; Misch-Tasks via `role: …`; SSOT Acceptance v1.1.
 
 Governance
@@ -60,17 +66,35 @@ Rollenwahl
 - Auto-Role Map (SSOT): `context/agents/_auto_role_map.md`
 - Traycer (optional, Features): `docs/engineering/traycer/prompt-mini.md`
 
-Codex-only
-- **Codex CLI:** einziger Dev-Agent, nutzt AGENTS.md (diese Datei). Auto-Role via `/status`.
-- Governance: context/agents/* (Dossiers, DoD, ADRs, SSOT v1.1).
-- Workflow: BMAD → PRP (Plan → Run → Prove).
-- Legacy: ehemalige Claude-Assets liegen archiviert unter `context/archive/claude-code-legacy/`.
+## Agent-Binding (Rollen → Agenten)
 
-Work-Modes (informell, für Codex)
-- **High Impact** (DB/PII/AI/Security): volle BMAD/PRP-Ceremony, passende Tests, ggf. Privacy-Review/DSGVO-Check.
-- **Normale Features**: kurzer BMAD-Block und passende Tests, Traycer/BMAD nach Bedarf (kein Overkill für kleinere Stories).
-- **Micro-Tasks** (kleine UI-/Copy-Fixes, kein DB/PII): `flutter analyze` + betroffene Tests reichen; kein vollständiger BMAD-/Traycer-/Prove-Block erforderlich.
-  - Quick-Ref: High Impact → volle BMAD/PRP, ≥Unit+Widget tests, ggf. Privacy-Review/DSGVO; Normale Features → kurzer BMAD, passende Tests, Traycer nach Bedarf; Micro-Tasks → flutter analyze + affected tests.
+- `ui-frontend` → Primär: Claude Code (Frontend/Dataviz), Review: Codex
+- `dataviz` → Primär: Claude Code, Review: Codex
+- `api-backend` → Primär: Codex
+- `db-admin` → Primär: Codex
+- `qa-dsgvo` → Primär: Codex
+
+Codex übernimmt UI/Dataviz-Aufgaben nur, wenn Claude Code nicht verfügbar ist (z. B. Modell-/Token-Limits).
+
+### Codex CLI (Backend + Review)
+
+- Primär für: `api-backend`, `db-admin`, `qa-dsgvo`.
+- Review-Agent für PRs von Claude Code (`ui-frontend`/`dataviz`); Merge nur nach Codex-Freigabe.
+- Arbeitet strikt nach BMAD → PRP und nutzt `scripts/flutter_codex.sh` für Analyze/Test (sandboxed), Supabase-MCP für DB/RLS/Policies sowie Archon/MCP für Tasks & Wissensarbeit.
+- Governance-Quellen: `AGENTS.md`, `context/agents/*` (Dossiers, DoD, ADRs, SSOT v1.1) + BMAD + Produkt-SSOTs.
+- Legacy-Hinweis: ehemalige Claude-Assets liegen archiviert unter `context/archive/claude-code-legacy/`.
+
+### Claude Code (Frontend / Dataviz)
+
+- Primär für: `ui-frontend`, `dataviz`.
+- Governance: `AGENTS.md`, `CLAUDE.md` im Repo-Root sowie `context/agents/01-ui-frontend.md` und `context/agents/04-dataviz.md`.
+- PRs gehen vor dem Merge immer an Codex zur technischen Review + CI/Governance-Checks.
+
+Work-Modes (informell, Dual-Agent)
+- **High Impact** (DB/PII/AI/Security): Codex führt, volle BMAD/PRP-Ceremony, passende Tests, Privacy-Review/DSGVO-Check; Claude Code liefert UI-Support nur nach Abstimmung.
+- **Normale Features**: UI/Dataviz → Claude Code implementiert & dokumentiert BMAD-slim gemäß `CLAUDE.md`, Codex reviewed; Backend/DB → Codex implementiert, Required Checks (Greptile/CI) als Gate.
+- **Micro-Tasks**: reine UI-/Copy-Fixes ohne State → Claude Code (Analyze + betroffene Tests); Backend-only/infra-Fixes → Codex (Analyze/Test scope passend).
+  - Quick-Ref: High Impact → Codex Ownership, ≥Unit+Widget Tests; Normale Features → Agent nach Domäne, Traycer optional; Micro-Tasks → schlanker Analyze/Test je Domäne.
 
 RAG-Nutzung & Fallback (für Codex)
 - Standard: Kontext zuerst über Archon/MCP laden (Dossiers & SSOTs), bevor du Code entwirfst oder Migrations vorschlägst.

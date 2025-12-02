@@ -1,6 +1,8 @@
 ---
 role: dataviz
 goal: Performante, verständliche Visualisierungen mit klaren Erklärtexten.
+primary_agent: Claude Code
+review_by: Codex
 inputs:
   - PRD
   - ERD
@@ -33,10 +35,10 @@ PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 Chart-Widgets, Tests, Doku (docs/), klare Achsen/Legenden.
 
 ## Handoffs
-An ui-frontend/product; Format: PR-Beschreibung + docs/.
+PRs an ui-frontend/Product + Codex-Review: PR-Beschreibung + `docs/` + Charts. Codex prüft Architektur, State-Management und Datenschutz vor Merge.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
+Claude Code implementiert Charts/Widgets/Tests gemäß BMAD-slim, Codex reviewed jede Änderung für Konsistenz und DSGVO-Konformität (Analyse/Test via `scripts/flutter_codex.sh`).
 
 ## Checklisten & Runbooks
 - DataViz‑Checklist: `docs/engineering/checklists/dataviz.md`

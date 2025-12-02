@@ -1,3 +1,9 @@
+# CLAUDE CODE – LEGACY (not operational)
+
+> This file describes the historical Claude Code workflow.
+> For all *current* Claude Code sessions, **CLAUDE.md at the repository root** is the only operative governance.
+> AGENTS.md + context/agents/* + _acceptance_v1.1.md remain the SSOT sources for all agents.
+
 LEGACY – not operational  
 This file describes the former workflow for “Claude Code”.  
 Current agent governance: `AGENTS.md` + `context/agents/*`.  

@@ -1,6 +1,8 @@
 ---
 role: api-backend
 goal: Zuverlässige Backend-Logik (Edge Functions/Services) mit Consent-Logs.
+primary_agent: Codex
+review_by: Codex
 inputs:
   - PRD
   - ERD
@@ -33,10 +35,10 @@ PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
 Edge Functions/Services, Contract-Tests, Doku (docs/), Rate-Limits (nur bei extern erreichbaren Endpunkten).
 
 ## Handoffs
-An ui-frontend/db-admin; Format: PR-Beschreibung + docs/ + supabase/functions/.
+An ui-frontend/db-admin; Format: PR-Beschreibung + `docs/` + `supabase/functions/`. UI-Anpassungen konsumieren die dokumentierten Contracts und werden von Claude Code umgesetzt.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
+Codex implementiert Edge Functions/Services, Policies und Tests gemäß BMAD → PRP; Claude Code adaptiert das UI nur nach erfolgreichem Backend-Handoff.
 
 ## Checklisten & Runbooks
 - API‑Checklist: `docs/engineering/checklists/api.md`

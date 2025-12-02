@@ -1,6 +1,8 @@
 ---
 role: qa-dsgvo
 goal: DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates sicherstellen.
+primary_agent: Codex
+review_by: Codex
 inputs:
   - PRD
   - ERD
@@ -31,10 +33,10 @@ PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
 Privacy-Review unter docs/privacy/reviews/{id}.md, Kommentare im PR.
 
 ## Handoffs
-An db-admin/ui-frontend; Format: Review-Report (docs/privacy/reviews/).
+An db-admin/ui-frontend; Format: Review-Report (`docs/privacy/reviews/`). Codex implementiert erforderliche Backend/DB-Fixes, Claude Code setzt UI-Änderungen nach dokumentierten Findings um.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
+Codex führt Privacy-Reviews, bewertet Logs/Telemetry und setzt Remediations in Backend/DB um; UI-bezogene Empfehlungen werden von Claude Code übernommen.
 
 ## Checklisten & Runbooks
 - Privacy‑Checklist: `docs/engineering/checklists/privacy.md`

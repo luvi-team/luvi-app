@@ -23,3 +23,17 @@ Operativer Prozess: BMAD → PRP.
 - Kein Match → User um Klarstellung bitten
 - Ankündigen (erste Zeile der Antwort, falls Rollenpflicht):
   `[Role: <rolle> | Keywords: k1, k2, …]`
+
+## Agent-Binding pro Rolle (Primary)
+
+| Rolle        | Primary Agent |
+|--------------|---------------|
+| ui-frontend  | Claude Code   |
+| dataviz      | Claude Code   |
+| api-backend  | Codex         |
+| db-admin     | Codex         |
+| qa-dsgvo     | Codex         |
+
+Hinweise:
+- Security/Privacy/DB (db-admin, qa-dsgvo) gehen immer an Codex als Primary (Security > UI).
+- Reine UI/Dataviz-Matches → Claude Code ist Primary, Codex übernimmt die Review.

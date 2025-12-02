@@ -434,6 +434,10 @@ sowie im Gold-Standard-Workflow beschrieben ist:
   - CI-Pipeline (GitHub Actions) ist grün (analyze/test/privacy-gate).
   - Preview-/Prod-Health-Checks (/api/health) entsprechen den
     Healthcheck-Spezifikationen.
+- **Agenten & Ablauf**
+  - UI/Dataviz-Stories werden primär von Claude Code (DoD: ui-frontend/dataviz) umgesetzt, Backend/DB/Privacy-Stories von Codex (DoD: api-backend/db-admin/qa-dsgvo).
+  - Für UI/Dataviz-PRs ist ein Codex-Review Pflicht (zusätzlich zu CI + Greptile), bevor gemergt wird.
+  - Beide Agenten folgen BMAD → PRP und nutzen dieses Dokument als BMAD Global.
 
 *(Quellen: docs/definition-of-done.md, context/agents/_acceptance_v1.1.md,
 docs/engineering/gold-standard-workflow.md)*

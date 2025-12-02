@@ -1,8 +1,8 @@
 # LUVI – BMAD Framework (Global & Sprints)
 
 Dieses Verzeichnis beschreibt, **wie BMAD in LUVI verwendet wird** –
-für mich selbst, für Agents (Codex, Traycer, GPT) und für zukünftige
-Team-Mitglieder.
+für mich selbst, für Agents (Codex, Claude Code, Traycer, GPT) und für
+zukünftige Team-Mitglieder.
 
 BMAD = Business → Modellierung → Architektur → Definition of Done.
 
@@ -131,7 +131,7 @@ Wenn ein neuer Sprint/Feature geplant wird:
      Traycer-Plan (TODO-Platzhalter ok).
 
 Ab diesem Zeitpunkt gilt der Sprint-BMAD als **Briefing-Dokument** für
-Traycer, Codex und andere Agents.
+Traycer, Codex, Claude Code und andere Agents.
 
 ---
 
@@ -152,21 +152,25 @@ Traycer, Codex und andere Agents.
     Sprint-BMAD + zugehörigen Screen-Contract als Input für Traycer
     verwenden.
 
-### 4.2 Codex (Dev/Auditor)
+### 4.2 Codex (Backend + Review)
 
+- Codex verantwortet Backend/API/Supabase/Privacy-Umsetzung **und** reviewed alle UI/Dataviz-PRs von Claude Code.
 - Für technische Planung (ohne Code):
-  - Codex zuerst `docs/bmad/global.md` + den aktuellen Sprint-BMAD lesen
-    lassen.  
-  - Dann EINE Story/Task beschreiben und Codex einen technischen Plan
-    erstellen lassen (Komponenten, Daten, Tests, Risiken).
-
+  - Codex zuerst `docs/bmad/global.md` + den aktuellen Sprint-BMAD lesen lassen.
+  - Dann EINE Story/Task beschreiben und Codex einen technischen Plan erstellen lassen (Komponenten, Daten, Tests, Risiken).
 - Für Implementation:
-  - Codex wieder mit BMAD Global + Sprint-BMAD briefen (als Kontext).  
-  - Klar sagen, welche Story/Teilaufgabe umgesetzt werden soll.  
+  - Codex wieder mit BMAD Global + Sprint-BMAD briefen (als Kontext).
+  - Klar sagen, welche Story/Teilaufgabe umgesetzt werden soll.
   - DoD/Gates in den Prompt aufnehmen (Tests, Privacy-Review, Events, CI).
 
 > **Regel:** Codex soll niemals „im Leeren“ planen oder coden, sondern
 > immer mit BMAD Global + aktuellem Sprint-BMAD als Kontext starten.
+
+### 4.3 Claude Code (UI/Dataviz)
+
+- Nutzt BMAD Global + Sprint-BMAD identisch wie Codex, fokussiert auf Screens/Widgets/Charts inkl. BMAD-slim.
+- Führt `flutter analyze` + relevante Tests, beschreibt UI-spezifische DoD und erstellt PRs mit Handoff an Codex.
+- Codex reviewed jede Änderung (Architektur, State, DSGVO) bevor CI/Greptile-Gates für Merge genutzt werden.
 
 ---
 

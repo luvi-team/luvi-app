@@ -1,6 +1,8 @@
 ---
 role: db-admin
 goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstellen.
+primary_agent: Codex
+review_by: Codex
 inputs:
   - PRD
   - ERD
@@ -31,10 +33,10 @@ PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
 SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
 
 ## Handoffs
-An api-backend/qa-dsgvo; Format: supabase/migrations/**.
+An api-backend/qa-dsgvo; Format: `supabase/migrations/**` + Notes. Backend-Services (Codex) konsumieren neue Schemas, UI-Anpassungen erfolgen durch Claude Code.
 
 ## Operativer Modus
-Codex CLI-first (BMAD → PRP, kleinste Schritte, DoD/Gates).
+Codex verantwortet Schema/Migration/RLS (Supabase MCP, BMAD → PRP). Claude Code greift nur auf dokumentierte Views/APIs zu und passt UI nach Backend-Signal an.
 
 ## Checklisten & Runbooks
 - DB‑Checklist: `docs/engineering/checklists/db.md`

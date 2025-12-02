@@ -10,3 +10,7 @@
 - Backend: dart analyze; dart test (services/contracts)
 - DB-Admin: Migrations & RLS-Policies & Docs; Kein service_role im Client
 - QA/DSGVO: Privacy-Review (docs/privacy/reviews/<id>.md)
+
+## Dual-Agent Review
+- PRs von Claude Code (`ui-frontend`, `dataviz`): Required Checks (Flutter CI analyze-test, privacy-gate, Greptile Review, Vercel Health) **plus** manuelles Codex-Review (Architektur, State, DSGVO) vor Merge.
+- PRs von Codex (`api-backend`, `db-admin`, `qa-dsgvo`): gleiche Required Checks + Greptile; optional Claude-Code-UI-Review, falls nicht-triviale UI-Anteile enthalten sind.
