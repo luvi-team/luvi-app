@@ -41,3 +41,8 @@ Codex führt Privacy-Reviews, bewertet Logs/Telemetry und setzt Remediations in 
 ## Checklisten & Runbooks
 - Privacy‑Checklist: `docs/engineering/checklists/privacy.md`
 - Incident‑Response Runbook: `docs/runbooks/incident-response.md`
+
+## Micro-Tasks (minimaler Modus)
+- Beispiele: einzelne Privacy-Note in `docs/privacy/**` aktualisieren, Log/Telemetry-Checkliste um eine Zeile ergänzen, bestehenden Consent-Text in App/Docs angleichen, isolierten Testfall zur Privacy-Gate-Suite hinzufügen, Hinweis auf PII-Redaction in einer Edge Function kommentieren.
+- Mindest-Checks: `scripts/flutter_codex.sh analyze-test` für betroffene Tests/Module, knapper PR-Hinweis welche `_acceptance_v1.1.md`-Abschnitte (Core/Privacy) berührt werden und Ergebnis der gezielten Review/Tests; kein vollständiger BMAD-Report nötig.
+- Sobald neue Datenflüsse, Policies oder Incident-Betrachtungen erforderlich sind, gilt wieder der volle BMAD → PRP-Ablauf mit sämtlichen Gates.

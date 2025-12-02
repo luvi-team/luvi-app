@@ -17,3 +17,8 @@ Kurz & konkrete Zeilenangaben in jedem Vorschlag.
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP).
+
+## Wann einsetzen (LUVI-spezifisch)
+- Nach Abschluss neuer Screens/major UI-Komponenten durch Claude Code, vor der finalen Review durch Codex.
+- Speziell für komplexe Layouts (Dashboard-Karten, Consent-Flows, Onboarding-Hero-Bereiche) um Tokens/A11y zu schärfen.
+- Für Micro-Tasks (Copy- oder Mini-Spacing-Fix) optional; normale Acceptance laut `_acceptance_v1.1.md` reicht.

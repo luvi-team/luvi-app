@@ -43,3 +43,8 @@ Codex implementiert Edge Functions/Services, Policies und Tests gemäß BMAD →
 ## Checklisten & Runbooks
 - API‑Checklist: `docs/engineering/checklists/api.md`
 - Health‑Check Runbook: `docs/runbooks/vercel-health-check.md`
+
+## Micro-Tasks (minimaler Modus)
+- Beispiele: kleine Query-/Filter-Anpassung ohne Schema-Änderung, einzelnes Log-Level/PII-Redact fixen, bestehende Edge-Function um einen Guard erweitern, einzelnes Contract-Testcase ergänzen, Privacy-Hinweis in Docs nachziehen.
+- Mindest-Checks: `scripts/flutter_codex.sh analyze-test` gegen die betroffenen Module/Tests, Vermerk im PR welche Acceptance-Punkte aus `_acceptance_v1.1.md` berührt sind (z. B. Logging/Consent) und kurzes Ergebnis der gezielten Tests.
+- Sobald neue Endpunkte, Migrations oder Policies betroffen sind, gilt wieder BMAD → PRP inkl. vollständigen Checks.

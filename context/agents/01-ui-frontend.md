@@ -40,4 +40,10 @@ PRs gehen an Codex zur technischen Review (Architektur, State-Management, DSGVO)
 Claude Code implementiert Screens/Widgets/Navigation inkl. Tests und BMAD-slim, Codex reviewed jeden PR vor Merge (Architecture + Privacy Checks).
 
 ## Checklisten & Runbooks
-- UI‑Checklist: `docs/engineering/checklists/ui.md`
+- Claude-Code UI-Checklist (kanonische UI-Regeln): `docs/engineering/checklists/ui_claude_code.md`
+- UI‑Checklist (generischer Spickzettel): `docs/engineering/checklists/ui.md`
+
+## Micro-Tasks (minimaler Modus)
+- Beispiele: kleine Copy-/L10n-Anpassung via `lib/l10n/app_{de,en}.arb`, Abstandskorrektur mit `Spacing`/`OnboardingSpacing`/`ConsentSpacing`, Ersetzen eines hardcodierten `Text` durch `AppLocalizations`, Icon-Tausch oder Einsatz eines DS-Widgets (z. B. `BackButtonCircle`, `LinkText`), fehlendes `Semantics`-Label/Key ergänzen.
+- Mindest-Checks: `scripts/flutter_codex.sh analyze` ausführen und betroffene Widget-Tests (bestehende `test/features/...`) laufen lassen; kurze PR-Beschreibung inkl. Hinweis auf getestete Dateien, Referenz auf `_acceptance_v1.1.md` für die Gate-Liste.
+- Alles darüber hinaus (State-Änderungen, Navigation, neue Widgets) benötigt den regulären BMAD → PRP-Flow mit vollständigen Acceptance-Checks.

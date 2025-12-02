@@ -17,3 +17,8 @@ Keine Vollscans, DSGVO-safe, kurz und prägnant.
 
 ## Operativer Modus
 Codex CLI-first (BMAD → PRP).
+
+## Wann einsetzen (LUVI-spezifisch)
+- Vor größeren Backend- oder Cross-Feature-Aufgaben einsetzen, um Anforderungen/PRD/ADRs zu verfeinern (z. B. neues Dashboard-Modul, zusätzlicher Consent-Step).
+- Pflicht bei High-Impact-Topics (DB-Schema, Privacy/RLS) bevor mit der Implementierung begonnen wird.
+- Für Micro-Tasks wie Copy/Spacing-Fixes nicht nötig; dort reicht direkter BMAD-Slim-Flow mit `_acceptance_v1.1.md`.

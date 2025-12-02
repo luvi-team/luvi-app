@@ -10,6 +10,12 @@ Beide Agenten teilen dieselben SSOT-Quellen: `AGENTS.md`, `context/agents/*` ink
 
 Scope & Nutzung: Gilt ab Repo-Root rekursiv; Default Auto-Role; Misch-Tasks via `role: …`; SSOT Acceptance v1.1.
 
+## First 5 Minutes (Quickstart für Agents)
+
+- LUVI ist eine Flutter/Riverpod-App mit Supabase-Backend und eigenem Design System; dieses Repo bündelt UI-Screens, Services und Supabase-Migrationen.
+- Claude Code: Öffne `CLAUDE.md`, die UI-Checkliste (`docs/engineering/checklists/ui_claude_code.md`) sowie die Dossiers `context/agents/01-ui-frontend.md`/`04-dataviz.md`; scanne `lib/core/design_tokens`, `lib/core/theme`, `lib/core/widgets` und `lib/features/onboarding|dashboard|consent` für Patterns und führe `scripts/flutter_codex.sh analyze` plus `scripts/flutter_codex.sh test -j 1` aus (Details siehe BMAD & Acceptance).
+- Codex: Lies `AGENTS.md`, die Dossiers `context/agents/02-*`, `03-*`, `05-*`, BMAD (`docs/bmad/global.md`) und `context/agents/_acceptance_v1.1.md`; checke Backend-/Privacy-Code unter `lib/features/**/state|data|domain`, `services/lib/**` und `supabase/migrations`, beachte Required Checks (Flutter analyze-test, privacy-gate, Greptile, Vercel Health) und folge BMAD → PRP.
+
 Governance
 - Dossiers (01–05): context/agents/README.md
 - SSOT Acceptance v1.1 (Core + Role extensions): context/agents/_acceptance_v1.1.md
@@ -95,6 +101,7 @@ Work-Modes (informell, Dual-Agent)
 - **Normale Features**: UI/Dataviz → Claude Code implementiert & dokumentiert BMAD-slim gemäß `CLAUDE.md`, Codex reviewed; Backend/DB → Codex implementiert, Required Checks (Greptile/CI) als Gate.
 - **Micro-Tasks**: reine UI-/Copy-Fixes ohne State → Claude Code (Analyze + betroffene Tests); Backend-only/infra-Fixes → Codex (Analyze/Test scope passend).
   - Quick-Ref: High Impact → Codex Ownership, ≥Unit+Widget Tests; Normale Features → Agent nach Domäne, Traycer optional; Micro-Tasks → schlanker Analyze/Test je Domäne.
+- Soft-Gates: `reqing-ball` vor High-Impact-Backend/DB/Privacy-Features zur Anforderungs-Schärfung; `ui-polisher` nach neuen Screens/komplexen UI-Diffs vor Codex-Review für Token/A11y-Checks.
 
 RAG-Nutzung & Fallback (für Codex)
 - Standard: Kontext zuerst über Archon/MCP laden (Dossiers & SSOTs), bevor du Code entwirfst oder Migrations vorschlägst.
