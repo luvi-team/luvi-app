@@ -12,6 +12,14 @@ It defines:
 
 It applies to **all contributors** using the Codex CLI workflow working on this repository.
 
+
+## Wie KI dieses Dokument nutzen soll
+
+- Dieses Dokument ist die maßgebliche Richtlinie für Fragen zu AI-Code-Reviews, Merge-Gates, Greptile und CodeRabbit.
+- Agents müssen sich an die hier definierten Rollen, Tools und Policies halten; bei Widersprüchen mit anderen Prozessen gewinnt dieses Dokument.
+- Nutze den Inhalt ausschließlich für Code-Review-/CI-/Workflow-Themen; Produkt- oder Business-Fragen sind in anderen SSOTs dokumentiert.
+- Wenn sich der Workflow ändert (z. B. neue Required Checks), ist zuerst dieses Dokument zu aktualisieren, bevor andere Artefakte angepasst werden.
+
 ---
 ## 2. Tools & Roles
 

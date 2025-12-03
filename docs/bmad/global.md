@@ -31,6 +31,24 @@
   ADR-Pflege, Runbooks), wie sie in DoD-, Checklisten- und
   Governance-Dokumenten definiert sind.
 
+## 6. Dokumenten-Hierarchie & Versionierung
+
+- Für jedes Themengebiet (z. B. App-Kontext, Roadmap, Phase-Definitionen, Ranking-Heuristik, Safety & Scope) existiert genau ein aktives SSOT-Dokument.  
+- Maßgeblich ist stets die höchste freigegebene Versionsnummer (z. B. v3.2 > v3.1); ältere Versionen sind nur Historie.  
+- Priorität bei Konflikten:  
+  1. BMAD Global (dieses Dokument)  
+  2. Thema-spezifische SSOT-Dossiers (z. B. Phase, Consent, Ranking)  
+  3. Roadmap / Sprint-Dokumente  
+  4. Notizen oder sonstige Artefakte  
+- Agents und Entwickler*innen müssen immer gegen das aktuellste SSOT arbeiten und Konflikte anhand dieser Reihenfolge auflösen.
+
+## Wie KI dieses Dokument nutzen soll
+
+- BMAD Global dient als übergeordnete Leitlinie und Index für alle SSOTs.  
+- KI/Agents nutzen dieses Dokument, um Business-, Modellierungs-, Architektur- und DoD-Kontext zu verstehen sowie zu wissen, welche Dossiers existieren.  
+- Bei konkreten Fragen (z. B. Ranking, Phase, Consent) müssen die jeweiligen SSOT-Dokumente herangezogen werden; BMAD Global gibt nur den Rahmen vor.  
+- Im Zweifel gilt die oben beschriebene Dokumenten-Hierarchie – Konflikte sind entlang dieser Priorität zu lösen.
+
 ---
 
 ## 1. Business (Global)
