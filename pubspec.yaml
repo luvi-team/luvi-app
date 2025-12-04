@@ -84,6 +84,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    - .env.development
     - assets/images/auth/hero_login_default_00.png
     - assets/images/consent/
     - assets/images/welcome/
@@ -101,8 +102,9 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   
-  # Note: .env files should NOT be listed as assets for security reasons.
-  # flutter_dotenv can load them directly from the project root.
+  # Note: .env.development MUST be listed as an asset for flutter_dotenv to work
+  # on iOS/Android. It's in .gitignore so credentials won't be committed.
+  # NEVER add .env.production as an asset!
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
