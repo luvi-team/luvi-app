@@ -39,6 +39,14 @@ period_len = period_length oder 5 (default)
 ovulation_day = round(cycle_len * 0.5) (MVP-Schätzwert)
 ```
 
+> **MVP-Vereinfachung:** Diese 50%-Heuristik ist eine Lifestyle-Schätzung.
+> Biologische Ovulation variiert typischerweise ±2–3 Tage und hängt von
+> individuellen Faktoren ab. Klinisch wird der Eisprung per LH-Surge-Test
+> oder Basaltemperatur (BBT) bestätigt.
+> **Roadmap:** Integration von Wearable-Daten, LH/BBT-Eingaben und
+> User-Feedback zur Verbesserung der Phasengenauigkeit.
+> - [ ] Follow-up: Confidence-Score bei Phasengrenzen implementieren
+
 ### 3. cycle_day berechnen
 ```
 cycle_day = ((heutiges_datum - last_period_start) mod cycle_len) + 1
@@ -83,7 +91,7 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 **Berechnung:**
 - `cycle_day` = 15
 - `ovulation_day` = 14
-- **Phase = Luteal** (da `cycle_day > ovulation_day + 1`)
+- **Phase = Ovulation** (da `cycle_day == ovulation_day + 1`)
 
 ### Beispiel B: Fehlende Zykluslänge
 **Input:**

@@ -38,7 +38,7 @@ Edge Functions/Services, Contract-Tests, Doku (docs/), Rate-Limits (nur bei exte
 An ui-frontend/db-admin; Format: PR-Beschreibung + `docs/` + `supabase/functions/`. UI-Anpassungen konsumieren die dokumentierten Contracts und werden von Claude Code umgesetzt.
 
 ## Operativer Modus
-Codex implementiert Edge Functions/Services, Policies und Tests gemäß BMAD → PRP; Claude Code adaptiert das UI nur nach erfolgreichem Backend-Handoff.
+Codex implementiert Edge Functions/Services, Policies und Tests gemäß BMAD → PRP (Plan → Run → Prove; siehe [Governance](../docs/bmad/global.md)); Claude Code adaptiert das UI nur nach erfolgreichem Backend-Handoff.
 
 ## Checklisten & Runbooks
 - API‑Checklist: `docs/engineering/checklists/api.md`
@@ -52,4 +52,4 @@ Codex implementiert Edge Functions/Services, Policies und Tests gemäß BMAD →
   - Einzelnes Contract-Testcase ergänzen
   - Privacy-Hinweis in Docs nachziehen
 - Mindest-Checks: `scripts/flutter_codex.sh analyze-test` gegen die betroffenen Module/Tests, Vermerk im PR welche Acceptance-Punkte aus `_acceptance_v1.1.md` berührt sind (z. B. Logging/Consent) und kurzes Ergebnis der gezielten Tests.
-- Sobald neue Endpunkte, Migrations oder Policies betroffen sind, gilt wieder BMAD → PRP inkl. vollständigen Checks.
+- Sobald neue Endpunkte, Migrations oder Policies betroffen sind, gilt wieder BMAD → PRP (siehe [Governance](../docs/bmad/global.md)) inkl. vollständigen Checks.

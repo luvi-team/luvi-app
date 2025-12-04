@@ -317,6 +317,10 @@ Puls / Health-Baseline & Trends bleibt Post-MVP und kann später als eigener Tab
     - 1 Health-/Longevity- oder Ernährungs-Clip,
     - 1 Sleep/Mind-Tipp
   - bei Zyklusdaten: Phase-Badge + Hinweistext
+  - **Fallback bei fehlenden Daten (Day-1 / Sparse Onboarding):**
+    - Ohne Zyklusdaten: Phase-Badge entfällt, neutraler Tagestext
+    - Ohne Ziele/Interessen: Generische Tier-1-Inhalte aus allen Säulen
+    - Komplett neuer User: Lightweight-Prompt „Vervollständige dein Profil" + 1 Default-Workout + 1 Mind-Tipp
 - **Reihen/Sections:**
   - „Für dich heute" (Mix aus Säulen, abhängig von Zielen & Interessen, Tier-1-Inhalte priorisiert)
   - „Dein aktuelles Programm" (falls aktiv)

@@ -19,7 +19,13 @@ Scope & Nutzung: Gilt ab Repo-Root rekursiv; Default Auto-Role; Misch-Tasks via 
   - Scanne Code-Patterns: `lib/core/design_tokens`, `lib/core/theme`, `lib/core/widgets` und `lib/features/onboarding|dashboard|consent`
   - Führe aus: `scripts/flutter_codex.sh analyze` und `scripts/flutter_codex.sh test -j 1`
   - Details: siehe BMAD & Acceptance
-- Codex: Lies `AGENTS.md`, die Dossiers `context/agents/02-*`, `03-*`, `05-*`, BMAD (`docs/bmad/global.md`) und `context/agents/_acceptance_v1.1.md`; checke Backend-/Privacy-Code unter `lib/features/**/state|data|domain`, `services/lib/**` und `supabase/migrations`, beachte Required Checks (Flutter analyze-test, privacy-gate, Greptile, Vercel Health) und folge BMAD → PRP.
+- Codex:
+  - Lies `AGENTS.md`, BMAD Global (`docs/bmad/global.md`) und Acceptance (`context/agents/_acceptance_v1.1.md`)
+  - Lies Dossiers: `context/agents/02-api-backend.md`, `03-db-admin.md`, `05-qa-dsgvo.md`
+  - Scanne Code-Patterns: `lib/features/**/state|data|domain`, `services/lib/**`, `supabase/migrations`
+  - Führe aus: `scripts/flutter_codex.sh analyze` und `scripts/flutter_codex.sh test -j 1`
+  - Beachte Required Checks: Flutter analyze-test, privacy-gate, Greptile, Vercel Health
+  - Workflow: BMAD → PRP (Plan → Run → Prove)
 
 Governance
 - Dossiers (01–05): context/agents/README.md
