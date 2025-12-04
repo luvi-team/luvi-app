@@ -13,6 +13,8 @@ import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_03_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_04_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_05_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_03.dart';
@@ -36,7 +38,7 @@ import 'package:luvi_app/core/navigation/route_names.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
-// Short "/onboarding/w" prefix covers welcome screens (w1–w3) and keeps URLs
+// Short "/onboarding/w" prefix covers welcome screens (w1–w5) and keeps URLs
 // aligned with existing deep links and analytics dashboards.
 const String _welcomeRootPath = '/onboarding/w';
 const String _consentRootPath = '/consent';
@@ -87,6 +89,16 @@ final List<GoRoute> featureRoutes = [
     path: ConsentWelcome03Screen.routeName,
     name: 'welcome3',
     builder: (context, state) => const ConsentWelcome03Screen(),
+  ),
+  GoRoute(
+    path: ConsentWelcome04Screen.routeName,
+    name: 'welcome4',
+    builder: (context, state) => const ConsentWelcome04Screen(),
+  ),
+  GoRoute(
+    path: ConsentWelcome05Screen.routeName,
+    name: 'welcome5',
+    builder: (context, state) => const ConsentWelcome05Screen(),
   ),
   GoRoute(
     path: Consent01Screen.routeName,

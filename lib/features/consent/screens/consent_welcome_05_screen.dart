@@ -4,13 +4,14 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'welcome_metrics.dart';
 import '../widgets/welcome_shell.dart';
-import 'consent_welcome_03_screen.dart';
+import '../widgets/welcome_video_player.dart';
+import 'consent_01_screen.dart';
 import '../widgets/localized_builder.dart';
 
-class ConsentWelcome02Screen extends StatelessWidget {
-  const ConsentWelcome02Screen({super.key});
+class ConsentWelcome05Screen extends StatelessWidget {
+  const ConsentWelcome05Screen({super.key});
 
-  static const routeName = '/onboarding/w2';
+  static const routeName = '/onboarding/w5';
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +24,16 @@ class ConsentWelcome02Screen extends StatelessWidget {
 
     return WelcomeShell(
       title: Text(
-        l10n.welcome02Title,
+        l10n.welcome05Title,
         textAlign: TextAlign.center,
         style: titleStyle,
       ),
-      subtitle: l10n.welcome02Subtitle,
-      primaryButtonLabel: l10n.commonContinue,
-      onNext: () => context.go(ConsentWelcome03Screen.routeName),
-      hero: Image.asset(
-        Assets.images.welcomeHero02,
-        fit: BoxFit.cover,
-        excludeFromSemantics: true,
+      subtitle: l10n.welcome05Subtitle,
+      primaryButtonLabel: l10n.welcome05PrimaryCta, // "Jetzt loslegen"
+      onNext: () => context.go(Consent01Screen.routeName),
+      hero: WelcomeVideoPlayer(
+        assetPath: Assets.videos.welcomeVideo05,
+        isActive: true,
       ),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,

@@ -4,13 +4,13 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'welcome_metrics.dart';
 import '../widgets/welcome_shell.dart';
-import 'consent_welcome_03_screen.dart';
+import 'consent_welcome_05_screen.dart';
 import '../widgets/localized_builder.dart';
 
-class ConsentWelcome02Screen extends StatelessWidget {
-  const ConsentWelcome02Screen({super.key});
+class ConsentWelcome04Screen extends StatelessWidget {
+  const ConsentWelcome04Screen({super.key});
 
-  static const routeName = '/onboarding/w2';
+  static const routeName = '/onboarding/w4';
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +23,15 @@ class ConsentWelcome02Screen extends StatelessWidget {
 
     return WelcomeShell(
       title: Text(
-        l10n.welcome02Title,
+        l10n.welcome04Title,
         textAlign: TextAlign.center,
         style: titleStyle,
       ),
-      subtitle: l10n.welcome02Subtitle,
+      subtitle: l10n.welcome04Subtitle,
       primaryButtonLabel: l10n.commonContinue,
-      onNext: () => context.go(ConsentWelcome03Screen.routeName),
+      onNext: () => context.go(ConsentWelcome05Screen.routeName),
       hero: Image.asset(
-        Assets.images.welcomeHero02,
+        Assets.images.welcomeHero04,
         fit: BoxFit.cover,
         excludeFromSemantics: true,
       ),
