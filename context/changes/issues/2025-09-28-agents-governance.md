@@ -26,3 +26,9 @@ Die Claude-Agentenprinzipien wurden erfolgreich auf Codex übertragen. Alle Agen
 - Non-blocking Drift-Check-Skript (`_drift_check.sh`) anlegen, das `_drift_report.md` erzeugt
 - Audit-Deliverables ergänzen (`_audit_report.md`, `_actions_todo.md`)
 - Regelmäßig Commit & Push, damit Governance konsistent in allen PRs greift
+
+### 2025-12-02 Dual-Agent-Reaktivierung
+- Governance auf Dual-Agent-Modell aktualisiert:
+  - Claude Code = Primary-Agent für UI/Frontend & Dataviz (siehe `CLAUDE.md`).
+  - Codex = Primary-Agent für Backend/DB/Privacy und technischer Reviewer für Claude-Code-PRs.
+  - SSOT-Quellen: `AGENTS.md`, `context/agents/*`, `_acceptance_v1.1.md`.

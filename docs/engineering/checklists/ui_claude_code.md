@@ -1,0 +1,25 @@
+# Claude Code UI Checklist (Flutter · Riverpod · GoRouter)
+
+Diese Liste richtet sich an Claude Code als UI-Frontend-Agent: Sie spiegelt den aktuellen Stand des LUVI-Codes wider und konkretisiert, wie Screens/Widgets mit dem bestehenden Design-System, Lokalisation und Navigation zusammenspielen.
+
+## MUST
+- **Design Tokens & ThemeExtensions nutzen:** Keine `Color(0xFF…)` oder adhoc-Farben in Features; greife auf `DsColors`, `DsTokens`, `TextColorTokens` usw. unter `lib/core/design_tokens/**` bzw. `AppTheme.buildAppTheme()` (`lib/core/theme/app_theme.dart`) zurück und erweitere Tokens dort, falls etwas fehlt.
+- **Spacing/Radii konsistent halten:** Verwende `Spacing`, `Sizes` (`lib/core/design_tokens/spacing.dart`, `sizes.dart`) sowie die Flow-spezifischen Tokens wie `OnboardingSpacing.of(context)` und `ConsentSpacing` statt eigener `EdgeInsets`/`BorderRadius`; so bleiben Onboarding- und Consent-Bildschirme deckungsgleich mit den Figma-Messungen.
+- **L10n first:** Alle user-facing Strings – inkl. Semantics-Labels – kommen aus `AppLocalizations` (`lib/l10n/app_localizations.dart`, `app_*.arb`). Nutze `AppLocalizations.of(context)` oder `LocalizedBuilder` (`lib/features/consent/widgets/localized_builder.dart`), pflege neue Keys in beiden ARB-Dateien und schreibe Tests, die die Lokalisierung laden.
+- **Navigation über GoRouter-Helfer:** Jede Seite bringt ein `routeName`-Feld mit (z. B. `lib/features/onboarding/screens/onboarding_04.dart`); registriere sie in `lib/core/navigation/routes.dart` und navigiere mit `context.goNamed(...)` oder `context.pushNamed(...)`, niemals mit Strings wie `'/path/$id'`. Nutze `RouteNames` für gemeinsam genutzte Namen und halte Redirect-Guards dort.
+- **Semantics & Touch Targets:** Interactive Icons/CTAs müssen `Semantics`-Labels und Hitbox ≥ `Sizes.touchTargetMin` (44dp) haben; Beispiele: `BackButtonCircle` (`lib/core/widgets/back_button.dart`) und `OnboardingHeader` (`lib/features/onboarding/widgets/onboarding_header.dart`). Folge dem Pattern `Semantics + ExcludeSemantics` und verifiziere das mit Tests wie `test/features/onboarding/widgets/onboarding_header_test.dart`.
+- **Widget-Tests verpflichtend:** Neue Screens/Komponenten brauchen mindestens einen Widget-Test unter `test/features/**` mit `buildTestApp` (`test/support/test_app.dart`) inkl. Semantics-/L10n-Prüfungen (`tester.ensureSemantics`, `AppLocalizations.delegate`). Navigation-Flows gehören ebenfalls getestet (`test/core/navigation/**`).
+- **Privacy-konforme Logs:** Verwende ausschließlich den `log`-Facade aus `lib/core/logging/logger.dart`, der `sanitizeForLog` nutzt; keine PII oder freien Texte aus Formularen in `debugPrint`/`print`.
+- **Audit-Hinweis:** Neue hardcodierte Farben oder deutsche Strings lösen `test/dev/audit/ui_guard_audit_test.dart` aus – Tokens (`DsColors`, `ThemeExtensions`) sowie `AppLocalizations` nutzen, Allowlist nur mit TODO erweitern.
+
+## SHOULD
+- **Build-Methoden klein halten:** Spalte umfangreiche UI in dedizierte Widgets wie unter `lib/features/dashboard/widgets/**` oder `features/onboarding/widgets/**`, damit Tests gezielt ansetzen und Rebuilds (const Widgets) funktionieren.
+- **Design-System-Bausteine vor Custom-Lösungen:** Greife zuerst zu vorhandenen Komponenten (`BackButtonCircle`, `LinkText`, `SectionHeader`, `WelcomeShell`, `LocalizedBuilder`, `CategoryChip`, …) statt neue Buttons/Headers mit Container + Text zu bauen.
+- **Async State via Riverpod:** Halte Statuslogik im Provider-Layer und präsentiere UI via `AsyncValue.when`/`maybeWhen`; so testen wir bereits `DailyPlan`-Flows (`test/features/dashboard/widgets/daily_plan_widget_authorization_test.dart`). Neue Provider kommen über `ProviderScope` & `initModeProvider` (`lib/core/init/init_mode.dart`).
+- **Theme Extensions auslesen statt Duplikate:** Wenn Oberflächenfarben oder Schatten nötig sind, nutze `Theme.of(context).extension<DsTokens>()` oder `SurfaceColorTokens` statt `Container(color: …)`, damit Geräte-Themes funktionieren.
+- **Navigation Hooks testen:** Für neue Guards oder Orientation-Switches verwende die Helper wie `isOnboardingRoute`/`isConsentRoute` und schreibe passende Tests ähnlich `test/core/navigation/onboarding_to_dashboard_test.dart`.
+
+## NICE-TO-HAVE
+- **Visual Regressions absichern:** Ergänze neue Screens in die Snapshot-/Window-Tests (`test/dev/audit/window_snap_test.dart`, `window_verify_test.dart`) oder schreibe Golden-Tests, sobald Layout stabil ist.
+- **Buttons zentralisieren:** Falls neue CTA-Varianten nötig sind, erweitere lieber `AppTheme`/`ElevatedButtonTheme` oder extrahiere ein gemeinsames Widget, statt jede Stelle anzupassen; so entsteht langfristig eine `LuviButton`-Basis ohne Copy-Paste.
+- **Docs & Audits synchron halten:** Wenn du Layout-Maße auditierst, aktualisiere die zugehörigen Specs unter `docs/audits/**` (z. B. Onboarding-Messungen) damit spätere Checks dieselben Werte nutzen.

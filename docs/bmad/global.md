@@ -31,6 +31,24 @@
   ADR-Pflege, Runbooks), wie sie in DoD-, Checklisten- und
   Governance-Dokumenten definiert sind.
 
+## 6. Dokumenten-Hierarchie & Versionierung
+
+- Für jedes Themengebiet (z. B. App-Kontext, Roadmap, Phase-Definitionen, Ranking-Heuristik, Safety & Scope) existiert genau ein aktives SSOT-Dokument.  
+- Maßgeblich ist stets die höchste freigegebene Versionsnummer (z. B. v3.2 > v3.1); ältere Versionen sind nur Historie.  
+- Priorität bei Konflikten:  
+  1. BMAD Global (dieses Dokument)  
+  2. Thema-spezifische SSOT-Dossiers (z. B. Phase, Consent, Ranking)  
+  3. Roadmap / Sprint-Dokumente  
+  4. Notizen oder sonstige Artefakte  
+- Agents und Entwickler*innen müssen immer gegen das aktuellste SSOT arbeiten und Konflikte anhand dieser Reihenfolge auflösen.
+
+## Wie KI dieses Dokument nutzen soll
+
+- BMAD Global dient als übergeordnete Leitlinie und Index für alle SSOTs.  
+- KI/Agents nutzen dieses Dokument, um Business-, Modellierungs-, Architektur- und DoD-Kontext zu verstehen sowie zu wissen, welche Dossiers existieren.  
+- Bei konkreten Fragen (z. B. Ranking, Phase, Consent) müssen die jeweiligen SSOT-Dokumente herangezogen werden; BMAD Global gibt nur den Rahmen vor.  
+- Im Zweifel gilt die oben beschriebene Dokumenten-Hierarchie – Konflikte sind entlang dieser Priorität zu lösen.
+
 ---
 
 ## 1. Business (Global)
@@ -434,6 +452,10 @@ sowie im Gold-Standard-Workflow beschrieben ist:
   - CI-Pipeline (GitHub Actions) ist grün (analyze/test/privacy-gate).
   - Preview-/Prod-Health-Checks (/api/health) entsprechen den
     Healthcheck-Spezifikationen.
+- **Agenten & Ablauf**
+  - UI/Dataviz-Stories werden primär von Claude Code (DoD: ui-frontend/dataviz) umgesetzt, Backend/DB/Privacy-Stories von Codex (DoD: api-backend/db-admin/qa-dsgvo).
+  - Für UI/Dataviz-PRs ist ein Codex-Review Pflicht (zusätzlich zu CI + Greptile), bevor gemergt wird.
+  - Beide Agenten folgen BMAD → PRP und nutzen dieses Dokument als BMAD Global.
 
 *(Quellen: docs/definition-of-done.md, context/agents/_acceptance_v1.1.md,
 docs/engineering/gold-standard-workflow.md)*

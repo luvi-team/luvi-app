@@ -10,13 +10,13 @@ Version: 2025-10-15
 - Leitsatz: Architektur vor Interaktion.
 
 
-## 1) Rollen (5-Agenten)
+## 1) Rollen (5-Agenten, Primary Agents)
 
-1. UI/Frontend — Flutter, GoRouter, Riverpod  
-2. API/Backend — Supabase Edge, Contracts/Validation, MIWF  
-3. DB-Admin — Schema, Migrations, RLS (owner-based)  
-4. QA/DSGVO — Privacy-Reviews, Opt-in/Opt-out, Audit-Trail  
-5. Dashboard/DataViz — ab M11 (Statistics)
+1. UI/Frontend — Flutter, GoRouter, Riverpod → **Claude Code (Primary)**
+2. API/Backend — Supabase Edge, Contracts/Validation, MIWF → **Codex (Primary)**
+3. DB-Admin — Schema, Migrations, RLS (owner-based) → **Codex (Primary)**
+4. QA/DSGVO — Privacy-Reviews, Opt-in/Opt-out, Audit-Trail → **Codex (Primary)**
+5. Dashboard/DataViz — ab M11 (Statistics) → **Claude Code (Primary)**
 
 
 ## 2) Governance & ADRs
@@ -86,6 +86,13 @@ Business (Ziele/DSGVO) → Modellierung (Flows/ERD, Tabellen/Policies) → Archi
 **Plan** (Mini-Plan + Why/What/How) → **Run** (kleinste Schritte; erst erklären, dann ausführen) →    
 **Prove** (Lint/Tests/RLS/API-Checks; Diff; DSGVO-Notiz; **Langfuse-Link**, falls AI) → **Preview Health-Gate** (Vercel) →    
 **Ready for Review** (Greptile Review als Required Check; optional lokales CodeRabbit-Review davor, nur lokal, kein GitHub-Check).
+
+### Cross-Agent Review (Claude Code → Codex)
+
+1. Claude Code setzt UI-/Dataviz-Stories gemäß BMAD (Screens, Widgets, Charts) um, führt `flutter analyze` + relevante Tests aus und erstellt den PR inkl. BMAD-Summary/Checklisten.
+2. Required Checks laufen: Flutter CI (analyze-test, privacy-gate), Vercel Preview Health, Greptile Review.
+3. Codex reviewt Architektur, State-Management (Riverpod/GoRouter) und DSGVO-Aspekte; ggf. Follow-ups bis alle Findings erledigt sind.
+4. Merge erst, wenn CI + Greptile + Codex-Review grün sind; danach Health-Check (Preview/Prod) dokumentieren.
 
 
 ### Soft-Gates

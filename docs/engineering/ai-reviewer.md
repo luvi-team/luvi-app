@@ -12,6 +12,14 @@ It defines:
 
 It applies to **all contributors** using the Codex CLI workflow working on this repository.
 
+
+## Wie KI dieses Dokument nutzen soll
+
+- Dieses Dokument ist die maßgebliche Richtlinie für Fragen zu AI-Code-Reviews, Merge-Gates, Greptile und CodeRabbit.
+- Agents müssen sich an die hier definierten Rollen, Tools und Policies halten; bei Widersprüchen mit anderen Prozessen gewinnt dieses Dokument.
+- Nutze den Inhalt ausschließlich für Code-Review-/CI-/Workflow-Themen; Produkt- oder Business-Fragen sind in anderen SSOTs dokumentiert.
+- Wenn sich der Workflow ändert (z. B. neue Required Checks), ist zuerst dieses Dokument zu aktualisieren, bevor andere Artefakte angepasst werden.
+
 ---
 ## 2. Tools & Roles
 
@@ -175,7 +183,22 @@ After each PR:
 The goal is a reviewer that consistently surfaces **high-value issues** (bugs, risks, architectural smells) with minimal noise.
 
 ---
-## 8. For Codex CLI (sole agent)
+## 8. Dual-Agent Review (Claude Code → Codex)
+
+1. Claude Code erstellt einen PR für UI/Frontend-/Dataviz-Arbeit mit kurzer BMAD-slim-Zusammenfassung, relevanten Checklisten und Testnachweisen.
+2. CI läuft wie gewohnt (`Flutter CI / analyze-test`, `Flutter CI / privacy-gate`, `Vercel Preview Health`).
+3. `Greptile Review` wird automatisch ausgeführt und muss grün sein.
+4. Codex führt ein manuelles Review durch mit Fokus auf:
+   - Architektur-Konsistenz (GoRouter, Feature-First-Struktur, SSOT-Verlinkungen),
+   - State-Management/Riverpod (saubere Provider-Lifecycles, keine Leaks),
+   - DSGVO/Privacy (keine PII-Logs, kein `service_role`, Consent-Flows konsistent),
+   - Tests (≥1 Widget-Test für neue Screens/Komponenten, sinnvolle coverage),
+   - grundlegende A11y (Kontrast, Semantik, Touch-Targets).
+5. Merge erst, wenn **alle** Gates grün sind: CI + Greptile + Codex-Review.
+
+Optional: Falls ein Codex-PR nicht-triviale UI-Anteile enthält, kann Claude Code spiegelbildlich ein UI-Review durchführen (kein required gate, aber empfohlen).
+
+## 9. For Codex CLI (sole agent)
 
 - When working on tasks related to code review, CI, branch protection, or development workflow, **always load this file** as part of your context.  
 - Treat this document as the **authoritative policy** for:
