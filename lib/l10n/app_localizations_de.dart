@@ -380,45 +380,37 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingSuccessGenericError => 'Etwas ist schiefgelaufen. Bitte versuche es erneut.';
 
   @override
-  String get welcome01Subtitle => 'Verwandle deinen Zyklus in deine Stärke. Training, Ernährung, Biohacking – alles perfekt auf deine Hormone abgestimmt.';
+  String get welcome01Title => 'Dein Körper. Dein Rhythmus. Jeden Tag.';
 
   @override
-  String welcome01Title(String prefix, String accent) {
-    return '$prefix $accent';
-  }
+  String get welcome01Subtitle => 'Dein täglicher Begleiter für Training, Ernährung, Schlaf & mehr.';
 
   @override
-  String get welcome01TitlePrefix => 'Im';
+  String get welcome02Title => 'In Sekunden wissen, was heute zählt.';
 
   @override
-  String get welcome01TitleAccent => 'Einklang';
+  String get welcome02Subtitle => 'Kein Suchen, kein Raten. LUVI zeigt dir den nächsten Schritt.';
 
   @override
-  String get welcome01TitleSuffixLine1 => ' mit deinem\n';
+  String get welcome03Title => 'Passt sich deinem Zyklus an.';
 
   @override
-  String get welcome01TitleSuffixLine2 => 'Körper';
+  String get welcome03Subtitle => 'Damit du mit deinem Körper arbeitest, nicht gegen ihn.';
 
   @override
-  String get welcome01PrimaryCta => 'Weiter';
+  String get welcome04Title => 'Von Expert:innen erstellt.';
 
   @override
-  String get welcome02TitleLine1 => 'Von Expert:innen für dich\n';
+  String get welcome04Subtitle => 'Kein Algorithmus, sondern echte Menschen.';
 
   @override
-  String get welcome02TitleLine2 => 'jeden Monat neu';
+  String get welcome05Title => 'Kleine Schritte heute. Große Wirkung morgen.';
 
   @override
-  String get welcome02Subtitle => 'Echte Personalisierung statt Standard‑Pläne. Automatisch angepasst an deine Fortschritte, Zyklusphase und individuellen Ziele.';
+  String get welcome05Subtitle => 'Für jetzt – und dein zukünftiges Ich.';
 
   @override
-  String get welcome03TitleLine1 => 'Dein perfekter Tag\n';
-
-  @override
-  String get welcome03TitleLine2 => 'beginnt hier';
-
-  @override
-  String get welcome03Subtitle => 'LUVI Sync: Dein täglicher Game‑Changer. Verstehe das \'Warum\' hinter deinen Hormonen. Wissenschaftlich fundiert.';
+  String get welcome05PrimaryCta => 'Jetzt loslegen';
 
   @override
   String get consent01IntroTitle => 'Lass uns LUVI\nauf dich abstimmen';

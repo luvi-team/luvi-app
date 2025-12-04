@@ -797,83 +797,71 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get onboardingSuccessGenericError;
 
-  /// Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings.
+  /// Title for Welcome Screen 1 (Video).
   ///
   /// In en, this message translates to:
-  /// **'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.'**
+  /// **'Your body. Your rhythm. Every day.'**
+  String get welcome01Title;
+
+  /// Subtitle for Welcome Screen 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily companion for training, nutrition, sleep & more.'**
   String get welcome01Subtitle;
 
-  /// Combined title prefix + accent with translatable order/spacing.
+  /// Title for Welcome Screen 2.
   ///
   /// In en, this message translates to:
-  /// **'{prefix} {accent}'**
-  String welcome01Title(String prefix, String accent);
+  /// **'Know what matters today in seconds.'**
+  String get welcome02Title;
 
-  /// Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed.
+  /// Subtitle for Welcome Screen 2.
   ///
   /// In en, this message translates to:
-  /// **'In'**
-  String get welcome01TitlePrefix;
-
-  /// Accented word for the consent welcome screen 1 title. Will be styled with the accent color.
-  ///
-  /// In en, this message translates to:
-  /// **'harmony'**
-  String get welcome01TitleAccent;
-
-  /// Middle portion of the consent welcome screen 1 title, ends with a newline. Include preceding/trailing spaces as required.
-  ///
-  /// In en, this message translates to:
-  /// **' with your\n'**
-  String get welcome01TitleSuffixLine1;
-
-  /// Final line of the consent welcome screen 1 title.
-  ///
-  /// In en, this message translates to:
-  /// **'body'**
-  String get welcome01TitleSuffixLine2;
-
-  /// Primary button label for consent welcome screen 1.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get welcome01PrimaryCta;
-
-  /// First line of the consent welcome step 2 title, includes trailing newline.
-  ///
-  /// In en, this message translates to:
-  /// **'Curated by experts for you\n'**
-  String get welcome02TitleLine1;
-
-  /// Second line of the consent welcome step 2 title.
-  ///
-  /// In en, this message translates to:
-  /// **'refreshed every month'**
-  String get welcome02TitleLine2;
-
-  /// Subtitle copy for consent welcome screen 2 (below the title). Prepared for future migration away from hardcoded strings.
-  ///
-  /// In en, this message translates to:
-  /// **'Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.'**
+  /// **'No searching, no guessing. LUVI shows you the next step.'**
   String get welcome02Subtitle;
 
-  /// First line of the consent welcome step 3 title, includes trailing newline to force a line break.
+  /// Title for Welcome Screen 3.
   ///
   /// In en, this message translates to:
-  /// **'Your perfect day\n'**
-  String get welcome03TitleLine1;
+  /// **'Adapts to your cycle.'**
+  String get welcome03Title;
 
-  /// Second line of the consent welcome step 3 title.
+  /// Subtitle for Welcome Screen 3.
   ///
   /// In en, this message translates to:
-  /// **'starts here'**
-  String get welcome03TitleLine2;
-
-  /// Subtitle copy for consent welcome screen 3 (below the title). Prepared for future migration away from hardcoded strings.
-  ///
-  /// In en, this message translates to:
-  /// **'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.'**
+  /// **'So you work with your body, not against it.'**
   String get welcome03Subtitle;
+
+  /// Title for Welcome Screen 4.
+  ///
+  /// In en, this message translates to:
+  /// **'Created by experts.'**
+  String get welcome04Title;
+
+  /// Subtitle for Welcome Screen 4.
+  ///
+  /// In en, this message translates to:
+  /// **'No algorithm, but real people.'**
+  String get welcome04Subtitle;
+
+  /// Title for Welcome Screen 5 (Video).
+  ///
+  /// In en, this message translates to:
+  /// **'Small steps today. Big impact tomorrow.'**
+  String get welcome05Title;
+
+  /// Subtitle for Welcome Screen 5.
+  ///
+  /// In en, this message translates to:
+  /// **'For now – and your future self.'**
+  String get welcome05Subtitle;
+
+  /// Primary CTA for Welcome Screen 5 (last screen).
+  ///
+  /// In en, this message translates to:
+  /// **'Start now'**
+  String get welcome05PrimaryCta;
 
   /// Headline copy shown on the consent 01 screen intro hero. Preserve the explicit newline escape '\n'.
   ///

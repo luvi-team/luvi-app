@@ -506,61 +506,49 @@
   "@onboardingSuccessGenericError": {
     "description": "Generic error SnackBar on onboarding success screen when an unexpected failure occurs."
   },
-  "welcome01Subtitle": "Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.",
-  "@welcome01Subtitle": {
-    "description": "Subtitle copy for consent welcome screen 1 (below the title). Prepared for future migration away from hardcoded strings."
-  },
-  "welcome01Title": "{prefix} {accent}",
+  "welcome01Title": "Your body. Your rhythm. Every day.",
   "@welcome01Title": {
-    "description": "Combined title prefix + accent with translatable order/spacing.",
-    "placeholders": {
-      "prefix": {"type": "String"},
-      "accent": {"type": "String"}
-    }
+    "description": "Title for Welcome Screen 1 (Video)."
   },
-  "welcome01TitlePrefix": "In",
-  "@welcome01TitlePrefix": {
-    "description": "Leading text for the consent welcome screen 1 title (appears before the accented span). Include trailing space if needed."
+  "welcome01Subtitle": "Your daily companion for training, nutrition, sleep & more.",
+  "@welcome01Subtitle": {
+    "description": "Subtitle for Welcome Screen 1."
   },
-  "welcome01TitleAccent": "harmony",
-  "@welcome01TitleAccent": {
-    "description": "Accented word for the consent welcome screen 1 title. Will be styled with the accent color."
+  "welcome02Title": "Know what matters today in seconds.",
+  "@welcome02Title": {
+    "description": "Title for Welcome Screen 2."
   },
-  "welcome01TitleSuffixLine1": " with your\n",
-  "@welcome01TitleSuffixLine1": {
-    "description": "Middle portion of the consent welcome screen 1 title, ends with a newline. Include preceding/trailing spaces as required."
-  },
-  "welcome01TitleSuffixLine2": "body",
-  "@welcome01TitleSuffixLine2": {
-    "description": "Final line of the consent welcome screen 1 title."
-  },
-  "welcome01PrimaryCta": "Continue",
-  "@welcome01PrimaryCta": {
-    "description": "Primary button label for consent welcome screen 1."
-  },
-  "welcome02TitleLine1": "Curated by experts for you\n",
-  "@welcome02TitleLine1": {
-    "description": "First line of the consent welcome step 2 title, includes trailing newline."
-  },
-  "welcome02TitleLine2": "refreshed every month",
-  "@welcome02TitleLine2": {
-    "description": "Second line of the consent welcome step 2 title."
-  },
-  "welcome02Subtitle": "Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.",
+  "welcome02Subtitle": "No searching, no guessing. LUVI shows you the next step.",
   "@welcome02Subtitle": {
-    "description": "Subtitle copy for consent welcome screen 2 (below the title). Prepared for future migration away from hardcoded strings."
+    "description": "Subtitle for Welcome Screen 2."
   },
-  "welcome03TitleLine1": "Your perfect day\n",
-  "@welcome03TitleLine1": {
-    "description": "First line of the consent welcome step 3 title, includes trailing newline to force a line break."
+  "welcome03Title": "Adapts to your cycle.",
+  "@welcome03Title": {
+    "description": "Title for Welcome Screen 3."
   },
-  "welcome03TitleLine2": "starts here",
-  "@welcome03TitleLine2": {
-    "description": "Second line of the consent welcome step 3 title."
-  },
-  "welcome03Subtitle": "LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.",
+  "welcome03Subtitle": "So you work with your body, not against it.",
   "@welcome03Subtitle": {
-    "description": "Subtitle copy for consent welcome screen 3 (below the title). Prepared for future migration away from hardcoded strings."
+    "description": "Subtitle for Welcome Screen 3."
+  },
+  "welcome04Title": "Created by experts.",
+  "@welcome04Title": {
+    "description": "Title for Welcome Screen 4."
+  },
+  "welcome04Subtitle": "No algorithm, but real people.",
+  "@welcome04Subtitle": {
+    "description": "Subtitle for Welcome Screen 4."
+  },
+  "welcome05Title": "Small steps today. Big impact tomorrow.",
+  "@welcome05Title": {
+    "description": "Title for Welcome Screen 5 (Video)."
+  },
+  "welcome05Subtitle": "For now – and your future self.",
+  "@welcome05Subtitle": {
+    "description": "Subtitle for Welcome Screen 5."
+  },
+  "welcome05PrimaryCta": "Start now",
+  "@welcome05PrimaryCta": {
+    "description": "Primary CTA for Welcome Screen 5 (last screen)."
   },
   "consent01IntroTitle": "Let's tailor LUVI\nto you",
   "@consent01IntroTitle": {
