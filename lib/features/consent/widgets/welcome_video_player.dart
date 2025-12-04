@@ -7,22 +7,16 @@ import 'package:video_player/video_player.dart';
 /// - Asset-based video playback
 /// - Autoplay, loop, muted (volume 0)
 /// - App lifecycle awareness (pauses on background)
-/// - Only plays when [isActive] is true (for PageView scenarios)
 /// - Falls back to a neutral placeholder on error
 /// - Excluded from semantics (purely decorative)
 class WelcomeVideoPlayer extends StatefulWidget {
   const WelcomeVideoPlayer({
     super.key,
     required this.assetPath,
-    this.isActive = true,
   });
 
   /// Path to the video asset (e.g., 'assets/videos/welcome/welcome_01.mp4')
   final String assetPath;
-
-  /// Whether this video should be playing. Set to false when the screen
-  /// is not visible (e.g., in a PageView).
-  final bool isActive;
 
   @override
   State<WelcomeVideoPlayer> createState() => _WelcomeVideoPlayerState();
@@ -55,10 +49,8 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
           _isInitialized = true;
         });
 
-        // Start playing if active
-        if (widget.isActive) {
-          _controller.play();
-        }
+        // Start playing immediately
+        _controller.play();
       }
     } catch (e) {
       if (mounted) {
@@ -69,27 +61,6 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
     }
   }
 
-  @override
-  void didUpdateWidget(WelcomeVideoPlayer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // Handle isActive changes
-    if (oldWidget.isActive != widget.isActive) {
-      if (widget.isActive && _isInitialized && !_hasError) {
-        _controller.play();
-      } else {
-        _controller.pause();
-      }
-    }
-
-    // Handle asset path changes (unlikely but defensive)
-    if (oldWidget.assetPath != widget.assetPath) {
-      _controller.dispose();
-      _isInitialized = false;
-      _hasError = false;
-      _initializeVideo();
-    }
-  }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -103,9 +74,7 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
         _controller.pause();
         break;
       case AppLifecycleState.resumed:
-        if (widget.isActive) {
-          _controller.play();
-        }
+        _controller.play();
         break;
     }
   }

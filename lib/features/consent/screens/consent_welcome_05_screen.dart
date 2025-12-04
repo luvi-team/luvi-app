@@ -31,10 +31,7 @@ class ConsentWelcome05Screen extends StatelessWidget {
       subtitle: l10n.welcome05Subtitle,
       primaryButtonLabel: l10n.welcome05PrimaryCta, // "Jetzt loslegen"
       onNext: () => context.go(Consent01Screen.routeName),
-      hero: WelcomeVideoPlayer(
-        assetPath: Assets.videos.welcomeVideo05,
-        isActive: true,
-      ),
+      hero: WelcomeVideoPlayer(assetPath: Assets.videos.welcomeVideo05),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,
       waveAsset: Assets.images.welcomeWave,
