@@ -17,38 +17,23 @@ void main() {
         theme: theme,
         home: WelcomeShell(
           hero: const SizedBox(),
-          title: RichText(
+          title: Text(
+            'Dein Körper. Dein Rhythmus. Jeden Tag.',
+            style: theme.textTheme.headlineMedium,
             textAlign: TextAlign.center,
-            text: TextSpan(
-              style: theme.textTheme.headlineMedium,
-              children: [
-                const TextSpan(text: 'Dein Zyklus ist deine\n'),
-                TextSpan(
-                  text: 'Superkraft.',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: theme.colorScheme.secondary,
-                  ),
-                ),
-              ],
-            ),
           ),
           subtitle:
-              'Training, Ernährung und Schlaf – endlich im Einklang mit dem, was dein Körper dir sagt.',
+              'Dein täglicher Begleiter für Training, Ernährung, Schlaf & mehr.',
           onNext: () {},
           heroAspect: kWelcomeHeroAspect,
           waveHeightPx: kWelcomeWaveHeight,
-          activeIndex: 0,
         ),
       ),
     );
 
-    // Assert headline contains "Dein Zyklus ist deine"
+    // Assert headline contains simplified title
     expect(
-      find.byWidgetPredicate(
-        (w) =>
-            w is RichText &&
-            w.text.toPlainText().contains('Dein Zyklus ist deine'),
-      ),
+      find.text('Dein Körper. Dein Rhythmus. Jeden Tag.'),
       findsOneWidget,
     );
 

@@ -17,7 +17,6 @@ void main() {
     await tester.pumpWidget(
       buildLocalizedApp(
         theme: AppTheme.buildAppTheme(),
-
         home: const ConsentWelcome01Screen(),
       ),
     );
@@ -26,18 +25,9 @@ void main() {
 
     final shellContext = tester.element(find.byType(WelcomeShell));
     final l10n = AppLocalizations.of(shellContext)!;
-    final richFinder = find.descendant(
-      of: find.byType(WelcomeShell),
-      matching: find.byType(RichText),
-    );
-    // Ensure at least one RichText descendant exists before accessing .first
-    expect(richFinder, findsWidgets);
-    final richTitle = tester.widget<RichText>(richFinder.first);
-    final plainText = richTitle.text.toPlainText();
-    expect(plainText, contains(l10n.welcome01TitlePrefix.trim()));
-    expect(plainText, contains(l10n.welcome01TitleAccent.trim()));
-    expect(plainText, contains(l10n.welcome01TitleSuffixLine1.trim()));
-    expect(plainText, contains(l10n.welcome01TitleSuffixLine2.trim()));
+
+    // Title is now a simple Text widget with simplified title
+    expect(find.text(l10n.welcome01Title), findsOneWidget);
 
     // Wave SVG present and asset path verified
     final svgFinder = find.byType(SvgPicture);
