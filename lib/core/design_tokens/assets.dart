@@ -3,14 +3,18 @@
 import 'package:flutter/material.dart';
 
 /// Centralized asset paths for the app (typo-safe, single source of truth).
-const String _kWelcomeHero01 = 'assets/images/welcome/welcome_01.png';
+// Note: welcome_01.png removed – Screen 1 now uses video
 const String _kWelcomeHero02 = 'assets/images/welcome/welcome_02.png';
 const String _kWelcomeHero03 = 'assets/images/welcome/welcome_03.png';
+const String _kWelcomeHero04 = 'assets/images/welcome/welcome_04.png';
 const String _kWelcomeWave = 'assets/images/welcome/welcome_wave.svg';
+const String _kWelcomeVideo01 = 'assets/videos/welcome/welcome_01.mp4';
+const String _kWelcomeVideo05 = 'assets/videos/welcome/welcome_05.mp4';
 
 class Assets {
   static const icons = _Icons();
   static const images = _Images();
+  static const videos = _Videos();
   static const animations = _Animations();
 
   /// Default error builder for dashboard `Image.asset` widgets.
@@ -89,11 +93,22 @@ class _Images {
   final String onboardingSuccessTrophy =
       'assets/images/onboarding/onboarding_success_trophy.png';
 
-  // Welcome/Consent hero assets
-  final String welcomeHero01 = _kWelcomeHero01;
+  // Welcome/Consent hero assets (images only; videos in _Videos)
+  // Note: welcomeHero01 removed – Screen 1 now uses video
   final String welcomeHero02 = _kWelcomeHero02;
   final String welcomeHero03 = _kWelcomeHero03;
+  final String welcomeHero04 = _kWelcomeHero04;
   final String welcomeWave = _kWelcomeWave;
+}
+
+class _Videos {
+  const _Videos();
+
+  /// Welcome Screen 1 – autoplay loop video
+  final String welcomeVideo01 = _kWelcomeVideo01;
+
+  /// Welcome Screen 5 – autoplay loop video
+  final String welcomeVideo05 = _kWelcomeVideo05;
 }
 
 class _Animations {
