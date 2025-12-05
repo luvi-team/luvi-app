@@ -20,8 +20,10 @@ if [ ! -f "$ENV_FILE" ]; then
     exit 1
 fi
 
-# Load environment variables from .env.development
-export $(grep -v '^#' "$ENV_FILE" | xargs)
+# Load environment variables from .env.development (safely handle spaces/quotes)
+set -a  # Auto-export all variables
+source "$ENV_FILE"
+set +a  # Disable auto-export
 
 # Validate required variables
 if [ -z "$SUPABASE_URL" ]; then

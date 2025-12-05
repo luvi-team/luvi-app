@@ -51,7 +51,9 @@ Supabase-Credentials werden via `--dart-define` übergeben (Security Best Practi
 
    **Option B: VSCode**
    - F5 drücken → "LUVI (Dev)" oder "LUVI (Dev) - iPhone Simulator" wählen
-   - Voraussetzung: Shell-Umgebungsvariablen gesetzt (siehe unten)
+   - Voraussetzung: VS Code muss Zugriff auf die Environment-Variablen haben:
+     - Entweder: VS Code aus Terminal starten nach `export $(cat .env.development | xargs)`
+     - Oder: Helper-Script (Option A) bevorzugen, das die Variablen automatisch lädt
 
    **Option C: Manuell**
    ```bash
