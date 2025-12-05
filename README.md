@@ -28,7 +28,47 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-Note: Dieses Projekt verwendet `flutter_dotenv`; lokale Entwicklung nutzt `.env.development` (siehe `.env.example` als Vorlage).
+## Local Development (Supabase Credentials)
+
+Supabase-Credentials werden via `--dart-define` übergeben (Security Best Practice - nicht im Asset-Bundle).
+
+### Setup
+
+1. **Erstelle `.env.development`** (falls nicht vorhanden):
+   ```bash
+   cp .env.example .env.development
+   # Dann SUPABASE_URL und SUPABASE_ANON_KEY eintragen
+   ```
+
+2. **App starten** (wähle eine Option):
+
+   **Option A: Helper-Script (empfohlen)**
+   ```bash
+   ./scripts/run_dev.sh -d "iPhone 16 Pro"   # iOS Simulator
+   ./scripts/run_dev.sh -d chrome            # Chrome
+   ./scripts/run_dev.sh                      # Default device
+   ```
+
+   **Option B: VSCode**
+   - F5 drücken → "LUVI (Dev)" oder "LUVI (Dev) - iPhone Simulator" wählen
+   - Voraussetzung: Shell-Umgebungsvariablen gesetzt (siehe unten)
+
+   **Option C: Manuell**
+   ```bash
+   export $(cat .env.development | xargs)
+   flutter run --dart-define=SUPABASE_URL=$SUPABASE_URL \
+               --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+   ```
+
+### Warum --dart-define statt Asset-Bundling?
+
+- Credentials sind **nicht** im APK/IPA extrahierbar
+- Konsistent mit Production-Builds
+- Flutter Security Best Practice
+
+### Fallback (Legacy)
+
+Falls `--dart-define` nicht gesetzt ist, versucht die App `.env.development` via `flutter_dotenv` zu laden (funktioniert nur auf Web/Desktop, nicht auf iOS/Android Simulatoren).
 
 ## Flutter Tooling (Codex CLI)
 
