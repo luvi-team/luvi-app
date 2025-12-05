@@ -35,8 +35,6 @@ void main() {
       'lib/features/dashboard/widgets/heute_header.dart',
       'lib/features/dashboard/widgets/category_chip.dart',
       'lib/features/dashboard/widgets/painters/bottom_wave_border_painter.dart',
-      // TODO: False positive – uses DsColors tokens, regex matches "Colors." in "DsColors."
-      'lib/features/consent/widgets/welcome_shell.dart',
     };
 
     const allowedGermanStringFiles = <String>{
@@ -54,7 +52,8 @@ void main() {
     };
 
     final colorPattern = RegExp(r'Color\s*\(\s*0x[0-9A-Fa-f]{6,8}');
-    final colorsDotPattern = RegExp(r'Colors\.');
+    // Word-boundary ensures we match Flutter's Colors class, not DsColors tokens
+    final colorsDotPattern = RegExp(r'\bColors\.');
     final umlautPattern = RegExp(r'[äöüÄÖÜß]');
     final keywordPattern = RegExp(
       r'\b(Registrieren|Einloggen|Willkommen|Zur(?:ück|ueck)|Weiter|Passwort|Hinweis|Bestätigen|Abbrechen|Speichern)\b',
