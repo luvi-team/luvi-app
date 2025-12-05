@@ -120,10 +120,17 @@ class SupabaseService {
   }
 
   static Future<void> _performInitialize({required String envFile}) async {
-    // Load .env for local development as a fallback only. For production,
-    // prefer passing credentials via --dart-define. _resolveCredentials()
-    // will read from compile-time defines first and fall back to dotenv.
-    await _loadEnvironment(envFile);
+    // Check if credentials are provided via --dart-define (preferred for security).
+    // Only try to load .env file if dart-define values are not available.
+    const defineUrl = String.fromEnvironment('SUPABASE_URL');
+    const defineAnon = String.fromEnvironment('SUPABASE_ANON_KEY');
+    final hasDartDefine = defineUrl.isNotEmpty && defineAnon.isNotEmpty;
+
+    if (!hasDartDefine) {
+      // Fallback: try loading from .env file (for legacy/local dev setups)
+      await _loadEnvironment(envFile);
+    }
+
     final credentials = _resolveCredentials(envFile);
     await _initializeSupabase(credentials);
   }
@@ -289,20 +296,22 @@ class SupabaseService {
     const defineUrl = String.fromEnvironment('SUPABASE_URL');
     const defineAnon = String.fromEnvironment('SUPABASE_ANON_KEY');
 
+    // If dart-define values are available, use them directly (don't access dotenv)
+    if (defineUrl.isNotEmpty && defineAnon.isNotEmpty) {
+      return _SupabaseCredentials(url: defineUrl, anonKey: defineAnon);
+    }
+
     // 2) Fallback to dotenv (local dev only) with legacy key support
     final envUrl =
         dotenv.maybeGet('SUPABASE_URL') ?? dotenv.maybeGet('SUPA_URL');
     final envAnon = dotenv.maybeGet('SUPABASE_ANON_KEY') ??
         dotenv.maybeGet('SUPA_ANON_KEY');
 
-    final url = (defineUrl.isNotEmpty ? defineUrl : envUrl);
-    final anon = (defineAnon.isNotEmpty ? defineAnon : envAnon);
-
     final missing = <String>[];
-    if (url == null || url.isEmpty) {
+    if (envUrl == null || envUrl.isEmpty) {
       missing.add('SUPABASE_URL/SUPA_URL');
     }
-    if (anon == null || anon.isEmpty) {
+    if (envAnon == null || envAnon.isEmpty) {
       missing.add('SUPABASE_ANON_KEY/SUPA_ANON_KEY');
     }
 
@@ -310,7 +319,7 @@ class SupabaseService {
       throw StateError('Missing ${missing.join(' and ')} in "$envFile".');
     }
 
-    return _SupabaseCredentials(url: url!, anonKey: anon!);
+    return _SupabaseCredentials(url: envUrl!, anonKey: envAnon!);
   }
 
   static Future<void> _initializeSupabase(
