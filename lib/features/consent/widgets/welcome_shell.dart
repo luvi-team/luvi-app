@@ -161,10 +161,6 @@ class WelcomeShell extends StatelessWidget {
       );
     }
 
-    if (children.isNotEmpty) {
-      children.add(const SizedBox(height: Spacing.xs));
-    }
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
