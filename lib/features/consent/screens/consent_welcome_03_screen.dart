@@ -18,14 +18,10 @@ class ConsentWelcome03Screen extends StatelessWidget {
   }
 
   Widget _buildLocalizedContent(BuildContext context, AppLocalizations l10n) {
-    final theme = Theme.of(context);
-    final titleStyle = theme.textTheme.headlineMedium;
-
     return WelcomeShell(
       title: Text(
         l10n.welcome03Title,
         textAlign: TextAlign.center,
-        style: titleStyle,
       ),
       subtitle: l10n.welcome03Subtitle,
       primaryButtonLabel: l10n.commonContinue,

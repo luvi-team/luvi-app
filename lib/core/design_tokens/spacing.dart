@@ -12,5 +12,8 @@ class Spacing {
   static const double goalCardIconGap =
       20.0; // spacing between icon and text in goal cards
 
+  /// Welcome content bottom padding (Figma: 52px from bottom edge)
+  static const double welcomeBottomPadding = 52.0;
+
   Spacing._();
 }

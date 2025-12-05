@@ -11,5 +11,8 @@ class Sizes {
   /// Figma: 40 px Kreisradius (z. B. Social-Button)
   static const double radiusXL = 40.0;
 
+  /// Welcome Button Radius - Pill Shape (Figma: 40px)
+  static const double radiusWelcomeButton = 40.0;
+
   Sizes._();
 }

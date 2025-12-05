@@ -17,6 +17,12 @@ class TypographyTokens {
   static const double lineHeightRatio32on24 = 32 / 24;
   static const double lineHeightRatio36on28 = 36 / 28;
   static const double lineHeightRatio40on32 = 40 / 32;
+
+  /// Welcome Title: Figma 38px line-height on 32px font (ratio: 1.1875)
+  static const double lineHeightRatio38on32 = 38 / 32;
+
+  /// Welcome Subtitle: Figma 26px line-height on 20px font (ratio: 1.3)
+  static const double lineHeightRatio26on20 = 26 / 20;
 }
 
 /// Shared font family identifiers to centralize typography references.

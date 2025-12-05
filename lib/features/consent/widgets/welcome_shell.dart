@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../../core/design_tokens/colors.dart';
+import '../../../core/design_tokens/sizes.dart';
 import '../../../core/design_tokens/spacing.dart';
+import '../../../core/design_tokens/typography.dart';
 
 class WelcomeShell extends StatelessWidget {
   WelcomeShell({
@@ -69,7 +72,7 @@ class WelcomeShell extends StatelessWidget {
                   Spacing.m, // 16px horizontal (Figma)
                   0,
                   Spacing.m,
-                  Spacing.l, // 24px bottom safe area
+                  Spacing.welcomeBottomPadding, // 52px bottom (Figma)
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -103,8 +106,27 @@ class WelcomeShell extends StatelessWidget {
     final buttonLabel = primaryButtonLabel ?? l10n.commonContinue;
     final children = <Widget>[];
 
+    // ─── LOCAL TextStyle Overrides (Figma Polish v2) ───
+    // Title: Playfair Display SemiBold (w600), line-height 38/32
+    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
+      fontWeight: FontWeight.w600,
+      height: TypographyTokens.lineHeightRatio38on32,
+    );
+    // Subtitle: Figtree Regular, line-height 26/20
+    final subtitleStyle = theme.textTheme.bodyMedium?.copyWith(
+      height: TypographyTokens.lineHeightRatio26on20,
+    );
+
     if (title != null) {
-      children.add(Semantics(header: true, child: title!));
+      children.add(
+        Semantics(
+          header: true,
+          child: DefaultTextStyle.merge(
+            style: titleStyle,
+            child: title!,
+          ),
+        ),
+      );
     }
     if (subtitle != null) {
       children.add(const SizedBox(height: Spacing.m)); // 16px gap (Figma)
@@ -114,15 +136,28 @@ class WelcomeShell extends StatelessWidget {
           child: Text(
             subtitle!,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge, // 20px Figtree (Figma)
+            style: subtitleStyle,
           ),
         ),
       );
     }
     if (onNext != null) {
       children.add(const SizedBox(height: Spacing.l)); // 24px before button
+      // ─── LOCAL Button Override (Figma Polish v2) ───
+      // Pill shape, #A8406F bg, white text
       children.add(
-        ElevatedButton(onPressed: onNext!, child: Text(buttonLabel)),
+        ElevatedButton(
+          onPressed: onNext!,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: DsColors.welcomeButtonBg,
+            foregroundColor: DsColors.welcomeButtonText,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
+            ),
+          ),
+          child: Text(buttonLabel),
+        ),
       );
     }
 

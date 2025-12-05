@@ -136,6 +136,8 @@ flutter:
       fonts:
         - asset: assets/fonts/PlayfairDisplay/PlayfairDisplay-Regular.ttf
           weight: 400
+        - asset: assets/fonts/PlayfairDisplay/PlayfairDisplay-SemiBold.ttf
+          weight: 600
         - asset: assets/fonts/PlayfairDisplay/PlayfairDisplay-Bold.ttf
           weight: 700
     - family: Figtree
