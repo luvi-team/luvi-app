@@ -22,7 +22,7 @@ Buttons: **Refuse – Open on YouTube** · **Load Video**
 ## Long EN (Variant A – DPF/Art.45)
 If you accept, LUVI will load the YouTube player. This transfers personal data (e.g., IP address, device data, cookies/local storage) to Google in the USA. Google participates in the EU‑US Data Privacy Framework.
 • Purpose: play the video; player convenience features
-• Withdraw: at any time in Profil → Datenschutz → Video-Einbettungen
+• Withdraw: at any time in Profile → Privacy → Video Embeds
 • More: https://luvi.example/privacy (Privacy Policy) and policies.google.com/privacy
 Buttons: Accept · Decline (open on YouTube) · Learn more
 
