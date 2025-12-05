@@ -35,6 +35,8 @@ void main() {
       'lib/features/dashboard/widgets/heute_header.dart',
       'lib/features/dashboard/widgets/category_chip.dart',
       'lib/features/dashboard/widgets/painters/bottom_wave_border_painter.dart',
+      // TODO: False positive – uses DsColors tokens, regex matches "Colors." in "DsColors."
+      'lib/features/consent/widgets/welcome_shell.dart',
     };
 
     const allowedGermanStringFiles = <String>{
