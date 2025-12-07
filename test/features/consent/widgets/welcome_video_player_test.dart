@@ -85,5 +85,69 @@ void main() {
       // Should build without errors and be findable by type
       expect(find.byType(WelcomeVideoPlayer), findsOneWidget);
     });
+
+    testWidgets('renders fallback image while loading when fallbackAsset provided', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildLocalizedApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const Scaffold(
+            body: WelcomeVideoPlayer(
+              assetPath: 'assets/videos/welcome/welcome_01.mp4',
+              fallbackAsset: 'assets/images/welcome/welcome_01_fallback.png',
+            ),
+          ),
+        ),
+      );
+
+      // Before video initializes, should show fallback Image
+      expect(find.byType(Image), findsOneWidget);
+    });
+
+    testWidgets('renders fallback image on error with fallbackAsset', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildLocalizedApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const Scaffold(
+            body: WelcomeVideoPlayer(
+              assetPath: 'invalid/nonexistent.mp4',
+              fallbackAsset: 'assets/images/welcome/welcome_01_fallback.png',
+            ),
+          ),
+        ),
+      );
+
+      // Pump to allow async initialization to fail
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Should show fallback Image on error
+      expect(find.byType(Image), findsOneWidget);
+    });
+
+    testWidgets('respects reduce-motion accessibility setting', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildLocalizedApp(
+          theme: AppTheme.buildAppTheme(),
+          home: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: const Scaffold(
+              body: WelcomeVideoPlayer(
+                assetPath: 'assets/videos/welcome/welcome_01.mp4',
+                fallbackAsset: 'assets/images/welcome/welcome_01_fallback.png',
+                honorReduceMotion: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // With reduce-motion enabled, should immediately show fallback Image
+      expect(find.byType(Image), findsOneWidget);
+    });
   });
 }

@@ -21,6 +21,7 @@ class WelcomeShell extends StatelessWidget {
     this.primaryButtonLabel,
     this.subtitleMaxWidth = double.infinity,
     this.bottomContent,
+    this.subtitleToButtonGap = Spacing.l,
   }) : waveAsset = waveAsset ?? Assets.images.welcomeWave,
        assert(
          bottomContent != null ||
@@ -40,6 +41,7 @@ class WelcomeShell extends StatelessWidget {
   final String? primaryButtonLabel;
   final double subtitleMaxWidth;
   final Widget? bottomContent;
+  final double subtitleToButtonGap;
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +144,7 @@ class WelcomeShell extends StatelessWidget {
       );
     }
     if (onNext != null) {
-      children.add(const SizedBox(height: Spacing.l)); // 24px before button
+      children.add(SizedBox(height: subtitleToButtonGap)); // default 24px, W5: 40px
       // ─── LOCAL Button Override (Figma Polish v2) ───
       // Pill shape, #A8406F bg, white text
       children.add(

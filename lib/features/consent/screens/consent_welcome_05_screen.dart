@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'welcome_metrics.dart';
 import '../widgets/welcome_shell.dart';
 import '../widgets/welcome_video_player.dart';
-import 'consent_01_screen.dart';
+import 'consent_02_screen.dart';
 import '../widgets/localized_builder.dart';
 
 class ConsentWelcome05Screen extends StatelessWidget {
@@ -26,11 +27,15 @@ class ConsentWelcome05Screen extends StatelessWidget {
       ),
       subtitle: l10n.welcome05Subtitle,
       primaryButtonLabel: l10n.welcome05PrimaryCta, // "Jetzt loslegen"
-      onNext: () => context.go(Consent01Screen.routeName),
-      hero: WelcomeVideoPlayer(assetPath: Assets.videos.welcomeVideo05),
+      onNext: () => context.go(Consent02Screen.routeName),
+      hero: WelcomeVideoPlayer(
+        assetPath: Assets.videos.welcomeVideo05,
+        fallbackAsset: Assets.images.welcomeFallback05,
+      ),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,
       waveAsset: Assets.images.welcomeWave,
+      subtitleToButtonGap: Spacing.welcomeCtaGap, // 40px (W5 only)
     );
   }
 }

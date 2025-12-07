@@ -8,7 +8,6 @@ import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/screens/verification_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_01_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_02_screen.dart';
@@ -99,11 +98,6 @@ final List<GoRoute> featureRoutes = [
     path: ConsentWelcome05Screen.routeName,
     name: 'welcome5',
     builder: (context, state) => const ConsentWelcome05Screen(),
-  ),
-  GoRoute(
-    path: Consent01Screen.routeName,
-    name: 'consent01',
-    builder: (context, state) => const Consent01Screen(),
   ),
   GoRoute(
     path: Consent02Screen.routeName,

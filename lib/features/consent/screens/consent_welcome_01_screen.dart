@@ -27,7 +27,10 @@ class ConsentWelcome01Screen extends StatelessWidget {
       subtitle: l10n.welcome01Subtitle,
       primaryButtonLabel: l10n.commonContinue,
       onNext: () => context.go(ConsentWelcome02Screen.routeName),
-      hero: WelcomeVideoPlayer(assetPath: Assets.videos.welcomeVideo01),
+      hero: WelcomeVideoPlayer(
+        assetPath: Assets.videos.welcomeVideo01,
+        fallbackAsset: Assets.images.welcomeFallback01,
+      ),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,
       waveAsset: Assets.images.welcomeWave,

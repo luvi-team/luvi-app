@@ -7,16 +7,34 @@ import 'package:video_player/video_player.dart';
 /// - Asset-based video playback
 /// - Autoplay, loop, muted (volume 0)
 /// - App lifecycle awareness (pauses on background)
-/// - Falls back to a neutral placeholder on error
+/// - Falls back to [fallbackAsset] on error or when reduce-motion is enabled
 /// - Excluded from semantics (purely decorative)
+///
+/// Usage:
+/// ```dart
+/// WelcomeVideoPlayer(
+///   assetPath: Assets.videos.welcomeVideo01,
+///   fallbackAsset: Assets.images.welcomeFallback01,
+/// )
+/// ```
 class WelcomeVideoPlayer extends StatefulWidget {
   const WelcomeVideoPlayer({
     super.key,
     required this.assetPath,
+    this.fallbackAsset,
+    this.honorReduceMotion = true,
   });
 
   /// Path to the video asset (e.g., 'assets/videos/welcome/welcome_01.mp4')
   final String assetPath;
+
+  /// Optional fallback image shown during loading, on error, or when
+  /// reduce-motion is enabled. If null, a neutral colored box is shown.
+  final String? fallbackAsset;
+
+  /// When true, respects the system's reduce-motion accessibility setting
+  /// and shows the fallback image instead of playing video.
+  final bool honorReduceMotion;
 
   @override
   State<WelcomeVideoPlayer> createState() => _WelcomeVideoPlayerState();
@@ -24,14 +42,37 @@ class WelcomeVideoPlayer extends StatefulWidget {
 
 class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
     with WidgetsBindingObserver {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _hasError = false;
+  bool _useStaticFallback = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkReduceMotionAndInitialize();
+  }
+
+  void _checkReduceMotionAndInitialize() {
+    if (_controller != null || _useStaticFallback) return;
+
+    // Check reduce-motion preference
+    if (widget.honorReduceMotion) {
+      final mediaQuery = MediaQuery.maybeOf(context);
+      if (mediaQuery?.disableAnimations == true) {
+        setState(() {
+          _useStaticFallback = true;
+        });
+        return;
+      }
+    }
+
     _initializeVideo();
   }
 
@@ -39,10 +80,10 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
     _controller = VideoPlayerController.asset(widget.assetPath);
 
     try {
-      await _controller.initialize();
+      await _controller!.initialize();
       // Configure: loop, muted
-      await _controller.setLooping(true);
-      await _controller.setVolume(0);
+      await _controller!.setLooping(true);
+      await _controller!.setVolume(0);
 
       if (mounted) {
         setState(() {
@@ -50,7 +91,7 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
         });
 
         // Start playing immediately
-        _controller.play();
+        _controller!.play();
       }
     } catch (e) {
       if (mounted) {
@@ -61,20 +102,19 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
     }
   }
 
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!_isInitialized || _hasError) return;
+    if (!_isInitialized || _hasError || _controller == null) return;
 
     switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
       case AppLifecycleState.hidden:
-        _controller.pause();
+        _controller!.pause();
         break;
       case AppLifecycleState.resumed:
-        _controller.play();
+        _controller!.play();
         break;
     }
   }
@@ -82,7 +122,7 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -95,15 +135,21 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
   }
 
   Widget _buildContent(BuildContext context) {
-    if (_hasError) {
-      // Fallback: neutral placeholder using theme colors
-      return ColoredBox(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      );
+    // Reduce-motion: show static fallback
+    if (_useStaticFallback) {
+      return _buildFallbackImage();
     }
 
+    // Error state: show fallback or neutral placeholder
+    if (_hasError) {
+      return _buildFallbackImage();
+    }
+
+    // Loading state: show fallback image if available, else transparent
     if (!_isInitialized) {
-      // Loading state: show transparent container to avoid layout jumps
+      if (widget.fallbackAsset != null) {
+        return _buildFallbackImage();
+      }
       return const SizedBox.expand();
     }
 
@@ -112,10 +158,29 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
       child: FittedBox(
         fit: BoxFit.cover,
         child: SizedBox(
-          width: _controller.value.size.width,
-          height: _controller.value.size.height,
-          child: VideoPlayer(_controller),
+          width: _controller!.value.size.width,
+          height: _controller!.value.size.height,
+          child: VideoPlayer(_controller!),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFallbackImage() {
+    if (widget.fallbackAsset != null) {
+      return SizedBox.expand(
+        child: Image.asset(
+          widget.fallbackAsset!,
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+        ),
+      );
+    }
+
+    // Ultimate fallback: neutral colored box
+    return SizedBox.expand(
+      child: ColoredBox(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
       ),
     );
   }

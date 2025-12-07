@@ -10,6 +10,8 @@ const String _kWelcomeHero04 = 'assets/images/welcome/welcome_04.png';
 const String _kWelcomeWave = 'assets/images/welcome/welcome_wave.svg';
 const String _kWelcomeVideo01 = 'assets/videos/welcome/welcome_01.mp4';
 const String _kWelcomeVideo05 = 'assets/videos/welcome/welcome_05.mp4';
+const String _kWelcomeFallback01 = 'assets/images/welcome/welcome_01_fallback.png';
+const String _kWelcomeFallback05 = 'assets/images/welcome/welcome_05_fallback.png';
 
 class Assets {
   static const icons = _Icons();
@@ -99,6 +101,12 @@ class _Images {
   final String welcomeHero03 = _kWelcomeHero03;
   final String welcomeHero04 = _kWelcomeHero04;
   final String welcomeWave = _kWelcomeWave;
+
+  /// Fallback poster for Welcome Screen 1 video (A11y + error state)
+  final String welcomeFallback01 = _kWelcomeFallback01;
+
+  /// Fallback poster for Welcome Screen 5 video (A11y + error state)
+  final String welcomeFallback05 = _kWelcomeFallback05;
 }
 
 class _Videos {
