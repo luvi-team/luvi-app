@@ -91,25 +91,23 @@ void main() {
             keywordPattern.hasMatch(literal);
       }
 
-      bool hasGermanUiString = false;
-      for (final match in textLiteralPattern.allMatches(source)) {
-        final literal = match.group(1) ?? '';
-        if (looksGerman(literal)) {
-          hasGermanUiString = true;
-          break;
+      bool fileHasGermanUiString() {
+        for (final match in textLiteralPattern.allMatches(source)) {
+          final literal = match.group(1) ?? '';
+          if (looksGerman(literal)) {
+            return true;
+          }
         }
-      }
-      if (!hasGermanUiString) {
         for (final match in labelPattern.allMatches(source)) {
           final literal = match.group(1) ?? '';
           if (looksGerman(literal)) {
-            hasGermanUiString = true;
-            break;
+            return true;
           }
         }
+        return false;
       }
 
-      if (hasGermanUiString &&
+      if (fileHasGermanUiString() &&
           !allowedGermanStringFiles.contains(normalizedPath)) {
         stringViolations.add(normalizedPath);
       }
