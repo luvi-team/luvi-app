@@ -20,10 +20,25 @@ if [ ! -f "$ENV_FILE" ]; then
     exit 1
 fi
 
-# Load environment variables from .env.development (safely handle spaces/quotes)
-set -a  # Auto-export all variables
-source "$ENV_FILE"
-set +a  # Disable auto-export
+# Load environment variables from .env.development
+# NOTE: Using safe KEY=VALUE parser instead of `source` to prevent code injection.
+# `source` would execute arbitrary shell code if .env contained malicious content.
+while IFS='=' read -r key value; do
+  # Skip empty lines and comments
+  [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
+  # Remove leading/trailing whitespace from key
+  key="${key#"${key%%[![:space:]]*}"}"
+  key="${key%"${key##*[![:space:]]}"}"
+  # Remove surrounding quotes from value (double and single)
+  value="${value#\"}"
+  value="${value%\"}"
+  value="${value#\'}"
+  value="${value%\'}"
+  # Export only if key is valid shell identifier
+  if [[ "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+    export "$key=$value"
+  fi
+done < "$ENV_FILE"
 
 # Validate required variables
 if [ -z "$SUPABASE_URL" ]; then

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
@@ -45,7 +46,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: DsColors.welcomeWaveBg,
       body: Center(
         child: Lottie.asset(
           Assets.animations.splashScreen,

@@ -74,9 +74,12 @@ void main() {
           keywordPattern.hasMatch(literal);
     }
 
+    // Cannot be const: RegExp instances are not compile-time constants.
+    // Defined once outside loop to avoid repeated allocation.
+    final uiStringPatterns = [textLiteralPattern, labelPattern];
+
     bool hasGermanUiString(String source) {
-      final patterns = [textLiteralPattern, labelPattern];
-      for (final pattern in patterns) {
+      for (final pattern in uiStringPatterns) {
         for (final match in pattern.allMatches(source)) {
           final literal = match.group(1) ?? '';
           if (looksGerman(literal)) {

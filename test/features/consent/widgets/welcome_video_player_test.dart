@@ -44,9 +44,9 @@ void main() {
         ),
       );
 
-      // Before video initializes, should show SizedBox.expand
+      // Before video initializes, should show SizedBox.expand with specific key
       // (video_player requires platform channels that aren't available in tests)
-      expect(find.byType(SizedBox), findsWidgets);
+      expect(find.byKey(const Key('welcome_video_loading')), findsOneWidget);
     });
 
     testWidgets('handles invalid asset gracefully with error fallback', (
@@ -63,8 +63,8 @@ void main() {
         ),
       );
 
-      // Pump to allow async initialization to fail
-      await tester.pump(const Duration(milliseconds: 100));
+      // Use pumpAndSettle with timeout for robust async error handling
+      await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Widget should still be in the tree (not crash)
       expect(find.byType(WelcomeVideoPlayer), findsOneWidget);
@@ -120,8 +120,8 @@ void main() {
         ),
       );
 
-      // Pump to allow async initialization to fail
-      await tester.pump(const Duration(milliseconds: 100));
+      // Use pumpAndSettle with timeout for robust async error handling
+      await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Should show fallback Image on error
       expect(find.byType(Image), findsOneWidget);

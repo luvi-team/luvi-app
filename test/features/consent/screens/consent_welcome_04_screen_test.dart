@@ -1,78 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
-import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_04_screen.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_app.dart';
 
 void main() {
   TestConfig.ensureInitialized();
 
-  testWidgets('W4 content renders headline and Weiter button (asset-free)', (
-    tester,
-  ) async {
-    final theme = AppTheme.buildAppTheme();
-    await tester.pumpWidget(
-      buildLocalizedApp(
-        theme: theme,
-        home: WelcomeShell(
-          hero: const SizedBox(),
-          title: Text(
-            'Von Expert:innen erstellt.',
-            style: theme.textTheme.headlineMedium,
-            textAlign: TextAlign.center,
+  group('ConsentWelcome04Screen', () {
+    group('German locale (DE)', () {
+      testWidgets('renders localized headline and Weiter button', (
+        tester,
+      ) async {
+        // 1. Render actual screen with DE locale
+        await tester.pumpWidget(
+          buildTestApp(
+            home: const ConsentWelcome04Screen(),
+            locale: const Locale('de'),
           ),
-          subtitle: 'Kein Algorithmus, sondern echte Menschen.',
-          onNext: () {},
-          heroAspect: kWelcomeHeroAspect,
-          waveHeightPx: kWelcomeWaveHeight,
-        ),
-      ),
-    );
+        );
+        await tester.pumpAndSettle();
 
-    // Assert headline contains simplified title
-    expect(find.text('Von Expert:innen erstellt.'), findsOneWidget);
+        // 2. Extract L10n from widget tree
+        final context = tester.element(find.byType(ConsentWelcome04Screen));
+        final l10n = AppLocalizations.of(context)!;
 
-    // Assert subtitle is present
-    expect(
-      find.text('Kein Algorithmus, sondern echte Menschen.'),
-      findsOneWidget,
-    );
+        // 3. Assertions against REAL L10n values (not hardcoded)
+        expect(find.text(l10n.welcome04Title), findsOneWidget);
+        expect(find.text(l10n.welcome04Subtitle), findsOneWidget);
+        expect(
+          find.widgetWithText(ElevatedButton, l10n.commonContinue),
+          findsOneWidget,
+        );
+      });
 
-    // Assert "Weiter" ElevatedButton is present
-    expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
-  });
-
-  testWidgets('W4 semantics header is present', (tester) async {
-    final theme = AppTheme.buildAppTheme();
-    await tester.pumpWidget(
-      buildLocalizedApp(
-        theme: theme,
-        home: WelcomeShell(
-          hero: const SizedBox(),
-          title: Text(
-            'Von Expert:innen erstellt.',
-            style: theme.textTheme.headlineMedium,
-            textAlign: TextAlign.center,
+      testWidgets('semantics header is present for accessibility', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            home: const ConsentWelcome04Screen(),
+            locale: const Locale('de'),
           ),
-          subtitle: 'Kein Algorithmus, sondern echte Menschen.',
-          onNext: () {},
-          heroAspect: kWelcomeHeroAspect,
-          waveHeightPx: kWelcomeWaveHeight,
-        ),
-      ),
-    );
+        );
+        await tester.pumpAndSettle();
 
-    // Semantics header present for accessibility
-    final handle = tester.ensureSemantics();
-    try {
-      final headerFinder = find.byWidgetPredicate(
-        (w) => w is Semantics && (w.properties.header == true),
-      );
-      expect(headerFinder, findsWidgets);
-    } finally {
-      handle.dispose();
-    }
+        // Verify semantics header for accessibility
+        final handle = tester.ensureSemantics();
+        try {
+          final headerFinder = find.byWidgetPredicate(
+            (w) => w is Semantics && (w.properties.header == true),
+          );
+          expect(headerFinder, findsOneWidget);
+        } finally {
+          handle.dispose();
+        }
+      });
+    });
+
+    group('English locale (EN)', () {
+      testWidgets('renders localized headline and Continue button', (
+        tester,
+      ) async {
+        // 1. Render actual screen with EN locale
+        await tester.pumpWidget(
+          buildTestApp(
+            home: const ConsentWelcome04Screen(),
+            locale: const Locale('en'),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // 2. Extract L10n from widget tree
+        final context = tester.element(find.byType(ConsentWelcome04Screen));
+        final l10n = AppLocalizations.of(context)!;
+
+        // 3. Assertions against REAL L10n values
+        expect(find.text(l10n.welcome04Title), findsOneWidget);
+        expect(find.text(l10n.welcome04Subtitle), findsOneWidget);
+        expect(
+          find.widgetWithText(ElevatedButton, l10n.commonContinue),
+          findsOneWidget,
+        );
+
+        // 4. Verify it's actually English (not German)
+        expect(find.text('Continue'), findsOneWidget);
+        expect(find.text('Weiter'), findsNothing);
+      });
+    });
   });
 }

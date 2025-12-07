@@ -47,6 +47,7 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
   bool _isInitialized = false;
   bool _hasError = false;
   bool _useStaticFallback = false;
+  bool _initializationStarted = false;
 
   @override
   void initState() {
@@ -61,7 +62,11 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
   }
 
   void _checkReduceMotionAndInitialize() {
-    if (_controller != null || _useStaticFallback) return;
+    // Guard: prevent multiple initializations (race condition fix)
+    if (_initializationStarted || _controller != null || _useStaticFallback) {
+      return;
+    }
+    _initializationStarted = true;
 
     // Check reduce-motion preference
     if (widget.honorReduceMotion) {
@@ -82,16 +87,14 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
 
     try {
       await _controller!.initialize();
-      // Configure: loop, muted
-      await _controller!.setLooping(true);
-      await _controller!.setVolume(0);
-
-      if (mounted) {
+      // Defensive: check mounted AND controller after async gap
+      if (mounted && _controller != null) {
+        // Configure: loop, muted
+        await _controller!.setLooping(true);
+        await _controller!.setVolume(0);
         setState(() {
           _isInitialized = true;
         });
-
-        // Start playing immediately
         _controller!.play();
       }
     } catch (e, stack) {
@@ -157,16 +160,21 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
       if (widget.fallbackAsset != null) {
         return _buildFallbackImage();
       }
-      return const SizedBox.expand();
+      return const SizedBox.expand(key: Key('welcome_video_loading'));
     }
 
     // Video is ready – use FittedBox to fill the available space
+    final videoSize = _controller!.value.size;
+    if (videoSize.isEmpty) {
+      // Guard against zero-sized video (edge case: corrupted files)
+      return _buildFallbackImage();
+    }
     return SizedBox.expand(
       child: FittedBox(
         fit: BoxFit.cover,
         child: SizedBox(
-          width: _controller!.value.size.width,
-          height: _controller!.value.size.height,
+          width: videoSize.width,
+          height: videoSize.height,
           child: VideoPlayer(_controller!),
         ),
       ),

@@ -1,86 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
-import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
+import 'package:luvi_app/features/consent/screens/consent_welcome_05_screen.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_app.dart';
 
 void main() {
   TestConfig.ensureInitialized();
 
-  testWidgets('W5 content renders headline and "Jetzt loslegen" CTA', (
-    tester,
-  ) async {
-    final theme = AppTheme.buildAppTheme();
-    await tester.pumpWidget(
-      buildLocalizedApp(
-        theme: theme,
-        home: WelcomeShell(
-          hero: const SizedBox(),
-          title: Text(
-            'Kleine Schritte heute. Große Wirkung morgen.',
-            style: theme.textTheme.headlineMedium,
-            textAlign: TextAlign.center,
+  group('ConsentWelcome05Screen', () {
+    group('German locale (DE)', () {
+      testWidgets('renders localized headline and "Jetzt loslegen" CTA', (
+        tester,
+      ) async {
+        // 1. Render actual screen with DE locale
+        await tester.pumpWidget(
+          buildTestApp(
+            home: const ConsentWelcome05Screen(),
+            locale: const Locale('de'),
           ),
-          subtitle: 'Für jetzt – und dein zukünftiges Ich.',
-          primaryButtonLabel: 'Jetzt loslegen', // Screen 5 uses custom CTA
-          onNext: () {},
-          heroAspect: kWelcomeHeroAspect,
-          waveHeightPx: kWelcomeWaveHeight,
-        ),
-      ),
-    );
+        );
+        await tester.pumpAndSettle();
 
-    // Assert headline contains simplified title
-    expect(
-      find.text('Kleine Schritte heute. Große Wirkung morgen.'),
-      findsOneWidget,
-    );
+        // 2. Extract L10n from widget tree
+        final context = tester.element(find.byType(ConsentWelcome05Screen));
+        final l10n = AppLocalizations.of(context)!;
 
-    // Assert subtitle is present
-    expect(
-      find.text('Für jetzt – und dein zukünftiges Ich.'),
-      findsOneWidget,
-    );
+        // 3. Assertions against REAL L10n values (not hardcoded)
+        expect(find.text(l10n.welcome05Title), findsOneWidget);
+        expect(find.text(l10n.welcome05Subtitle), findsOneWidget);
+        // W5 uses custom CTA "Jetzt loslegen" (welcome05PrimaryCta)
+        expect(
+          find.widgetWithText(ElevatedButton, l10n.welcome05PrimaryCta),
+          findsOneWidget,
+        );
+      });
 
-    // Assert custom "Jetzt loslegen" CTA button (not "Weiter")
-    expect(
-      find.widgetWithText(ElevatedButton, 'Jetzt loslegen'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('W5 semantics header is present', (tester) async {
-    final theme = AppTheme.buildAppTheme();
-    await tester.pumpWidget(
-      buildLocalizedApp(
-        theme: theme,
-        home: WelcomeShell(
-          hero: const SizedBox(),
-          title: Text(
-            'Kleine Schritte heute. Große Wirkung morgen.',
-            style: theme.textTheme.headlineMedium,
-            textAlign: TextAlign.center,
+      testWidgets('semantics header is present for accessibility', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            home: const ConsentWelcome05Screen(),
+            locale: const Locale('de'),
           ),
-          subtitle: 'Für jetzt – und dein zukünftiges Ich.',
-          primaryButtonLabel: 'Jetzt loslegen',
-          onNext: () {},
-          heroAspect: kWelcomeHeroAspect,
-          waveHeightPx: kWelcomeWaveHeight,
-        ),
-      ),
-    );
+        );
+        await tester.pumpAndSettle();
 
-    // Semantics header present for accessibility
-    final handle = tester.ensureSemantics();
-    try {
-      final headerFinder = find.byWidgetPredicate(
-        (w) => w is Semantics && (w.properties.header == true),
-      );
-      expect(headerFinder, findsWidgets);
-    } finally {
-      handle.dispose();
-    }
+        // Verify semantics header for accessibility
+        final handle = tester.ensureSemantics();
+        try {
+          final headerFinder = find.byWidgetPredicate(
+            (w) => w is Semantics && (w.properties.header == true),
+          );
+          expect(headerFinder, findsOneWidget);
+        } finally {
+          handle.dispose();
+        }
+      });
+    });
+
+    group('English locale (EN)', () {
+      testWidgets('renders localized headline and "Start now" CTA', (
+        tester,
+      ) async {
+        // 1. Render actual screen with EN locale
+        await tester.pumpWidget(
+          buildTestApp(
+            home: const ConsentWelcome05Screen(),
+            locale: const Locale('en'),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // 2. Extract L10n from widget tree
+        final context = tester.element(find.byType(ConsentWelcome05Screen));
+        final l10n = AppLocalizations.of(context)!;
+
+        // 3. Assertions against REAL L10n values
+        expect(find.text(l10n.welcome05Title), findsOneWidget);
+        expect(find.text(l10n.welcome05Subtitle), findsOneWidget);
+        expect(
+          find.widgetWithText(ElevatedButton, l10n.welcome05PrimaryCta),
+          findsOneWidget,
+        );
+
+        // 4. Verify it's actually English (not German)
+        expect(find.text('Start now'), findsOneWidget);
+        expect(find.text('Jetzt loslegen'), findsNothing);
+      });
+    });
   });
 }

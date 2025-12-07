@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/features/consent/screens/welcome_metrics.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 import '../../support/test_app.dart';
 
@@ -16,18 +17,21 @@ void main() {
       routes: [
         GoRoute(
           path: '/onboarding/w3',
-          builder: (context, state) => WelcomeShell(
-            hero: const SizedBox(), // asset-free hero
-            title: Text(
-              'Passt sich deinem Zyklus an.',
-              style: Theme.of(context).textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            subtitle: 'Damit du mit deinem Körper arbeitest, nicht gegen ihn.',
-            onNext: () => context.go('/onboarding/w4'),
-            heroAspect: kWelcomeHeroAspect,
-            waveHeightPx: kWelcomeWaveHeight,
-          ),
+          builder: (context, state) {
+            final l10n = AppLocalizations.of(context)!;
+            return WelcomeShell(
+              hero: const SizedBox(), // asset-free hero
+              title: Text(
+                l10n.welcome03Title,
+                style: Theme.of(context).textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              subtitle: l10n.welcome03Subtitle,
+              onNext: () => context.go('/onboarding/w4'),
+              heroAspect: kWelcomeHeroAspect,
+              waveHeightPx: kWelcomeWaveHeight,
+            );
+          },
         ),
         GoRoute(
           path: '/onboarding/w4',
@@ -37,14 +41,18 @@ void main() {
     );
 
     await tester.pumpWidget(
-      buildLocalizedApp(
+      buildTestApp(
         theme: AppTheme.buildAppTheme(),
         router: router,
       ),
     );
 
-    expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Weiter'));
+    // Get L10n from widget tree context
+    final context = tester.element(find.byType(WelcomeShell));
+    final l10n = AppLocalizations.of(context)!;
+
+    expect(find.widgetWithText(ElevatedButton, l10n.commonContinue), findsOneWidget);
+    await tester.tap(find.widgetWithText(ElevatedButton, l10n.commonContinue));
     await tester.pumpAndSettle();
 
     expect(find.text('Welcome 04'), findsOneWidget);
