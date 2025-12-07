@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 /// A decorative video player for Welcome screens.
 ///
@@ -93,7 +94,13 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
         // Start playing immediately
         _controller!.play();
       }
-    } catch (e) {
+    } catch (e, stack) {
+      log.w(
+        'video_init_failed',
+        tag: 'welcome_video',
+        error: e,
+        stack: stack,
+      );
       if (mounted) {
         setState(() {
           _hasError = true;
