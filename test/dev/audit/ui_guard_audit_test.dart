@@ -68,6 +68,25 @@ void main() {
       multiLine: true,
     );
 
+    // Helper functions defined once outside the loop for efficiency
+    bool looksGerman(String literal) {
+      return umlautPattern.hasMatch(literal) ||
+          keywordPattern.hasMatch(literal);
+    }
+
+    bool hasGermanUiString(String source) {
+      final patterns = [textLiteralPattern, labelPattern];
+      for (final pattern in patterns) {
+        for (final match in pattern.allMatches(source)) {
+          final literal = match.group(1) ?? '';
+          if (looksGerman(literal)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
     final colorViolations = <String>{};
     final stringViolations = <String>{};
 
@@ -85,29 +104,7 @@ void main() {
         colorViolations.add(normalizedPath);
       }
 
-      // Check for German UI strings
-      bool looksGerman(String literal) {
-        return umlautPattern.hasMatch(literal) ||
-            keywordPattern.hasMatch(literal);
-      }
-
-      bool fileHasGermanUiString() {
-        for (final match in textLiteralPattern.allMatches(source)) {
-          final literal = match.group(1) ?? '';
-          if (looksGerman(literal)) {
-            return true;
-          }
-        }
-        for (final match in labelPattern.allMatches(source)) {
-          final literal = match.group(1) ?? '';
-          if (looksGerman(literal)) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      if (fileHasGermanUiString() &&
+      if (hasGermanUiString(source) &&
           !allowedGermanStringFiles.contains(normalizedPath)) {
         stringViolations.add(normalizedPath);
       }
