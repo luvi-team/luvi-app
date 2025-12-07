@@ -70,7 +70,7 @@ Supabase-Credentials werden via `--dart-define` übergeben (Security Best Practi
 
 ### Fallback (Legacy)
 
-Falls `--dart-define` nicht gesetzt ist, versucht die App `.env.development` via `flutter_dotenv` zu laden (funktioniert nur auf Web/Desktop, nicht auf iOS/Android Simulatoren).
+Falls `--dart-define` nicht gesetzt ist, versucht die App `.env.development` via `flutter_dotenv` zu laden (funktioniert nur auf Web/Desktop, nicht auf iOS/Android Simulatoren). Dieser Fallback existiert für Rückwärtskompatibilität und spezifische Web/Desktop-Testszenarien. Für reguläre Entwicklung nutze die --dart-define-Methode oben.
 
 ## Flutter Tooling (Codex CLI)
 

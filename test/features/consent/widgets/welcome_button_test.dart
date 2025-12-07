@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_app.dart';
 
@@ -66,7 +67,7 @@ void main() {
       expect(fgColor, equals(DsColors.welcomeButtonText));
     });
 
-    testWidgets('has pill-shaped border radius', (tester) async {
+    testWidgets('has pill-shaped border radius with correct Design Token value', (tester) async {
       await tester.pumpWidget(
         buildTestApp(
           home: Scaffold(
@@ -83,7 +84,11 @@ void main() {
       final shape = style.shape?.resolve({}) as RoundedRectangleBorder?;
 
       expect(shape, isNotNull);
-      expect(shape!.borderRadius, isA<BorderRadius>());
+      // Verify actual Design Token value (Sizes.radiusWelcomeButton = 40.0)
+      expect(
+        shape!.borderRadius,
+        equals(BorderRadius.circular(Sizes.radiusWelcomeButton)),
+      );
     });
   });
 }
