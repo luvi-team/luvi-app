@@ -97,7 +97,7 @@ Falls `--dart-define` nicht gesetzt ist, versucht die App `.env.development` via
 - App‑Kontext: `docs/product/app-context.md:1`
 - Tech‑Stack: `docs/engineering/tech-stack.md:1`
 - Roadmap: `docs/product/roadmap.md:1`
-- Gold‑Standard Workflow (inkl. „Praktische Anleitung · Ultra‑Slim“): `docs/engineering/gold-standard-workflow.md:62`
+- Gold‑Standard Workflow (inkl. „Praktische Anleitung · Ultra‑Slim"): `docs/engineering/gold-standard-workflow.md:62`
 
 ## Database Security (RLS)
 
@@ -109,7 +109,7 @@ All tables in this project use Supabase Row Level Security (RLS) with owner-base
 - **RLS Status**: ✅ Enabled
 - **Policies**: Owner-based (user_id = auth.uid())
   - SELECT: Users can only view their own daily plans
-  - INSERT: Users can only create their own daily plans  
+  - INSERT: Users can only create their own daily plans
   - UPDATE: Users can only update their own daily plans
   - DELETE: Users can only delete their own daily plans
 - **Auto-Population**: Trigger `set_user_id_from_auth()` automatically sets user_id from auth context
