@@ -62,7 +62,7 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   sign_in_with_apple: ^7.0.1
   sign_in_button: ^4.0.1
-  video_player: ^2.9.1
+  video_player: ^2.10.1
 
 dev_dependencies:
   flutter_test:
