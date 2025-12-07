@@ -30,21 +30,21 @@ class WelcomeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: label,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: DsColors.welcomeButtonBg,
-          foregroundColor: DsColors.welcomeButtonText,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
-          ),
+    // ElevatedButton provides built-in button semantics with child text as label.
+    // No explicit Semantics wrapper needed.
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: DsColors.welcomeButtonBg,
+        foregroundColor: DsColors.welcomeButtonText,
+        padding: EdgeInsets.symmetric(
+          vertical: Sizes.welcomeButtonPaddingVertical,
         ),
-        child: ExcludeSemantics(child: Text(label)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
+        ),
       ),
+      child: Text(label),
     );
   }
 }

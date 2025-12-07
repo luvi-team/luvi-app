@@ -15,5 +15,8 @@ class Sizes {
   /// Semantically references radiusXL to avoid value duplication.
   static const double radiusWelcomeButton = radiusXL;
 
+  /// Welcome Button Vertical Padding (Figma: 12px)
+  static const double welcomeButtonPaddingVertical = 12.0;
+
   Sizes._();
 }
