@@ -63,8 +63,8 @@ void main() {
         ),
       );
 
-      // Pump to allow async initialization to fail
-      await tester.pump(const Duration(milliseconds: 100));
+      // Use pumpAndSettle with timeout for robust async error handling
+      await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Widget should still be in the tree (not crash)
       expect(find.byType(WelcomeVideoPlayer), findsOneWidget);
@@ -120,8 +120,8 @@ void main() {
         ),
       );
 
-      // Pump to allow async initialization to fail
-      await tester.pump(const Duration(milliseconds: 100));
+      // Use pumpAndSettle with timeout for robust async error handling
+      await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Should show fallback Image on error
       expect(find.byType(Image), findsOneWidget);

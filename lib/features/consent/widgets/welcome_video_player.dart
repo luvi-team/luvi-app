@@ -161,12 +161,17 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
     }
 
     // Video is ready – use FittedBox to fill the available space
+    final videoSize = _controller!.value.size;
+    if (videoSize.isEmpty) {
+      // Guard against zero-sized video (edge case: corrupted files)
+      return _buildFallbackImage();
+    }
     return SizedBox.expand(
       child: FittedBox(
         fit: BoxFit.cover,
         child: SizedBox(
-          width: _controller!.value.size.width,
-          height: _controller!.value.size.height,
+          width: videoSize.width,
+          height: videoSize.height,
           child: VideoPlayer(_controller!),
         ),
       ),

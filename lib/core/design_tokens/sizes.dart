@@ -12,7 +12,8 @@ class Sizes {
   static const double radiusXL = 40.0;
 
   /// Welcome Button Radius - Pill Shape (Figma: 40px)
-  static const double radiusWelcomeButton = 40.0;
+  /// Semantically references radiusXL to avoid value duplication.
+  static const double radiusWelcomeButton = radiusXL;
 
   Sizes._();
 }
