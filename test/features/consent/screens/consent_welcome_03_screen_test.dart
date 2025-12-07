@@ -17,36 +17,20 @@ void main() {
         theme: theme,
         home: WelcomeShell(
           hero: const SizedBox(), // << no real image
-          title: RichText(
+          title: Text(
+            'Passt sich deinem Zyklus an.',
+            style: theme.textTheme.headlineMedium,
             textAlign: TextAlign.center,
-            text: TextSpan(
-              style: theme.textTheme.headlineMedium,
-              children: [
-                const TextSpan(text: 'Endlich verstehen, was dein '),
-                TextSpan(
-                  text: 'Körper',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-                const TextSpan(text: ' dir sagt.'),
-              ],
-            ),
           ),
-          subtitle: 'LUVI zeigt dir deine ganz persönlichen Zusammenhänge.',
+          subtitle: 'Damit du mit deinem Körper arbeitest, nicht gegen ihn.',
           onNext: () {},
           heroAspect: kWelcomeHeroAspect,
           waveHeightPx: kWelcomeWaveHeight,
-          activeIndex: 2,
         ),
       ),
     );
     expect(
-      find.byWidgetPredicate(
-        (w) =>
-            w is RichText &&
-            w.text.toPlainText().contains('Endlich verstehen, was dein'),
-      ),
+      find.text('Passt sich deinem Zyklus an.'),
       findsOneWidget,
     );
     expect(find.widgetWithText(ElevatedButton, 'Weiter'), findsOneWidget);

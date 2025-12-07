@@ -7,9 +7,8 @@ import 'support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  testWidgets('Consent welcome title renders spacing for de locale', (
-    tester,
-  ) async {
+
+  testWidgets('Consent welcome title renders for de locale', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildAppTheme(),
@@ -19,27 +18,20 @@ void main() {
         home: const ConsentWelcome01Screen(),
       ),
     );
+    await tester.pumpAndSettle();
+
     final l10n = AppLocalizations.of(
       tester.element(find.byType(ConsentWelcome01Screen)),
     )!;
-    final richTextFinder = find.byWidgetPredicate(
-      (widget) =>
-          widget is RichText &&
-          widget.text.toPlainText().contains(l10n.welcome01TitleAccent.trim()),
-    );
-    expect(richTextFinder, findsOneWidget);
-    final richText = tester.widget<RichText>(richTextFinder);
-    final content = richText.text.toPlainText();
-    final lines = content.split('\n');
-    expect(lines.length, 2);
-    expect(content.contains(l10n.welcome01TitleAccent.trim()), isTrue);
-    expect(lines.first.contains(l10n.welcome01TitleSuffixLine1.trim()), isTrue);
-    expect(lines.last.trim(), l10n.welcome01TitleSuffixLine2.trim());
+
+    // Simplified title is now a single-line Text widget
+    expect(find.text(l10n.welcome01Title), findsOneWidget);
+
+    // Subtitle is present
+    expect(find.text(l10n.welcome01Subtitle), findsOneWidget);
   });
 
-  testWidgets('Consent welcome title renders spacing for en locale', (
-    tester,
-  ) async {
+  testWidgets('Consent welcome title renders for en locale', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildAppTheme(),
@@ -49,21 +41,16 @@ void main() {
         home: const ConsentWelcome01Screen(),
       ),
     );
+    await tester.pumpAndSettle();
+
     final l10n = AppLocalizations.of(
       tester.element(find.byType(ConsentWelcome01Screen)),
     )!;
-    final richTextFinder = find.byWidgetPredicate(
-      (widget) =>
-          widget is RichText &&
-          widget.text.toPlainText().contains(l10n.welcome01TitleAccent.trim()),
-    );
-    expect(richTextFinder, findsOneWidget);
-    final richText = tester.widget<RichText>(richTextFinder);
-    final content = richText.text.toPlainText();
-    final lines = content.split('\n');
-    expect(lines.length, 2);
-    expect(content.contains(l10n.welcome01TitleAccent.trim()), isTrue);
-    expect(lines.first.contains(l10n.welcome01TitleSuffixLine1.trim()), isTrue);
-    expect(lines.last.trim(), l10n.welcome01TitleSuffixLine2.trim());
+
+    // Simplified title is now a single-line Text widget
+    expect(find.text(l10n.welcome01Title), findsOneWidget);
+
+    // Subtitle is present
+    expect(find.text(l10n.welcome01Subtitle), findsOneWidget);
   });
 }

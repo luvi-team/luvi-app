@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'welcome_metrics.dart';
-import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import 'welcome_metrics.dart';
 import '../widgets/welcome_shell.dart';
 import 'consent_welcome_03_screen.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
 import '../widgets/localized_builder.dart';
 
 class ConsentWelcome02Screen extends StatelessWidget {
@@ -19,34 +18,22 @@ class ConsentWelcome02Screen extends StatelessWidget {
   }
 
   Widget _buildLocalizedContent(BuildContext context, AppLocalizations l10n) {
-    final t = Theme.of(context).textTheme;
-    final c = Theme.of(context).colorScheme;
-    final titleStyle = t.headlineMedium?.copyWith(
-      fontSize: TypographyTokens.size28,
-      height: TypographyTokens.lineHeightRatio36on28,
-    );
-
     return WelcomeShell(
-      title: RichText(
+      title: Text(
+        l10n.welcome02Title,
         textAlign: TextAlign.center,
-        text: TextSpan(
-          style: titleStyle,
-          children: [
-            TextSpan(text: l10n.welcome02TitleLine1),
-            TextSpan(
-              text: l10n.welcome02TitleLine2,
-              style: titleStyle?.copyWith(color: c.primary),
-            ),
-          ],
-        ),
       ),
       subtitle: l10n.welcome02Subtitle,
+      primaryButtonLabel: l10n.commonContinue,
       onNext: () => context.go(ConsentWelcome03Screen.routeName),
-      hero: Image.asset(Assets.images.welcomeHero02, fit: BoxFit.cover),
+      hero: Image.asset(
+        Assets.images.welcomeHero02,
+        fit: BoxFit.cover,
+        excludeFromSemantics: true,
+      ),
       heroAspect: kWelcomeHeroAspect,
       waveHeightPx: kWelcomeWaveHeight,
-      headerSpacing: 0,
-      activeIndex: 1,
+      waveAsset: Assets.images.welcomeWave,
     );
   }
 }

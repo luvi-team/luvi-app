@@ -12,5 +12,11 @@ class Spacing {
   static const double goalCardIconGap =
       20.0; // spacing between icon and text in goal cards
 
+  /// Welcome content bottom padding (Figma: 52px from bottom edge)
+  static const double welcomeBottomPadding = 52.0;
+
+  /// Gap between subtitle and CTA on welcome screens (W5)
+  static const double welcomeCtaGap = 40.0;
+
   Spacing._();
 }

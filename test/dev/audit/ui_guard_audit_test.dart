@@ -52,7 +52,8 @@ void main() {
     };
 
     final colorPattern = RegExp(r'Color\s*\(\s*0x[0-9A-Fa-f]{6,8}');
-    final colorsDotPattern = RegExp(r'Colors\.');
+    // Word-boundary ensures we match Flutter's Colors class, not DsColors tokens
+    final colorsDotPattern = RegExp(r'\bColors\.');
     final umlautPattern = RegExp(r'[äöüÄÖÜß]');
     final keywordPattern = RegExp(
       r'\b(Registrieren|Einloggen|Willkommen|Zur(?:ück|ueck)|Weiter|Passwort|Hinweis|Bestätigen|Abbrechen|Speichern)\b',
@@ -66,6 +67,25 @@ void main() {
       r"""label\s*:\s*['"]([^'"]+)['"]""",
       multiLine: true,
     );
+
+    // Helper functions defined once outside the loop for efficiency
+    bool looksGerman(String literal) {
+      return umlautPattern.hasMatch(literal) ||
+          keywordPattern.hasMatch(literal);
+    }
+
+    bool hasGermanUiString(String source) {
+      final patterns = [textLiteralPattern, labelPattern];
+      for (final pattern in patterns) {
+        for (final match in pattern.allMatches(source)) {
+          final literal = match.group(1) ?? '';
+          if (looksGerman(literal)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
 
     final colorViolations = <String>{};
     final stringViolations = <String>{};
@@ -84,28 +104,7 @@ void main() {
         colorViolations.add(normalizedPath);
       }
 
-      bool _looksGerman(String literal) {
-        return umlautPattern.hasMatch(literal) ||
-            keywordPattern.hasMatch(literal);
-      }
-
-      bool fileHasGermanUiString() {
-        for (final match in textLiteralPattern.allMatches(source)) {
-          final literal = match.group(1) ?? '';
-          if (_looksGerman(literal)) {
-            return true;
-          }
-        }
-        for (final match in labelPattern.allMatches(source)) {
-          final literal = match.group(1) ?? '';
-          if (_looksGerman(literal)) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      if (fileHasGermanUiString() &&
+      if (hasGermanUiString(source) &&
           !allowedGermanStringFiles.contains(normalizedPath)) {
         stringViolations.add(normalizedPath);
       }

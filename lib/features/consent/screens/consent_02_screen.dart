@@ -18,7 +18,7 @@ import 'package:luvi_app/core/widgets/link_text.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 
-import 'consent_01_screen.dart';
+import 'consent_welcome_05_screen.dart';
 
 class _ConsentBtnBusyNotifier extends Notifier<bool> {
   @override
@@ -219,7 +219,7 @@ class _ConsentTopBar extends StatelessWidget {
                 if (router.canPop()) {
                   context.pop();
                 } else {
-                  context.go(Consent01Screen.routeName);
+                  context.go(ConsentWelcome05Screen.routeName);
                 }
               },
               semanticLabel: AppLocalizations.of(context)!.authBackSemantic,

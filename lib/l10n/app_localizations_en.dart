@@ -380,45 +380,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingSuccessGenericError => 'Something went wrong. Please try again.';
 
   @override
-  String get welcome01Subtitle => 'Transform your cycle into your strength. Training, nutrition, biohacking — everything perfectly tailored to your hormones.';
+  String get welcome01Title => 'Your body. Your rhythm. Every day.';
 
   @override
-  String welcome01Title(String prefix, String accent) {
-    return '$prefix $accent';
-  }
+  String get welcome01Subtitle => 'Your daily companion for training, nutrition, sleep & more.';
 
   @override
-  String get welcome01TitlePrefix => 'In';
+  String get welcome02Title => 'Know what matters today in seconds.';
 
   @override
-  String get welcome01TitleAccent => 'harmony';
+  String get welcome02Subtitle => 'No searching, no guessing. LUVI shows you the next step.';
 
   @override
-  String get welcome01TitleSuffixLine1 => ' with your\n';
+  String get welcome03Title => 'Adapts to your cycle.';
 
   @override
-  String get welcome01TitleSuffixLine2 => 'body';
+  String get welcome03Subtitle => 'So you work with your body, not against it.';
 
   @override
-  String get welcome01PrimaryCta => 'Continue';
+  String get welcome04Title => 'Created by experts.';
 
   @override
-  String get welcome02TitleLine1 => 'Curated by experts for you\n';
+  String get welcome04Subtitle => 'No algorithm, but real people.';
 
   @override
-  String get welcome02TitleLine2 => 'refreshed every month';
+  String get welcome05Title => 'Small steps today. Big impact tomorrow.';
 
   @override
-  String get welcome02Subtitle => 'Real personalization instead of standard plans. Automatically adapted to your progress, cycle phase, and individual goals.';
+  String get welcome05Subtitle => 'For now – and your future self.';
 
   @override
-  String get welcome03TitleLine1 => 'Your perfect day\n';
-
-  @override
-  String get welcome03TitleLine2 => 'starts here';
-
-  @override
-  String get welcome03Subtitle => 'LUVI Sync: Your daily game-changer. Understand the \"why\" behind your hormones. Scientifically grounded.';
+  String get welcome05PrimaryCta => 'Start now';
 
   @override
   String get consent01IntroTitle => 'Let\'s tailor LUVI\nto you';

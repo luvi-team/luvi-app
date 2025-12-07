@@ -83,6 +83,17 @@ class DsColors {
   /// Low-emphasis border color for neutral cards.
   /// Hex: #000000 @ 10% alpha
   static const Color borderSubtle = Color(0x1A000000);
+
+  // ─── Welcome Screen Specific (Figma Polish v2) ───
+
+  /// Welcome CTA Button Background (Figma: #A8406F)
+  static const Color welcomeButtonBg = Color(0xFFA8406F);
+
+  /// Welcome Wave/Panel Background (Figma: #FAEEE0 warm cream)
+  static const Color welcomeWaveBg = Color(0xFFFAEEE0);
+
+  /// Welcome Button Text (white)
+  static const Color welcomeButtonText = Color(0xFFFFFFFF);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.

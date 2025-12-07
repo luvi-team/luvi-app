@@ -62,6 +62,7 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   sign_in_with_apple: ^7.0.1
   sign_in_button: ^4.0.1
+  video_player: ^2.9.1
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +84,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    # Note: .env.development is NOT bundled as asset (security best practice).
+    # Use --dart-define for credentials. See .vscode/launch.json
     - assets/images/auth/hero_login_default_00.png
     - assets/images/consent/
     - assets/images/welcome/
@@ -93,14 +96,15 @@ flutter:
     - assets/icons/dashboard/
     - assets/animations/
     - assets/legal/
+    - assets/videos/welcome/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   
-  # Note: .env files should NOT be listed as assets for security reasons.
-  # flutter_dotenv can load them directly from the project root.
+  # Security: .env files are NOT bundled as assets (credentials would be extractable).
+  # Use --dart-define for Supabase credentials. See .vscode/launch.json and scripts/run_dev.sh
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -132,6 +136,8 @@ flutter:
       fonts:
         - asset: assets/fonts/PlayfairDisplay/PlayfairDisplay-Regular.ttf
           weight: 400
+        - asset: assets/fonts/PlayfairDisplay/PlayfairDisplay-SemiBold.ttf
+          weight: 600
         - asset: assets/fonts/PlayfairDisplay/PlayfairDisplay-Bold.ttf
           weight: 700
     - family: Figtree
