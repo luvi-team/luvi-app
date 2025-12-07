@@ -53,7 +53,7 @@ void main() {
           final headerFinder = find.byWidgetPredicate(
             (w) => w is Semantics && (w.properties.header == true),
           );
-          expect(headerFinder, findsWidgets);
+          expect(headerFinder, findsOneWidget);
         } finally {
           handle.dispose();
         }

@@ -74,7 +74,8 @@ void main() {
           keywordPattern.hasMatch(literal);
     }
 
-    // Defined once outside loop to avoid repeated allocation
+    // Cannot be const: RegExp instances are not compile-time constants.
+    // Defined once outside loop to avoid repeated allocation.
     final uiStringPatterns = [textLiteralPattern, labelPattern];
 
     bool hasGermanUiString(String source) {

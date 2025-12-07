@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
+import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
 
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import '../../../support/test_config.dart';
@@ -80,5 +82,42 @@ void main() {
     } finally {
       handle.dispose();
     }
+  });
+
+  testWidgets('WelcomeShell renders WelcomeButton with DS tokens', (
+    tester,
+  ) async {
+    var buttonPressed = false;
+
+    await tester.pumpWidget(
+      buildLocalizedApp(
+        theme: AppTheme.buildAppTheme(),
+        home: Scaffold(
+          body: WelcomeShell(
+            hero: const SizedBox(height: 200),
+            heroAspect: 1.0,
+            waveHeightPx: 300,
+            title: const Text('Test Title'),
+            subtitle: 'Test Subtitle',
+            onNext: () => buttonPressed = true,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // 1. Verify WelcomeButton is rendered inside WelcomeShell
+    expect(find.byType(WelcomeButton), findsOneWidget);
+
+    // 2. Verify button uses Design System token colors
+    final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+    final style = button.style!;
+    final bgColor = style.backgroundColor?.resolve({});
+    expect(bgColor, equals(DsColors.welcomeButtonBg));
+
+    // 3. Verify button is functional (onNext callback works)
+    await tester.tap(find.byType(WelcomeButton));
+    expect(buttonPressed, isTrue);
   });
 }

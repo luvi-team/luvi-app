@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import '../../../core/design_tokens/colors.dart';
-import '../../../core/design_tokens/sizes.dart';
 import '../../../core/design_tokens/spacing.dart';
 import '../../../core/design_tokens/typography.dart';
+import 'welcome_button.dart';
 
 class WelcomeShell extends StatelessWidget {
   WelcomeShell({
@@ -145,20 +144,10 @@ class WelcomeShell extends StatelessWidget {
     }
     if (onNext != null) {
       children.add(SizedBox(height: subtitleToButtonGap)); // default 24px, W5: 40px
-      // ─── LOCAL Button Override (Figma Polish v2) ───
-      // Pill shape, #A8406F bg, white text
       children.add(
-        ElevatedButton(
+        WelcomeButton(
+          label: buttonLabel,
           onPressed: onNext!,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: DsColors.welcomeButtonBg,
-            foregroundColor: DsColors.welcomeButtonText,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
-            ),
-          ),
-          child: Text(buttonLabel),
         ),
       );
     }

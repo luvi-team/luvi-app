@@ -44,9 +44,9 @@ void main() {
         ),
       );
 
-      // Before video initializes, should show SizedBox.expand
+      // Before video initializes, should show SizedBox.expand with specific key
       // (video_player requires platform channels that aren't available in tests)
-      expect(find.byType(SizedBox), findsWidgets);
+      expect(find.byKey(const Key('welcome_video_loading')), findsOneWidget);
     });
 
     testWidgets('handles invalid asset gracefully with error fallback', (
