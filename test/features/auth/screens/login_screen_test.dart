@@ -51,7 +51,9 @@ void main() {
       ),
     );
 
-    expect(find.text(AuthStrings.loginHeadline), findsOneWidget);
+    // Per Auth v2 refactoring: LoginScreen shows title (not headline)
+    // Title uses l10n.authLoginTitle
+    expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
     expect(find.text(AuthStrings.loginCta), findsOneWidget);
   });
 

@@ -8,7 +8,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_services/supabase_service.dart';
@@ -85,12 +85,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       late final String target;
       if (hasSeenWelcomeMaybe == null) {
         // Unknown state: choose conservatively based on auth.
-        target = isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName;
+        target = isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName;
       } else if (isAuth && !hasSeenWelcomeMaybe) {
         // Consent/Welcome flow only for authenticated users.
         target = ConsentWelcome01Screen.routeName;
       } else {
-        target = isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName;
+        target = isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName;
       }
 
       if (!mounted || _hasNavigated) return;
@@ -100,7 +100,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       log.e('routing error', tag: 'splash', error: e, stack: st);
       if (!mounted || _hasNavigated) return;
       _hasNavigated = true;
-      context.go(isAuth ? HeuteScreen.routeName : AuthEntryScreen.routeName);
+      context.go(isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName);
     }
   }
 }

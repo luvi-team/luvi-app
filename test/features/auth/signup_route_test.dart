@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as features;
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
 void main() {
-
   TestConfig.ensureInitialized();
   test('featureRoutes contains signup route path', () {
     final route = features.featureRoutes.firstWhere(
@@ -31,6 +31,9 @@ void main() {
         child: MaterialApp.router(
           routerConfig: router,
           theme: AppTheme.buildAppTheme(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );

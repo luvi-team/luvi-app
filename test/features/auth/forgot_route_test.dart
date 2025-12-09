@@ -6,6 +6,6 @@ void main() {
     final route = features.featureRoutes.firstWhere(
       (route) => route.path == '/auth/forgot',
     );
-    expect(route.name, 'forgot');
+    expect(route.name, 'reset');
   });
 }

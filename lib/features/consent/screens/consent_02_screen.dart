@@ -8,7 +8,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
@@ -605,7 +605,7 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
 }
 
 void _navigateToAuthEntry(BuildContext context) {
-  context.go(AuthEntryScreen.routeName);
+  context.go(AuthSignInScreen.routeName);
 }
 
 void _reportUnexpectedConsentError(

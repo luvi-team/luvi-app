@@ -9,6 +9,7 @@ import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as features;
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -33,6 +34,9 @@ void main() {
         child: MaterialApp.router(
           theme: AppTheme.buildAppTheme(),
           routerConfig: router,
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );
@@ -57,7 +61,9 @@ void main() {
       router.dispose();
     });
 
-    testWidgets('successful signup navigates to verify screen', (tester) async {
+    testWidgets('successful signup navigates to login screen', (tester) async {
+      // Per Auth v2 refactoring: VerificationScreen was removed,
+      // signup now navigates to login screen with success snackbar
       final mockRepo = _MockAuthRepository();
       when(
         () => mockRepo.signUp(
@@ -89,7 +95,8 @@ void main() {
         ),
       ).called(1);
 
-      expect(find.byKey(const ValueKey('auth_verify_screen')), findsOneWidget);
+      // After successful signup, user is navigated to login screen
+      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
     });
 
     testWidgets('shows API error message and re-enables CTA after failure', (
@@ -121,7 +128,12 @@ void main() {
 
       expect(find.text('Email already registered'), findsOneWidget);
 
-      final button = tester.widget<ElevatedButton>(buttonFinder);
+      // WelcomeButton wraps ElevatedButton - find the inner ElevatedButton
+      final elevatedButtonFinder = find.descendant(
+        of: buttonFinder,
+        matching: find.byType(ElevatedButton),
+      );
+      final button = tester.widget<ElevatedButton>(elevatedButtonFinder);
       expect(button.onPressed, isNotNull);
     });
 
@@ -153,7 +165,12 @@ void main() {
 
       expect(find.byKey(const ValueKey('signup_cta_loading')), findsOneWidget);
 
-      final loadingButton = tester.widget<ElevatedButton>(buttonFinder);
+      // WelcomeButton wraps ElevatedButton - find the inner ElevatedButton
+      final elevatedButtonFinder = find.descendant(
+        of: buttonFinder,
+        matching: find.byType(ElevatedButton),
+      );
+      final loadingButton = tester.widget<ElevatedButton>(elevatedButtonFinder);
       expect(loadingButton.onPressed, isNull);
 
       completer.complete(AuthResponse(session: null, user: null));

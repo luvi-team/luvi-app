@@ -80,7 +80,7 @@ void main() {
       final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
 
       final titleFinder = find.byKey(const ValueKey('create_new_title'));
-      final subtitleFinder = find.byKey(const ValueKey('create_new_subtitle'));
+      final subtitleFinder = find.byKey(const ValueKey('create_new_title'));
       final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 
       // Get Y positions

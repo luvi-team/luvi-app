@@ -4,21 +4,31 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
-import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
-import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
+import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/features/auth/state/auth_controller.dart';
+import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
+import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
+import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/features/auth/state/auth_controller.dart';
-import 'package:luvi_app/core/navigation/route_names.dart';
+import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-const double _signupInputGap = Spacing.s + Spacing.xs; // 20
-const double _signupTopSpacer = Spacing.l + Spacing.xs;
-
+/// SignupScreen with Figma Auth UI v2 design.
+///
+/// Note: No Figma spec exists - design based on LoginScreen layout.
+/// Route: /auth/signup
+///
+/// Features:
+/// - Linear gradient background (same as Login)
+/// - Back button navigation
+/// - Email + Password form (simplified from 5 fields to 2)
+/// - Pink CTA button (56px height)
+/// - "Schon dabei? Anmelden" link
 class AuthSignupScreen extends ConsumerStatefulWidget {
   const AuthSignupScreen({super.key});
 
@@ -29,15 +39,19 @@ class AuthSignupScreen extends ConsumerStatefulWidget {
 }
 
 class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _isSubmitting = false;
   String? _errorMessage;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleSignup() async {
     if (_isSubmitting) return;
@@ -47,7 +61,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       setState(() {
-        _errorMessage = AuthStrings.signupMissingFields;
+        _errorMessage = AppLocalizations.of(context)!.authSignupMissingFields;
       });
       return;
     }
@@ -59,23 +73,23 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       _errorMessage = null;
     });
 
-    final metadata = <String, dynamic>{
-      'first_name': _firstNameController.text.trim(),
-      'last_name': _lastNameController.text.trim(),
-      'phone': _phoneController.text.trim(),
-    }..removeWhere((_, value) => (value as String).isEmpty);
-
     final authRepository = ref.read(authRepositoryProvider);
 
     try {
       await authRepository.signUp(
         email: email,
         password: password,
-        data: metadata.isEmpty ? null : metadata,
       );
 
       if (!mounted) return;
-      context.goNamed('verify', queryParameters: const {'variant': 'email'});
+      // Show success message and navigate to login
+      // Note: VerificationScreen was removed per Auth v2 refactoring plan
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.authSignupSuccess),
+        ),
+      );
+      context.go(LoginScreen.routeName);
     } on AuthException catch (error, stackTrace) {
       log.e(
         'signup_failed_auth',
@@ -87,7 +101,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       setState(() {
         _errorMessage = message.isNotEmpty
             ? message
-            : AuthStrings.signupGenericError;
+            : AppLocalizations.of(context)!.authSignupGenericError;
       });
     } catch (error, stackTrace) {
       log.e(
@@ -97,7 +111,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _errorMessage = AuthStrings.signupGenericError;
+        _errorMessage = AppLocalizations.of(context)!.authSignupGenericError;
       });
     } finally {
       if (mounted) {
@@ -109,347 +123,158 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   }
 
   @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final safeBottom = MediaQuery.of(context).padding.bottom;
-    final fieldScrollPadding = EdgeInsets.only(
-      bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final tokens = theme.extension<DsTokens>()!;
+
+    final hasError = _errorMessage != null;
+    final canSubmit = !_isSubmitting;
+
+    // Figma: Title style - Playfair Display Bold, 24px (same as Login)
+    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
+      fontSize: 24,
+      height: 32 / 24,
+      fontWeight: FontWeight.bold,
+      color: theme.colorScheme.onSurface,
+    );
+
+    // Link style for "Already have account?"
+    final linkStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontSize: 16,
+      height: 24 / 16,
+      color: theme.colorScheme.onSurface,
+    );
+
+    final linkActionStyle = linkStyle?.copyWith(
+      fontWeight: FontWeight.bold,
+      color: tokens.cardBorderSelected,
+      decoration: TextDecoration.underline,
     );
 
     return Scaffold(
       key: const ValueKey('auth_signup_screen'),
       resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      bottomNavigationBar: AuthBottomCta(
-        topPadding: AuthLayout.inputToCta,
-        child: _SignupCtaSection(
-          onLoginPressed: () => context.goNamed(RouteNames.login),
-          onSignupPressed: _handleSignup,
-          isLoading: _isSubmitting,
-        ),
-      ),
-      body: AuthScreenShell(
-        includeBottomReserve: false,
-        children: [
-          const _SignupHeader(),
-          _SignupFields(
-            firstNameController: _firstNameController,
-            lastNameController: _lastNameController,
-            phoneController: _phoneController,
-            emailController: _emailController,
-            passwordController: _passwordController,
-            obscurePassword: _obscurePassword,
-            scrollPadding: fieldScrollPadding,
-            onToggleObscure: () {
-              setState(() => _obscurePassword = !_obscurePassword);
-            },
-            onSubmit: _handleSignup,
-            isSubmitting: _isSubmitting,
-          ),
-          if (_errorMessage != null) ...[
-            const SizedBox(height: Spacing.s),
-            Semantics(
-              liveRegion: true,
-              label: _errorMessage,
-              child: Text(
-                _errorMessage!,
-                key: const ValueKey('signup_error_message'),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
+      body: AuthShell(
+        background: const AuthLinearGradientBackground(),
+        showBackButton: true,
+        onBackPressed: () {
+          final router = GoRouter.of(context);
+          if (router.canPop()) {
+            router.pop();
+          }
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Gap after back button
+            const SizedBox(height: AuthLayout.backButtonToTitle),
+
+            // Title: "Konto erstellen"
+            Text(
+              l10n.authSignupTitle,
+              style: titleStyle,
+            ),
+
+            // Gap between title and inputs
+            const SizedBox(height: Spacing.l + Spacing.xs), // 32px
+
+            // Email field
+            LoginEmailField(
+              key: const ValueKey('signup_email_field'),
+              controller: _emailController,
+              errorText: null,
+              autofocus: true,
+              onChanged: (_) {
+                if (_errorMessage != null) {
+                  setState(() => _errorMessage = null);
+                }
+              },
+            ),
+
+            // Gap between inputs = 20px
+            const SizedBox(height: Spacing.goalCardVertical),
+
+            // Password field
+            LoginPasswordField(
+              key: const ValueKey('signup_password_field'),
+              controller: _passwordController,
+              errorText: null,
+              obscure: _obscurePassword,
+              onToggleObscure: () {
+                setState(() => _obscurePassword = !_obscurePassword);
+              },
+              onChanged: (_) {
+                if (_errorMessage != null) {
+                  setState(() => _errorMessage = null);
+                }
+              },
+              onSubmitted: (_) {
+                if (canSubmit) _handleSignup();
+              },
+            ),
+
+            // Error message
+            if (hasError) ...[
+              const SizedBox(height: Spacing.xs),
+              FieldErrorText(_errorMessage!),
+            ],
+
+            // Gap before CTA
+            const SizedBox(height: Spacing.l + Spacing.m), // 40px
+
+            // CTA Button - Figma: h=56px
+            SizedBox(
+              width: double.infinity,
+              height: Sizes.buttonHeightL,
+              child: WelcomeButton(
+                key: const ValueKey('signup_cta_button'),
+                onPressed: canSubmit ? _handleSignup : null,
+                isLoading: _isSubmitting,
+                label: l10n.authSignupCta,
+                loadingKey: const ValueKey('signup_cta_loading'),
+                labelKey: const ValueKey('signup_cta_label'),
+              ),
+            ),
+
+            // Gap before login link
+            const SizedBox(height: Spacing.l),
+
+            // "Schon dabei? Anmelden" link - centered
+            Center(
+              child: TextButton(
+                key: const ValueKey('signup_login_link'),
+                onPressed: () => context.push(LoginScreen.routeName),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(
+                    Sizes.touchTargetMin,
+                    Sizes.touchTargetMin,
+                  ),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: l10n.authSignupAlreadyMember,
+                        style: linkStyle,
+                      ),
+                      TextSpan(
+                        text: l10n.authSignupLoginLink,
+                        style: linkActionStyle,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+
+            // Bottom padding
+            const SizedBox(height: Spacing.l),
           ],
-        ],
-      ),
-    );
-  }
-}
-
-class _SignupHeader extends StatelessWidget {
-  const _SignupHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final headlineStyle = theme.textTheme.headlineMedium?.copyWith(
-      color: theme.colorScheme.onSurface,
-    );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: _signupTopSpacer),
-        const SizedBox(height: Spacing.l),
-        Text(AuthStrings.signupTitle, style: headlineStyle),
-        const SizedBox(height: Spacing.xs),
-        Text(
-          AuthStrings.signupSubtitle,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: AuthLayout.gapTitleToInputs),
-      ],
-    );
-  }
-}
-
-class _SignupFields extends StatelessWidget {
-  const _SignupFields({
-    required this.firstNameController,
-    required this.lastNameController,
-    required this.phoneController,
-    required this.emailController,
-    required this.passwordController,
-    required this.obscurePassword,
-    required this.scrollPadding,
-    required this.onToggleObscure,
-    required this.onSubmit,
-    required this.isSubmitting,
-  });
-
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
-  final TextEditingController phoneController;
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final bool obscurePassword;
-  final EdgeInsets scrollPadding;
-  final VoidCallback onToggleObscure;
-  final VoidCallback onSubmit;
-  final bool isSubmitting;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _NameFieldsRow(
-          firstNameController: firstNameController,
-          lastNameController: lastNameController,
-          scrollPadding: scrollPadding,
-        ),
-        const SizedBox(height: _signupInputGap),
-        _PhoneField(controller: phoneController, scrollPadding: scrollPadding),
-        const SizedBox(height: _signupInputGap),
-        _EmailPasswordFields(
-          emailController: emailController,
-          passwordController: passwordController,
-          obscurePassword: obscurePassword,
-          scrollPadding: scrollPadding,
-          onToggleObscure: onToggleObscure,
-          onSubmit: onSubmit,
-          isSubmitting: isSubmitting,
-        ),
-        const SizedBox(height: AuthLayout.inputToCta),
-      ],
-    );
-  }
-}
-
-class _SignupCtaSection extends StatelessWidget {
-  const _SignupCtaSection({
-    required this.onLoginPressed,
-    required this.onSignupPressed,
-    required this.isLoading,
-  });
-
-  final VoidCallback onLoginPressed;
-  final VoidCallback onSignupPressed;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final linkBaseStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: 16,
-      height: 24 / 16,
-      fontWeight: FontWeight.w400,
-    );
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          height: Sizes.buttonHeight,
-          width: double.infinity,
-          child: ElevatedButton(
-            key: const ValueKey('signup_cta_button'),
-            onPressed: isLoading ? null : onSignupPressed,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 150),
-              child: _SignupButtonChild(isLoading: isLoading),
-            ),
-          ),
-        ),
-        const SizedBox(height: Spacing.s),
-        TextButton(
-          key: const ValueKey('signup_login_link'),
-          onPressed: onLoginPressed,
-          child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: AuthStrings.signupLinkPrefix,
-                  style: linkBaseStyle,
-                ),
-                TextSpan(
-                  text: AuthStrings.signupLinkAction,
-                  style: linkBaseStyle?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SignupButtonChild extends StatelessWidget {
-  const _SignupButtonChild({required this.isLoading});
-
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isLoading) {
-      return Text(
-        AuthStrings.signupCta,
-        key: const ValueKey('signup_cta_label'),
-      );
-    }
-
-    final theme = Theme.of(context);
-    return Semantics(
-      key: const ValueKey('signup_cta_loading_semantics'),
-      label: AuthStrings.signupCtaLoadingSemantic,
-      liveRegion: true,
-      child: SizedBox(
-        key: const ValueKey('signup_cta_loading'),
-        height: Sizes.buttonHeight / 2,
-        width: Sizes.buttonHeight / 2,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation(theme.colorScheme.onPrimary),
         ),
       ),
-    );
-  }
-}
-
-class _NameFieldsRow extends StatelessWidget {
-  const _NameFieldsRow({
-    required this.firstNameController,
-    required this.lastNameController,
-    required this.scrollPadding,
-  });
-
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
-  final EdgeInsets scrollPadding;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AuthTextField(
-          controller: firstNameController,
-          hintText: AuthStrings.signupHintFirstName,
-          autofillHints: const [AutofillHints.givenName],
-          textCapitalization: TextCapitalization.words,
-          scrollPadding: scrollPadding,
-        ),
-        const SizedBox(height: _signupInputGap),
-        AuthTextField(
-          controller: lastNameController,
-          hintText: AuthStrings.signupHintLastName,
-          autofillHints: const [AutofillHints.familyName],
-          textCapitalization: TextCapitalization.words,
-          scrollPadding: scrollPadding,
-        ),
-      ],
-    );
-  }
-}
-
-class _PhoneField extends StatelessWidget {
-  const _PhoneField({required this.controller, required this.scrollPadding});
-
-  final TextEditingController controller;
-  final EdgeInsets scrollPadding;
-
-  @override
-  Widget build(BuildContext context) {
-    return AuthTextField(
-      controller: controller,
-      hintText: AuthStrings.signupHintPhone,
-      keyboardType: TextInputType.phone,
-      autofillHints: const [AutofillHints.telephoneNumber],
-      scrollPadding: scrollPadding,
-    );
-  }
-}
-
-class _EmailPasswordFields extends StatelessWidget {
-  const _EmailPasswordFields({
-    required this.emailController,
-    required this.passwordController,
-    required this.obscurePassword,
-    required this.scrollPadding,
-    required this.onToggleObscure,
-    required this.onSubmit,
-    required this.isSubmitting,
-  });
-
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final bool obscurePassword;
-  final EdgeInsets scrollPadding;
-  final VoidCallback onToggleObscure;
-  final VoidCallback onSubmit;
-  final bool isSubmitting;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        LoginEmailField(
-          controller: emailController,
-          errorText: null,
-          autofocus: false,
-          onChanged: (_) {},
-          onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-          scrollPadding: scrollPadding,
-        ),
-        const SizedBox(height: _signupInputGap),
-        LoginPasswordField(
-          controller: passwordController,
-          errorText: null,
-          obscure: obscurePassword,
-          onToggleObscure: onToggleObscure,
-          onChanged: (_) {},
-          textInputAction: TextInputAction.done,
-          onSubmitted: (_) {
-            if (!isSubmitting) {
-              onSubmit();
-            }
-          },
-          scrollPadding: scrollPadding,
-          hintText: AuthStrings.passwordHint,
-        ),
-      ],
     );
   }
 }

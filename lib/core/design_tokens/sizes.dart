@@ -17,5 +17,14 @@ class Sizes {
   /// Welcome Button Vertical Padding (Figma: 12px)
   static const double welcomeButtonPaddingVertical = 12.0;
 
+  // ─── Auth Flow Specific (Figma Auth UI v2) ───
+
+  /// Auth CTA Button Height (Figma: 56px)
+  /// Note: Standard buttonHeight is 50px, Auth screens use 56px.
+  static const double buttonHeightL = 56.0;
+
+  /// Auth Glass Card Border Radius (Figma: 40px)
+  static const double glassCardRadius = 40.0;
+
   Sizes._();
 }

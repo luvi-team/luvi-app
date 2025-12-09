@@ -479,6 +479,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authLoginHeadline => 'Willkommen zurück 💜';
 
   @override
+  String get authLoginTitle => 'Anmelden mit E-Mail';
+
+  @override
+  String get authLoginForgotPassword => 'Passwort vergessen?';
+
+  @override
   String get authLoginSubhead => 'Schön, dass du da bist.';
 
   @override
@@ -556,10 +562,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authPasswordHint => 'Dein Passwort';
 
   @override
-  String get authSignupTitle => 'Deine Reise beginnt hier 💜';
+  String get authSignupTitle => 'Konto erstellen';
 
   @override
   String get authSignupSubtitle => 'Schnell registrieren und loslegen.';
+
+  @override
+  String get authSignupAlreadyMember => 'Schon dabei? ';
+
+  @override
+  String get authSignupLoginLink => 'Anmelden';
 
   @override
   String get authSignupCta => 'Registrieren';
@@ -662,4 +674,49 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
+
+  @override
+  String get authSignInHeadline => 'Verpasse nicht, das Beste aus Dir zu machen!';
+
+  @override
+  String get authSignInEmail => 'Anmelden mit E-Mail';
+
+  @override
+  String get authSignInGoogle => 'Anmelden mit Google';
+
+  @override
+  String get authResetTitle => 'Passwort vergessen?';
+
+  @override
+  String get authResetSubtitle => 'Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu.';
+
+  @override
+  String get authResetCta => 'Passwort zurücksetzen';
+
+  @override
+  String get authResetEmailSent => 'E-Mail zum Zurücksetzen wurde gesendet.';
+
+  @override
+  String get authNewPasswordTitle => 'Neues Passwort erstellen';
+
+  @override
+  String get authNewPasswordHint => 'Neues Passwort';
+
+  @override
+  String get authConfirmPasswordHint => 'Neues Passwort bestätigen';
+
+  @override
+  String get authCreatePasswordCta => 'Passwort zurücksetzen';
+
+  @override
+  String get authSuccessTitle => 'Geschafft!';
+
+  @override
+  String get authSuccessSubtitle => 'Neues Passwort gespeichert.';
+
+  @override
+  String get authSuccessBackToLogin => 'Zurück zur Anmeldung';
+
+  @override
+  String get authSignupSuccess => 'Registrierung erfolgreich! Du kannst dich jetzt anmelden.';
 }

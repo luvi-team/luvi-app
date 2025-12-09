@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
 void main() {
@@ -22,6 +23,9 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.buildAppTheme(),
+        locale: const Locale('de'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: MediaQuery(
           data: const MediaQueryData(
             viewInsets: EdgeInsets.only(bottom: keyboardInset),
@@ -37,8 +41,9 @@ void main() {
     await tester.pumpAndSettle();
 
     final fieldRect = tester.getRect(confirmField);
+    // Find the CTA button by key instead of hardcoded text
     final buttonRect = tester.getRect(
-      find.widgetWithText(ElevatedButton, 'Speichern'),
+      find.byKey(const ValueKey('create_new_cta_button')),
     );
 
     final visibleBottom =

@@ -670,6 +670,14 @@
   "@authLoginHeadline": {
     "description": "Überschrift auf dem Login-Screen."
   },
+  "authLoginTitle": "Anmelden mit E-Mail",
+  "@authLoginTitle": {
+    "description": "Titel auf dem Login-Screen (Figma Auth UI v2)."
+  },
+  "authLoginForgotPassword": "Passwort vergessen?",
+  "@authLoginForgotPassword": {
+    "description": "Link zum Passwort-vergessen-Flow (Figma Auth UI v2)."
+  },
   "authLoginSubhead": "Schön, dass du da bist.",
   "@authLoginSubhead": {
     "description": "Unterzeile auf dem Login-Screen."
@@ -738,13 +746,21 @@
   "@authPasswordHint": {
     "description": "Platzhalter/Hinweistext für das Passwort-Feld."
   },
-  "authSignupTitle": "Deine Reise beginnt hier 💜",
+  "authSignupTitle": "Konto erstellen",
   "@authSignupTitle": {
-    "description": "Titel für den Registrierungsbildschirm."
+    "description": "Titel für den Registrierungsbildschirm (Figma Auth UI v2)."
   },
   "authSignupSubtitle": "Schnell registrieren und loslegen.",
   "@authSignupSubtitle": {
     "description": "Unterzeile für den Registrierungsbildschirm."
+  },
+  "authSignupAlreadyMember": "Schon dabei? ",
+  "@authSignupAlreadyMember": {
+    "description": "Prefix für den Login-Link auf dem Registrierungsbildschirm."
+  },
+  "authSignupLoginLink": "Anmelden",
+  "@authSignupLoginLink": {
+    "description": "Link-Text zum Login vom Registrierungsbildschirm."
   },
   "authSignupCta": "Registrieren",
   "@authSignupCta": {
@@ -878,5 +894,65 @@
   "consentSnackbarRateLimited": "Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.",
   "@consentSnackbarRateLimited": {
     "description": "Snackbar-Hinweis bei Rate-Limit-Blockierungen während des Consent-Loggings."
+  },
+  "authSignInHeadline": "Verpasse nicht, das Beste aus Dir zu machen!",
+  "@authSignInHeadline": {
+    "description": "Headline auf dem SignIn-Entry-Screen (Glassmorphism Card)."
+  },
+  "authSignInEmail": "Anmelden mit E-Mail",
+  "@authSignInEmail": {
+    "description": "Text für den E-Mail-Login-Button auf dem SignIn-Screen."
+  },
+  "authSignInGoogle": "Anmelden mit Google",
+  "@authSignInGoogle": {
+    "description": "Text für den Google-Login-Button auf dem SignIn-Screen."
+  },
+  "authResetTitle": "Passwort vergessen?",
+  "@authResetTitle": {
+    "description": "Titel auf dem Reset-Password-Screen (ohne Emoji)."
+  },
+  "authResetSubtitle": "Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu.",
+  "@authResetSubtitle": {
+    "description": "Untertitel auf dem Reset-Password-Screen."
+  },
+  "authResetCta": "Passwort zurücksetzen",
+  "@authResetCta": {
+    "description": "CTA-Button-Text auf dem Reset-Password-Screen."
+  },
+  "authResetEmailSent": "E-Mail zum Zurücksetzen wurde gesendet.",
+  "@authResetEmailSent": {
+    "description": "Snackbar-Bestätigung nach erfolgreichem Passwort-Reset-Request."
+  },
+  "authNewPasswordTitle": "Neues Passwort erstellen",
+  "@authNewPasswordTitle": {
+    "description": "Titel auf dem Create-New-Password-Screen (ohne Emoji)."
+  },
+  "authNewPasswordHint": "Neues Passwort",
+  "@authNewPasswordHint": {
+    "description": "Hint-Text für das neue Passwort-Feld."
+  },
+  "authConfirmPasswordHint": "Neues Passwort bestätigen",
+  "@authConfirmPasswordHint": {
+    "description": "Hint-Text für das Passwort-Bestätigung-Feld."
+  },
+  "authCreatePasswordCta": "Passwort zurücksetzen",
+  "@authCreatePasswordCta": {
+    "description": "CTA-Button-Text auf dem Create-New-Password-Screen."
+  },
+  "authSuccessTitle": "Geschafft!",
+  "@authSuccessTitle": {
+    "description": "Titel auf dem Success-Screen."
+  },
+  "authSuccessSubtitle": "Neues Passwort gespeichert.",
+  "@authSuccessSubtitle": {
+    "description": "Untertitel auf dem Success-Screen."
+  },
+  "authSuccessBackToLogin": "Zurück zur Anmeldung",
+  "@authSuccessBackToLogin": {
+    "description": "CTA-Button-Text auf dem Success-Screen."
+  },
+  "authSignupSuccess": "Registrierung erfolgreich! Du kannst dich jetzt anmelden.",
+  "@authSignupSuccess": {
+    "description": "Snackbar-Nachricht nach erfolgreicher Registrierung."
   }
 }

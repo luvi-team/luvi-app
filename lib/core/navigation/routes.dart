@@ -1,11 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
-import 'package:luvi_app/features/auth/screens/verification_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
@@ -175,9 +174,9 @@ final List<GoRoute> featureRoutes = [
         Center(child: Text(AppLocalizations.of(ctx)!.onboardingComplete)),
   ),
   GoRoute(
-    path: AuthEntryScreen.routeName,
-    name: 'auth_entry',
-    builder: (context, state) => const AuthEntryScreen(),
+    path: AuthSignInScreen.routeName,
+    name: 'auth_signin',
+    builder: (context, state) => const AuthSignInScreen(),
   ),
   GoRoute(
     path: LoginScreen.routeName,
@@ -186,14 +185,8 @@ final List<GoRoute> featureRoutes = [
   ),
   GoRoute(
     path: ResetPasswordScreen.routeName,
-    name: 'forgot',
+    name: 'reset',
     builder: (context, state) => const ResetPasswordScreen(),
-  ),
-  GoRoute(
-    path: SuccessScreen.forgotEmailSentRoutePath,
-    name: SuccessScreen.forgotEmailSentRouteName,
-    builder: (context, state) =>
-        const SuccessScreen(variant: SuccessVariant.forgotEmailSent),
   ),
   GoRoute(
     path: CreateNewPasswordScreen.routeName,
@@ -206,17 +199,6 @@ final List<GoRoute> featureRoutes = [
     path: SuccessScreen.passwordSavedRoutePath,
     name: SuccessScreen.passwordSavedRouteName,
     builder: (context, state) => const SuccessScreen(),
-  ),
-  GoRoute(
-    path: VerificationScreen.routeName,
-    name: 'verify',
-    builder: (context, state) {
-      final variantParam = state.uri.queryParameters['variant'];
-      final variant = variantParam == 'email'
-          ? VerificationScreenVariant.emailConfirmation
-          : VerificationScreenVariant.resetPassword;
-      return VerificationScreen(variant: variant);
-    },
   ),
   GoRoute(
     path: AuthSignupScreen.routeName,
@@ -270,8 +252,8 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
 
   final isInitialized = SupabaseService.isInitialized;
   final isLoggingIn = state.matchedLocation.startsWith(LoginScreen.routeName);
-  final isAuthEntry = state.matchedLocation.startsWith(
-    AuthEntryScreen.routeName,
+  final isAuthSignIn = state.matchedLocation.startsWith(
+    AuthSignInScreen.routeName,
   );
   final isOnboarding = isOnboardingRoute(state.matchedLocation);
   final isWelcome = isWelcomeRoute(state.matchedLocation);
@@ -300,10 +282,10 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   }
 
   if (session == null) {
-    if (isLoggingIn || isAuthEntry) {
+    if (isLoggingIn || isAuthSignIn) {
       return null;
     }
-    return AuthEntryScreen.routeName;
+    return AuthSignInScreen.routeName;
   }
   if (isLoggingIn) {
     return Onboarding01Screen.routeName;

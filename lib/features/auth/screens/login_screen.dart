@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
-import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
-import 'package:luvi_app/features/auth/widgets/login_cta_section.dart';
-import 'package:luvi_app/features/auth/widgets/login_form_section.dart';
-import 'package:luvi_app/features/auth/widgets/login_header_section.dart';
-import 'package:luvi_app/core/config/app_links.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
-// LaunchMode comes from supabase_flutter (no url_launcher needed)
+import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
+import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
+import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
+import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
+import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// LoginScreen with pixel-perfect Figma implementation.
+/// LoginScreen with Figma Auth UI v2 design.
+///
+/// Figma Node: 68919:8853
+/// Route: /auth/login
+///
+/// Features:
+/// - Linear gradient background
+/// - Back button navigation
+/// - Email + Password form
+/// - Pink CTA button (56px height)
+/// - "Passwort vergessen?" link
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -29,12 +39,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final GlobalKey _socialAuthKey = GlobalKey(debugLabel: 'login_social_auth');
-  double _socialBlockHeight = AuthLayout.socialBlockReserveFallback;
-  MediaQueryData? _lastMediaQuery;
-  Locale? _lastLocale;
-  bool _pendingSocialMeasurement = false;
-  bool _oauthLoading = false;
 
   @override
   void initState() {
@@ -55,8 +59,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       );
     }
-    // Schedule initial measurement once after first layout.
-    _scheduleSocialBlockMeasurement();
   }
 
   @override
@@ -67,151 +69,128 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final mediaQuery = MediaQuery.of(context);
-    final locale = Localizations.maybeLocaleOf(context);
-    if (_shouldReMeasure(mediaQuery, locale)) {
-      _lastMediaQuery = mediaQuery;
-      _lastLocale = locale;
-      _scheduleSocialBlockMeasurement();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final tokens = theme.extension<DsTokens>()!;
+
     final loginAsync = ref.watch(loginProvider);
     final loginState = loginAsync.value ?? LoginState.initial();
     final emailError = loginState.emailError;
     final passwordError = loginState.passwordError;
-    final globalError = loginState.globalError;
     final submitState = ref.watch(loginSubmitProvider);
     final isLoading = submitState.isLoading;
     final hasValidationError = emailError != null || passwordError != null;
 
-    // Measurement scheduled in initState and when dependencies change.
-
-    void submit() => ref
-        .read(loginSubmitProvider.notifier)
-        .submit(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
-
-    final mediaQuery = MediaQuery.of(context);
-    final safeBottom = mediaQuery.padding.bottom;
-    final inlineReserve = AuthLayout.inlineCtaReserveLogin(_socialBlockHeight);
-    final fieldScrollPadding = EdgeInsets.only(
-      // Reserve unterhalb der Felder: CTA + Social-Block + Footer + safeBottom
-      bottom: inlineReserve + safeBottom,
+    // Figma: Title style - Playfair Display Bold, 24px
+    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
+      fontSize: 24,
+      height: 32 / 24,
+      fontWeight: FontWeight.bold,
+      color: theme.colorScheme.onSurface,
     );
-    const gapBelowForgot = Spacing.m;
-    const socialGap = Spacing.m;
+
+    // Figma: Forgot link style - Figtree Bold, 20px, #696969
+    final forgotLinkStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontSize: 20,
+      height: 24 / 20,
+      fontWeight: FontWeight.bold,
+      color: tokens.grayscale500,
+    );
 
     return Scaffold(
       key: const ValueKey('auth_login_screen'),
       resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: SafeArea(
-        bottom: false,
+      body: AuthShell(
+        background: const AuthLinearGradientBackground(),
+        showBackButton: true,
+        onBackPressed: () {
+          final router = GoRouter.of(context);
+          if (router.canPop()) {
+            router.pop();
+          }
+        },
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final config = _LoginScrollConfig(
-                    constraints: constraints,
-                    fieldScrollPadding: fieldScrollPadding,
-                    safeBottom: safeBottom,
-                    gapBelowForgot: gapBelowForgot,
-                    socialGap: socialGap,
-                    globalError: globalError,
-                    emailError: emailError,
-                    passwordError: passwordError,
-                  );
-                  return _LoginScrollableBody(
-                    config: config,
-                    emailController: _emailController,
-                    passwordController: _passwordController,
-                    obscurePassword: _obscurePassword,
-                    socialAuthKey: _socialAuthKey,
-                    onEmailChanged: _onEmailChanged,
-                    onPasswordChanged: _onPasswordChanged,
-                    onToggleObscure: _toggleObscurePassword,
-                    onForgotPassword: () => context.goNamed('forgot'),
-                    onSubmit: submit,
-                    onGoogle: () =>
-                        _handleOAuthSignIn(supa.OAuthProvider.google),
-                    onApple: () =>
-                        _handleOAuthSignIn(supa.OAuthProvider.apple),
-                    onClearGlobalError: () =>
-                        ref.read(loginProvider.notifier).clearGlobalError(),
-                  );
-                },
-              ),
+            // Figma: Gap after back button
+            const SizedBox(height: AuthLayout.backButtonToTitle),
+
+            // Title: "Anmelden mit E-Mail"
+            Text(
+              l10n.authLoginTitle,
+              style: titleStyle,
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, safeBottom),
-              child: LoginCtaSection(
-                onSubmit: submit,
-                onSignup: () => context.goNamed('signup'),
-                hasValidationError: hasValidationError,
+
+            // Figma: Gap between title and inputs
+            const SizedBox(height: Spacing.l + Spacing.xs), // 32px
+
+            // Email field
+            LoginEmailField(
+              key: const ValueKey('login_email_field'),
+              controller: _emailController,
+              errorText: emailError,
+              autofocus: true,
+              onChanged: _onEmailChanged,
+            ),
+
+            // Figma: Gap between inputs = 20px
+            const SizedBox(height: Spacing.goalCardVertical), // 20px
+
+            // Password field
+            LoginPasswordField(
+              key: const ValueKey('login_password_field'),
+              controller: _passwordController,
+              errorText: passwordError,
+              obscure: _obscurePassword,
+              onToggleObscure: _toggleObscurePassword,
+              onChanged: _onPasswordChanged,
+              onSubmitted: (_) => _submit(),
+            ),
+
+            // Figma: Gap before CTA
+            const SizedBox(height: Spacing.l + Spacing.m), // 40px
+
+            // CTA Button - Figma: h=56px
+            SizedBox(
+              width: double.infinity,
+              height: Sizes.buttonHeightL, // 56px
+              child: WelcomeButton(
+                key: const ValueKey('login_cta_button'),
+                onPressed: (isLoading || hasValidationError) ? null : _submit,
                 isLoading: isLoading,
+                label: l10n.authLoginCta,
+                loadingKey: const ValueKey('login_cta_loading'),
+                labelKey: const ValueKey('login_cta_label'),
               ),
             ),
+
+            // Figma: Gap before forgot link
+            const SizedBox(height: Spacing.l), // 24px
+
+            // "Passwort vergessen?" link - centered
+            Center(
+              child: TextButton(
+                key: const ValueKey('login_forgot_link'),
+                onPressed: () => context.push(ResetPasswordScreen.routeName),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(Sizes.touchTargetMin, Sizes.touchTargetMin),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  l10n.authLoginForgotPassword,
+                  style: forgotLinkStyle,
+                ),
+              ),
+            ),
+
+            // Bottom padding for keyboard
+            const SizedBox(height: Spacing.l),
           ],
         ),
       ),
     );
-  }
-
-  bool _shouldReMeasure(MediaQueryData mediaQuery, Locale? locale) {
-    final mediaChanged =
-        _lastMediaQuery == null ||
-        _mediaQueryChanged(_lastMediaQuery!, mediaQuery);
-    final localeChanged = locale != _lastLocale;
-    return mediaChanged || localeChanged;
-  }
-
-  bool _mediaQueryChanged(MediaQueryData previous, MediaQueryData next) {
-    final previousScale = previous.textScaler.scale(1.0);
-    final nextScale = next.textScaler.scale(1.0);
-    return previous.size != next.size ||
-        previous.padding != next.padding ||
-        previous.viewInsets != next.viewInsets ||
-        previous.devicePixelRatio != next.devicePixelRatio ||
-        previousScale != nextScale;
-  }
-
-  void _scheduleSocialBlockMeasurement() {
-    if (_pendingSocialMeasurement) {
-      return;
-    }
-    _pendingSocialMeasurement = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _pendingSocialMeasurement = false;
-      if (!mounted) {
-        return;
-      }
-      _measureSocialBlock();
-    });
-  }
-
-  void _measureSocialBlock() {
-    final element = _socialAuthKey.currentContext;
-    if (element == null) {
-      return;
-    }
-    final size = element.size;
-    if (size == null) {
-      return;
-    }
-    final measuredHeight = size.height;
-    if ((measuredHeight - _socialBlockHeight).abs() > 0.5) {
-      setState(() {
-        _socialBlockHeight = measuredHeight;
-      });
-    }
   }
 
   void _onEmailChanged(String value) {
@@ -236,131 +215,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _obscurePassword = !_obscurePassword);
   }
 
-  Future<void> _handleOAuthSignIn(supa.OAuthProvider provider) async {
-    if (_oauthLoading) return;
-    setState(() => _oauthLoading = true);
-    try {
-      final redirect = AppLinks.oauthRedirectUri;
-      await supa.Supabase.instance.client.auth.signInWithOAuth(
-        provider,
-        redirectTo: kIsWeb ? null : redirect,
-        authScreenLaunchMode: kIsWeb
-            ? supa.LaunchMode.platformDefault
-            : supa.LaunchMode.externalApplication,
-      );
-    } catch (error, stackTrace) {
-      FlutterError.reportError(FlutterErrorDetails(
-        exception: error,
-        stack: stackTrace,
-        library: 'login_screen',
-        context: ErrorDescription('OAuth sign-in failed: ${provider.name}'),
-      ));
-      if (!mounted) return;
-      ref.read(loginProvider.notifier).setGlobalError(
-            AuthStrings.errLoginUnavailable,
-          );
-    } finally {
-      if (mounted) {
-        setState(() => _oauthLoading = false);
-      }
-    }
+  void _submit() {
+    ref.read(loginSubmitProvider.notifier).submit(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
   }
-}
-
-class _LoginScrollableBody extends StatelessWidget {
-  final _LoginScrollConfig config;
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final bool obscurePassword;
-  final GlobalKey socialAuthKey;
-  final ValueChanged<String> onEmailChanged;
-  final ValueChanged<String> onPasswordChanged;
-  final VoidCallback onToggleObscure;
-  final VoidCallback onForgotPassword;
-  final VoidCallback onSubmit;
-  final VoidCallback onGoogle;
-  final VoidCallback onApple;
-  final VoidCallback onClearGlobalError;
-
-  const _LoginScrollableBody({
-    required this.config,
-    required this.emailController,
-    required this.passwordController,
-    required this.obscurePassword,
-    required this.socialAuthKey,
-    required this.onEmailChanged,
-    required this.onPasswordChanged,
-    required this.onToggleObscure,
-    required this.onForgotPassword,
-    required this.onSubmit,
-    required this.onGoogle,
-    required this.onApple,
-    required this.onClearGlobalError,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      padding: EdgeInsets.fromLTRB(Spacing.l, 0, Spacing.l, config.safeBottom),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: config.constraints.maxHeight),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            LoginHeaderSection(
-              emailController: emailController,
-              passwordController: passwordController,
-              emailError: config.emailError,
-              passwordError: config.passwordError,
-              obscurePassword: obscurePassword,
-              fieldScrollPadding: config.fieldScrollPadding,
-              onEmailChanged: onEmailChanged,
-              onPasswordChanged: onPasswordChanged,
-              onToggleObscure: onToggleObscure,
-              onForgotPassword: onForgotPassword,
-              onSubmit: onSubmit,
-            ),
-            LoginFormSection(
-              gapBelowForgot: config.gapBelowForgot,
-              socialGap: config.socialGap,
-              socialBlockKey: socialAuthKey,
-              onGoogle: onGoogle,
-              onApple: onApple,
-            ),
-            if (config.globalError != null) ...[
-              const SizedBox(height: Spacing.m),
-              GlobalErrorBanner(
-                message: config.globalError!,
-                onTap: onClearGlobalError,
-              ),
-            ],
-            const SizedBox(height: AuthLayout.ctaTopAfterCopy),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LoginScrollConfig {
-  final BoxConstraints constraints;
-  final EdgeInsets fieldScrollPadding;
-  final double safeBottom;
-  final double gapBelowForgot;
-  final double socialGap;
-  final String? globalError;
-  final String? emailError;
-  final String? passwordError;
-
-  const _LoginScrollConfig({
-    required this.constraints,
-    required this.fieldScrollPadding,
-    required this.safeBottom,
-    required this.gapBelowForgot,
-    required this.socialGap,
-    required this.globalError,
-    required this.emailError,
-    required this.passwordError,
-  });
 }

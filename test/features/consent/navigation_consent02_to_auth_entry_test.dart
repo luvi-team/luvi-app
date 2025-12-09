@@ -85,21 +85,22 @@ void main() {
 
     verify(() => userState.markWelcomeSeen()).called(1);
 
+    // Per Auth v2: navigation goes to AuthSignInScreen instead of old AuthEntryScreen
     expect(
-      find.byKey(const ValueKey('auth_entry_register_cta')),
+      find.byKey(const ValueKey('auth_signin_screen')),
       findsOneWidget,
     );
-    expect(find.byKey(const ValueKey('auth_entry_login_cta')), findsOneWidget);
 
-    final registerButton = tester.widget<ElevatedButton>(
-      find.byKey(const ValueKey('auth_entry_register_cta')),
+    // Verify email sign-in button is present and enabled
+    // AuthOutlineButton wraps an OutlinedButton internally
+    final emailButtonFinder = find.byKey(const ValueKey('signin_email_button'));
+    expect(emailButtonFinder, findsOneWidget);
+    final outlinedButton = find.descendant(
+      of: emailButtonFinder,
+      matching: find.byType(OutlinedButton),
     );
-    final loginButton = tester.widget<TextButton>(
-      find.byKey(const ValueKey('auth_entry_login_cta')),
-    );
-
-    expect(registerButton.onPressed, isNotNull);
-    expect(loginButton.onPressed, isNotNull);
+    final button = tester.widget<OutlinedButton>(outlinedButton);
+    expect(button.onPressed, isNotNull);
   });
 
   testWidgets(
@@ -141,8 +142,8 @@ void main() {
       verify(() => userState.markWelcomeSeen()).called(1);
 
       expect(find.text(l10n.consentErrorSavingConsent), findsOneWidget);
-      expect(find.byKey(const ValueKey('auth_entry_register_cta')), findsOneWidget);
-      expect(find.byKey(const ValueKey('auth_entry_login_cta')), findsOneWidget);
+      // Per Auth v2: navigation goes to AuthSignInScreen
+      expect(find.byKey(const ValueKey('auth_signin_screen')), findsOneWidget);
     },
   );
 
@@ -187,8 +188,8 @@ void main() {
     verifyNever(() => userState.markWelcomeSeen());
 
     expect(find.text(l10n.consentSnackbarRateLimited), findsOneWidget);
-    expect(find.byKey(const ValueKey('auth_entry_register_cta')), findsNothing);
-    expect(find.byKey(const ValueKey('auth_entry_login_cta')), findsNothing);
+    // Per Auth v2: check that navigation to auth did NOT happen
+    expect(find.byKey(const ValueKey('auth_signin_screen')), findsNothing);
   });
 }
 

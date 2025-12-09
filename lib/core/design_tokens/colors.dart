@@ -94,6 +94,67 @@ class DsColors {
 
   /// Welcome Button Text (white)
   static const Color welcomeButtonText = Color(0xFFFFFFFF);
+
+  // ─── Auth Flow Specific (Figma Auth UI v2) ───
+
+  /// Auth SignIn Headline Magenta (Figma: #9F2B68)
+  static const Color headlineMagenta = Color(0xFF9F2B68);
+
+  /// Auth Gradient Base Color (Figma: #D4B896)
+  static const Color authGradientBase = Color(0xFFD4B896);
+
+  /// Auth Gradient Light Color (Figma: #EDE1D3)
+  static const Color authGradientLight = Color(0xFFEDE1D3);
+
+  // ─── Auth Conic Gradient Stops (Figma SignIn Screen) ───
+
+  /// Auth Gradient Stop: #E5D3BF (19.79%)
+  static const Color authGradientStop1 = Color(0xFFE5D3BF);
+
+  /// Auth Gradient Stop: #EADDCD (29.13%)
+  static const Color authGradientStop2 = Color(0xFFEADDCD);
+
+  /// Auth Gradient Stop: #D6BC9C (60.93%)
+  static const Color authGradientStop3 = Color(0xFFD6BC9C);
+
+  /// Auth Gradient Stop: #E2CFB8 (78.65%)
+  static const Color authGradientStop4 = Color(0xFFE2CFB8);
+
+  // ─── Auth Radial Gradient Stops (Figma Success Screen) ───
+
+  /// Auth Radial Stop: #DBC4A7 (14.17%)
+  static const Color authRadialStop1 = Color(0xFFDBC4A7);
+
+  /// Auth Radial Stop: #E4D3BE (32.86%)
+  static const Color authRadialStop2 = Color(0xFFE4D3BE);
+
+  /// Auth Radial Stop: #E9DBCA (42.51%)
+  static const Color authRadialStop3 = Color(0xFFE9DBCA);
+
+  /// Auth Radial Stop: #E8D9C7 (60.22%)
+  static const Color authRadialStop4 = Color(0xFFE8D9C7);
+
+  /// Auth Radial Stop: #E1CDB5 (74.22%)
+  static const Color authRadialStop5 = Color(0xFFE1CDB5);
+
+  /// Auth Radial Stop: #DBC4A8 (85.34%)
+  static const Color authRadialStop6 = Color(0xFFDBC4A8);
+
+  // ─── Auth Glass Card (Figma SignIn Screen) ───
+
+  /// Glass Background: 10% white opacity (rgba 255,255,255,0.1)
+  static const Color authGlassBackground = Color(0x1AFFFFFF);
+
+  /// Glass Border: 20% white opacity (rgba 255,255,255,0.2)
+  static const Color authGlassBorder = Color(0x33FFFFFF);
+
+  // ─── Auth Outline Button (Figma SignIn Screen) ───
+
+  /// Outline Button Border Color (Figma: #E5E7EB)
+  static const Color authOutlineBorder = Color(0xFFE5E7EB);
+
+  /// Outline Button Text/Icon Color (Figma: #1F2937)
+  static const Color authOutlineText = Color(0xFF1F2937);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.

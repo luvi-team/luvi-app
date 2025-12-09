@@ -638,6 +638,14 @@
   "@authLoginHeadline": {
     "description": "Headline shown on the login screen."
   },
+  "authLoginTitle": "Sign in with Email",
+  "@authLoginTitle": {
+    "description": "Title on login screen (Figma Auth UI v2)."
+  },
+  "authLoginForgotPassword": "Forgot password?",
+  "@authLoginForgotPassword": {
+    "description": "Link to forgot password flow (Figma Auth UI v2)."
+  },
   "authLoginSubhead": "We're glad you're here.",
   "@authLoginSubhead": {
     "description": "Subheadline displayed under the login headline."
@@ -735,13 +743,21 @@
   "@authPasswordHint": {
     "description": "Hint text for the password input field."
   },
-  "authSignupTitle": "Your journey starts here 💜",
+  "authSignupTitle": "Create account",
   "@authSignupTitle": {
-    "description": "Headline shown on the sign-up screen."
+    "description": "Headline shown on the sign-up screen (Figma Auth UI v2)."
   },
   "authSignupSubtitle": "Quick signup and you're ready to go.",
   "@authSignupSubtitle": {
     "description": "Subtitle encouraging users to complete sign-up."
+  },
+  "authSignupAlreadyMember": "Already a member? ",
+  "@authSignupAlreadyMember": {
+    "description": "Prefix for login link on sign-up screen."
+  },
+  "authSignupLoginLink": "Sign in",
+  "@authSignupLoginLink": {
+    "description": "Link text to login from sign-up screen."
   },
   "authSignupCta": "Sign up",
   "@authSignupCta": {
@@ -878,5 +894,65 @@
   "consentSnackbarRateLimited": "Too many requests right now. Please wait a moment and try again.",
   "@consentSnackbarRateLimited": {
     "description": "Snackbar text shown when consent logging is rate limited."
+  },
+  "authSignInHeadline": "Don't miss out on being your best self!",
+  "@authSignInHeadline": {
+    "description": "Headline on the SignIn entry screen (glassmorphism card)."
+  },
+  "authSignInEmail": "Sign in with Email",
+  "@authSignInEmail": {
+    "description": "Text for the Email login button on the SignIn screen."
+  },
+  "authSignInGoogle": "Sign in with Google",
+  "@authSignInGoogle": {
+    "description": "Text for the Google login button on the SignIn screen."
+  },
+  "authResetTitle": "Forgot password?",
+  "@authResetTitle": {
+    "description": "Title on the Reset Password screen (no emoji)."
+  },
+  "authResetSubtitle": "Enter your email and we'll send you a link to reset it.",
+  "@authResetSubtitle": {
+    "description": "Subtitle on the Reset Password screen."
+  },
+  "authResetCta": "Reset password",
+  "@authResetCta": {
+    "description": "CTA button text on the Reset Password screen."
+  },
+  "authResetEmailSent": "Password reset email sent.",
+  "@authResetEmailSent": {
+    "description": "Snackbar confirmation after successful password reset request."
+  },
+  "authNewPasswordTitle": "Create new password",
+  "@authNewPasswordTitle": {
+    "description": "Title on the Create New Password screen (no emoji)."
+  },
+  "authNewPasswordHint": "New password",
+  "@authNewPasswordHint": {
+    "description": "Hint text for the new password field."
+  },
+  "authConfirmPasswordHint": "Confirm new password",
+  "@authConfirmPasswordHint": {
+    "description": "Hint text for the password confirmation field."
+  },
+  "authCreatePasswordCta": "Reset password",
+  "@authCreatePasswordCta": {
+    "description": "CTA button text on the Create New Password screen."
+  },
+  "authSuccessTitle": "Done!",
+  "@authSuccessTitle": {
+    "description": "Title on the Success screen."
+  },
+  "authSuccessSubtitle": "Your new password has been saved.",
+  "@authSuccessSubtitle": {
+    "description": "Subtitle on the Success screen."
+  },
+  "authSuccessBackToLogin": "Back to sign in",
+  "@authSuccessBackToLogin": {
+    "description": "CTA button text on the Success screen."
+  },
+  "authSignupSuccess": "Registration successful! You can now sign in.",
+  "@authSignupSuccess": {
+    "description": "Snackbar message after successful registration."
   }
 }
