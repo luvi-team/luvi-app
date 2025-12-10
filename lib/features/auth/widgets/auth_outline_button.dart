@@ -103,6 +103,10 @@ class AuthOutlineButton extends StatelessWidget {
                 svgAsset!,
                 width: Sizes.iconM,
                 height: Sizes.iconM,
+                placeholderBuilder: (_) => SizedBox(
+                  width: Sizes.iconM,
+                  height: Sizes.iconM,
+                ),
               ),
               const SizedBox(width: Spacing.s),
             ] else if (icon != null) ...[

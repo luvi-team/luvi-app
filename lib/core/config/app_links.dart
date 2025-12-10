@@ -43,17 +43,10 @@ class AppLinks {
       if (parsed != null && parsed.scheme.isNotEmpty && parsed.host.isNotEmpty) {
         return parsed;
       }
-      assert(() {
-        log.w(
-          'app_links_invalid_auth_callback',
-          error: 'Invalid OAUTH_REDIRECT_URI="$override"',
-        );
-        return true;
-      }());
-      // Also log in release for visibility into config issues
+      // Single consolidated warning for invalid override (visible in all builds)
       log.w(
         'app_links_invalid_auth_callback',
-        error: 'Invalid OAUTH_REDIRECT_URI, using fallback',
+        error: 'Invalid OAUTH_REDIRECT_URI="$override", using fallback',
       );
     }
     final scheme = _rawCallbackScheme.trim().isEmpty

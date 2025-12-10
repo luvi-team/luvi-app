@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/features/auth/widgets/auth_radial_gradient_background.dart';
 import 'package:luvi_app/features/auth/widgets/glow_checkmark.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
@@ -101,7 +102,7 @@ class SuccessScreen extends StatelessWidget {
                     height: Sizes.buttonHeightL,
                     child: WelcomeButton(
                       key: const ValueKey('success_cta_button'),
-                      onPressed: () => context.goNamed('auth_signin'),
+                      onPressed: () => context.goNamed(RouteNames.authSignIn),
                       label: l10n.authSuccessBackToLogin,
                     ),
                   ),

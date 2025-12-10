@@ -175,7 +175,7 @@ final List<GoRoute> featureRoutes = [
   ),
   GoRoute(
     path: AuthSignInScreen.routeName,
-    name: 'auth_signin',
+    name: RouteNames.authSignIn,
     builder: (context, state) => const AuthSignInScreen(),
   ),
   GoRoute(

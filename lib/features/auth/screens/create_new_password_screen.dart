@@ -170,8 +170,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   Future<void> _onCreatePasswordPressed() async {
     final l10n = AppLocalizations.of(context)!;
-    final newPw = _newPasswordController.text.trim();
-    final confirmPw = _confirmPasswordController.text.trim();
+    // Use raw values without trimming - users may intentionally include
+    // leading/trailing whitespace in passwords. Trimming would silently
+    // alter user intent and cause password mismatch issues on login.
+    final newPw = _newPasswordController.text;
+    final confirmPw = _confirmPasswordController.text;
     final validation = validateNewPassword(newPw, confirmPw);
 
     if (!validation.isValid && validation.error != null) {

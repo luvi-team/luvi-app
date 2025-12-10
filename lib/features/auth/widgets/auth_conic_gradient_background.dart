@@ -68,6 +68,7 @@ class _ConicGradientPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Figma center (197, 395.5) on ~394×841 canvas → normalized to (0.5, 0.47)
     final center = Offset(size.width * 0.5, size.height * 0.47);
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
 

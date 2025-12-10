@@ -72,6 +72,12 @@ class SupabaseService {
     SupabaseValidationConfig? validationConfig,
     SupabaseAuthDeepLinkConfig? authConfig,
   }) {
+    if (_initialized && authConfig != null) {
+      log.w(
+        'authConfig ignored: SupabaseService already initialized',
+        tag: 'supabase_service',
+      );
+    }
     if (validationConfig != null) {
       _validationConfig = validationConfig;
     }
