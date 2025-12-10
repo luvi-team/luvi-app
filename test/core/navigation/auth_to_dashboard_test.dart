@@ -28,6 +28,7 @@ void main() {
           ),
           GoRoute(
             path: AuthSignInScreen.routeName,
+            name: 'auth_signin', // Must match the name used in goNamed()
             builder: (context, state) => const AuthSignInScreen(),
           ),
         ],

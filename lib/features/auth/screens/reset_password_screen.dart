@@ -78,16 +78,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
     // Figma: Title style - Playfair Display Bold, 24px
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: 24,
-      height: 32 / 24,
+      fontSize: Sizes.authTitleFontSize,
+      height: Sizes.authTitleLineHeight,
       fontWeight: FontWeight.bold,
       color: theme.colorScheme.onSurface,
     );
 
     // Figma: Subtitle style - Figtree Regular, 16px, line-height 24px
     final subtitleStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: 16,
-      height: 24 / 16,
+      fontSize: Sizes.authSubtitleFontSize,
+      height: Sizes.authSubtitleLineHeight,
       color: theme.colorScheme.onSurface,
     );
 
@@ -127,8 +127,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               style: subtitleStyle,
             ),
 
-            // Gap between subtitle and input
-            const SizedBox(height: Spacing.l + Spacing.xs), // 32px
+            // Gap between subtitle and input (32px)
+            const SizedBox(height: AuthLayout.ctaTopAfterCopy),
 
             // Email field
             LoginEmailField(
@@ -142,8 +142,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               textInputAction: TextInputAction.done,
             ),
 
-            // Gap before CTA
-            const SizedBox(height: Spacing.l + Spacing.m), // 40px
+            // Gap before CTA (40px)
+            const SizedBox(height: AuthLayout.inputToCta),
 
             // CTA Button - Figma: h=56px
             SizedBox(

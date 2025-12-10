@@ -162,6 +162,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
           final router = GoRouter.of(context);
           if (router.canPop()) {
             router.pop();
+          } else {
+            context.go(LoginScreen.routeName);
           }
         },
         child: Column(

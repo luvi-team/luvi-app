@@ -84,16 +84,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     // Figma: Title style - Playfair Display Bold, 24px
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: 24,
-      height: 32 / 24,
+      fontSize: Sizes.authTitleFontSize,
+      height: Sizes.authTitleLineHeight,
       fontWeight: FontWeight.bold,
       color: theme.colorScheme.onSurface,
     );
 
     // Figma: Forgot link style - Figtree Bold, 20px, #696969
     final forgotLinkStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: 20,
-      height: 24 / 20,
+      fontSize: Sizes.authLinkFontSize,
+      height: Sizes.authLinkLineHeight,
       fontWeight: FontWeight.bold,
       color: tokens.grayscale500,
     );
@@ -122,8 +122,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               style: titleStyle,
             ),
 
-            // Figma: Gap between title and inputs
-            const SizedBox(height: Spacing.l + Spacing.xs), // 32px
+            // Figma: Gap between title and inputs (32px)
+            const SizedBox(height: AuthLayout.ctaTopAfterCopy),
 
             // Email field
             LoginEmailField(
@@ -148,8 +148,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onSubmitted: (_) => _submit(),
             ),
 
-            // Figma: Gap before CTA
-            const SizedBox(height: Spacing.l + Spacing.m), // 40px
+            // Figma: Gap before CTA (40px)
+            const SizedBox(height: AuthLayout.inputToCta),
 
             // CTA Button - Figma: h=56px
             SizedBox(
@@ -179,7 +179,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
-                  l10n.authLoginForgotPassword,
+                  l10n.authLoginForgot,
                   style: forgotLinkStyle,
                 ),
               ),

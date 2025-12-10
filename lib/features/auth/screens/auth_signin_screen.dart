@@ -160,10 +160,15 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
               key: const ValueKey('signin_google_button'),
               width: double.infinity,
               height: Sizes.buttonHeightL,
-              child: SignInButton(
-                Buttons.google,
-                text: l10n.authSignInGoogle,
-                onPressed: () => _handleOAuthSignIn(supa.OAuthProvider.google),
+              child: Semantics(
+                button: true,
+                enabled: !_oauthLoading,
+                label: l10n.authSignInGoogle,
+                child: SignInButton(
+                  Buttons.google,
+                  text: l10n.authSignInGoogle,
+                  onPressed: () => _handleOAuthSignIn(supa.OAuthProvider.google),
+                ),
               ),
             ),
           ),

@@ -69,8 +69,11 @@ class _ConicGradientPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width * 0.5, size.height * 0.47);
-    final radius = math.max(size.width, size.height);
+    // radius is reserved for potential future radial gradient implementation
+    // final radius = math.max(size.width, size.height);
 
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    
     final gradient = SweepGradient(
       center: Alignment(
         (center.dx / size.width) * 2 - 1,
@@ -82,12 +85,6 @@ class _ConicGradientPainter extends CustomPainter {
       transform: const GradientRotation(-math.pi / 6),
     );
 
-    final rect = Rect.fromCenter(
-      center: center,
-      width: radius * 2,
-      height: radius * 2,
-    );
-
     final paint = Paint()..shader = gradient.createShader(rect);
 
     canvas.drawRect(
@@ -97,5 +94,5 @@ class _ConicGradientPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _ConicGradientPainter oldDelegate) => false;
 }

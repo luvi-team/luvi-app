@@ -24,7 +24,36 @@ class Sizes {
   static const double buttonHeightL = 56.0;
 
   /// Auth Glass Card Border Radius (Figma: 40px)
-  static const double glassCardRadius = 40.0;
+  static const double glassCardRadius = radiusXL;
+
+  /// Auth Glass Card Blur Sigma (Figma: blur 10)
+  static const double glassBlurSigma = 10.0;
+
+  /// Auth Glass Card Border Width (Figma: 1px)
+  static const double glassCardBorderWidth = 1.0;
+
+  /// Auth Outline Button Height (Figma: 58px for E-Mail/Google buttons)
+  static const double buttonHeightOutline = 58.0;
+
+  // ─── Auth Typography (Figma Auth UI v2) ───
+
+  /// Auth screen title fontSize (Figma: Playfair Display Bold 24px)
+  static const double authTitleFontSize = 24.0;
+
+  /// Auth screen title lineHeight ratio (Figma: 32/24)
+  static const double authTitleLineHeight = 32.0 / 24.0;
+
+  /// Auth screen subtitle fontSize (Figma: Figtree Regular 16px)
+  static const double authSubtitleFontSize = 16.0;
+
+  /// Auth screen subtitle lineHeight ratio (Figma: 24/16)
+  static const double authSubtitleLineHeight = 24.0 / 16.0;
+
+  /// Auth forgot/link text fontSize (Figma: Figtree Bold 20px)
+  static const double authLinkFontSize = 20.0;
+
+  /// Auth link lineHeight ratio (Figma: 24/20)
+  static const double authLinkLineHeight = 24.0 / 20.0;
 
   // ─── Loading Indicator (Button spinner) ───
 

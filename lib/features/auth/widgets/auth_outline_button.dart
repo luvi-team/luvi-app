@@ -23,13 +23,10 @@ class AuthOutlineButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final IconData? icon;
 
-  /// Button height from Figma (58px for outline buttons)
-  static const double _buttonHeight = 58.0;
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: _buttonHeight,
+      height: Sizes.buttonHeightOutline,
       width: double.infinity,
       child: OutlinedButton(
         onPressed: onPressed,
@@ -38,7 +35,7 @@ class AuthOutlineButton extends StatelessWidget {
           foregroundColor: DsColors.authOutlineText,
           side: const BorderSide(color: DsColors.authOutlineBorder),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(_buttonHeight / 2),
+            borderRadius: BorderRadius.circular(Sizes.buttonHeightOutline / 2),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
@@ -52,9 +49,7 @@ class AuthOutlineButton extends StatelessWidget {
             Flexible(
               child: Text(
                 text,
-                style: const TextStyle(
-                  fontFamily: 'Figtree',
-                  fontSize: 16,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
                 overflow: TextOverflow.ellipsis,

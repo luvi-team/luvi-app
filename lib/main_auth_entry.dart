@@ -8,7 +8,8 @@ import 'features/auth/screens/auth_signin_screen.dart';
 import 'core/navigation/routes.dart' as routes;
 import 'l10n/app_localizations.dart';
 
-/// Preview entrypoint to boot directly into AuthSignInScreen without global redirects.
+/// Preview entrypoint to boot directly into Auth screens without global redirects.
+/// Use --dart-define=INITIAL_LOCATION=/auth/forgot to start at a specific route.
 void main() {
   runApp(const ProviderScope(child: _AuthSignInPreviewApp()));
 }
@@ -16,12 +17,17 @@ void main() {
 class _AuthSignInPreviewApp extends StatelessWidget {
   const _AuthSignInPreviewApp();
 
+  static const _initialLocation = String.fromEnvironment(
+    'INITIAL_LOCATION',
+    defaultValue: AuthSignInScreen.routeName,
+  );
+
   @override
   Widget build(BuildContext context) {
     final router = GoRouter(
       routes: routes.featureRoutes,
       // No redirect here so we can preview without auth/session
-      initialLocation: AuthSignInScreen.routeName,
+      initialLocation: _initialLocation,
     );
 
     return MaterialApp.router(

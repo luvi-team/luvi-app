@@ -74,7 +74,7 @@ class WelcomeButton extends StatelessWidget {
               width: Sizes.loadingIndicatorSize,
               child: CircularProgressIndicator(
                 strokeWidth: Sizes.loadingIndicatorStroke,
-                valueColor: AlwaysStoppedAnimation(DsColors.welcomeButtonText),
+                valueColor: const AlwaysStoppedAnimation(DsColors.welcomeButtonText),
               ),
             )
           : Text(label, key: labelKey),
