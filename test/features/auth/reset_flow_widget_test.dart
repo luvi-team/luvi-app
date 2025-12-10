@@ -17,7 +17,7 @@ void main() {
     setUp(() {
       router = GoRouter(
         routes: features.featureRoutes,
-        initialLocation: '/auth/forgot',
+        initialLocation: '/auth/reset',
       );
     });
 

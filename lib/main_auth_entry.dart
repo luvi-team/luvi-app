@@ -9,7 +9,7 @@ import 'core/navigation/routes.dart' as routes;
 import 'l10n/app_localizations.dart';
 
 /// Preview entrypoint to boot directly into Auth screens without global redirects.
-/// Use --dart-define=INITIAL_LOCATION=/auth/forgot to start at a specific route.
+/// Use --dart-define=INITIAL_LOCATION=/auth/reset to start at a specific route.
 void main() {
   runApp(const ProviderScope(child: _AuthSignInPreviewApp()));
 }

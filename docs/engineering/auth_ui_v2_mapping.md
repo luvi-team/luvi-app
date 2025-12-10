@@ -255,7 +255,8 @@ Wie Login, aber mit 2 Password-Inputs.
 ## Screen 5: Success
 
 **Figma Node:** `68919:8802`
-**Route:** `/auth/success`
+**Route:** `/auth/password/success`
+> **Note:** Der Pfad `/auth/password/success` wurde bewusst gewählt, um den Namespace pro Use-Case zu trennen (Password Recovery Flow).
 
 ### Screenshot-Referenz
 Radial Gradient Background, Glow Checkmark Icon, Centered Text, Pink CTA.

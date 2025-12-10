@@ -10,11 +10,55 @@ import 'package:url_launcher/url_launcher.dart';
 class AppLinks {
   AppLinks._(); // Private constructor prevents instantiation
 
-  // OAuth redirect URI used for mobile deep linking. Configurable via --dart-define.
-  static const String oauthRedirectUri = String.fromEnvironment(
+  static const String _rawRedirectOverride = String.fromEnvironment(
     'OAUTH_REDIRECT_URI',
-    defaultValue: 'luvi://auth-callback',
   );
+  static const String _rawCallbackScheme = String.fromEnvironment(
+    'AUTH_CALLBACK_SCHEME',
+    defaultValue: 'luvi',
+  );
+  static const String _rawCallbackHost = String.fromEnvironment(
+    'AUTH_CALLBACK_HOST',
+    defaultValue: 'auth-callback',
+  );
+
+  static final Uri _authCallbackUri = _resolveAuthCallbackUri();
+
+  /// Canonical callback URI used for OAuth/deep links.
+  static Uri get authCallbackUri => _authCallbackUri;
+
+  /// Convenience getter for the callback scheme (defaults to `luvi`).
+  static String get authCallbackScheme => _authCallbackUri.scheme;
+
+  /// Convenience getter for the callback host (defaults to `auth-callback`).
+  static String get authCallbackHost => _authCallbackUri.host;
+
+  /// Redirect URL string passed to Supabase auth flows.
+  static String get oauthRedirectUri => _authCallbackUri.toString();
+
+  static Uri _resolveAuthCallbackUri() {
+    final override = _rawRedirectOverride.trim();
+    if (override.isNotEmpty) {
+      final parsed = Uri.tryParse(override);
+      if (parsed != null && parsed.scheme.isNotEmpty && parsed.host.isNotEmpty) {
+        return parsed;
+      }
+      assert(() {
+        log.w(
+          'app_links_invalid_auth_callback',
+          error: 'Invalid OAUTH_REDIRECT_URI="$override"',
+        );
+        return true;
+      }());
+    }
+    final scheme = _rawCallbackScheme.trim().isEmpty
+        ? 'luvi'
+        : _rawCallbackScheme.trim();
+    final host = _rawCallbackHost.trim().isEmpty
+        ? 'auth-callback'
+        : _rawCallbackHost.trim();
+    return Uri(scheme: scheme, host: host);
+  }
 }
 /// Defines the API for retrieving legal link configuration (privacy/terms) and
 /// validating whether configured URLs meet production requirements.

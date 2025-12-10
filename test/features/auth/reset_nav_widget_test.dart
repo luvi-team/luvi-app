@@ -36,6 +36,6 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('login_forgot_link')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const ValueKey('auth_forgot_screen')), findsOneWidget);
+    expect(find.byKey(const ValueKey('auth_reset_screen')), findsOneWidget);
   });
 }

@@ -61,8 +61,8 @@ class SuccessScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                // Flexible top space
-                const Spacer(flex: 2),
+                // Flexible top space (reduced to position content higher)
+                const Spacer(flex: 1),
 
                 // GlowCheckmark centered
                 const GlowCheckmark(),
@@ -95,11 +95,7 @@ class SuccessScreen extends StatelessWidget {
 
                 // CTA Button - navigates to /auth/signin per plan
                 Padding(
-                  padding: EdgeInsets.only(
-                    left: Spacing.l,
-                    right: Spacing.l,
-                    bottom: MediaQuery.of(context).padding.bottom + Spacing.l,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
                   child: SizedBox(
                     width: double.infinity,
                     height: Sizes.buttonHeightL,
@@ -110,6 +106,9 @@ class SuccessScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+
+                // Flexible bottom space (pushes content group upward)
+                const Spacer(flex: 2),
               ],
             ),
           ),

@@ -53,7 +53,7 @@ Refactoring des Auth Flows von 8 auf 6 Screens mit neuem Figma-Design.
 | 3 | **AuthSignupScreen** | AuthSignupScreen | `/auth/signup` | **Kein Figma** → Login-Layout |
 | 4 | **AuthResetPasswordScreen** | ResetPasswordScreen | `/auth/reset` | Node 68919-8822 |
 | 5 | **AuthCreatePasswordScreen** | CreateNewPasswordScreen | `/auth/password/new` | Node 68919-8814 |
-| 6 | **AuthSuccessScreen** | SuccessScreen | `/auth/success` | Node 68919-8802 |
+| 6 | **AuthSuccessScreen** | SuccessScreen | `/auth/password/success` | Node 68919-8802 |
 
 **Signup Screen (ohne Figma - basiert auf Login):**
 - Layout: Identisch zu AuthLoginScreen
@@ -126,7 +126,7 @@ AuthShell
 | Umbenennen | `/auth/entry` → `/auth/signin` |
 | Umbenennen | `/auth/forgot` → `/auth/reset` |
 | Entfernen | `/auth/verify`, `/auth/forgot/sent` |
-| Hinzufügen | `/auth/success` (vereinfacht) |
+| Hinzufügen | `/auth/password/success` (Namespace: Password Recovery) |
 
 ---
 

@@ -17,7 +17,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 /// ResetPasswordScreen with Figma Auth UI v2 design.
 ///
 /// Figma Node: 68919:8822
-/// Route: /auth/reset (currently /auth/forgot - will be updated in Phase 4)
+/// Route: /auth/reset
 ///
 /// Features:
 /// - Linear gradient background
@@ -26,7 +26,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 /// - Email field only
 /// - Pink CTA button (56px height)
 class ResetPasswordScreen extends ConsumerStatefulWidget {
-  static const String routeName = '/auth/forgot';
+  static const String routeName = '/auth/reset';
 
   const ResetPasswordScreen({super.key});
 
@@ -95,7 +95,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     );
 
     return Scaffold(
-      key: const ValueKey('auth_forgot_screen'),
+      key: const ValueKey('auth_reset_screen'),
       resizeToAvoidBottomInset: true,
       body: AuthShell(
         background: const AuthLinearGradientBackground(),

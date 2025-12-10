@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,10 +12,12 @@ import 'package:go_router/go_router.dart';
 import 'core/navigation/go_router_refresh_stream.dart' as luvi_refresh;
 import 'package:luvi_services/supabase_service.dart';
 import 'core/config/app_links.dart';
+import 'core/navigation/password_recovery_navigation_driver.dart';
 import 'core/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'core/navigation/routes.dart' as routes;
 import 'features/splash/screens/splash_screen.dart';
+import 'features/auth/screens/create_new_password_screen.dart';
 import 'core/init/supabase_init_controller.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'core/init/init_mode.dart' show initModeProvider;
@@ -34,6 +38,10 @@ void main() async {
   // classification (config vs transient) and backoff retries.
 
   const appLinks = ProdAppLinks();
+  SupabaseService.configure(
+    authConfig:
+        SupabaseAuthDeepLinkConfig.fromUri(AppLinks.authCallbackUri),
+  );
   // Legal links enforcement modes:
   // - Debug: asserts + optional runtime check when ENFORCE_LINKS_IN_DEBUG=true
   // - Profile: optional runtime check when ENFORCE_LINKS_IN_DEBUG=true
@@ -90,6 +98,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   late final _RouterRefreshNotifier _routerRefreshNotifier =
       _RouterRefreshNotifier();
   late final GoRouter _router = _createRouter(_initialLocation);
+  PasswordRecoveryNavigationDriver? _passwordRecoveryDriver;
 
   String get _initialLocation => kReleaseMode
       ? SplashScreen.routeName
@@ -117,6 +126,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
 
   @override
   void dispose() {
+    unawaited(_passwordRecoveryDriver?.dispose());
     _router.dispose();
     _routerRefreshNotifier.dispose();
     super.dispose();
@@ -159,6 +169,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   Widget build(BuildContext context) {
     final initState = ref.watch(supabaseInitControllerProvider);
     _routerRefreshNotifier.ensureSupabaseListener();
+    _ensurePasswordRecoveryListener();
 
     return _buildMaterialApp(initState);
   }
@@ -216,6 +227,21 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         : child ?? const SizedBox.shrink();
 
     return LocaleChangeCacheReset(child: content);
+  }
+
+  void _ensurePasswordRecoveryListener() {
+    if (_passwordRecoveryDriver != null || !SupabaseService.isInitialized) {
+      return;
+    }
+    final authEvents = SupabaseService.client.auth.onAuthStateChange.map(
+      (authState) => authState.event,
+    );
+    _passwordRecoveryDriver = PasswordRecoveryNavigationDriver(
+      authEvents: authEvents,
+      onNavigateToCreatePassword: () {
+        _router.go(CreateNewPasswordScreen.routeName);
+      },
+    );
   }
 
 }

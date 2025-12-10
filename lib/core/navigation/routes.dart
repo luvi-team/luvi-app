@@ -188,6 +188,11 @@ final List<GoRoute> featureRoutes = [
     name: 'reset',
     builder: (context, state) => const ResetPasswordScreen(),
   ),
+  // Legacy redirect: /auth/forgot → /auth/reset (backward compatibility)
+  GoRoute(
+    path: '/auth/forgot',
+    redirect: (context, state) => ResetPasswordScreen.routeName,
+  ),
   GoRoute(
     path: CreateNewPasswordScreen.routeName,
     name: 'password_new',
@@ -260,9 +265,17 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   final isConsent = isConsentRoute(state.matchedLocation);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
+  final isPasswordRecoveryRoute =
+      state.matchedLocation.startsWith(CreateNewPasswordScreen.routeName);
+  final isPasswordSuccessRoute = state.matchedLocation
+      .startsWith(SuccessScreen.passwordSavedRoutePath);
   final session = isInitialized
       ? SupabaseService.client.auth.currentSession
       : null;
+
+  if (isPasswordRecoveryRoute || isPasswordSuccessRoute) {
+    return null;
+  }
 
   if (isWelcome || isConsent) {
     return null;
