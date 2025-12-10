@@ -1001,12 +1001,6 @@ abstract class AppLocalizations {
   /// **'Sign in with Email'**
   String get authLoginTitle;
 
-  /// Link to forgot password flow (Figma Auth UI v2).
-  ///
-  /// In en, this message translates to:
-  /// **'Forgot password?'**
-  String get authLoginForgotPassword;
-
   /// Subheadline displayed under the login headline.
   ///
   /// In en, this message translates to:
@@ -1391,7 +1385,7 @@ abstract class AppLocalizations {
   /// **'Sign in with Google'**
   String get authSignInGoogle;
 
-  /// Semantics label for the Apple login button on the SignIn screen.
+  /// Label for Apple Sign In button (used in Semantics wrapper on SignIn screen).
   ///
   /// In en, this message translates to:
   /// **'Sign in with Apple'**

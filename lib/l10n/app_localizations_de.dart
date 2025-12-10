@@ -482,9 +482,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authLoginTitle => 'Anmelden mit E-Mail';
 
   @override
-  String get authLoginForgotPassword => 'Passwort vergessen?';
-
-  @override
   String get authLoginSubhead => 'Schön, dass du da bist.';
 
   @override
@@ -685,7 +682,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSignInGoogle => 'Anmelden mit Google';
 
   @override
-  String get authSignInApple => 'Mit Apple anmelden';
+  String get authSignInApple => 'Anmelden mit Apple';
 
   @override
   String get authSignInLoading => 'Anmeldung läuft';
@@ -727,7 +724,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSuccessTitle => 'Geschafft!';
 
   @override
-  String get authSuccessSubtitle => 'Neues Passwort gespeichert.';
+  String get authSuccessSubtitle => 'Dein neues Passwort wurde gespeichert.';
 
   @override
   String get authSuccessBackToLogin => 'Zurück zur Anmeldung';

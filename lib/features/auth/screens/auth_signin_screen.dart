@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
@@ -92,10 +93,10 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: Spacing.m),
                       child: SizedBox(
-                        height: 24,
-                        width: 24,
+                        height: Sizes.loadingIndicatorSize,
+                        width: Sizes.loadingIndicatorSize,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2,
+                          strokeWidth: Sizes.loadingIndicatorStroke,
                           color: DsColors.headlineMagenta,
                           semanticsLabel: l10n.authSignInLoading,
                         ),
@@ -167,12 +168,17 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
       AnimatedOpacity(
         opacity: _oauthLoading ? 0.5 : 1.0,
         duration: const Duration(milliseconds: 150),
-        child: AuthOutlineButton(
-          key: const ValueKey('signin_email_button'),
-          text: l10n.authSignInEmail,
-          icon: Icons.mail_outline,
-          borderColor: DsColors.authOutlineBorder,
-          onPressed: _oauthLoading ? null : () => context.push(LoginScreen.routeName),
+        child: Semantics(
+          button: true,
+          enabled: !_oauthLoading,
+          label: l10n.authSignInEmail,
+          child: AuthOutlineButton(
+            key: const ValueKey('signin_email_button'),
+            text: l10n.authSignInEmail,
+            icon: Icons.mail_outline,
+            borderColor: DsColors.authOutlineBorder,
+            onPressed: _oauthLoading ? null : () => context.push(LoginScreen.routeName),
+          ),
         ),
       ),
     );

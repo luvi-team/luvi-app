@@ -82,16 +82,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           : await serviceFuture;
       final hasSeenWelcomeMaybe = service.hasSeenWelcomeOrNull;
 
-      late final String target;
-      if (hasSeenWelcomeMaybe == null) {
-        // Unknown state: choose conservatively based on auth.
-        target = isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName;
-      } else if (isAuth && !hasSeenWelcomeMaybe) {
-        // Consent/Welcome flow only for authenticated users.
-        target = ConsentWelcome01Screen.routeName;
-      } else {
-        target = isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName;
-      }
+      // Default target based on auth state (DRY extraction)
+      final defaultTarget = isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName;
+
+      // Only show consent flow for authenticated users who haven't seen welcome
+      final target = (isAuth && hasSeenWelcomeMaybe == false)
+          ? ConsentWelcome01Screen.routeName
+          : defaultTarget;
 
       if (!mounted || _hasNavigated) return;
       _hasNavigated = true;
@@ -100,7 +97,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       log.e('routing error', tag: 'splash', error: e, stack: st);
       if (!mounted || _hasNavigated) return;
       _hasNavigated = true;
-      context.go(isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName);
+      final fallbackTarget = isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName;
+      context.go(fallbackTarget);
     }
   }
 }

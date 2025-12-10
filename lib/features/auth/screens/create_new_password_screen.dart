@@ -132,11 +132,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       return;
     }
 
-    await _runPasswordUpdate(newPw);
+    await _runPasswordUpdate(newPw, l10n);
   }
 
-  Future<void> _runPasswordUpdate(String newPassword) async {
-    final l10n = AppLocalizations.of(context)!;
+  Future<void> _runPasswordUpdate(String newPassword, AppLocalizations l10n) async {
     setState(() => _isLoading = true);
 
     try {

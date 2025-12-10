@@ -903,7 +903,7 @@
   "@authSignInGoogle": {
     "description": "Text für den Google-Login-Button auf dem SignIn-Screen."
   },
-  "authSignInApple": "Mit Apple anmelden",
+  "authSignInApple": "Anmelden mit Apple",
   "@authSignInApple": {
     "description": "Semantik-Label für den Apple-Login-Button auf dem SignIn-Screen."
   },

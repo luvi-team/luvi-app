@@ -14,7 +14,7 @@ void main() {
   runApp(const ProviderScope(child: _AuthSignInPreviewApp()));
 }
 
-class _AuthSignInPreviewApp extends StatelessWidget {
+class _AuthSignInPreviewApp extends StatefulWidget {
   const _AuthSignInPreviewApp();
 
   static const _initialLocation = String.fromEnvironment(
@@ -23,17 +23,29 @@ class _AuthSignInPreviewApp extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) {
-    final router = GoRouter(
-      routes: routes.featureRoutes,
-      // No redirect here so we can preview without auth/session
-      initialLocation: _initialLocation,
-    );
+  State<_AuthSignInPreviewApp> createState() => _AuthSignInPreviewAppState();
+}
 
+class _AuthSignInPreviewAppState extends State<_AuthSignInPreviewApp> {
+  // Router persists across rebuilds to maintain navigation state
+  late final GoRouter _router = GoRouter(
+    routes: routes.featureRoutes,
+    // No redirect here so we can preview without auth/session
+    initialLocation: _AuthSignInPreviewApp._initialLocation,
+  );
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'LUVI - Auth SignIn Preview',
       theme: AppTheme.buildAppTheme(),
-      routerConfig: router,
+      routerConfig: _router,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

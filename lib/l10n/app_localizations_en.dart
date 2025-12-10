@@ -482,9 +482,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLoginTitle => 'Sign in with Email';
 
   @override
-  String get authLoginForgotPassword => 'Forgot password?';
-
-  @override
   String get authLoginSubhead => 'We\'re glad you\'re here.';
 
   @override

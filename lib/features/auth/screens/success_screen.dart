@@ -90,8 +90,8 @@ class SuccessScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Flexible bottom space
-                const Spacer(flex: 3),
+                // Fixed gap between text and CTA (Figma: ~40px)
+                const SizedBox(height: Spacing.welcomeCtaGap),
 
                 // CTA Button - navigates to /auth/signin per plan
                 Padding(

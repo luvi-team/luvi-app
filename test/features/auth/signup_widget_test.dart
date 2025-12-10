@@ -44,6 +44,15 @@ void main() {
     final ctaFinder = find.byKey(const ValueKey('signup_cta_button'));
     expect(ctaFinder, findsOneWidget);
 
+    // Verify button is enabled (onPressed is not null)
+    final elevatedButton = find.descendant(
+      of: ctaFinder,
+      matching: find.byType(ElevatedButton),
+    );
+    expect(elevatedButton, findsOneWidget);
+    final button = tester.widget<ElevatedButton>(elevatedButton);
+    expect(button.onPressed, isNotNull, reason: 'CTA button should be enabled');
+
     // Login link is present
     expect(find.byKey(const ValueKey('signup_login_link')), findsOneWidget);
   });

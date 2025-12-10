@@ -108,6 +108,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           final router = GoRouter.of(context);
           if (router.canPop()) {
             router.pop();
+          } else {
+            // Navigate to sign-in or landing screen
+            context.go('/auth/signin');
           }
         },
         child: Column(

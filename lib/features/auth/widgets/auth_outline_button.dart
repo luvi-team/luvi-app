@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 
 /// Unified auth button with pill shape for SignIn screen.
 ///
@@ -64,7 +66,7 @@ class AuthOutlineButton extends StatelessWidget {
       key: key,
       text: text,
       onPressed: onPressed,
-      svgAsset: 'assets/icons/google_g.svg',
+      svgAsset: Assets.icons.googleG,
       backgroundColor: DsColors.white,
       textColor: DsColors.authOutlineText,
       borderColor: DsColors.authOutlineBorder,
@@ -102,10 +104,10 @@ class AuthOutlineButton extends StatelessWidget {
                 width: Sizes.iconM,
                 height: Sizes.iconM,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Spacing.s),
             ] else if (icon != null) ...[
               Icon(icon, size: Sizes.iconM),
-              const SizedBox(width: 12),
+              const SizedBox(width: Spacing.s),
             ],
             Flexible(
               child: Text(

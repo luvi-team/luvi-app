@@ -58,6 +58,12 @@ class Sizes {
   /// Auth link lineHeight ratio (Figma: 24/20)
   static const double authLinkLineHeight = 24.0 / 20.0;
 
+  // ─── Auth Back Button (Figma Auth UI v2) ───
+
+  /// Auth Back Button Icon Size (Figma: 32×30.5px)
+  /// Used for back chevron icon in Auth screens without circle background.
+  static const double authBackIconSize = 32.0;
+
   // ─── Loading Indicator (Button spinner) ───
 
   /// Loading indicator size inside buttons (Figma: 20px)

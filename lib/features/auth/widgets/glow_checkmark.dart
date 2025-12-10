@@ -10,8 +10,8 @@ import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 /// - Inner Icon: 48px × 48px, Checkmark
 /// - Icon Color: #FFFFFF (white with stroke)
 ///
-/// NOTE: The existing _SuccessIcon uses green (#04B155).
-/// This widget uses a beige radial gradient glow as per Figma.
+/// Design: Uses a beige radial gradient glow per Figma Auth UI v2 spec.
+/// This replaces the previous green checkmark design.
 class GlowCheckmark extends StatelessWidget {
   const GlowCheckmark({super.key});
 

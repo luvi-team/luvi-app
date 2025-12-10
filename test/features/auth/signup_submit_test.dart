@@ -180,5 +180,51 @@ void main() {
 
       expect(find.byKey(const ValueKey('signup_cta_loading')), findsNothing);
     });
+
+    testWidgets('shows snackbar and delays 800ms before navigation to login', (
+      tester,
+    ) async {
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      ).thenAnswer((_) async => AuthResponse(session: null, user: null));
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      // Fill form
+      await tester.enterText(
+        textFieldByHint(AuthStrings.emailHint),
+        'user@example.com',
+      );
+      await tester.enterText(
+        textFieldByHint(AuthStrings.passwordHint),
+        'strongpass',
+      );
+
+      // Submit
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+
+      // After API call completes, pump to show SnackBar
+      await tester.pump(); // Trigger setState after async
+      await tester.pump(); // Build SnackBar
+
+      // SnackBar should be visible
+      expect(find.byType(SnackBar), findsOneWidget);
+
+      // Still on signup screen (delay hasn't passed)
+      expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
+      expect(find.byKey(const ValueKey('auth_login_screen')), findsNothing);
+
+      // Advance past 800ms delay
+      await tester.pump(const Duration(milliseconds: 850));
+      await tester.pumpAndSettle();
+
+      // Now on login screen
+      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+    });
   });
 }
