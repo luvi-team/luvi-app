@@ -38,6 +38,6 @@ Authoritative snapshot of the values we have configured in the Supabase Dashboar
 
 ## Maintenance checklist
 
-1. After changing anything under Supabase → Authentication → URL Configuration, update the tables above and run `flutter test test/dev/docs/supabase_auth_settings_doc_guard_test.dart`.
+1. After changing anything under Supabase → Authentication → URL Configuration, update the tables above and run `flutter test test/dev/supabase_auth_settings_doc_guard_test.dart`.
 2. Whenever Apple/Google client IDs rotate, paste the new public IDs into the table (never commit secrets) and link to the vault location.
 3. When introducing new deep links, add them to the Additional Redirect URLs list and update `AppLinks` in Flutter so the doc guard stays green.

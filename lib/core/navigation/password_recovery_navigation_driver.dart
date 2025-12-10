@@ -29,8 +29,11 @@ class PasswordRecoveryNavigationDriver {
   final PasswordRecoveryNavigateCallback _onNavigateToCreatePassword;
   StreamSubscription<supa.AuthChangeEvent>? _subscription;
 
+  bool _hasNavigated = false;
+
   void _handleEvent(supa.AuthChangeEvent event) {
-    if (event == supa.AuthChangeEvent.passwordRecovery) {
+    if (event == supa.AuthChangeEvent.passwordRecovery && !_hasNavigated) {
+      _hasNavigated = true;
       _onNavigateToCreatePassword();
     }
   }

@@ -186,7 +186,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     return Column(
       children: [
         for (int i = 0; i < buttons.length; i++) ...[
-          if (i > 0) const SizedBox(height: 12), // Figma: 12px gap
+          if (i > 0) const SizedBox(height: Spacing.s), // 12px gap per Figma
           buttons[i],
         ],
       ],

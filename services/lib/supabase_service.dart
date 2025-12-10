@@ -339,6 +339,7 @@ class SupabaseService {
         anonKey: credentials.anonKey,
         authOptions: FlutterAuthClientOptions(
           authFlowType: AuthFlowType.pkce,
+          detectSessionInUri: false,
         ),
       );
       log.d(

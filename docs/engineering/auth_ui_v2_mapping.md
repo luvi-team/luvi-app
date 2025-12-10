@@ -1,6 +1,6 @@
 # Auth UI v2 – Figma → Flutter Mapping
 
-> **Erstellt:** 2024-12-09
+> **Erstellt:** 2025-12-09
 > **Status:** Analyse-Phase (kein Code)
 > **Figma-Quelle:** Nova Health UI – Working Copy
 

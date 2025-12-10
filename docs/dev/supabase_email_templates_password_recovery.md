@@ -24,3 +24,4 @@ Team LUVI
 - `{{ .ConfirmationURL }}` öffnet `luvi://auth-callback` → `/auth/password/new` in der App.
 - Passe Änderungen immer doppelt an: im Supabase Dashboard **und** hier.
 - Keine Secrets oder SMTP-Header committen – nur Subjekt + Body Copy.
+- Doc-Guard-Test: `flutter test test/dev/password_recovery_email_template_doc_guard_test.dart`

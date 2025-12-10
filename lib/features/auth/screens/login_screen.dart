@@ -220,7 +220,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _submit() {
-    ref.read(loginSubmitProvider.notifier).submit(
+    final submitNotifier = ref.read(loginSubmitProvider.notifier);
+    if (ref.read(loginSubmitProvider).isLoading) return;
+    submitNotifier.submit(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );

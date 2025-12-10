@@ -41,6 +41,7 @@ dependencies:
 
   # Supabase Flutter client
   supabase_flutter: ^2.8.0
+  app_links: ^6.4.1
 
   # Environment variables support
   flutter_dotenv: ^6.0.0

@@ -23,6 +23,7 @@ import 'package:luvi_services/init_mode.dart';
 import 'core/init/init_mode.dart' show initModeProvider;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 import 'core/init/init_diagnostics.dart';
+import 'core/init/supabase_deep_link_handler.dart';
 
 // TODO(arwin): Greptile status check smoke test
 void main() async {
@@ -99,6 +100,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
       _RouterRefreshNotifier();
   late final GoRouter _router = _createRouter(_initialLocation);
   PasswordRecoveryNavigationDriver? _passwordRecoveryDriver;
+  SupabaseDeepLinkHandler? _deepLinkHandler;
 
   String get _initialLocation => kReleaseMode
       ? SplashScreen.routeName
@@ -127,6 +129,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   @override
   void dispose() {
     unawaited(_passwordRecoveryDriver?.dispose());
+    unawaited(_deepLinkHandler?.dispose());
     _router.dispose();
     _routerRefreshNotifier.dispose();
     super.dispose();
@@ -169,6 +172,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   Widget build(BuildContext context) {
     final initState = ref.watch(supabaseInitControllerProvider);
     _routerRefreshNotifier.ensureSupabaseListener();
+    _ensureDeepLinkHandler();
     _ensurePasswordRecoveryListener();
 
     return _buildMaterialApp(initState);
@@ -242,6 +246,15 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         _router.go(CreateNewPasswordScreen.routeName);
       },
     );
+  }
+
+  void _ensureDeepLinkHandler() {
+    if (_deepLinkHandler != null || !SupabaseService.isInitialized) {
+      return;
+    }
+    final handler = SupabaseDeepLinkHandler();
+    _deepLinkHandler = handler;
+    unawaited(handler.start());
   }
 
 }
