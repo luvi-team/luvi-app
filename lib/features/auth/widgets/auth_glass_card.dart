@@ -23,14 +23,15 @@ class AuthGlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(Sizes.glassCardRadius);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(Sizes.glassCardRadius),
+      borderRadius: borderRadius,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
             color: DsColors.authGlassBackground,
-            borderRadius: BorderRadius.circular(Sizes.glassCardRadius),
+            borderRadius: borderRadius,
             border: Border.all(
               color: DsColors.authGlassBorder,
               width: 1,

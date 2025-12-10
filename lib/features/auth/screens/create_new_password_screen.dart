@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
 import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
@@ -216,6 +217,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
           final router = GoRouter.of(context);
           if (router.canPop()) {
             router.pop();
+          } else {
+            // Fallback: navigate to sign-in or another appropriate route
+            router.go(AuthSignInScreen.routeName);
           }
         },
         child: Column(

@@ -64,7 +64,8 @@ void main() {
 
       // Note: Per Auth v2 refactoring, the reset flow shows a snackbar
       // and navigates to /auth/signin instead of showing a success screen.
-      // Navigation test is omitted as it requires mocking the AuthRepository.
+      // TODO(auth-v2): Add navigation test with mocked AuthRepository
+      // See: test/features/auth/signup_submit_test.dart for mock pattern
     });
   });
 }

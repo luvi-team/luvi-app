@@ -80,13 +80,12 @@ void main() {
       final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
 
       final titleFinder = find.byKey(const ValueKey('create_new_title'));
-      final subtitleFinder = find.byKey(const ValueKey('create_new_title'));
+      // Note: CreateNewPasswordScreen has no subtitle - title is the only header element
       final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
 
       // Get Y positions
       final backButtonRect = tester.getRect(backButtonFinder);
       final titleRect = tester.getRect(titleFinder);
-      final subtitleRect = tester.getRect(subtitleFinder);
       final ctaRect = tester.getRect(ctaFinder);
 
 
@@ -98,7 +97,8 @@ void main() {
       final field2Rect = tester.getRect(field2Finder);
 
       // Calculate gaps
-      final headerBottomY = subtitleRect.bottom;
+      // Use titleRect.bottom as header bottom since there's no subtitle
+      final headerBottomY = titleRect.bottom;
       final gapHeaderToField1 = field1Rect.top - headerBottomY;
       final gapField1ToField2 = field2Rect.top - field1Rect.bottom;
       final gapField2ToCta = ctaRect.top - field2Rect.bottom;
@@ -118,8 +118,6 @@ void main() {
           'backButtonBottom': backButtonRect.bottom,
           'titleTop': titleRect.top,
           'titleBottom': titleRect.bottom,
-          'subtitleTop': subtitleRect.top,
-          'subtitleBottom': subtitleRect.bottom,
           'field1Top': field1Rect.top,
           'field1Bottom': field1Rect.bottom,
           'field2Top': field2Rect.top,
@@ -163,7 +161,6 @@ void main() {
         '  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}',
       );
       print('  Title: ${pos['titleTop']} - ${pos['titleBottom']}');
-      print('  Subtitle: ${pos['subtitleTop']} - ${pos['subtitleBottom']}');
       print('  Field1: ${pos['field1Top']} - ${pos['field1Bottom']}');
       print('  Field2: ${pos['field2Top']} - ${pos['field2Bottom']}');
       print('  CTA: ${pos['ctaTop']} - ${pos['ctaBottom']}');
@@ -206,7 +203,6 @@ void main() {
         '  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}',
       );
       print('  Title: ${pos['titleTop']} - ${pos['titleBottom']}');
-      print('  Subtitle: ${pos['subtitleTop']} - ${pos['subtitleBottom']}');
       print('  Field1: ${pos['field1Top']} - ${pos['field1Bottom']}');
       print('  Field2: ${pos['field2Top']} - ${pos['field2Bottom']}');
       print('  CTA: ${pos['ctaTop']} - ${pos['ctaBottom']}');
@@ -263,7 +259,6 @@ void main() {
         '  BackButton: ${pos['backButtonTop']} - ${pos['backButtonBottom']}',
       );
       print('  Title: ${pos['titleTop']} - ${pos['titleBottom']}');
-      print('  Subtitle: ${pos['subtitleTop']} - ${pos['subtitleBottom']}');
       print('  Field1: ${pos['field1Top']} - ${pos['field1Bottom']}');
       print('  Field2: ${pos['field2Top']} - ${pos['field2Bottom']}');
       print('  CTA: ${pos['ctaTop']} - ${pos['ctaBottom']}');

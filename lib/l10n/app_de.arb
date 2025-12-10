@@ -907,6 +907,26 @@
   "@authSignInGoogle": {
     "description": "Text für den Google-Login-Button auf dem SignIn-Screen."
   },
+  "authSignInApple": "Mit Apple anmelden",
+  "@authSignInApple": {
+    "description": "Semantik-Label für den Apple-Login-Button auf dem SignIn-Screen."
+  },
+  "authSignInLoading": "Anmeldung läuft",
+  "@authSignInLoading": {
+    "description": "Semantik-Label für den Ladeindikator während OAuth."
+  },
+  "authSignInOAuthError": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+  "@authSignInOAuthError": {
+    "description": "Fehlertext bei fehlgeschlagener OAuth-Anmeldung."
+  },
+  "authSignInAppleError": "Apple-Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+  "@authSignInAppleError": {
+    "description": "Fehlertext bei fehlgeschlagener Apple-Anmeldung."
+  },
+  "authSignInGoogleError": "Google-Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+  "@authSignInGoogleError": {
+    "description": "Fehlertext bei fehlgeschlagener Google-Anmeldung."
+  },
   "authResetTitle": "Passwort vergessen?",
   "@authResetTitle": {
     "description": "Titel auf dem Reset-Password-Screen (ohne Emoji)."

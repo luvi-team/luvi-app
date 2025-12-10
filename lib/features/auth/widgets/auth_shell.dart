@@ -30,7 +30,10 @@ class AuthShell extends StatelessWidget {
     this.onBackPressed,
     this.bottomCta,
     this.horizontalPadding = AuthLayout.horizontalPadding,
-  });
+  }) : assert(
+         !showBackButton || onBackPressed != null,
+         'onBackPressed must be provided when showBackButton is true',
+       );
 
   /// The gradient background widget (Conic, Linear, or Radial)
   final Widget background;
@@ -63,7 +66,8 @@ class AuthShell extends StatelessWidget {
           child: Column(
             children: [
               // Back button row (if shown)
-              if (showBackButton && onBackPressed != null)
+              // Note: assertion guarantees onBackPressed != null when showBackButton is true
+              if (showBackButton)
                 Padding(
                   padding: EdgeInsets.only(
                     left: horizontalPadding,

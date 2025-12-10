@@ -40,13 +40,23 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize controller with current state value
     final state = ref.read(resetPasswordProvider);
     if (state.email.isNotEmpty) {
-      _emailController.value = _emailController.value.copyWith(
-        text: state.email,
-        selection: TextSelection.collapsed(offset: state.email.length),
-      );
+      _emailController.text = state.email;
     }
+
+    // Listen for external state changes and sync controller
+    // This avoids controller mutation inside build()
+    ref.listenManual(resetPasswordProvider, (prev, next) {
+      if (!mounted) return;
+      if (_emailController.text != next.email) {
+        _emailController.value = _emailController.value.copyWith(
+          text: next.email,
+          selection: TextSelection.collapsed(offset: next.email.length),
+        );
+      }
+    });
   }
 
   @override
@@ -63,14 +73,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final state = ref.watch(resetPasswordProvider);
     final submitState = ref.watch(resetSubmitProvider);
     final errorText = state.error != null ? l10n.authErrEmailInvalid : null;
-
-    // Sync controller with state
-    if (_emailController.text != state.email) {
-      _emailController.value = _emailController.value.copyWith(
-        text: state.email,
-        selection: TextSelection.collapsed(offset: state.email.length),
-      );
-    }
 
     // Figma: Title style - Playfair Display Bold, 24px
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
@@ -97,6 +99,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           final router = GoRouter.of(context);
           if (router.canPop()) {
             router.pop();
+          } else {
+            router.go(AuthSignInScreen.routeName);
           }
         },
         child: Column(

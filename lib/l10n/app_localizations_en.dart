@@ -685,6 +685,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSignInGoogle => 'Sign in with Google';
 
   @override
+  String get authSignInApple => 'Sign in with Apple';
+
+  @override
+  String get authSignInLoading => 'Signing in';
+
+  @override
+  String get authSignInOAuthError => 'Sign in failed. Please try again.';
+
+  @override
+  String get authSignInAppleError => 'Apple sign in failed. Please try again.';
+
+  @override
+  String get authSignInGoogleError => 'Google sign in failed. Please try again.';
+
+  @override
   String get authResetTitle => 'Forgot password?';
 
   @override

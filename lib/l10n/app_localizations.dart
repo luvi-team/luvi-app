@@ -1391,6 +1391,36 @@ abstract class AppLocalizations {
   /// **'Sign in with Google'**
   String get authSignInGoogle;
 
+  /// Semantics label for the Apple login button on the SignIn screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Apple'**
+  String get authSignInApple;
+
+  /// Semantics label for the loading indicator during OAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in'**
+  String get authSignInLoading;
+
+  /// Error text when OAuth sign-in fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in failed. Please try again.'**
+  String get authSignInOAuthError;
+
+  /// Error text when Apple sign-in fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple sign in failed. Please try again.'**
+  String get authSignInAppleError;
+
+  /// Error text when Google sign-in fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign in failed. Please try again.'**
+  String get authSignInGoogleError;
+
   /// Title on the Reset Password screen (no emoji).
   ///
   /// In en, this message translates to:

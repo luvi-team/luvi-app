@@ -685,6 +685,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSignInGoogle => 'Anmelden mit Google';
 
   @override
+  String get authSignInApple => 'Mit Apple anmelden';
+
+  @override
+  String get authSignInLoading => 'Anmeldung läuft';
+
+  @override
+  String get authSignInOAuthError => 'Anmeldung fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
+  String get authSignInAppleError => 'Apple-Anmeldung fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
+  String get authSignInGoogleError => 'Google-Anmeldung fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
   String get authResetTitle => 'Passwort vergessen?';
 
   @override

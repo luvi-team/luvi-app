@@ -244,7 +244,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
             Center(
               child: TextButton(
                 key: const ValueKey('signup_login_link'),
-                onPressed: () => context.push(LoginScreen.routeName),
+                // Use context.go to replace stack consistently (same as line 92)
+                onPressed: () => context.go(LoginScreen.routeName),
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   minimumSize: const Size(

@@ -73,7 +73,8 @@ void main() {
       // Find widgets by specific finders
       final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
 
-      final subtitleFinder = find.byKey(const ValueKey('create_new_title'));
+      // Note: This finds the title (not subtitle) - CreateNewPasswordScreen has no subtitle
+      final titleFinder = find.byKey(const ValueKey('create_new_title'));
       final passwordFieldFinder = find.byKey(const ValueKey('AuthPasswordField'));
       final confirmFieldFinder = find.byKey(
         const ValueKey('AuthConfirmPasswordField'),
@@ -82,15 +83,15 @@ void main() {
 
       // Get positions
       final backButtonRect = tester.getRect(backButtonFinder);
-      final subtitleRect = tester.getRect(subtitleFinder);
+      final titleRect = tester.getRect(titleFinder);
       final passwordRect = tester.getRect(passwordFieldFinder);
       final confirmRect = tester.getRect(confirmFieldFinder);
       final ctaRect = tester.getRect(ctaFinder);
 
       return {
         'backButtonY': backButtonRect.top,
-        'headerTop': subtitleRect.top,
-        'headerBottom': subtitleRect.bottom,
+        'headerTop': titleRect.top,
+        'headerBottom': titleRect.bottom,
         'passwordTop': passwordRect.top,
         'confirmTop': confirmRect.top,
         'confirmBottom': confirmRect.bottom,

@@ -128,7 +128,7 @@ class Consent02Screen extends ConsumerWidget {
       }
 
       if (!context.mounted) return;
-      _navigateToAuthEntry(context);
+      _navigateToSignIn(context);
     } on ConsentException catch (error) {
       if (!context.mounted) return;
       final message = error.code == 'rate_limit'
@@ -604,7 +604,7 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
   }
 }
 
-void _navigateToAuthEntry(BuildContext context) {
+void _navigateToSignIn(BuildContext context) {
   context.go(AuthSignInScreen.routeName);
 }
 

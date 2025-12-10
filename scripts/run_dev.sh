@@ -23,9 +23,13 @@ fi
 # Load environment variables from .env.development
 # NOTE: Using safe KEY=VALUE parser instead of `source` to prevent code injection.
 # `source` would execute arbitrary shell code if .env contained malicious content.
-while IFS='=' read -r key value; do
+# Handles CRLF line endings and final-line-without-newline edge cases.
+while IFS='=' read -r key value || [ -n "$key" ]; do
   # Skip empty lines and comments
   [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
+  # Strip trailing CR (Windows CRLF line endings)
+  key="${key%$'\r'}"
+  value="${value%$'\r'}"
   # Remove leading/trailing whitespace from key
   key="${key#"${key%%[![:space:]]*}"}"
   key="${key%"${key##*[![:space:]]}"}"
@@ -35,8 +39,9 @@ while IFS='=' read -r key value; do
   value="${value#\'}"
   value="${value%\'}"
   # Export only if key is valid shell identifier
+  # Quote key and value separately for robust handling of special characters
   if [[ "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
-    export "$key=$value"
+    export "$key"="$value"
   fi
 done < "$ENV_FILE"
 

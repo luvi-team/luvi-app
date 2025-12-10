@@ -71,6 +71,8 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
                       ),
                       child: Text(
                         l10n.authSignInHeadline,
+                        // Figma: Playfair Display Bold 32px, #9F2B68 (headlineMagenta)
+                        // Intentional override: Auth headline requires specific Figma styling
                         style: const TextStyle(
                           fontFamily: 'Playfair Display',
                           fontSize: 32,
@@ -85,8 +87,23 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
 
                   const Spacer(flex: 1),
 
-                  // Auth buttons
+                  // Auth buttons with loading overlay
                   _buildAuthButtons(context, l10n),
+
+                  // Loading indicator during OAuth
+                  if (_oauthLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(top: Spacing.m),
+                      child: SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: DsColors.headlineMagenta,
+                          semanticsLabel: l10n.authSignInLoading,
+                        ),
+                      ),
+                    ),
 
                   const Spacer(flex: 2),
                 ],
@@ -107,13 +124,24 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
 
     if (appleSignInSupported) {
       buttons.add(
-        SizedBox(
-          key: const ValueKey('signin_apple_button'),
-          width: double.infinity,
-          height: Sizes.buttonHeightL,
-          child: SignInWithAppleButton(
-            style: SignInWithAppleButtonStyle.black,
-            onPressed: () => _handleOAuthSignIn(supa.OAuthProvider.apple),
+        AnimatedOpacity(
+          opacity: _oauthLoading ? 0.5 : 1.0,
+          duration: const Duration(milliseconds: 150),
+          child: SizedBox(
+            key: const ValueKey('signin_apple_button'),
+            width: double.infinity,
+            height: Sizes.buttonHeightL,
+            child: Semantics(
+              button: true,
+              enabled: !_oauthLoading,
+              label: l10n.authSignInApple,
+              child: SignInWithAppleButton(
+                style: SignInWithAppleButtonStyle.black,
+                onPressed: _oauthLoading
+                    ? () {} // Prevent taps during loading
+                    : () => _handleOAuthSignIn(supa.OAuthProvider.apple),
+              ),
+            ),
           ),
         ),
       );
@@ -122,14 +150,22 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     // Google Sign In
     if (FeatureFlags.enableGoogleSignIn) {
       buttons.add(
-        SizedBox(
-          key: const ValueKey('signin_google_button'),
-          width: double.infinity,
-          height: 58, // Figma: 58px for Google button
-          child: SignInButton(
-            Buttons.google,
-            text: l10n.authSignInGoogle,
-            onPressed: () => _handleOAuthSignIn(supa.OAuthProvider.google),
+        AnimatedOpacity(
+          opacity: _oauthLoading ? 0.5 : 1.0,
+          duration: const Duration(milliseconds: 150),
+          child: SizedBox(
+            key: const ValueKey('signin_google_button'),
+            width: double.infinity,
+            height: Sizes.buttonHeightL,
+            // Note: sign_in_button package requires non-null onPressed callback.
+            // We use empty callback when loading instead of null.
+            child: SignInButton(
+              Buttons.google,
+              text: l10n.authSignInGoogle,
+              onPressed: _oauthLoading
+                  ? () {}
+                  : () => _handleOAuthSignIn(supa.OAuthProvider.google),
+            ),
           ),
         ),
       );
@@ -137,11 +173,15 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
 
     // Email login outline button
     buttons.add(
-      AuthOutlineButton(
-        key: const ValueKey('signin_email_button'),
-        text: l10n.authSignInEmail,
-        icon: Icons.mail_outline,
-        onPressed: () => context.push(LoginScreen.routeName),
+      AnimatedOpacity(
+        opacity: _oauthLoading ? 0.5 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        child: AuthOutlineButton(
+          key: const ValueKey('signin_email_button'),
+          text: l10n.authSignInEmail,
+          icon: Icons.mail_outline,
+          onPressed: _oauthLoading ? null : () => context.push(LoginScreen.routeName),
+        ),
       ),
     );
 
@@ -169,17 +209,43 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             : supa.LaunchMode.externalApplication,
       );
     } catch (error, stackTrace) {
+      // Report error for diagnostics
       FlutterError.reportError(FlutterErrorDetails(
         exception: error,
         stack: stackTrace,
         library: 'auth_signin_screen',
         context: ErrorDescription('OAuth sign-in failed: ${provider.name}'),
       ));
-      // TODO: Show error snackbar/banner
+
+      // Show provider-specific user-facing error snackbar
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        final errorMessage = _getProviderErrorMessage(l10n, provider);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _oauthLoading = false);
       }
+    }
+  }
+
+  String _getProviderErrorMessage(
+    AppLocalizations l10n,
+    supa.OAuthProvider provider,
+  ) {
+    switch (provider) {
+      case supa.OAuthProvider.apple:
+        return l10n.authSignInAppleError;
+      case supa.OAuthProvider.google:
+        return l10n.authSignInGoogleError;
+      default:
+        return l10n.authSignInOAuthError;
     }
   }
 }
