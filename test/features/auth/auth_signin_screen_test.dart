@@ -46,6 +46,9 @@ void main() {
     // Glass card should be present
     expect(find.byType(AuthGlassCard), findsOneWidget);
     expect(find.byKey(const ValueKey('auth_glass_card')), findsOneWidget);
+
+    final l10n = AppLocalizations.of(tester.element(find.byType(AuthSignInScreen)))!;
+    expect(find.text(l10n.authSignInHeadline), findsOneWidget);
   });
 
   testWidgets('AuthSignInScreen shows email login button', (tester) async {

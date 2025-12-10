@@ -36,6 +36,7 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _emailController = TextEditingController();
+  ProviderSubscription<ResetPasswordState>? _stateSubscription;
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
     // Listen for external state changes and sync controller
     // This avoids controller mutation inside build()
-    ref.listenManual(resetPasswordProvider, (prev, next) {
+    _stateSubscription = ref.listenManual(resetPasswordProvider, (prev, next) {
       if (!mounted) return;
       if (_emailController.text != next.email) {
         _emailController.value = _emailController.value.copyWith(
@@ -61,6 +62,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
   @override
   void dispose() {
+    _stateSubscription?.close();
     _emailController.dispose();
     super.dispose();
   }

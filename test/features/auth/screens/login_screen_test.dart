@@ -54,6 +54,8 @@ void main() {
     // Per Auth v2 refactoring: LoginScreen shows title (not headline)
     // Title uses l10n.authLoginTitle
     expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+    final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
+    expect(find.text(l10n.authLoginTitle), findsOneWidget);
     expect(find.text(AuthStrings.loginCta), findsOneWidget);
   });
 

@@ -95,7 +95,15 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
         setState(() {
           _isInitialized = true;
         });
-        _controller!.play();
+        // Handle play() errors separately as they don't affect initialization
+        _controller!.play().catchError((Object e, StackTrace stack) {
+          log.w(
+            'video_play_failed',
+            tag: 'welcome_video',
+            error: e,
+            stack: stack,
+          );
+        });
       }
     } catch (e, stack) {
       log.w(

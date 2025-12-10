@@ -70,10 +70,10 @@ class WelcomeButton extends StatelessWidget {
       child: isLoading
           ? SizedBox(
               key: loadingKey,
-              height: 20,
-              width: 20,
+              height: Sizes.loadingIndicatorSize,
+              width: Sizes.loadingIndicatorSize,
               child: CircularProgressIndicator(
-                strokeWidth: 2,
+                strokeWidth: Sizes.loadingIndicatorStroke,
                 valueColor: AlwaysStoppedAnimation(DsColors.welcomeButtonText),
               ),
             )

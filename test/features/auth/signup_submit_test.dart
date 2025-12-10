@@ -47,6 +47,12 @@ void main() {
     (widget) => widget is TextField && widget.decoration?.hintText == hint,
   );
 
+  /// Finds the inner ElevatedButton inside a WelcomeButton wrapper.
+  Finder innerElevatedButton(Finder parent) => find.descendant(
+    of: parent,
+    matching: find.byType(ElevatedButton),
+  );
+
   group('AuthSignupScreen submit behaviour', () {
     late GoRouter router;
 
@@ -129,11 +135,9 @@ void main() {
       expect(find.text('Email already registered'), findsOneWidget);
 
       // WelcomeButton wraps ElevatedButton - find the inner ElevatedButton
-      final elevatedButtonFinder = find.descendant(
-        of: buttonFinder,
-        matching: find.byType(ElevatedButton),
+      final button = tester.widget<ElevatedButton>(
+        innerElevatedButton(buttonFinder),
       );
-      final button = tester.widget<ElevatedButton>(elevatedButtonFinder);
       expect(button.onPressed, isNotNull);
     });
 
@@ -166,11 +170,9 @@ void main() {
       expect(find.byKey(const ValueKey('signup_cta_loading')), findsOneWidget);
 
       // WelcomeButton wraps ElevatedButton - find the inner ElevatedButton
-      final elevatedButtonFinder = find.descendant(
-        of: buttonFinder,
-        matching: find.byType(ElevatedButton),
+      final loadingButton = tester.widget<ElevatedButton>(
+        innerElevatedButton(buttonFinder),
       );
-      final loadingButton = tester.widget<ElevatedButton>(elevatedButtonFinder);
       expect(loadingButton.onPressed, isNull);
 
       completer.complete(AuthResponse(session: null, user: null));

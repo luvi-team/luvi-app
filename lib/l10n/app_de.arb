@@ -674,10 +674,6 @@
   "@authLoginTitle": {
     "description": "Titel auf dem Login-Screen (Figma Auth UI v2)."
   },
-  "authLoginForgotPassword": "Passwort vergessen?",
-  "@authLoginForgotPassword": {
-    "description": "Link zum Passwort-vergessen-Flow (Figma Auth UI v2)."
-  },
   "authLoginSubhead": "Schön, dass du da bist.",
   "@authLoginSubhead": {
     "description": "Unterzeile auf dem Login-Screen."
@@ -963,7 +959,7 @@
   "@authSuccessTitle": {
     "description": "Titel auf dem Success-Screen."
   },
-  "authSuccessSubtitle": "Neues Passwort gespeichert.",
+  "authSuccessSubtitle": "Dein neues Passwort wurde gespeichert.",
   "@authSuccessSubtitle": {
     "description": "Untertitel auf dem Success-Screen."
   },

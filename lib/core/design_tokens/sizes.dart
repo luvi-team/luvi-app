@@ -26,5 +26,13 @@ class Sizes {
   /// Auth Glass Card Border Radius (Figma: 40px)
   static const double glassCardRadius = 40.0;
 
+  // ─── Loading Indicator (Button spinner) ───
+
+  /// Loading indicator size inside buttons (Figma: 20px)
+  static const double loadingIndicatorSize = 20.0;
+
+  /// Loading indicator stroke width (Figma: 2px)
+  static const double loadingIndicatorStroke = 2.0;
+
   Sizes._();
 }

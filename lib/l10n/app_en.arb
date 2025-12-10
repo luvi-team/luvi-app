@@ -642,10 +642,6 @@
   "@authLoginTitle": {
     "description": "Title on login screen (Figma Auth UI v2)."
   },
-  "authLoginForgotPassword": "Forgot password?",
-  "@authLoginForgotPassword": {
-    "description": "Link to forgot password flow (Figma Auth UI v2)."
-  },
   "authLoginSubhead": "We're glad you're here.",
   "@authLoginSubhead": {
     "description": "Subheadline displayed under the login headline."
@@ -909,7 +905,7 @@
   },
   "authSignInApple": "Sign in with Apple",
   "@authSignInApple": {
-    "description": "Semantics label for the Apple login button on the SignIn screen."
+    "description": "Label for Apple Sign In button (used in Semantics wrapper on SignIn screen)."
   },
   "authSignInLoading": "Signing in",
   "@authSignInLoading": {

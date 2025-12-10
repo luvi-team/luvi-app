@@ -127,19 +127,20 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
         AnimatedOpacity(
           opacity: _oauthLoading ? 0.5 : 1.0,
           duration: const Duration(milliseconds: 150),
-          child: SizedBox(
-            key: const ValueKey('signin_apple_button'),
-            width: double.infinity,
-            height: Sizes.buttonHeightL,
-            child: Semantics(
-              button: true,
-              enabled: !_oauthLoading,
-              label: l10n.authSignInApple,
-              child: SignInWithAppleButton(
-                style: SignInWithAppleButtonStyle.black,
-                onPressed: _oauthLoading
-                    ? () {} // Prevent taps during loading
-                    : () => _handleOAuthSignIn(supa.OAuthProvider.apple),
+          child: IgnorePointer(
+            ignoring: _oauthLoading,
+            child: SizedBox(
+              key: const ValueKey('signin_apple_button'),
+              width: double.infinity,
+              height: Sizes.buttonHeightL,
+              child: Semantics(
+                button: true,
+                enabled: !_oauthLoading,
+                label: l10n.authSignInApple,
+                child: SignInWithAppleButton(
+                  style: SignInWithAppleButtonStyle.black,
+                  onPressed: () => _handleOAuthSignIn(supa.OAuthProvider.apple),
+                ),
               ),
             ),
           ),
@@ -153,18 +154,17 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
         AnimatedOpacity(
           opacity: _oauthLoading ? 0.5 : 1.0,
           duration: const Duration(milliseconds: 150),
-          child: SizedBox(
-            key: const ValueKey('signin_google_button'),
-            width: double.infinity,
-            height: Sizes.buttonHeightL,
-            // Note: sign_in_button package requires non-null onPressed callback.
-            // We use empty callback when loading instead of null.
-            child: SignInButton(
-              Buttons.google,
-              text: l10n.authSignInGoogle,
-              onPressed: _oauthLoading
-                  ? () {}
-                  : () => _handleOAuthSignIn(supa.OAuthProvider.google),
+          child: IgnorePointer(
+            ignoring: _oauthLoading,
+            child: SizedBox(
+              key: const ValueKey('signin_google_button'),
+              width: double.infinity,
+              height: Sizes.buttonHeightL,
+              child: SignInButton(
+                Buttons.google,
+                text: l10n.authSignInGoogle,
+                onPressed: () => _handleOAuthSignIn(supa.OAuthProvider.google),
+              ),
             ),
           ),
         ),
