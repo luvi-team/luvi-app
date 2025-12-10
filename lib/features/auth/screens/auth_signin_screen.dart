@@ -2,15 +2,13 @@ import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sign_in_button/sign_in_button.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/widgets/auth_conic_gradient_background.dart';
 import 'package:luvi_app/features/auth/widgets/auth_glass_card.dart';
@@ -72,12 +70,11 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
                       child: Text(
                         l10n.authSignInHeadline,
                         // Figma: Playfair Display Bold 32px, #9F2B68 (headlineMagenta)
-                        // Intentional override: Auth headline requires specific Figma styling
                         style: const TextStyle(
-                          fontFamily: 'Playfair Display',
-                          fontSize: 32,
+                          fontFamily: FontFamilies.playfairDisplay,
+                          fontSize: AuthTypography.headlineFontSize,
                           fontWeight: FontWeight.bold,
-                          height: 40 / 32,
+                          height: AuthTypography.headlineLineHeight,
                           color: DsColors.headlineMagenta,
                         ),
                         textAlign: TextAlign.center,
@@ -127,21 +124,16 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
         AnimatedOpacity(
           opacity: _oauthLoading ? 0.5 : 1.0,
           duration: const Duration(milliseconds: 150),
-          child: IgnorePointer(
-            ignoring: _oauthLoading,
-            child: SizedBox(
+          child: Semantics(
+            button: true,
+            enabled: !_oauthLoading,
+            label: l10n.authSignInApple,
+            child: AuthOutlineButton.apple(
               key: const ValueKey('signin_apple_button'),
-              width: double.infinity,
-              height: Sizes.buttonHeightL,
-              child: Semantics(
-                button: true,
-                enabled: !_oauthLoading,
-                label: l10n.authSignInApple,
-                child: SignInWithAppleButton(
-                  style: SignInWithAppleButtonStyle.black,
-                  onPressed: () => _handleOAuthSignIn(supa.OAuthProvider.apple),
-                ),
-              ),
+              text: l10n.authSignInApple,
+              onPressed: _oauthLoading
+                  ? null
+                  : () => _handleOAuthSignIn(supa.OAuthProvider.apple),
             ),
           ),
         ),
@@ -154,22 +146,16 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
         AnimatedOpacity(
           opacity: _oauthLoading ? 0.5 : 1.0,
           duration: const Duration(milliseconds: 150),
-          child: IgnorePointer(
-            ignoring: _oauthLoading,
-            child: SizedBox(
+          child: Semantics(
+            button: true,
+            enabled: !_oauthLoading,
+            label: l10n.authSignInGoogle,
+            child: AuthOutlineButton.google(
               key: const ValueKey('signin_google_button'),
-              width: double.infinity,
-              height: Sizes.buttonHeightL,
-              child: Semantics(
-                button: true,
-                enabled: !_oauthLoading,
-                label: l10n.authSignInGoogle,
-                child: SignInButton(
-                  Buttons.google,
-                  text: l10n.authSignInGoogle,
-                  onPressed: () => _handleOAuthSignIn(supa.OAuthProvider.google),
-                ),
-              ),
+              text: l10n.authSignInGoogle,
+              onPressed: _oauthLoading
+                  ? null
+                  : () => _handleOAuthSignIn(supa.OAuthProvider.google),
             ),
           ),
         ),
@@ -185,6 +171,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
           key: const ValueKey('signin_email_button'),
           text: l10n.authSignInEmail,
           icon: Icons.mail_outline,
+          borderColor: DsColors.authOutlineBorder,
           onPressed: _oauthLoading ? null : () => context.push(LoginScreen.routeName),
         ),
       ),

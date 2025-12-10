@@ -1,48 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 
-/// Outline button for "Anmelden mit E-Mail" on the SignIn screen.
+/// Unified auth button with pill shape for SignIn screen.
 ///
 /// Figma Details:
-/// - Background: #FFFFFF (white)
-/// - Border: 1px solid #E5E7EB (light gray)
 /// - Height: 58px
 /// - Border Radius: pill (29px for 58px height)
-/// - Icon: Mail icon on the left
-/// - Text: Centered text
+/// - Supports different color variants (Apple=black, Google/Email=white)
 class AuthOutlineButton extends StatelessWidget {
   const AuthOutlineButton({
     super.key,
     required this.text,
     required this.onPressed,
     this.icon,
+    this.svgAsset,
+    this.backgroundColor,
+    this.textColor,
+    this.borderColor,
   });
 
   final String text;
   final VoidCallback? onPressed;
   final IconData? icon;
 
+  /// Optional SVG asset path (e.g., 'assets/icons/google_g.svg')
+  final String? svgAsset;
+
+  /// Background color (default: white)
+  final Color? backgroundColor;
+
+  /// Text/icon color (default: authOutlineText)
+  final Color? textColor;
+
+  /// Border color (default: authOutlineBorder, null = no border for filled buttons)
+  final Color? borderColor;
+
+  /// Factory constructor for Apple Sign In button (black with white text)
+  factory AuthOutlineButton.apple({
+    Key? key,
+    required String text,
+    required VoidCallback? onPressed,
+  }) {
+    return AuthOutlineButton(
+      key: key,
+      text: text,
+      onPressed: onPressed,
+      icon: Icons.apple,
+      backgroundColor: DsColors.black,
+      textColor: DsColors.white,
+      borderColor: null, // No border for filled black button
+    );
+  }
+
+  /// Factory constructor for Google Sign In button (white with border + Google logo)
+  factory AuthOutlineButton.google({
+    Key? key,
+    required String text,
+    required VoidCallback? onPressed,
+  }) {
+    return AuthOutlineButton(
+      key: key,
+      text: text,
+      onPressed: onPressed,
+      svgAsset: 'assets/icons/google_g.svg',
+      backgroundColor: DsColors.white,
+      textColor: DsColors.authOutlineText,
+      borderColor: DsColors.authOutlineBorder,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bgColor = backgroundColor ?? DsColors.white;
+    final fgColor = textColor ?? DsColors.authOutlineText;
+    final border = borderColor;
+
     return SizedBox(
       height: Sizes.buttonHeightOutline,
       width: double.infinity,
-      child: OutlinedButton(
+      child: ElevatedButton(
         onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: DsColors.white,
-          foregroundColor: DsColors.authOutlineText,
-          side: const BorderSide(color: DsColors.authOutlineBorder),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: bgColor,
+          foregroundColor: fgColor,
+          elevation: 0,
+          shadowColor: DsColors.transparent,
+          side: border != null ? BorderSide(color: border) : BorderSide.none,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Sizes.buttonHeightOutline / 2),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: Sizes.buttonPaddingHorizontal),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (icon != null) ...[
+            if (svgAsset != null) ...[
+              SvgPicture.asset(
+                svgAsset!,
+                width: Sizes.iconM,
+                height: Sizes.iconM,
+              ),
+              const SizedBox(width: 12),
+            ] else if (icon != null) ...[
               Icon(icon, size: Sizes.iconM),
               const SizedBox(width: 12),
             ],
@@ -51,6 +112,7 @@ class AuthOutlineButton extends StatelessWidget {
                 text,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w600,
+                  color: fgColor,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),

@@ -85,9 +85,13 @@ void main() {
           findsOneWidget,
         );
 
-        // 4. Verify it's actually English (not German)
-        expect(find.text('Start now'), findsOneWidget);
-        expect(find.text('Jetzt loslegen'), findsNothing);
+        // 3. Assertions against REAL L10n values
+        expect(find.text(l10n.welcome05Title), findsOneWidget);
+        expect(find.text(l10n.welcome05Subtitle), findsOneWidget);
+        expect(
+          find.widgetWithText(ElevatedButton, l10n.welcome05PrimaryCta),
+          findsOneWidget,
+        );
       });
     });
   });

@@ -9,7 +9,7 @@ class LoginPasswordField extends StatelessWidget {
     super.key,
     required this.controller,
     required this.errorText,
-    required this.onChanged,
+    this.onChanged,
     required this.obscure,
     required this.onToggleObscure,
     this.onSubmitted,
@@ -23,7 +23,9 @@ class LoginPasswordField extends StatelessWidget {
 
   final TextEditingController controller;
   final String? errorText;
-  final ValueChanged<String> onChanged;
+  /// Callback when text changes. Optional - use when you need to track changes
+  /// for validation or state updates. If null, TextField handles internally.
+  final ValueChanged<String>? onChanged;
   final bool obscure;
   final VoidCallback onToggleObscure;
   final ValueChanged<String>? onSubmitted;

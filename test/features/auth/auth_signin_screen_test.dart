@@ -9,8 +9,8 @@ import 'package:luvi_app/features/auth/widgets/auth_outline_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
-Widget _buildRouterHarness() {
-  final router = GoRouter(
+GoRouter _createRouter() {
+  return GoRouter(
     initialLocation: AuthSignInScreen.routeName,
     routes: [
       GoRoute(
@@ -24,6 +24,9 @@ Widget _buildRouterHarness() {
       ),
     ],
   );
+}
+
+Widget _buildRouterHarness(GoRouter router) {
   return ProviderScope(
     child: MaterialApp.router(
       routerConfig: router,
@@ -40,7 +43,7 @@ void main() {
   testWidgets('AuthSignInScreen shows glass card with headline', (
     tester,
   ) async {
-    await tester.pumpWidget(_buildRouterHarness());
+    await tester.pumpWidget(_buildRouterHarness(_createRouter()));
     await tester.pumpAndSettle();
 
     // Glass card should be present
@@ -52,16 +55,16 @@ void main() {
   });
 
   testWidgets('AuthSignInScreen shows email login button', (tester) async {
-    await tester.pumpWidget(_buildRouterHarness());
+    await tester.pumpWidget(_buildRouterHarness(_createRouter()));
     await tester.pumpAndSettle();
 
-    // Email button should always be visible
-    expect(find.byType(AuthOutlineButton), findsOneWidget);
+    // Email button should always be visible (AuthOutlineButton is used for all social buttons now)
+    expect(find.byType(AuthOutlineButton), findsWidgets);
     expect(find.byKey(const ValueKey('signin_email_button')), findsOneWidget);
   });
 
   testWidgets('Email button navigates to /auth/login', (tester) async {
-    await tester.pumpWidget(_buildRouterHarness());
+    await tester.pumpWidget(_buildRouterHarness(_createRouter()));
     await tester.pumpAndSettle();
 
     final emailButton = find.byKey(const ValueKey('signin_email_button'));

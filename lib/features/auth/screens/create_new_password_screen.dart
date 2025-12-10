@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
@@ -201,8 +202,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
     // Figma: Title style - Playfair Display Bold, 24px
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: 24,
-      height: 32 / 24,
+      fontSize: AuthTypography.titleFontSize,
+      height: AuthTypography.titleLineHeight,
       fontWeight: FontWeight.bold,
       color: theme.colorScheme.onSurface,
     );
@@ -247,7 +248,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
               onToggleObscure: () {
                 setState(() => _obscureNewPassword = !_obscureNewPassword);
               },
-              onChanged: (_) {},
               hintText: l10n.authNewPasswordHint,
               textInputAction: TextInputAction.next,
             ),
@@ -265,7 +265,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                 setState(
                     () => _obscureConfirmPassword = !_obscureConfirmPassword);
               },
-              onChanged: (_) {},
               hintText: l10n.authConfirmPasswordHint,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) {

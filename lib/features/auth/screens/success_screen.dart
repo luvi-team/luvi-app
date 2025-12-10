@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/widgets/auth_radial_gradient_background.dart';
 import 'package:luvi_app/features/auth/widgets/glow_checkmark.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
@@ -31,18 +32,18 @@ class SuccessScreen extends StatelessWidget {
 
     // Figma: Title style - Playfair Display Regular, 32px
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontFamily: 'Playfair Display',
-      fontSize: 32,
-      height: 40 / 32,
+      fontFamily: FontFamilies.playfairDisplay,
+      fontSize: AuthTypography.successTitleFontSize,
+      height: AuthTypography.successTitleLineHeight,
       fontWeight: FontWeight.w400,
       color: theme.colorScheme.onSurface,
     );
 
     // Figma: Subtitle style - Playfair Display Regular, 24px
     final subtitleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontFamily: 'Playfair Display',
-      fontSize: 24,
-      height: 32 / 24,
+      fontFamily: FontFamilies.playfairDisplay,
+      fontSize: AuthTypography.successSubtitleFontSize,
+      height: AuthTypography.successSubtitleLineHeight,
       fontWeight: FontWeight.w400,
       color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
     );

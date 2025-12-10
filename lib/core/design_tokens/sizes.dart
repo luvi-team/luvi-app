@@ -35,6 +35,9 @@ class Sizes {
   /// Auth Outline Button Height (Figma: 58px for E-Mail/Google buttons)
   static const double buttonHeightOutline = 58.0;
 
+  /// Auth Outline Button Horizontal Padding (Figma: 24px)
+  static const double buttonPaddingHorizontal = 24.0;
+
   // ─── Auth Typography (Figma Auth UI v2) ───
 
   /// Auth screen title fontSize (Figma: Playfair Display Bold 24px)

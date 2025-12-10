@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 
-/// Radial gradient background for the Success screen.
+/// Radial gradient background for authentication screens.
 ///
 /// Figma Gradient Details:
 /// - Type: Radial Gradient

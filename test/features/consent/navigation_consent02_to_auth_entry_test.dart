@@ -92,14 +92,14 @@ void main() {
     );
 
     // Verify email sign-in button is present and enabled
-    // AuthOutlineButton wraps an OutlinedButton internally
+    // AuthOutlineButton wraps an ElevatedButton internally
     final emailButtonFinder = find.byKey(const ValueKey('signin_email_button'));
     expect(emailButtonFinder, findsOneWidget);
-    final outlinedButton = find.descendant(
+    final elevatedButton = find.descendant(
       of: emailButtonFinder,
-      matching: find.byType(OutlinedButton),
+      matching: find.byType(ElevatedButton),
     );
-    final button = tester.widget<OutlinedButton>(outlinedButton);
+    final button = tester.widget<ElevatedButton>(elevatedButton);
     expect(button.onPressed, isNotNull);
   });
 

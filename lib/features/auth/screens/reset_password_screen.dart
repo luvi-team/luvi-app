@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/state/reset_password_state.dart';
@@ -74,12 +75,14 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
     final state = ref.watch(resetPasswordProvider);
     final submitState = ref.watch(resetSubmitProvider);
-    final errorText = state.error != null ? l10n.authErrEmailInvalid : null;
+
+    // Map specific error types to localized messages for extensibility
+    final errorText = _errorTextFor(state.error, l10n);
 
     // Figma: Title style - Playfair Display Bold, 24px
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: Sizes.authTitleFontSize,
-      height: Sizes.authTitleLineHeight,
+      fontSize: AuthTypography.titleFontSize,
+      height: AuthTypography.titleLineHeight,
       fontWeight: FontWeight.bold,
       color: theme.colorScheme.onSurface,
     );
@@ -178,5 +181,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         ),
       ),
     );
+  }
+}
+
+/// Maps [ResetPasswordError] to localized user-facing messages.
+///
+/// Explicit switch ensures compile-time exhaustiveness check when new
+/// error types are added to [ResetPasswordError].
+String? _errorTextFor(ResetPasswordError? error, AppLocalizations l10n) {
+  if (error == null) return null;
+
+  switch (error) {
+    case ResetPasswordError.invalidEmail:
+      return l10n.authErrEmailInvalid;
   }
 }

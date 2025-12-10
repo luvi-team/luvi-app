@@ -133,8 +133,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     // Figma: Title style - Playfair Display Bold, 24px (same as Login)
     final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: 24,
-      height: 32 / 24,
+      fontSize: Sizes.authTitleFontSize,
+      height: Sizes.authTitleLineHeight,
       fontWeight: FontWeight.bold,
       color: theme.colorScheme.onSurface,
     );

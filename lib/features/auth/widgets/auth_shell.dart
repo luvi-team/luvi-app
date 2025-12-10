@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 
@@ -78,6 +79,9 @@ class AuthShell extends StatelessWidget {
                     child: BackButtonCircle(
                       key: const ValueKey('backButtonCircle'),
                       onPressed: onBackPressed!,
+                      // Figma: Back button without circle background
+                      backgroundColor: DsColors.transparent,
+                      iconColor: DsColors.textPrimary,
                     ),
                   ),
                 ),
@@ -88,7 +92,15 @@ class AuthShell extends StatelessWidget {
                   physics: const ClampingScrollPhysics(),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  padding: EdgeInsets.only(
+                    left: horizontalPadding,
+                    right: horizontalPadding,
+                    // Add bottom safe area padding when no bottomCta is present
+                    // to prevent content from being obscured by home indicator
+                    bottom: bottomCta == null
+                        ? MediaQuery.of(context).padding.bottom
+                        : 0,
+                  ),
                   child: child,
                 ),
               ),

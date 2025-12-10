@@ -155,6 +155,14 @@ class DsColors {
 
   /// Outline Button Text/Icon Color (Figma: #1F2937)
   static const Color authOutlineText = Color(0xFF1F2937);
+
+  // ─── Base Colors (Common Utility) ───
+
+  /// Pure black (#000000) for filled buttons like Apple Sign-In.
+  static const Color black = Color(0xFF000000);
+
+  /// Fully transparent color for backgrounds that should show through.
+  static const Color transparent = Color(0x00000000);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.
