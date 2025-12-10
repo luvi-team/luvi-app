@@ -16,7 +16,7 @@ void main() {
       contents.contains(AppLinks.oauthRedirectUri),
       isTrue,
       reason:
-          'Keep docs/dev/supabase_auth_settings.md in sync with AppLinks.authCallbackUri.',
+          'Keep docs/dev/supabase_auth_settings.md in sync with AppLinks.oauthRedirectUri.',
     );
   });
 }

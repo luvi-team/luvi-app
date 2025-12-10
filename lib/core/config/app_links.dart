@@ -50,6 +50,11 @@ class AppLinks {
         );
         return true;
       }());
+      // Also log in release for visibility into config issues
+      log.w(
+        'app_links_invalid_auth_callback',
+        error: 'Invalid OAUTH_REDIRECT_URI, using fallback',
+      );
     }
     final scheme = _rawCallbackScheme.trim().isEmpty
         ? 'luvi'

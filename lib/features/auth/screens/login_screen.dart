@@ -5,6 +5,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
@@ -109,8 +110,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           if (router.canPop()) {
             router.pop();
           } else {
-            // Navigate to sign-in or landing screen
-            context.go('/auth/signin');
+            // Navigate to sign-in using SSOT route constant
+            context.go(AuthSignInScreen.routeName);
           }
         },
         child: Column(

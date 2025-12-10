@@ -127,7 +127,14 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    // Explicit null check with clear failure message for debugging
+    final localizations = AppLocalizations.of(context);
+    assert(
+      localizations != null,
+      'AppLocalizations not configured. Ensure localizationsDelegates '
+      'include AppLocalizations.delegate in MaterialApp.',
+    );
+    final l10n = localizations!;
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
 

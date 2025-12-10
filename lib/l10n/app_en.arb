@@ -640,7 +640,7 @@
   },
   "authLoginTitle": "Sign in with Email",
   "@authLoginTitle": {
-    "description": "Title on login screen (Figma Auth UI v2)."
+    "description": "Title on login screen (Figma Auth UI v2). NOTE: Intentionally shares text with authSignInEmail for translation flexibility - authLoginTitle is screen title, authSignInEmail is button text. Keep separate keys for future localization divergence."
   },
   "authLoginSubhead": "We're glad you're here.",
   "@authLoginSubhead": {
@@ -953,7 +953,7 @@
   },
   "authCreatePasswordCta": "Reset password",
   "@authCreatePasswordCta": {
-    "description": "CTA button text on the Create New Password screen."
+    "description": "CTA button text on the Create New Password screen. NOTE: Intentionally shares text with authResetCta - both are 'Reset password' CTAs but in different screen contexts (password entry vs email entry). Keep separate for localization flexibility."
   },
   "authSuccessTitle": "Done!",
   "@authSuccessTitle": {
@@ -961,7 +961,7 @@
   },
   "authSuccessSubtitle": "Your new password has been saved.",
   "@authSuccessSubtitle": {
-    "description": "Subtitle on the Success screen."
+    "description": "Subtitle on the Success screen. NOTE: Intentionally shares text with authSuccessPwdSubtitle for translation flexibility - both refer to password-saved success state but in different screen contexts."
   },
   "authSuccessBackToLogin": "Back to sign in",
   "@authSuccessBackToLogin": {

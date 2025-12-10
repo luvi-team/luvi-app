@@ -91,7 +91,9 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
       if (mounted && _controller != null) {
         // Configure: loop, muted
         await _controller!.setLooping(true);
+        if (!mounted || _controller == null) return;
         await _controller!.setVolume(0);
+        if (!mounted || _controller == null) return;
         setState(() {
           _isInitialized = true;
         });

@@ -672,7 +672,7 @@
   },
   "authLoginTitle": "Anmelden mit E-Mail",
   "@authLoginTitle": {
-    "description": "Titel auf dem Login-Screen (Figma Auth UI v2)."
+    "description": "Titel auf dem Login-Screen (Figma Auth UI v2). HINWEIS: Teilt absichtlich den Text mit authSignInEmail für Übersetzungsflexibilität - authLoginTitle ist Bildschirmtitel, authSignInEmail ist Button-Text. Separate Keys für zukünftige Lokalisierungsabweichungen beibehalten."
   },
   "authLoginSubhead": "Schön, dass du da bist.",
   "@authLoginSubhead": {
@@ -953,7 +953,7 @@
   },
   "authCreatePasswordCta": "Passwort zurücksetzen",
   "@authCreatePasswordCta": {
-    "description": "CTA-Button-Text auf dem Create-New-Password-Screen."
+    "description": "CTA-Button-Text auf dem Create-New-Password-Screen. HINWEIS: Teilt absichtlich den Text mit authResetCta - beide sind 'Passwort zurücksetzen' CTAs, aber in unterschiedlichen Bildschirm-Kontexten (Passwort-Eingabe vs. E-Mail-Eingabe). Separate Keys für Lokalisierungsflexibilität beibehalten."
   },
   "authSuccessTitle": "Geschafft!",
   "@authSuccessTitle": {
@@ -961,7 +961,7 @@
   },
   "authSuccessSubtitle": "Dein neues Passwort wurde gespeichert.",
   "@authSuccessSubtitle": {
-    "description": "Untertitel auf dem Success-Screen."
+    "description": "Untertitel auf dem Success-Screen. HINWEIS: Teilt absichtlich den Text mit authSuccessPwdSubtitle für Übersetzungsflexibilität - beide beziehen sich auf Passwort-gespeichert-Erfolg, aber in unterschiedlichen Bildschirm-Kontexten."
   },
   "authSuccessBackToLogin": "Zurück zur Anmeldung",
   "@authSuccessBackToLogin": {

@@ -207,7 +207,23 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             : supa.LaunchMode.externalApplication,
       );
     } catch (error, stackTrace) {
-      // Report error for diagnostics
+      // Detect user-initiated OAuth cancellations - these are expected user actions,
+      // not errors, so we skip error reporting and snackbar display.
+      final errorString = error.toString().toLowerCase();
+      final isCancellation = errorString.contains('cancel') ||
+          errorString.contains('canceled') ||
+          errorString.contains('cancelled') ||
+          errorString.contains('user cancelled') ||
+          errorString.contains('user canceled') ||
+          errorString.contains('user_cancelled') ||
+          errorString.contains('user_canceled');
+
+      if (isCancellation) {
+        // User cancelled OAuth flow - silently return without error
+        return;
+      }
+
+      // Report actual error for diagnostics
       FlutterError.reportError(FlutterErrorDetails(
         exception: error,
         stack: stackTrace,

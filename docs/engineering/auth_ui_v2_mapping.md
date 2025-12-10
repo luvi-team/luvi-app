@@ -217,7 +217,7 @@ Wie Login, aber mit Subtitle-Text und nur 1 Input.
 | Size | 16px |
 | Line Height | 24px |
 | Color | #010100 |
-| Text | "Gib deine E-Mail ein und wir schicken dir einen für Link zum Zurücksetzen zu." |
+| Text | "Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu." |
 | Gap to Title | 8px |
 
 ---

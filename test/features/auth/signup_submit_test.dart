@@ -209,9 +209,8 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
 
       // After API call completes, pump to show SnackBar
-      await tester.pump(); // Trigger setState after async
-      await tester.pump(); // Build SnackBar
-
+      await tester.pump(); // First pump: trigger setState after async completes
+      await tester.pump(); // Second pump: build SnackBar overlay
       // SnackBar should be visible
       expect(find.byType(SnackBar), findsOneWidget);
 
