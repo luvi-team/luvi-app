@@ -192,11 +192,12 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
             const SizedBox(height: Spacing.l + Spacing.xs), // 32px
 
             // Email field
+            // Auth-Flow Bugfix: Keyboard öffnet nicht automatisch
             LoginEmailField(
               key: const ValueKey('signup_email_field'),
               controller: _emailController,
               errorText: null,
-              autofocus: true,
+              autofocus: false,
               onChanged: (_) {
                 if (_errorMessage != null) {
                   setState(() => _errorMessage = null);
