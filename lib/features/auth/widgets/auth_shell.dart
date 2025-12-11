@@ -57,13 +57,20 @@ class AuthShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // Full-screen gradient background
-        Positioned.fill(child: background),
+    // Auth-Flow Bugfix: Tap-to-dismiss Keyboard
+    // HitTestBehavior.translucent erlaubt das Durchreichen von Taps an Kinder
+    // (Buttons/Links funktionieren weiterhin), während gleichzeitig das Keyboard
+    // bei Tap auf leere Flächen geschlossen wird.
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.translucent,
+      child: Stack(
+        children: [
+          // Full-screen gradient background
+          Positioned.fill(child: background),
 
-        // Main content with SafeArea
-        SafeArea(
+          // Main content with SafeArea
+          SafeArea(
           bottom: false,
           child: Column(
             children: [
@@ -121,7 +128,8 @@ class AuthShell extends StatelessWidget {
             ],
           ),
         ),
-      ],
+        ],
+      ),
     );
   }
 }

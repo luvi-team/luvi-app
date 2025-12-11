@@ -144,11 +144,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: AuthLayout.ctaTopAfterCopy),
 
             // Email field
+            // Auth-Flow Bugfix: Keyboard öffnet nicht automatisch
             LoginEmailField(
               key: const ValueKey('login_email_field'),
               controller: _emailController,
               errorText: emailError,
-              autofocus: true,
+              autofocus: false,
               onChanged: _onEmailChanged,
             ),
 

@@ -260,6 +260,9 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   final isAuthSignIn = state.matchedLocation.startsWith(
     AuthSignInScreen.routeName,
   );
+  // Auth-Flow Bugfix: Signup und Reset-Routen ohne Session erlauben
+  final isSigningUp = state.matchedLocation.startsWith(AuthSignupScreen.routeName);
+  final isResettingPassword = state.matchedLocation.startsWith(ResetPasswordScreen.routeName);
   final isOnboarding = isOnboardingRoute(state.matchedLocation);
   final isWelcome = isWelcomeRoute(state.matchedLocation);
   final isConsent = isConsentRoute(state.matchedLocation);
@@ -295,13 +298,17 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   }
 
   if (session == null) {
-    if (isLoggingIn || isAuthSignIn) {
+    // Auth-Flow Bugfix: Alle Auth-Screens ohne Session erlauben
+    if (isLoggingIn || isAuthSignIn || isSigningUp || isResettingPassword) {
       return null;
     }
     return AuthSignInScreen.routeName;
   }
-  if (isLoggingIn) {
-    return Onboarding01Screen.routeName;
+  // Auth-Flow Bugfix: Nach Login (E-Mail ODER OAuth) mit Session → zu Splash
+  // Splash macht die First-Time/Returning-User-Logik async und korrekt
+  // Hinweis: session ist hier garantiert != null (oben bereits geprüft)
+  if (isLoggingIn || isAuthSignIn) {
+    return SplashScreen.routeName;
   }
   return null;
 }

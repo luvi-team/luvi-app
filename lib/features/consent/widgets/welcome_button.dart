@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/design_tokens/colors.dart';
 import '../../../core/design_tokens/sizes.dart';
 
@@ -54,7 +55,13 @@ class WelcomeButton extends StatelessWidget {
     // ElevatedButton provides built-in button semantics with child text as label.
     // No explicit Semantics wrapper needed.
     return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
+      // Auth-Flow Bugfix: Dezentes haptisches Feedback bei Button-Tap
+      onPressed: isLoading || onPressed == null
+          ? null
+          : () {
+              HapticFeedback.lightImpact();
+              onPressed!();
+            },
       style: ElevatedButton.styleFrom(
         backgroundColor: DsColors.welcomeButtonBg,
         foregroundColor: DsColors.welcomeButtonText,
