@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../support/test_config.dart';
 
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/core/navigation/routes.dart' as routes;
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -147,5 +150,69 @@ void main() {
     final plainText = richText.text.toPlainText();
     expect(plainText, contains(l10n.authLoginCtaLinkPrefix));
     expect(plainText, contains(l10n.authLoginCtaLinkAction));
+  });
+
+  testWidgets('tapping signup link navigates to AuthSignupScreen', (
+    tester,
+  ) async {
+    final view = tester.view;
+    view.physicalSize = const Size(1080, 2340);
+    view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      view.resetPhysicalSize();
+      view.resetDevicePixelRatio();
+    });
+
+    final mockRepo = _MockAuthRepository();
+    when(
+      () => mockRepo.signInWithPassword(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenThrow(AuthException('invalid credentials'));
+
+    final router = GoRouter(
+      routes: routes.featureRoutes,
+      initialLocation: LoginScreen.routeName,
+    );
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.buildAppTheme(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify we start on LoginScreen
+    expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+
+    // Scroll down to ensure the signup link is visible
+    await tester.drag(
+      find.byType(SingleChildScrollView),
+      const Offset(0, -200),
+    );
+    await tester.pumpAndSettle();
+
+    // Tap the signup link
+    final signupLink = find.byKey(const ValueKey('login_signup_link'));
+    expect(signupLink, findsOneWidget);
+    await tester.tap(signupLink);
+    await tester.pumpAndSettle();
+
+    // Verify navigation to AuthSignupScreen
+    expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
   });
 }
