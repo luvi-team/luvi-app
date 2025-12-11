@@ -51,7 +51,19 @@ class AppLinks {
     }
     final scheme = _rawCallbackScheme.trim();
     final host = _rawCallbackHost.trim();
-    return Uri(scheme: scheme, host: host);
+
+    // Validate scheme and host are non-empty before constructing Uri
+    if (scheme.isNotEmpty && host.isNotEmpty) {
+      return Uri(scheme: scheme, host: host);
+    }
+
+    // Single consolidated warning for invalid scheme/host configuration
+    log.w(
+      'app_links_invalid_auth_callback',
+      error: 'Invalid AUTH_CALLBACK_SCHEME="$scheme" or HOST="$host", '
+          'using default luvi://auth-callback',
+    );
+    return Uri(scheme: 'luvi', host: 'auth-callback');
   }
 }
 /// Defines the API for retrieving legal link configuration (privacy/terms) and

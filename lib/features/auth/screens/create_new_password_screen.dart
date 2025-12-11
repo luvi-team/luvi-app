@@ -317,8 +317,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
               style: titleStyle,
             ),
 
-            // Gap between title and inputs
-            const SizedBox(height: Spacing.l + Spacing.xs), // 32px
+            // Gap between title and inputs (Figma: 32px)
+            const SizedBox(height: Spacing.authGlassCardVertical),
 
             // New password field with inline validation
             LoginPasswordField(
@@ -335,7 +335,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             ),
 
             // Figma: Gap between inputs = 20px
-            const SizedBox(height: Spacing.goalCardVertical),
+            const SizedBox(height: AuthLayout.inputGap),
 
             // Confirm password field with inline mismatch validation
             LoginPasswordField(
@@ -355,8 +355,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
               },
             ),
 
-            // Gap before CTA
-            const SizedBox(height: Spacing.l + Spacing.m), // 40px
+            // Gap before CTA (Figma: 40px)
+            const SizedBox(height: AuthLayout.inputToCta),
 
             // CTA Button - Figma: h=56px
             SizedBox(

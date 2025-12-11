@@ -163,7 +163,6 @@ void main() {
       view.resetDevicePixelRatio();
     });
 
-    final mockRepo = _MockAuthRepository();
     when(
       () => mockRepo.signInWithPassword(
         email: any(named: 'email'),

@@ -27,6 +27,7 @@ void main() {
         final l10n = AppLocalizations.of(context)!;
 
         // 3. Assertions against REAL L10n values (not hardcoded)
+        expect(l10n.localeName, 'de');
         expect(find.text(l10n.welcome04Title), findsOneWidget);
         expect(find.text(l10n.welcome04Subtitle), findsOneWidget);
         expect(

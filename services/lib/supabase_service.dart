@@ -81,9 +81,9 @@ class SupabaseService {
           'authConfig ignored: SupabaseService already initialized',
           tag: 'supabase_service',
         );
-        return;
+      } else {
+        _authDeepLinkConfig = authConfig;
       }
-      _authDeepLinkConfig = authConfig;
     }
   }
 
