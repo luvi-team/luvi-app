@@ -95,4 +95,57 @@ void main() {
     expect(find.text(AuthStrings.errPasswordEmpty), findsOneWidget);
     expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
   });
+
+  testWidgets('shows signup link with correct text', (tester) async {
+    final view = tester.view;
+    view.physicalSize = const Size(1080, 2340);
+    view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      view.resetPhysicalSize();
+      view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
+        child: MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          home: const LoginScreen(),
+          locale: const Locale('de'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+        ),
+      ),
+    );
+
+    // Scroll down to ensure the signup link is visible
+    await tester.drag(
+      find.byType(SingleChildScrollView),
+      const Offset(0, -200),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify signup link exists with correct key
+    final signupLink = find.byKey(const ValueKey('login_signup_link'));
+    expect(signupLink, findsOneWidget);
+
+    // Verify the link contains expected l10n text
+    // Note: LoginScreen uses RichText with TextSpan, so find.text() won't work
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(LoginScreen)),
+    )!;
+
+    // Find RichText inside the signup link and verify its content
+    final richTextFinder = find.descendant(
+      of: signupLink,
+      matching: find.byType(RichText),
+    );
+    expect(richTextFinder, findsOneWidget);
+
+    // Extract the plain text from RichText and verify both parts are present
+    final richText = tester.widget<RichText>(richTextFinder);
+    final plainText = richText.text.toPlainText();
+    expect(plainText, contains(l10n.authLoginCtaLinkPrefix));
+    expect(plainText, contains(l10n.authLoginCtaLinkAction));
+  });
 }

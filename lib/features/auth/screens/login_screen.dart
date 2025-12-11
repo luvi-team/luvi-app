@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
+import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
@@ -99,6 +100,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       color: tokens.grayscale500,
     );
 
+    // Signup link style - konsistent mit auth_signup_screen.dart:153-163
+    final signupLinkStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontSize: 16,
+      height: 24 / 16,
+      color: theme.colorScheme.onSurface,
+    );
+
+    final signupLinkActionStyle = signupLinkStyle?.copyWith(
+      fontWeight: FontWeight.bold,
+      color: tokens.cardBorderSelected,
+      decoration: TextDecoration.underline,
+    );
+
     return Scaffold(
       key: const ValueKey('auth_login_screen'),
       resizeToAvoidBottomInset: true,
@@ -185,6 +199,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Text(
                   l10n.authLoginForgot,
                   style: forgotLinkStyle,
+                ),
+              ),
+            ),
+
+            // Spacing zwischen Forgot und Signup Link
+            const SizedBox(height: Spacing.m), // 16px
+
+            // "Neu bei LUVI? Hier starten" link - centered
+            // Pattern aus auth_signup_screen.dart:256-284
+            Center(
+              child: Semantics(
+                button: true,
+                label: '${l10n.authLoginCtaLinkPrefix}${l10n.authLoginCtaLinkAction}',
+                child: TextButton(
+                  key: const ValueKey('login_signup_link'),
+                  onPressed: () => context.push(AuthSignupScreen.routeName),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize:
+                        const Size(Sizes.touchTargetMin, Sizes.touchTargetMin),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: l10n.authLoginCtaLinkPrefix,
+                          style: signupLinkStyle,
+                        ),
+                        TextSpan(
+                          text: l10n.authLoginCtaLinkAction,
+                          style: signupLinkActionStyle,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),

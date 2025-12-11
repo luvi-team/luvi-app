@@ -107,7 +107,7 @@ class AuthOutlineButton extends StatelessWidget {
                   width: Sizes.iconM,
                   height: Sizes.iconM,
                 ),
-                errorBuilder: (_, _, _) => SizedBox(
+                errorBuilder: (context, error, stackTrace) => SizedBox(
                   width: Sizes.iconM,
                   height: Sizes.iconM,
                 ),

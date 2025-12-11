@@ -891,7 +891,7 @@
   "@consentSnackbarRateLimited": {
     "description": "Snackbar-Hinweis bei Rate-Limit-Blockierungen während des Consent-Loggings."
   },
-  "authSignInHeadline": "Verpasse nicht, das Beste aus Dir zu machen!",
+  "authSignInHeadline": "Verpasse es nicht, das Beste aus dir zu machen!",
   "@authSignInHeadline": {
     "description": "Headline auf dem SignIn-Entry-Screen (Glassmorphism Card)."
   },

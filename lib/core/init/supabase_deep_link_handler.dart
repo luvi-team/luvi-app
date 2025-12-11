@@ -78,7 +78,13 @@ class SupabaseDeepLinkHandler {
   Future<void> _handleUri(Uri? uri) async {
     if (uri == null) return;
     if (!_matchesAllowed(uri)) return;
-    if (!SupabaseService.isInitialized) return;
+    if (!SupabaseService.isInitialized) {
+      log.d(
+        'supabase_deeplink_skipped: Supabase not initialized',
+        tag: 'supabase_deeplink',
+      );
+      return;
+    }
 
     try {
       // Let Supabase SDK process the redirect and update auth state.

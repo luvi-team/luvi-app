@@ -49,12 +49,8 @@ class AppLinks {
         error: 'Invalid OAUTH_REDIRECT_URI="$override", using fallback',
       );
     }
-    final scheme = _rawCallbackScheme.trim().isEmpty
-        ? 'luvi'
-        : _rawCallbackScheme.trim();
-    final host = _rawCallbackHost.trim().isEmpty
-        ? 'auth-callback'
-        : _rawCallbackHost.trim();
+    final scheme = _rawCallbackScheme.trim();
+    final host = _rawCallbackHost.trim();
     return Uri(scheme: scheme, host: host);
   }
 }

@@ -995,7 +995,7 @@ abstract class AppLocalizations {
   /// **'Welcome back 💜'**
   String get authLoginHeadline;
 
-  /// Title on login screen (Figma Auth UI v2).
+  /// Title on login screen (Figma Auth UI v2). NOTE: Intentionally shares text with authSignInEmail for translation flexibility - authLoginTitle is screen title, authSignInEmail is button text. Keep separate keys for future localization divergence.
   ///
   /// In en, this message translates to:
   /// **'Sign in with Email'**
@@ -1457,7 +1457,7 @@ abstract class AppLocalizations {
   /// **'Confirm new password'**
   String get authConfirmPasswordHint;
 
-  /// CTA button text on the Create New Password screen.
+  /// CTA button text on the Create New Password screen. NOTE: Intentionally shares text with authResetCta - both are 'Reset password' CTAs but in different screen contexts (password entry vs email entry). Keep separate for localization flexibility.
   ///
   /// In en, this message translates to:
   /// **'Reset password'**
@@ -1469,7 +1469,7 @@ abstract class AppLocalizations {
   /// **'Done!'**
   String get authSuccessTitle;
 
-  /// Subtitle on the Success screen.
+  /// Subtitle on the Success screen. NOTE: Intentionally shares text with authSuccessPwdSubtitle for translation flexibility - both refer to password-saved success state but in different screen contexts.
   ///
   /// In en, this message translates to:
   /// **'Your new password has been saved.'**
