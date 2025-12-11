@@ -11,6 +11,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/features/auth/utils/oauth_cancellation.dart';
 import 'package:luvi_app/features/auth/widgets/auth_conic_gradient_background.dart';
 import 'package:luvi_app/features/auth/widgets/auth_glass_card.dart';
 import 'package:luvi_app/features/auth/widgets/auth_outline_button.dart';
@@ -209,17 +210,22 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     } on supa.AuthException catch (error) {
       // Supabase typed auth exceptions - check for user-initiated cancellation.
       // AuthException.message may contain cancellation indicators from the provider.
-      if (_isUserCancellation(error.message)) {
+      if (isOAuthUserCancellation(error.message)) {
         return;
       }
+      // Log non-cancellation OAuth errors for observability (detect missed patterns)
+      logNonCancellationOAuthError(error.message, provider: provider.name);
       _handleOAuthError(error, StackTrace.current, provider);
     } catch (error, stackTrace) {
       // Fallback for platform-specific WebAuth cancellations (e.g., ASWebAuthSession,
       // Chrome Custom Tabs) that may not map to typed Supabase exceptions and only
       // surface as platform exceptions with cancellation strings.
-      if (_isUserCancellation(error.toString())) {
+      final errorString = error.toString();
+      if (isOAuthUserCancellation(errorString)) {
         return;
       }
+      // Log non-cancellation OAuth errors for observability (detect missed patterns)
+      logNonCancellationOAuthError(errorString, provider: provider.name);
       _handleOAuthError(error, stackTrace, provider);
     } finally {
       if (mounted) {
@@ -240,23 +246,6 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
       default:
         return l10n.authSignInOAuthError;
     }
-  }
-
-  /// Detects user-initiated OAuth cancellations from error messages.
-  ///
-  /// User cancellations are expected actions (not errors) and should be
-  /// handled silently without error reporting or snackbars.
-  ///
-  /// NOTE: This relies on string matching in error messages from various
-  /// OAuth providers and platform SDKs. May need updates if SDK behavior changes.
-  bool _isUserCancellation(String errorText) {
-    final lower = errorText.toLowerCase();
-    return lower.contains('cancel') ||
-        lower.contains('canceled') ||
-        lower.contains('cancelled') ||
-        lower.contains('user_cancelled') ||
-        lower.contains('user_canceled') ||
-        lower.contains('aborted');
   }
 
   /// Handles OAuth errors by reporting to Flutter error handler and showing snackbar.

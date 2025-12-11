@@ -22,20 +22,31 @@ class AppLinks {
     defaultValue: 'auth-callback',
   );
 
-  static final Uri _authCallbackUri = _resolveAuthCallbackUri();
+  /// Lazily initialized auth callback URI.
+  /// Using nullable + getter pattern to avoid logging during static initialization,
+  /// which could fail if the logger isn't ready yet.
+  static Uri? _authCallbackUriCache;
 
   /// Canonical callback URI used for OAuth/deep links.
-  static Uri get authCallbackUri => _authCallbackUri;
+  /// Lazily computed and cached on first access to ensure logging
+  /// infrastructure is available when warnings need to be emitted.
+  static Uri get authCallbackUri {
+    _authCallbackUriCache ??= _resolveAuthCallbackUri();
+    return _authCallbackUriCache!;
+  }
 
   /// Convenience getter for the callback scheme (defaults to `luvi`).
-  static String get authCallbackScheme => _authCallbackUri.scheme;
+  static String get authCallbackScheme => authCallbackUri.scheme;
 
   /// Convenience getter for the callback host (defaults to `auth-callback`).
-  static String get authCallbackHost => _authCallbackUri.host;
+  static String get authCallbackHost => authCallbackUri.host;
 
   /// Redirect URL string passed to Supabase auth flows.
-  static String get oauthRedirectUri => _authCallbackUri.toString();
+  static String get oauthRedirectUri => authCallbackUri.toString();
 
+  /// Resolves the auth callback URI from environment variables.
+  /// Called lazily on first access to [authCallbackUri] to ensure
+  /// logging infrastructure is available for any warnings.
   static Uri _resolveAuthCallbackUri() {
     final override = _rawRedirectOverride.trim();
     if (override.isNotEmpty) {
