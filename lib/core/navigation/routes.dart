@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Session;
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
@@ -243,7 +244,22 @@ final List<GoRoute> featureRoutes = [
   ),
 ];
 
-String? supabaseRedirect(BuildContext context, GoRouterState state) {
+/// Redirect-Guard für GoRouter - delegiert an [supabaseRedirectWithSession].
+String? supabaseRedirect(BuildContext context, GoRouterState state) =>
+    supabaseRedirectWithSession(context, state);
+
+/// Testbare Version des Redirect-Guards mit optionalen Overrides.
+///
+/// In Production wird [sessionOverride] und [isInitializedOverride] ignoriert.
+/// In Tests können diese Parameter genutzt werden, um verschiedene
+/// Session-Szenarien zu simulieren ohne Supabase-Client zu mocken.
+@visibleForTesting
+String? supabaseRedirectWithSession(
+  BuildContext context,
+  GoRouterState state, {
+  Session? sessionOverride,
+  bool? isInitializedOverride,
+}) {
   // Dev-only bypass to allow opening the dashboard without auth during development
   const allowDashboardDev = bool.fromEnvironment(
     'ALLOW_DASHBOARD_DEV',
@@ -255,7 +271,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   );
   // Enable via --dart-define=ALLOW_ONBOARDING_DEV=true (false by default).
 
-  final isInitialized = SupabaseService.isInitialized;
+  final isInitialized = isInitializedOverride ?? SupabaseService.isInitialized;
   final isLoggingIn = state.matchedLocation.startsWith(LoginScreen.routeName);
   final isAuthSignIn = state.matchedLocation.startsWith(
     AuthSignInScreen.routeName,
@@ -272,9 +288,8 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
       state.matchedLocation.startsWith(CreateNewPasswordScreen.routeName);
   final isPasswordSuccessRoute = state.matchedLocation
       .startsWith(SuccessScreen.passwordSavedRoutePath);
-  final session = isInitialized
-      ? SupabaseService.client.auth.currentSession
-      : null;
+  final session = sessionOverride ??
+      (isInitialized ? SupabaseService.client.auth.currentSession : null);
 
   if (isPasswordRecoveryRoute || isPasswordSuccessRoute) {
     return null;
