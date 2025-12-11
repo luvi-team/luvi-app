@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kReleaseMode;
+import 'package:flutter/foundation.dart' show kReleaseMode, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +14,33 @@ import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+
+/// Determines the target route based on auth state and welcome status.
+///
+/// Extracted for testability (Codex-Audit).
+///
+/// Logic:
+/// - Not authenticated → AuthSignInScreen
+/// - Authenticated + hasSeenWelcome != true → ConsentWelcome01Screen (first-time user)
+/// - Authenticated + hasSeenWelcome == true → defaultTarget (returning user)
+@visibleForTesting
+String determineTargetRoute({
+  required bool isAuth,
+  required bool? hasSeenWelcomeMaybe,
+  required String defaultTarget,
+}) {
+  if (!isAuth) {
+    return AuthSignInScreen.routeName;
+  }
+  // BUG-FIX: Use != true instead of == false to catch null (first-time users)
+  // null != true → true → first-time user → Consent
+  // false != true → true → first-time user → Consent
+  // true != true → false → returning user → Dashboard
+  if (hasSeenWelcomeMaybe != true) {
+    return ConsentWelcome01Screen.routeName;
+  }
+  return defaultTarget;
+}
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -82,13 +109,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           : await serviceFuture;
       final hasSeenWelcomeMaybe = service.hasSeenWelcomeOrNull;
 
-      // Default target based on auth state (DRY extraction)
-      final defaultTarget = isAuth ? HeuteScreen.routeName : AuthSignInScreen.routeName;
-
-      // Only show consent flow for authenticated users who haven't seen welcome
-      final target = (isAuth && hasSeenWelcomeMaybe == false)
-          ? ConsentWelcome01Screen.routeName
-          : defaultTarget;
+      // Determine target route using extracted helper (testable)
+      final target = determineTargetRoute(
+        isAuth: isAuth,
+        hasSeenWelcomeMaybe: hasSeenWelcomeMaybe,
+        defaultTarget: HeuteScreen.routeName,
+      );
 
       if (!mounted || _hasNavigated) return;
       _hasNavigated = true;

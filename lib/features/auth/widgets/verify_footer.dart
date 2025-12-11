@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
@@ -33,7 +34,12 @@ class VerifyFooter extends StatelessWidget {
           height: Sizes.buttonHeight,
           child: ElevatedButton(
             key: const ValueKey('verify_confirm_button'),
-            onPressed: ctaEnabled ? onConfirm : null,
+            onPressed: ctaEnabled
+                ? () {
+                    HapticFeedback.lightImpact();
+                    onConfirm();
+                  }
+                : null,
             child: Text(AuthStrings.verifyCta),
           ),
         ),
@@ -43,7 +49,10 @@ class VerifyFooter extends StatelessWidget {
           children: [
             Text(helper, style: helperStyle),
             TextButton(
-              onPressed: onResend,
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                onResend();
+              },
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -16,7 +17,10 @@ class LoginForgotButton extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: TextButton(
         key: const ValueKey('login_forgot_button'),
-        onPressed: onPressed,
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          onPressed();
+        },
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
           minimumSize: const Size(44, 44),

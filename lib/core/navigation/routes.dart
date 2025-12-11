@@ -177,12 +177,38 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: AuthSignInScreen.routeName,
     name: RouteNames.authSignIn,
-    builder: (context, state) => const AuthSignInScreen(),
+    pageBuilder: (context, state) => CustomTransitionPage(
+      key: state.pageKey,
+      child: const AuthSignInScreen(),
+      transitionDuration: const Duration(milliseconds: 300),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ),
+          child: child,
+        );
+      },
+    ),
   ),
   GoRoute(
     path: LoginScreen.routeName,
     name: RouteNames.login,
-    builder: (context, state) => const LoginScreen(),
+    pageBuilder: (context, state) => CustomTransitionPage(
+      key: state.pageKey,
+      child: const LoginScreen(),
+      transitionDuration: const Duration(milliseconds: 300),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ),
+          child: child,
+        );
+      },
+    ),
   ),
   GoRoute(
     path: ResetPasswordScreen.routeName,
