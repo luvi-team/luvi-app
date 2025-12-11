@@ -45,7 +45,7 @@ void main() {
       'lib/features/auth/state/login_state.dart',
       'lib/features/auth/widgets/login_header.dart',
       'lib/features/cycle/widgets/cycle_inline_calendar.dart',
-      'lib/features/auth/screens/auth_signin_screen.dart',
+      'lib/features/auth/screens/auth_signin_screen.dart', // TODO: Migrate to l10n in Auth v2 cleanup
       'lib/features/cycle/domain/date_utils.dart',
       'lib/features/auth/utils/name_validator.dart',
       'lib/features/dashboard/data/fixtures/heute_fixtures.dart',

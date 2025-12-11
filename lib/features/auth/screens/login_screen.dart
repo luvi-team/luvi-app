@@ -100,10 +100,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       color: tokens.grayscale500,
     );
 
-    // Signup link style - konsistent mit auth_signup_screen.dart:153-163
+    // Signup link style - uses authSubtitle tokens for consistency
     final signupLinkStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: 16,
-      height: 24 / 16,
+      fontSize: Sizes.authSubtitleFontSize,
+      height: Sizes.authSubtitleLineHeight,
       color: theme.colorScheme.onSurface,
     );
 
@@ -153,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
 
             // Figma: Gap between inputs = 20px
-            const SizedBox(height: Spacing.goalCardVertical), // 20px
+            const SizedBox(height: AuthLayout.inputGap),
 
             // Password field
             LoginPasswordField(

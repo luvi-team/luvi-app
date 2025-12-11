@@ -246,10 +246,6 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
   ///
   /// User cancellations are expected actions (not errors) and should be
   /// handled silently without error reporting or snackbars.
-  /// Detects user-initiated OAuth cancellations from error messages.
-  ///
-  /// User cancellations are expected actions (not errors) and should be
-  /// handled silently without error reporting or snackbars.
   ///
   /// NOTE: This relies on string matching in error messages from various
   /// OAuth providers and platform SDKs. May need updates if SDK behavior changes.
