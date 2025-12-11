@@ -70,15 +70,11 @@ class _ConicGradientPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;
 
-    // Figma center (197, 395.5) on ~394×841 canvas → normalized to (0.5, 0.47)
-    final center = Offset(size.width * 0.5, size.height * 0.47);
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
 
     final gradient = SweepGradient(
-      center: Alignment(
-        (center.dx / size.width) * 2 - 1,
-        (center.dy / size.height) * 2 - 1,
-      ),
+      // Figma center (197, 395.5) on ~394×841 canvas → normalized to (0.5, 0.47) → Alignment(0.0, -0.06)
+      center: const Alignment(0.0, -0.06),
       colors: _colors,
       stops: _stops,
       // Slight rotation to better match Figma's matrix transform effect

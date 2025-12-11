@@ -55,6 +55,7 @@ class SupabaseDeepLinkHandler {
   Future<void> dispose() async {
     await _subscription?.cancel();
     _subscription = null;
+    _started = false;
     _disposed = true;
   }
 

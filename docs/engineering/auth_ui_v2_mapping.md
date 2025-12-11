@@ -344,8 +344,20 @@ static const double buttonHeightL = 56.0;  // Auth CTA Buttons
 static const double glassCardRadius = 40.0; // Glass Card
 ```
 
+### Gradient ThemeExtension (Sketch)
+
+```dart
+/// Sketch for a potential AuthGradientTokens ThemeExtension.
+/// TODO: Complete implementation when gradient tokens are finalized.
 @immutable
 class AuthGradientTokens extends ThemeExtension<AuthGradientTokens> {
+  const AuthGradientTokens({
+    required this.linearColors,
+    required this.linearStops,
+    required this.radialColors,
+    required this.radialStops,
+  });
+
   // Linear Gradient (Login, Reset, NewPassword)
   final List<Color> linearColors;
   final List<double> linearStops;
@@ -356,7 +368,30 @@ class AuthGradientTokens extends ThemeExtension<AuthGradientTokens> {
 
   // Conic Gradient (SignIn) – komplexer, ggf. CustomPainter
   // TODO: Define conic gradient fields or document CustomPainter approach
+
+  @override
+  AuthGradientTokens copyWith({
+    List<Color>? linearColors,
+    List<double>? linearStops,
+    List<Color>? radialColors,
+    List<double>? radialStops,
+  }) {
+    return AuthGradientTokens(
+      linearColors: linearColors ?? this.linearColors,
+      linearStops: linearStops ?? this.linearStops,
+      radialColors: radialColors ?? this.radialColors,
+      radialStops: radialStops ?? this.radialStops,
+    );
+  }
+
+  @override
+  AuthGradientTokens lerp(AuthGradientTokens? other, double t) {
+    // Gradient lerp is complex; return this or other based on t threshold
+    if (other == null) return this;
+    return t < 0.5 ? this : other;
+  }
 }
+```
 
 ---
 

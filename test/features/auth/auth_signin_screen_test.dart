@@ -43,7 +43,10 @@ void main() {
   testWidgets('AuthSignInScreen shows glass card with headline', (
     tester,
   ) async {
-    await tester.pumpWidget(_buildRouterHarness(_createRouter()));
+    final router = _createRouter();
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(_buildRouterHarness(router));
     await tester.pumpAndSettle();
 
     // Glass card should be present
@@ -55,7 +58,10 @@ void main() {
   });
 
   testWidgets('AuthSignInScreen shows email login button', (tester) async {
-    await tester.pumpWidget(_buildRouterHarness(_createRouter()));
+    final router = _createRouter();
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(_buildRouterHarness(router));
     await tester.pumpAndSettle();
 
     // Email button should always be visible (AuthOutlineButton is used for all social buttons now)
@@ -64,7 +70,10 @@ void main() {
   });
 
   testWidgets('Email button navigates to /auth/login', (tester) async {
-    await tester.pumpWidget(_buildRouterHarness(_createRouter()));
+    final router = _createRouter();
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(_buildRouterHarness(router));
     await tester.pumpAndSettle();
 
     final emailButton = find.byKey(const ValueKey('signin_email_button'));

@@ -252,7 +252,8 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
         lower.contains('canceled') ||
         lower.contains('cancelled') ||
         lower.contains('user_cancelled') ||
-        lower.contains('user_canceled');
+        lower.contains('user_canceled') ||
+        lower.contains('aborted');
   }
 
   /// Handles OAuth errors by reporting to Flutter error handler and showing snackbar.
