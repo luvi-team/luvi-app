@@ -673,7 +673,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
 
   @override
-  String get authSignInHeadline => 'Verpasse nicht, das Beste aus dir zu machen!';
+  String get authSignInHeadline => 'Verpasse es nicht, das Beste aus dir zu machen!';
 
   @override
   String get authSignInEmail => 'Anmelden mit E-Mail';
