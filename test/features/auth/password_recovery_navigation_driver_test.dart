@@ -48,5 +48,30 @@ void main() {
       await driver.dispose();
       await events.close();
     });
+
+    test('navigates only once for duplicate passwordRecovery events', () async {
+      final events = StreamController<supa.AuthChangeEvent>();
+      var navigateCount = 0;
+
+      final driver = PasswordRecoveryNavigationDriver(
+        authEvents: events.stream,
+        onNavigateToCreatePassword: () {
+          navigateCount++;
+        },
+      );
+
+      // Emit passwordRecovery twice back-to-back
+      events
+        ..add(supa.AuthChangeEvent.passwordRecovery)
+        ..add(supa.AuthChangeEvent.passwordRecovery);
+
+      await Future<void>.delayed(Duration.zero);
+
+      // Should navigate only once despite two events
+      expect(navigateCount, 1);
+
+      await driver.dispose();
+      await events.close();
+    });
   });
 }

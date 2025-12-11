@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
@@ -28,7 +29,7 @@ void main() {
           ),
           GoRoute(
             path: AuthSignInScreen.routeName,
-            name: 'auth_signin', // Must match the name used in goNamed()
+            name: RouteNames.authSignIn,
             builder: (context, state) => const AuthSignInScreen(),
           ),
         ],

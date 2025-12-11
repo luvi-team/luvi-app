@@ -9,6 +9,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Handles Supabase deep links manually so we can enforce explicit
 /// scheme/host validation before handing control to Supabase's auth client.
+///
+/// Once [dispose] is called, this handler cannot be restarted. Create a new
+/// instance if you need to handle deep links again after disposal.
 class SupabaseDeepLinkHandler {
   SupabaseDeepLinkHandler({
     platform_links.AppLinks? appLinks,
@@ -20,8 +23,15 @@ class SupabaseDeepLinkHandler {
   final Uri _allowedUri;
   StreamSubscription<Uri?>? _subscription;
   bool _started = false;
+  bool _disposed = false;
 
   Future<void> start() async {
+    if (_disposed) {
+      throw StateError(
+        'SupabaseDeepLinkHandler has been disposed and cannot be restarted. '
+        'Create a new instance instead.',
+      );
+    }
     if (_started) return;
     _started = true;
     await _handleInitialUri();
@@ -38,10 +48,14 @@ class SupabaseDeepLinkHandler {
     );
   }
 
+  /// Disposes resources and marks this handler as unusable.
+  ///
+  /// After calling dispose, [start] will throw a [StateError]. Create a new
+  /// instance if you need to handle deep links again.
   Future<void> dispose() async {
     await _subscription?.cancel();
     _subscription = null;
-    _started = false;
+    _disposed = true;
   }
 
   Future<void> _handleInitialUri() async {
@@ -66,10 +80,18 @@ class SupabaseDeepLinkHandler {
     if (!SupabaseService.isInitialized) return;
 
     try {
+      // Let Supabase SDK process the redirect and update auth state.
+      // The onAuthStateChange listener will propagate state changes.
       await SupabaseService.client.auth.getSessionFromUrl(uri);
     } on AuthException catch (error, stackTrace) {
-      // ignore: invalid_use_of_internal_member
-      SupabaseService.client.auth.notifyException(error, stackTrace);
+      // Log auth failures for diagnostics. The auth state listener will
+      // handle the unauthenticated state appropriately.
+      log.w(
+        'supabase_deeplink_auth_error',
+        tag: 'supabase_deeplink',
+        error: sanitizeError(error) ?? error.message,
+        stack: stackTrace,
+      );
     } catch (error, stackTrace) {
       log.w(
         'supabase_deeplink_session_error',

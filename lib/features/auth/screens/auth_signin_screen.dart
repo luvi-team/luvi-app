@@ -64,9 +64,9 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
                   AuthGlassCard(
                     key: const ValueKey('auth_glass_card'),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: Spacing.l,
-                        vertical: Spacing.l + Spacing.xs, // 32px
+                        vertical: Spacing.authGlassCardVertical,
                       ),
                       child: Text(
                         l10n.authSignInHeadline,
@@ -206,42 +206,21 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             ? supa.LaunchMode.platformDefault
             : supa.LaunchMode.externalApplication,
       );
-    } catch (error, stackTrace) {
-      // Detect user-initiated OAuth cancellations - these are expected user actions,
-      // not errors, so we skip error reporting and snackbar display.
-      final errorString = error.toString().toLowerCase();
-      final isCancellation = errorString.contains('cancel') ||
-          errorString.contains('canceled') ||
-          errorString.contains('cancelled') ||
-          errorString.contains('user cancelled') ||
-          errorString.contains('user canceled') ||
-          errorString.contains('user_cancelled') ||
-          errorString.contains('user_canceled');
-
-      if (isCancellation) {
-        // User cancelled OAuth flow - silently return without error
+    } on supa.AuthException catch (error) {
+      // Supabase typed auth exceptions - check for user-initiated cancellation.
+      // AuthException.message may contain cancellation indicators from the provider.
+      if (_isUserCancellation(error.message)) {
         return;
       }
-
-      // Report actual error for diagnostics
-      FlutterError.reportError(FlutterErrorDetails(
-        exception: error,
-        stack: stackTrace,
-        library: 'auth_signin_screen',
-        context: ErrorDescription('OAuth sign-in failed: ${provider.name}'),
-      ));
-
-      // Show provider-specific user-facing error snackbar
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        final errorMessage = _getProviderErrorMessage(l10n, provider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+      _handleOAuthError(error, StackTrace.current, provider);
+    } catch (error, stackTrace) {
+      // Fallback for platform-specific WebAuth cancellations (e.g., ASWebAuthSession,
+      // Chrome Custom Tabs) that may not map to typed Supabase exceptions and only
+      // surface as platform exceptions with cancellation strings.
+      if (_isUserCancellation(error.toString())) {
+        return;
       }
+      _handleOAuthError(error, stackTrace, provider);
     } finally {
       if (mounted) {
         setState(() => _oauthLoading = false);
@@ -260,6 +239,44 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
         return l10n.authSignInGoogleError;
       default:
         return l10n.authSignInOAuthError;
+    }
+  }
+
+  /// Detects user-initiated OAuth cancellations from error messages.
+  ///
+  /// User cancellations are expected actions (not errors) and should be
+  /// handled silently without error reporting or snackbars.
+  bool _isUserCancellation(String errorText) {
+    final lower = errorText.toLowerCase();
+    return lower.contains('cancel') ||
+        lower.contains('canceled') ||
+        lower.contains('cancelled') ||
+        lower.contains('user_cancelled') ||
+        lower.contains('user_canceled');
+  }
+
+  /// Handles OAuth errors by reporting to Flutter error handler and showing snackbar.
+  void _handleOAuthError(
+    Object error,
+    StackTrace stackTrace,
+    supa.OAuthProvider provider,
+  ) {
+    FlutterError.reportError(FlutterErrorDetails(
+      exception: error,
+      stack: stackTrace,
+      library: 'auth_signin_screen',
+      context: ErrorDescription('OAuth sign-in failed: ${provider.name}'),
+    ));
+
+    if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      final errorMessage = _getProviderErrorMessage(l10n, provider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 }

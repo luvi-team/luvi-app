@@ -26,7 +26,10 @@ void main() {
         final context = tester.element(find.byType(ConsentWelcome05Screen));
         final l10n = AppLocalizations.of(context)!;
 
-        // 3. Assertions against REAL L10n values (not hardcoded)
+        // 3. Verify it's actually German locale
+        expect(l10n.localeName, 'de');
+
+        // 4. Assertions against REAL L10n values (not hardcoded)
         expect(find.text(l10n.welcome05Title), findsOneWidget);
         expect(find.text(l10n.welcome05Subtitle), findsOneWidget);
         // W5 uses custom CTA "Jetzt loslegen" (welcome05PrimaryCta)

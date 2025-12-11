@@ -344,9 +344,6 @@ static const double buttonHeightL = 56.0;  // Auth CTA Buttons
 static const double glassCardRadius = 40.0; // Glass Card
 ```
 
-### Neuer ThemeExtension: `AuthGradientTokens`
-
-```dart
 @immutable
 class AuthGradientTokens extends ThemeExtension<AuthGradientTokens> {
   // Linear Gradient (Login, Reset, NewPassword)
@@ -358,8 +355,8 @@ class AuthGradientTokens extends ThemeExtension<AuthGradientTokens> {
   final List<double> radialStops;
 
   // Conic Gradient (SignIn) – komplexer, ggf. CustomPainter
+  // TODO: Define conic gradient fields or document CustomPainter approach
 }
-```
 
 ---
 

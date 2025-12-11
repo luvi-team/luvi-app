@@ -32,7 +32,8 @@ class PasswordRecoveryNavigationDriver {
   bool _hasNavigated = false;
 
   void _handleEvent(supa.AuthChangeEvent event) {
-    if (event == supa.AuthChangeEvent.passwordRecovery && !_hasNavigated) {
+    if (event == supa.AuthChangeEvent.passwordRecovery) {
+      if (_hasNavigated) return;
       _hasNavigated = true;
       _onNavigateToCreatePassword();
     }
