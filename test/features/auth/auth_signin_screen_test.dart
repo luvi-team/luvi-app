@@ -67,7 +67,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Email button should always be visible (AuthOutlineButton is used for all social buttons now)
-    expect(find.byType(AuthOutlineButton), findsWidgets);
+    expect(find.byType(AuthOutlineButton), findsAtLeastNWidgets(1));
     expect(find.byKey(const ValueKey('signin_email_button')), findsOneWidget);
   });
 

@@ -83,15 +83,17 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       );
 
       if (!mounted) return;
-      // Show success message and navigate to login after snackbar closes
+      // Show success message and navigate to login
       // Note: VerificationScreen was removed per Auth v2 refactoring plan
-      final snackBarController = ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.authSignupSuccess),
+          duration: const Duration(milliseconds: 1500),
         ),
       );
-      // Wait for snackbar to close naturally instead of hardcoded delay
-      await snackBarController.closed;
+      // Short delay for user to see success message, then navigate
+      // (bounded delay avoids race condition from unbounded snackbar.closed)
+      await Future.delayed(const Duration(milliseconds: 800));
       if (!mounted) return;
       context.go(LoginScreen.routeName);
     } on AuthException catch (error, stackTrace) {

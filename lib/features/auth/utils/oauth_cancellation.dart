@@ -61,8 +61,9 @@ bool isOAuthUserCancellation(String errorText) {
 void logNonCancellationOAuthError(String errorText, {String? provider}) {
   if (!isOAuthUserCancellation(errorText)) {
     final providerTag = provider != null ? ' [$provider]' : '';
+    // Note: log.d auto-sanitizes the message via sanitizeForLog
     log.d(
-      'oauth_error_non_cancellation$providerTag',
+      'oauth_error_non_cancellation$providerTag: $errorText',
       tag: 'oauth',
     );
   }

@@ -17,6 +17,17 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
+/// Configures test view size. Returns teardown function to reset.
+void Function() _configureTestView(WidgetTester tester) {
+  final view = tester.view;
+  view.physicalSize = const Size(1080, 2340);
+  view.devicePixelRatio = 1.0;
+  return () {
+    view.resetPhysicalSize();
+    view.resetDevicePixelRatio();
+  };
+}
+
 void main() {
   TestConfig.ensureInitialized();
   late _MockAuthRepository mockRepo;
@@ -33,13 +44,7 @@ void main() {
   });
 
   testWidgets('LoginScreen shows headline and button', (tester) async {
-    final view = tester.view;
-    view.physicalSize = const Size(1080, 2340);
-    view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      view.resetPhysicalSize();
-      view.resetDevicePixelRatio();
-    });
+    addTearDown(_configureTestView(tester));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -65,13 +70,7 @@ void main() {
   testWidgets('CTA enabled before submit; disables on field errors', (
     tester,
   ) async {
-    final view = tester.view;
-    view.physicalSize = const Size(1080, 2340);
-    view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      view.resetPhysicalSize();
-      view.resetDevicePixelRatio();
-    });
+    addTearDown(_configureTestView(tester));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -100,13 +99,7 @@ void main() {
   });
 
   testWidgets('shows signup link with correct text', (tester) async {
-    final view = tester.view;
-    view.physicalSize = const Size(1080, 2340);
-    view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      view.resetPhysicalSize();
-      view.resetDevicePixelRatio();
-    });
+    addTearDown(_configureTestView(tester));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -155,13 +148,7 @@ void main() {
   testWidgets('tapping signup link navigates to AuthSignupScreen', (
     tester,
   ) async {
-    final view = tester.view;
-    view.physicalSize = const Size(1080, 2340);
-    view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      view.resetPhysicalSize();
-      view.resetDevicePixelRatio();
-    });
+    addTearDown(_configureTestView(tester));
 
     when(
       () => mockRepo.signInWithPassword(

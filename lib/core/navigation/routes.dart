@@ -310,7 +310,10 @@ final List<GoRoute> featureRoutes = [
       // This prevents bypassing gates via deep link or saved route.
       final container = ProviderScope.containerOf(context, listen: false);
       final asyncValue = container.read(userStateServiceProvider);
-      // Extract value if loaded, null otherwise (loading/error states)
+      // Extract value if loaded, null otherwise (loading/error states).
+      // NOTE: AsyncLoading/AsyncError → null → isStateKnown=false → redirect
+      // to Splash. This is intentional: during loading, we delegate to Splash
+      // which handles the loading screen properly.
       final service = asyncValue.whenOrNull(data: (s) => s);
       return homeGuardRedirectWithConsent(
         isStateKnown: service != null,

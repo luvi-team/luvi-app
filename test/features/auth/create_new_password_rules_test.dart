@@ -35,7 +35,7 @@ void main() {
 
     test('accepts passwords meeting minimum length requirement', () {
       // Any 8+ character password not in blocklist should be valid
-      final result = validateNewPassword('mypassword', 'mypassword');
+      final result = validateNewPassword('validTestPw8', 'validTestPw8');
       expect(result.isValid, isTrue);
       expect(result.error, isNull);
     });
