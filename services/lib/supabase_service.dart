@@ -398,7 +398,9 @@ class SupabaseAuthDeepLinkConfig {
   );
 
   factory SupabaseAuthDeepLinkConfig.fromUri(Uri uri) {
-    if (!uri.hasScheme || uri.host.isEmpty) {
+    // Use uri.scheme.isEmpty instead of !uri.hasScheme because
+    // Uri.hasScheme can be true for an explicitly empty scheme string.
+    if (uri.scheme.isEmpty || uri.host.isEmpty) {
       throw ArgumentError(
         'Supabase auth callback URI must include a scheme and host.',
       );
