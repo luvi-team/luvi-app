@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
+import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 
 void main() {
   group('isOnboardingRoute', () {
@@ -46,43 +47,108 @@ void main() {
   });
 
   group('homeGuardRedirect (defense-in-depth for /heute)', () {
-    test('redirects to Onboarding01 when hasCompletedOnboarding is false', () {
-      final result = homeGuardRedirect(hasCompletedOnboarding: false);
-      expect(
-        result,
-        equals(Onboarding01Screen.routeName),
-        reason: 'Incomplete onboarding should redirect to Onboarding01',
-      );
+    group('when state is known (isStateKnown=true)', () {
+      test('redirects to Onboarding01 when hasCompletedOnboarding is false', () {
+        final result = homeGuardRedirect(
+          isStateKnown: true,
+          hasCompletedOnboarding: false,
+        );
+        expect(
+          result,
+          equals(Onboarding01Screen.routeName),
+          reason: 'Incomplete onboarding should redirect to Onboarding01',
+        );
+      });
+
+      test('allows access when hasCompletedOnboarding is true', () {
+        final result = homeGuardRedirect(
+          isStateKnown: true,
+          hasCompletedOnboarding: true,
+        );
+        expect(
+          result,
+          isNull,
+          reason: 'Completed onboarding should allow access (null = no redirect)',
+        );
+      });
+
+      test('allows access when hasCompletedOnboarding is null but state known', () {
+        // Edge case: state loaded but value is null (shouldn't happen in practice)
+        final result = homeGuardRedirect(
+          isStateKnown: true,
+          hasCompletedOnboarding: null,
+        );
+        expect(
+          result,
+          isNull,
+          reason: 'When state is known, null should allow (defensive)',
+        );
+      });
     });
 
-    test('allows access when hasCompletedOnboarding is true', () {
-      final result = homeGuardRedirect(hasCompletedOnboarding: true);
-      expect(
-        result,
-        isNull,
-        reason: 'Completed onboarding should allow access (null = no redirect)',
-      );
+    group('when state is unknown (isStateKnown=false) - FAIL-SAFE', () {
+      test('redirects to Splash with skipAnimation when state unknown', () {
+        final result = homeGuardRedirect(
+          isStateKnown: false,
+          hasCompletedOnboarding: null,
+        );
+        expect(
+          result,
+          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          reason: 'Unknown state should fail-safe to Splash for gate re-check',
+        );
+      });
+
+      test('redirects to Splash even if hasCompletedOnboarding claims false', () {
+        // isStateKnown=false takes precedence - value is unreliable
+        final result = homeGuardRedirect(
+          isStateKnown: false,
+          hasCompletedOnboarding: false,
+        );
+        expect(
+          result,
+          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          reason: 'Unknown state takes precedence over hasCompletedOnboarding',
+        );
+      });
+
+      test('redirects to Splash even if hasCompletedOnboarding claims true', () {
+        // isStateKnown=false takes precedence - value is unreliable
+        final result = homeGuardRedirect(
+          isStateKnown: false,
+          hasCompletedOnboarding: true,
+        );
+        expect(
+          result,
+          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          reason: 'Unknown state takes precedence over hasCompletedOnboarding',
+        );
+      });
     });
 
-    test('allows access when hasCompletedOnboarding is null (unknown state)', () {
-      final result = homeGuardRedirect(hasCompletedOnboarding: null);
-      expect(
-        result,
-        isNull,
-        reason: 'Unknown onboarding state should allow through (rely on normal flow)',
-      );
-    });
+    group('redirect loop prevention', () {
+      test('never returns Home route (prevents redirect loop)', () {
+        const homeRoute = '/heute';
 
-    test('never returns Home route (prevents redirect loop)', () {
-      const homeRoute = '/heute';
+        // Known state cases
+        final falseResult = homeGuardRedirect(
+          isStateKnown: true,
+          hasCompletedOnboarding: false,
+        );
+        final trueResult = homeGuardRedirect(
+          isStateKnown: true,
+          hasCompletedOnboarding: true,
+        );
+        // Unknown state case
+        final unknownResult = homeGuardRedirect(
+          isStateKnown: false,
+          hasCompletedOnboarding: null,
+        );
 
-      final falseResult = homeGuardRedirect(hasCompletedOnboarding: false);
-      final trueResult = homeGuardRedirect(hasCompletedOnboarding: true);
-      final nullResult = homeGuardRedirect(hasCompletedOnboarding: null);
-
-      expect(falseResult, isNot(equals(homeRoute)));
-      expect(trueResult, isNot(equals(homeRoute)));
-      expect(nullResult, isNot(equals(homeRoute)));
+        expect(falseResult, isNot(equals(homeRoute)));
+        expect(trueResult, isNot(equals(homeRoute)));
+        expect(unknownResult, isNot(equals(homeRoute)));
+      });
     });
   });
 }

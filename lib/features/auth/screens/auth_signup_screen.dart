@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
@@ -82,15 +83,15 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       );
 
       if (!mounted) return;
-      // Show success message and navigate to login after delay
+      // Show success message and navigate to login after snackbar closes
       // Note: VerificationScreen was removed per Auth v2 refactoring plan
-      ScaffoldMessenger.of(context).showSnackBar(
+      final snackBarController = ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.authSignupSuccess),
         ),
       );
-      // Allow user to see success message before navigating
-      await Future<void>.delayed(const Duration(milliseconds: 800));
+      // Wait for snackbar to close naturally instead of hardcoded delay
+      await snackBarController.closed;
       if (!mounted) return;
       context.go(LoginScreen.routeName);
     } on AuthException catch (error, stackTrace) {
@@ -178,7 +179,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
           if (router.canPop()) {
             router.pop();
           } else {
-            context.go(LoginScreen.routeName);
+            // Fallback to SignIn entry screen (consistent with auth flow)
+            context.go(AuthSignInScreen.routeName);
           }
         },
         child: Column(

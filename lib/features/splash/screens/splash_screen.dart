@@ -189,6 +189,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           : await serviceFuture;
     } catch (e, st) {
       log.w('state load failed, retrying once', tag: 'splash', error: e, stack: st);
+      // Invalidate provider to clear cached error before retry
+      ref.invalidate(userStateServiceProvider);
       // One retry with shorter timeout
       final serviceFuture = ref.read(userStateServiceProvider.future);
       return useTimeout

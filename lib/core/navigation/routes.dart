@@ -70,13 +70,24 @@ bool isConsentRoute(String location) {
 
 /// Determines if access to Home should be blocked due to incomplete onboarding.
 ///
-/// Returns the redirect target if onboarding is incomplete, null otherwise.
-/// This guard ensures direct access to /heute (via deep link, saved route)
-/// doesn't bypass the onboarding flow.
+/// Fail-safe approach: When state is unknown (service not loaded), redirect to
+/// Splash with skipAnimation to let the gate logic decide properly.
+///
+/// Returns:
+/// - `/splash?skipAnimation=true` if state is unknown (fail-safe)
+/// - Onboarding01 route if hasCompletedOnboarding is explicitly false
+/// - null (allow) if hasCompletedOnboarding is true
 @visibleForTesting
-String? homeGuardRedirect({required bool? hasCompletedOnboarding}) {
-  // If onboarding status is unknown (null), allow through - rely on normal flow.
-  // If explicitly false, redirect to Onboarding01.
+String? homeGuardRedirect({
+  required bool isStateKnown,
+  required bool? hasCompletedOnboarding,
+}) {
+  // Fail-safe: If state unknown, delegate to Splash (no visible animation).
+  // Splash will re-check all gates properly.
+  if (!isStateKnown) {
+    return '${SplashScreen.routeName}?skipAnimation=true';
+  }
+  // State is known - apply gate logic
   if (hasCompletedOnboarding == false) {
     return Onboarding01Screen.routeName;
   }
@@ -263,6 +274,7 @@ final List<GoRoute> featureRoutes = [
       // Extract value if loaded, null otherwise (loading/error states)
       final service = asyncValue.whenOrNull(data: (s) => s);
       return homeGuardRedirect(
+        isStateKnown: service != null,
         hasCompletedOnboarding: service?.hasCompletedOnboarding,
       );
     },
