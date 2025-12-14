@@ -72,9 +72,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final localizations = AppLocalizations.of(context);
+    assert(
+      localizations != null,
+      'AppLocalizations not configured. Ensure localizationsDelegates '
+      'include AppLocalizations.delegate in MaterialApp.',
+    );
+    final l10n = localizations!;
     final theme = Theme.of(context);
-    final tokens = theme.extension<DsTokens>()!;
+    final tokensNullable = theme.extension<DsTokens>();
+    assert(
+      tokensNullable != null,
+      'DsTokens not configured. Ensure AppTheme includes DsTokens extension.',
+    );
+    final tokens = tokensNullable!;
 
     final loginAsync = ref.watch(loginProvider);
     final loginState = loginAsync.value ?? LoginState.initial();

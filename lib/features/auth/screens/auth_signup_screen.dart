@@ -136,7 +136,12 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     );
     final l10n = localizations!;
     final theme = Theme.of(context);
-    final tokens = theme.extension<DsTokens>()!;
+    final tokensNullable = theme.extension<DsTokens>();
+    assert(
+      tokensNullable != null,
+      'DsTokens not configured. Ensure AppTheme includes DsTokens extension.',
+    );
+    final tokens = tokensNullable!;
 
     final hasError = _errorMessage != null;
     final canSubmit = !_isSubmitting;

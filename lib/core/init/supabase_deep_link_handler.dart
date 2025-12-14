@@ -55,7 +55,6 @@ class SupabaseDeepLinkHandler {
   Future<void> dispose() async {
     await _subscription?.cancel();
     _subscription = null;
-    _started = false;
     _disposed = true;
   }
 
@@ -113,6 +112,13 @@ class SupabaseDeepLinkHandler {
     if (uri.scheme.toLowerCase() != _allowedUri.scheme.toLowerCase()) {
       return false;
     }
-    return uri.host.toLowerCase() == _allowedUri.host.toLowerCase();
+    if (uri.host.toLowerCase() != _allowedUri.host.toLowerCase()) {
+      return false;
+    }
+    // Also validate path if the allowed URI specifies one
+    if (_allowedUri.path.isNotEmpty) {
+      return uri.path.toLowerCase() == _allowedUri.path.toLowerCase();
+    }
+    return true;
   }
 }

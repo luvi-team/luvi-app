@@ -114,6 +114,7 @@ class AuthOutlineButton extends StatelessWidget {
                   height: Sizes.iconM,
                 ),
                 errorBuilder: (context, error, stackTrace) => SizedBox(
+                  // Consider: assert(() { debugPrint('SVG load failed: $svgAsset - $error'); return true; }());
                   width: Sizes.iconM,
                   height: Sizes.iconM,
                 ),

@@ -891,7 +891,7 @@
   "@consentSnackbarRateLimited": {
     "description": "Snackbar text shown when consent logging is rate limited."
   },
-  "authSignInHeadline": "Don't miss out on being your best self!",
+  "authSignInHeadline": "Welcome! Ready to support your wellness journey?",
   "@authSignInHeadline": {
     "description": "Headline on the SignIn entry screen (glassmorphism card)."
   },

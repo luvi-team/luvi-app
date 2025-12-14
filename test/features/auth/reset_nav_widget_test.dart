@@ -32,10 +32,17 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    // Verify login screen is displayed
+    expect(find.byType(LoginScreen), findsOneWidget);
+
     // Key matches login_screen.dart: ValueKey('login_forgot_link')
     await tester.tap(find.byKey(const ValueKey('login_forgot_link')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const ValueKey('auth_reset_screen')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('auth_reset_screen')),
+      findsOneWidget,
+      reason: 'Reset password screen should be displayed after tapping forgot link',
+    );
   });
 }

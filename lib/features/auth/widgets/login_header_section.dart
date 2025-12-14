@@ -41,7 +41,7 @@ class LoginHeaderSection extends StatelessWidget {
         const SizedBox(height: Spacing.l + Spacing.xs),
         const LoginHeader(),
         const SizedBox(height: Spacing.l + Spacing.xs),
-        // Auth-Flow Bugfix: Keyboard öffnet nicht automatisch
+        // Auth-Flow Bugfix: Prevents automatic keyboard opening
         LoginEmailField(
           controller: emailController,
           errorText: emailError,
