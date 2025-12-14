@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 
 void main() {
   group('isOnboardingRoute', () {
@@ -41,6 +42,47 @@ void main() {
     test('ignores non-consent paths', () {
       expect(isConsentRoute('/consent-welcome'), isFalse);
       expect(isConsentRoute('/onboarding/consent'), isFalse);
+    });
+  });
+
+  group('homeGuardRedirect (defense-in-depth for /heute)', () {
+    test('redirects to Onboarding01 when hasCompletedOnboarding is false', () {
+      final result = homeGuardRedirect(hasCompletedOnboarding: false);
+      expect(
+        result,
+        equals(Onboarding01Screen.routeName),
+        reason: 'Incomplete onboarding should redirect to Onboarding01',
+      );
+    });
+
+    test('allows access when hasCompletedOnboarding is true', () {
+      final result = homeGuardRedirect(hasCompletedOnboarding: true);
+      expect(
+        result,
+        isNull,
+        reason: 'Completed onboarding should allow access (null = no redirect)',
+      );
+    });
+
+    test('allows access when hasCompletedOnboarding is null (unknown state)', () {
+      final result = homeGuardRedirect(hasCompletedOnboarding: null);
+      expect(
+        result,
+        isNull,
+        reason: 'Unknown onboarding state should allow through (rely on normal flow)',
+      );
+    });
+
+    test('never returns Home route (prevents redirect loop)', () {
+      const homeRoute = '/heute';
+
+      final falseResult = homeGuardRedirect(hasCompletedOnboarding: false);
+      final trueResult = homeGuardRedirect(hasCompletedOnboarding: true);
+      final nullResult = homeGuardRedirect(hasCompletedOnboarding: null);
+
+      expect(falseResult, isNot(equals(homeRoute)));
+      expect(trueResult, isNot(equals(homeRoute)));
+      expect(nullResult, isNot(equals(homeRoute)));
     });
   });
 }

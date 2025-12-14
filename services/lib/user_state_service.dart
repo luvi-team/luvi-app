@@ -6,6 +6,7 @@ part 'user_state_service.g.dart';
 const _keyHasSeenWelcome = 'has_seen_welcome';
 const _keyHasCompletedOnboarding = 'has_completed_onboarding';
 const _keyFitnessLevel = 'onboarding_fitness_level';
+const _keyAcceptedConsentVersion = 'accepted_consent_version';
 
 enum FitnessLevel {
   beginner,
@@ -72,6 +73,17 @@ class UserStateService {
 
   FitnessLevel? get fitnessLevel =>
       FitnessLevel.tryParse(prefs.getString(_keyFitnessLevel));
+
+  /// Returns the accepted consent version, or null if not yet accepted.
+  int? get acceptedConsentVersionOrNull =>
+      prefs.getInt(_keyAcceptedConsentVersion);
+
+  Future<void> setAcceptedConsentVersion(int version) async {
+    final success = await prefs.setInt(_keyAcceptedConsentVersion, version);
+    if (!success) {
+      throw StateError('Failed to persist accepted consent version');
+    }
+  }
 
   Future<void> markWelcomeSeen() async {
     final success = await prefs.setBool(_keyHasSeenWelcome, true);
@@ -156,6 +168,7 @@ class UserStateService {
     await removeKey(_keyHasSeenWelcome);
     await removeKey(_keyHasCompletedOnboarding);
     await removeKey(_keyFitnessLevel);
+    await removeKey(_keyAcceptedConsentVersion);
 
     if (failures.isNotEmpty) {
       throw StateError(

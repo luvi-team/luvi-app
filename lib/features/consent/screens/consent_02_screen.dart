@@ -592,6 +592,8 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
   try {
     final userState = await ref.read(userStateServiceProvider.future);
     await userState.markWelcomeSeen();
+    // Also persist accepted consent version for version-gate checks
+    await userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt);
     return true;
   } catch (error, stackTrace) {
     log.e(

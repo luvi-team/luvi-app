@@ -11,18 +11,20 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 ///
 /// Gate Logic (Priority Order):
 /// 1. Not authenticated → AuthSignInScreen
-/// 2. Authenticated + hasSeenWelcome != true → ConsentWelcome01Screen (Welcome/Consent)
-/// 3. Authenticated + hasSeenWelcome == true + hasCompletedOnboarding == false → Onboarding01
-/// 4. Authenticated + hasSeenWelcome == true + hasCompletedOnboarding == true → defaultTarget
+/// 2. Authenticated + needs consent (null or outdated version) → ConsentWelcome01Screen
+/// 3. Authenticated + consent OK + hasCompletedOnboarding == false → Onboarding01
+/// 4. Authenticated + consent OK + hasCompletedOnboarding == true → defaultTarget
 void main() {
   group('determineTargetRoute', () {
     const defaultTarget = '/dashboard';
+    const currentVersion = 1;
 
     group('Unauthenticated users', () {
-      test('redirects to AuthSignIn when not authenticated (hasSeenWelcome = null)', () {
+      test('redirects to AuthSignIn when not authenticated (consent null)', () {
         final result = determineTargetRoute(
           isAuth: false,
-          hasSeenWelcomeMaybe: null,
+          acceptedConsentVersion: null,
+          currentConsentVersion: currentVersion,
           hasCompletedOnboarding: false,
           defaultTarget: defaultTarget,
         );
@@ -33,86 +35,105 @@ void main() {
         );
       });
 
-      test('redirects to AuthSignIn when not authenticated (hasSeenWelcome = true)', () {
+      test('redirects to AuthSignIn when not authenticated (consent accepted)', () {
         final result = determineTargetRoute(
           isAuth: false,
-          hasSeenWelcomeMaybe: true,
+          acceptedConsentVersion: currentVersion,
+          currentConsentVersion: currentVersion,
           hasCompletedOnboarding: true,
           defaultTarget: defaultTarget,
         );
         expect(
           result,
           equals(AuthSignInScreen.routeName),
-          reason: 'Unauthenticated users should always go to AuthSignIn regardless of welcome/onboarding status',
-        );
-      });
-
-      test('redirects to AuthSignIn when not authenticated (hasSeenWelcome = false)', () {
-        final result = determineTargetRoute(
-          isAuth: false,
-          hasSeenWelcomeMaybe: false,
-          hasCompletedOnboarding: false,
-          defaultTarget: defaultTarget,
-        );
-        expect(
-          result,
-          equals(AuthSignInScreen.routeName),
-          reason: 'Unauthenticated users should always go to AuthSignIn regardless of welcome status',
+          reason: 'Unauthenticated users should always go to AuthSignIn regardless of consent/onboarding status',
         );
       });
     });
 
-    group('First-Time users (authenticated, needs Welcome/Consent)', () {
-      test('redirects to Consent when hasSeenWelcome is null (first-time user via OAuth)', () {
+    group('Consent-Version Gate', () {
+      test('needs consent when acceptedVersion is null', () {
         final result = determineTargetRoute(
           isAuth: true,
-          hasSeenWelcomeMaybe: null,
+          acceptedConsentVersion: null,
+          currentConsentVersion: currentVersion,
           hasCompletedOnboarding: false,
           defaultTarget: defaultTarget,
         );
         expect(
           result,
           equals(ConsentWelcome01Screen.routeName),
-          reason: 'First-time authenticated users (null) should go to Consent flow',
+          reason: 'First-time users (null consent) should go to Consent flow',
         );
       });
 
-      test('redirects to Consent when hasSeenWelcome is false (first-time user via Email)', () {
+      test('needs consent when acceptedVersion < currentVersion', () {
         final result = determineTargetRoute(
           isAuth: true,
-          hasSeenWelcomeMaybe: false,
-          hasCompletedOnboarding: false,
+          acceptedConsentVersion: 1,
+          currentConsentVersion: 2, // Version erhöht
+          hasCompletedOnboarding: true,
           defaultTarget: defaultTarget,
         );
         expect(
           result,
           equals(ConsentWelcome01Screen.routeName),
-          reason: 'First-time authenticated users (false) should go to Consent flow',
+          reason: 'Outdated consent version should trigger Consent flow',
+        );
+      });
+
+      test('skips consent when acceptedVersion == currentVersion', () {
+        final result = determineTargetRoute(
+          isAuth: true,
+          acceptedConsentVersion: currentVersion,
+          currentConsentVersion: currentVersion,
+          hasCompletedOnboarding: true,
+          defaultTarget: defaultTarget,
+        );
+        expect(
+          result,
+          equals(defaultTarget),
+          reason: 'Current consent version should skip Consent flow',
+        );
+      });
+
+      test('skips consent when acceptedVersion > currentVersion (edge case)', () {
+        final result = determineTargetRoute(
+          isAuth: true,
+          acceptedConsentVersion: 2,
+          currentConsentVersion: 1,
+          hasCompletedOnboarding: true,
+          defaultTarget: defaultTarget,
+        );
+        expect(
+          result,
+          equals(defaultTarget),
+          reason: 'Higher consent version should skip Consent flow',
         );
       });
     });
 
-    group('Onboarding Gate (authenticated, completed Welcome, needs Onboarding)', () {
-      test('redirects to Onboarding when hasSeenWelcome=true but hasCompletedOnboarding=false', () {
+    group('Onboarding Gate (authenticated, consent OK, needs Onboarding)', () {
+      test('redirects to Onboarding when consent OK but hasCompletedOnboarding=false', () {
         final result = determineTargetRoute(
           isAuth: true,
-          hasSeenWelcomeMaybe: true,
+          acceptedConsentVersion: currentVersion,
+          currentConsentVersion: currentVersion,
           hasCompletedOnboarding: false,
           defaultTarget: defaultTarget,
         );
         expect(
           result,
           equals(Onboarding01Screen.routeName),
-          reason: 'Users who completed Welcome/Consent but not Onboarding should go to Onboarding',
+          reason: 'Users who completed Consent but not Onboarding should go to Onboarding',
         );
       });
 
       test('Onboarding Gate takes precedence over Dashboard for incomplete onboarding', () {
-        // This test ensures that even if hasSeenWelcome is true,
-        // the user cannot bypass Onboarding by going directly to Dashboard
         final result = determineTargetRoute(
           isAuth: true,
-          hasSeenWelcomeMaybe: true,
+          acceptedConsentVersion: currentVersion,
+          currentConsentVersion: currentVersion,
           hasCompletedOnboarding: false,
           defaultTarget: '/heute',
         );
@@ -128,7 +149,8 @@ void main() {
       test('redirects to defaultTarget when all gates passed (returning user)', () {
         final result = determineTargetRoute(
           isAuth: true,
-          hasSeenWelcomeMaybe: true,
+          acceptedConsentVersion: currentVersion,
+          currentConsentVersion: currentVersion,
           hasCompletedOnboarding: true,
           defaultTarget: defaultTarget,
         );
@@ -143,7 +165,8 @@ void main() {
         const customTarget = '/custom-dashboard';
         final result = determineTargetRoute(
           isAuth: true,
-          hasSeenWelcomeMaybe: true,
+          acceptedConsentVersion: currentVersion,
+          currentConsentVersion: currentVersion,
           hasCompletedOnboarding: true,
           defaultTarget: customTarget,
         );
@@ -156,21 +179,62 @@ void main() {
     });
 
     group('Edge Cases', () {
-      test('Welcome Gate takes priority over Onboarding Gate', () {
-        // Even if hasCompletedOnboarding is true, if hasSeenWelcome is null/false,
-        // user should go to Welcome (this is an edge case that shouldn't occur in practice)
+      test('Consent Gate takes priority over Onboarding Gate', () {
+        // Even if hasCompletedOnboarding is true, if consent is null/outdated,
+        // user should go to Consent
         final result = determineTargetRoute(
           isAuth: true,
-          hasSeenWelcomeMaybe: null,
+          acceptedConsentVersion: null,
+          currentConsentVersion: currentVersion,
           hasCompletedOnboarding: true, // Edge case: this shouldn't happen in practice
           defaultTarget: defaultTarget,
         );
         expect(
           result,
           equals(ConsentWelcome01Screen.routeName),
-          reason: 'Welcome Gate should take priority over Onboarding completion status',
+          reason: 'Consent Gate should take priority over Onboarding completion status',
         );
       });
+    });
+  });
+
+  group('determineFallbackRoute (fail-safe on state load error)', () {
+    test('redirects to AuthSignIn when not authenticated', () {
+      final result = determineFallbackRoute(isAuth: false);
+      expect(
+        result,
+        equals(AuthSignInScreen.routeName),
+        reason: 'Unauthenticated users should go to AuthSignIn on error',
+      );
+    });
+
+    test('redirects to ConsentWelcome01 when authenticated (NOT Home)', () {
+      final result = determineFallbackRoute(isAuth: true);
+      expect(
+        result,
+        equals(ConsentWelcome01Screen.routeName),
+        reason:
+            'Authenticated users should go to ConsentWelcome01 on error, never directly to Home',
+      );
+    });
+
+    test('never returns Home route on error (fail-safe guarantee)', () {
+      // Test both auth states to ensure Home is never returned
+      const homeRoute = '/heute';
+
+      final unauthResult = determineFallbackRoute(isAuth: false);
+      final authResult = determineFallbackRoute(isAuth: true);
+
+      expect(
+        unauthResult,
+        isNot(equals(homeRoute)),
+        reason: 'Fallback should never return Home route (unauthenticated)',
+      );
+      expect(
+        authResult,
+        isNot(equals(homeRoute)),
+        reason: 'Fallback should never return Home route (authenticated)',
+      );
     });
   });
 }

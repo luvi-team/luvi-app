@@ -68,6 +68,21 @@ bool isConsentRoute(String location) {
       location.startsWith(_consentPathPrefix);
 }
 
+/// Determines if access to Home should be blocked due to incomplete onboarding.
+///
+/// Returns the redirect target if onboarding is incomplete, null otherwise.
+/// This guard ensures direct access to /heute (via deep link, saved route)
+/// doesn't bypass the onboarding flow.
+@visibleForTesting
+String? homeGuardRedirect({required bool? hasCompletedOnboarding}) {
+  // If onboarding status is unknown (null), allow through - rely on normal flow.
+  // If explicitly false, redirect to Onboarding01.
+  if (hasCompletedOnboarding == false) {
+    return Onboarding01Screen.routeName;
+  }
+  return null;
+}
+
 final List<GoRoute> featureRoutes = [
   GoRoute(
     path: SplashScreen.routeName,
@@ -240,6 +255,17 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: HeuteScreen.routeName,
     name: 'heute',
+    redirect: (context, state) {
+      // Home Guard: Ensure onboarding is complete before allowing access.
+      // This prevents bypassing onboarding via deep link or saved route.
+      final container = ProviderScope.containerOf(context, listen: false);
+      final asyncValue = container.read(userStateServiceProvider);
+      // Extract value if loaded, null otherwise (loading/error states)
+      final service = asyncValue.whenOrNull(data: (s) => s);
+      return homeGuardRedirect(
+        hasCompletedOnboarding: service?.hasCompletedOnboarding,
+      );
+    },
     builder: (context, state) => const HeuteScreen(),
   ),
   GoRoute(
