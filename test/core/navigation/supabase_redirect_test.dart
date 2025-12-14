@@ -77,7 +77,7 @@ void main() {
     });
 
     group('Szenario 2: session != null + Login/AuthSignIn → redirect to Splash', () {
-      test('redirects LoginScreen to Splash when session exists', () {
+      test('redirects LoginScreen to Splash with skipAnimation when session exists', () {
         when(() => mockState.matchedLocation).thenReturn(LoginScreen.routeName);
 
         final result = supabaseRedirectWithSession(
@@ -87,14 +87,16 @@ void main() {
           isInitializedOverride: true,
         );
 
+        // UX-Fix: Post-login redirect includes skipAnimation=true to avoid
+        // showing the splash animation again after user just logged in
         expect(
           result,
-          equals(SplashScreen.routeName),
-          reason: 'LoginScreen with session should redirect to Splash',
+          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          reason: 'LoginScreen with session should redirect to Splash with skipAnimation',
         );
       });
 
-      test('redirects AuthSignInScreen to Splash when session exists', () {
+      test('redirects AuthSignInScreen to Splash with skipAnimation when session exists', () {
         when(() => mockState.matchedLocation).thenReturn(AuthSignInScreen.routeName);
 
         final result = supabaseRedirectWithSession(
@@ -104,10 +106,12 @@ void main() {
           isInitializedOverride: true,
         );
 
+        // UX-Fix: Post-login redirect includes skipAnimation=true to avoid
+        // showing the splash animation again after user just logged in
         expect(
           result,
-          equals(SplashScreen.routeName),
-          reason: 'AuthSignInScreen with session should redirect to Splash',
+          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          reason: 'AuthSignInScreen with session should redirect to Splash with skipAnimation',
         );
       });
 

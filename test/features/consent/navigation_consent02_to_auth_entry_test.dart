@@ -10,6 +10,7 @@ import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 
@@ -85,26 +86,17 @@ void main() {
 
     verify(() => userState.markWelcomeSeen()).called(1);
 
-    // Per Auth v2: navigation goes to AuthSignInScreen instead of old AuthEntryScreen
+    // Auth Flow Fix: After consent, user (already authenticated) goes to Onboarding, not Auth
+    // User is already logged in at this point (logged in before Welcome/Consent flow)
     expect(
-      find.byKey(const ValueKey('auth_signin_screen')),
+      find.byType(Onboarding01Screen),
       findsOneWidget,
+      reason: 'Consent02 should navigate to Onboarding01 (user is already authenticated)',
     );
-
-    // Verify email sign-in button is present and enabled
-    // AuthOutlineButton wraps an ElevatedButton internally
-    final emailButtonFinder = find.byKey(const ValueKey('signin_email_button'));
-    expect(emailButtonFinder, findsOneWidget);
-    final elevatedButton = find.descendant(
-      of: emailButtonFinder,
-      matching: find.byType(ElevatedButton),
-    );
-    final button = tester.widget<ElevatedButton>(elevatedButton);
-    expect(button.onPressed, isNotNull);
   });
 
   testWidgets(
-    'navigates to auth entry and shows best-effort snackbar when markWelcomeSeen fails',
+    'navigates to onboarding and shows best-effort snackbar when markWelcomeSeen fails',
     (tester) async {
       final consentService = _MockConsentService();
       final userState = _MockUserStateService();
@@ -142,8 +134,12 @@ void main() {
       verify(() => userState.markWelcomeSeen()).called(1);
 
       expect(find.text(l10n.consentErrorSavingConsent), findsOneWidget);
-      // Per Auth v2: navigation goes to AuthSignInScreen
-      expect(find.byKey(const ValueKey('auth_signin_screen')), findsOneWidget);
+      // Auth Flow Fix: navigation goes to Onboarding (user is already authenticated)
+      expect(
+        find.byType(Onboarding01Screen),
+        findsOneWidget,
+        reason: 'Even on markWelcomeSeen failure, navigation should proceed to Onboarding',
+      );
     },
   );
 
@@ -188,8 +184,12 @@ void main() {
     verifyNever(() => userState.markWelcomeSeen());
 
     expect(find.text(l10n.consentSnackbarRateLimited), findsOneWidget);
-    // Per Auth v2: check that navigation to auth did NOT happen
-    expect(find.byKey(const ValueKey('auth_signin_screen')), findsNothing);
+    // Auth Flow Fix: check that navigation to onboarding did NOT happen (blocked by error)
+    expect(
+      find.byType(Onboarding01Screen),
+      findsNothing,
+      reason: 'Rate-limit error should block navigation to Onboarding',
+    );
   });
 }
 

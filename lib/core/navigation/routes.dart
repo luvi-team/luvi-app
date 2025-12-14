@@ -348,8 +348,9 @@ String? supabaseRedirectWithSession(
   // Auth-Flow Bugfix: Nach Login (E-Mail ODER OAuth) mit Session → zu Splash
   // Splash macht die First-Time/Returning-User-Logik async und korrekt
   // Hinweis: session ist hier garantiert != null (oben bereits geprüft)
+  // UX-Fix: skipAnimation=true verhindert erneute Splash-Animation nach Login
   if (isLoggingIn || isAuthSignIn) {
-    return SplashScreen.routeName;
+    return '${SplashScreen.routeName}?skipAnimation=true';
   }
   return null;
 }

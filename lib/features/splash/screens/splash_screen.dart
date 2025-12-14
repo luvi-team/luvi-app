@@ -11,22 +11,26 @@ import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 
-/// Determines the target route based on auth state and welcome status.
+/// Determines the target route based on auth state, welcome status, and
+/// onboarding completion.
 ///
 /// Extracted for testability (Codex-Audit).
 ///
 /// Logic:
 /// - Not authenticated → AuthSignInScreen
-/// - Authenticated + hasSeenWelcome != true → ConsentWelcome01Screen (first-time user)
-/// - Authenticated + hasSeenWelcome == true → defaultTarget (returning user)
+/// - Authenticated + hasSeenWelcome != true → ConsentWelcome01Screen (Welcome/Consent)
+/// - Authenticated + hasSeenWelcome == true + hasCompletedOnboarding != true → Onboarding01
+/// - Authenticated + hasSeenWelcome == true + hasCompletedOnboarding == true → defaultTarget
 @visibleForTesting
 String determineTargetRoute({
   required bool isAuth,
   required bool? hasSeenWelcomeMaybe,
+  required bool hasCompletedOnboarding,
   required String defaultTarget,
 }) {
   if (!isAuth) {
@@ -35,9 +39,13 @@ String determineTargetRoute({
   // BUG-FIX: Use != true instead of == false to catch null (first-time users)
   // null != true → true → first-time user → Consent
   // false != true → true → first-time user → Consent
-  // true != true → false → returning user → Dashboard
+  // true != true → false → returning user → check onboarding
   if (hasSeenWelcomeMaybe != true) {
     return ConsentWelcome01Screen.routeName;
+  }
+  // Onboarding Gate: User has seen welcome/consent but not completed onboarding
+  if (!hasCompletedOnboarding) {
+    return Onboarding01Screen.routeName;
   }
   return defaultTarget;
 }
@@ -55,12 +63,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   bool _hasNavigated = false;
+  bool _skipAnimation = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this)
       ..addStatusListener(_handleAnimationStatus);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Read skipAnimation query param once (post-login redirect uses this)
+    final routerState = GoRouterState.of(context);
+    _skipAnimation = routerState.uri.queryParameters['skipAnimation'] == 'true';
   }
 
   @override
@@ -83,6 +100,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           fit: BoxFit.contain,
           onLoaded: (composition) {
             if (!mounted) return;
+            // UX-Fix: Skip animation if coming from post-login redirect
+            if (_skipAnimation) {
+              _navigateAfterAnimation();
+              return;
+            }
             _controller.duration = composition.duration;
             _controller.forward(from: 0);
           },
@@ -108,11 +130,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           ? await serviceFuture.timeout(const Duration(seconds: 3))
           : await serviceFuture;
       final hasSeenWelcomeMaybe = service.hasSeenWelcomeOrNull;
+      final hasCompletedOnboarding = service.hasCompletedOnboarding;
 
       // Determine target route using extracted helper (testable)
       final target = determineTargetRoute(
         isAuth: isAuth,
         hasSeenWelcomeMaybe: hasSeenWelcomeMaybe,
+        hasCompletedOnboarding: hasCompletedOnboarding,
         defaultTarget: HeuteScreen.routeName,
       );
 
