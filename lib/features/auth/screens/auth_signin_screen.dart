@@ -114,6 +114,24 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     );
   }
 
+  /// Wraps a button with AnimatedOpacity and Semantics for consistent
+  /// loading state behavior across all auth buttons.
+  Widget _buildAnimatedButton({
+    required String semanticsLabel,
+    required Widget child,
+  }) {
+    return AnimatedOpacity(
+      opacity: _oauthLoading ? 0.5 : 1.0,
+      duration: const Duration(milliseconds: 150),
+      child: Semantics(
+        button: true,
+        enabled: !_oauthLoading,
+        label: semanticsLabel,
+        child: child,
+      ),
+    );
+  }
+
   Widget _buildAuthButtons(BuildContext context, AppLocalizations l10n) {
     final buttons = <Widget>[];
 
@@ -123,20 +141,14 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
 
     if (appleSignInSupported) {
       buttons.add(
-        AnimatedOpacity(
-          opacity: _oauthLoading ? 0.5 : 1.0,
-          duration: const Duration(milliseconds: 150),
-          child: Semantics(
-            button: true,
-            enabled: !_oauthLoading,
-            label: l10n.authSignInApple,
-            child: AuthOutlineButton.apple(
-              key: const ValueKey('signin_apple_button'),
-              text: l10n.authSignInApple,
-              onPressed: _oauthLoading
-                  ? null
-                  : () => _handleOAuthSignIn(supa.OAuthProvider.apple),
-            ),
+        _buildAnimatedButton(
+          semanticsLabel: l10n.authSignInApple,
+          child: AuthOutlineButton.apple(
+            key: const ValueKey('signin_apple_button'),
+            text: l10n.authSignInApple,
+            onPressed: _oauthLoading
+                ? null
+                : () => _handleOAuthSignIn(supa.OAuthProvider.apple),
           ),
         ),
       );
@@ -145,20 +157,14 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     // Google Sign In
     if (FeatureFlags.enableGoogleSignIn) {
       buttons.add(
-        AnimatedOpacity(
-          opacity: _oauthLoading ? 0.5 : 1.0,
-          duration: const Duration(milliseconds: 150),
-          child: Semantics(
-            button: true,
-            enabled: !_oauthLoading,
-            label: l10n.authSignInGoogle,
-            child: AuthOutlineButton.google(
-              key: const ValueKey('signin_google_button'),
-              text: l10n.authSignInGoogle,
-              onPressed: _oauthLoading
-                  ? null
-                  : () => _handleOAuthSignIn(supa.OAuthProvider.google),
-            ),
+        _buildAnimatedButton(
+          semanticsLabel: l10n.authSignInGoogle,
+          child: AuthOutlineButton.google(
+            key: const ValueKey('signin_google_button'),
+            text: l10n.authSignInGoogle,
+            onPressed: _oauthLoading
+                ? null
+                : () => _handleOAuthSignIn(supa.OAuthProvider.google),
           ),
         ),
       );
@@ -166,20 +172,15 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
 
     // Email login outline button
     buttons.add(
-      AnimatedOpacity(
-        opacity: _oauthLoading ? 0.5 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        child: Semantics(
-          button: true,
-          enabled: !_oauthLoading,
-          label: l10n.authSignInEmail,
-          child: AuthOutlineButton(
-            key: const ValueKey('signin_email_button'),
-            text: l10n.authSignInEmail,
-            icon: Icons.mail_outline,
-            borderColor: DsColors.authOutlineBorder,
-            onPressed: _oauthLoading ? null : () => context.push(LoginScreen.routeName),
-          ),
+      _buildAnimatedButton(
+        semanticsLabel: l10n.authSignInEmail,
+        child: AuthOutlineButton(
+          key: const ValueKey('signin_email_button'),
+          text: l10n.authSignInEmail,
+          icon: Icons.mail_outline,
+          borderColor: DsColors.authOutlineBorder,
+          onPressed:
+              _oauthLoading ? null : () => context.push(LoginScreen.routeName),
         ),
       ),
     );
