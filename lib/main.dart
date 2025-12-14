@@ -249,7 +249,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   void _setupInitOrchestration() {
     _initOrchestrationSubscription = ref.listenManual<InitState>(
       supabaseInitControllerProvider,
-      (prev, next) {
+      (prev, next) async {
         if (!SupabaseService.isInitialized) return;
 
         // 1. Router-Refresh aktivieren (braucht Supabase-Client)

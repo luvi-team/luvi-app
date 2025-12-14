@@ -150,3 +150,67 @@ BEGIN
   WHERE user_id = (SELECT auth.uid());
   ASSERT rls_allows, 'email_preferences owner context must allow querying own rows';
 END $$;
+
+-- 5) profiles: baseline ohne Kontext & Owner-Kontext
+RESET ROLE; RESET ALL;
+SELECT COUNT(*) = 0 AS rls_blocks FROM public.profiles;
+DO $$
+DECLARE
+  rls_blocks boolean;
+BEGIN
+  SELECT COUNT(*) = 0 INTO rls_blocks FROM public.profiles;
+  ASSERT rls_blocks, 'profiles baseline must return zero rows without context';
+END $$;
+
+SET LOCAL ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  json_build_object('sub','00000000-0000-0000-0000-000000000000','role','authenticated')::text,
+  true
+);
+INSERT INTO public.profiles (
+  user_id,
+  display_name,
+  fitness_level,
+  goals,
+  interests,
+  has_seen_welcome,
+  has_completed_onboarding,
+  accepted_consent_version,
+  accepted_consent_at,
+  onboarding_completed_at
+)
+VALUES (
+  (SELECT auth.uid()),
+  'rls-smoke',
+  'beginner',
+  '[]'::jsonb,
+  '[]'::jsonb,
+  true,
+  true,
+  1,
+  now(),
+  now()
+)
+ON CONFLICT (user_id) DO UPDATE
+SET display_name = EXCLUDED.display_name,
+    fitness_level = EXCLUDED.fitness_level,
+    goals = EXCLUDED.goals,
+    interests = EXCLUDED.interests,
+    has_seen_welcome = EXCLUDED.has_seen_welcome,
+    has_completed_onboarding = EXCLUDED.has_completed_onboarding,
+    accepted_consent_version = EXCLUDED.accepted_consent_version,
+    accepted_consent_at = EXCLUDED.accepted_consent_at,
+    onboarding_completed_at = EXCLUDED.onboarding_completed_at;
+SELECT COUNT(*) = 1 AS rls_allows
+FROM public.profiles
+WHERE user_id = (SELECT auth.uid());
+DO $$
+DECLARE
+  rls_allows boolean;
+BEGIN
+  SELECT COUNT(*) = 1 INTO rls_allows
+  FROM public.profiles
+  WHERE user_id = (SELECT auth.uid());
+  ASSERT rls_allows, 'profiles owner context must allow querying own row';
+END $$;
