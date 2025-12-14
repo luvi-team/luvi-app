@@ -20,6 +20,39 @@ import '../../support/test_config.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
+/// Configures test view size. Returns teardown function to reset.
+void Function() _configureTestView(WidgetTester tester) {
+  final view = tester.view;
+  view.physicalSize = const Size(1080, 2340);
+  view.devicePixelRatio = 1.0;
+  return () {
+    view.resetPhysicalSize();
+    view.resetDevicePixelRatio();
+  };
+}
+
+/// Builds a test widget with router, mocked auth repo, and standard localization.
+Widget _buildAuthRouterTestWidget({
+  required GoRouter router,
+  required AuthRepository mockAuthRepo,
+}) {
+  return ProviderScope(
+    overrides: [authRepositoryProvider.overrideWithValue(mockAuthRepo)],
+    child: MaterialApp.router(
+      routerConfig: router,
+      theme: AppTheme.buildAppTheme(),
+      locale: const Locale('de'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+    ),
+  );
+}
+
 /// Auth-Flow Bugfix Tests: Verify auth route whitelist behavior.
 ///
 /// These tests verify that navigation between auth screens works correctly:
@@ -42,13 +75,7 @@ void main() {
 
   group('Auth route whitelist (navigation without session)', () {
     testWidgets('LoginScreen → SignupScreen navigation works', (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(1080, 2340);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+      addTearDown(_configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -56,23 +83,10 @@ void main() {
       );
       addTearDown(router.dispose);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildAuthRouterTestWidget(
+        router: router,
+        mockAuthRepo: mockRepo,
+      ));
       await tester.pumpAndSettle();
 
       // Verify we start on LoginScreen
@@ -100,13 +114,7 @@ void main() {
     });
 
     testWidgets('LoginScreen → ResetPasswordScreen navigation works', (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(1080, 2340);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+      addTearDown(_configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -114,23 +122,10 @@ void main() {
       );
       addTearDown(router.dispose);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildAuthRouterTestWidget(
+        router: router,
+        mockAuthRepo: mockRepo,
+      ));
       await tester.pumpAndSettle();
 
       // Verify we start on LoginScreen
@@ -151,13 +146,7 @@ void main() {
     });
 
     testWidgets('AuthSignInScreen is accessible', (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(1080, 2340);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+      addTearDown(_configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -165,23 +154,10 @@ void main() {
       );
       addTearDown(router.dispose);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildAuthRouterTestWidget(
+        router: router,
+        mockAuthRepo: mockRepo,
+      ));
       await tester.pumpAndSettle();
 
       // Verify AuthSignInScreen is shown (not redirected)
@@ -193,13 +169,7 @@ void main() {
     });
 
     testWidgets('AuthSignupScreen is directly accessible', (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(1080, 2340);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+      addTearDown(_configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -207,23 +177,10 @@ void main() {
       );
       addTearDown(router.dispose);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildAuthRouterTestWidget(
+        router: router,
+        mockAuthRepo: mockRepo,
+      ));
       await tester.pumpAndSettle();
 
       // Auth-Flow Bugfix: Verify SignupScreen is accessible (not redirected to sign-in)
@@ -235,13 +192,7 @@ void main() {
     });
 
     testWidgets('ResetPasswordScreen is directly accessible', (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(1080, 2340);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+      addTearDown(_configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -249,23 +200,10 @@ void main() {
       );
       addTearDown(router.dispose);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildAuthRouterTestWidget(
+        router: router,
+        mockAuthRepo: mockRepo,
+      ));
       await tester.pumpAndSettle();
 
       // Auth-Flow Bugfix: Verify ResetPasswordScreen is accessible (not redirected to sign-in)

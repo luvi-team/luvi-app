@@ -82,7 +82,10 @@ class SupabaseDeepLinkHandler {
     if (uri == null) return;
     if (!_matchesAllowed(uri)) return;
     if (!SupabaseService.isInitialized) {
-      // Preserve the URI for processing after Supabase initialization
+      // NOTE: Last-one-wins design - if multiple deep links arrive before
+      // Supabase init completes, only the most recent URI is preserved.
+      // This is acceptable for MVP as deep links are rare events and the
+      // most recent link is typically the one the user actually wants.
       _pendingUri = uri;
       log.i(
         'supabase_deeplink_queued: Supabase not initialized, URI queued for later processing',
