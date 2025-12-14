@@ -25,6 +25,10 @@ class SupabaseDeepLinkHandler {
   bool _started = false;
   bool _disposed = false;
 
+  /// Pending URI to be processed when Supabase initialization completes.
+  /// This preserves deep links that arrive before Supabase is ready.
+  Uri? _pendingUri;
+
   Future<void> start() async {
     if (_disposed) {
       throw StateError(
@@ -78,13 +82,20 @@ class SupabaseDeepLinkHandler {
     if (uri == null) return;
     if (!_matchesAllowed(uri)) return;
     if (!SupabaseService.isInitialized) {
-      log.d(
-        'supabase_deeplink_skipped: Supabase not initialized',
+      // Preserve the URI for processing after Supabase initialization
+      _pendingUri = uri;
+      log.i(
+        'supabase_deeplink_queued: Supabase not initialized, URI queued for later processing',
         tag: 'supabase_deeplink',
       );
       return;
     }
 
+    await _processUri(uri);
+  }
+
+  /// Processes a validated deep link URI with Supabase.
+  Future<void> _processUri(Uri uri) async {
     try {
       // Let Supabase SDK process the redirect and update auth state.
       // The onAuthStateChange listener will propagate state changes.
@@ -107,6 +118,32 @@ class SupabaseDeepLinkHandler {
       );
     }
   }
+
+  /// Processes any pending deep link URI that was received before Supabase
+  /// was initialized. Should be called after Supabase initialization completes.
+  Future<void> processPendingUri() async {
+    final pending = _pendingUri;
+    if (pending == null) return;
+
+    _pendingUri = null;
+
+    if (!SupabaseService.isInitialized) {
+      log.w(
+        'supabase_deeplink_pending_skipped: Supabase still not initialized',
+        tag: 'supabase_deeplink',
+      );
+      return;
+    }
+
+    log.i(
+      'supabase_deeplink_pending_processing: Processing queued URI',
+      tag: 'supabase_deeplink',
+    );
+    await _processUri(pending);
+  }
+
+  /// Returns true if there is a pending URI waiting to be processed.
+  bool get hasPendingUri => _pendingUri != null;
 
   bool _matchesAllowed(Uri uri) {
     if (uri.scheme.toLowerCase() != _allowedUri.scheme.toLowerCase()) {

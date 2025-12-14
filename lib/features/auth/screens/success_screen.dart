@@ -71,9 +71,9 @@ class SuccessScreen extends StatelessWidget {
                 // Space between icon and text
                 const SizedBox(height: Spacing.l + Spacing.m), // ~40px
 
-                // Title
+                // Title - using canonical authSuccessPwdTitle getter
                 Text(
-                  l10n.authSuccessTitle,
+                  l10n.authSuccessPwdTitle,
                   style: titleStyle,
                   textAlign: TextAlign.center,
                 ),
@@ -81,11 +81,11 @@ class SuccessScreen extends StatelessWidget {
                 // Figma: Gap = 8px between title and subtitle
                 const SizedBox(height: Spacing.xs),
 
-                // Subtitle
+                // Subtitle - using canonical authSuccessPwdSubtitle getter
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
                   child: Text(
-                    l10n.authSuccessSubtitle,
+                    l10n.authSuccessPwdSubtitle,
                     style: subtitleStyle,
                     textAlign: TextAlign.center,
                   ),

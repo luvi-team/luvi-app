@@ -1175,18 +1175,6 @@ abstract class AppLocalizations {
   /// **'Signing up'**
   String get authSignupCtaLoadingSemantic;
 
-  /// Prefix text for the sign-in link on the sign-up screen. Keep trailing space.
-  ///
-  /// In en, this message translates to:
-  /// **'Already have an account? '**
-  String get authSignupLinkPrefix;
-
-  /// Link encouraging users to return to the sign-in screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in'**
-  String get authSignupLinkAction;
-
   /// Hint text for the first-name input.
   ///
   /// In en, this message translates to:
@@ -1271,35 +1259,11 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get authSuccessCta;
 
-  /// Headline for the create-new-password screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a new password 💜'**
-  String get authCreateNewTitle;
-
   /// Subtitle for the create-new-password screen.
   ///
   /// In en, this message translates to:
   /// **'Make it strong.'**
   String get authCreateNewSubtitle;
-
-  /// Hint text for the new password input.
-  ///
-  /// In en, this message translates to:
-  /// **'New password'**
-  String get authCreateNewHint1;
-
-  /// Hint text for the confirm password input.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm new password'**
-  String get authCreateNewHint2;
-
-  /// Primary CTA label when creating a new password.
-  ///
-  /// In en, this message translates to:
-  /// **'Save'**
-  String get authCreateNewCta;
 
   /// Headline for the password reset verification screen.
   ///
@@ -1370,7 +1334,7 @@ abstract class AppLocalizations {
   /// Headline on the SignIn entry screen (glassmorphism card).
   ///
   /// In en, this message translates to:
-  /// **'Don\'t miss out on being your best self!'**
+  /// **'Don\'t miss out on becoming your best self!'**
   String get authSignInHeadline;
 
   /// Text for the Email login button on the SignIn screen.
@@ -1462,18 +1426,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset password'**
   String get authCreatePasswordCta;
-
-  /// Title on the Success screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Done!'**
-  String get authSuccessTitle;
-
-  /// Subtitle on the Success screen. NOTE: Intentionally shares text with authSuccessPwdSubtitle for translation flexibility - both refer to password-saved success state but in different screen contexts.
-  ///
-  /// In en, this message translates to:
-  /// **'Your new password has been saved.'**
-  String get authSuccessSubtitle;
 
   /// CTA button text on the Success screen.
   ///

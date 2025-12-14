@@ -577,12 +577,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSignupCtaLoadingSemantic => 'Wird registriert';
 
   @override
-  String get authSignupLinkPrefix => 'Schon ein Konto? ';
-
-  @override
-  String get authSignupLinkAction => 'Anmelden';
-
-  @override
   String get authSignupHintFirstName => 'Dein Vorname';
 
   @override
@@ -625,19 +619,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSuccessCta => 'Fertig';
 
   @override
-  String get authCreateNewTitle => 'Neues Passwort erstellen 💜';
-
-  @override
   String get authCreateNewSubtitle => 'Mach es stark.';
-
-  @override
-  String get authCreateNewHint1 => 'Neues Passwort';
-
-  @override
-  String get authCreateNewHint2 => 'Neues Passwort bestätigen';
-
-  @override
-  String get authCreateNewCta => 'Speichern';
 
   @override
   String get authVerifyResetTitle => 'Code eingeben 💜';
@@ -719,12 +701,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authCreatePasswordCta => 'Passwort zurücksetzen';
-
-  @override
-  String get authSuccessTitle => 'Geschafft!';
-
-  @override
-  String get authSuccessSubtitle => 'Dein neues Passwort wurde gespeichert.';
 
   @override
   String get authSuccessBackToLogin => 'Zurück zur Anmeldung';

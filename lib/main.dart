@@ -249,12 +249,20 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   }
 
   void _ensureDeepLinkHandler() {
-    if (_deepLinkHandler != null || !SupabaseService.isInitialized) {
-      return;
+    // Start handler early to capture deep links that arrive before Supabase init
+    if (_deepLinkHandler == null) {
+      final handler = SupabaseDeepLinkHandler();
+      _deepLinkHandler = handler;
+      unawaited(handler.start());
     }
-    final handler = SupabaseDeepLinkHandler();
-    _deepLinkHandler = handler;
-    unawaited(handler.start());
+
+    // Process any queued deep links once Supabase is ready
+    final handler = _deepLinkHandler;
+    if (handler != null &&
+        handler.hasPendingUri &&
+        SupabaseService.isInitialized) {
+      unawaited(handler.processPendingUri());
+    }
   }
 
 }

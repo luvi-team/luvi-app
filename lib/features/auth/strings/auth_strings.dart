@@ -160,8 +160,11 @@ class AuthStrings {
   static String get signupCta => _l10n().authSignupCta;
   static String get signupCtaLoadingSemantic =>
       _l10n().authSignupCtaLoadingSemantic;
-  static String get signupLinkPrefix => _l10n().authSignupLinkPrefix;
-  static String get signupLinkAction => _l10n().authSignupLinkAction;
+  // Canonical signup link getters - authSignupAlreadyMember/authSignupLoginLink
+  // are the active keys used in auth_signup_screen.dart. These aliases exist
+  // for backwards compatibility but delegate to the canonical getters.
+  static String get signupLinkPrefix => _l10n().authSignupAlreadyMember;
+  static String get signupLinkAction => _l10n().authSignupLoginLink;
   static String get signupHintFirstName => _l10n().authSignupHintFirstName;
   static String get signupHintLastName => _l10n().authSignupHintLastName;
   static String get signupHintPhone => _l10n().authSignupHintPhone;
@@ -176,10 +179,11 @@ class AuthStrings {
   static String get successForgotTitle => _l10n().authSuccessForgotTitle;
   static String get successForgotSubtitle => _l10n().authSuccessForgotSubtitle;
   static String get successCta => _l10n().authSuccessCta;
-  static String get createNewHint1 => _l10n().authCreateNewHint1;
-  static String get createNewHint2 => _l10n().authCreateNewHint2;
-  static String get createNewCta => _l10n().authCreateNewCta;
-  static String get createNewTitle => _l10n().authCreateNewTitle;
+  // Canonical password hint getters - using authNewPassword* keys per Auth UI v2
+  static String get createNewHint1 => _l10n().authNewPasswordHint;
+  static String get createNewHint2 => _l10n().authConfirmPasswordHint;
+  static String get createNewCta => _l10n().authCreatePasswordCta;
+  static String get createNewTitle => _l10n().authNewPasswordTitle;
   static String get createNewSubtitle => _l10n().authCreateNewSubtitle;
   static String get verifyResetTitle => _l10n().authVerifyResetTitle;
   static String get verifyResetSubtitle => _l10n().authVerifyResetSubtitle;

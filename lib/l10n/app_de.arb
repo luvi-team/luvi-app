@@ -766,14 +766,6 @@
   "@authSignupCtaLoadingSemantic": {
     "description": "Semantischer/Accessibility-Text während der Registrierung."
   },
-  "authSignupLinkPrefix": "Schon ein Konto? ",
-  "@authSignupLinkPrefix": {
-    "description": "Text vor dem Link zur Anmeldung vom Registrierungsbildschirm."
-  },
-  "authSignupLinkAction": "Anmelden",
-  "@authSignupLinkAction": {
-    "description": "Aktionslink zur Anmeldung vom Registrierungsbildschirm."
-  },
   "authSignupHintFirstName": "Dein Vorname",
   "@authSignupHintFirstName": {
     "description": "Platzhalter für das Feld Vorname."
@@ -818,14 +810,6 @@
   "@authSuccessCta": {
     "description": "CTA nach erfolgreichem Vorgang."
   },
-  "authCreateNewHint1": "Neues Passwort",
-  "@authCreateNewHint1": {
-    "description": "Platzhalter für das neue Passwortfeld."
-  },
-  "authCreateNewHint2": "Neues Passwort bestätigen",
-  "@authCreateNewHint2": {
-    "description": "Platzhalter für das Bestätigungsfeld."
-  },
   "authVerifyResetTitle": "Code eingeben 💜",
   "@authVerifyResetTitle": {
     "description": "Titel für den Code-Eingabebildschirm im Reset-Flow."
@@ -854,17 +838,9 @@
   "@authVerifyResend": {
     "description": "Link zum erneuten Senden des Codes."
   },
-  "authCreateNewTitle": "Neues Passwort erstellen 💜",
-  "@authCreateNewTitle": {
-    "description": "Überschrift für den Bildschirm zum Erstellen eines neuen Passworts."
-  },
   "authCreateNewSubtitle": "Mach es stark.",
   "@authCreateNewSubtitle": {
     "description": "Untertitel für den Bildschirm zum Erstellen eines neuen Passworts."
-  },
-  "authCreateNewCta": "Speichern",
-  "@authCreateNewCta": {
-    "description": "Primärer CTA-Text beim Speichern des neuen Passworts."
   },
   "authErrWaitBeforeRetry": "Bitte warte {seconds, plural, one {# Sekunde} other {# Sekunden}}, bevor du es erneut versuchst.",
   "@authErrWaitBeforeRetry": {
@@ -954,14 +930,6 @@
   "authCreatePasswordCta": "Passwort zurücksetzen",
   "@authCreatePasswordCta": {
     "description": "CTA-Button-Text auf dem Create-New-Password-Screen. HINWEIS: Teilt absichtlich den Text mit authResetCta - beide sind 'Passwort zurücksetzen' CTAs, aber in unterschiedlichen Bildschirm-Kontexten (Passwort-Eingabe vs. E-Mail-Eingabe). Separate Keys für Lokalisierungsflexibilität beibehalten."
-  },
-  "authSuccessTitle": "Geschafft!",
-  "@authSuccessTitle": {
-    "description": "Titel auf dem Success-Screen."
-  },
-  "authSuccessSubtitle": "Dein neues Passwort wurde gespeichert.",
-  "@authSuccessSubtitle": {
-    "description": "Untertitel auf dem Success-Screen. HINWEIS: Teilt absichtlich den Text mit authSuccessPwdSubtitle für Übersetzungsflexibilität - beide beziehen sich auf Passwort-gespeichert-Erfolg, aber in unterschiedlichen Bildschirm-Kontexten."
   },
   "authSuccessBackToLogin": "Zurück zur Anmeldung",
   "@authSuccessBackToLogin": {

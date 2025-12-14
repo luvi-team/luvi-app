@@ -577,12 +577,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSignupCtaLoadingSemantic => 'Signing up';
 
   @override
-  String get authSignupLinkPrefix => 'Already have an account? ';
-
-  @override
-  String get authSignupLinkAction => 'Sign in';
-
-  @override
   String get authSignupHintFirstName => 'Your first name';
 
   @override
@@ -625,19 +619,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSuccessCta => 'Done';
 
   @override
-  String get authCreateNewTitle => 'Create a new password 💜';
-
-  @override
   String get authCreateNewSubtitle => 'Make it strong.';
-
-  @override
-  String get authCreateNewHint1 => 'New password';
-
-  @override
-  String get authCreateNewHint2 => 'Confirm new password';
-
-  @override
-  String get authCreateNewCta => 'Save';
 
   @override
   String get authVerifyResetTitle => 'Enter the code 💜';
@@ -673,7 +655,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentSnackbarRateLimited => 'Too many requests right now. Please wait a moment and try again.';
 
   @override
-  String get authSignInHeadline => 'Don\'t miss out on being your best self!';
+  String get authSignInHeadline => 'Don\'t miss out on becoming your best self!';
 
   @override
   String get authSignInEmail => 'Sign in with Email';
@@ -719,12 +701,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authCreatePasswordCta => 'Reset password';
-
-  @override
-  String get authSuccessTitle => 'Done!';
-
-  @override
-  String get authSuccessSubtitle => 'Your new password has been saved.';
 
   @override
   String get authSuccessBackToLogin => 'Back to sign in';
