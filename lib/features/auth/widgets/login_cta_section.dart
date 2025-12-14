@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
@@ -30,7 +31,12 @@ class LoginCtaSection extends StatelessWidget {
           height: Sizes.buttonHeight,
           child: ElevatedButton(
             key: const ValueKey('login_cta_button'),
-            onPressed: (isLoading || hasValidationError) ? null : onSubmit,
+            onPressed: (isLoading || hasValidationError)
+                ? null
+                : () {
+                    HapticFeedback.lightImpact();
+                    onSubmit();
+                  },
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 150),
               child: _LoginButtonChild(isLoading: isLoading),

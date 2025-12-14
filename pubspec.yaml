@@ -41,6 +41,9 @@ dependencies:
 
   # Supabase Flutter client
   supabase_flutter: ^2.8.0
+  # Note: app_links ^7.0.0 requires Dart SDK ^3.10.0 (current: 3.9.2)
+  # Upgrade when Flutter/Dart SDK is updated
+  app_links: ^6.4.1
 
   # Environment variables support
   flutter_dotenv: ^6.0.0

@@ -689,6 +689,12 @@ abstract class AppLocalizations {
   /// **'Onboarding complete'**
   String get onboardingComplete;
 
+  /// Error message shown when a workout ID in the URL is invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid workout ID'**
+  String get errorInvalidWorkoutId;
+
   /// Headline for the cycle tip card during menstruation.
   ///
   /// In en, this message translates to:
@@ -995,6 +1001,12 @@ abstract class AppLocalizations {
   /// **'Welcome back 💜'**
   String get authLoginHeadline;
 
+  /// Title on login screen (Figma Auth UI v2). NOTE: Intentionally shares text with authSignInEmail for translation flexibility - authLoginTitle is screen title, authSignInEmail is button text. Keep separate keys for future localization divergence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Email'**
+  String get authLoginTitle;
+
   /// Subheadline displayed under the login headline.
   ///
   /// In en, this message translates to:
@@ -1133,10 +1145,10 @@ abstract class AppLocalizations {
   /// **'Your password'**
   String get authPasswordHint;
 
-  /// Headline shown on the sign-up screen.
+  /// Headline shown on the sign-up screen (Figma Auth UI v2).
   ///
   /// In en, this message translates to:
-  /// **'Your journey starts here 💜'**
+  /// **'Create account'**
   String get authSignupTitle;
 
   /// Subtitle encouraging users to complete sign-up.
@@ -1144,6 +1156,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick signup and you\'re ready to go.'**
   String get authSignupSubtitle;
+
+  /// Prefix for login link on sign-up screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Already a member? '**
+  String get authSignupAlreadyMember;
+
+  /// Link text to login from sign-up screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authSignupLoginLink;
 
   /// Primary call-to-action label on the sign-up screen.
   ///
@@ -1156,18 +1180,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Signing up'**
   String get authSignupCtaLoadingSemantic;
-
-  /// Prefix text for the sign-in link on the sign-up screen. Keep trailing space.
-  ///
-  /// In en, this message translates to:
-  /// **'Already have an account? '**
-  String get authSignupLinkPrefix;
-
-  /// Link encouraging users to return to the sign-in screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in'**
-  String get authSignupLinkAction;
 
   /// Hint text for the first-name input.
   ///
@@ -1253,35 +1265,11 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get authSuccessCta;
 
-  /// Headline for the create-new-password screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a new password 💜'**
-  String get authCreateNewTitle;
-
   /// Subtitle for the create-new-password screen.
   ///
   /// In en, this message translates to:
   /// **'Make it strong.'**
   String get authCreateNewSubtitle;
-
-  /// Hint text for the new password input.
-  ///
-  /// In en, this message translates to:
-  /// **'New password'**
-  String get authCreateNewHint1;
-
-  /// Hint text for the confirm password input.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm new password'**
-  String get authCreateNewHint2;
-
-  /// Primary CTA label when creating a new password.
-  ///
-  /// In en, this message translates to:
-  /// **'Save'**
-  String get authCreateNewCta;
 
   /// Headline for the password reset verification screen.
   ///
@@ -1348,6 +1336,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Too many requests right now. Please wait a moment and try again.'**
   String get consentSnackbarRateLimited;
+
+  /// Headline on the SignIn entry screen (glassmorphism card).
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t miss out on becoming your best self!'**
+  String get authSignInHeadline;
+
+  /// Text for the Email login button on the SignIn screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Email'**
+  String get authSignInEmail;
+
+  /// Text for the Google login button on the SignIn screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get authSignInGoogle;
+
+  /// Label for Apple Sign In button (used in Semantics wrapper on SignIn screen).
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Apple'**
+  String get authSignInApple;
+
+  /// Semantics label for the loading indicator during OAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in'**
+  String get authSignInLoading;
+
+  /// Error text when OAuth sign-in fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in failed. Please try again.'**
+  String get authSignInOAuthError;
+
+  /// Error text when Apple sign-in fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple sign in failed. Please try again.'**
+  String get authSignInAppleError;
+
+  /// Error text when Google sign-in fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign in failed. Please try again.'**
+  String get authSignInGoogleError;
+
+  /// Title on the Reset Password screen (no emoji).
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authResetTitle;
+
+  /// Subtitle on the Reset Password screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email and we\'ll send you a link to reset it.'**
+  String get authResetSubtitle;
+
+  /// CTA button text on the Reset Password screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get authResetCta;
+
+  /// Snackbar confirmation after successful password reset request.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset email sent.'**
+  String get authResetEmailSent;
+
+  /// Title on the Create New Password screen (no emoji).
+  ///
+  /// In en, this message translates to:
+  /// **'Create new password'**
+  String get authNewPasswordTitle;
+
+  /// Hint text for the new password field.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get authNewPasswordHint;
+
+  /// Hint text for the password confirmation field.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get authConfirmPasswordHint;
+
+  /// CTA button text on the Create New Password screen. NOTE: Intentionally shares text with authResetCta - both are 'Reset password' CTAs but in different screen contexts (password entry vs email entry). Keep separate for localization flexibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get authCreatePasswordCta;
+
+  /// CTA button text on the Success screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get authSuccessBackToLogin;
+
+  /// Snackbar message after successful registration.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration successful! You can now sign in.'**
+  String get authSignupSuccess;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

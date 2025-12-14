@@ -5,7 +5,7 @@ import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -55,8 +55,8 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     if (router.canPop()) {
       context.pop();
     } else {
-      // Fallback to auth entry when no back stack is available
-      context.go(AuthEntryScreen.routeName);
+      // Fallback to auth signin when no back stack is available
+      context.go(AuthSignInScreen.routeName);
     }
   }
 

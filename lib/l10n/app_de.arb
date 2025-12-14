@@ -488,6 +488,10 @@
   "@onboardingComplete": {
     "description": "Completion message shown on the onboarding done route."
   },
+  "errorInvalidWorkoutId": "Ungültige Workout-ID",
+  "@errorInvalidWorkoutId": {
+    "description": "Error message shown when a workout ID in the URL is invalid."
+  },
 
   "cycleTipHeadlineMenstruation": "Menstruation",
   "@cycleTipHeadlineMenstruation": {"description": "Headline for the cycle tip card during menstruation."},
@@ -670,6 +674,10 @@
   "@authLoginHeadline": {
     "description": "Überschrift auf dem Login-Screen."
   },
+  "authLoginTitle": "Anmelden mit E-Mail",
+  "@authLoginTitle": {
+    "description": "Titel auf dem Login-Screen (Figma Auth UI v2). HINWEIS: Teilt absichtlich den Text mit authSignInEmail für Übersetzungsflexibilität - authLoginTitle ist Bildschirmtitel, authSignInEmail ist Button-Text. Separate Keys für zukünftige Lokalisierungsabweichungen beibehalten."
+  },
   "authLoginSubhead": "Schön, dass du da bist.",
   "@authLoginSubhead": {
     "description": "Unterzeile auf dem Login-Screen."
@@ -738,13 +746,21 @@
   "@authPasswordHint": {
     "description": "Platzhalter/Hinweistext für das Passwort-Feld."
   },
-  "authSignupTitle": "Deine Reise beginnt hier 💜",
+  "authSignupTitle": "Konto erstellen",
   "@authSignupTitle": {
-    "description": "Titel für den Registrierungsbildschirm."
+    "description": "Titel für den Registrierungsbildschirm (Figma Auth UI v2)."
   },
   "authSignupSubtitle": "Schnell registrieren und loslegen.",
   "@authSignupSubtitle": {
     "description": "Unterzeile für den Registrierungsbildschirm."
+  },
+  "authSignupAlreadyMember": "Schon dabei? ",
+  "@authSignupAlreadyMember": {
+    "description": "Prefix für den Login-Link auf dem Registrierungsbildschirm."
+  },
+  "authSignupLoginLink": "Anmelden",
+  "@authSignupLoginLink": {
+    "description": "Link-Text zum Login vom Registrierungsbildschirm."
   },
   "authSignupCta": "Registrieren",
   "@authSignupCta": {
@@ -753,14 +769,6 @@
   "authSignupCtaLoadingSemantic": "Wird registriert",
   "@authSignupCtaLoadingSemantic": {
     "description": "Semantischer/Accessibility-Text während der Registrierung."
-  },
-  "authSignupLinkPrefix": "Schon ein Konto? ",
-  "@authSignupLinkPrefix": {
-    "description": "Text vor dem Link zur Anmeldung vom Registrierungsbildschirm."
-  },
-  "authSignupLinkAction": "Anmelden",
-  "@authSignupLinkAction": {
-    "description": "Aktionslink zur Anmeldung vom Registrierungsbildschirm."
   },
   "authSignupHintFirstName": "Dein Vorname",
   "@authSignupHintFirstName": {
@@ -806,14 +814,6 @@
   "@authSuccessCta": {
     "description": "CTA nach erfolgreichem Vorgang."
   },
-  "authCreateNewHint1": "Neues Passwort",
-  "@authCreateNewHint1": {
-    "description": "Platzhalter für das neue Passwortfeld."
-  },
-  "authCreateNewHint2": "Neues Passwort bestätigen",
-  "@authCreateNewHint2": {
-    "description": "Platzhalter für das Bestätigungsfeld."
-  },
   "authVerifyResetTitle": "Code eingeben 💜",
   "@authVerifyResetTitle": {
     "description": "Titel für den Code-Eingabebildschirm im Reset-Flow."
@@ -842,17 +842,9 @@
   "@authVerifyResend": {
     "description": "Link zum erneuten Senden des Codes."
   },
-  "authCreateNewTitle": "Neues Passwort erstellen 💜",
-  "@authCreateNewTitle": {
-    "description": "Überschrift für den Bildschirm zum Erstellen eines neuen Passworts."
-  },
   "authCreateNewSubtitle": "Mach es stark.",
   "@authCreateNewSubtitle": {
     "description": "Untertitel für den Bildschirm zum Erstellen eines neuen Passworts."
-  },
-  "authCreateNewCta": "Speichern",
-  "@authCreateNewCta": {
-    "description": "Primärer CTA-Text beim Speichern des neuen Passworts."
   },
   "authErrWaitBeforeRetry": "Bitte warte {seconds, plural, one {# Sekunde} other {# Sekunden}}, bevor du es erneut versuchst.",
   "@authErrWaitBeforeRetry": {
@@ -878,5 +870,77 @@
   "consentSnackbarRateLimited": "Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.",
   "@consentSnackbarRateLimited": {
     "description": "Snackbar-Hinweis bei Rate-Limit-Blockierungen während des Consent-Loggings."
+  },
+  "authSignInHeadline": "Verpasse es nicht, das Beste aus dir zu machen!",
+  "@authSignInHeadline": {
+    "description": "Headline auf dem SignIn-Entry-Screen (Glassmorphism Card)."
+  },
+  "authSignInEmail": "Anmelden mit E-Mail",
+  "@authSignInEmail": {
+    "description": "Text für den E-Mail-Login-Button auf dem SignIn-Screen."
+  },
+  "authSignInGoogle": "Anmelden mit Google",
+  "@authSignInGoogle": {
+    "description": "Text für den Google-Login-Button auf dem SignIn-Screen."
+  },
+  "authSignInApple": "Anmelden mit Apple",
+  "@authSignInApple": {
+    "description": "Semantik-Label für den Apple-Login-Button auf dem SignIn-Screen."
+  },
+  "authSignInLoading": "Anmeldung läuft",
+  "@authSignInLoading": {
+    "description": "Semantik-Label für den Ladeindikator während OAuth."
+  },
+  "authSignInOAuthError": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+  "@authSignInOAuthError": {
+    "description": "Fehlertext bei fehlgeschlagener OAuth-Anmeldung."
+  },
+  "authSignInAppleError": "Apple-Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+  "@authSignInAppleError": {
+    "description": "Fehlertext bei fehlgeschlagener Apple-Anmeldung."
+  },
+  "authSignInGoogleError": "Google-Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+  "@authSignInGoogleError": {
+    "description": "Fehlertext bei fehlgeschlagener Google-Anmeldung."
+  },
+  "authResetTitle": "Passwort vergessen?",
+  "@authResetTitle": {
+    "description": "Titel auf dem Reset-Password-Screen (ohne Emoji)."
+  },
+  "authResetSubtitle": "Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu.",
+  "@authResetSubtitle": {
+    "description": "Untertitel auf dem Reset-Password-Screen."
+  },
+  "authResetCta": "Passwort zurücksetzen",
+  "@authResetCta": {
+    "description": "CTA-Button-Text auf dem Reset-Password-Screen."
+  },
+  "authResetEmailSent": "E-Mail zum Zurücksetzen wurde gesendet.",
+  "@authResetEmailSent": {
+    "description": "Snackbar-Bestätigung nach erfolgreichem Passwort-Reset-Request."
+  },
+  "authNewPasswordTitle": "Neues Passwort erstellen",
+  "@authNewPasswordTitle": {
+    "description": "Titel auf dem Create-New-Password-Screen (ohne Emoji)."
+  },
+  "authNewPasswordHint": "Neues Passwort",
+  "@authNewPasswordHint": {
+    "description": "Hint-Text für das neue Passwort-Feld."
+  },
+  "authConfirmPasswordHint": "Neues Passwort bestätigen",
+  "@authConfirmPasswordHint": {
+    "description": "Hint-Text für das Passwort-Bestätigung-Feld."
+  },
+  "authCreatePasswordCta": "Passwort zurücksetzen",
+  "@authCreatePasswordCta": {
+    "description": "CTA-Button-Text auf dem Create-New-Password-Screen. HINWEIS: Teilt absichtlich den Text mit authResetCta - beide sind 'Passwort zurücksetzen' CTAs, aber in unterschiedlichen Bildschirm-Kontexten (Passwort-Eingabe vs. E-Mail-Eingabe). Separate Keys für Lokalisierungsflexibilität beibehalten."
+  },
+  "authSuccessBackToLogin": "Zurück zur Anmeldung",
+  "@authSuccessBackToLogin": {
+    "description": "CTA-Button-Text auf dem Success-Screen."
+  },
+  "authSignupSuccess": "Registrierung erfolgreich! Du kannst dich jetzt anmelden.",
+  "@authSignupSuccess": {
+    "description": "Snackbar-Nachricht nach erfolgreicher Registrierung."
   }
 }

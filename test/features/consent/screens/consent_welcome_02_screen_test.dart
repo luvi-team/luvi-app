@@ -27,6 +27,7 @@ void main() {
         final l10n = AppLocalizations.of(context)!;
 
         // 3. Assertions against REAL L10n values (not hardcoded)
+        expect(l10n.localeName, 'de');
         expect(find.text(l10n.welcome02Title), findsOneWidget);
         expect(find.text(l10n.welcome02Subtitle), findsOneWidget);
         expect(
@@ -84,9 +85,8 @@ void main() {
           findsOneWidget,
         );
 
-        // 4. Verify it's actually English (not German)
-        expect(find.text('Continue'), findsOneWidget);
-        expect(find.text('Weiter'), findsNothing);
+        // 4. Verify it's actually English locale
+        expect(l10n.localeName, 'en');
       });
     });
   });

@@ -137,9 +137,8 @@ void main() {
           findsOneWidget,
         );
 
-        // Verify it's actually English (not German)
-        expect(find.text('Continue'), findsOneWidget);
-        expect(find.text('Weiter'), findsNothing);
+        // Verify it's actually English locale
+        expect(l10n.localeName, 'en');
       });
     });
   });

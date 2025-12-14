@@ -35,6 +35,9 @@ class _Icons {
 
   final _DashboardStatIcons dashboard = const _DashboardStatIcons();
 
+  // Auth/Social icons
+  final String googleG = 'assets/icons/google_g.svg';
+
   // Top bar
   final String search = 'assets/icons/dashboard/icon.search.svg';
   final String notifications = 'assets/icons/dashboard/icon.notifications.svg';

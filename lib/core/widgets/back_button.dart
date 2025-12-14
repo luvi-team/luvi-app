@@ -24,8 +24,12 @@ class BackButtonCircle extends StatelessWidget {
   final double iconSize;
   final String? semanticLabel;
 
+  // Figma Auth Back Icon: 32×32px viewBox
+  // Path coordinates scaled from 20×20 to 32×32 (scale factor 1.6).
+  // stroke-width 2.5 is a deliberate visual adjustment matching Figma spec,
+  // not a mathematically scaled value from the original coordinates.
   static const _chevronSvg =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5007 14.1666L8.33398 9.99992L12.5007 5.83325" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M20 22.67L13.33 16L20 9.33" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   @override
   Widget build(BuildContext context) {

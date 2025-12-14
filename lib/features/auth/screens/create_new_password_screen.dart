@@ -2,23 +2,33 @@ import 'dart:async' show TimeoutException, Timer;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/core/navigation/route_names.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/core/utils/layout_utils.dart';
-import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
+import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
-import 'package:luvi_app/features/auth/utils/field_auto_scroller.dart';
-import 'package:luvi_app/features/auth/widgets/auth_bottom_cta.dart';
-import 'package:luvi_app/features/auth/widgets/auth_screen_shell.dart';
-import 'package:luvi_app/features/auth/widgets/create_new/back_button_overlay.dart';
-import 'package:luvi_app/features/auth/widgets/create_new/create_new_form.dart';
-import 'package:luvi_app/features/auth/widgets/create_new/create_new_header.dart';
+import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
+import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
+import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
+import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
+/// CreateNewPasswordScreen with Figma Auth UI v2 design.
+///
+/// Figma Node: 68919:8814
+/// Route: /auth/password/new
+///
+/// Features:
+/// - Linear gradient background
+/// - Back button navigation
+/// - Title: "Neues Passwort erstellen"
+/// - Two password fields (new + confirm)
+/// - Pink CTA button (56px height)
+/// - Password validation with backoff protection
 class CreateNewPasswordScreen extends StatefulWidget {
   static const String routeName = '/auth/password/new';
 
@@ -32,19 +42,16 @@ class CreateNewPasswordScreen extends StatefulWidget {
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final FieldAutoScroller _autoScroller = FieldAutoScroller(ScrollController());
-
-  final _headerKey = GlobalKey();
-  final _passwordFieldKey = GlobalKey();
-  final _confirmFieldKey = GlobalKey();
-
-  ScrollController get _scrollController => _autoScroller.controller;
 
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
 
-  // Simple client-side rate limiting with exponential backoff
+  // Inline validation error states for per-field feedback
+  String? _newPasswordError;
+  String? _confirmPasswordError;
+
+  // Rate limiting with exponential backoff
   int _consecutiveFailures = 0;
   DateTime? _lastFailureAt;
   Timer? _backoffTicker;
@@ -75,7 +82,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     });
   }
 
-  // Consolidated failure handling for password update attempts.
   void _handlePasswordUpdateFailure(
     BuildContext context,
     AppLocalizations l10n,
@@ -95,12 +101,12 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     );
   }
 
-  static const double _backButtonSize = AuthLayout.backButtonSize;
-
   String? _validationMessageFor(
     AuthPasswordValidationError error,
     AppLocalizations l10n,
   ) {
+    // Note: Per NIST SP 800-63B, we no longer enforce character composition
+    // rules (missingTypes). Validation focuses on length + blocklist only.
     switch (error) {
       case AuthPasswordValidationError.emptyFields:
         return l10n.authErrPasswordInvalid;
@@ -108,61 +114,119 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         return l10n.authPasswordMismatchError;
       case AuthPasswordValidationError.tooShort:
         return l10n.authErrPasswordTooShort;
-      case AuthPasswordValidationError.missingTypes:
-        return l10n.authErrPasswordMissingTypes;
       case AuthPasswordValidationError.commonWeak:
         return l10n.authErrPasswordCommonWeak;
     }
   }
 
-  Future<void> _onCreatePasswordPressed(
-    BuildContext context,
+  /// Validates the new password field inline and updates error state.
+  /// Returns the error message if invalid, null if valid.
+  ///
+  /// Per NIST SP 800-63B: Only checks minimum length. Character composition
+  /// rules are explicitly discouraged by modern security guidance.
+  String? _validateNewPasswordField(String value, AppLocalizations l10n) {
+    if (value.isEmpty) return null; // Don't show error for empty field on typing
+    if (value.length < 8) return l10n.authErrPasswordTooShort;
+    return null;
+  }
+
+  /// Validates the confirm password field inline and updates error state.
+  /// Returns the error message if passwords don't match, null if they match.
+  String? _validateConfirmPasswordField(
+    String newPassword,
+    String confirmPassword,
     AppLocalizations l10n,
-  ) async {
-    final newPw = _newPasswordController.text.trim();
-    final confirmPw = _confirmPasswordController.text.trim();
+  ) {
+    if (confirmPassword.isEmpty) return null; // Don't show error for empty field
+    if (newPassword != confirmPassword) return l10n.authPasswordMismatchError;
+    return null;
+  }
+
+  void _onNewPasswordChanged(String value) {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmPw = _confirmPasswordController.text;
+    setState(() {
+      _newPasswordError = _validateNewPasswordField(value, l10n);
+      // Re-validate confirm field when new password changes
+      if (confirmPw.isNotEmpty) {
+        _confirmPasswordError =
+            _validateConfirmPasswordField(value, confirmPw, l10n);
+      }
+    });
+  }
+
+  void _onConfirmPasswordChanged(String value) {
+    final l10n = AppLocalizations.of(context)!;
+    final newPw = _newPasswordController.text;
+    setState(() {
+      _confirmPasswordError =
+          _validateConfirmPasswordField(newPw, value, l10n);
+    });
+  }
+
+  Future<void> _onCreatePasswordPressed() async {
+    final l10n = AppLocalizations.of(context)!;
+    // Use raw values without trimming - users may intentionally include
+    // leading/trailing whitespace in passwords. Trimming would silently
+    // alter user intent and cause password mismatch issues on login.
+    final newPw = _newPasswordController.text;
+    final confirmPw = _confirmPasswordController.text;
     final validation = validateNewPassword(newPw, confirmPw);
+
     if (!validation.isValid && validation.error != null) {
       if (!context.mounted) return;
       final message = _validationMessageFor(validation.error!, l10n);
+
+      // Set inline errors based on validation failure type
+      setState(() {
+        switch (validation.error!) {
+          case AuthPasswordValidationError.emptyFields:
+            _newPasswordError = newPw.isEmpty ? l10n.authErrPasswordEmpty : null;
+            _confirmPasswordError =
+                confirmPw.isEmpty ? l10n.authErrPasswordEmpty : null;
+          case AuthPasswordValidationError.mismatch:
+            _newPasswordError = null;
+            _confirmPasswordError = l10n.authPasswordMismatchError;
+          case AuthPasswordValidationError.tooShort:
+          case AuthPasswordValidationError.commonWeak:
+            _newPasswordError = message;
+            _confirmPasswordError = null;
+        }
+      });
+
+      // Also show snackbar for visibility
       if (message != null) {
-        _showValidationError(context, message);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
       }
       return;
     }
 
-    await _runPasswordUpdate(context, l10n, newPw);
+    // Clear any inline errors before submission
+    setState(() {
+      _newPasswordError = null;
+      _confirmPasswordError = null;
+    });
+
+    await _runPasswordUpdate(newPw, l10n);
   }
 
-  void _showValidationError(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
-  Future<void> _runPasswordUpdate(
-    BuildContext context,
-    AppLocalizations l10n,
-    String newPassword,
-  ) async {
+  Future<void> _runPasswordUpdate(String newPassword, AppLocalizations l10n) async {
     setState(() => _isLoading = true);
+
     try {
       await supa.Supabase.instance.client.auth
-          .updateUser(
-        supa.UserAttributes(password: newPassword),
-      )
-          .timeout(
-        const Duration(seconds: 30),
-      );
-      if (!context.mounted) return;
+          .updateUser(supa.UserAttributes(password: newPassword))
+          .timeout(const Duration(seconds: 30));
+
+      if (!mounted) return;
       setState(() {
         _consecutiveFailures = 0;
         _lastFailureAt = null;
       });
       _backoffTicker?.cancel();
-      context.goNamed(
-        SuccessScreen.passwordSavedRouteName,
-      );
+      context.goNamed(SuccessScreen.passwordSavedRouteName);
     } on supa.AuthException catch (error, stackTrace) {
       log.w(
         'auth_update_password_auth_exception',
@@ -170,7 +234,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         error: sanitizeError(error) ?? error.runtimeType,
         stack: stackTrace,
       );
-      if (!context.mounted) return;
+      if (!mounted) return;
       _handlePasswordUpdateFailure(context, l10n);
     } on TimeoutException catch (error, stackTrace) {
       log.w(
@@ -179,7 +243,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         error: sanitizeError(error) ?? error.runtimeType,
         stack: stackTrace,
       );
-      if (!context.mounted) return;
+      if (!mounted) return;
       _handlePasswordUpdateFailure(context, l10n);
     } catch (error, stackTrace) {
       log.e(
@@ -188,7 +252,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         error: sanitizeError(error) ?? error.runtimeType,
         stack: stackTrace,
       );
-      if (!context.mounted) return;
+      if (!mounted) return;
       _handlePasswordUpdateFailure(context, l10n);
     } finally {
       if (mounted) {
@@ -196,179 +260,116 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       }
     }
   }
+
   @override
   void dispose() {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
-    _scrollController.dispose();
     _backoffTicker?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final tokens = theme.extension<DsTokens>();
-    final mediaQuery = MediaQuery.of(context);
-    final l10n = AppLocalizations.of(context) ??
-        lookupAppLocalizations(AppLocalizations.supportedLocales.first);
 
-    final backButtonTopSpacing = topOffsetFromSafeArea(
-      AuthLayout.backButtonTop,
-      figmaSafeTop: AuthLayout.figmaSafeTop,
-    );
-    final headerTopGap =
-        backButtonTopSpacing +
-        _backButtonSize +
-        AuthLayout.gapTitleToInputs / 2;
-    final confirmTextStyle = theme.textTheme.bodySmall?.copyWith(
+    final canSubmit = !_isLoading && !_isBackoffActive;
+
+    // Figma: Title style - Playfair Display Bold, 24px
+    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
+      fontSize: AuthTypography.titleFontSize,
+      height: AuthTypography.titleLineHeight,
+      fontWeight: FontWeight.bold,
       color: theme.colorScheme.onSurface,
-    );
-    final confirmHintColor =
-        tokens?.grayscale500 ??
-        theme.colorScheme.onSurface.withValues(alpha: 0.6);
-    final confirmHintStyle = theme.textTheme.bodySmall?.copyWith(
-      color: confirmHintColor,
-    );
-
-    final safeBottom = mediaQuery.padding.bottom;
-    final fieldScrollPadding = EdgeInsets.only(
-      bottom: Sizes.buttonHeight + AuthLayout.inputToCta + safeBottom,
     );
 
     return Scaffold(
+      key: const ValueKey('auth_create_password_screen'),
       resizeToAvoidBottomInset: true,
-      backgroundColor: theme.colorScheme.surface,
-      bottomNavigationBar: AuthBottomCta(
-        topPadding: AuthLayout.inputToCta,
-        child: SizedBox(
-          height: Sizes.buttonHeight,
-          width: double.infinity,
-            child: ElevatedButton(
-            key: const ValueKey('create_new_cta_button'),
-            onPressed: (_isLoading || _isBackoffActive)
-                ? null
-                : () => _onCreatePasswordPressed(context, l10n),
-            child: _isLoading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(l10n.authCreateNewCta),
-          ),
-        ),
-      ),
-      body: _CreateNewBody(
-        scrollController: _scrollController,
-        headerKey: _headerKey,
-        headerTopGap: headerTopGap,
-        autoScroller: _autoScroller,
-        newPasswordController: _newPasswordController,
-        confirmPasswordController: _confirmPasswordController,
-        passwordFieldKey: _passwordFieldKey,
-        confirmFieldKey: _confirmFieldKey,
-        isNewPasswordObscured: _obscureNewPassword,
-        isConfirmPasswordObscured: _obscureConfirmPassword,
-        onToggleNewPassword: () {
-          setState(() => _obscureNewPassword = !_obscureNewPassword);
+      body: AuthShell(
+        background: const AuthLinearGradientBackground(),
+        showBackButton: true,
+        onBackPressed: () {
+          final router = GoRouter.of(context);
+          if (router.canPop()) {
+            router.pop();
+          } else {
+            // Fallback: navigate to sign-in or another appropriate route
+            router.go(AuthSignInScreen.routeName);
+          }
         },
-        onToggleConfirmPassword: () {
-          setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-        },
-        fieldScrollPadding: fieldScrollPadding,
-        confirmTextStyle: confirmTextStyle,
-        confirmHintStyle: confirmHintStyle,
-        safeTop: mediaQuery.padding.top,
-        backgroundColor: theme.colorScheme.primary,
-        iconColor: theme.colorScheme.onSurface,
-      ),
-    );
-  }
-}
-
-class _CreateNewBody extends StatelessWidget {
-  const _CreateNewBody({
-    required this.scrollController,
-    required this.headerKey,
-    required this.headerTopGap,
-    required this.autoScroller,
-    required this.newPasswordController,
-    required this.confirmPasswordController,
-    required this.passwordFieldKey,
-    required this.confirmFieldKey,
-    required this.isNewPasswordObscured,
-    required this.isConfirmPasswordObscured,
-    required this.onToggleNewPassword,
-    required this.onToggleConfirmPassword,
-    required this.fieldScrollPadding,
-    required this.confirmTextStyle,
-    required this.confirmHintStyle,
-    required this.safeTop,
-    required this.backgroundColor,
-    required this.iconColor,
-  });
-
-  final ScrollController scrollController;
-  final GlobalKey headerKey;
-  final double headerTopGap;
-  final FieldAutoScroller autoScroller;
-  final TextEditingController newPasswordController;
-  final TextEditingController confirmPasswordController;
-  final GlobalKey passwordFieldKey;
-  final GlobalKey confirmFieldKey;
-  final bool isNewPasswordObscured;
-  final bool isConfirmPasswordObscured;
-  final VoidCallback onToggleNewPassword;
-  final VoidCallback onToggleConfirmPassword;
-  final EdgeInsets fieldScrollPadding;
-  final TextStyle? confirmTextStyle;
-  final TextStyle? confirmHintStyle;
-  final double safeTop;
-  final Color backgroundColor;
-  final Color iconColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        AuthScreenShell(
-          includeBottomReserve: false,
-          controller: scrollController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CreateNewHeader(headerKey: headerKey, topGap: headerTopGap),
-            const SizedBox(height: AuthLayout.gapTitleToInputs),
-            CreateNewForm(
-              autoScroller: autoScroller,
-              newPasswordController: newPasswordController,
-              confirmPasswordController: confirmPasswordController,
-              passwordFieldKey: passwordFieldKey,
-              confirmFieldKey: confirmFieldKey,
-              isNewPasswordObscured: isNewPasswordObscured,
-              isConfirmPasswordObscured: isConfirmPasswordObscured,
-              onToggleNewPassword: onToggleNewPassword,
-              onToggleConfirmPassword: onToggleConfirmPassword,
-              fieldScrollPadding: fieldScrollPadding,
-              confirmTextStyle: confirmTextStyle,
-              confirmHintStyle: confirmHintStyle,
+            // Gap after back button
+            const SizedBox(height: AuthLayout.backButtonToTitle),
+
+            // Title: "Neues Passwort erstellen"
+            Text(
+              key: const ValueKey('create_new_title'),
+              l10n.authNewPasswordTitle,
+              style: titleStyle,
             ),
+
+            // Gap between title and inputs (Figma: 32px)
+            const SizedBox(height: Spacing.authGlassCardVertical),
+
+            // New password field with inline validation
+            LoginPasswordField(
+              key: const ValueKey('AuthPasswordField'),
+              controller: _newPasswordController,
+              errorText: _newPasswordError,
+              obscure: _obscureNewPassword,
+              onToggleObscure: () {
+                setState(() => _obscureNewPassword = !_obscureNewPassword);
+              },
+              onChanged: _onNewPasswordChanged,
+              hintText: l10n.authNewPasswordHint,
+              textInputAction: TextInputAction.next,
+            ),
+
+            // Figma: Gap between inputs = 20px
+            const SizedBox(height: AuthLayout.inputGap),
+
+            // Confirm password field with inline mismatch validation
+            LoginPasswordField(
+              key: const ValueKey('AuthConfirmPasswordField'),
+              controller: _confirmPasswordController,
+              errorText: _confirmPasswordError,
+              obscure: _obscureConfirmPassword,
+              onToggleObscure: () {
+                setState(
+                    () => _obscureConfirmPassword = !_obscureConfirmPassword);
+              },
+              onChanged: _onConfirmPasswordChanged,
+              hintText: l10n.authConfirmPasswordHint,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) {
+                if (canSubmit) _onCreatePasswordPressed();
+              },
+            ),
+
+            // Gap before CTA (Figma: 40px)
+            const SizedBox(height: AuthLayout.inputToCta),
+
+            // CTA Button - Figma: h=56px
+            SizedBox(
+              width: double.infinity,
+              height: Sizes.buttonHeightL,
+              child: WelcomeButton(
+                key: const ValueKey('create_new_cta_button'),
+                onPressed: canSubmit ? _onCreatePasswordPressed : null,
+                isLoading: _isLoading,
+                label: l10n.authCreatePasswordCta,
+              ),
+            ),
+
+            // Bottom padding
+            const SizedBox(height: Spacing.l),
           ],
         ),
-        CreateNewBackButtonOverlay(
-          onPressed: () {
-            final router = GoRouter.of(context);
-            if (router.canPop()) {
-              router.pop();
-            } else {
-              context.goNamed(RouteNames.login);
-            }
-          },
-          backgroundColor: backgroundColor,
-          iconColor: iconColor,
-          size: _CreateNewPasswordScreenState._backButtonSize,
-          iconSize: AuthLayout.backIconSize,
-        ),
-      ],
+      ),
     );
   }
 }

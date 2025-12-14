@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,15 +12,18 @@ import 'package:go_router/go_router.dart';
 import 'core/navigation/go_router_refresh_stream.dart' as luvi_refresh;
 import 'package:luvi_services/supabase_service.dart';
 import 'core/config/app_links.dart';
+import 'core/navigation/password_recovery_navigation_driver.dart';
 import 'core/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'core/navigation/routes.dart' as routes;
 import 'features/splash/screens/splash_screen.dart';
+import 'features/auth/screens/create_new_password_screen.dart';
 import 'core/init/supabase_init_controller.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'core/init/init_mode.dart' show initModeProvider;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 import 'core/init/init_diagnostics.dart';
+import 'core/init/supabase_deep_link_handler.dart';
 
 // TODO(arwin): Greptile status check smoke test
 void main() async {
@@ -34,6 +39,10 @@ void main() async {
   // classification (config vs transient) and backoff retries.
 
   const appLinks = ProdAppLinks();
+  SupabaseService.configure(
+    authConfig:
+        SupabaseAuthDeepLinkConfig.fromUri(AppLinks.authCallbackUri),
+  );
   // Legal links enforcement modes:
   // - Debug: asserts + optional runtime check when ENFORCE_LINKS_IN_DEBUG=true
   // - Profile: optional runtime check when ENFORCE_LINKS_IN_DEBUG=true
@@ -90,6 +99,9 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   late final _RouterRefreshNotifier _routerRefreshNotifier =
       _RouterRefreshNotifier();
   late final GoRouter _router = _createRouter(_initialLocation);
+  PasswordRecoveryNavigationDriver? _passwordRecoveryDriver;
+  SupabaseDeepLinkHandler? _deepLinkHandler;
+  ProviderSubscription<InitState>? _initOrchestrationSubscription;
 
   String get _initialLocation => kReleaseMode
       ? SplashScreen.routeName
@@ -111,12 +123,20 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   @override
   void initState() {
     super.initState();
-    _routerRefreshNotifier.ensureSupabaseListener();
+    // 1. Deep-Link-Handler früh starten (queued URIs, KEIN processing)
+    _initDeepLinkHandler();
+    // 2. Diagnostics-Listener (existing)
     _listenForInitDiagnostics();
+    // 3. Orchestrierung via Listener (NICHT in build!)
+    // Ensures correct sequence: RouterRefresh → RecoveryListener → processPendingUri
+    _setupInitOrchestration();
   }
 
   @override
   void dispose() {
+    _initOrchestrationSubscription?.close();
+    unawaited(_passwordRecoveryDriver?.dispose());
+    unawaited(_deepLinkHandler?.dispose());
     _router.dispose();
     _routerRefreshNotifier.dispose();
     super.dispose();
@@ -158,8 +178,8 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   @override
   Widget build(BuildContext context) {
     final initState = ref.watch(supabaseInitControllerProvider);
-    _routerRefreshNotifier.ensureSupabaseListener();
-
+    // ✅ 100% PURE - keine Side-Effects!
+    // All orchestration happens in _setupInitOrchestration() via ref.listenManual
     return _buildMaterialApp(initState);
   }
 
@@ -216,6 +236,59 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         : child ?? const SizedBox.shrink();
 
     return LocaleChangeCacheReset(child: content);
+  }
+
+  /// Orchestriert Router-Refresh, Recovery-Listener und Pending-URI-Processing
+  /// in der korrekten Reihenfolge, sobald Supabase initialisiert ist.
+  ///
+  /// Pattern: ref.listenManual mit fireImmediately (siehe reset_password_screen.dart:40)
+  /// Reihenfolge KRITISCH für Recovery-Flow:
+  /// 1. Router-Refresh aktivieren (braucht Supabase-Client)
+  /// 2. Recovery-Listener registrieren (MUSS vor pending URI!)
+  /// 3. Pending URI verarbeiten (Listener ist garantiert ready)
+  void _setupInitOrchestration() {
+    _initOrchestrationSubscription = ref.listenManual<InitState>(
+      supabaseInitControllerProvider,
+      (prev, next) {
+        if (!SupabaseService.isInitialized) return;
+
+        // 1. Router-Refresh aktivieren (braucht Supabase-Client)
+        _routerRefreshNotifier.ensureSupabaseListener();
+
+        // 2. Recovery-Listener registrieren (MUSS vor pending URI!)
+        _ensurePasswordRecoveryListener();
+
+        // 3. ERST JETZT: Pending URI verarbeiten (Listener ist garantiert ready)
+        final handler = _deepLinkHandler;
+        if (handler != null && handler.hasPendingUri) {
+          unawaited(handler.processPendingUri());
+        }
+      },
+      fireImmediately: true, // Falls Supabase schon initialized
+    );
+  }
+
+  /// Startet Deep-Link-Handler früh um URIs zu queuen (KEIN processing).
+  /// Processing passiert erst in _setupInitOrchestration nach Listener-Setup.
+  void _initDeepLinkHandler() {
+    if (_deepLinkHandler != null) return;
+    _deepLinkHandler = SupabaseDeepLinkHandler();
+    unawaited(_deepLinkHandler!.start());
+  }
+
+  void _ensurePasswordRecoveryListener() {
+    if (_passwordRecoveryDriver != null || !SupabaseService.isInitialized) {
+      return;
+    }
+    final authEvents = SupabaseService.client.auth.onAuthStateChange.map(
+      (authState) => authState.event,
+    );
+    _passwordRecoveryDriver = PasswordRecoveryNavigationDriver(
+      authEvents: authEvents,
+      onNavigateToCreatePassword: () {
+        _router.go(CreateNewPasswordScreen.routeName);
+      },
+    );
   }
 
 }

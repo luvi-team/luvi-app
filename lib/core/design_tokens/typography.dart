@@ -33,3 +33,40 @@ class FontFamilies {
   static const String inter = 'Inter';
   static const String playfairDisplay = 'Playfair Display';
 }
+
+/// Auth screen typography constants (Figma Auth UI v2).
+///
+/// These constants define reusable text style parameters for auth screens.
+/// Use with theme.textTheme.copyWith() to maintain theme integration.
+///
+/// Values delegate to [TypographyTokens] to avoid maintenance drift.
+class AuthTypography {
+  const AuthTypography._();
+
+  // ─── Auth Headline (SignIn glass card) ───
+  /// Auth headline fontSize (Figma: Playfair Display Bold 32px)
+  static const double headlineFontSize = TypographyTokens.size32;
+
+  /// Auth headline lineHeight ratio (Figma: 40/32)
+  static const double headlineLineHeight = TypographyTokens.lineHeightRatio40on32;
+
+  // ─── Auth Title (Login, Reset, CreateNew screens) ───
+  /// Auth title fontSize (Figma: Playfair Display Bold 24px)
+  static const double titleFontSize = TypographyTokens.size24;
+
+  /// Auth title lineHeight ratio (Figma: 32/24)
+  static const double titleLineHeight = TypographyTokens.lineHeightRatio32on24;
+
+  // ─── Success Screen Typography ───
+  /// Success title fontSize (Figma: Playfair Display Regular 32px)
+  static const double successTitleFontSize = TypographyTokens.size32;
+
+  /// Success title lineHeight ratio (Figma: 40/32)
+  static const double successTitleLineHeight = TypographyTokens.lineHeightRatio40on32;
+
+  /// Success subtitle fontSize (Figma: Playfair Display Regular 24px)
+  static const double successSubtitleFontSize = TypographyTokens.size24;
+
+  /// Success subtitle lineHeight ratio (Figma: 32/24)
+  static const double successSubtitleLineHeight = TypographyTokens.lineHeightRatio32on24;
+}

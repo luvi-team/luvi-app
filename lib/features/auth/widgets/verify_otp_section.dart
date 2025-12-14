@@ -19,10 +19,11 @@ class VerifyOtpSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Auth-Flow Bugfix: Prevents automatic keyboard opening
     return Center(
       child: VerificationCodeInput(
         length: length,
-        autofocus: true,
+        autofocus: false,
         inactiveBorderColor: inactiveBorderColor,
         focusedBorderColor: focusedBorderColor,
         scrollPadding: scrollPadding,

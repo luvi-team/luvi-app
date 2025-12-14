@@ -21,6 +21,8 @@ class SupabaseService {
   static StackTrace? _initializationStackTrace;
   static SupabaseValidationConfig _validationConfig =
       const SupabaseValidationConfig();
+  static SupabaseAuthDeepLinkConfig _authDeepLinkConfig =
+      SupabaseAuthDeepLinkConfig.fallback;
 
   static bool get isInitialized => _initialized;
   static Object? get lastInitializationError => _initializationError;
@@ -66,9 +68,22 @@ class SupabaseService {
     });
   }
 
-  static void configure({SupabaseValidationConfig? validationConfig}) {
+  static void configure({
+    SupabaseValidationConfig? validationConfig,
+    SupabaseAuthDeepLinkConfig? authConfig,
+  }) {
     if (validationConfig != null) {
       _validationConfig = validationConfig;
+    }
+    if (authConfig != null) {
+      if (_initialized) {
+        log.w(
+          'authConfig ignored: SupabaseService already initialized',
+          tag: 'supabase_service',
+        );
+      } else {
+        _authDeepLinkConfig = authConfig;
+      }
     }
   }
 
@@ -329,6 +344,14 @@ class SupabaseService {
       await Supabase.initialize(
         url: credentials.url,
         anonKey: credentials.anonKey,
+        authOptions: FlutterAuthClientOptions(
+          authFlowType: AuthFlowType.pkce,
+          detectSessionInUri: false,
+        ),
+      );
+      log.d(
+        'supabase_auth_callback_configured: scheme=${_authDeepLinkConfig.scheme} host=${_authDeepLinkConfig.host}',
+        tag: 'supabase_init',
       );
     } on Object catch (error, stackTrace) {
       Error.throwWithStackTrace(
@@ -363,6 +386,33 @@ class _SupabaseCredentials {
 
   final String url;
   final String anonKey;
+}
+
+@immutable
+class SupabaseAuthDeepLinkConfig {
+  const SupabaseAuthDeepLinkConfig._internal(this.uri);
+
+  static final SupabaseAuthDeepLinkConfig fallback =
+      SupabaseAuthDeepLinkConfig._internal(
+    Uri(scheme: 'luvi', host: 'auth-callback'),
+  );
+
+  factory SupabaseAuthDeepLinkConfig.fromUri(Uri uri) {
+    // Use uri.scheme.isEmpty instead of !uri.hasScheme because
+    // Uri.hasScheme can be true for an explicitly empty scheme string.
+    if (uri.scheme.isEmpty || uri.host.isEmpty) {
+      throw ArgumentError(
+        'Supabase auth callback URI must include a scheme and host.',
+      );
+    }
+    return SupabaseAuthDeepLinkConfig._internal(uri);
+  }
+
+  final Uri uri;
+
+  String get host => uri.host;
+  String get scheme => uri.scheme;
+  String get url => uri.toString();
 }
 
 @immutable

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as features;
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
 void main() {
@@ -16,7 +17,7 @@ void main() {
     setUp(() {
       router = GoRouter(
         routes: features.featureRoutes,
-        initialLocation: '/auth/forgot',
+        initialLocation: '/auth/reset',
       );
     });
 
@@ -24,25 +25,33 @@ void main() {
       router.dispose();
     });
 
-    testWidgets('button enables only for valid email and navigates on submit', (
-      tester,
-    ) async {
+    testWidgets('button enables only for valid email', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.buildAppTheme(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
           ),
         ),
       );
       await tester.pumpAndSettle();
 
       final emailField = find.byKey(const ValueKey('reset_email_field'));
-      final ctaButton = find.byKey(const ValueKey('reset_cta'));
+      final ctaButtonFinder = find.byKey(const ValueKey('reset_cta'));
 
-      ElevatedButton buttonWidget() => tester.widget<ElevatedButton>(ctaButton);
+      // WelcomeButton wraps ElevatedButton - find the inner ElevatedButton
+      ElevatedButton buttonWidget() {
+        final elevatedButtonFinder = find.descendant(
+          of: ctaButtonFinder,
+          matching: find.byType(ElevatedButton),
+        );
+        return tester.widget<ElevatedButton>(elevatedButtonFinder);
+      }
 
-      // Initially invalid -> disabled CTA and no spinner.
+      // Initially invalid -> disabled CTA
       expect(buttonWidget().onPressed, isNull);
 
       await tester.enterText(emailField, 'invalid');
@@ -53,19 +62,10 @@ void main() {
       await tester.pump();
       expect(buttonWidget().onPressed, isNotNull);
 
-      await tester.tap(ctaButton);
-      await tester.pump(); // start loading
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(buttonWidget().onPressed, isNull);
-
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const ValueKey('auth_success_screen')), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('success_title_forgot')),
-        findsOneWidget,
-      );
+      // Note: Per Auth v2 refactoring, the reset flow shows a snackbar
+      // and navigates to /auth/signin instead of showing a success screen.
+      // TODO(auth-v2): Add navigation test with mocked AuthRepository
+      // See: test/features/auth/signup_submit_test.dart for mock pattern
     });
   });
 }

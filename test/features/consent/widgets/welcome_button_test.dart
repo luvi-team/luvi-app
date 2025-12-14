@@ -40,6 +40,7 @@ void main() {
       );
 
       await tester.tap(find.byType(ElevatedButton));
+      await tester.pump();
       expect(pressed, isTrue);
     });
 
@@ -84,7 +85,7 @@ void main() {
       final shape = style.shape?.resolve({}) as RoundedRectangleBorder?;
 
       expect(shape, isNotNull);
-      // Verify actual Design Token value (Sizes.radiusWelcomeButton = 40.0)
+      // Verify border radius matches Design Token
       expect(
         shape!.borderRadius,
         equals(BorderRadius.circular(Sizes.radiusWelcomeButton)),

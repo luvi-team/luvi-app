@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 /// Possible validation failures for the password creation screen.
+///
+/// Note: Per NIST SP 800-63B and OWASP guidance, we do NOT enforce character
+/// composition rules (requiring uppercase, lowercase, digits, symbols).
+/// Instead we rely on minimum length + blocklist of common weak passwords.
 enum AuthPasswordValidationError {
   emptyFields,
   mismatch,
   tooShort,
-  missingTypes,
   commonWeak,
 }
 
@@ -83,13 +86,11 @@ AuthPasswordValidationResult validateNewPassword(
     );
   }
 
+  // NIST SP 800-63B: Minimum length is the primary strength factor.
+  // Character composition rules are explicitly discouraged.
   final hasMinLen = newPassword.length >= _kMinPasswordLength;
-  final hasLetter = RegExp(r'[A-Za-z]').hasMatch(newPassword);
-  final hasNumber = RegExp(r'\d').hasMatch(newPassword);
-  final hasSpecial = RegExp(
-    r'[!@#\$%\^&*()_\+\-=\{\}\[\]:;,.<>/?`~|\\]',
-  ).hasMatch(newPassword);
 
+  // Blocklist check for common weak passwords (NIST-compliant)
   final trimmed = newPassword.trim();
   final isCommonWeak = _commonWeakPatterns.any((r) => r.hasMatch(trimmed)) ||
       _isRepetitive(trimmed) ||
@@ -99,11 +100,6 @@ AuthPasswordValidationResult validateNewPassword(
   if (!hasMinLen) {
     return const AuthPasswordValidationResult(
       AuthPasswordValidationError.tooShort,
-    );
-  }
-  if (!(hasLetter && hasNumber && hasSpecial)) {
-    return const AuthPasswordValidationResult(
-      AuthPasswordValidationError.missingTypes,
     );
   }
   if (isCommonWeak) {

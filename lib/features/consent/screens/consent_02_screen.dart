@@ -8,7 +8,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
@@ -128,7 +128,7 @@ class Consent02Screen extends ConsumerWidget {
       }
 
       if (!context.mounted) return;
-      _navigateToAuthEntry(context);
+      _navigateToOnboarding(context);
     } on ConsentException catch (error) {
       if (!context.mounted) return;
       final message = error.code == 'rate_limit'
@@ -592,6 +592,8 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
   try {
     final userState = await ref.read(userStateServiceProvider.future);
     await userState.markWelcomeSeen();
+    // Also persist accepted consent version for version-gate checks
+    await userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt);
     return true;
   } catch (error, stackTrace) {
     log.e(
@@ -604,8 +606,10 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
   }
 }
 
-void _navigateToAuthEntry(BuildContext context) {
-  context.go(AuthEntryScreen.routeName);
+/// Navigate to Onboarding after consent is accepted.
+/// User is already authenticated at this point (logged in before Welcome/Consent flow).
+void _navigateToOnboarding(BuildContext context) {
+  context.go(Onboarding01Screen.routeName);
 }
 
 void _reportUnexpectedConsentError(

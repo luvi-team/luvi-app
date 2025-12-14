@@ -18,5 +18,8 @@ class Spacing {
   /// Gap between subtitle and CTA on welcome screens (W5)
   static const double welcomeCtaGap = 40.0;
 
+  /// Auth SignIn glass card vertical padding (Figma: 32px = l + xs)
+  static const double authGlassCardVertical = l + xs;
+
   Spacing._();
 }

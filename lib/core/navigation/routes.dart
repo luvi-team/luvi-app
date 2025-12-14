@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/features/auth/screens/auth_entry_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Session;
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
-import 'package:luvi_app/features/auth/screens/verification_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
@@ -34,6 +34,7 @@ import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
+import 'package:luvi_app/features/consent/config/consent_config.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
@@ -66,6 +67,70 @@ bool isWelcomeRoute(String location) {
 bool isConsentRoute(String location) {
   return location == _consentRootPath ||
       location.startsWith(_consentPathPrefix);
+}
+
+/// Determines if access to Home should be blocked due to incomplete onboarding.
+///
+/// Fail-safe approach: When state is unknown (service not loaded), redirect to
+/// Splash with skipAnimation to let the gate logic decide properly.
+///
+/// Returns:
+/// - `/splash?skipAnimation=true` if state is unknown (fail-safe)
+/// - Onboarding01 route if hasCompletedOnboarding is explicitly false
+/// - null (allow) if hasCompletedOnboarding is true
+@visibleForTesting
+String? homeGuardRedirect({
+  required bool isStateKnown,
+  required bool? hasCompletedOnboarding,
+}) {
+  // Fail-safe: If state unknown, delegate to Splash (no visible animation).
+  // Splash will re-check all gates properly.
+  if (!isStateKnown) {
+    return '${SplashScreen.routeName}?skipAnimation=true';
+  }
+  // State is known - apply gate logic
+  if (hasCompletedOnboarding == false) {
+    return Onboarding01Screen.routeName;
+  }
+  return null;
+}
+
+/// Defense-in-Depth: Home guard with consent version check.
+///
+/// Unlike [homeGuardRedirect], this also validates that the user has accepted
+/// the current consent version. This prevents bypassing consent via deep link
+/// or saved route to /heute.
+///
+/// Gate priority (matches Splash logic):
+/// 1. State unknown → Splash (fail-safe)
+/// 2. Consent outdated/missing → ConsentWelcome01
+/// 3. Onboarding incomplete → Onboarding01
+/// 4. All gates passed → null (allow)
+@visibleForTesting
+String? homeGuardRedirectWithConsent({
+  required bool isStateKnown,
+  required bool? hasCompletedOnboarding,
+  required int? acceptedConsentVersion,
+  required int currentConsentVersion,
+}) {
+  // Fail-safe: If state unknown, delegate to Splash (no visible animation).
+  if (!isStateKnown) {
+    return '${SplashScreen.routeName}?skipAnimation=true';
+  }
+
+  // Defense-in-Depth: Check consent version FIRST (matches Splash gate order)
+  final needsConsent = acceptedConsentVersion == null ||
+      acceptedConsentVersion < currentConsentVersion;
+  if (needsConsent) {
+    return ConsentWelcome01Screen.routeName;
+  }
+
+  // Then check onboarding
+  if (hasCompletedOnboarding == false) {
+    return Onboarding01Screen.routeName;
+  }
+
+  return null;
 }
 
 final List<GoRoute> featureRoutes = [
@@ -175,25 +240,50 @@ final List<GoRoute> featureRoutes = [
         Center(child: Text(AppLocalizations.of(ctx)!.onboardingComplete)),
   ),
   GoRoute(
-    path: AuthEntryScreen.routeName,
-    name: 'auth_entry',
-    builder: (context, state) => const AuthEntryScreen(),
+    path: AuthSignInScreen.routeName,
+    name: RouteNames.authSignIn,
+    pageBuilder: (context, state) => CustomTransitionPage(
+      key: state.pageKey,
+      child: const AuthSignInScreen(),
+      transitionDuration: const Duration(milliseconds: 300),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ),
+          child: child,
+        );
+      },
+    ),
   ),
   GoRoute(
     path: LoginScreen.routeName,
     name: RouteNames.login,
-    builder: (context, state) => const LoginScreen(),
+    pageBuilder: (context, state) => CustomTransitionPage(
+      key: state.pageKey,
+      child: const LoginScreen(),
+      transitionDuration: const Duration(milliseconds: 300),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ),
+          child: child,
+        );
+      },
+    ),
   ),
   GoRoute(
     path: ResetPasswordScreen.routeName,
-    name: 'forgot',
+    name: 'reset',
     builder: (context, state) => const ResetPasswordScreen(),
   ),
+  // Legacy redirect: /auth/forgot → /auth/reset (backward compatibility)
   GoRoute(
-    path: SuccessScreen.forgotEmailSentRoutePath,
-    name: SuccessScreen.forgotEmailSentRouteName,
-    builder: (context, state) =>
-        const SuccessScreen(variant: SuccessVariant.forgotEmailSent),
+    path: '/auth/forgot',
+    redirect: (context, state) => ResetPasswordScreen.routeName,
   ),
   GoRoute(
     path: CreateNewPasswordScreen.routeName,
@@ -208,17 +298,6 @@ final List<GoRoute> featureRoutes = [
     builder: (context, state) => const SuccessScreen(),
   ),
   GoRoute(
-    path: VerificationScreen.routeName,
-    name: 'verify',
-    builder: (context, state) {
-      final variantParam = state.uri.queryParameters['variant'];
-      final variant = variantParam == 'email'
-          ? VerificationScreenVariant.emailConfirmation
-          : VerificationScreenVariant.resetPassword;
-      return VerificationScreen(variant: variant);
-    },
-  ),
-  GoRoute(
     path: AuthSignupScreen.routeName,
     name: 'signup',
     builder: (context, state) => const AuthSignupScreen(),
@@ -226,6 +305,23 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: HeuteScreen.routeName,
     name: 'heute',
+    redirect: (context, state) {
+      // Defense-in-Depth: Ensure consent AND onboarding are complete.
+      // This prevents bypassing gates via deep link or saved route.
+      final container = ProviderScope.containerOf(context, listen: false);
+      final asyncValue = container.read(userStateServiceProvider);
+      // Extract value if loaded, null otherwise (loading/error states).
+      // NOTE: AsyncLoading/AsyncError → null → isStateKnown=false → redirect
+      // to Splash. This is intentional: during loading, we delegate to Splash
+      // which handles the loading screen properly.
+      final service = asyncValue.whenOrNull(data: (s) => s);
+      return homeGuardRedirectWithConsent(
+        isStateKnown: service != null,
+        hasCompletedOnboarding: service?.hasCompletedOnboarding,
+        acceptedConsentVersion: service?.acceptedConsentVersionOrNull,
+        currentConsentVersion: ConsentConfig.currentVersionInt,
+      );
+    },
     builder: (context, state) => const HeuteScreen(),
   ),
   GoRoute(
@@ -242,7 +338,7 @@ final List<GoRoute> featureRoutes = [
         // Redirect to a safe fallback or show an error state
         return Scaffold(
           body: Center(
-            child: Text('Invalid workout ID'),
+            child: Text(AppLocalizations.of(context)!.errorInvalidWorkoutId),
           ),
         );
       }
@@ -256,7 +352,22 @@ final List<GoRoute> featureRoutes = [
   ),
 ];
 
-String? supabaseRedirect(BuildContext context, GoRouterState state) {
+/// Redirect-Guard für GoRouter - delegiert an [supabaseRedirectWithSession].
+String? supabaseRedirect(BuildContext context, GoRouterState state) =>
+    supabaseRedirectWithSession(context, state);
+
+/// Testbare Version des Redirect-Guards mit optionalen Overrides.
+///
+/// In Production wird [sessionOverride] und [isInitializedOverride] ignoriert.
+/// In Tests können diese Parameter genutzt werden, um verschiedene
+/// Session-Szenarien zu simulieren ohne Supabase-Client zu mocken.
+@visibleForTesting
+String? supabaseRedirectWithSession(
+  BuildContext context,
+  GoRouterState state, {
+  Session? sessionOverride,
+  bool? isInitializedOverride,
+}) {
   // Dev-only bypass to allow opening the dashboard without auth during development
   const allowDashboardDev = bool.fromEnvironment(
     'ALLOW_DASHBOARD_DEV',
@@ -268,19 +379,29 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   );
   // Enable via --dart-define=ALLOW_ONBOARDING_DEV=true (false by default).
 
-  final isInitialized = SupabaseService.isInitialized;
+  final isInitialized = isInitializedOverride ?? SupabaseService.isInitialized;
   final isLoggingIn = state.matchedLocation.startsWith(LoginScreen.routeName);
-  final isAuthEntry = state.matchedLocation.startsWith(
-    AuthEntryScreen.routeName,
+  final isAuthSignIn = state.matchedLocation.startsWith(
+    AuthSignInScreen.routeName,
   );
+  // Auth-Flow Bugfix: Signup und Reset-Routen ohne Session erlauben
+  final isSigningUp = state.matchedLocation.startsWith(AuthSignupScreen.routeName);
+  final isResettingPassword = state.matchedLocation.startsWith(ResetPasswordScreen.routeName);
   final isOnboarding = isOnboardingRoute(state.matchedLocation);
   final isWelcome = isWelcomeRoute(state.matchedLocation);
   final isConsent = isConsentRoute(state.matchedLocation);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
-  final session = isInitialized
-      ? SupabaseService.client.auth.currentSession
-      : null;
+  final isPasswordRecoveryRoute =
+      state.matchedLocation.startsWith(CreateNewPasswordScreen.routeName);
+  final isPasswordSuccessRoute = state.matchedLocation
+      .startsWith(SuccessScreen.passwordSavedRoutePath);
+  final session = sessionOverride ??
+      (isInitialized ? SupabaseService.client.auth.currentSession : null);
+
+  if (isPasswordRecoveryRoute || isPasswordSuccessRoute) {
+    return null;
+  }
 
   if (isWelcome || isConsent) {
     return null;
@@ -300,13 +421,18 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) {
   }
 
   if (session == null) {
-    if (isLoggingIn || isAuthEntry) {
+    // Auth-Flow Bugfix: Alle Auth-Screens ohne Session erlauben
+    if (isLoggingIn || isAuthSignIn || isSigningUp || isResettingPassword) {
       return null;
     }
-    return AuthEntryScreen.routeName;
+    return AuthSignInScreen.routeName;
   }
-  if (isLoggingIn) {
-    return Onboarding01Screen.routeName;
+  // Auth-Flow Bugfix: Nach Login (E-Mail ODER OAuth) mit Session → zu Splash
+  // Splash macht die First-Time/Returning-User-Logik async und korrekt
+  // Hinweis: session ist hier garantiert != null (oben bereits geprüft)
+  // UX-Fix: skipAnimation=true verhindert erneute Splash-Animation nach Login
+  if (isLoggingIn || isAuthSignIn) {
+    return '${SplashScreen.routeName}?skipAnimation=true';
   }
   return null;
 }

@@ -326,6 +326,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingComplete => 'Onboarding abgeschlossen';
 
   @override
+  String get errorInvalidWorkoutId => 'Ungültige Workout-ID';
+
+  @override
   String get cycleTipHeadlineMenstruation => 'Menstruation';
 
   @override
@@ -479,6 +482,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authLoginHeadline => 'Willkommen zurück 💜';
 
   @override
+  String get authLoginTitle => 'Anmelden mit E-Mail';
+
+  @override
   String get authLoginSubhead => 'Schön, dass du da bist.';
 
   @override
@@ -556,22 +562,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authPasswordHint => 'Dein Passwort';
 
   @override
-  String get authSignupTitle => 'Deine Reise beginnt hier 💜';
+  String get authSignupTitle => 'Konto erstellen';
 
   @override
   String get authSignupSubtitle => 'Schnell registrieren und loslegen.';
+
+  @override
+  String get authSignupAlreadyMember => 'Schon dabei? ';
+
+  @override
+  String get authSignupLoginLink => 'Anmelden';
 
   @override
   String get authSignupCta => 'Registrieren';
 
   @override
   String get authSignupCtaLoadingSemantic => 'Wird registriert';
-
-  @override
-  String get authSignupLinkPrefix => 'Schon ein Konto? ';
-
-  @override
-  String get authSignupLinkAction => 'Anmelden';
 
   @override
   String get authSignupHintFirstName => 'Dein Vorname';
@@ -616,19 +622,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSuccessCta => 'Fertig';
 
   @override
-  String get authCreateNewTitle => 'Neues Passwort erstellen 💜';
-
-  @override
   String get authCreateNewSubtitle => 'Mach es stark.';
-
-  @override
-  String get authCreateNewHint1 => 'Neues Passwort';
-
-  @override
-  String get authCreateNewHint2 => 'Neues Passwort bestätigen';
-
-  @override
-  String get authCreateNewCta => 'Speichern';
 
   @override
   String get authVerifyResetTitle => 'Code eingeben 💜';
@@ -662,4 +656,58 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
+
+  @override
+  String get authSignInHeadline => 'Verpasse es nicht, das Beste aus dir zu machen!';
+
+  @override
+  String get authSignInEmail => 'Anmelden mit E-Mail';
+
+  @override
+  String get authSignInGoogle => 'Anmelden mit Google';
+
+  @override
+  String get authSignInApple => 'Anmelden mit Apple';
+
+  @override
+  String get authSignInLoading => 'Anmeldung läuft';
+
+  @override
+  String get authSignInOAuthError => 'Anmeldung fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
+  String get authSignInAppleError => 'Apple-Anmeldung fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
+  String get authSignInGoogleError => 'Google-Anmeldung fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
+  String get authResetTitle => 'Passwort vergessen?';
+
+  @override
+  String get authResetSubtitle => 'Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu.';
+
+  @override
+  String get authResetCta => 'Passwort zurücksetzen';
+
+  @override
+  String get authResetEmailSent => 'E-Mail zum Zurücksetzen wurde gesendet.';
+
+  @override
+  String get authNewPasswordTitle => 'Neues Passwort erstellen';
+
+  @override
+  String get authNewPasswordHint => 'Neues Passwort';
+
+  @override
+  String get authConfirmPasswordHint => 'Neues Passwort bestätigen';
+
+  @override
+  String get authCreatePasswordCta => 'Passwort zurücksetzen';
+
+  @override
+  String get authSuccessBackToLogin => 'Zurück zur Anmeldung';
+
+  @override
+  String get authSignupSuccess => 'Registrierung erfolgreich! Du kannst dich jetzt anmelden.';
 }

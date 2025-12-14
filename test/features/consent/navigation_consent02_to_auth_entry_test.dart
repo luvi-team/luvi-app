@@ -10,6 +10,7 @@ import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 
@@ -85,25 +86,17 @@ void main() {
 
     verify(() => userState.markWelcomeSeen()).called(1);
 
+    // Auth Flow Fix: After consent, user (already authenticated) goes to Onboarding, not Auth
+    // User is already logged in at this point (logged in before Welcome/Consent flow)
     expect(
-      find.byKey(const ValueKey('auth_entry_register_cta')),
+      find.byType(Onboarding01Screen),
       findsOneWidget,
+      reason: 'Consent02 should navigate to Onboarding01 (user is already authenticated)',
     );
-    expect(find.byKey(const ValueKey('auth_entry_login_cta')), findsOneWidget);
-
-    final registerButton = tester.widget<ElevatedButton>(
-      find.byKey(const ValueKey('auth_entry_register_cta')),
-    );
-    final loginButton = tester.widget<TextButton>(
-      find.byKey(const ValueKey('auth_entry_login_cta')),
-    );
-
-    expect(registerButton.onPressed, isNotNull);
-    expect(loginButton.onPressed, isNotNull);
   });
 
   testWidgets(
-    'navigates to auth entry and shows best-effort snackbar when markWelcomeSeen fails',
+    'navigates to onboarding and shows best-effort snackbar when markWelcomeSeen fails',
     (tester) async {
       final consentService = _MockConsentService();
       final userState = _MockUserStateService();
@@ -141,8 +134,12 @@ void main() {
       verify(() => userState.markWelcomeSeen()).called(1);
 
       expect(find.text(l10n.consentErrorSavingConsent), findsOneWidget);
-      expect(find.byKey(const ValueKey('auth_entry_register_cta')), findsOneWidget);
-      expect(find.byKey(const ValueKey('auth_entry_login_cta')), findsOneWidget);
+      // Auth Flow Fix: navigation goes to Onboarding (user is already authenticated)
+      expect(
+        find.byType(Onboarding01Screen),
+        findsOneWidget,
+        reason: 'Even on markWelcomeSeen failure, navigation should proceed to Onboarding',
+      );
     },
   );
 
@@ -187,8 +184,12 @@ void main() {
     verifyNever(() => userState.markWelcomeSeen());
 
     expect(find.text(l10n.consentSnackbarRateLimited), findsOneWidget);
-    expect(find.byKey(const ValueKey('auth_entry_register_cta')), findsNothing);
-    expect(find.byKey(const ValueKey('auth_entry_login_cta')), findsNothing);
+    // Auth Flow Fix: check that navigation to onboarding did NOT happen (blocked by error)
+    expect(
+      find.byType(Onboarding01Screen),
+      findsNothing,
+      reason: 'Rate-limit error should block navigation to Onboarding',
+    );
   });
 }
 

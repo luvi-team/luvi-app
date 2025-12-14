@@ -444,6 +444,10 @@
   "@onboardingComplete": {
     "description": "Completion message shown on the onboarding done route."
   },
+  "errorInvalidWorkoutId": "Invalid workout ID",
+  "@errorInvalidWorkoutId": {
+    "description": "Error message shown when a workout ID in the URL is invalid."
+  },
 
   "cycleTipHeadlineMenstruation": "Menstruation",
   "@cycleTipHeadlineMenstruation": {"description": "Headline for the cycle tip card during menstruation."},
@@ -638,6 +642,10 @@
   "@authLoginHeadline": {
     "description": "Headline shown on the login screen."
   },
+  "authLoginTitle": "Sign in with Email",
+  "@authLoginTitle": {
+    "description": "Title on login screen (Figma Auth UI v2). NOTE: Intentionally shares text with authSignInEmail for translation flexibility - authLoginTitle is screen title, authSignInEmail is button text. Keep separate keys for future localization divergence."
+  },
   "authLoginSubhead": "We're glad you're here.",
   "@authLoginSubhead": {
     "description": "Subheadline displayed under the login headline."
@@ -735,13 +743,21 @@
   "@authPasswordHint": {
     "description": "Hint text for the password input field."
   },
-  "authSignupTitle": "Your journey starts here 💜",
+  "authSignupTitle": "Create account",
   "@authSignupTitle": {
-    "description": "Headline shown on the sign-up screen."
+    "description": "Headline shown on the sign-up screen (Figma Auth UI v2)."
   },
   "authSignupSubtitle": "Quick signup and you're ready to go.",
   "@authSignupSubtitle": {
     "description": "Subtitle encouraging users to complete sign-up."
+  },
+  "authSignupAlreadyMember": "Already a member? ",
+  "@authSignupAlreadyMember": {
+    "description": "Prefix for login link on sign-up screen."
+  },
+  "authSignupLoginLink": "Sign in",
+  "@authSignupLoginLink": {
+    "description": "Link text to login from sign-up screen."
   },
   "authSignupCta": "Sign up",
   "@authSignupCta": {
@@ -750,14 +766,6 @@
   "authSignupCtaLoadingSemantic": "Signing up",
   "@authSignupCtaLoadingSemantic": {
     "description": "Semantic description announced while the sign-up request is running."
-  },
-  "authSignupLinkPrefix": "Already have an account? ",
-  "@authSignupLinkPrefix": {
-    "description": "Prefix text for the sign-in link on the sign-up screen. Keep trailing space."
-  },
-  "authSignupLinkAction": "Sign in",
-  "@authSignupLinkAction": {
-    "description": "Link encouraging users to return to the sign-in screen."
   },
   "authSignupHintFirstName": "Your first name",
   "@authSignupHintFirstName": {
@@ -815,25 +823,9 @@
   "@authSuccessCta": {
     "description": "Button label closing the success screen."
   },
-  "authCreateNewTitle": "Create a new password 💜",
-  "@authCreateNewTitle": {
-    "description": "Headline for the create-new-password screen."
-  },
   "authCreateNewSubtitle": "Make it strong.",
   "@authCreateNewSubtitle": {
     "description": "Subtitle for the create-new-password screen."
-  },
-  "authCreateNewHint1": "New password",
-  "@authCreateNewHint1": {
-    "description": "Hint text for the new password input."
-  },
-  "authCreateNewHint2": "Confirm new password",
-  "@authCreateNewHint2": {
-    "description": "Hint text for the confirm password input."
-  },
-  "authCreateNewCta": "Save",
-  "@authCreateNewCta": {
-    "description": "Primary CTA label when creating a new password."
   },
   "authVerifyResetTitle": "Enter the code 💜",
   "@authVerifyResetTitle": {
@@ -878,5 +870,77 @@
   "consentSnackbarRateLimited": "Too many requests right now. Please wait a moment and try again.",
   "@consentSnackbarRateLimited": {
     "description": "Snackbar text shown when consent logging is rate limited."
+  },
+  "authSignInHeadline": "Don't miss out on becoming your best self!",
+  "@authSignInHeadline": {
+    "description": "Headline on the SignIn entry screen (glassmorphism card)."
+  },
+  "authSignInEmail": "Sign in with Email",
+  "@authSignInEmail": {
+    "description": "Text for the Email login button on the SignIn screen."
+  },
+  "authSignInGoogle": "Sign in with Google",
+  "@authSignInGoogle": {
+    "description": "Text for the Google login button on the SignIn screen."
+  },
+  "authSignInApple": "Sign in with Apple",
+  "@authSignInApple": {
+    "description": "Label for Apple Sign In button (used in Semantics wrapper on SignIn screen)."
+  },
+  "authSignInLoading": "Signing in",
+  "@authSignInLoading": {
+    "description": "Semantics label for the loading indicator during OAuth."
+  },
+  "authSignInOAuthError": "Sign in failed. Please try again.",
+  "@authSignInOAuthError": {
+    "description": "Error text when OAuth sign-in fails."
+  },
+  "authSignInAppleError": "Apple sign in failed. Please try again.",
+  "@authSignInAppleError": {
+    "description": "Error text when Apple sign-in fails."
+  },
+  "authSignInGoogleError": "Google sign in failed. Please try again.",
+  "@authSignInGoogleError": {
+    "description": "Error text when Google sign-in fails."
+  },
+  "authResetTitle": "Forgot password?",
+  "@authResetTitle": {
+    "description": "Title on the Reset Password screen (no emoji)."
+  },
+  "authResetSubtitle": "Enter your email and we'll send you a link to reset it.",
+  "@authResetSubtitle": {
+    "description": "Subtitle on the Reset Password screen."
+  },
+  "authResetCta": "Reset password",
+  "@authResetCta": {
+    "description": "CTA button text on the Reset Password screen."
+  },
+  "authResetEmailSent": "Password reset email sent.",
+  "@authResetEmailSent": {
+    "description": "Snackbar confirmation after successful password reset request."
+  },
+  "authNewPasswordTitle": "Create new password",
+  "@authNewPasswordTitle": {
+    "description": "Title on the Create New Password screen (no emoji)."
+  },
+  "authNewPasswordHint": "New password",
+  "@authNewPasswordHint": {
+    "description": "Hint text for the new password field."
+  },
+  "authConfirmPasswordHint": "Confirm new password",
+  "@authConfirmPasswordHint": {
+    "description": "Hint text for the password confirmation field."
+  },
+  "authCreatePasswordCta": "Reset password",
+  "@authCreatePasswordCta": {
+    "description": "CTA button text on the Create New Password screen. NOTE: Intentionally shares text with authResetCta - both are 'Reset password' CTAs but in different screen contexts (password entry vs email entry). Keep separate for localization flexibility."
+  },
+  "authSuccessBackToLogin": "Back to sign in",
+  "@authSuccessBackToLogin": {
+    "description": "CTA button text on the Success screen."
+  },
+  "authSignupSuccess": "Registration successful! You can now sign in.",
+  "@authSignupSuccess": {
+    "description": "Snackbar message after successful registration."
   }
 }

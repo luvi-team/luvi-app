@@ -10,7 +10,6 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
-import 'package:luvi_app/features/auth/widgets/global_error_banner.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../support/test_config.dart';
@@ -140,64 +139,9 @@ void main() {
     expect(enabledBtn.onPressed, isNotNull);
   });
 
-  testWidgets(
-    'Global error banner clears on new input while field errors stay',
-    (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(1080, 2340);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
-
-      final mockRepo = _MockAuthRepository();
-      when(
-        () => mockRepo.signInWithPassword(
-          email: any(named: 'email'),
-          password: any(named: 'password'),
-        ),
-      ).thenThrow(AuthException('Please confirm your email.'));
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-          child: MaterialApp(
-            theme: AppTheme.buildAppTheme(),
-            home: const LoginScreen(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-          ),
-        ),
-      );
-
-      final emailField = find.byType(TextField).at(0);
-      final passwordField = find.byType(TextField).at(1);
-      await tester.enterText(emailField, 'user@example.com');
-      await tester.enterText(passwordField, 'correctpw');
-
-      final loginButton = find.widgetWithText(
-        ElevatedButton,
-        AuthStrings.loginCta,
-      );
-      await tester.tap(loginButton);
-      await tester.pumpAndSettle();
-
-      final confirmBanner = find.text(AuthStrings.errConfirmEmail);
-      expect(confirmBanner, findsOneWidget);
-
-      await tester.enterText(emailField, 'user@example.com1');
-      await tester.pump();
-
-      expect(confirmBanner, findsNothing);
-      // Field errors remain untouched (stay null)
-      expect(find.text(AuthStrings.errEmailInvalid), findsNothing);
-      expect(find.text(AuthStrings.errPasswordInvalid), findsNothing);
-    },
-  );
-
-  testWidgets('Global error banner clears when tapped', (tester) async {
+  testWidgets('Shows validation errors on empty submit', (tester) async {
+    // Per Auth v2 refactoring: GlobalErrorBanner was removed from LoginScreen.
+    // Error handling now uses FieldErrorText and inline error display.
     final view = tester.view;
     view.physicalSize = const Size(1080, 2340);
     view.devicePixelRatio = 1.0;
@@ -212,7 +156,7 @@ void main() {
         email: any(named: 'email'),
         password: any(named: 'password'),
       ),
-    ).thenThrow(AuthException('Please confirm your email.'));
+    ).thenThrow(AuthException('invalid credentials'));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -227,26 +171,20 @@ void main() {
       ),
     );
 
-    final emailField = find.byType(TextField).at(0);
-    final passwordField = find.byType(TextField).at(1);
-    await tester.enterText(emailField, 'user@example.com');
-    await tester.enterText(passwordField, 'correctpw');
-
+    // Submit with empty fields to trigger validation errors
     final loginButton = find.widgetWithText(
       ElevatedButton,
       AuthStrings.loginCta,
     );
     await tester.tap(loginButton);
-    await tester.pumpAndSettle();
-
-    final confirmBanner = find.text(AuthStrings.errConfirmEmail);
-    expect(confirmBanner, findsOneWidget);
-
-    await tester.tap(find.byType(GlobalErrorBanner));
     await tester.pump();
 
-    expect(confirmBanner, findsNothing);
-    expect(find.text(AuthStrings.errEmailInvalid), findsNothing);
-    expect(find.text(AuthStrings.errPasswordInvalid), findsNothing);
+    // Validation errors should appear for empty fields
+    expect(find.text(AuthStrings.errEmailEmpty), findsOneWidget);
+    expect(find.text(AuthStrings.errPasswordEmpty), findsOneWidget);
+
+    // CTA should be disabled when validation errors are present
+    final btn = tester.widget<ElevatedButton>(loginButton);
+    expect(btn.onPressed, isNull);
   });
 }
