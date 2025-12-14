@@ -19,9 +19,13 @@ void main() {
       expect(result.error, AuthPasswordValidationError.tooShort);
     });
 
-    test('requires letters, numbers, and specials', () {
-      final result = validateNewPassword('Password1', 'Password1');
-      expect(result.error, AuthPasswordValidationError.missingTypes);
+    test('accepts passwords without special characters (NIST SP 800-63B)', () {
+      // Per NIST SP 800-63B: Character composition rules are not recommended.
+      // We only require minimum length (8+) and blocklist check.
+      // Note: "Password1" is blocklisted, so we use a different example.
+      final result = validateNewPassword('MySecret1', 'MySecret1');
+      expect(result.isValid, isTrue);
+      expect(result.error, isNull);
     });
 
     test('flags common weak patterns', () {
@@ -29,8 +33,9 @@ void main() {
       expect(result.error, AuthPasswordValidationError.commonWeak);
     });
 
-    test('accepts strong passwords', () {
-      final result = validateNewPassword('Str0ng!Pass', 'Str0ng!Pass');
+    test('accepts passwords meeting minimum length requirement', () {
+      // Any 8+ character password not in blocklist should be valid
+      final result = validateNewPassword('mypassword', 'mypassword');
       expect(result.isValid, isTrue);
       expect(result.error, isNull);
     });

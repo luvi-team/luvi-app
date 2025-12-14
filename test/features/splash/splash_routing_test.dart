@@ -158,7 +158,7 @@ void main() {
     group('Edge Cases', () {
       test('Welcome Gate takes priority over Onboarding Gate', () {
         // Even if hasCompletedOnboarding is true, if hasSeenWelcome is null/false,
-        // user should go to Welcome (this is an edge case that shouldnt occur in practice)
+        // user should go to Welcome (this is an edge case that shouldn't occur in practice)
         final result = determineTargetRoute(
           isAuth: true,
           hasSeenWelcomeMaybe: null,

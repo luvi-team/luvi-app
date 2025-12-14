@@ -105,6 +105,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     AuthPasswordValidationError error,
     AppLocalizations l10n,
   ) {
+    // Note: Per NIST SP 800-63B, we no longer enforce character composition
+    // rules (missingTypes). Validation focuses on length + blocklist only.
     switch (error) {
       case AuthPasswordValidationError.emptyFields:
         return l10n.authErrPasswordInvalid;
@@ -112,8 +114,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         return l10n.authPasswordMismatchError;
       case AuthPasswordValidationError.tooShort:
         return l10n.authErrPasswordTooShort;
-      case AuthPasswordValidationError.missingTypes:
-        return l10n.authErrPasswordMissingTypes;
       case AuthPasswordValidationError.commonWeak:
         return l10n.authErrPasswordCommonWeak;
     }
@@ -121,16 +121,12 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   /// Validates the new password field inline and updates error state.
   /// Returns the error message if invalid, null if valid.
+  ///
+  /// Per NIST SP 800-63B: Only checks minimum length. Character composition
+  /// rules are explicitly discouraged by modern security guidance.
   String? _validateNewPasswordField(String value, AppLocalizations l10n) {
     if (value.isEmpty) return null; // Don't show error for empty field on typing
     if (value.length < 8) return l10n.authErrPasswordTooShort;
-
-    final hasLetter = RegExp(r'[A-Za-z]').hasMatch(value);
-    final hasNumber = RegExp(r'\d').hasMatch(value);
-    final hasSpecial = RegExp(r'[!@#\$%\^&*()_\+\-=\{\}\[\]:;,.<>/?`~|\\]').hasMatch(value);
-    if (!(hasLetter && hasNumber && hasSpecial)) {
-      return l10n.authErrPasswordMissingTypes;
-    }
     return null;
   }
 
@@ -192,7 +188,6 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             _newPasswordError = null;
             _confirmPasswordError = l10n.authPasswordMismatchError;
           case AuthPasswordValidationError.tooShort:
-          case AuthPasswordValidationError.missingTypes:
           case AuthPasswordValidationError.commonWeak:
             _newPasswordError = message;
             _confirmPasswordError = null;

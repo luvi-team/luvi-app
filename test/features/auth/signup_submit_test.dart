@@ -219,7 +219,7 @@ void main() {
       expect(find.byKey(const ValueKey('auth_login_screen')), findsNothing);
 
       // Advance past 800ms delay
-      await tester.pump(const Duration(milliseconds: 850));
+      await tester.pump(const Duration(milliseconds: 800));
       await tester.pumpAndSettle();
 
       // Now on login screen
