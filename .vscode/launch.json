@@ -16,6 +16,7 @@
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
+      "deviceId": "iphone",
       "args": [
         "--dart-define=SUPABASE_URL=${env:SUPABASE_URL}",
         "--dart-define=SUPABASE_ANON_KEY=${env:SUPABASE_ANON_KEY}"
