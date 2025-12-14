@@ -16,6 +16,7 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 
 /// Determines the target route based on auth state, consent version, and
 /// onboarding completion.
@@ -148,7 +149,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     try {
       service = await _loadUserStateWithRetry(useTimeout: useTimeout);
     } catch (e, st) {
-      log.e('state load failed after retry', tag: 'splash', error: e, stack: st);
+      log.e('state load failed after retry', tag: 'splash',
+          error: sanitizeError(e) ?? e.runtimeType, stack: st);
     }
 
     if (!mounted || _hasNavigated) return;
@@ -188,7 +190,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           ? await serviceFuture.timeout(primaryTimeout)
           : await serviceFuture;
     } catch (e, st) {
-      log.w('state load failed, retrying once', tag: 'splash', error: e, stack: st);
+      log.w('state load failed, retrying once', tag: 'splash',
+          error: sanitizeError(e) ?? e.runtimeType, stack: st);
       // Invalidate provider to clear cached error before retry
       ref.invalidate(userStateServiceProvider);
       // One retry with shorter timeout

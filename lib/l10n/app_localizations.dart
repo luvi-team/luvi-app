@@ -689,6 +689,12 @@ abstract class AppLocalizations {
   /// **'Onboarding complete'**
   String get onboardingComplete;
 
+  /// Error message shown when a workout ID in the URL is invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid workout ID'**
+  String get errorInvalidWorkoutId;
+
   /// Headline for the cycle tip card during menstruation.
   ///
   /// In en, this message translates to:

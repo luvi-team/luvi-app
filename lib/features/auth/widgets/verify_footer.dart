@@ -55,7 +55,7 @@ class VerifyFooter extends StatelessWidget {
               },
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
+                minimumSize: Size(Sizes.touchTargetMin, Sizes.touchTargetMin),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: Text(resend, style: resendStyle),

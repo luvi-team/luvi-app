@@ -326,6 +326,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingComplete => 'Onboarding abgeschlossen';
 
   @override
+  String get errorInvalidWorkoutId => 'Ungültige Workout-ID';
+
+  @override
   String get cycleTipHeadlineMenstruation => 'Menstruation';
 
   @override

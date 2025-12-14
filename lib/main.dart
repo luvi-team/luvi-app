@@ -101,6 +101,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   late final GoRouter _router = _createRouter(_initialLocation);
   PasswordRecoveryNavigationDriver? _passwordRecoveryDriver;
   SupabaseDeepLinkHandler? _deepLinkHandler;
+  ProviderSubscription<InitState>? _initOrchestrationSubscription;
 
   String get _initialLocation => kReleaseMode
       ? SplashScreen.routeName
@@ -122,12 +123,18 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   @override
   void initState() {
     super.initState();
-    _routerRefreshNotifier.ensureSupabaseListener();
+    // 1. Deep-Link-Handler früh starten (queued URIs, KEIN processing)
+    _initDeepLinkHandler();
+    // 2. Diagnostics-Listener (existing)
     _listenForInitDiagnostics();
+    // 3. Orchestrierung via Listener (NICHT in build!)
+    // Ensures correct sequence: RouterRefresh → RecoveryListener → processPendingUri
+    _setupInitOrchestration();
   }
 
   @override
   void dispose() {
+    _initOrchestrationSubscription?.close();
     unawaited(_passwordRecoveryDriver?.dispose());
     unawaited(_deepLinkHandler?.dispose());
     _router.dispose();
@@ -171,10 +178,8 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   @override
   Widget build(BuildContext context) {
     final initState = ref.watch(supabaseInitControllerProvider);
-    _routerRefreshNotifier.ensureSupabaseListener();
-    _ensureDeepLinkHandler();
-    _ensurePasswordRecoveryListener();
-
+    // ✅ 100% PURE - keine Side-Effects!
+    // All orchestration happens in _setupInitOrchestration() via ref.listenManual
     return _buildMaterialApp(initState);
   }
 
@@ -233,6 +238,44 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
     return LocaleChangeCacheReset(child: content);
   }
 
+  /// Orchestriert Router-Refresh, Recovery-Listener und Pending-URI-Processing
+  /// in der korrekten Reihenfolge, sobald Supabase initialisiert ist.
+  ///
+  /// Pattern: ref.listenManual mit fireImmediately (siehe reset_password_screen.dart:40)
+  /// Reihenfolge KRITISCH für Recovery-Flow:
+  /// 1. Router-Refresh aktivieren (braucht Supabase-Client)
+  /// 2. Recovery-Listener registrieren (MUSS vor pending URI!)
+  /// 3. Pending URI verarbeiten (Listener ist garantiert ready)
+  void _setupInitOrchestration() {
+    _initOrchestrationSubscription = ref.listenManual<InitState>(
+      supabaseInitControllerProvider,
+      (prev, next) {
+        if (!SupabaseService.isInitialized) return;
+
+        // 1. Router-Refresh aktivieren (braucht Supabase-Client)
+        _routerRefreshNotifier.ensureSupabaseListener();
+
+        // 2. Recovery-Listener registrieren (MUSS vor pending URI!)
+        _ensurePasswordRecoveryListener();
+
+        // 3. ERST JETZT: Pending URI verarbeiten (Listener ist garantiert ready)
+        final handler = _deepLinkHandler;
+        if (handler != null && handler.hasPendingUri) {
+          unawaited(handler.processPendingUri());
+        }
+      },
+      fireImmediately: true, // Falls Supabase schon initialized
+    );
+  }
+
+  /// Startet Deep-Link-Handler früh um URIs zu queuen (KEIN processing).
+  /// Processing passiert erst in _setupInitOrchestration nach Listener-Setup.
+  void _initDeepLinkHandler() {
+    if (_deepLinkHandler != null) return;
+    _deepLinkHandler = SupabaseDeepLinkHandler();
+    unawaited(_deepLinkHandler!.start());
+  }
+
   void _ensurePasswordRecoveryListener() {
     if (_passwordRecoveryDriver != null || !SupabaseService.isInitialized) {
       return;
@@ -246,23 +289,6 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         _router.go(CreateNewPasswordScreen.routeName);
       },
     );
-  }
-
-  void _ensureDeepLinkHandler() {
-    // Start handler early to capture deep links that arrive before Supabase init
-    if (_deepLinkHandler == null) {
-      final handler = SupabaseDeepLinkHandler();
-      _deepLinkHandler = handler;
-      unawaited(handler.start());
-    }
-
-    // Process any queued deep links once Supabase is ready
-    final handler = _deepLinkHandler;
-    if (handler != null &&
-        handler.hasPendingUri &&
-        SupabaseService.isInitialized) {
-      unawaited(handler.processPendingUri());
-    }
   }
 
 }

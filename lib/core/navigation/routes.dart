@@ -34,6 +34,7 @@ import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
+import 'package:luvi_app/features/consent/config/consent_config.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
@@ -91,6 +92,44 @@ String? homeGuardRedirect({
   if (hasCompletedOnboarding == false) {
     return Onboarding01Screen.routeName;
   }
+  return null;
+}
+
+/// Defense-in-Depth: Home guard with consent version check.
+///
+/// Unlike [homeGuardRedirect], this also validates that the user has accepted
+/// the current consent version. This prevents bypassing consent via deep link
+/// or saved route to /heute.
+///
+/// Gate priority (matches Splash logic):
+/// 1. State unknown → Splash (fail-safe)
+/// 2. Consent outdated/missing → ConsentWelcome01
+/// 3. Onboarding incomplete → Onboarding01
+/// 4. All gates passed → null (allow)
+@visibleForTesting
+String? homeGuardRedirectWithConsent({
+  required bool isStateKnown,
+  required bool? hasCompletedOnboarding,
+  required int? acceptedConsentVersion,
+  required int currentConsentVersion,
+}) {
+  // Fail-safe: If state unknown, delegate to Splash (no visible animation).
+  if (!isStateKnown) {
+    return '${SplashScreen.routeName}?skipAnimation=true';
+  }
+
+  // Defense-in-Depth: Check consent version FIRST (matches Splash gate order)
+  final needsConsent = acceptedConsentVersion == null ||
+      acceptedConsentVersion < currentConsentVersion;
+  if (needsConsent) {
+    return ConsentWelcome01Screen.routeName;
+  }
+
+  // Then check onboarding
+  if (hasCompletedOnboarding == false) {
+    return Onboarding01Screen.routeName;
+  }
+
   return null;
 }
 
@@ -267,15 +306,17 @@ final List<GoRoute> featureRoutes = [
     path: HeuteScreen.routeName,
     name: 'heute',
     redirect: (context, state) {
-      // Home Guard: Ensure onboarding is complete before allowing access.
-      // This prevents bypassing onboarding via deep link or saved route.
+      // Defense-in-Depth: Ensure consent AND onboarding are complete.
+      // This prevents bypassing gates via deep link or saved route.
       final container = ProviderScope.containerOf(context, listen: false);
       final asyncValue = container.read(userStateServiceProvider);
       // Extract value if loaded, null otherwise (loading/error states)
       final service = asyncValue.whenOrNull(data: (s) => s);
-      return homeGuardRedirect(
+      return homeGuardRedirectWithConsent(
         isStateKnown: service != null,
         hasCompletedOnboarding: service?.hasCompletedOnboarding,
+        acceptedConsentVersion: service?.acceptedConsentVersionOrNull,
+        currentConsentVersion: ConsentConfig.currentVersionInt,
       );
     },
     builder: (context, state) => const HeuteScreen(),
@@ -294,7 +335,7 @@ final List<GoRoute> featureRoutes = [
         // Redirect to a safe fallback or show an error state
         return Scaffold(
           body: Center(
-            child: Text('Invalid workout ID'),
+            child: Text(AppLocalizations.of(context)!.errorInvalidWorkoutId),
           ),
         );
       }

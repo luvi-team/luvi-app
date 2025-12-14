@@ -488,6 +488,10 @@
   "@onboardingComplete": {
     "description": "Completion message shown on the onboarding done route."
   },
+  "errorInvalidWorkoutId": "Ungültige Workout-ID",
+  "@errorInvalidWorkoutId": {
+    "description": "Error message shown when a workout ID in the URL is invalid."
+  },
 
   "cycleTipHeadlineMenstruation": "Menstruation",
   "@cycleTipHeadlineMenstruation": {"description": "Headline for the cycle tip card during menstruation."},
