@@ -60,6 +60,11 @@ class OnboardingSpacing {
     required this.headerToFirstOption05,
     required this.headerToFirstOption06,
     required this.headerToFirstOption07,
+    // O3 Fitness screen specific spacing
+    required this.headerToSubtitle03,
+    required this.subtitleToPills03,
+    required this.pillsGap03,
+    required this.pillsToCta03,
     // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
     required this.trophyToTitle,
     required this.titleToButton,
@@ -130,6 +135,12 @@ class OnboardingSpacing {
   final double headerToFirstOption05;
   final double headerToFirstOption06;
   final double headerToFirstOption07;
+
+  // O3 Fitness screen specific spacing
+  final double headerToSubtitle03;
+  final double subtitleToPills03;
+  final double pillsGap03;
+  final double pillsToCta03;
 
   // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
   final double trophyToTitle;
@@ -207,6 +218,11 @@ class OnboardingSpacing {
       headerToFirstOption05: _headerToFirstOption05 * effectiveHeightScale,
       headerToFirstOption06: _headerToFirstOption06 * effectiveHeightScale,
       headerToFirstOption07: _headerToFirstOption07 * effectiveHeightScale,
+      // O3 Fitness screen specific spacing
+      headerToSubtitle03: _headerToSubtitle03 * effectiveHeightScale,
+      subtitleToPills03: _subtitleToPills03 * effectiveHeightScale,
+      pillsGap03: _pillsGap03,
+      pillsToCta03: _pillsToCta03 * effectiveHeightScale,
       // Success Screen specific spacing
       trophyToTitle: _trophyToTitle * effectiveHeightScale,
       titleToButton: _titleToButton * effectiveHeightScale,
@@ -317,6 +333,12 @@ class OnboardingSpacing {
   static const double _headerToFirstOption05 = 50.0; // ONB_05: (42+42)*0.6
   static const double _headerToFirstOption06 = 58.0; // ONB_06: (48+48)*0.6
   static const double _headerToFirstOption07 = 108.0; // ONB_07: (90+90)*0.6
+
+  // O3 Fitness screen specific spacing (based on Figma)
+  static const double _headerToSubtitle03 = 24.0;
+  static const double _subtitleToPills03 = 80.0;
+  static const double _pillsGap03 = 16.0;
+  static const double _pillsToCta03 = 120.0;
 
   // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
   // Custom values (not aligned mit bestehenden Rhythmus-Tokens)

@@ -1,6 +1,12 @@
 class Sizes {
+  static const double radiusS = 8.0; // small radius (inner elements)
   static const double radiusM = 12.0; // default medium radius
   static const double radiusL = 20.0; // cards / collage tiles
+  static const double radiusCard = 16.0; // content card radius (Figma: 16px)
+
+  /// Picker selection highlight radius (Figma: 14px)
+  static const double radiusPickerHighlight = 14.0;
+
   static const double buttonHeight = 50.0; // Figma: Button H=50
   static const double touchTargetMin = 44.0; // iOS HIG / WCAG minimum tap target
 

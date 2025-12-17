@@ -23,6 +23,9 @@ class TypographyTokens {
 
   /// Welcome Subtitle: Figma 26px line-height on 20px font (ratio: 1.3)
   static const double lineHeightRatio26on20 = 26 / 20;
+
+  /// Onboarding header: 28px line-height on 20px font (ratio: 1.4)
+  static const double lineHeightRatio28on20 = 28 / 20;
 }
 
 /// Shared font family identifiers to centralize typography references.

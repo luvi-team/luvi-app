@@ -52,6 +52,10 @@ class DsColors {
   /// Hex: #FFB9B9
   static const Color phaseMenstruation = Color(0xFFFFB9B9);
 
+  /// Cycle phase: menstruation dark (fallback for progress indicators).
+  /// Hex: #8B3A62
+  static const Color phaseMenstruationDark = Color(0xFF8B3A62);
+
   /// Dashboard wave overlay tint (30% opacity blush pink from Figma).
   /// Hex: #FADCDC @ 0x4D alpha.
   static const Color waveOverlayPink = Color(0x4DFADCDC);
@@ -163,6 +167,76 @@ class DsColors {
 
   /// Fully transparent color for backgrounds that should show through.
   static const Color transparent = Color(0x00000000);
+
+  /// Shadow color for elevated components (20% black opacity).
+  /// Used for: OnboardingButton drop shadow
+  static const Color shadowMedium = Color(0x33000000);
+
+  // ─── Consent & Onboarding Specific (Figma Refactor 2024-12) ───
+
+  /// Consent Background Cream (Figma: #FAEEE0)
+  /// Alias: Same as welcomeWaveBg for consistency
+  static const Color bgCream = welcomeWaveBg;
+
+  /// Gradient Light Gold (Figma: #EDE1D3)
+  /// Alias: Same as authGradientLight for consistency
+  static const Color goldLight = authGradientLight;
+
+  /// Gradient Medium Gold (Figma: #D4B896)
+  /// Alias: Same as authGradientBase for consistency
+  static const Color goldMedium = authGradientBase;
+
+  /// Signature Magenta (Figma: #9F2B68)
+  /// Used for links, progress indicators, period markers
+  /// Alias: Same as headlineMagenta for consistency
+  static const Color signature = headlineMagenta;
+
+  /// Primary Button Background (Figma: #A8406F)
+  /// Alias: Same as welcomeButtonBg for consistency
+  static const Color buttonPrimary = welcomeButtonBg;
+
+  /// Gray 300 - Secondary Button Background (Figma: #DCDCDC)
+  static const Color gray300 = Color(0xFFDCDCDC);
+
+  /// Gray 500 - Secondary Button Text (Figma: #525252)
+  static const Color gray500 = Color(0xFF525252);
+
+  /// Divider Color (Figma: #A1A1A1)
+  static const Color divider = Color(0xFFA1A1A1);
+
+  // ─── Consent Checkbox Specific (Figma Consent Options Screen) ───
+
+  /// Consent Checkbox Border (Figma: #B0B0B0)
+  static const Color consentCheckboxBorder = Color(0xFFB0B0B0);
+
+  /// Consent Checkbox Selected Fill (Figma: #A8406F)
+  /// Alias: Same as buttonPrimary for consistency
+  static const Color consentCheckboxSelected = buttonPrimary;
+
+  /// Consent Checkbox Background (Figma: #FFFFFF)
+  /// Alias: Same as grayscaleWhite for consistency
+  static const Color consentCheckboxBackground = grayscaleWhite;
+
+  /// Divider Gray (Figma: #A1A1A1)
+  /// Alias: Same as divider for semantic clarity
+  static const Color dividerGray = divider;
+
+  // ─── Calendar/Period Picker Specific (Figma Onboarding 2024-12) ───
+
+  /// Calendar Weekday Header Gray (Figma: #99A1AF)
+  static const Color calendarWeekdayGray = Color(0xFF99A1AF);
+
+  /// Today Label Gray (Figma: #6A7282)
+  static const Color todayLabelGray = Color(0xFF6A7282);
+
+  /// Period Glow Pink - 60% opacity (Figma: #FF6482 @ 0.6)
+  static const Color periodGlowPink = Color(0x99FF6482);
+
+  /// Period Glow Pink Light - 10% opacity (Figma: #FF6482 @ 0.1)
+  static const Color periodGlowPinkLight = Color(0x19FF6482);
+
+  /// Date Picker Selection Background (Figma: #F5F5F5)
+  static const Color datePickerSelectionBg = Color(0xFFF5F5F5);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.

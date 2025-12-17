@@ -4,10 +4,18 @@ import 'package:flutter/widgets.dart';
 class ConsentSpacing {
   const ConsentSpacing._();
 
-  // Base page paddings (mirrors Figma 20px horizontal rhythm).
-  static const double pageHorizontal = 20.0;
+  // Base page paddings (mirrors Figma 24px horizontal rhythm).
+  static const double pageHorizontal = 24.0;
   static const double topBarSafeAreaOffset = 12.0;
   static const double topBarButtonToTitle = 7.0;
+
+  // Consent Screen Specific (Figma Refactor 2024-12)
+  static const double sectionGap = 16.0;
+  static const double buttonGapC2 = 16.0; // Between buttons on C2 (Options) - 16px per Figma
+  static const double buttonGapC3 = 16.0; // Between buttons on C3 (Blocking)
+  static const double checkboxSize = 24.0;
+  static const double checkboxInnerSize = 14.0;
+  static const double checkboxBorderWidth = 2.0;
 
   // Card list paddings and gaps.
   static const double listPaddingTop = 24.0;
@@ -17,11 +25,15 @@ class ConsentSpacing {
   static const double cardPaddingVertical = 35.0;
 
   // Footer spacing rhythm.
-  static const double footerPaddingTop = 12.0;
+  static const double footerPaddingTop = 8.0; // Reduced to bring buttons closer to bottom
   static const double footerHintToPrimaryCta = 12.0;
   static const double footerPrimaryToSecondaryCta = 15.0;
   static const double footerPaddingBottom = 20.0;
-  static const double ctaBottomInset = 44.0;
+  static const double ctaBottomInset = 0.0; // Buttons sit directly above safe area per Figma
+
+  /// Estimated height of the sticky footer to add as bottom padding to lists
+  /// so content is not obscured by the footer overlay.
+  static const double footerEstimatedHeight = 180.0;
 
   // Pre-baked paddings (kept here to avoid per-call allocations).
   static const EdgeInsets listPadding = EdgeInsets.fromLTRB(
