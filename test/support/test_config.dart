@@ -8,6 +8,7 @@ import 'package:luvi_app/l10n/app_localizations_de.dart';
 import 'package:luvi_services/init_mode.dart';
 
 import 'test_app_links.dart';
+import 'video_player_mock.dart';
 
 /// Centralized configuration for test-specific feature flags used by tests.
 class TestConfig {
@@ -16,6 +17,8 @@ class TestConfig {
   /// Ensures shared test-only configuration (feature flags, localized strings) is initialized.
   static void ensureInitialized({AppLocalizations? locale}) {
     TestWidgetsFlutterBinding.ensureInitialized();
+    // Register VideoPlayer mock to handle transitive imports from WelcomeVideoPlayer
+    VideoPlayerMock.registerWith();
     // Register suite-scoped localization overrides and cleanup. Overrides are
     // applied in setUpAll to avoid double-initialization; see _registerSuiteLifecycle().
     _registerSuiteLifecycle();

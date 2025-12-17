@@ -64,7 +64,7 @@ The branch introduces foundational DSGVO-compliant data structures with proper R
 #### Analysis:
 - Health data with appropriate constraints
 - Proper RLS implementation
-- Reasonable data validation (age 10-65, cycle length ≤60 days)
+- Reasonable data validation (age 16-120, cycle length ≤60 days)
 
 #### DSGVO Compliance:
 - [x] ✅ Row Level Security (RLS) enabled

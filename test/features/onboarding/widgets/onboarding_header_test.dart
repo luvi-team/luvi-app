@@ -47,7 +47,9 @@ void main() {
     );
 
     expect(find.text('Ready for LUVI?'), findsOneWidget);
-    expect(find.text('1/5'), findsOneWidget);
+    // New format: "Frage X von Y" instead of "X/Y"
+    expect(find.text('Frage 1 von 5'), findsOneWidget);
+    // Back button is hidden on step 1 (correct behavior)
     expect(find.byType(BackButtonCircle), findsNothing);
 
     final headerSemanticsFinder = find.byWidgetPredicate(

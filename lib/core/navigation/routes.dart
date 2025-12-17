@@ -8,7 +8,9 @@ import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_03_screen.dart';
@@ -16,12 +18,12 @@ import 'package:luvi_app/features/consent/screens/consent_welcome_04_screen.dart
 import 'package:luvi_app/features/consent/screens/consent_welcome_05_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_03.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_04.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_05.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_06.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_07.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_08.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_03_fitness.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_04_goals.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
@@ -164,15 +166,28 @@ final List<GoRoute> featureRoutes = [
     name: 'welcome5',
     builder: (context, state) => const ConsentWelcome05Screen(),
   ),
+  // C1 - Consent Intro Screen (Route: /consent/02 - mapped from W5 for backwards compatibility)
   GoRoute(
-    path: Consent02Screen.routeName,
-    name: 'consent02',
+    path: ConsentIntroScreen.routeName,
+    name: 'consent_intro',
+    builder: (context, state) => const ConsentIntroScreen(),
+  ),
+  // C2 - Consent Options Screen
+  GoRoute(
+    path: ConsentOptionsScreen.routeName,
+    name: 'consent_options',
     builder: (context, state) {
       // Obtain AppLinks via Riverpod to enable DI and testing.
       final container = ProviderScope.containerOf(context, listen: false);
       final appLinks = container.read(appLinksProvider);
-      return Consent02Screen(appLinks: appLinks);
+      return ConsentOptionsScreen(appLinks: appLinks);
     },
+  ),
+  // C3 - Consent Blocking Screen
+  GoRoute(
+    path: ConsentBlockingScreen.routeName,
+    name: 'consent_blocking',
+    builder: (context, state) => const ConsentBlockingScreen(),
   ),
   GoRoute(
     path: Onboarding01Screen.routeName,
@@ -184,35 +199,40 @@ final List<GoRoute> featureRoutes = [
     name: 'onboarding_02',
     builder: (ctx, st) => const Onboarding02Screen(),
   ),
+  // Onboarding screens (refactored flow)
   GoRoute(
-    path: Onboarding03Screen.routeName,
-    name: 'onboarding_03',
-    builder: (ctx, st) => const Onboarding03Screen(),
+    path: Onboarding03FitnessScreen.routeName,
+    name: 'onboarding_03_fitness',
+    builder: (ctx, st) => const Onboarding03FitnessScreen(),
   ),
   GoRoute(
-    path: Onboarding04Screen.routeName,
-    name: 'onboarding_04',
-    builder: (ctx, st) => const Onboarding04Screen(),
+    path: Onboarding04GoalsScreen.routeName,
+    name: 'onboarding_04_goals',
+    builder: (ctx, st) => const Onboarding04GoalsScreen(),
   ),
   GoRoute(
-    path: Onboarding05Screen.routeName,
-    name: 'onboarding_05',
-    builder: (ctx, st) => const Onboarding05Screen(),
+    path: Onboarding05InterestsScreen.routeName,
+    name: 'onboarding_05_interests',
+    builder: (ctx, st) => const Onboarding05InterestsScreen(),
+  ),
+  // O6: Cycle Intro Screen (NEU - zwischen O5 und O7)
+  GoRoute(
+    path: Onboarding06CycleIntroScreen.routeName,
+    name: 'onboarding_06_cycle_intro',
+    builder: (ctx, st) => const Onboarding06CycleIntroScreen(),
   ),
   GoRoute(
-    path: Onboarding06Screen.routeName,
-    name: 'onboarding_06',
-    builder: (ctx, st) => const Onboarding06Screen(),
+    path: Onboarding06PeriodScreen.routeName,
+    name: 'onboarding_06_period',
+    builder: (ctx, st) => const Onboarding06PeriodScreen(),
   ),
   GoRoute(
-    path: Onboarding07Screen.routeName,
-    name: 'onboarding_07',
-    builder: (ctx, st) => const Onboarding07Screen(),
-  ),
-  GoRoute(
-    path: Onboarding08Screen.routeName,
-    name: 'onboarding_08',
-    builder: (ctx, st) => const Onboarding08Screen(),
+    path: Onboarding07DurationScreen.routeName,
+    name: 'onboarding_07_duration',
+    builder: (ctx, st) {
+      final periodStart = st.extra as DateTime?;
+      return Onboarding07DurationScreen(periodStartDate: periodStart);
+    },
   ),
   GoRoute(
     path: OnboardingSuccessScreen.routeName,

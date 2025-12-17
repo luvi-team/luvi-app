@@ -1,0 +1,234 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/effects.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+
+/// Custom birthdate picker with three wheels (Month, Day, Year).
+///
+/// Figma specs:
+/// - Container: 333 × 280px
+/// - Selection highlight: 313 × 56px, radius 14
+/// - Age policy: 16-120 years (kMinAge, kMaxAge)
+class BirthdatePicker extends StatefulWidget {
+  const BirthdatePicker({
+    super.key,
+    required this.initialDate,
+    required this.onDateChanged,
+  });
+
+  /// Initial date to display
+  final DateTime initialDate;
+
+  /// Callback when date changes
+  final ValueChanged<DateTime> onDateChanged;
+
+  @override
+  State<BirthdatePicker> createState() => _BirthdatePickerState();
+}
+
+class _BirthdatePickerState extends State<BirthdatePicker> {
+  late FixedExtentScrollController _monthController;
+  late FixedExtentScrollController _dayController;
+  late FixedExtentScrollController _yearController;
+
+  late int _selectedMonth;
+  late int _selectedDay;
+  late int _selectedYear;
+
+  // Widget-specific layout constants (Figma Birthdate Picker specs)
+  static const double _containerWidth = 333.0;
+  static const double _containerHeight = 280.0;
+  static const double _highlightWidth = 313.0;
+  static const double _highlightHeight = 56.0;
+  static const double _itemExtent = 56.0;
+  static const double _perspective = 0.003;
+  static const double _diameterRatio = 1.5;
+  static const double _unselectedOpacity = 0.5;
+
+  /// Minimum year based on max age policy (120 years back)
+  int get _minimumYear => DateTime.now().year - kMaxAge;
+
+  /// Maximum year based on min age policy (16 years back)
+  int get _maximumYear => DateTime.now().year - kMinAge;
+
+  /// List of years in valid range
+  List<int> get _years =>
+      List.generate(_maximumYear - _minimumYear + 1, (i) => _maximumYear - i);
+
+  /// Days in the selected month/year
+  int get _daysInMonth => DateTime(_selectedYear, _selectedMonth + 1, 0).day;
+
+  /// Get localized month name using intl DateFormat
+  String _getMonthName(int month, String locale) {
+    final date = DateTime(2024, month);
+    return DateFormat.MMMM(locale).format(date);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Clamp initial date to valid range
+    final clampedDate = _clampDate(widget.initialDate);
+
+    _selectedMonth = clampedDate.month - 1;
+    _selectedDay = clampedDate.day;
+    _selectedYear = clampedDate.year;
+
+    _monthController = FixedExtentScrollController(initialItem: _selectedMonth);
+    _dayController = FixedExtentScrollController(initialItem: _selectedDay - 1);
+    _yearController = FixedExtentScrollController(
+      initialItem: _years.indexOf(_selectedYear),
+    );
+  }
+
+  DateTime _clampDate(DateTime date) {
+    final minDate = onboardingBirthdateMinDate();
+    final maxDate = onboardingBirthdateMaxDate();
+
+    if (date.isBefore(minDate)) return minDate;
+    if (date.isAfter(maxDate)) return maxDate;
+    return date;
+  }
+
+  @override
+  void dispose() {
+    _monthController.dispose();
+    _dayController.dispose();
+    _yearController.dispose();
+    super.dispose();
+  }
+
+  void _onDateChanged() {
+    // Clamp day if needed (e.g., Feb 30 -> Feb 28)
+    final maxDay = _daysInMonth;
+    if (_selectedDay > maxDay) {
+      _selectedDay = maxDay;
+      _dayController.jumpToItem(_selectedDay - 1);
+    }
+
+    final newDate = DateTime(_selectedYear, _selectedMonth + 1, _selectedDay);
+    widget.onDateChanged(newDate);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+
+    return Semantics(
+      label: l10n.onboarding02PickerSemantic,
+      child: Container(
+        width: _containerWidth,
+        height: _containerHeight,
+        decoration: DsEffects.glassCard,
+        child: Stack(
+          children: [
+            // Selection highlight
+            Center(
+              child: Container(
+                width: _highlightWidth,
+                height: _highlightHeight,
+                decoration: BoxDecoration(
+                  color: DsColors.datePickerSelectionBg,
+                  borderRadius: BorderRadius.circular(Sizes.radiusPickerHighlight),
+                ),
+              ),
+            ),
+            // Wheels
+            Row(
+              children: [
+                // Month wheel
+                Expanded(
+                  flex: 3,
+                  child: _buildWheel(
+                    controller: _monthController,
+                    itemCount: 12,
+                    itemBuilder: (index) => _getMonthName(index + 1, locale),
+                    onSelectedItemChanged: (index) {
+                      setState(() {
+                        _selectedMonth = index;
+                        _onDateChanged();
+                      });
+                    },
+                  ),
+                ),
+                // Day wheel
+                Expanded(
+                  flex: 2,
+                  child: _buildWheel(
+                    controller: _dayController,
+                    itemCount: _daysInMonth,
+                    itemBuilder: (index) => '${index + 1}',
+                    onSelectedItemChanged: (index) {
+                      setState(() {
+                        _selectedDay = index + 1;
+                        _onDateChanged();
+                      });
+                    },
+                  ),
+                ),
+                // Year wheel
+                Expanded(
+                  flex: 2,
+                  child: _buildWheel(
+                    controller: _yearController,
+                    itemCount: _years.length,
+                    itemBuilder: (index) => '${_years[index]}',
+                    onSelectedItemChanged: (index) {
+                      setState(() {
+                        _selectedYear = _years[index];
+                        _onDateChanged();
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWheel({
+    required FixedExtentScrollController controller,
+    required int itemCount,
+    required String Function(int) itemBuilder,
+    required ValueChanged<int> onSelectedItemChanged,
+  }) {
+    return ListWheelScrollView.useDelegate(
+      controller: controller,
+      itemExtent: _itemExtent,
+      perspective: _perspective,
+      diameterRatio: _diameterRatio,
+      physics: const FixedExtentScrollPhysics(),
+      onSelectedItemChanged: onSelectedItemChanged,
+      childDelegate: ListWheelChildBuilderDelegate(
+        childCount: itemCount,
+        builder: (context, index) {
+          final isSelected = controller.hasClients &&
+              controller.selectedItem == index;
+          return Center(
+            child: Text(
+              itemBuilder(index),
+              style: TextStyle(
+                fontSize: isSelected
+                    ? TypographyTokens.size20
+                    : TypographyTokens.size16,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected
+                    ? DsColors.grayscaleBlack
+                    : DsColors.grayscaleBlack.withValues(alpha: _unselectedOpacity),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

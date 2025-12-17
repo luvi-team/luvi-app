@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -9,23 +10,25 @@ import 'package:luvi_app/features/onboarding/utils/date_formatters.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
+import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
+import 'package:luvi_app/features/onboarding/widgets/birthdate_picker.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_03.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding02: Birthday input screen
 /// Figma: 02_Onboarding (Geburtstag)
 /// nodeId: 68219-6350
-class Onboarding02Screen extends StatefulWidget {
+class Onboarding02Screen extends ConsumerStatefulWidget {
   const Onboarding02Screen({super.key});
 
   static const routeName = '/onboarding/02';
 
   @override
-  State<Onboarding02Screen> createState() => _Onboarding02ScreenState();
+  ConsumerState<Onboarding02Screen> createState() => _Onboarding02ScreenState();
 }
 
-class _Onboarding02ScreenState extends State<Onboarding02Screen> {
+class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
   late DateTime _date;
   bool _hasInteracted = false;
 
@@ -40,16 +43,31 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
   @override
   void initState() {
     super.initState();
-    _date = _computeInitialBirthDate();
+    // Restore from OnboardingNotifier if available (back navigation)
+    final onboardingState = ref.read(onboardingProvider);
+    if (onboardingState.birthDate != null) {
+      _date = onboardingState.birthDate!;
+      _hasInteracted = true;
+    } else {
+      _date = _computeInitialBirthDate();
+    }
   }
 
   DateTime _computeInitialBirthDate() {
+    // Default to 25 years old, clamped within Age Policy 16-120
     final now = DateTime.now();
     final targetYear = now.year - 25;
     final month = now.month;
     final daysInMonth = DateTime(targetYear, month + 1, 0).day;
     final clampedDay = now.day > daysInMonth ? daysInMonth : now.day;
-    return DateTime(targetYear, month, clampedDay);
+    final initialDate = DateTime(targetYear, month, clampedDay);
+
+    // Clamp within Age Policy bounds
+    final minDate = onboardingBirthdateMinDate();
+    final maxDate = onboardingBirthdateMaxDate();
+    if (initialDate.isBefore(minDate)) return minDate;
+    if (initialDate.isAfter(maxDate)) return maxDate;
+    return initialDate;
   }
 
   @override
@@ -59,22 +77,30 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, _) {
-            // Stack: Scroll + Picker (keeps CTA visible above picker); padding = picker height (216px) + safeBottom
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                _buildScrollableContent(spacing, safeBottom),
-                _buildDatePicker(safeBottom),
-              ],
-            );
-          },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: DsGradients.onboardingStandard,
+        ),
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, _) {
+              // Stack: Scroll + Picker (keeps CTA visible above picker); padding = picker height (216px) + safeBottom
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  _buildScrollableContent(spacing, safeBottom),
+                  _buildDatePicker(safeBottom),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
+
+  // BirthdatePicker height (280) from birthdate_picker.dart
+  static const double _birthdatePickerHeight = 280;
 
   Widget _buildScrollableContent(OnboardingSpacing spacing, double safeBottom) {
     return SingleChildScrollView(
@@ -82,17 +108,12 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
         spacing.horizontalPadding,
         spacing.topPadding,
         spacing.horizontalPadding,
-        safeBottom + kOnboardingPickerHeight + spacing.ctaToPicker,
+        safeBottom + _birthdatePickerHeight + spacing.ctaToPicker,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          OnboardingHeader(
-            title: AppLocalizations.of(context)!.onboarding02Title,
-            step: 2,
-            totalSteps: kOnboardingTotalSteps,
-            onBack: _handleBack,
-          ),
+          _buildHeader(),
           SizedBox(height: spacing.headerToDate),
           _buildDateDisplay(),
           SizedBox(height: spacing.dateToUnderline),
@@ -114,6 +135,19 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
     } else {
       context.go(Onboarding01Screen.routeName);
     }
+  }
+
+  Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context)!;
+    final onboardingState = ref.watch(onboardingProvider);
+    final displayName = onboardingState.name ?? l10n.onboardingDefaultName;
+
+    return OnboardingHeader(
+      title: l10n.onboarding02Title(displayName),
+      step: 2,
+      totalSteps: kOnboardingTotalSteps,
+      onBack: _handleBack,
+    );
   }
 
   Widget _buildDateDisplay() {
@@ -197,41 +231,32 @@ class _Onboarding02ScreenState extends State<Onboarding02Screen> {
 
   Widget _buildCta() {
     final l10n = AppLocalizations.of(context)!;
-    return Semantics(
+    return OnboardingButton(
+      key: const Key('onb_cta'),
       label: l10n.commonContinue,
-      button: true,
-      child: ElevatedButton(
-        key: const Key('onb_cta'),
-        onPressed: _hasInteracted
-            ? () {
-                context.push(Onboarding03Screen.routeName);
-              }
-            : null,
-        child: Text(l10n.commonContinue),
-      ),
+      onPressed: () {
+        // Save birthDate to OnboardingNotifier
+        ref.read(onboardingProvider.notifier).setBirthDate(_date);
+        context.pushNamed('onboarding_03_fitness');
+      },
+      isEnabled: _hasInteracted,
     );
   }
 
   Widget _buildDatePicker(double safeBottom) {
-    final l10n = AppLocalizations.of(context)!;
+    // Use custom BirthdatePicker widget (Figma: 333x280px)
+    // Age Policy 16-120 is enforced inside BirthdatePicker
     return Positioned(
       left: 0,
       right: 0,
       bottom: safeBottom + Spacing.l,
-      child: SizedBox(
-        height: kOnboardingPickerHeight,
-        child: Semantics(
-          label: l10n.onboarding02PickerSemantic,
-          child: CupertinoDatePicker(
-            mode: CupertinoDatePickerMode.date,
-            initialDateTime: _date,
-            minimumYear: kOnboardingMinBirthYear,
-            maximumYear: kOnboardingMaxBirthYear,
-            onDateTimeChanged: (d) => setState(() {
-              _date = d;
-              _hasInteracted = true;
-            }),
-          ),
+      child: Center(
+        child: BirthdatePicker(
+          initialDate: _date,
+          onDateChanged: (d) => setState(() {
+            _date = d;
+            _hasInteracted = true;
+          }),
         ),
       ),
     );

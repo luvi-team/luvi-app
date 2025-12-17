@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/onboarding/widgets/custom_radio_check.dart';
 
 /// Goal card widget for onboarding multi-select screen.
 ///
@@ -42,7 +42,7 @@ class GoalCard extends StatelessWidget {
       label: title,
       checked: selected,
       child: Material(
-        color: Colors.transparent,
+        color: DsColors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(Sizes.radiusL),
@@ -84,8 +84,6 @@ class GoalCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: Spacing.m),
-                CustomRadioCheck(selected: selected),
               ],
             ),
           ),

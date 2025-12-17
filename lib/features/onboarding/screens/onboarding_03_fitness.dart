@@ -1,0 +1,175 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/gradients.dart';
+import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/features/onboarding/widgets/fitness_pill.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
+import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/user_state_service.dart' hide FitnessLevel;
+import 'package:luvi_services/user_state_service.dart' as services show FitnessLevel;
+
+/// Onboarding03: Fitness level single-select screen (O3)
+/// Figma: 03_Onboarding (Fitnesslevel)
+/// Shows 3 horizontal pills: "Nicht fit" | "Fit" | "Sehr fit"
+class Onboarding03FitnessScreen extends ConsumerStatefulWidget {
+  const Onboarding03FitnessScreen({super.key, this.userName});
+
+  /// User's name from O1 for personalized title
+  final String? userName;
+
+  static const routeName = '/onboarding/03';
+
+  @override
+  ConsumerState<Onboarding03FitnessScreen> createState() =>
+      _Onboarding03FitnessScreenState();
+}
+
+class _Onboarding03FitnessScreenState
+    extends ConsumerState<Onboarding03FitnessScreen> {
+  FitnessLevel? _selectedLevel;
+
+  @override
+  void initState() {
+    super.initState();
+    // Restore from OnboardingNotifier (back navigation)
+    final onboardingState = ref.read(onboardingProvider);
+    if (onboardingState.fitnessLevel != null) {
+      _selectedLevel = onboardingState.fitnessLevel;
+    }
+  }
+
+  void _selectLevel(FitnessLevel level) {
+    setState(() {
+      _selectedLevel = level;
+    });
+  }
+
+  Future<void> _handleContinue() async {
+    if (_selectedLevel != null) {
+      // Save to OnboardingNotifier (SSOT)
+      ref.read(onboardingProvider.notifier).setFitnessLevel(_selectedLevel!);
+      // Also save to UserStateService for backward compatibility
+      final userState = await ref.read(userStateServiceProvider.future);
+      final serviceFitness =
+          services.FitnessLevel.tryParse(_selectedLevel!.name) ??
+              services.FitnessLevel.beginner;
+      await userState.setFitnessLevel(serviceFitness);
+    }
+    // Navigate to O4 Goals
+    if (mounted) context.pushNamed('onboarding_04_goals');
+  }
+
+  void _handleBack() {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      context.pop();
+    } else {
+      context.go(Onboarding02Screen.routeName);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final spacing = OnboardingSpacing.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    // Read name from OnboardingNotifier (SSOT), fallback to widget.userName or default
+    final onboardingState = ref.watch(onboardingProvider);
+    final displayName = onboardingState.name ?? widget.userName ?? l10n.onboardingDefaultName;
+    final title = l10n.onboarding03FitnessTitle(displayName);
+
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: DsGradients.onboardingStandard,
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: spacing.topPadding),
+                OnboardingHeader(
+                  title: title,
+                  step: 3,
+                  totalSteps: kOnboardingTotalSteps,
+                  onBack: _handleBack,
+                ),
+                SizedBox(height: spacing.headerToSubtitle03),
+                _buildSubtitle(textTheme, colorScheme, l10n),
+                SizedBox(height: spacing.subtitleToPills03),
+                _buildFitnessPills(l10n, spacing),
+                SizedBox(height: spacing.pillsToCta03),
+                _buildCta(l10n),
+                SizedBox(height: Spacing.xl),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubtitle(
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
+    return Semantics(
+      label: l10n.onboarding03FitnessSubtitle,
+      child: Text(
+        l10n.onboarding03FitnessSubtitle,
+        textAlign: TextAlign.center,
+        style: textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurface,
+          fontSize: TypographyTokens.size16,
+          height: TypographyTokens.lineHeightRatio24on16,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFitnessPills(AppLocalizations l10n, OnboardingSpacing spacing) {
+    final levels = FitnessLevel.values;
+
+    return Semantics(
+      label: l10n.onboarding03FitnessSemantic,
+      child: Wrap(
+        spacing: spacing.pillsGap03,
+        runSpacing: spacing.pillsGap03,
+        alignment: WrapAlignment.center,
+        children: levels.map((level) {
+          return FitnessPill(
+            key: Key('fitness_pill_${level.name}'),
+            label: level.label(l10n),
+            selected: _selectedLevel == level,
+            onTap: () => _selectLevel(level),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildCta(AppLocalizations l10n) {
+    final ctaLabel = l10n.commonContinue;
+
+    return OnboardingButton(
+      key: const Key('onb_cta'),
+      label: ctaLabel,
+      onPressed: _handleContinue,
+      isEnabled: _selectedLevel != null,
+    );
+  }
+}

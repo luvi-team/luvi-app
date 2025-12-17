@@ -71,12 +71,37 @@ class UserStateService {
   bool get hasCompletedOnboarding =>
       prefs.getBool(_keyHasCompletedOnboarding) ?? false;
 
+  /// Returns whether onboarding has been completed, or null if the key is
+  /// absent
+  /// (unknown state). Useful for callers that want to treat "unknown"
+  /// differently from an explicit false.
+  bool? get hasCompletedOnboardingOrNull {
+    if (!prefs.containsKey(_keyHasCompletedOnboarding)) return null;
+    return prefs.getBool(_keyHasCompletedOnboarding);
+  }
+
   FitnessLevel? get fitnessLevel =>
       FitnessLevel.tryParse(prefs.getString(_keyFitnessLevel));
 
   /// Returns the accepted consent version, or null if not yet accepted.
   int? get acceptedConsentVersionOrNull =>
       prefs.getInt(_keyAcceptedConsentVersion);
+
+  Future<void> setHasCompletedOnboarding(bool value) async {
+    final success = await prefs.setBool(_keyHasCompletedOnboarding, value);
+    if (!success) {
+      throw StateError('Failed to persist onboarding completion flag');
+    }
+
+    // Optional consistency: if onboarding is explicitly false, also clear the
+    // fitness level key so callers don't observe stale onboarding state.
+    if (!value && prefs.containsKey(_keyFitnessLevel)) {
+      final removed = await prefs.remove(_keyFitnessLevel);
+      if (!removed) {
+        throw StateError('Failed to clear onboarding fitness level');
+      }
+    }
+  }
 
   Future<void> setAcceptedConsentVersion(int version) async {
     final success = await prefs.setInt(_keyAcceptedConsentVersion, version);

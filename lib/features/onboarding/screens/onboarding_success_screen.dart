@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/gradients.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/core/design_tokens/onboarding_success_tokens.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
+import 'package:luvi_app/features/onboarding/model/goal.dart';
+import 'package:luvi_app/features/onboarding/model/interest.dart';
+import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
+import 'package:luvi_app/features/onboarding/widgets/circular_progress_ring.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
+import 'package:luvi_app/features/onboarding/data/onboarding_backend_writer.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/l10n/app_localizations_en.dart';
 import 'package:luvi_services/user_state_service.dart';
 
-class _SuccessBtnBusyNotifier extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void setBusy(bool value) => state = value;
+/// Animation state machine for O9 success screen
+enum O9AnimationState {
+  animating, // 0-100% Progress animation running
+  saving, // Save operation in progress
+  error, // Save failed, retry available
+  success, // Done, navigation starts
 }
 
-final _successBtnBusyProvider =
-    NotifierProvider.autoDispose<_SuccessBtnBusyNotifier, bool>(
-      _SuccessBtnBusyNotifier.new,
-    );
-
-/// Final screen after onboarding completes.
-/// Shows a trophy celebration (combined Lottie with trophy + confetti, or PNG
-/// fallback when motion is disabled), celebratory title, and CTA.
-class OnboardingSuccessScreen extends ConsumerWidget {
+/// Final screen after onboarding completes (O9).
+/// Shows content preview cards, progress ring animation,
+/// then saves data and navigates to home.
+class OnboardingSuccessScreen extends ConsumerStatefulWidget {
   const OnboardingSuccessScreen({super.key, required this.fitnessLevel});
 
   static const routeName = '/onboarding/success';
@@ -37,38 +39,234 @@ class OnboardingSuccessScreen extends ConsumerWidget {
   final FitnessLevel fitnessLevel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mediaQuery = MediaQuery.of(context);
+  ConsumerState<OnboardingSuccessScreen> createState() =>
+      _OnboardingSuccessScreenState();
+}
+
+class _OnboardingSuccessScreenState
+    extends ConsumerState<OnboardingSuccessScreen> {
+  O9AnimationState _state = O9AnimationState.animating;
+  final GlobalKey<CircularProgressRingState> _progressKey = GlobalKey();
+
+  // Content cards layout constants (Figma Success Screen specs)
+  static const double _cardsContainerHeight = 200.0;
+  static const double _card1Width = 140.0;
+  static const double _card2Width = 120.0;
+  static const double _card2TopOffset = 20.0;
+  static const double _card3Width = 130.0;
+  static const double _card3LeftOffset = 20.0;
+
+  void _onAnimationComplete() {
+    if (!mounted) return;
+    setState(() {
+      _state = O9AnimationState.saving;
+    });
+    _performSave();
+  }
+
+  Future<void> _performSave() async {
+    try {
+      // Read all onboarding data from OnboardingNotifier
+      final onboardingData = ref.read(onboardingProvider);
+
+      // Backend-SSOT: Validate data completeness FIRST (no fallback values)
+      if (!onboardingData.isComplete) {
+        log.w(
+          'onboarding_data_incomplete',
+          tag: 'onboarding_success',
+          error: 'Onboarding data is incomplete. Cannot proceed.',
+        );
+        if (mounted) {
+          setState(() {
+            _state = O9AnimationState.error;
+          });
+        }
+        return;
+      }
+
+      // Backend-SSOT: User MUST be authenticated to complete onboarding
+      final backendWriter = ref.read(onboardingBackendWriterProvider);
+
+      // Block unauthenticated users from completing onboarding
+      if (!backendWriter.isAuthenticated) {
+        log.w(
+          'onboarding_not_authenticated',
+          tag: 'onboarding_success',
+          error: 'User not authenticated. Cannot complete onboarding.',
+        );
+        if (mounted) {
+          setState(() {
+            _state = O9AnimationState.error;
+          });
+        }
+        return;
+      }
+
+      // Authenticated user - backend save MUST succeed
+      final supabaseSuccess = await _saveToSupabase(onboardingData, backendWriter);
+      if (!supabaseSuccess) {
+        // Backend save failed - do NOT mark local as complete
+        log.w(
+          'onboarding_backend_save_failed',
+          tag: 'onboarding_success',
+          error: 'Backend save failed. Local completion blocked.',
+        );
+        if (mounted) {
+          setState(() {
+            _state = O9AnimationState.error;
+          });
+        }
+        return;
+      }
+
+      // Local save (only after successful backend save for authenticated users)
+      final userState = await tryOrNullAsync(
+        () => ref.read(userStateServiceProvider.future),
+        tag: 'userState',
+      );
+
+      if (userState == null) {
+        log.w(
+          'onboarding_user_state_unavailable',
+          tag: 'onboarding_success',
+          error: 'Cannot complete onboarding: user state service unavailable',
+        );
+        if (mounted) {
+          setState(() {
+            _state = O9AnimationState.error;
+          });
+        }
+        return;
+      }
+
+      await userState.markOnboardingComplete(
+        fitnessLevel: widget.fitnessLevel,
+      );
+
+      if (mounted) {
+        setState(() {
+          _state = O9AnimationState.success;
+        });
+        // Navigate to home after short delay
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) {
+          context.go(HeuteScreen.routeName);
+        }
+      }
+    } catch (error, stackTrace) {
+      log.e(
+        'onboarding_mark_complete_failed',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
+      if (mounted) {
+        setState(() {
+          _state = O9AnimationState.error;
+        });
+      }
+    }
+  }
+
+  /// Saves onboarding data to Supabase.
+  /// Returns true on success, false on failure.
+  /// Backend-SSOT: This must succeed for authenticated users before local save.
+  Future<bool> _saveToSupabase(
+    OnboardingData data,
+    OnboardingBackendWriter backendWriter,
+  ) async {
+    // Skip if not authenticated (returns true - nothing to do)
+    if (!backendWriter.isAuthenticated) {
+      log.d('onboarding_skip_supabase: not authenticated', tag: 'onboarding_success');
+      return true;
+    }
+
+    try {
+      // data.isComplete was verified in _performSave, so birthDate is guaranteed non-null
+      final birthDate = data.birthDate!;
+      final now = DateTime.now();
+      final age = now.year -
+          birthDate.year -
+          ((now.month < birthDate.month ||
+                  (now.month == birthDate.month && now.day < birthDate.day))
+              ? 1
+              : 0);
+
+      // Save profile data (data.name is guaranteed non-null by isComplete)
+      await backendWriter.upsertProfile(
+        displayName: data.name!,
+        birthDate: birthDate,
+        fitnessLevel: data.fitnessLevel?.name ?? widget.fitnessLevel.name,
+        goals: data.selectedGoals.map((g) => g.dbKey).toList(),
+        interests: data.selectedInterests.map((i) => i.key).toList(),
+      );
+
+      // Save cycle data only if periodStart is available
+      // (User may have selected "I don't remember" in O6)
+      if (data.periodStart != null) {
+        await backendWriter.upsertCycleData(
+          cycleLength: data.cycleLength,
+          periodDuration: data.periodDuration,
+          lastPeriod: data.periodStart!,
+          age: age,
+        );
+      } else {
+        log.i(
+          'onboarding_cycle_skipped: User selected "I don\'t remember"',
+          tag: 'onboarding_success',
+        );
+      }
+
+      log.d('onboarding_supabase_save_success', tag: 'onboarding_success');
+      return true;
+    } catch (error, stackTrace) {
+      log.e(
+        'onboarding_supabase_save_failed',
+        tag: 'onboarding_success',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
+      return false;
+    }
+  }
+
+  void _handleRetry() {
+    setState(() {
+      _state = O9AnimationState.saving;
+    });
+    _performSave();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final l10n = AppLocalizations.of(context)!;
     final spacing = OnboardingSpacing.of(context);
-    final reduceMotion =
-        mediaQuery.disableAnimations || mediaQuery.accessibleNavigation;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: Spacing.l),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: double.infinity),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildTrophy(context, reduceMotion),
-                    SizedBox(height: spacing.trophyToTitle),
-                    _buildTitle(textTheme, colorScheme, l10n),
-                    SizedBox(height: spacing.titleToButton),
-                    _buildButton(context, ref, l10n, fitnessLevel),
-                  ],
-                ),
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: DsGradients.successScreen,
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding:
+                EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
+            child: Column(
+              children: [
+                SizedBox(height: Spacing.xl),
+                // Content preview cards
+                _buildContentCards(l10n),
+                const Spacer(),
+                // Progress ring
+                _buildProgressSection(textTheme, colorScheme, l10n),
+                const Spacer(),
+                // Error retry button (only shown on error)
+                if (_state == O9AnimationState.error)
+                  _buildRetryButton(l10n),
+                SizedBox(height: Spacing.xl),
+              ],
             ),
           ),
         ),
@@ -76,231 +274,155 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTrophy(BuildContext context, bool reduceMotion) {
-    final config =
-        _computeTrophyConfig(context, reduceMotion: reduceMotion);
-    return _buildTrophyPresentation(context, config);
-  }
-
-  _OnboardingTrophyConfig _computeTrophyConfig(
-    BuildContext context, {
-    required bool reduceMotion,
-  }) {
-    final mediaQuery = MediaQuery.of(context);
-    final usableHeight = mediaQuery.size.height - mediaQuery.padding.vertical;
-    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
-    final celebrationConfig = reduceMotion
-        ? null
-        : OnboardingSuccessTokens.celebrationConfig(
-            viewHeight: usableHeight,
-            textScaleFactor: textScale,
-          );
-    final baselineOffset =
-        celebrationConfig?.baselineOffset ??
-        OnboardingSuccessTokens.minBaselineOffset;
-    final animationScale = celebrationConfig?.scale ?? 1.0;
-    final shouldAnimate = !reduceMotion && celebrationConfig != null;
-    return _OnboardingTrophyConfig(
-      baselineOffset: baselineOffset,
-      animationScale: animationScale,
-      shouldAnimate: shouldAnimate,
-    );
-  }
-
-  Widget _buildTrophyPresentation(
-    BuildContext context,
-    _OnboardingTrophyConfig config,
-  ) {
-    return ExcludeSemantics(
-      child: Center(
-        child: SizedBox(
-          key: const Key('onboarding_success_trophy'),
-          width: OnboardingSuccessTokens.trophyWidth,
-          height: OnboardingSuccessTokens.trophyHeight,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: config.shouldAnimate
-                ? _AnimatedTrophy(config: config)
-                : Transform.translate(
-                    key: const Key('onboarding_success_trophy_transform_png'),
-                    offset: Offset(0, config.baselineOffset),
-                    child: Image.asset(
-                      Assets.images.onboardingSuccessTrophy,
-                      width: OnboardingSuccessTokens.trophyWidth,
-                      height: OnboardingSuccessTokens.trophyHeight,
-                      errorBuilder: Assets.defaultImageErrorBuilder,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+  Widget _buildContentCards(AppLocalizations l10n) {
+    return SizedBox(
+      height: _cardsContainerHeight,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Card 1 - top left
+          Positioned(
+            left: 0,
+            top: 0,
+            child: _ContentPreviewCard(
+              imagePath: 'assets/images/onboarding/content_card_1.png',
+              text: l10n.onboardingContentCard1,
+              width: _card1Width,
+            ),
           ),
-        ),
+          // Card 2 - top right
+          Positioned(
+            right: 0,
+            top: _card2TopOffset,
+            child: _ContentPreviewCard(
+              imagePath: 'assets/images/onboarding/content_card_2.png',
+              text: l10n.onboardingContentCard2,
+              width: _card2Width,
+            ),
+          ),
+          // Card 3 - bottom left
+          Positioned(
+            left: _card3LeftOffset,
+            bottom: 0,
+            child: _ContentPreviewCard(
+              imagePath: 'assets/images/onboarding/content_card_3.png',
+              text: l10n.onboardingContentCard3,
+              width: _card3Width,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildTitle(
+  Widget _buildProgressSection(
     TextTheme textTheme,
     ColorScheme colorScheme,
     AppLocalizations l10n,
   ) {
-    // From Figma audit: Playfair Display Regular 24px/32px (Heading 2 token)
-    return Semantics(
-      header: true,
-      child: Text(
-        key: const Key('onboarding_success_title'),
-        l10n.onboardingSuccessTitle,
-        textAlign: TextAlign.center,
-        style: textTheme.headlineMedium?.copyWith(
-          fontFamily: FontFamilies.playfairDisplay,
-          fontSize: TypographyTokens.size24,
-          height: TypographyTokens.lineHeightRatio32on24,
-          color: colorScheme.onSurface,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CircularProgressRing(
+          key: _progressKey,
+          duration: const Duration(seconds: 3),
+          onAnimationComplete: _onAnimationComplete,
         ),
+        SizedBox(height: Spacing.l),
+        Text(
+          _getStatusText(l10n),
+          textAlign: TextAlign.center,
+          style: textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontSize: TypographyTokens.size16,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getStatusText(AppLocalizations l10n) {
+    return switch (_state) {
+      O9AnimationState.animating => l10n.onboardingSuccessLoading,
+      O9AnimationState.saving => l10n.onboardingSuccessSaving,
+      O9AnimationState.error => l10n.onboardingSaveError,
+      O9AnimationState.success => l10n.onboardingSuccessComplete,
+    };
+  }
+
+  Widget _buildRetryButton(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Spacing.l),
+      child: OnboardingButton(
+        label: l10n.onboardingRetryButton,
+        onPressed: _handleRetry,
+        isEnabled: true,
       ),
     );
   }
-
-  Widget _buildButton(
-    BuildContext context,
-    WidgetRef ref,
-    AppLocalizations l10n,
-    FitnessLevel fitnessLevel,
-  ) {
-    // ElevatedButton already provides accessible label from visible text
-    final isBusy = ref.watch(_successBtnBusyProvider);
-    return ElevatedButton(
-      key: const Key('onboarding_success_cta'),
-      onPressed: isBusy
-          ? null
-          : () async {
-              final busyNotifier = ref.read(_successBtnBusyProvider.notifier);
-              busyNotifier.setBusy(true);
-              try {
-                final userState = await tryOrNullAsync(
-                  () => ref.read(userStateServiceProvider.future),
-                  tag: 'userState',
-                );
-                if (userState == null) {
-                  log.w(
-                    'onboarding_user_state_unavailable',
-                    tag: 'onboarding_success',
-                    error:
-                        'Cannot complete onboarding: user state service unavailable',
-                  );
-                  if (context.mounted) {
-                    final cs = Theme.of(context).colorScheme;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: cs.error,
-                        content: Text(l10n.onboardingSuccessStateUnavailable),
-                      ),
-                    );
-                  }
-                  return;
-                }
-                await userState.markOnboardingComplete(
-                  fitnessLevel: fitnessLevel,
-                );
-                if (context.mounted) {
-                  context.go(HeuteScreen.routeName);
-                }
-              } catch (error, stackTrace) {
-                log.e(
-                  'onboarding_mark_complete_failed',
-                  error: sanitizeError(error) ?? error.runtimeType,
-                  stack: stackTrace,
-                );
-                if (context.mounted) {
-                  final cs = Theme.of(context).colorScheme;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: cs.error,
-                      content: Text(l10n.onboardingSuccessGenericError),
-                    ),
-                  );
-                }
-              } finally {
-                try {
-                  busyNotifier.setBusy(false);
-                } on StateError catch (_) {
-                  // Provider may have been disposed while awaiting async work; ignore.
-                } catch (e, stackTrace) {
-                  assert(() {
-                    log.w(
-                      'onboarding_success_busy_reset_failed',
-                      error: sanitizeError(e) ?? e.runtimeType,
-                      stack: stackTrace,
-                    );
-                    return true;
-                  }());
-                }
-              }
-            },
-      child: Text(l10n.commonStartNow),
-    );
-  }
-
 }
 
-class _AnimatedTrophy extends StatelessWidget {
-  const _AnimatedTrophy({required this.config});
+/// Content preview card widget for success screen
+class _ContentPreviewCard extends StatelessWidget {
+  const _ContentPreviewCard({
+    required this.imagePath,
+    required this.text,
+    this.width = 140,
+  });
 
-  final _OnboardingTrophyConfig config;
+  final String imagePath;
+  final String text;
+  final double width;
+
+  // Widget-specific layout constants (Figma Success Screen specs)
+  static const double _imageHeight = 80.0;
+  static const double _textFontSize = 12.0;
+  static const double _shadowBlur = 10.0;
+  static const double _shadowOffsetY = 4.0;
 
   @override
   Widget build(BuildContext context) {
-    return OverflowBox(
-      minWidth: OnboardingSuccessTokens.trophyWidth,
-      maxWidth: OnboardingSuccessTokens.trophyWidth,
-      minHeight: OnboardingSuccessTokens.trophyHeight,
-      maxHeight:
-          OnboardingSuccessTokens.trophyHeight +
-          OnboardingSuccessTokens.celebrationBleedTop,
-      alignment: Alignment.bottomCenter,
-      child: Transform.translate(
-        key: const Key('onboarding_success_trophy_transform'),
-        offset: Offset(0, config.baselineOffset),
-        child: Transform.scale(
-          scale: config.animationScale,
-          child: RepaintBoundary(
-            key: const Key('onboarding_success_lottie_boundary'),
-            child: Lottie.asset(
-              Assets.animations.onboardingSuccessCelebration,
-              repeat: false,
-              frameRate: FrameRate.composition,
-              fit: BoxFit.contain,
-              alignment: Alignment.center,
-              filterQuality: FilterQuality.medium,
-              errorBuilder: (context, error, stackTrace) {
-                log.w(
-                  'onboarding_trophy_lottie_failed',
-                  error: sanitizeError(error) ?? error.runtimeType,
-                  stack: stackTrace,
-                );
-                return Image.asset(
-                  Assets.images.onboardingSuccessTrophy,
-                  width: OnboardingSuccessTokens.trophyWidth,
-                  height: OnboardingSuccessTokens.trophyHeight,
-                  fit: BoxFit.contain,
-                  errorBuilder: Assets.defaultImageErrorBuilder,
-                );
-              },
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(Spacing.xs),
+      decoration: BoxDecoration(
+        color: DsColors.white,
+        borderRadius: BorderRadius.circular(Sizes.radiusCard),
+        boxShadow: [
+          BoxShadow(
+            color: DsColors.black.withValues(alpha: 0.1),
+            blurRadius: _shadowBlur,
+            offset: const Offset(0, _shadowOffsetY),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(Sizes.radiusM),
+            child: Image.asset(
+              imagePath,
+              width: width - (Spacing.xs * 2),
+              height: _imageHeight,
+              fit: BoxFit.cover,
+              errorBuilder: Assets.defaultImageErrorBuilder,
             ),
           ),
-        ),
+          const SizedBox(height: Spacing.xs),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: _textFontSize,
+              fontWeight: FontWeight.w500,
+              color: DsColors.grayscaleBlack,
+            ),
+          ),
+        ],
       ),
     );
   }
-}
-
-class _OnboardingTrophyConfig {
-  const _OnboardingTrophyConfig({
-    required this.baselineOffset,
-    required this.animationScale,
-    required this.shouldAnimate,
-  });
-
-  final double baselineOffset;
-  final double animationScale;
-  final bool shouldAnimate;
 }

@@ -23,7 +23,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboarding01NameInputSemantic => 'Enter your name';
 
   @override
-  String get onboarding02Title => 'When is your\nbirthday?';
+  String onboarding02Title(String name) {
+    return 'Hey $name,\nwhen is your birthday?';
+  }
 
   @override
   String get onboarding02CalloutSemantic => 'Note: Your age helps us better understand your hormonal phase.';
@@ -105,6 +107,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonStartNow => 'Start now';
+
+  @override
+  String get commonToday => 'TODAY';
 
   @override
   String dashboardGreeting(String name) {
@@ -710,4 +715,300 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authSignupSuccess => 'Registration successful! You can now sign in.';
+
+  @override
+  String get interestStrengthTraining => 'Strength training & muscle building';
+
+  @override
+  String get interestCardio => 'Cardio & endurance';
+
+  @override
+  String get interestMobility => 'Flexibility & mobility';
+
+  @override
+  String get interestNutrition => 'Nutrition & supplements';
+
+  @override
+  String get interestMindfulness => 'Mindfulness & recovery';
+
+  @override
+  String get interestHormonesCycle => 'Hormones & cycle';
+
+  @override
+  String onboarding02AgeTooYoung(int minAge) {
+    return 'You must be at least $minAge years old.';
+  }
+
+  @override
+  String onboarding02AgeTooOld(int maxAge) {
+    return 'Maximum age is $maxAge years.';
+  }
+
+  @override
+  String get fitnessLevelBeginner => 'Not fit';
+
+  @override
+  String get fitnessLevelOccasional => 'Fit';
+
+  @override
+  String get fitnessLevelFit => 'Very fit';
+
+  @override
+  String get consentIntroTitle => 'Let\'s personalize LUVI for you';
+
+  @override
+  String get consentIntroBody => 'To personalize LUVI for you, we first need your okay.';
+
+  @override
+  String get consentIntroCtaLabel => 'Continue';
+
+  @override
+  String get consentIntroIllustrationSemantic => 'Illustration: Hand holding a pen to sign';
+
+  @override
+  String get consentIntroCtaSemantic => 'Continue to privacy consent';
+
+  @override
+  String get consentOptionsTitle => 'You and LUVI';
+
+  @override
+  String get consentOptionsSubtitle => 'Securely stored, strictly protected. GDPR, EU hosting';
+
+  @override
+  String get consentOptionsSectionRequired => 'REQUIRED';
+
+  @override
+  String get consentOptionsSectionOptional => 'OPTIONAL';
+
+  @override
+  String get consentOptionsHealthText => 'I agree that LUVI processes my health and cycle data to give me cycle-aware recommendations.';
+
+  @override
+  String get consentOptionsTermsPrefix => 'I accept the ';
+
+  @override
+  String get consentOptionsTermsLink => 'Terms of Service';
+
+  @override
+  String get consentOptionsTermsConjunction => ' and have read the ';
+
+  @override
+  String get consentOptionsPrivacyLink => 'Privacy Policy';
+
+  @override
+  String get consentOptionsTermsSuffix => '.';
+
+  @override
+  String get consentOptionsAnalyticsText => 'I agree that LUVI processes pseudonymized usage and device data (e.g. crash info, performance, features used) to fix bugs and improve the app.\nRevoke anytime under Profile → Privacy.';
+
+  @override
+  String get consentOptionsCtaContinue => 'Continue';
+
+  @override
+  String get consentOptionsCtaAcceptAll => 'Accept all';
+
+  @override
+  String consentOptionsCheckboxSelectedSemantic(String section, String text) {
+    return '$section: $text. Selected';
+  }
+
+  @override
+  String consentOptionsCheckboxUnselectedSemantic(String section, String text) {
+    return '$section: $text. Not selected';
+  }
+
+  @override
+  String get consentOptionsShieldSemantic => 'Shield icon for data protection';
+
+  @override
+  String get consentBlockingTitle => 'Your consent makes LUVI possible';
+
+  @override
+  String get consentBlockingBody => 'LUVI needs your cycle and health data to show you cycle-based content and recommendations. Without this processing, we cannot provide the service.';
+
+  @override
+  String get consentBlockingCtaBack => 'Back & Agree';
+
+  @override
+  String get consentBlockingCtaSemantic => 'Back to consent';
+
+  @override
+  String get consentBlockingShieldSemantic => 'Shield icon for data protection';
+
+  @override
+  String onboarding03FitnessTitle(String name) {
+    return '$name, how fit do you feel?';
+  }
+
+  @override
+  String get onboarding03FitnessSubtitle => 'So we can choose the right intensity for you.';
+
+  @override
+  String get onboarding03FitnessSemantic => 'Select fitness level';
+
+  @override
+  String get onboarding04GoalsTitle => 'What are your goals?';
+
+  @override
+  String get onboarding04GoalsSubtitle => 'You can select multiple.';
+
+  @override
+  String get onboarding04GoalFitter => 'Get fitter & stronger';
+
+  @override
+  String get onboarding04GoalEnergy => 'More energy in daily life';
+
+  @override
+  String get onboarding04GoalSleep => 'Sleep better and reduce stress';
+
+  @override
+  String get onboarding04GoalCycle => 'Understand cycle & hormones';
+
+  @override
+  String get onboarding04GoalLongevity => 'Long-term health and longevity';
+
+  @override
+  String get onboarding04GoalWellbeing => 'Simply feel good';
+
+  @override
+  String get onboarding04GoalsSemantic => 'Select goals';
+
+  @override
+  String get onboarding05InterestsTitle => 'What interests you?';
+
+  @override
+  String get onboarding05InterestsSubtitle => 'Choose 3–5 so your feed fits right away.';
+
+  @override
+  String get onboarding05InterestsSemantic => 'Select interests';
+
+  @override
+  String get onboarding06PeriodTitle => 'Tap the day your last period started.';
+
+  @override
+  String get onboarding06PeriodUnknown => 'I don\'t remember';
+
+  @override
+  String get onboarding07DurationTitle => 'We\'ve estimated the duration. Tap a day to adjust.';
+
+  @override
+  String get onboarding08SuccessLoading => 'We\'re putting your results together...';
+
+  @override
+  String onboardingProgressLabel(int current, int total) {
+    return 'Question $current of $total';
+  }
+
+  @override
+  String get onboardingDefaultName => 'you';
+
+  @override
+  String get weekdayMondayShort => 'M';
+
+  @override
+  String get weekdayTuesdayShort => 'T';
+
+  @override
+  String get weekdayWednesdayShort => 'W';
+
+  @override
+  String get weekdayThursdayShort => 'T';
+
+  @override
+  String get weekdayFridayShort => 'F';
+
+  @override
+  String get weekdaySaturdayShort => 'S';
+
+  @override
+  String get weekdaySundayShort => 'S';
+
+  @override
+  String get periodCalendarSemanticToday => 'Today';
+
+  @override
+  String get periodCalendarSemanticSelected => 'selected';
+
+  @override
+  String get periodCalendarSemanticPeriodDay => 'period day';
+
+  @override
+  String get consent02SectionRequired => 'REQUIRED';
+
+  @override
+  String get consent02SectionOptional => 'OPTIONAL';
+
+  @override
+  String get onboardingCycleIntroTitle => 'To personalize LUVI for you, we need your cycle start.';
+
+  @override
+  String get onboardingCycleIntroButton => 'Okay, let\'s go';
+
+  @override
+  String get onboardingSuccessLoading => 'We\'re putting together your plans...';
+
+  @override
+  String get onboardingSuccessSaving => 'Saving...';
+
+  @override
+  String get onboardingSuccessComplete => 'Done!';
+
+  @override
+  String get onboardingSaveError => 'Save failed. Please try again.';
+
+  @override
+  String get onboardingRetryButton => 'Try again';
+
+  @override
+  String get onboardingContentCard1 => 'Do I need more iron during my period?';
+
+  @override
+  String get onboardingContentCard2 => 'How do I train during ovulation?';
+
+  @override
+  String get onboardingContentCard3 => 'How can I reduce my stress?';
+
+  @override
+  String get goalFitter => 'Get fitter & stronger';
+
+  @override
+  String get goalEnergy => 'More energy in daily life';
+
+  @override
+  String get goalSleep => 'Better sleep and stress reduction';
+
+  @override
+  String get goalCycle => 'Understand cycle & hormones';
+
+  @override
+  String get goalLongevity => 'Long-term health and longevity';
+
+  @override
+  String get goalWellbeing => 'Simply feel good';
+
+  @override
+  String get commonBack => 'Back';
+
+  @override
+  String get semanticCalendarPreview => 'Calendar preview for cycle tracking';
+
+  @override
+  String get semanticLoadingProgress => 'Loading progress';
+
+  @override
+  String semanticProgressPercent(int percent) {
+    return '$percent percent';
+  }
+
+  @override
+  String get splashGateUnknownTitle => 'Connection unavailable';
+
+  @override
+  String get splashGateUnknownBody => 'We couldn\'t load your progress. Please check your internet connection.';
+
+  @override
+  String get splashGateRetryCta => 'Try again';
+
+  @override
+  String get splashGateStartOnboardingCta => 'Start onboarding';
 }

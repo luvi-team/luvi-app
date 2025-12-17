@@ -215,11 +215,25 @@ class SupabaseService {
     if (cycleLength <= 0) {
       throw ArgumentError.value(cycleLength, 'cycleLength', 'must be positive');
     }
+    if (cycleLength > 60) {
+      throw ArgumentError.value(
+        cycleLength,
+        'cycleLength',
+        'must be <= 60',
+      );
+    }
     if (periodDuration <= 0) {
       throw ArgumentError.value(
         periodDuration,
         'periodDuration',
         'must be positive',
+      );
+    }
+    if (periodDuration > 15) {
+      throw ArgumentError.value(
+        periodDuration,
+        'periodDuration',
+        'must be <= 15',
       );
     }
     if (periodDuration > cycleLength) {
@@ -284,6 +298,97 @@ class SupabaseService {
         .select()
         .eq('user_id', userId)
         .maybeSingle();
+  }
+
+  /// Upsert user profile data from onboarding
+  ///
+  /// Saves display name, birth date, goals, and interests to profiles table.
+  static Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    final user = _ensureAuthenticated();
+    if (displayName.trim().isEmpty) {
+      throw ArgumentError.value(displayName, 'displayName', 'cannot be empty');
+    }
+    // Validate age bounds
+    final now = DateTime.now();
+    final age = now.year -
+        birthDate.year -
+        ((now.month < birthDate.month ||
+                (now.month == birthDate.month && now.day < birthDate.day))
+            ? 1
+            : 0);
+    final ageConfig = _validationConfig;
+    if (age < ageConfig.minAge || age > ageConfig.maxAge) {
+      throw ArgumentError.value(
+        birthDate,
+        'birthDate',
+        'age must be between ${ageConfig.minAge} and ${ageConfig.maxAge}',
+      );
+    }
+    // Normalize birthDate to UTC date-only
+    final bdLocal = birthDate.toLocal();
+    final birthDateNormalized =
+        DateTime.utc(bdLocal.year, bdLocal.month, bdLocal.day);
+
+    final timestamp = DateTime.now().toUtc().toIso8601String();
+    final payload = <String, dynamic>{
+      'user_id': user.id,
+      'display_name': displayName.trim(),
+      'birth_date': _formatIsoDate(birthDateNormalized),
+      'fitness_level': fitnessLevel,
+      'goals': goals,
+      'interests': interests,
+      'has_completed_onboarding': true,
+      'onboarding_completed_at': timestamp,
+      'updated_at': timestamp,
+    };
+    final row = await client
+        .from('profiles')
+        .upsert(payload, onConflict: 'user_id')
+        .select()
+        .single();
+    return row;
+  }
+
+  /// Upsert an account-scoped onboarding gate row for the current user in
+  /// `public.profiles`.
+  ///
+  /// MVP policy: only backfill `true` (local true -> remote true). Passing
+  /// `false` is treated as a no-op to avoid remotely resetting completion.
+  static Future<Map<String, dynamic>?> upsertOnboardingGate({
+    required bool hasCompletedOnboarding,
+  }) async {
+    final user = _ensureAuthenticated();
+
+    if (!hasCompletedOnboarding) {
+      return null;
+    }
+
+    final timestamp = DateTime.now().toUtc().toIso8601String();
+    final payload = <String, dynamic>{
+      'user_id': user.id,
+      'has_completed_onboarding': true,
+      'onboarding_completed_at': timestamp,
+      'updated_at': timestamp,
+    };
+
+    final row = await client
+        .from('profiles')
+        .upsert(payload, onConflict: 'user_id')
+        .select()
+        .single();
+    return row;
+  }
+
+  /// Get user profile data
+  static Future<Map<String, dynamic>?> getProfile() async {
+    final user = _ensureAuthenticated();
+    return await client.from('profiles').select().eq('user_id', user.id).maybeSingle();
   }
 
   static Future<void> _loadEnvironment(String envFile) async {
@@ -417,9 +522,9 @@ class SupabaseAuthDeepLinkConfig {
 
 @immutable
 class SupabaseValidationConfig {
-  const SupabaseValidationConfig({this.minAge = 13, this.maxAge = 100})
-      : assert(minAge >= 13, 'minAge must be >= 13.'),
-        assert(maxAge <= 150, 'maxAge must be <= 150 (sanity check).'),
+  const SupabaseValidationConfig({this.minAge = 16, this.maxAge = 120})
+      : assert(minAge >= 16, 'minAge must be >= 16.'),
+        assert(maxAge <= 120, 'maxAge must be <= 120.'),
         assert(maxAge >= minAge, 'maxAge must be >= minAge.');
 
   final int minAge;

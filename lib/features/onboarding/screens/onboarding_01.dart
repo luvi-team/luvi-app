@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/design_tokens/opacity.dart';
+import 'package:luvi_app/core/design_tokens/effects.dart';
+import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// First onboarding screen: name input.
 /// Displays title, step counter, instruction, text input, and CTA.
-class Onboarding01Screen extends StatefulWidget {
+class Onboarding01Screen extends ConsumerStatefulWidget {
   const Onboarding01Screen({super.key});
 
   static const routeName = '/onboarding/01';
 
   @override
-  State<Onboarding01Screen> createState() => _Onboarding01ScreenState();
+  ConsumerState<Onboarding01Screen> createState() => _Onboarding01ScreenState();
 }
 
-class _Onboarding01ScreenState extends State<Onboarding01Screen> {
+class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
   final _nameController = TextEditingController();
   bool _hasText = false;
 
@@ -29,6 +32,11 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   void initState() {
     super.initState();
     _nameController.addListener(_onTextChanged);
+    // Restore state from Notifier (for back navigation)
+    final onboardingState = ref.read(onboardingProvider);
+    if (onboardingState.name != null && onboardingState.name!.isNotEmpty) {
+      _nameController.text = onboardingState.name!;
+    }
   }
 
   @override
@@ -46,8 +54,10 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   void _handleContinue() {
-    // Use push instead of go to preserve back stack (consistent with screens 02-07)
-    context.push(Onboarding02Screen.routeName);
+    // Save name to OnboardingNotifier
+    ref.read(onboardingProvider.notifier).setName(_nameController.text.trim());
+    // Navigate to O2
+    context.pushNamed('onboarding_02');
   }
 
   void _handleBack() {
@@ -68,9 +78,12 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     final spacing = OnboardingSpacing.of(context);
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: DsGradients.onboardingStandard,
+        ),
+        child: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
@@ -95,6 +108,7 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
             ],
           ),
         ),
+        ),
       ),
     );
   }
@@ -118,59 +132,45 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     OnboardingSpacing spacing,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final dividerThickness = theme.dividerTheme.thickness ?? 1;
 
-    return Column(
-      children: [
-        Semantics(
-          textField: true,
-          label: l10n.onboarding01NameInputSemantic,
-          child: AuthTextField(
-            controller: _nameController,
-            frameless: true,
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            textInputAction: TextInputAction.done,
-            autofocus: true,
-            hintText: '',
-            onSubmitted: (_) {
-              if (_hasText) {
-                _handleContinue();
-              }
-            },
-          ),
+    // Figma specs: Glass container 340×88px, radius 16, 10% white opacity
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 340),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.m,
+        vertical: Spacing.l,
+      ),
+      decoration: DsEffects.glassCard,
+      child: Semantics(
+        textField: true,
+        label: l10n.onboarding01NameInputSemantic,
+        child: AuthTextField(
+          controller: _nameController,
+          frameless: true,
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.name,
+          textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.done,
+          autofocus: true,
+          hintText: '',
+          onSubmitted: (_) {
+            if (_hasText) {
+              _handleContinue();
+            }
+          },
         ),
-        const SizedBox(height: Spacing.l),
-        Align(
-          alignment: Alignment.center,
-          child: SizedBox(
-            width: spacing.underlineWidth,
-            child: Divider(
-              height: 0,
-              thickness: dividerThickness,
-              color: colorScheme.onSurface.withValues(
-                alpha: OpacityTokens.inactive,
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget _buildCta(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context)!;
     final ctaLabel = l10n.commonContinue;
-    return Semantics(
+    return OnboardingButton(
+      key: const Key('onb_cta'),
       label: ctaLabel,
-      button: true,
-      child: ElevatedButton(
-        key: const Key('onb_cta'),
-        onPressed: _hasText ? _handleContinue : null,
-        child: Text(ctaLabel),
-      ),
+      onPressed: _handleContinue,
+      isEnabled: _hasText,
     );
   }
 }

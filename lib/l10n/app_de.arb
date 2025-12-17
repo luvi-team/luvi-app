@@ -24,9 +24,14 @@
   "@onboarding01NameInputSemantic": {
     "description": "Semantics label for the name input field on step 1."
   },
-  "onboarding02Title": "Wann hast du\nGeburtstag?",
+  "onboarding02Title": "Hey {name},\nwann hast du Geburtstag?",
   "@onboarding02Title": {
-    "description": "Header title for onboarding step 2 (birthday). Enthält einen erzwungenen Zeilenumbruch wie im Figma-Layout – bitte das '\\n' in allen Übersetzungen beibehalten."
+    "description": "Personalized header title for onboarding step 2 (birthday). Contains forced line break to match Figma layout.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "onboarding02CalloutSemantic": "Hinweis: Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.",
   "@onboarding02CalloutSemantic": {
@@ -148,6 +153,10 @@
   "commonStartNow": "Los geht's!",
   "@commonStartNow": {
     "description": "Primärer CTA-Text, der zum sofortigen Start auffordert."
+  },
+  "commonToday": "HEUTE",
+  "@commonToday": {
+    "description": "Uppercase label for today's date in calendar widgets."
   },
   "dashboardGreeting": "Hey, {name} 💜",
   "@dashboardGreeting": {
@@ -942,5 +951,438 @@
   "authSignupSuccess": "Registrierung erfolgreich! Du kannst dich jetzt anmelden.",
   "@authSignupSuccess": {
     "description": "Snackbar-Nachricht nach erfolgreicher Registrierung."
+  },
+
+  "interestStrengthTraining": "Krafttraining & Muskelaufbau",
+  "@interestStrengthTraining": {
+    "description": "Interest option: strength training and muscle building"
+  },
+  "interestCardio": "Cardio & Ausdauer",
+  "@interestCardio": {
+    "description": "Interest option: cardio and endurance"
+  },
+  "interestMobility": "Beweglichkeit & Mobilität",
+  "@interestMobility": {
+    "description": "Interest option: flexibility and mobility"
+  },
+  "interestNutrition": "Ernährung & Supplements",
+  "@interestNutrition": {
+    "description": "Interest option: nutrition and supplements"
+  },
+  "interestMindfulness": "Achtsamkeit & Regeneration",
+  "@interestMindfulness": {
+    "description": "Interest option: mindfulness and recovery"
+  },
+  "interestHormonesCycle": "Hormone & Zyklus",
+  "@interestHormonesCycle": {
+    "description": "Interest option: hormones and menstrual cycle"
+  },
+
+  "onboarding02AgeTooYoung": "Du musst mindestens {minAge} Jahre alt sein.",
+  "@onboarding02AgeTooYoung": {
+    "description": "Error message when user is too young for the app.",
+    "placeholders": {
+      "minAge": {
+        "type": "int"
+      }
+    }
+  },
+  "onboarding02AgeTooOld": "Das maximale Alter beträgt {maxAge} Jahre.",
+  "@onboarding02AgeTooOld": {
+    "description": "Error message when user's age exceeds maximum.",
+    "placeholders": {
+      "maxAge": {
+        "type": "int"
+      }
+    }
+  },
+
+  "fitnessLevelBeginner": "Nicht fit",
+  "@fitnessLevelBeginner": {
+    "description": "Fitness level label for beginners (maps to DB: beginner)"
+  },
+  "fitnessLevelOccasional": "Fit",
+  "@fitnessLevelOccasional": {
+    "description": "Fitness level label for occasional trainers (maps to DB: occasional)"
+  },
+  "fitnessLevelFit": "Sehr fit",
+  "@fitnessLevelFit": {
+    "description": "Fitness level label for fit users (maps to DB: fit)"
+  },
+
+  "consentIntroTitle": "Lass uns LUVI für dich personalisieren",
+  "@consentIntroTitle": {
+    "description": "Title for consent intro screen (C1)"
+  },
+  "consentIntroBody": "Um LUVI für dich zu personalisieren, brauchen wir zuerst dein Okay.",
+  "@consentIntroBody": {
+    "description": "Body text for consent intro screen (C1)"
+  },
+  "consentIntroCtaLabel": "Weiter",
+  "@consentIntroCtaLabel": {
+    "description": "CTA button label for consent intro screen"
+  },
+  "consentIntroIllustrationSemantic": "Illustration: Hand hält Stift zum Unterschreiben",
+  "@consentIntroIllustrationSemantic": {
+    "description": "Semantics label for consent intro illustration"
+  },
+  "consentIntroCtaSemantic": "Weiter zur Datenschutz-Einwilligung",
+  "@consentIntroCtaSemantic": {
+    "description": "Semantics label for consent intro continue button"
+  },
+
+  "consentOptionsTitle": "Du und LUVI",
+  "@consentOptionsTitle": {
+    "description": "Title for consent options screen (C2)"
+  },
+  "consentOptionsSubtitle": "Sicher gespeichert, streng geschützt. DSGVO, EU-Hosting",
+  "@consentOptionsSubtitle": {
+    "description": "Subtitle for consent options screen (C2)"
+  },
+  "consentOptionsSectionRequired": "ERFORDERLICH",
+  "@consentOptionsSectionRequired": {
+    "description": "Section header for required consents on C2"
+  },
+  "consentOptionsSectionOptional": "OPTIONAL",
+  "@consentOptionsSectionOptional": {
+    "description": "Section header for optional consents on C2"
+  },
+  "consentOptionsHealthText": "Ich bin damit einverstanden, dass LUVI meine Gesundheits- und Zyklusdaten verarbeitet, um mir zyklusbewusste Empfehlungen zu geben.",
+  "@consentOptionsHealthText": {
+    "description": "Health processing consent text on C2"
+  },
+  "consentOptionsTermsPrefix": "Ich akzeptiere die ",
+  "@consentOptionsTermsPrefix": {
+    "description": "Prefix before terms link on C2"
+  },
+  "consentOptionsTermsLink": "Nutzungsbedingungen",
+  "@consentOptionsTermsLink": {
+    "description": "Terms of service link text on C2"
+  },
+  "consentOptionsTermsConjunction": " und habe die ",
+  "@consentOptionsTermsConjunction": {
+    "description": "Conjunction between terms and privacy links on C2"
+  },
+  "consentOptionsPrivacyLink": "Datenschutzerklärung",
+  "@consentOptionsPrivacyLink": {
+    "description": "Privacy policy link text on C2"
+  },
+  "consentOptionsTermsSuffix": " zur Kenntnis genommen.",
+  "@consentOptionsTermsSuffix": {
+    "description": "Suffix after privacy link on C2"
+  },
+  "consentOptionsAnalyticsText": "Ich damit einverstanden, dass LUVI pseudonymisierte Nutzungs- und Gerätedaten (z.B. Crash-Infos, Performance, genutzte Funktionen) verarbeitet, um Fehler zu beheben und die App zu verbessern.\nWiderruf jederzeit unter Profil → Datenschutz.",
+  "@consentOptionsAnalyticsText": {
+    "description": "Analytics consent text on C2"
+  },
+  "consentOptionsCtaContinue": "Weiter",
+  "@consentOptionsCtaContinue": {
+    "description": "Continue button label on C2"
+  },
+  "consentOptionsCtaAcceptAll": "Alles akzeptieren",
+  "@consentOptionsCtaAcceptAll": {
+    "description": "Accept all button label on C2"
+  },
+  "consentOptionsCheckboxSelectedSemantic": "{section}: {text}. Ausgewählt",
+  "@consentOptionsCheckboxSelectedSemantic": {
+    "description": "Semantics label for selected checkbox on C2",
+    "placeholders": {
+      "section": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "consentOptionsCheckboxUnselectedSemantic": "{section}: {text}. Nicht ausgewählt",
+  "@consentOptionsCheckboxUnselectedSemantic": {
+    "description": "Semantics label for unselected checkbox on C2",
+    "placeholders": {
+      "section": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "consentOptionsShieldSemantic": "Schild-Symbol für Datenschutz",
+  "@consentOptionsShieldSemantic": {
+    "description": "Semantics label for shield icon on C2"
+  },
+
+  "consentBlockingTitle": "Deine Zustimmung macht LUVI möglich",
+  "@consentBlockingTitle": {
+    "description": "Title for consent blocking screen (C3)"
+  },
+  "consentBlockingBody": "LUVI braucht deine Zyklus- und Gesundheitsangaben, um dir zyklusbasierte Inhalte und Empfehlungen anzuzeigen. Ohne diese Verarbeitung können wir den Dienst nicht bereitstellen.",
+  "@consentBlockingBody": {
+    "description": "Body text for consent blocking screen (C3)"
+  },
+  "consentBlockingCtaBack": "Zurück & Zustimmen",
+  "@consentBlockingCtaBack": {
+    "description": "Back button label on consent blocking screen (C3)"
+  },
+  "consentBlockingCtaSemantic": "Zurück zur Einwilligung",
+  "@consentBlockingCtaSemantic": {
+    "description": "Semantics label for back button on consent blocking screen"
+  },
+  "consentBlockingShieldSemantic": "Schild-Symbol für Datenschutz",
+  "@consentBlockingShieldSemantic": {
+    "description": "Accessibility label for shield icon on consent blocking screen."
+  },
+
+  "onboarding03FitnessTitle": "{name}, wie fit fühlst du dich?",
+  "@onboarding03FitnessTitle": {
+    "description": "Personalized title for fitness level screen (O3)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "onboarding03FitnessSubtitle": "Damit wir die Intensität passend wählen.",
+  "@onboarding03FitnessSubtitle": {
+    "description": "Subtitle explaining why fitness level is needed"
+  },
+  "onboarding03FitnessSemantic": "Fitnesslevel auswählen",
+  "@onboarding03FitnessSemantic": {
+    "description": "Semantics label for fitness level options"
+  },
+
+  "onboarding04GoalsTitle": "Was sind deine Ziele?",
+  "@onboarding04GoalsTitle": {
+    "description": "Title for goals multi-select screen (O4)"
+  },
+  "onboarding04GoalsSubtitle": "Du kannst mehrere auswählen.",
+  "@onboarding04GoalsSubtitle": {
+    "description": "Subtitle for goals screen"
+  },
+  "onboarding04GoalFitter": "Fitter & stärker werden",
+  "@onboarding04GoalFitter": {
+    "description": "Goal: Get fitter and stronger"
+  },
+  "onboarding04GoalEnergy": "Mehr Energie im Alltag",
+  "@onboarding04GoalEnergy": {
+    "description": "Goal: More energy in daily life"
+  },
+  "onboarding04GoalSleep": "Besser schlafen und Stress reduzieren",
+  "@onboarding04GoalSleep": {
+    "description": "Goal: Better sleep and stress reduction"
+  },
+  "onboarding04GoalCycle": "Zyklus & Hormone verstehen",
+  "@onboarding04GoalCycle": {
+    "description": "Goal: Understand cycle and hormones"
+  },
+  "onboarding04GoalLongevity": "Langfristige Gesundheit und Longevity",
+  "@onboarding04GoalLongevity": {
+    "description": "Goal: Long-term health and longevity"
+  },
+  "onboarding04GoalWellbeing": "Mich einfach wohlfühlen",
+  "@onboarding04GoalWellbeing": {
+    "description": "Goal: Simply feel good"
+  },
+  "onboarding04GoalsSemantic": "Ziele auswählen",
+  "@onboarding04GoalsSemantic": {
+    "description": "Semantics label for goals selection"
+  },
+
+  "onboarding05InterestsTitle": "Was interessiert dich?",
+  "@onboarding05InterestsTitle": {
+    "description": "Title for interests multi-select screen (O5)"
+  },
+  "onboarding05InterestsSubtitle": "Wähle 3–5, damit dein Feed direkt passt.",
+  "@onboarding05InterestsSubtitle": {
+    "description": "Subtitle explaining interest selection (3-5 required)"
+  },
+  "onboarding05InterestsSemantic": "Interessen auswählen",
+  "@onboarding05InterestsSemantic": {
+    "description": "Semantics label for interests selection"
+  },
+
+  "onboarding06PeriodTitle": "Tippe auf den Tag, an dem deine letzte Periode begann.",
+  "@onboarding06PeriodTitle": {
+    "description": "Title for period start calendar screen (O6)"
+  },
+  "onboarding06PeriodUnknown": "Ich weiß es nicht mehr",
+  "@onboarding06PeriodUnknown": {
+    "description": "Option when user doesn't remember period start date"
+  },
+
+  "onboarding07DurationTitle": "Wir haben die Dauer geschätzt. Tippe auf den Tag, um anzupassen.",
+  "@onboarding07DurationTitle": {
+    "description": "Title for period duration adjustment screen (O7)"
+  },
+
+  "onboarding08SuccessLoading": "Wir stellen deine Ergebnisse zusammen...",
+  "@onboarding08SuccessLoading": {
+    "description": "Loading text on success screen (O8)"
+  },
+
+  "onboardingProgressLabel": "Frage {current} von {total}",
+  "@onboardingProgressLabel": {
+    "description": "Progress indicator label showing current question",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "onboardingDefaultName": "Du",
+  "@onboardingDefaultName": {
+    "description": "Default name used when user name is not available"
+  },
+  "weekdayMondayShort": "M",
+  "@weekdayMondayShort": {
+    "description": "Single letter abbreviation for Monday"
+  },
+  "weekdayTuesdayShort": "D",
+  "@weekdayTuesdayShort": {
+    "description": "Single letter abbreviation for Tuesday"
+  },
+  "weekdayWednesdayShort": "M",
+  "@weekdayWednesdayShort": {
+    "description": "Single letter abbreviation for Wednesday"
+  },
+  "weekdayThursdayShort": "D",
+  "@weekdayThursdayShort": {
+    "description": "Single letter abbreviation for Thursday"
+  },
+  "weekdayFridayShort": "F",
+  "@weekdayFridayShort": {
+    "description": "Single letter abbreviation for Friday"
+  },
+  "weekdaySaturdayShort": "S",
+  "@weekdaySaturdayShort": {
+    "description": "Single letter abbreviation for Saturday"
+  },
+  "weekdaySundayShort": "S",
+  "@weekdaySundayShort": {
+    "description": "Single letter abbreviation for Sunday"
+  },
+  "periodCalendarSemanticToday": "Heute",
+  "@periodCalendarSemanticToday": {
+    "description": "Semantic label for today in period calendar"
+  },
+  "periodCalendarSemanticSelected": "ausgewählt",
+  "@periodCalendarSemanticSelected": {
+    "description": "Semantic label for selected day in period calendar"
+  },
+  "periodCalendarSemanticPeriodDay": "Periodentag",
+  "@periodCalendarSemanticPeriodDay": {
+    "description": "Semantic label for period day in calendar"
+  },
+  "consent02SectionRequired": "ERFORDERLICH",
+  "@consent02SectionRequired": {
+    "description": "Section header for required consents"
+  },
+  "consent02SectionOptional": "OPTIONAL",
+  "@consent02SectionOptional": {
+    "description": "Section header for optional consents"
+  },
+
+  "onboardingCycleIntroTitle": "Damit LUVI für dich passt, brauchen wir noch deinen Zyklusstart.",
+  "@onboardingCycleIntroTitle": {
+    "description": "Title for cycle intro screen (O6)"
+  },
+  "onboardingCycleIntroButton": "Okay, los",
+  "@onboardingCycleIntroButton": {
+    "description": "CTA button on cycle intro screen"
+  },
+
+  "onboardingSuccessLoading": "Wir stellen deine Pläne zusammen...",
+  "@onboardingSuccessLoading": {
+    "description": "Loading text during progress animation on success screen"
+  },
+  "onboardingSuccessSaving": "Wird gespeichert...",
+  "@onboardingSuccessSaving": {
+    "description": "Saving text on success screen"
+  },
+  "onboardingSuccessComplete": "Fertig!",
+  "@onboardingSuccessComplete": {
+    "description": "Completion text on success screen"
+  },
+  "onboardingSaveError": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+  "@onboardingSaveError": {
+    "description": "Error text when save fails on success screen"
+  },
+  "onboardingRetryButton": "Erneut versuchen",
+  "@onboardingRetryButton": {
+    "description": "Retry button label on success screen"
+  },
+
+  "onboardingContentCard1": "Brauche ich mehr Eisen während meiner Blutung?",
+  "@onboardingContentCard1": {
+    "description": "Text for content preview card 1 on success screen"
+  },
+  "onboardingContentCard2": "Wie trainiere ich während meiner Ovulation?",
+  "@onboardingContentCard2": {
+    "description": "Text for content preview card 2 on success screen"
+  },
+  "onboardingContentCard3": "Wie kann ich meinen Stress reduzieren?",
+  "@onboardingContentCard3": {
+    "description": "Text for content preview card 3 on success screen"
+  },
+
+  "goalFitter": "Fitter & stärker werden",
+  "@goalFitter": {
+    "description": "Goal label: Get fitter and stronger"
+  },
+  "goalEnergy": "Mehr Energie im Alltag",
+  "@goalEnergy": {
+    "description": "Goal label: More energy in daily life"
+  },
+  "goalSleep": "Besser schlafen und Stress reduzieren",
+  "@goalSleep": {
+    "description": "Goal label: Better sleep and stress reduction"
+  },
+  "goalCycle": "Zyklus & Hormone verstehen",
+  "@goalCycle": {
+    "description": "Goal label: Understand cycle and hormones"
+  },
+  "goalLongevity": "Langfristige Gesundheit und Longevity",
+  "@goalLongevity": {
+    "description": "Goal label: Long-term health and longevity"
+  },
+  "goalWellbeing": "Mich einfach wohlfühlen",
+  "@goalWellbeing": {
+    "description": "Goal label: Simply feel good"
+  },
+
+  "commonBack": "Zurück",
+  "@commonBack": {
+    "description": "Common back button label"
+  },
+
+  "semanticCalendarPreview": "Kalendervorschau für Zyklustracking",
+  "@semanticCalendarPreview": {
+    "description": "Semantics label for calendar preview widget"
+  },
+  "semanticLoadingProgress": "Ladefortschritt",
+  "@semanticLoadingProgress": {
+    "description": "Semantics label for loading progress indicator"
+  },
+  "semanticProgressPercent": "{percent} Prozent",
+  "@semanticProgressPercent": {
+    "description": "Semantics value for progress percentage",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+
+  "splashGateUnknownTitle": "Verbindung nicht möglich",
+  "@splashGateUnknownTitle": {
+    "description": "Title shown when splash screen cannot determine onboarding state"
+  },
+  "splashGateUnknownBody": "Wir konnten deinen Fortschritt nicht laden. Bitte prüfe deine Internetverbindung.",
+  "@splashGateUnknownBody": {
+    "description": "Body text shown when splash screen cannot determine onboarding state"
+  },
+  "splashGateRetryCta": "Erneut versuchen",
+  "@splashGateRetryCta": {
+    "description": "Retry button label on splash unknown state UI"
+  },
+  "splashGateStartOnboardingCta": "Onboarding starten",
+  "@splashGateStartOnboardingCta": {
+    "description": "Start onboarding button label on splash unknown state UI"
   }
 }

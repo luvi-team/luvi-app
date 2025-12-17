@@ -1,0 +1,122 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/gradients.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
+import 'package:luvi_app/features/onboarding/widgets/calendar_mini_widget.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_progress_bar.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+
+/// Onboarding06: Cycle Intro screen (O6)
+/// Figma: 06_Onboarding (Zyklus Intro)
+/// Explains cycle tracking before calendar input
+class Onboarding06CycleIntroScreen extends StatelessWidget {
+  const Onboarding06CycleIntroScreen({super.key});
+
+  static const routeName = '/onboarding/cycle-intro';
+
+  void _handleContinue(BuildContext context) {
+    context.pushNamed('onboarding_06_period');
+  }
+
+  void _handleBack(BuildContext context) {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      context.pop();
+    } else {
+      context.go(Onboarding05InterestsScreen.routeName);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final spacing = OnboardingSpacing.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: DsGradients.onboardingStandard,
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
+            child: Column(
+              children: [
+                SizedBox(height: spacing.topPadding),
+                // Header with progress bar
+                _buildHeader(context, l10n),
+                const Spacer(),
+                // Title
+                _buildTitle(textTheme, colorScheme, l10n),
+                SizedBox(height: Spacing.xl),
+                // Calendar mini preview
+                const CalendarMiniWidget(highlightedDay: 25),
+                const Spacer(),
+                // CTA Button
+                _buildCta(context, l10n),
+                SizedBox(height: Spacing.xl),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
+    return Row(
+      children: [
+        // Back button
+        IconButton(
+          onPressed: () => _handleBack(context),
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          tooltip: l10n.commonBack,
+        ),
+        const Spacer(),
+        // Progress bar
+        const OnboardingProgressBar(
+          currentStep: 6,
+          totalSteps: kOnboardingTotalSteps,
+        ),
+        const Spacer(),
+        // Placeholder for symmetry
+        const SizedBox(width: 48),
+      ],
+    );
+  }
+
+  Widget _buildTitle(
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
+    return Semantics(
+      header: true,
+      child: Text(
+        l10n.onboardingCycleIntroTitle,
+        textAlign: TextAlign.center,
+        style: textTheme.headlineMedium?.copyWith(
+          fontFamily: FontFamilies.playfairDisplay,
+          fontSize: TypographyTokens.size24,
+          height: TypographyTokens.lineHeightRatio32on24,
+          color: colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCta(BuildContext context, AppLocalizations l10n) {
+    return OnboardingButton(
+      label: l10n.onboardingCycleIntroButton,
+      onPressed: () => _handleContinue(context),
+    );
+  }
+}

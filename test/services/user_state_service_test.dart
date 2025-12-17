@@ -43,7 +43,51 @@ void main() {
 
         expect(service.hasSeenWelcome, isFalse);
         expect(service.hasCompletedOnboarding, isFalse);
+        expect(service.hasCompletedOnboardingOrNull, isNull);
         expect(service.fitnessLevel, isNull);
+      },
+    );
+
+    test(
+      'hasCompletedOnboardingOrNull distinguishes unknown from false',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+
+        expect(service.hasCompletedOnboardingOrNull, isNull);
+
+        await service.setHasCompletedOnboarding(false);
+        expect(service.hasCompletedOnboardingOrNull, isFalse);
+        expect(service.hasCompletedOnboarding, isFalse);
+      },
+    );
+
+    test(
+      'setHasCompletedOnboarding(false) clears fitness level key',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+
+        await service.setFitnessLevel(FitnessLevel.fit);
+        expect(service.fitnessLevel, FitnessLevel.fit);
+
+        await service.setHasCompletedOnboarding(false);
+        expect(service.hasCompletedOnboarding, isFalse);
+        expect(service.fitnessLevel, isNull);
+        expect(prefs.containsKey('onboarding_fitness_level'), isFalse);
+      },
+    );
+
+    test(
+      'setHasCompletedOnboarding(true) persists explicit true',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+
+        await service.setHasCompletedOnboarding(true);
+
+        expect(service.hasCompletedOnboarding, isTrue);
+        expect(service.hasCompletedOnboardingOrNull, isTrue);
       },
     );
 
@@ -112,6 +156,7 @@ void main() {
 
       expect(service.hasSeenWelcome, isFalse);
       expect(service.hasCompletedOnboarding, isFalse);
+      expect(service.hasCompletedOnboardingOrNull, isNull);
       expect(service.fitnessLevel, isNull);
     });
 

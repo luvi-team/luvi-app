@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 
 /// Custom radio-style checkbox widget for multi-select scenarios.
 /// Visually appears as a radio button but supports multiple selections.
@@ -13,8 +14,9 @@ class CustomRadioCheck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    // Use DsColors.signature (pink) to match Figma onboarding designs
+    final activeColor = DsColors.signature;
+    final inactiveColor = DsColors.signature.withValues(alpha: 0.5);
 
     return Container(
       width: 24,
@@ -22,12 +24,7 @@ class CustomRadioCheck extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: selected
-              ? colorScheme
-                    .primary // #D9B18E (gold) when selected
-              : colorScheme.onSurface.withValues(
-                  alpha: 0.3,
-                ), // lighter when unselected
+          color: selected ? activeColor : inactiveColor,
           width: 2,
         ),
       ),
@@ -38,7 +35,7 @@ class CustomRadioCheck extends StatelessWidget {
                 height: 14,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: colorScheme.primary, // #D9B18E
+                  color: activeColor,
                 ),
               ),
             )

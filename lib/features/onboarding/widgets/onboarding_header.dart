@@ -1,12 +1,18 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_progress_bar.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
+/// Onboarding header widget with progress bar, step label, and back button.
+///
+/// Layout (Figma specs):
+/// - Row: [Back Button (if step > 1)] [Progress Bar (centered)]
+/// - Below: "Frage X von 6" centered
+/// - Below: Title centered
 class OnboardingHeader extends StatelessWidget {
   OnboardingHeader({
     super.key,
@@ -43,98 +49,101 @@ class OnboardingHeader extends StatelessWidget {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
-    final stepSemantic = l10n.onboardingStepSemantic(step, totalSteps);
-    final stepFraction = l10n.onboardingStepFraction(step, totalSteps);
-    final stepTextStyle = textTheme.bodySmall?.copyWith(
-      color: colorScheme.onSurface,
-    );
-    final stepPainter = TextPainter(
-      text: TextSpan(text: stepFraction, style: stepTextStyle),
-      textDirection: Directionality.of(context),
-    )..layout();
-
-    // Measure width, then dispose
-    final stepWidth = stepPainter.width;
-    stepPainter.dispose();
 
     final showBackButton = step > 1;
-    const double backButtonHitSize = Sizes.touchTargetMin;
-    const double interSlotSpacing = Spacing.s;
-    final double reservedLeft = backButtonHitSize + interSlotSpacing;
-    final double reservedRight = interSlotSpacing + stepWidth;
-    final double centeredPadding = math.max(reservedLeft, reservedRight);
-    final EdgeInsets titlePadding = centerTitle
-        ? EdgeInsets.symmetric(horizontal: centeredPadding)
-        : EdgeInsets.only(left: reservedLeft, right: reservedRight);
+    final stepLabel = l10n.onboardingProgressLabel(step, totalSteps);
 
-    final titleWidget = Padding(
-      padding: titlePadding,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Row 1: Back Button + Progress Bar
+        _buildProgressRow(context, showBackButton, colorScheme, l10n),
+        const SizedBox(height: Spacing.s),
+        // Row 2: Step label "Frage X von 6"
+        _buildStepLabel(stepLabel, textTheme, colorScheme, l10n),
+        const SizedBox(height: Spacing.l),
+        // Row 3: Title
+        _buildTitle(textTheme, colorScheme),
+      ],
+    );
+  }
+
+  Widget _buildProgressRow(
+    BuildContext context,
+    bool showBackButton,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
+    return Row(
+      children: [
+        // Back button (only if step > 1)
+        if (showBackButton)
+          BackButtonCircle(
+            onPressed: onBack,
+            iconColor: colorScheme.onSurface,
+            semanticLabel: l10n.authBackSemantic,
+          )
+        else
+          const SizedBox(width: Sizes.touchTargetMin),
+        const SizedBox(width: Spacing.s),
+        // Progress bar (centered, takes remaining space)
+        Expanded(
+          child: Center(
+            child: OnboardingProgressBar(
+              currentStep: step,
+              totalSteps: totalSteps,
+            ),
+          ),
+        ),
+        // Spacer to balance the back button
+        const SizedBox(width: Spacing.s),
+        const SizedBox(width: Sizes.touchTargetMin),
+      ],
+    );
+  }
+
+  Widget _buildStepLabel(
+    String stepLabel,
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
+    return Semantics(
+      label: l10n.onboardingStepSemantic(step, totalSteps),
       child: Text(
-        title,
-        textAlign: centerTitle ? TextAlign.center : TextAlign.start,
-        maxLines: 2,
-        softWrap: true,
-        overflow: TextOverflow.ellipsis,
-        style: textTheme.headlineMedium?.copyWith(
-          color: colorScheme.onSurface,
-          fontSize: TypographyTokens.size24,
-          height: TypographyTokens.lineHeightRatio32on24,
+        stepLabel,
+        textAlign: TextAlign.center,
+        style: textTheme.bodySmall?.copyWith(
+          color: DsColors.grayscaleBlack,
+          fontSize: TypographyTokens.size14,
         ),
       ),
     );
+  }
 
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (showBackButton)
-                BackButtonCircle(
-                  onPressed: onBack,
-                  iconColor: colorScheme.onSurface,
-                  semanticLabel: l10n.authBackSemantic,
-                )
-              else
-                const SizedBox(
-                  width: backButtonHitSize,
-                  height: backButtonHitSize,
-                ),
-              const SizedBox(width: Spacing.s),
-            ],
-          ),
-        ),
-        Align(
-          alignment: centerTitle ? Alignment.center : Alignment.centerLeft,
-          child: semanticsLabel != null
-              ? Semantics(
-                  header: true,
-                  label: semanticsLabel,
-                  child: ExcludeSemantics(child: titleWidget),
-                )
-              : Semantics(
-                  header: true,
-                  child: titleWidget,
-                ),
-        ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(width: Spacing.s),
-              Semantics(
-                label: stepSemantic,
-                child: ExcludeSemantics(
-                  child: Text(stepFraction, style: stepTextStyle),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+  Widget _buildTitle(TextTheme textTheme, ColorScheme colorScheme) {
+    final titleWidget = Text(
+      title,
+      textAlign: centerTitle ? TextAlign.center : TextAlign.start,
+      maxLines: 3,
+      softWrap: true,
+      overflow: TextOverflow.ellipsis,
+      style: textTheme.headlineMedium?.copyWith(
+        color: colorScheme.onSurface,
+        fontSize: TypographyTokens.size24,
+        height: TypographyTokens.lineHeightRatio32on24,
+      ),
     );
+
+    return semanticsLabel != null
+        ? Semantics(
+            header: true,
+            label: semanticsLabel,
+            child: ExcludeSemantics(child: titleWidget),
+          )
+        : Semantics(
+            header: true,
+            child: titleWidget,
+          );
   }
 }
