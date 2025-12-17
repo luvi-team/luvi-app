@@ -5,11 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
-import 'package:luvi_app/features/consent/routes.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
-import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
@@ -198,9 +196,22 @@ Future<void> _pumpConsentScreen(
   required ConsentService consentService,
   required UserStateService userStateService,
 }) async {
+  // Note: Consent02Screen is no longer in featureRoutes (replaced by ConsentIntroScreen + ConsentOptionsScreen).
+  // We create a custom router with Consent02Screen for backwards compatibility.
   final router = GoRouter(
-    routes: featureRoutes,
-    initialLocation: ConsentRoutes.consent02,
+    routes: [
+      GoRoute(
+        path: Consent02Screen.routeName,
+        builder: (context, state) => const Consent02Screen(
+          appLinks: TestConfig.defaultAppLinks,
+        ),
+      ),
+      GoRoute(
+        path: Onboarding01Screen.routeName,
+        builder: (context, state) => const Onboarding01Screen(),
+      ),
+    ],
+    initialLocation: Consent02Screen.routeName,
   );
 
   await tester.pumpWidget(

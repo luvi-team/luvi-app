@@ -42,25 +42,38 @@ void main() {
       expect(container.read(consent02Provider).requiredAccepted, isTrue);
     });
 
-    test('selectAllOptional sets optional true, required unchanged', () {
+    test('selectAllVisibleOptional sets ONLY visible optional scopes (DSGVO)', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
       final notifier = container.read(consent02Provider.notifier);
 
-      // Ensure required are false to start
+      // Ensure all are false to start
       final before = container.read(consent02Provider);
       expect(before.choices[ConsentScope.terms], isFalse);
       expect(before.choices[ConsentScope.health_processing], isFalse);
+      expect(before.choices[ConsentScope.analytics], isFalse);
+      expect(before.choices[ConsentScope.ai_journal], isFalse);
+      expect(before.choices[ConsentScope.marketing], isFalse);
+      expect(before.choices[ConsentScope.model_training], isFalse);
 
-      notifier.selectAllOptional();
+      // Fix 2: Call the DSGVO-compliant method
+      notifier.selectAllVisibleOptional();
 
       final state = container.read(consent02Provider);
-      expect(state.choices[ConsentScope.analytics], isTrue);
-      expect(state.choices[ConsentScope.marketing], isTrue);
-      expect(state.choices[ConsentScope.model_training], isTrue);
-      expect(state.choices[ConsentScope.ai_journal], isTrue);
 
-      // Required unchanged
+      // VISIBLE optional scopes should be true
+      expect(state.choices[ConsentScope.analytics], isTrue,
+          reason: 'analytics is visible in MVP UI');
+
+      // HIDDEN optional scopes should remain false (DSGVO!)
+      expect(state.choices[ConsentScope.ai_journal], isFalse,
+          reason: 'ai_journal is NOT visible in MVP UI');
+      expect(state.choices[ConsentScope.marketing], isFalse,
+          reason: 'marketing is NOT visible in MVP UI');
+      expect(state.choices[ConsentScope.model_training], isFalse,
+          reason: 'model_training is NOT visible in MVP UI');
+
+      // Required scopes unchanged (must be selected separately)
       expect(state.choices[ConsentScope.terms], isFalse);
       expect(state.choices[ConsentScope.health_processing], isFalse);
     });

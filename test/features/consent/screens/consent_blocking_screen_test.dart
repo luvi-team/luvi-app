@@ -1,0 +1,153 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../../support/test_config.dart';
+import '../../../support/test_app.dart';
+
+void main() {
+  TestConfig.ensureInitialized();
+
+  /// Creates a test router for navigation tests.
+  GoRouter createTestRouter() {
+    return GoRouter(
+      initialLocation: ConsentBlockingScreen.routeName,
+      routes: [
+        GoRoute(
+          path: ConsentBlockingScreen.routeName,
+          builder: (context, state) => const ConsentBlockingScreen(),
+        ),
+        GoRoute(
+          path: ConsentOptionsScreen.routeName,
+          builder: (context, state) => const Scaffold(
+            body: Center(child: Text('ConsentOptionsScreen')),
+          ),
+        ),
+      ],
+    );
+  }
+
+  group('ConsentBlockingScreen', () {
+    testWidgets('renders without errors', (tester) async {
+      await tester.pumpWidget(buildTestApp(
+        router: createTestRouter(),
+      ));
+      await tester.pumpAndSettle();
+
+      // Verify screen rendered
+      expect(find.byType(ConsentBlockingScreen), findsOneWidget);
+    });
+
+    testWidgets('renders with correct L10n (DE)', (tester) async {
+      await tester.pumpWidget(buildTestApp(
+        locale: const Locale('de'),
+        router: createTestRouter(),
+      ));
+      await tester.pumpAndSettle();
+
+      final context = tester.element(find.byType(ConsentBlockingScreen));
+      final l10n = AppLocalizations.of(context)!;
+
+      // Verify title and body text
+      expect(find.text(l10n.consentBlockingTitle), findsOneWidget);
+      expect(find.text(l10n.consentBlockingBody), findsOneWidget);
+      expect(find.text(l10n.consentBlockingCtaBack), findsOneWidget);
+    });
+
+    testWidgets('renders with correct L10n (EN)', (tester) async {
+      await tester.pumpWidget(buildTestApp(
+        locale: const Locale('en'),
+        router: createTestRouter(),
+      ));
+      await tester.pumpAndSettle();
+
+      final context = tester.element(find.byType(ConsentBlockingScreen));
+      final l10n = AppLocalizations.of(context)!;
+
+      expect(find.text(l10n.consentBlockingTitle), findsOneWidget);
+      expect(find.text(l10n.consentBlockingBody), findsOneWidget);
+      expect(find.text(l10n.consentBlockingCtaBack), findsOneWidget);
+    });
+
+    testWidgets('has only ONE button (no "App verlassen" button)', (tester) async {
+      await tester.pumpWidget(buildTestApp(
+        router: createTestRouter(),
+      ));
+      await tester.pumpAndSettle();
+
+      // Should find exactly one ElevatedButton (the "Zurück & Zustimmen" button)
+      expect(find.byType(ElevatedButton), findsOneWidget);
+
+      // Should NOT find any OutlinedButton (the old "App verlassen" button)
+      expect(find.byType(OutlinedButton), findsNothing);
+    });
+
+    testWidgets('has correct semantics header', (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(buildTestApp(
+          router: createTestRouter(),
+        ));
+        await tester.pumpAndSettle();
+
+        // Verify there's a semantics header
+        final headerFinder = find.byWidgetPredicate(
+          (w) => w is Semantics && (w.properties.header == true),
+        );
+        expect(headerFinder, findsOneWidget);
+      } finally {
+        handle.dispose();
+      }
+    });
+
+    testWidgets('back button navigates to ConsentOptionsScreen', (tester) async {
+      await tester.pumpWidget(buildTestApp(
+        locale: const Locale('de'),
+        router: createTestRouter(),
+      ));
+      await tester.pumpAndSettle();
+
+      final context = tester.element(find.byType(ConsentBlockingScreen));
+      final l10n = AppLocalizations.of(context)!;
+
+      // Find and tap the back button
+      final buttonFinder = find.text(l10n.consentBlockingCtaBack);
+      expect(buttonFinder, findsOneWidget);
+
+      await tester.tap(buttonFinder);
+      await tester.pumpAndSettle();
+
+      // Verify navigation to ConsentOptionsScreen
+      expect(find.text('ConsentOptionsScreen'), findsOneWidget);
+    });
+
+    // Fix 5: Shield should not have BoxShadow
+    testWidgets('Shield image has no BoxShadow decoration (Fix 5)', (tester) async {
+      await tester.pumpWidget(buildTestApp(
+        router: createTestRouter(),
+      ));
+      await tester.pumpAndSettle();
+
+      // Find all Containers in the widget tree
+      final containerFinder = find.byType(Container);
+
+      // Check that no Container has a BoxShadow decoration
+      bool foundShadow = false;
+      for (final element in containerFinder.evaluate()) {
+        final container = element.widget as Container;
+        if (container.decoration is BoxDecoration) {
+          final decoration = container.decoration as BoxDecoration;
+          if (decoration.boxShadow != null && decoration.boxShadow!.isNotEmpty) {
+            foundShadow = true;
+            break;
+          }
+        }
+      }
+
+      expect(foundShadow, isFalse,
+          reason: 'Shield image should not have BoxShadow decoration (Fix 5)');
+    });
+  });
+}

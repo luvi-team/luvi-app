@@ -21,3 +21,11 @@ const Set<ConsentScope> kRequiredConsentScopes = <ConsentScope>{
   ConsentScope.terms,
   ConsentScope.health_processing,
 };
+
+/// Visible optional scopes in MVP UI.
+/// DSGVO: "Alles akzeptieren" darf NUR diese Scopes setzen, nicht versteckte!
+/// Andere optionale Scopes (ai_journal, marketing, model_training) werden
+/// erst in zukünftigen Versionen im UI angezeigt.
+const Set<ConsentScope> kVisibleOptionalScopes = <ConsentScope>{
+  ConsentScope.analytics,
+};

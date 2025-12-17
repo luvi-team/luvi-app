@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -49,9 +51,10 @@ class Consent02Screen extends ConsumerWidget {
     final footer = _ConsentFooter(
       key: const Key('consent02_footer'),
       l10n: l10n,
-      onSelectAll: notifier.selectAllOptional,
+      // DSGVO: Only select VISIBLE optional scopes
+      onSelectAll: notifier.selectAllVisibleOptional,
       onClearAll: notifier.clearAllOptional,
-      allOptionalSelected: state.allOptionalSelected,
+      allOptionalSelected: state.allVisibleOptionalSelected,
       onNext: () async => _handleNext(context, ref, state, l10n),
       nextEnabled: state.requiredAccepted && !isNextBusy,
     );
@@ -86,19 +89,6 @@ class Consent02Screen extends ConsumerWidget {
       ConsentChoiceListItem(
         body: l10n.consent02CardAnalytics,
         scope: ConsentScope.analytics,
-      ),
-      ConsentChoiceListItem(
-        body: l10n.consent02CardMarketing,
-        scope: ConsentScope.marketing,
-      ),
-      ConsentChoiceListItem(
-        body: l10n.consent02CardModelTraining,
-        scope: ConsentScope.model_training,
-      ),
-      ConsentChoiceListItem(
-        key: const Key('consent02_card_optional_ai_journal'),
-        body: l10n.consent02CardAiJournal,
-        scope: ConsentScope.ai_journal,
       ),
     ];
   }
@@ -226,6 +216,15 @@ class _ConsentTopBar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: ConsentSpacing.topBarButtonToTitle),
+          // Shield Icon (Header)
+          ExcludeSemantics(
+            child: Image.asset(
+              Assets.consentIcons.shield1,
+              width: 80,
+              height: 80,
+            ),
+          ),
+          const SizedBox(height: Spacing.l),
           Semantics(
             header: true,
             child: Text(
@@ -264,7 +263,11 @@ class ConsentChoiceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: ConsentSpacing.listPadding,
+      // Add extra bottom padding to prevent sticky footer from obscuring content
+      padding: ConsentSpacing.listPadding.copyWith(
+        bottom: ConsentSpacing.listPaddingBottom +
+            ConsentSpacing.footerEstimatedHeight,
+      ),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
