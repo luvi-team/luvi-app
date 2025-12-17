@@ -91,6 +91,9 @@ class _Onboarding03FitnessScreenState
 
     return Scaffold(
       body: Container(
+        // Gradient fills entire screen (Figma v2)
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: DsGradients.onboardingStandard,
         ),
@@ -112,7 +115,7 @@ class _Onboarding03FitnessScreenState
                 SizedBox(height: spacing.subtitleToPills03),
                 _buildFitnessPills(l10n, spacing),
                 SizedBox(height: spacing.pillsToCta03),
-                _buildCta(l10n),
+                Center(child: _buildCta(l10n)),
                 SizedBox(height: Spacing.xl),
               ],
             ),

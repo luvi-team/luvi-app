@@ -1,12 +1,24 @@
 {
   "@@locale": "de",
-  "onboarding01Title": "Erzähl mir von dir 💜",
+  "onboarding01Title": "Willkommen!\nWie dürfen wir dich nennen?",
   "@onboarding01Title": {
-    "description": "Header title for onboarding step 1."
+    "description": "Header title for onboarding step 1 (Figma v3). Contains forced line break."
   },
   "onboardingStepSemantic": "Schritt {current} von {total}",
   "@onboardingStepSemantic": {
     "description": "Spoken step indicator for onboarding progress.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingStepLabel": "Frage {current} von {total}",
+  "@onboardingStepLabel": {
+    "description": "Visual step label for onboarding screens (Figma v2).",
     "placeholders": {
       "current": {
         "type": "int"

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -143,6 +143,9 @@ class _Onboarding07DurationScreenState
 
     return Scaffold(
       body: Container(
+        // Gradient fills entire screen (Figma v2)
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: DsGradients.onboardingStandard,
         ),
@@ -156,7 +159,7 @@ class _Onboarding07DurationScreenState
               Expanded(
                 child: _buildCalendarCard(dsTokens, l10n),
               ),
-              _buildCta(l10n),
+              Center(child: _buildCta(l10n)),
               SizedBox(height: Spacing.xl),
             ],
           ),
@@ -196,11 +199,11 @@ class _Onboarding07DurationScreenState
               header: true,
               child: Text(
                 l10n.onboarding07DurationTitle,
-                style: textTheme.headlineSmall?.copyWith(
+                style: textTheme.headlineMedium?.copyWith(
+                  fontFamily: FontFamilies.playfairDisplay,
                   color: colorScheme.onSurface,
-                  fontSize: TypographyTokens.size20,
-                  fontWeight: FontWeight.w600,
-                  height: TypographyTokens.lineHeightRatio28on20,
+                  fontSize: TypographyTokens.size24,
+                  height: TypographyTokens.lineHeightRatio32on24,
                 ),
               ),
             ),
@@ -214,12 +217,10 @@ class _Onboarding07DurationScreenState
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: Container(
-        decoration: BoxDecoration(
-          color: dsTokens?.cardSurface ?? DsColors.white.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(Sizes.radiusXL),
-        ),
+        // Figma v3: Glass calendar effect (30% white opacity + 40px radius)
+        decoration: DsEffects.glassCalendar,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(Sizes.radiusXL),
+          borderRadius: BorderRadius.circular(40),
           child: PeriodCalendar(
             selectedDate: _periodStart,
             periodDays: _periodDays,
@@ -235,14 +236,11 @@ class _Onboarding07DurationScreenState
   Widget _buildCta(AppLocalizations l10n) {
     final ctaLabel = l10n.commonContinue;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-      child: OnboardingButton(
-        key: const Key('onb_cta'),
-        label: ctaLabel,
-        onPressed: _handleContinue,
-        isEnabled: true,
-      ),
+    return OnboardingButton(
+      key: const Key('onb_cta'),
+      label: ctaLabel,
+      onPressed: _handleContinue,
+      isEnabled: true,
     );
   }
 }

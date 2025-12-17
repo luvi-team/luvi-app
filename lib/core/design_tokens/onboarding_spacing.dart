@@ -60,6 +60,8 @@ class OnboardingSpacing {
     required this.headerToFirstOption05,
     required this.headerToFirstOption06,
     required this.headerToFirstOption07,
+    // O2 Birthday screen specific spacing
+    required this.headerToSubtitle,
     // O3 Fitness screen specific spacing
     required this.headerToSubtitle03,
     required this.subtitleToPills03,
@@ -135,6 +137,9 @@ class OnboardingSpacing {
   final double headerToFirstOption05;
   final double headerToFirstOption06;
   final double headerToFirstOption07;
+
+  // O2 Birthday screen specific spacing
+  final double headerToSubtitle;
 
   // O3 Fitness screen specific spacing
   final double headerToSubtitle03;
@@ -218,6 +223,8 @@ class OnboardingSpacing {
       headerToFirstOption05: _headerToFirstOption05 * effectiveHeightScale,
       headerToFirstOption06: _headerToFirstOption06 * effectiveHeightScale,
       headerToFirstOption07: _headerToFirstOption07 * effectiveHeightScale,
+      // O2 Birthday screen specific spacing
+      headerToSubtitle: _headerToSubtitle * effectiveHeightScale,
       // O3 Fitness screen specific spacing
       headerToSubtitle03: _headerToSubtitle03 * effectiveHeightScale,
       subtitleToPills03: _subtitleToPills03 * effectiveHeightScale,
@@ -333,6 +340,9 @@ class OnboardingSpacing {
   static const double _headerToFirstOption05 = 50.0; // ONB_05: (42+42)*0.6
   static const double _headerToFirstOption06 = 58.0; // ONB_06: (48+48)*0.6
   static const double _headerToFirstOption07 = 108.0; // ONB_07: (90+90)*0.6
+
+  // O2 Birthday screen specific spacing (based on Figma)
+  static const double _headerToSubtitle = 24.0;
 
   // O3 Fitness screen specific spacing (based on Figma)
   static const double _headerToSubtitle03 = 24.0;

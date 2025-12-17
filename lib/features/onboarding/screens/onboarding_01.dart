@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
@@ -98,8 +99,6 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
                   totalSteps: kOnboardingTotalSteps,
                   onBack: _handleBack,
                 ),
-                SizedBox(height: spacing.headerToInstruction01),
-                _buildInstruction(textTheme, colorScheme),
               SizedBox(height: spacing.instructionToInput01),
               _buildNameInput(textTheme, colorScheme, spacing),
               SizedBox(height: spacing.inputToCta01),
@@ -109,19 +108,6 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
           ),
         ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildInstruction(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context)!;
-    final instruction = l10n.onboarding01Instruction;
-    return Semantics(
-      label: instruction,
-      child: Text(
-        instruction,
-        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
-        textAlign: TextAlign.center,
       ),
     );
   }
@@ -153,6 +139,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
           textInputAction: TextInputAction.done,
           autofocus: true,
           hintText: '',
+          fontSize: Sizes.onboardingInputFontSize, // 18px (Figma v2)
           onSubmitted: (_) {
             if (_hasText) {
               _handleContinue();
@@ -166,11 +153,13 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
   Widget _buildCta(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context)!;
     final ctaLabel = l10n.commonContinue;
-    return OnboardingButton(
-      key: const Key('onb_cta'),
-      label: ctaLabel,
-      onPressed: _handleContinue,
-      isEnabled: _hasText,
+    return Center(
+      child: OnboardingButton(
+        key: const Key('onb_cta'),
+        label: ctaLabel,
+        onPressed: _handleContinue,
+        isEnabled: _hasText,
+      ),
     );
   }
 }

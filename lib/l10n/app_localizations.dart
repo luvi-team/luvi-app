@@ -95,10 +95,10 @@ abstract class AppLocalizations {
     Locale('en')
   ];
 
-  /// Header title for onboarding step 1.
+  /// Header title for onboarding step 1 (Figma v3). Contains forced line break.
   ///
   /// In en, this message translates to:
-  /// **'Tell me about yourself 💜'**
+  /// **'Welcome!\nWhat should we call you?'**
   String get onboarding01Title;
 
   /// Spoken step indicator for onboarding progress.
@@ -106,6 +106,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Step {current} of {total}'**
   String onboardingStepSemantic(int current, int total);
+
+  /// Visual step label for onboarding screens (Figma v2).
+  ///
+  /// In en, this message translates to:
+  /// **'Question {current} of {total}'**
+  String onboardingStepLabel(int current, int total);
 
   /// Instruction copy asking the user for their preferred name on step 1.
   ///

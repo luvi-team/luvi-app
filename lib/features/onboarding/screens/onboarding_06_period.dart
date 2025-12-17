@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -96,6 +96,9 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
 
     return Scaffold(
       body: Container(
+        // Gradient fills entire screen (Figma v2)
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: DsGradients.onboardingStandard,
         ),
@@ -149,11 +152,11 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
               header: true,
               child: Text(
                 l10n.onboarding06PeriodTitle,
-                style: textTheme.headlineSmall?.copyWith(
+                style: textTheme.headlineMedium?.copyWith(
+                  fontFamily: FontFamilies.playfairDisplay,
                   color: colorScheme.onSurface,
-                  fontSize: TypographyTokens.size20,
-                  fontWeight: FontWeight.w600,
-                  height: TypographyTokens.lineHeightRatio28on20,
+                  fontSize: TypographyTokens.size24,
+                  height: TypographyTokens.lineHeightRatio32on24,
                 ),
               ),
             ),
@@ -167,12 +170,10 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: Container(
-        decoration: BoxDecoration(
-          color: dsTokens?.cardSurface ?? DsColors.white.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(Sizes.radiusXL),
-        ),
+        // Figma v3: Glass calendar effect (30% white opacity + 40px radius)
+        decoration: DsEffects.glassCalendar,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(Sizes.radiusXL),
+          borderRadius: BorderRadius.circular(40),
           child: PeriodCalendar(
             selectedDate: _selectedDate,
             onDateSelected: _handleDateSelected,

@@ -25,8 +25,8 @@ class OnboardingProgressBar extends StatelessWidget {
   /// Total number of steps
   final int totalSteps;
 
-  // Widget-specific layout constants (Figma Progress Bar specs)
-  static const double _barWidth = 227.0;
+  // Widget-specific layout constants (Figma Progress Bar specs v2)
+  static const double _barWidth = Sizes.progressBarWidth; // 307px
   static const double _barHeight = 18.0;
   static const double _borderWidth = 1.0;
 
@@ -52,9 +52,9 @@ class OnboardingProgressBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(Sizes.radiusXL),
             child: Stack(
               children: [
-                // Background (transparent/white)
+                // Background (white - Figma v2)
                 Container(
-                  color: DsColors.transparent,
+                  color: DsColors.white,
                 ),
                 // Progress fill
                 FractionallySizedBox(

@@ -23,6 +23,7 @@ class AuthTextField extends StatelessWidget {
     this.scrollPadding = EdgeInsets.zero,
     this.textAlign = TextAlign.start,
     this.frameless = false,
+    this.fontSize,
   });
 
   final TextEditingController controller;
@@ -40,12 +41,16 @@ class AuthTextField extends StatelessWidget {
   final TextAlign textAlign;
   final bool frameless;
 
+  /// Optional font size override (default: TypographyTokens.size14)
+  final double? fontSize;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final resolvedFontSize = fontSize ?? TypographyTokens.size14;
     final inputStyle = theme.textTheme.bodySmall?.copyWith(
-      fontSize: TypographyTokens.size14,
+      fontSize: resolvedFontSize,
       height: TypographyTokens.lineHeightRatio24on14,
       color: theme.colorScheme.onSurface,
     );

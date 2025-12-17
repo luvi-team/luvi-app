@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
-import 'package:luvi_app/core/design_tokens/opacity.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/features/onboarding/utils/date_formatters.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
@@ -31,14 +27,6 @@ class Onboarding02Screen extends ConsumerStatefulWidget {
 class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
   late DateTime _date;
   bool _hasInteracted = false;
-
-  String _formattedDate(BuildContext context) {
-    final localeName = Localizations.localeOf(context).toLanguageTag();
-    return DateFormatters.localizedDayMonthYear(
-      _date,
-      localeName: localeName,
-    );
-  }
 
   @override
   void initState() {
@@ -82,51 +70,49 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
           gradient: DsGradients.onboardingStandard,
         ),
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, _) {
-              // Stack: Scroll + Picker (keeps CTA visible above picker); padding = picker height (216px) + safeBottom
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  _buildScrollableContent(spacing, safeBottom),
-                  _buildDatePicker(safeBottom),
-                ],
-              );
-            },
+          child: Column(
+            children: [
+              // Header + Subtitle (scrollable)
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: spacing.horizontalPadding,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: Spacing.m),
+                      _buildHeader(),
+                      SizedBox(height: spacing.headerToSubtitle),
+                      _buildSubtitle(),
+                    ],
+                  ),
+                ),
+              ),
+              // Picker (fixed at bottom)
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: spacing.horizontalPadding,
+                ),
+                child: BirthdatePicker(
+                  initialDate: _date,
+                  onDateChanged: (d) => setState(() {
+                    _date = d;
+                    _hasInteracted = true;
+                  }),
+                ),
+              ),
+              SizedBox(height: Spacing.m),
+              // CTA Button UNDER Picker (Figma v2)
+              Center(child: _buildCta()),
+              SizedBox(height: Spacing.xl + safeBottom),
+            ],
           ),
         ),
       ),
     );
   }
 
-  // BirthdatePicker height (280) from birthdate_picker.dart
-  static const double _birthdatePickerHeight = 280;
-
-  Widget _buildScrollableContent(OnboardingSpacing spacing, double safeBottom) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(
-        spacing.horizontalPadding,
-        spacing.topPadding,
-        spacing.horizontalPadding,
-        safeBottom + _birthdatePickerHeight + spacing.ctaToPicker,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildHeader(),
-          SizedBox(height: spacing.headerToDate),
-          _buildDateDisplay(),
-          SizedBox(height: spacing.dateToUnderline),
-          _buildUnderline(spacing),
-          SizedBox(height: spacing.underlineToCallout),
-          _buildCallout(),
-          SizedBox(height: spacing.calloutToCta),
-          _buildCta(),
-          SizedBox(height: spacing.ctaToPicker),
-        ],
-      ),
-    );
-  }
 
   void _handleBack() {
     final router = GoRouter.of(context);
@@ -150,81 +136,21 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
     );
   }
 
-  Widget _buildDateDisplay() {
+  /// Subtitle text without box or icon (Figma v2)
+  Widget _buildSubtitle() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-
     final l10n = AppLocalizations.of(context)!;
-    final formatted = _formattedDate(context);
-    return Semantics(
-      label: l10n.selectedDateLabel(formatted),
-      child: Text(
-        formatted,
-        style: textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Widget _buildUnderline(OnboardingSpacing spacing) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final dividerThickness = theme.dividerTheme.thickness ?? 1;
-
-    return Align(
-      alignment: Alignment.center,
-      child: SizedBox(
-        width: spacing.underlineWidth,
-        child: Divider(
-          thickness: dividerThickness,
-          color: colorScheme.onSurface.withValues(
-            alpha: OpacityTokens.inactive,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCallout() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-    final dividerThickness = theme.dividerTheme.thickness ?? 1;
-    final iconSize = theme.iconTheme.size ?? TypographyTokens.size20;
-
-    final l10n = AppLocalizations.of(context)!;
-    final baseTextStyle = textTheme.bodySmall?.copyWith(
-      color: colorScheme.onSurface,
-    );
 
     return Semantics(
       label: l10n.onboarding02CalloutSemantic,
-      child: Container(
-        padding: const EdgeInsets.all(Spacing.m),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(Sizes.radiusM),
-          border: Border.all(
-            color: colorScheme.primary,
-            width: dividerThickness,
-          ),
+      child: Text(
+        l10n.onboarding02CalloutBody,
+        style: textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurface,
         ),
-        child: Row(
-          children: [
-            ExcludeSemantics(
-              child: Icon(
-                Icons.info_outline,
-                color: colorScheme.onSurface,
-                size: iconSize,
-              ),
-            ),
-            const SizedBox(width: Spacing.s),
-            Expanded(
-              child: Text(l10n.onboarding02CalloutBody, style: baseTextStyle),
-            ),
-          ],
-        ),
+        textAlign: TextAlign.center,
       ),
     );
   }
@@ -240,25 +166,6 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
         context.pushNamed('onboarding_03_fitness');
       },
       isEnabled: _hasInteracted,
-    );
-  }
-
-  Widget _buildDatePicker(double safeBottom) {
-    // Use custom BirthdatePicker widget (Figma: 333x280px)
-    // Age Policy 16-120 is enforced inside BirthdatePicker
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: safeBottom + Spacing.l,
-      child: Center(
-        child: BirthdatePicker(
-          initialDate: _date,
-          onDateChanged: (d) => setState(() {
-            _date = d;
-            _hasInteracted = true;
-          }),
-        ),
-      ),
     );
   }
 }

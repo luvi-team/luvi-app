@@ -78,5 +78,19 @@ class Sizes {
   /// Loading indicator stroke width (Figma: 2px)
   static const double loadingIndicatorStroke = 2.0;
 
+  // ─── Onboarding Specific (Figma Onboarding v2) ───
+
+  /// Progress Bar Width (Figma: 307px)
+  static const double progressBarWidth = 307.0;
+
+  /// Onboarding Button Font Size (Figma: 20px)
+  static const double onboardingButtonFontSize = 20.0;
+
+  /// Input Text Font Size (Figma: 18px)
+  static const double onboardingInputFontSize = 18.0;
+
+  /// HEUTE Label Font Size - klein für Einzeiler (Figma: 10px)
+  static const double todayLabelFontSize = 10.0;
+
   Sizes._();
 }

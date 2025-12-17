@@ -9,11 +9,16 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get onboarding01Title => 'Tell me about yourself 💜';
+  String get onboarding01Title => 'Welcome!\nWhat should we call you?';
 
   @override
   String onboardingStepSemantic(int current, int total) {
     return 'Step $current of $total';
+  }
+
+  @override
+  String onboardingStepLabel(int current, int total) {
+    return 'Question $current of $total';
   }
 
   @override

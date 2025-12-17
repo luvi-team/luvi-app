@@ -46,7 +46,8 @@ class FitnessPill extends StatelessWidget {
               vertical: Spacing.m,
             ),
             decoration: BoxDecoration(
-              color: dsTokens.cardSurface,
+              // Glass effect: white with 10% opacity (Figma v2)
+              color: DsColors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(Sizes.radiusL),
               border: selected
                   ? Border.all(

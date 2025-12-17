@@ -42,6 +42,9 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
 
     return Scaffold(
       body: Container(
+        // Gradient fills entire screen (Figma v2)
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: DsGradients.onboardingStandard,
         ),
@@ -54,14 +57,17 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
                 // Header with progress bar
                 _buildHeader(context, l10n),
                 const Spacer(),
+                // Step label (Figma v2: "Frage 6 von 6" manuell)
+                _buildStepLabel(textTheme, colorScheme, l10n),
+                SizedBox(height: Spacing.m),
                 // Title
                 _buildTitle(textTheme, colorScheme, l10n),
                 SizedBox(height: Spacing.xl),
                 // Calendar mini preview
                 const CalendarMiniWidget(highlightedDay: 25),
                 const Spacer(),
-                // CTA Button
-                _buildCta(context, l10n),
+                // CTA Button (centered)
+                Center(child: _buildCta(context, l10n)),
                 SizedBox(height: Spacing.xl),
               ],
             ),
@@ -90,6 +96,22 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
         // Placeholder for symmetry
         const SizedBox(width: 48),
       ],
+    );
+  }
+
+  /// Step label "Frage 6 von 6" (Figma v2: manual, not via OnboardingHeader)
+  Widget _buildStepLabel(
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
+    return Text(
+      l10n.onboardingStepLabel(6, kOnboardingTotalSteps),
+      textAlign: TextAlign.center,
+      style: textTheme.bodySmall?.copyWith(
+        fontSize: TypographyTokens.size14,
+        color: colorScheme.onSurface.withValues(alpha: 0.7),
+      ),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -353,7 +354,12 @@ class _DayCell extends StatelessWidget {
       button: allowSelection,
       selected: isSelected,
       child: GestureDetector(
-        onTap: allowSelection ? onTap : null,
+        onTap: allowSelection
+            ? () {
+                HapticFeedback.lightImpact();
+                onTap();
+              }
+            : null,
         child: SizedBox(
           width: 40,
           height: 48, // Increased to fit HEUTE label (24px circle + 12px text + 4px gap)
@@ -371,18 +377,20 @@ class _DayCell extends StatelessWidget {
                           color: periodColor,
                           width: 2,
                         ),
-                        color: isSelected
-                            ? periodColor.withValues(alpha: 0.2)
-                            : null,
+                        // Figma v3: Transparent fill, only border colored
+                        color: null,
                       )
                     : null,
                 alignment: Alignment.center,
                 child: Text(
                   date.day.toString(),
                   style: textTheme.bodyMedium?.copyWith(
-                    color: allowSelection
-                        ? colorScheme.onSurface
-                        : colorScheme.onSurface.withValues(alpha: 0.3),
+                    // Figma v3: Red text for selected/period days
+                    color: (isSelected || isPeriodDay)
+                        ? DsColors.signature
+                        : allowSelection
+                            ? colorScheme.onSurface
+                            : colorScheme.onSurface.withValues(alpha: 0.3),
                     fontWeight: _isToday ? FontWeight.bold : FontWeight.normal,
                     fontSize: TypographyTokens.size14,
                   ),
@@ -391,9 +399,12 @@ class _DayCell extends StatelessWidget {
               if (_isToday) ...[
                 Text(
                   AppLocalizations.of(context)!.commonToday,
+                  maxLines: 1,
+                  softWrap: false,
                   style: TextStyle(
                     color: DsColors.todayLabelGray,
-                    fontSize: TypographyTokens.size12,
+                    // Figma v3: 10px font size for HEUTE label
+                    fontSize: Sizes.todayLabelFontSize,
                     height: 1.0,
                     fontWeight: FontWeight.w600,
                   ),

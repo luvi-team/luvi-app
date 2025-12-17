@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_progress_bar.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
@@ -34,7 +35,7 @@ void main() {
     final sizedBox = find.byType(SizedBox).first;
     final widget = tester.widget<SizedBox>(sizedBox);
 
-    expect(widget.width, 227);
+    expect(widget.width, Sizes.progressBarWidth); // 307px (Figma v2)
     expect(widget.height, 18);
   });
 

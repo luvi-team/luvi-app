@@ -8,8 +8,9 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 ///
 /// Figma specs:
 /// - Container: 10% white opacity, radius 24
-/// - RadialGradient glow for highlighted day (120px)
-class CalendarMiniWidget extends StatelessWidget {
+/// - RadialGradient glow for highlighted day (pulsating animation)
+/// - Days after highlighted day: only text color change (no circle)
+class CalendarMiniWidget extends StatefulWidget {
   const CalendarMiniWidget({
     super.key,
     this.highlightedDay = 25,
@@ -17,6 +18,15 @@ class CalendarMiniWidget extends StatelessWidget {
 
   /// The day to highlight with the glow effect
   final int highlightedDay;
+
+  @override
+  State<CalendarMiniWidget> createState() => _CalendarMiniWidgetState();
+}
+
+class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _glowController;
+  late Animation<double> _glowAnimation;
 
   static const _weekdayLabels = ['M', 'D', 'M', 'D', 'F', 'S', 'S'];
 
@@ -26,6 +36,26 @@ class CalendarMiniWidget extends StatelessWidget {
   static const double _glowSize = 40.0;
   static const double _weekdayFontSize = 12.0;
   static const double _dayFontSize = 14.0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pulsating glow animation (Figma v2)
+    _glowController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _glowAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +98,7 @@ class CalendarMiniWidget extends StatelessWidget {
                     if (dayNumber > 31) {
                       return const SizedBox(width: _cellSize, height: _cellSize);
                     }
-                    return _buildDayCell(dayNumber);
+                    return _buildDayCell(dayNumber, widget.highlightedDay);
                   }),
                 ),
               );
@@ -79,10 +109,10 @@ class CalendarMiniWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDayCell(int day) {
+  Widget _buildDayCell(int day, int highlightedDay) {
     final isHighlighted = day == highlightedDay;
     // Period range: days AFTER the highlighted day (26-31 when highlightedDay=25)
-    // Figma: Days after period start are marked as upcoming period days
+    // Figma v2: Only text color change, no circle background
     final isInPeriodRange = day > highlightedDay && day <= 31;
 
     return SizedBox(
@@ -91,24 +121,29 @@ class CalendarMiniWidget extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Glow effect for highlighted day
+          // Pulsating glow effect for highlighted day (Figma v2)
           if (isHighlighted)
-            Container(
-              width: _glowSize,
-              height: _glowSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    DsColors.periodGlowPink,
-                    DsColors.periodGlowPinkLight,
-                    DsColors.transparent,
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
-              ),
+            AnimatedBuilder(
+              animation: _glowAnimation,
+              builder: (context, child) {
+                return Container(
+                  width: _glowSize,
+                  height: _glowSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        DsColors.periodGlowPink.withValues(alpha: _glowAnimation.value),
+                        DsColors.periodGlowPinkLight.withValues(alpha: _glowAnimation.value * 0.5),
+                        DsColors.transparent,
+                      ],
+                      stops: const [0.0, 0.5, 1.0],
+                    ),
+                  ),
+                );
+              },
             ),
-          // Day number
+          // Day number - Figma v2: days 26-31 only have text color, no circle
           Container(
             width: _dayCircleSize,
             height: _dayCircleSize,
@@ -117,13 +152,7 @@ class CalendarMiniWidget extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: DsColors.signature,
                   )
-                : isInPeriodRange
-                    ? BoxDecoration(
-                        shape: BoxShape.circle,
-                        // Filled with light pink (Figma: period days after start)
-                        color: DsColors.signature.withValues(alpha: 0.2),
-                      )
-                    : null,
+                : null, // No circle for period range days (Figma v2)
             child: Center(
               child: Text(
                 '$day',
@@ -134,7 +163,7 @@ class CalendarMiniWidget extends StatelessWidget {
                   color: isHighlighted
                       ? DsColors.white
                       : isInPeriodRange
-                          ? DsColors.signature
+                          ? DsColors.signature // Only text color change
                           : DsColors.grayscaleBlack,
                 ),
               ),

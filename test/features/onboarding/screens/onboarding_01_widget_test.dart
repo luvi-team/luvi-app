@@ -57,7 +57,9 @@ void main() {
       expect(l10n, isNotNull, reason: 'AppLocalizations not initialized');
       final stepText = l10n!.onboardingProgressLabel(1, kOnboardingTotalSteps);
       expect(find.text(stepText), findsOneWidget);
-      expect(find.textContaining('Wie soll ich dich nennen'), findsOneWidget);
+      // Figma v3: Title contains "Willkommen!" + "Wie dürfen wir dich nennen?"
+      // Use L10n value directly to avoid hardcoded strings
+      expect(find.text(l10n.onboarding01Title), findsOneWidget);
 
       final nameField = find.byType(TextField);
       expect(nameField, findsOneWidget);

@@ -1,8 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/init/init_mode.dart';
+import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/splash/data/onboarding_gate_profile_reader.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
 /// Mock implementation of OnboardingGateProfileReader for testing.
@@ -469,6 +474,101 @@ void main() {
         );
         expect(result, equals(Onboarding01Screen.routeName));
       });
+    });
+  });
+
+  group('Race-retry Widget Test', () {
+    testWidgets(
+        'race-retry: Reader false→true after delay routes to Home',
+        (tester) async {
+      // This test simulates the race-retry behavior from _navigateAfterAnimation
+      // using a widget that mirrors the navigation logic with provider override.
+
+      final reader = RaceRetryGateReader();
+      String? navigatedRoute;
+
+      // Minimal widget that simulates _navigateAfterAnimation race-retry logic
+      final testWidget = ProviderScope(
+        overrides: [
+          initModeProvider.overrideWithValue(InitMode.test),
+          onboardingGateProfileReaderProvider.overrideWithValue(reader),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Consumer(
+            builder: (context, ref, _) {
+              return ElevatedButton(
+                key: const Key('trigger'),
+                onPressed: () async {
+                  // Simulate race-retry logic from _navigateAfterAnimation
+                  const localGate = true;
+                  const homeRoute = HeuteScreen.routeName;
+
+                  final gateReader =
+                      ref.read(onboardingGateProfileReaderProvider);
+
+                  // First fetch
+                  var remoteGate =
+                      await gateReader.fetchRemoteOnboardingGate();
+
+                  var targetRoute = determineOnboardingGateRoute(
+                    remoteGate: remoteGate,
+                    localGate: localGate,
+                    homeRoute: homeRoute,
+                  );
+
+                  // Race-retry condition: local true + remote false
+                  if (targetRoute == null &&
+                      localGate == true &&
+                      remoteGate == false) {
+                    // Wait 500ms (simulated delay)
+                    await Future<void>.delayed(
+                        const Duration(milliseconds: 100));
+
+                    // Re-fetch after delay
+                    remoteGate =
+                        await gateReader.fetchRemoteOnboardingGate();
+
+                    // Re-evaluate
+                    targetRoute = determineOnboardingGateRoute(
+                      remoteGate: remoteGate,
+                      localGate: localGate,
+                      homeRoute: homeRoute,
+                    );
+
+                    // If still null after retry, go to Onboarding
+                    if (targetRoute == null && remoteGate == false) {
+                      navigatedRoute = Onboarding01Screen.routeName;
+                      return;
+                    }
+                  }
+
+                  navigatedRoute = targetRoute;
+                },
+                child: const Text('Trigger'),
+              );
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      // Trigger the race-retry logic
+      await tester.tap(find.byKey(const Key('trigger')));
+
+      // Allow async operations to complete
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      // Verify: Reader was called twice (first false, then true)
+      expect(reader.callCount, 2);
+
+      // Verify: Navigation went to Home (because remote became true on retry)
+      expect(navigatedRoute, equals(HeuteScreen.routeName));
     });
   });
 }

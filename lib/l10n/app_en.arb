@@ -1,12 +1,24 @@
 {
   "@@locale": "en",
-  "onboarding01Title": "Tell me about yourself 💜",
+  "onboarding01Title": "Welcome!\nWhat should we call you?",
   "@onboarding01Title": {
-    "description": "Header title for onboarding step 1."
+    "description": "Header title for onboarding step 1 (Figma v3). Contains forced line break."
   },
   "onboardingStepSemantic": "Step {current} of {total}",
   "@onboardingStepSemantic": {
     "description": "Spoken step indicator for onboarding progress.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingStepLabel": "Question {current} of {total}",
+  "@onboardingStepLabel": {
+    "description": "Visual step label for onboarding screens (Figma v2).",
     "placeholders": {
       "current": {
         "type": "int"

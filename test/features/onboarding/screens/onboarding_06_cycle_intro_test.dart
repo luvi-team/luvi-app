@@ -11,7 +11,9 @@ void main() {
       await tester.pumpWidget(buildTestApp(
         home: const Onboarding06CycleIntroScreen(),
       ));
-      await tester.pumpAndSettle();
+      // Use pump() instead of pumpAndSettle() because CalendarMiniWidget
+      // has an infinite pulsating animation that never completes
+      await tester.pump();
 
       // Verify screen rendered
       expect(find.byType(Onboarding06CycleIntroScreen), findsOneWidget);

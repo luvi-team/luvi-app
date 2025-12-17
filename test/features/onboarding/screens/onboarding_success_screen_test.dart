@@ -298,11 +298,14 @@ void main() {
 
         // Tap retry button
         await tester.tap(find.text('Try again'));
-        // Pump to allow async operation to start
-        await tester.pump(const Duration(milliseconds: 100));
-        await tester.pump(const Duration(milliseconds: 100));
+        // Allow setState to rebuild widget
+        await tester.pump();
+        // Animation restarts and runs for 3 seconds, drive animation with multiple pumps
+        for (int i = 0; i < 35; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
 
-        // Second attempt should have been made
+        // Second attempt should have been made (via animation completion)
         expect(failingWriter.callCount, 2);
 
         // Pump through any remaining timers to clean up

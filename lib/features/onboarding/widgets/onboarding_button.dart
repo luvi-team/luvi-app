@@ -61,7 +61,7 @@ class OnboardingButton extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: enabled ? DsColors.white : DsColors.gray500,
-              fontSize: 16,
+              fontSize: Sizes.onboardingButtonFontSize, // 20px (Figma v2)
               fontWeight: FontWeight.w600,
             ),
           ),

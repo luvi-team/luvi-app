@@ -233,7 +233,13 @@ class _OnboardingSuccessScreenState
     setState(() {
       _state = O9AnimationState.saving;
     });
-    _performSave();
+    // Animation restart if available - save triggers via onAnimationComplete
+    // Fallback: Direct save if animation state unavailable
+    if (_progressKey.currentState != null) {
+      _progressKey.currentState!.restart();
+    } else {
+      _performSave();
+    }
   }
 
   @override
@@ -246,6 +252,9 @@ class _OnboardingSuccessScreenState
 
     return Scaffold(
       body: Container(
+        // Gradient fills entire screen (Figma v2)
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: DsGradients.successScreen,
         ),
@@ -353,10 +362,12 @@ class _OnboardingSuccessScreenState
   Widget _buildRetryButton(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.only(bottom: Spacing.l),
-      child: OnboardingButton(
-        label: l10n.onboardingRetryButton,
-        onPressed: _handleRetry,
-        isEnabled: true,
+      child: Center(
+        child: OnboardingButton(
+          label: l10n.onboardingRetryButton,
+          onPressed: _handleRetry,
+          isEnabled: true,
+        ),
       ),
     );
   }
@@ -377,8 +388,6 @@ class _ContentPreviewCard extends StatelessWidget {
   // Widget-specific layout constants (Figma Success Screen specs)
   static const double _imageHeight = 80.0;
   static const double _textFontSize = 12.0;
-  static const double _shadowBlur = 10.0;
-  static const double _shadowOffsetY = 4.0;
 
   @override
   Widget build(BuildContext context) {
@@ -386,15 +395,10 @@ class _ContentPreviewCard extends StatelessWidget {
       width: width,
       padding: const EdgeInsets.all(Spacing.xs),
       decoration: BoxDecoration(
-        color: DsColors.white,
+        // Glass effect: 10% white opacity (Figma v3)
+        color: DsColors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(Sizes.radiusCard),
-        boxShadow: [
-          BoxShadow(
-            color: DsColors.black.withValues(alpha: 0.1),
-            blurRadius: _shadowBlur,
-            offset: const Offset(0, _shadowOffsetY),
-          ),
-        ],
+        // No shadow for true glass look
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

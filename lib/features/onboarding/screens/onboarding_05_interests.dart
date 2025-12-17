@@ -88,6 +88,9 @@ class _Onboarding05InterestsScreenState
 
     return Scaffold(
       body: Container(
+        // Gradient fills entire screen (Figma v2)
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: DsGradients.onboardingStandard,
         ),
@@ -109,7 +112,7 @@ class _Onboarding05InterestsScreenState
                 SizedBox(height: spacing.headerToFirstCard),
                 _buildInterestList(spacing, l10n),
                 SizedBox(height: spacing.lastCardToCta),
-                _buildCta(l10n),
+                Center(child: _buildCta(l10n)),
                 SizedBox(height: Spacing.xl),
               ],
             ),
