@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
@@ -42,13 +43,8 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
   }
 
   DateTime _computeInitialBirthDate() {
-    // Default to 25 years old, clamped within Age Policy 16-120
-    final now = DateTime.now();
-    final targetYear = now.year - 25;
-    final month = now.month;
-    final daysInMonth = DateTime(targetYear, month + 1, 0).day;
-    final clampedDay = now.day > daysInMonth ? daysInMonth : now.day;
-    final initialDate = DateTime(targetYear, month, clampedDay);
+    // Figma default: June 8, 1992, clamped within Age Policy 16-120
+    final initialDate = DateTime(1992, 6, 8);
 
     // Clamp within Age Policy bounds
     final minDate = onboardingBirthdateMinDate();
@@ -137,6 +133,7 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
   }
 
   /// Subtitle text without box or icon (Figma v2)
+  /// Font: bodySmall, 14px (smaller than O1)
   Widget _buildSubtitle() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -147,7 +144,8 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
       label: l10n.onboarding02CalloutSemantic,
       child: Text(
         l10n.onboarding02CalloutBody,
-        style: textTheme.bodyMedium?.copyWith(
+        style: textTheme.bodySmall?.copyWith(
+          fontSize: TypographyTokens.size14,
           color: colorScheme.onSurface,
         ),
         textAlign: TextAlign.center,

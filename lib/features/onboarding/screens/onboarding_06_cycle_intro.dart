@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/widgets/calendar_mini_widget.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
@@ -55,7 +57,7 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
               children: [
                 SizedBox(height: spacing.topPadding),
                 // Header with progress bar
-                _buildHeader(context, l10n),
+                _buildHeader(context, l10n, colorScheme),
                 const Spacer(),
                 // Step label (Figma v2: "Frage 6 von 6" manuell)
                 _buildStepLabel(textTheme, colorScheme, l10n),
@@ -77,24 +79,29 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
+  Widget _buildHeader(BuildContext context, AppLocalizations l10n, ColorScheme colorScheme) {
     return Row(
       children: [
-        // Back button
-        IconButton(
+        // Back button (icon-only style, Figma O6)
+        BackButtonCircle(
           onPressed: () => _handleBack(context),
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          tooltip: l10n.commonBack,
+          iconColor: colorScheme.onSurface,
+          showCircle: false,
+          semanticLabel: l10n.authBackSemantic,
         ),
-        const Spacer(),
-        // Progress bar
-        const OnboardingProgressBar(
-          currentStep: 6,
-          totalSteps: kOnboardingTotalSteps,
+        const SizedBox(width: Spacing.s),
+        // Progress bar (Flexible prevents overflow)
+        Expanded(
+          child: Center(
+            child: OnboardingProgressBar(
+              currentStep: 6,
+              totalSteps: kOnboardingTotalSteps,
+            ),
+          ),
         ),
-        const Spacer(),
+        const SizedBox(width: Spacing.s),
         // Placeholder for symmetry
-        const SizedBox(width: 48),
+        const SizedBox(width: Sizes.touchTargetMin),
       ],
     );
   }

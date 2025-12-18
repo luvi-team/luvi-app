@@ -125,7 +125,7 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
       child: Container(
         width: _containerWidth,
         height: _containerHeight,
-        decoration: DsEffects.glassCard,
+        decoration: DsEffects.glassCardStrong,
         child: Stack(
           children: [
             // Selection highlight

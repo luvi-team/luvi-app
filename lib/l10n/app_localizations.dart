@@ -1781,6 +1781,12 @@ abstract class AppLocalizations {
   /// **'I don\'t remember'**
   String get onboarding06PeriodUnknown;
 
+  /// Subheader hint for period start screen (O6)
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later.'**
+  String get onboarding06PeriodSubheader;
+
   /// Title for period duration adjustment screen (O7)
   ///
   /// In en, this message translates to:

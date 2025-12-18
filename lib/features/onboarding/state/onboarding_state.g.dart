@@ -9,21 +9,27 @@ part of 'onboarding_state.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Riverpod notifier for onboarding state management.
+/// keepAlive: true ensures state persists across all onboarding screens
+/// (prevents name/data loss when navigating between O1-O9).
 
 @ProviderFor(OnboardingNotifier)
 const onboardingProvider = OnboardingNotifierProvider._();
 
 /// Riverpod notifier for onboarding state management.
+/// keepAlive: true ensures state persists across all onboarding screens
+/// (prevents name/data loss when navigating between O1-O9).
 final class OnboardingNotifierProvider
     extends $NotifierProvider<OnboardingNotifier, OnboardingData> {
   /// Riverpod notifier for onboarding state management.
+  /// keepAlive: true ensures state persists across all onboarding screens
+  /// (prevents name/data loss when navigating between O1-O9).
   const OnboardingNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'onboardingProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -45,9 +51,11 @@ final class OnboardingNotifierProvider
 }
 
 String _$onboardingNotifierHash() =>
-    r'eee47117d37e6587c1b0e5a675cf2f7d58ba3db8';
+    r'ed036cb7b3edfd766ff473e3a9dfb6d18db86624';
 
 /// Riverpod notifier for onboarding state management.
+/// keepAlive: true ensures state persists across all onboarding screens
+/// (prevents name/data loss when navigating between O1-O9).
 
 abstract class _$OnboardingNotifier extends $Notifier<OnboardingData> {
   OnboardingData build();

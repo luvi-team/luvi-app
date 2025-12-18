@@ -83,7 +83,9 @@ class OnboardingData {
 }
 
 /// Riverpod notifier for onboarding state management.
-@riverpod
+/// keepAlive: true ensures state persists across all onboarding screens
+/// (prevents name/data loss when navigating between O1-O9).
+@Riverpod(keepAlive: true)
 class OnboardingNotifier extends _$OnboardingNotifier {
   @override
   OnboardingData build() => OnboardingData.empty();
@@ -137,6 +139,22 @@ class OnboardingNotifier extends _$OnboardingNotifier {
   void setPeriodDuration(int days) {
     // Clamp to valid range 1-14
     state = state.copyWith(periodDuration: days.clamp(1, 14));
+  }
+
+  /// Clear period start date (for "I don't remember" flow)
+  /// Privacy-safe: ensures no implicit cycle data is created when user
+  /// selects "unknown" option in O7.
+  void clearPeriodStart() {
+    state = OnboardingData(
+      name: state.name,
+      birthDate: state.birthDate,
+      fitnessLevel: state.fitnessLevel,
+      selectedGoals: state.selectedGoals,
+      selectedInterests: state.selectedInterests,
+      periodStart: null,
+      periodDuration: 7,
+      cycleLength: 28,
+    );
   }
 
   /// Reset all state (for testing or restart)

@@ -77,10 +77,12 @@ class OnboardingHeader extends StatelessWidget {
     return Row(
       children: [
         // Back button (only if step > 1)
+        // showCircle: false for Figma O2-O8 icon-only style
         if (showBackButton)
           BackButtonCircle(
             onPressed: onBack,
             iconColor: colorScheme.onSurface,
+            showCircle: false,
             semanticLabel: l10n.authBackSemantic,
           )
         else

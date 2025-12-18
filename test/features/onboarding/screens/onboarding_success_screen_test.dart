@@ -155,6 +155,16 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  // Configure larger screen size for Figma O9 layout (280px cards container)
+  void setTestScreenSize(WidgetTester tester) {
+    tester.view.physicalSize = const Size(430 * 3, 932 * 3);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+  }
+
   Widget buildTestApp({
     List<dynamic> overrides = const [],
   }) {
@@ -163,13 +173,17 @@ void main() {
         initModeProvider.overrideWithValue(InitMode.test),
         ...overrides,
       ],
-      child: MaterialApp(
-        theme: AppTheme.buildAppTheme(),
-        locale: const Locale('en'),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: const OnboardingSuccessScreen(
-          fitnessLevel: FitnessLevel.beginner,
+      // Use MediaQuery to set a larger surface for Figma O9 layout (280px cards)
+      child: MediaQuery(
+        data: const MediaQueryData(size: Size(430, 932)),
+        child: MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          locale: const Locale('en'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: const OnboardingSuccessScreen(
+            fitnessLevel: FitnessLevel.beginner,
+          ),
         ),
       ),
     );
@@ -197,6 +211,7 @@ void main() {
     group('K10.1: isComplete validation', () {
       testWidgets('shows error state when onboarding data is incomplete',
           (tester) async {
+        setTestScreenSize(tester);
         await tester.pumpWidget(
           buildTestApp(
             overrides: [
@@ -223,6 +238,7 @@ void main() {
 
     group('K10.2: Backend save failure', () {
       testWidgets('shows error state when backend save fails', (tester) async {
+        setTestScreenSize(tester);
         final failingWriter = _AlwaysFailingBackendWriter();
 
         await tester.pumpWidget(
@@ -247,6 +263,7 @@ void main() {
       });
 
       testWidgets('does not show success when save fails', (tester) async {
+        setTestScreenSize(tester);
         final failingWriter = _AlwaysFailingBackendWriter();
 
         await tester.pumpWidget(
@@ -270,6 +287,7 @@ void main() {
 
     group('K10.3: Retry functionality', () {
       testWidgets('retry button triggers new save attempt', (tester) async {
+        setTestScreenSize(tester);
         final failingWriter = _FailingBackendWriter(failOnce: true);
 
         await tester.pumpWidget(
@@ -334,6 +352,7 @@ void main() {
     group('Authentication check', () {
       testWidgets('shows error state when user is not authenticated',
           (tester) async {
+        setTestScreenSize(tester);
         await tester.pumpWidget(
           buildTestApp(
             overrides: [

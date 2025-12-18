@@ -64,7 +64,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
       label: l10n.semanticCalendarPreview,
       child: Container(
         padding: const EdgeInsets.all(Spacing.calendarMiniPadding),
-        decoration: DsEffects.glassMiniCalendar,
+        decoration: DsEffects.glassMiniCalendarStrong,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -150,7 +150,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
             decoration: isHighlighted
                 ? BoxDecoration(
                     shape: BoxShape.circle,
-                    color: DsColors.signature,
+                    color: DsColors.white,
                   )
                 : null, // No circle for period range days (Figma v2)
             child: Center(
@@ -161,7 +161,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
                   fontWeight:
                       isHighlighted ? FontWeight.w600 : FontWeight.w400,
                   color: isHighlighted
-                      ? DsColors.white
+                      ? DsColors.signature
                       : isInPeriodRange
                           ? DsColors.signature // Only text color change
                           : DsColors.grayscaleBlack,

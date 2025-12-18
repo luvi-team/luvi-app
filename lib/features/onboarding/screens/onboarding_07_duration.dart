@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
@@ -159,6 +159,7 @@ class _Onboarding07DurationScreenState
               Expanded(
                 child: _buildCalendarCard(dsTokens, l10n),
               ),
+              SizedBox(height: Spacing.l),
               Center(child: _buildCta(l10n)),
               SizedBox(height: Spacing.xl),
             ],
@@ -179,19 +180,11 @@ class _Onboarding07DurationScreenState
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Semantics(
-            label: l10n.authBackSemantic,
-            button: true,
-            child: IconButton(
-              key: const Key('onb_back'),
-              icon: const Icon(Icons.chevron_left),
-              onPressed: _handleBack,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(
-                minWidth: Sizes.touchTargetMin,
-                minHeight: Sizes.touchTargetMin,
-              ),
-            ),
+          BackButtonCircle(
+            onPressed: _handleBack,
+            iconColor: colorScheme.onSurface,
+            showCircle: false,
+            semanticLabel: l10n.authBackSemantic,
           ),
           SizedBox(width: Spacing.xs),
           Expanded(
@@ -217,8 +210,8 @@ class _Onboarding07DurationScreenState
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: Container(
-        // Figma v3: Glass calendar effect (30% white opacity + 40px radius)
-        decoration: DsEffects.glassCalendar,
+        // Figma v3: Strong glass calendar effect (40% white + border)
+        decoration: DsEffects.glassCalendarStrong,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(40),
           child: PeriodCalendar(

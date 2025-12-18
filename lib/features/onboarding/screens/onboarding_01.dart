@@ -81,6 +81,9 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
+        // Ensure gradient fills entire screen even with keyboard
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: DsGradients.onboardingStandard,
         ),
@@ -119,14 +122,14 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
 
-    // Figma specs: Glass container 340×88px, radius 16, 10% white opacity
+    // Figma specs: Glass container 340×88px, radius 16, enhanced glass effect (v3)
     return Container(
       constraints: const BoxConstraints(maxWidth: 340),
       padding: const EdgeInsets.symmetric(
         horizontal: Spacing.m,
         vertical: Spacing.l,
       ),
-      decoration: DsEffects.glassCard,
+      decoration: DsEffects.glassCardStrong,
       child: Semantics(
         textField: true,
         label: l10n.onboarding01NameInputSemantic,

@@ -46,15 +46,16 @@ class FitnessPill extends StatelessWidget {
               vertical: Spacing.m,
             ),
             decoration: BoxDecoration(
-              // Glass effect: white with 10% opacity (Figma v2)
-              color: DsColors.white.withValues(alpha: 0.1),
+              // Glass effect: white with 20% opacity (Figma v3)
+              color: DsColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(Sizes.radiusL),
-              border: selected
-                  ? Border.all(
-                      color: dsTokens.cardBorderSelected,
-                      width: 1,
-                    )
-                  : null,
+              // White borders instead of black for softer Figma look
+              border: Border.all(
+                color: selected
+                    ? DsColors.white.withValues(alpha: 0.5)
+                    : DsColors.white.withValues(alpha: 0.3),
+                width: selected ? 1.5 : 1,
+              ),
             ),
             child: Text(
               label,

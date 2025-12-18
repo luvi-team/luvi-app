@@ -1213,6 +1213,10 @@
   "@onboarding06PeriodUnknown": {
     "description": "Option when user doesn't remember period start date"
   },
+  "onboarding06PeriodSubheader": "You can change this later.",
+  "@onboarding06PeriodSubheader": {
+    "description": "Subheader hint for period start screen (O6)"
+  },
 
   "onboarding07DurationTitle": "We've estimated the duration. Tap a day to adjust.",
   "@onboarding07DurationTitle": {

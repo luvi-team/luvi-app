@@ -8,11 +8,14 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/widgets/back_button.dart';
+import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/custom_radio_check.dart';
 import 'package:luvi_app/features/onboarding/widgets/period_calendar.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/user_state_service.dart' as services;
 
 /// Onboarding06: Period start calendar screen (O6)
 /// Figma: 06_Onboarding (Periode Start)
@@ -60,7 +63,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     });
     // Auto-navigate when "I don't remember" is selected
     if (_unknownSelected) {
-      _navigateToNextScreen();
+      _navigateToSuccessScreen();
     }
   }
 
@@ -69,10 +72,30 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     if (_selectedDate != null) {
       ref.read(onboardingProvider.notifier).setPeriodStart(_selectedDate!);
     }
-    // Navigate to O7 Period Duration Calendar
+    // Navigate to O8 Period Duration Calendar
     context.pushNamed(
       'onboarding_07_duration',
       extra: _selectedDate,
+    );
+  }
+
+  /// Navigate directly to success screen when user selects "I don't remember"
+  /// Privacy-safe: clears period data and skips O8 to avoid implicit cycle data
+  void _navigateToSuccessScreen() {
+    // Clear period data in provider (privacy-safe)
+    ref.read(onboardingProvider.notifier).clearPeriodStart();
+
+    // P0 FIX: Map App-FitnessLevel → Services-FitnessLevel (like O8)
+    // Router expects services.FitnessLevel, not app.FitnessLevel
+    final appLevel =
+        ref.read(onboardingProvider).fitnessLevel ?? FitnessLevel.beginner;
+    final serviceLevel = services.FitnessLevel.tryParse(appLevel.name) ??
+        services.FitnessLevel.beginner;
+
+    // Skip O8 and go directly to O9 Success
+    context.pushNamed(
+      'onboarding_success',
+      extra: serviceLevel,
     );
   }
 
@@ -132,33 +155,39 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Semantics(
-            label: l10n.authBackSemantic,
-            button: true,
-            child: IconButton(
-              key: const Key('onb_back'),
-              icon: const Icon(Icons.chevron_left),
-              onPressed: _handleBack,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(
-                minWidth: Sizes.touchTargetMin,
-                minHeight: Sizes.touchTargetMin,
-              ),
-            ),
+          BackButtonCircle(
+            onPressed: _handleBack,
+            iconColor: colorScheme.onSurface,
+            showCircle: false,
+            semanticLabel: l10n.authBackSemantic,
           ),
           SizedBox(width: Spacing.xs),
           Expanded(
-            child: Semantics(
-              header: true,
-              child: Text(
-                l10n.onboarding06PeriodTitle,
-                style: textTheme.headlineMedium?.copyWith(
-                  fontFamily: FontFamilies.playfairDisplay,
-                  color: colorScheme.onSurface,
-                  fontSize: TypographyTokens.size24,
-                  height: TypographyTokens.lineHeightRatio32on24,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Semantics(
+                  header: true,
+                  child: Text(
+                    l10n.onboarding06PeriodTitle,
+                    style: textTheme.headlineMedium?.copyWith(
+                      fontFamily: FontFamilies.playfairDisplay,
+                      color: colorScheme.onSurface,
+                      fontSize: TypographyTokens.size24,
+                      height: TypographyTokens.lineHeightRatio32on24,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: Spacing.xs),
+                // Subheader (Figma v3: "Du kannst das später ändern.")
+                Text(
+                  l10n.onboarding06PeriodSubheader,
+                  style: textTheme.bodySmall?.copyWith(
+                    fontSize: TypographyTokens.size14,
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -170,8 +199,8 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: Container(
-        // Figma v3: Glass calendar effect (30% white opacity + 40px radius)
-        decoration: DsEffects.glassCalendar,
+        // Figma v3: Strong glass calendar effect (40% white + border)
+        decoration: DsEffects.glassCalendarStrong,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(40),
           child: PeriodCalendar(

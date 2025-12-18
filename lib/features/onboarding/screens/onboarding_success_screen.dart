@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
@@ -48,12 +49,13 @@ class _OnboardingSuccessScreenState
   O9AnimationState _state = O9AnimationState.animating;
   final GlobalKey<CircularProgressRingState> _progressKey = GlobalKey();
 
-  // Content cards layout constants (Figma Success Screen specs)
-  static const double _cardsContainerHeight = 200.0;
-  static const double _card1Width = 140.0;
+  // Content cards layout constants (Figma O9 Success Screen specs)
+  static const double _cardsContainerHeight = 280.0;
+  static const double _card1Width = 150.0;
   static const double _card2Width = 120.0;
   static const double _card2TopOffset = 20.0;
-  static const double _card3Width = 130.0;
+  static const double _card3Width = 133.0;
+  static const double _card3Height = 114.0;
   static const double _card3LeftOffset = 20.0;
 
   void _onAnimationComplete() {
@@ -230,14 +232,20 @@ class _OnboardingSuccessScreenState
   }
 
   void _handleRetry() {
+    // BUG FIX: Set state to animating (not saving) so animation runs correctly
+    // Animation will trigger _onAnimationComplete which sets saving state
     setState(() {
-      _state = O9AnimationState.saving;
+      _state = O9AnimationState.animating;
     });
     // Animation restart if available - save triggers via onAnimationComplete
     // Fallback: Direct save if animation state unavailable
     if (_progressKey.currentState != null) {
       _progressKey.currentState!.restart();
     } else {
+      // No animation available, directly save
+      setState(() {
+        _state = O9AnimationState.saving;
+      });
       _performSave();
     }
   }
@@ -309,7 +317,7 @@ class _OnboardingSuccessScreenState
               width: _card2Width,
             ),
           ),
-          // Card 3 - bottom left
+          // Card 3 - bottom left (Figma: 133×114px)
           Positioned(
             left: _card3LeftOffset,
             bottom: 0,
@@ -317,6 +325,7 @@ class _OnboardingSuccessScreenState
               imagePath: 'assets/images/onboarding/content_card_3.png',
               text: l10n.onboardingContentCard3,
               width: _card3Width,
+              height: _card3Height,
             ),
           ),
         ],
@@ -373,17 +382,19 @@ class _OnboardingSuccessScreenState
   }
 }
 
-/// Content preview card widget for success screen
+/// Content preview card widget for success screen (Figma O9)
 class _ContentPreviewCard extends StatelessWidget {
   const _ContentPreviewCard({
     required this.imagePath,
     required this.text,
     this.width = 140,
+    this.height,
   });
 
   final String imagePath;
   final String text;
   final double width;
+  final double? height;
 
   // Widget-specific layout constants (Figma Success Screen specs)
   static const double _imageHeight = 80.0;
@@ -393,13 +404,9 @@ class _ContentPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
+      height: height,
       padding: const EdgeInsets.all(Spacing.xs),
-      decoration: BoxDecoration(
-        // Glass effect: 10% white opacity (Figma v3)
-        color: DsColors.white.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(Sizes.radiusCard),
-        // No shadow for true glass look
-      ),
+      decoration: DsEffects.successCardGlass,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -414,15 +421,17 @@ class _ContentPreviewCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: Spacing.xs),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: _textFontSize,
-              fontWeight: FontWeight.w500,
-              color: DsColors.grayscaleBlack,
+          Flexible(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: _textFontSize,
+                fontWeight: FontWeight.w500,
+                color: DsColors.grayscaleBlack,
+              ),
             ),
           ),
         ],

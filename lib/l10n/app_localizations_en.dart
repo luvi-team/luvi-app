@@ -894,6 +894,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboarding06PeriodUnknown => 'I don\'t remember';
 
   @override
+  String get onboarding06PeriodSubheader => 'You can change this later.';
+
+  @override
   String get onboarding07DurationTitle => 'We\'ve estimated the duration. Tap a day to adjust.';
 
   @override

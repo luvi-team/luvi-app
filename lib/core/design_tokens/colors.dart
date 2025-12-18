@@ -237,6 +237,12 @@ class DsColors {
 
   /// Date Picker Selection Background (Figma: #F5F5F5)
   static const Color datePickerSelectionBg = Color(0xFFF5F5F5);
+
+  // ─── Onboarding Success Screen (Figma O9 2024-12) ───
+
+  /// Success Card Glass Background (Figma: #E9D5FF @ 20%)
+  /// Light purple/lavender with 20% opacity for content preview cards
+  static const Color successCardGlass = Color(0x33E9D5FF);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.
