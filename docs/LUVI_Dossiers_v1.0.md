@@ -1,5 +1,8 @@
 # LUVI Dossiers v1.0
 
+> Legacy/Archive: This file is not an active SSOT. Use `docs/phase_definitions.md`,
+> `docs/consent_texts.md`, and `docs/ranking_heuristic.md` instead.
+
 > Zusammengeführt aus drei Dossiers · Datum: 2025-11-08
 
 ## Inhaltsübersicht
@@ -123,4 +126,3 @@ score = 0.40*0.8 + 0.20*0.6 + 0.15*0.2 + 0.10*0.5 + 0.10*0.7 - 0.05*0.3
 - Normalisierung: <!-- TODO: Sicherstellen, dass alle Faktoren kompatibel skaliert sind. -->
 - Grenzen: <!-- TODO: Score auf [0,1] clampen oder z-score verwenden? -->
 - Monitoring: <!-- TODO: Drift/Impact der Gewichte regelmäßig evaluieren. -->
-

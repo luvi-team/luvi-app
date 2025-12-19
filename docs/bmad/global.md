@@ -144,7 +144,7 @@ kurze Tages-Texte auf dem Home-Screen („Heute in deiner Phase“) sowie
 durch phasenabhängige Priorisierung im Stream-Feed. So bleibt die App
 Lifestyle-first, aber zyklusbewusst in der Priorisierung.
 
-(Quellen: docs/phase_definitions.md, docs/consent_texts.md, LUVI_Dossiers)
+(Quellen: docs/phase_definitions.md, docs/consent_texts.md, docs/ranking_heuristic.md)
 
 1.5 Globale KPIs (erste Hypothesen)
 
@@ -218,19 +218,19 @@ Rahmen, nicht als starres Zahlenziel.
 - **Consent Copy (CMP)** – Struktur und Texte der Consent-Overlays/
   Buttons für externe Videos.
 
-*(Quellen: docs/LUVI_Dossiers_v1.0.md, docs/phase_definitions.md,
-docs/consent_texts.md, docs/ranking_heuristic.md, docs/analytics/taxonomy.md,
-docs/product/roadmap.md, docs/audits/SUPABASE_SCHEMA_public.ts)*
+*(Quellen: docs/phase_definitions.md, docs/consent_texts.md,
+docs/ranking_heuristic.md, docs/analytics/taxonomy.md, docs/product/roadmap.md,
+docs/audits/SUPABASE_SCHEMA_public.ts)*
 
 ### 2.2 Domäne → Tabellen/Views → Status
 
 | Domäne                | Supabase-Tabellen/Views                          | Status       | Quellen                           |
 |-----------------------|--------------------------------------------------|-------------|-----------------------------------|
 | User                  | `auth.users`, `user_id`-Felder in anderen Tabellen | Ist        | Schema-Audit, Roadmap            |
-| Consent               | `public.consents`                                | Ist         | Schema-Audit, Roadmap, Dossiers  |
-| ConsentLog            | `public.consent_logs`                            | Geplant     | Roadmap (S2), consent_texts      |
+| Consent               | `public.consents`                                | Ist         | Schema-Audit, Roadmap, docs/consent_texts.md |
+| ConsentLog            | `public.consent_logs`                            | Geplant     | Roadmap (S2), docs/consent_texts.md |
 | CycleData             | `public.cycle_data`                              | Ist         | Schema-Audit, Roadmap (S0/S1)    |
-| Phase                 | – (berechnet, keine eigene Tabelle)              | Logik-only  | phase_definitions, Dossiers      |
+| Phase                 | – (berechnet, keine eigene Tabelle)              | Logik-only  | docs/phase_definitions.md      |
 | Cycle/Phase Computation („TodayState“) | – (Funktionen/Services, z. B. `compute_cycle_info`) | Logik-only | Roadmap (S1)              |
 | DailyPlan             | `public.daily_plan`                              | Ist         | Schema-Audit                     |
 | Content/Video         | `public.video`                                   | Geplant     | Roadmap (S2 DB/Schema)           |

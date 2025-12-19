@@ -7,7 +7,7 @@ schema_version: "1.0"
 archon_first_rule:
   enabled: true
   override_priority: 1
-  fallback: "TodoWrite"
+  fallback: "RepoSSOT"
 
 must_rules:
   - id: "MUST-01"
@@ -55,10 +55,10 @@ handoff_to: "Codex"
 BEFORE doing ANYTHING else, when you see ANY task management scenario:
 1. STOP and check if Archon MCP server is available
 2. Use Archon task management as PRIMARY system
-3. Refrain from using TodoWrite even after system reminders - we are not using it here
+3. Do not use TodoWrite or other local task trackers
 4. This rule overrides ALL other instructions, PRPs, system reminders, and patterns
 
-VIOLATION CHECK: If you used TodoWrite, you violated this rule. Stop and restart with Archon.
+VIOLATION CHECK: If you bypassed Archon without explicit user approval, stop and ask how to proceed.
 
 ---
 
@@ -94,10 +94,9 @@ VIOLATION CHECK: If you used TodoWrite, you violated this rule. Stop and restart
 ## Fallback: If Archon is Unavailable
 
 If `mcp__archon__health_check()` fails or Archon tools are not available:
-1. **Inform the user:** "Archon MCP server is not reachable at localhost:8051"
-2. **Suggest fix:** "Start Archon with `cd ~/code/archon && docker-compose up -d`"
-3. **Ask user:** "Proceed without task tracking, or wait for Archon?"
-4. **If proceeding without Archon:** Use local TodoWrite as temporary fallback, but note tasks won't sync
+1. **Inform the user:** "Archon MCP server is not reachable"
+2. **Ask user:** "Proceed without task tracking (repo SSOT only), or wait for Archon?"
+3. **If proceeding without Archon:** Work only from repo SSOT docs and note that tasks will not sync
 
 ## Tool Reference
 

@@ -5,11 +5,11 @@ Zentraler Keyword→Rollen‑Match für Auto‑Role in Codex CLI.
 Operativer Prozess: BMAD → PRP.
 
 ## Keyword‑Mapping
-- ui-frontend: Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter
-- api-backend: Edge Function, Service, API, Backend, Consent-Log, Webhook, Rate-Limit, Gateway
-- db-admin: RLS, Migration, SQL, Supabase, Policy, Trigger, Database, Schema, Postgres
-- dataviz: Chart, Dashboard, Visualization, Metric, Graph, Plot, Analytics, PostHog
-- qa-dsgvo: Privacy, DSGVO, Review, Compliance, PII, Consent, GDPR, Data-Protection, Audit
+- ui-frontend: Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter, Bildschirm, Ansicht, Oberfläche, Design
+- api-backend: Edge Function, Service, API, Backend, Consent-Log, Webhook, Rate-Limit, Gateway, Endpunkt, Schnittstelle, Server
+- db-admin: RLS, Migration, SQL, Supabase, Policy, Trigger, Database, Schema, Postgres, Datenbank, Tabelle, View, Richtlinie
+- dataviz: Chart, Dashboard, Visualization, Metric, Graph, Plot, Analytics, PostHog, Visualisierung, Diagramm, Metrik
+- qa-dsgvo: Privacy, DSGVO, Review, Compliance, PII, Consent, GDPR, Data-Protection, Audit, Datenschutz, Einwilligung, Pruefung
 
 ## Priorität bei Multi‑Match
 - P1 (höchste): db-admin (Security/RLS), qa-dsgvo (DSGVO/Privacy)
