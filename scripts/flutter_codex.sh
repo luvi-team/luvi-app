@@ -70,5 +70,11 @@ if [[ "$#" -eq 0 ]]; then
   exec "${FLUTTER_BIN}" --version
 else
   subcmd="$1"; shift || true
+  if [[ "${subcmd}" == "analyze-test" ]]; then
+    # Shortcut: run analyze then test sequentially.
+    "${SCRIPT_DIR}/flutter_codex.sh" analyze
+    "${SCRIPT_DIR}/flutter_codex.sh" test "$@"
+    exit 0
+  fi
   run_cmd "${subcmd}" "$@"
 fi

@@ -42,7 +42,7 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
   // Widget-specific layout constants (Figma Birthdate Picker specs)
   static const double _containerWidth = 333.0;
   static const double _containerHeight = 280.0;
-  static const double _highlightWidth = 313.0;
+  // Note: Highlight uses Positioned with left/right offsets instead of fixed width
   static const double _highlightHeight = 56.0;
   static const double _itemExtent = 56.0;
   static const double _perspective = 0.003;
@@ -128,14 +128,19 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
         decoration: DsEffects.glassCardStrong,
         child: Stack(
           children: [
-            // Selection highlight
-            Center(
-              child: Container(
-                width: _highlightWidth,
-                height: _highlightHeight,
-                decoration: BoxDecoration(
-                  color: DsColors.datePickerSelectionBg,
-                  borderRadius: BorderRadius.circular(Sizes.radiusPickerHighlight),
+            // Selection highlight - Figma v3: Asymmetric position (more right padding)
+            Positioned(
+              left: 8,
+              right: 5,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Container(
+                  height: _highlightHeight,
+                  decoration: BoxDecoration(
+                    color: DsColors.datePickerSelectionBg,
+                    borderRadius: BorderRadius.circular(Sizes.radiusPickerHighlight),
+                  ),
                 ),
               ),
             ),

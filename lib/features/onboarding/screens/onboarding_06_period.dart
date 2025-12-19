@@ -199,7 +199,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: Container(
-        // Figma v3: Strong glass calendar effect (40% white + border)
+        // Figma v3: Strong glass calendar effect (50% white + 70% border)
         decoration: DsEffects.glassCalendarStrong,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(40),

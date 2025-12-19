@@ -191,6 +191,7 @@ void main() {
 
   group('OnboardingSuccessScreen', () {
     testWidgets('renders initially in animating state', (tester) async {
+      setTestScreenSize(tester);
       await tester.pumpWidget(
         buildTestApp(
           overrides: [
@@ -333,6 +334,7 @@ void main() {
 
       testWidgets('retry button is not visible during animation',
           (tester) async {
+        setTestScreenSize(tester);
         await tester.pumpWidget(
           buildTestApp(
             overrides: [

@@ -14,9 +14,10 @@ class CustomRadioCheck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use DsColors.signature (pink) to match Figma onboarding designs
+    // Figma v3: Use full DsColors.signature (pink) for both states
+    // Matches CTA button color per design review
     final activeColor = DsColors.signature;
-    final inactiveColor = DsColors.signature.withValues(alpha: 0.5);
+    final inactiveColor = DsColors.signature;
 
     return Container(
       width: 24,

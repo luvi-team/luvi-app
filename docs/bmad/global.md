@@ -41,6 +41,7 @@
   3. Roadmap / Sprint-Dokumente  
   4. Notizen oder sonstige Artefakte  
 - Agents und Entwickler*innen müssen immer gegen das aktuellste SSOT arbeiten und Konflikte anhand dieser Reihenfolge auflösen.
+- Ausnahme: Für AI-Review/CI-Policy ist `docs/engineering/ai-reviewer.md` innerhalb dieses Scopes maßgeblich.
 
 ## Wie KI dieses Dokument nutzen soll
 

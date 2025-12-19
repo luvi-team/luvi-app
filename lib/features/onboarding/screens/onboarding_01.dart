@@ -126,7 +126,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
 
-    // Figma specs: Glass container 340×88px, radius 16, enhanced glass effect (v3)
+    // Figma specs: Glass container 340×88px, radius 16, ultra glass effect (v3)
     return Container(
       constraints: const BoxConstraints(maxWidth: 340),
       padding: const EdgeInsets.symmetric(

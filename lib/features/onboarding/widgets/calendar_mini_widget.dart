@@ -33,7 +33,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
   // Widget-specific layout constants (Figma Calendar Mini specs)
   static const double _cellSize = 32.0;
   static const double _dayCircleSize = 28.0;
-  static const double _glowSize = 50.0;
+  static const double _glowSize = 70.0; // Figma v3: Larger glow for visibility
   static const double _weekdayFontSize = 12.0;
   static const double _dayFontSize = 14.0;
 
@@ -46,7 +46,8 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
       vsync: this,
     )..repeat(reverse: true);
 
-    _glowAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
+    // Figma v3: Full range animation for more visible pulsating effect
+    _glowAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
   }
@@ -122,11 +123,15 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
         clipBehavior: Clip.none, // Allow glow to extend beyond cell bounds
         alignment: Alignment.center,
         children: [
-          // Pulsating glow effect for highlighted day (Figma v2)
+          // Pulsating glow effect for highlighted day (Figma v3)
+          // Pink glow around the highlighted day number
           if (isHighlighted)
             AnimatedBuilder(
               animation: _glowAnimation,
               builder: (context, child) {
+                // Minimum alpha 0.3 ensures glow is always visible
+                // Animation pulsates from 0.3 to 1.0 alpha
+                final glowAlpha = 0.3 + (_glowAnimation.value * 0.7);
                 return Container(
                   width: _glowSize,
                   height: _glowSize,
@@ -134,41 +139,52 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        DsColors.periodGlowPink.withValues(alpha: _glowAnimation.value),
-                        DsColors.periodGlowPinkLight.withValues(alpha: _glowAnimation.value * 0.6),
+                        // Figma v3: Pink glow with animated alpha (0.3 → 1.0)
+                        DsColors.periodGlowPinkBase.withValues(alpha: glowAlpha),
+                        DsColors.periodGlowPinkBase
+                            .withValues(alpha: glowAlpha * 0.5),
                         DsColors.transparent,
                       ],
-                      stops: const [0.0, 0.6, 1.0],
+                      stops: const [0.0, 0.5, 1.0],
                     ),
                   ),
                 );
               },
             ),
-          // Day number - Figma v2: days 26-31 only have text color, no circle
-          Container(
-            width: _dayCircleSize,
-            height: _dayCircleSize,
-            decoration: isHighlighted
-                ? BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: DsColors.white,
-                  )
-                : null, // No circle for period range days (Figma v2)
-            child: Center(
-              child: Text(
-                '$day',
-                style: TextStyle(
-                  fontSize: _dayFontSize,
-                  fontWeight:
-                      isHighlighted ? FontWeight.w600 : FontWeight.w400,
-                  color: isHighlighted
-                      ? DsColors.signature
-                      : isInPeriodRange
-                          ? DsColors.signature // Only text color change
-                          : DsColors.grayscaleBlack,
+          // Day number - Figma v3: Scale animation for highlighted day
+          AnimatedBuilder(
+            animation: _glowAnimation,
+            builder: (context, child) {
+              return Transform.scale(
+                // Figma v3: Number scales from 1.0 to 1.15 with glow
+                scale: isHighlighted ? 1.0 + (_glowAnimation.value * 0.15) : 1.0,
+                child: Container(
+                  width: _dayCircleSize,
+                  height: _dayCircleSize,
+                  decoration: isHighlighted
+                      ? BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: DsColors.white,
+                        )
+                      : null, // No circle for period range days (Figma v3)
+                  child: Center(
+                    child: Text(
+                      '$day',
+                      style: TextStyle(
+                        fontSize: _dayFontSize,
+                        fontWeight:
+                            isHighlighted ? FontWeight.w600 : FontWeight.w400,
+                        color: isHighlighted
+                            ? DsColors.signature
+                            : isInPeriodRange
+                                ? DsColors.signature // Only text color change
+                                : DsColors.grayscaleBlack,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),

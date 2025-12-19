@@ -6,7 +6,7 @@ KONSTANTEN (für ALLE Sprints – unverändert aus deinen Standards)
 
 
 
-• DoD: CI grün (`flutter analyze`, `flutter test`) mit ≥ 1 Unit + ≥ 1 Widget je Story; DSGVO-Review pro datenrelevantem Task; ADRs gepflegt; Greptile Review grün (GitHub Required Check); optional lokales CodeRabbit-Review vor dem PR (lokaler Preflight, kein GitHub-Check); `/api/health = 200`.  
+• DoD: gemäß `context/agents/_acceptance_v1.1.md` (Core + Role extensions; UI/DataViz: ≥ 1 Unit + ≥ 1 Widget je Story). Greptile Review grün (GitHub Required Check); optional lokales CodeRabbit-Review vor dem PR (lokaler Preflight, kein GitHub-Check); `/api/health = 200`.  
 
 
 

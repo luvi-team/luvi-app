@@ -229,6 +229,10 @@ class DsColors {
   /// Today Label Gray (Figma: #6A7282)
   static const Color todayLabelGray = Color(0xFF6A7282);
 
+  /// Period Glow Pink Base - 100% opacity for animation control (Figma: #FF6482)
+  /// Use this when alpha is animated programmatically via .withValues(alpha:)
+  static const Color periodGlowPinkBase = Color(0xFFFF6482);
+
   /// Period Glow Pink - 60% opacity (Figma: #FF6482 @ 0.6)
   static const Color periodGlowPink = Color(0x99FF6482);
 

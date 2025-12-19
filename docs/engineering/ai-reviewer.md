@@ -19,6 +19,7 @@ It applies to **all contributors** using the Codex CLI workflow working on this 
 - Agents müssen sich an die hier definierten Rollen, Tools und Policies halten; bei Widersprüchen mit anderen Prozessen gewinnt dieses Dokument.
 - Nutze den Inhalt ausschließlich für Code-Review-/CI-/Workflow-Themen; Produkt- oder Business-Fragen sind in anderen SSOTs dokumentiert.
 - Wenn sich der Workflow ändert (z. B. neue Required Checks), ist zuerst dieses Dokument zu aktualisieren, bevor andere Artefakte angepasst werden.
+- Geltungsbereich: Dieses Dokument überschreibt nur AI-Review/CI-Policy; für globale Governance gilt `docs/bmad/global.md`.
 
 ---
 ## 2. Tools & Roles

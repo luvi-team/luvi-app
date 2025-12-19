@@ -45,16 +45,7 @@ class OnboardingButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: enabled ? DsColors.buttonPrimary : DsColors.gray300,
             borderRadius: BorderRadius.circular(Sizes.radiusXL),
-            boxShadow: enabled
-                ? const [
-                    BoxShadow(
-                      color: DsColors.shadowMedium,
-                      offset: Offset(0, 25),
-                      blurRadius: 50,
-                      spreadRadius: -12,
-                    ),
-                  ]
-                : null,
+            // Figma v3: No shadow on CTA buttons (matches Welcome screens)
           ),
           child: Text(
             label,

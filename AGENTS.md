@@ -41,7 +41,7 @@ Recommended Reading Order (for new devs/agents)
 Workflow
 - Codex CLI-first; BMAD → PRP (Plan → Run → Prove).
 - Required Checks (GitHub): Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check) · Vercel Preview Health (200 OK).
-- AI review setup (Greptile merge gate, optional local CodeRabbit) is defined in docs/engineering/ai-reviewer.md. If anything else contradicts it, ai-reviewer.md wins.
+- AI review setup (Greptile merge gate, optional local CodeRabbit) is defined in docs/engineering/ai-reviewer.md. If anything else contradicts it for AI review/CI policy, ai-reviewer.md wins.
 - Acceptance per role: "Core + Role extension" per SSOT v1.1.
 - Answer format: binding per `docs/engineering/assistant-answer-format.md`.
 - CI maintenance cycle: Actions pinning (checkout/upload-artifact/github-script) check/update quarterly; see `context/agents/_actions_todo.md`.

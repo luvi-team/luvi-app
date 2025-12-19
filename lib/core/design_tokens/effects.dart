@@ -93,4 +93,40 @@ class DsEffects {
           width: 1,
         ),
       );
+
+  // ─── Ultra-Strong Glass Effects (Figma v3 Polish 2024-12) ───
+  // These effects have enhanced opacity and borders for pixel-perfect Figma match
+
+  /// Ultra Glass Card - 60% white opacity + 85% white border, 2px width
+  /// Used for: O1 name input, O2 birthdate picker (Figma v3 polish)
+  static BoxDecoration get glassCardUltra => BoxDecoration(
+        color: DsColors.white.withValues(alpha: 0.60),
+        borderRadius: BorderRadius.circular(Sizes.radiusL),
+        border: Border.all(
+          color: DsColors.white.withValues(alpha: 0.85),
+          width: 2.0,
+        ),
+      );
+
+  /// Ultra Glass Pill - 60% white opacity + 80% white border, 2px width
+  /// Used for: O3 fitness level pills (Figma v3 polish)
+  static BoxDecoration get glassPillUltra => BoxDecoration(
+        color: DsColors.white.withValues(alpha: 0.60),
+        borderRadius: BorderRadius.circular(Sizes.radiusL),
+        border: Border.all(
+          color: DsColors.white.withValues(alpha: 0.80),
+          width: 2.0,
+        ),
+      );
+
+  /// Ultra Glass Calendar - 70% white opacity + 90% white border, 2px width
+  /// Used for: O7/O8 period calendar containers (Figma v3 polish)
+  static BoxDecoration get glassCalendarUltra => BoxDecoration(
+        color: DsColors.white.withValues(alpha: 0.70),
+        borderRadius: BorderRadius.circular(Sizes.radiusXL),
+        border: Border.all(
+          color: DsColors.white.withValues(alpha: 0.90),
+          width: 2.0,
+        ),
+      );
 }

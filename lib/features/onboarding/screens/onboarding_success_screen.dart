@@ -1,3 +1,5 @@
+import 'dart:math' show min;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -49,27 +51,41 @@ class _OnboardingSuccessScreenState
   O9AnimationState _state = O9AnimationState.animating;
   final GlobalKey<CircularProgressRingState> _progressKey = GlobalKey();
 
-  // Content cards layout constants (Figma O9 Success Screen specs v3)
-  static const double _cardsContainerHeight = 280.0;
+  // Figma base dimensions (iPhone 14 Pro: 393×852)
+  static const double _figmaBaseWidth = 393.0;
+  static const double _figmaBaseHeight = 852.0;
 
-  // Card 1 (oben links, vertikal)
+  // Figma v3 exact card positions and sizes
+  // Card 1 (oben links): x=66, y=81, 150×183
+  static const double _card1Left = 66.0;
+  static const double _card1Top = 81.0;
   static const double _card1Width = 150.0;
-  static const double _card1ImageWidth = 92.0;
-  static const double _card1ImageHeight = 127.0;
+  static const double _card1Height = 183.0;
 
-  // Card 2 (rechts, horizontal) - constrained width to prevent spanning screen
-  static const double _card2Width = 180.0;
+  // Card 2 (rechts): x=227, y=210, 140×120
+  static const double _card2Left = 227.0;
+  static const double _card2Top = 210.0;
+  static const double _card2Width = 140.0;
   static const double _card2Height = 120.0;
-  static const double _card2ImageWidth = 46.0;
-  static const double _card2ImageHeight = 90.0;
-  static const double _card2TopOffset = 60.0;
 
-  // Card 3 (unten, horizontal)
+  // Card 3 (unten links): x=79, y=282, 133×114
+  static const double _card3Left = 79.0;
+  static const double _card3Top = 282.0;
   static const double _card3Width = 133.0;
   static const double _card3Height = 114.0;
-  static const double _card3ImageWidth = 46.0;
-  static const double _card3ImageHeight = 90.0;
-  static const double _card3LeftOffset = 20.0;
+
+  // Cards container height (bottom of card 3 + margin)
+  static const double _cardsContainerHeight = 400.0;
+
+  /// Calculates responsive scale factor based on screen size
+  /// Uses min of width and height ratios to prevent overflow
+  double _scaleFactor(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return min(
+      size.width / _figmaBaseWidth,
+      size.height / _figmaBaseHeight,
+    );
+  }
 
   void _onAnimationComplete() {
     if (!mounted) return;
@@ -286,8 +302,11 @@ class _OnboardingSuccessScreenState
             child: Column(
               children: [
                 SizedBox(height: Spacing.xl),
-                // Content preview cards
-                _buildContentCards(l10n),
+                // Content preview cards with fixed Figma-based height
+                SizedBox(
+                  height: _cardsContainerHeight * _scaleFactor(context),
+                  child: _buildContentCards(l10n),
+                ),
                 const Spacer(),
                 // Progress ring
                 _buildProgressSection(textTheme, colorScheme, l10n),
@@ -305,54 +324,54 @@ class _OnboardingSuccessScreenState
   }
 
   Widget _buildContentCards(AppLocalizations l10n) {
-    return SizedBox(
-      height: _cardsContainerHeight,
-      child: Stack(
-        children: [
+    final scale = _scaleFactor(context);
+
+    // Stack with absolute positioned cards per Figma coordinates
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
           // Card 1 - oben links (vertikal: Bild oben, Text unten)
+          // Figma v3: x=66, y=81, 150×183
           Positioned(
-            left: 0,
-            top: 0,
+            left: _card1Left * scale,
+            top: _card1Top * scale,
             child: _VerticalContentCard(
               imagePath: 'assets/images/onboarding/content_card_1.png',
               text: l10n.onboardingContentCard1,
-              width: _card1Width,
-              imageWidth: _card1ImageWidth,
-              imageHeight: _card1ImageHeight,
+              width: _card1Width * scale,
+              height: _card1Height * scale,
+              scaleFactor: scale,
             ),
           ),
-          // Card 2 - rechts mittig (horizontal: Bild links, Text rechts)
-          // NOTE: Full text intentionally kept per Designer decision (Figma v3 review).
-          // Width constrained to _card2Width=180 to prevent overflow.
+          // Card 2 - rechts (horizontal: Bild links, Text rechts)
+          // Figma v3: x=227, y=210, 140×120
           Positioned(
-            right: 0,
-            top: _card2TopOffset,
+            left: _card2Left * scale,
+            top: _card2Top * scale,
             child: _HorizontalContentCard(
               imagePath: 'assets/images/onboarding/content_card_2.png',
               text: l10n.onboardingContentCard2,
-              width: _card2Width,
-              height: _card2Height,
-              imageWidth: _card2ImageWidth,
-              imageHeight: _card2ImageHeight,
+              width: _card2Width * scale,
+              height: _card2Height * scale,
+              scaleFactor: scale,
             ),
           ),
-          // Card 3 - unten links (horizontal: Text links, Bild rechts per Figma)
+          // Card 3 - unten links (horizontal: Text links, Bild rechts)
+          // Figma v3: x=79, y=282, 133×114
           Positioned(
-            left: _card3LeftOffset,
-            bottom: 0,
+            left: _card3Left * scale,
+            top: _card3Top * scale,
             child: _HorizontalContentCard(
               imagePath: 'assets/images/onboarding/content_card_3.png',
               text: l10n.onboardingContentCard3,
-              width: _card3Width,
-              height: _card3Height,
-              imageWidth: _card3ImageWidth,
-              imageHeight: _card3ImageHeight,
+              width: _card3Width * scale,
+              height: _card3Height * scale,
+              scaleFactor: scale,
               imageOnRight: true,
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 
   Widget _buildProgressSection(
@@ -406,52 +425,59 @@ class _OnboardingSuccessScreenState
 }
 
 /// Vertical content preview card (Bild oben, Text unten) for O9 Card 1
+/// Figma v3: Fixed card dimensions with auto-fit text
 class _VerticalContentCard extends StatelessWidget {
   const _VerticalContentCard({
     required this.imagePath,
     required this.text,
     required this.width,
-    required this.imageWidth,
-    required this.imageHeight,
+    required this.height,
+    required this.scaleFactor,
   });
 
   final String imagePath;
   final String text;
   final double width;
-  final double imageWidth;
-  final double imageHeight;
+  final double height;
+  final double scaleFactor;
 
-  static const double _textFontSize = 12.0;
+  // Figma v3: Base font sizes that scale with screen
+  static const double _maxFontSize = 12.0;
+  static const double _minFontSize = 9.0;
 
   @override
   Widget build(BuildContext context) {
+    // Figma v3: Image takes ~65% of card height, text gets remaining space
+    final padding = Spacing.s * scaleFactor;
+    final innerHeight = height - (padding * 2);
+    final imageHeight = innerHeight * 0.65;
+
     return Container(
       width: width,
-      padding: const EdgeInsets.all(Spacing.s),
+      height: height,
+      padding: EdgeInsets.all(padding),
       decoration: DsEffects.successCardGlass,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(Sizes.radiusCard),
+            borderRadius: BorderRadius.circular(Sizes.radiusCard * scaleFactor),
             child: Image.asset(
               imagePath,
-              width: imageWidth,
+              width: width - (padding * 2),
               height: imageHeight,
               fit: BoxFit.cover,
               errorBuilder: Assets.defaultImageErrorBuilder,
             ),
           ),
-          const SizedBox(height: Spacing.xs),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: _textFontSize,
-              fontWeight: FontWeight.w500,
-              color: DsColors.grayscaleBlack,
+          SizedBox(height: Spacing.xs * scaleFactor),
+          // Auto-fit text takes remaining space
+          Expanded(
+            child: _AutoFitText(
+              text: text,
+              maxFontSize: _maxFontSize * scaleFactor,
+              minFontSize: _minFontSize * scaleFactor,
+              textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -461,66 +487,145 @@ class _VerticalContentCard extends StatelessWidget {
 }
 
 /// Horizontal content preview card for O9 Card 2/3
+/// Figma v3: Fixed card dimensions with auto-fit text
 /// Supports image on left (default) or right via [imageOnRight] parameter
 class _HorizontalContentCard extends StatelessWidget {
   const _HorizontalContentCard({
     required this.imagePath,
     required this.text,
-    this.width,
+    required this.width,
     required this.height,
-    required this.imageWidth,
-    required this.imageHeight,
+    required this.scaleFactor,
     this.imageOnRight = false,
   });
 
   final String imagePath;
   final String text;
-  final double? width;
+  final double width;
   final double height;
-  final double imageWidth;
-  final double imageHeight;
+  final double scaleFactor;
   final bool imageOnRight;
 
-  static const double _textFontSize = 12.0;
+  // Figma v3: Base font sizes that scale with screen
+  static const double _maxFontSize = 12.0;
+  static const double _minFontSize = 9.0;
 
   @override
   Widget build(BuildContext context) {
+    // Figma v3: Image takes ~45% of card width, text gets remaining space
+    final padding = Spacing.s * scaleFactor;
+    final innerHeight = height - (padding * 2);
+    final imageSize = min((width - (padding * 2)) * 0.45, innerHeight);
+
     final imageWidget = ClipRRect(
-      borderRadius: BorderRadius.circular(Sizes.radiusCard),
+      borderRadius: BorderRadius.circular(Sizes.radiusCard * scaleFactor),
       child: Image.asset(
         imagePath,
-        width: imageWidth,
-        height: imageHeight,
+        width: imageSize,
+        height: imageSize,
         fit: BoxFit.cover,
         errorBuilder: Assets.defaultImageErrorBuilder,
       ),
     );
 
-    final textWidget = Flexible(
-      child: Text(
-        text,
+    // Text takes remaining space via Expanded
+    final textWidget = Expanded(
+      child: _AutoFitText(
+        text: text,
+        maxFontSize: _maxFontSize * scaleFactor,
+        minFontSize: _minFontSize * scaleFactor,
         textAlign: TextAlign.start,
-        maxLines: 3,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: _textFontSize,
-          fontWeight: FontWeight.w500,
-          color: DsColors.grayscaleBlack,
-        ),
       ),
     );
 
     return Container(
       width: width,
       height: height,
-      padding: const EdgeInsets.all(Spacing.s),
+      padding: EdgeInsets.all(padding),
       decoration: DsEffects.successCardGlass,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: imageOnRight
-            ? [textWidget, const SizedBox(width: Spacing.xs), imageWidget]
-            : [imageWidget, const SizedBox(width: Spacing.xs), textWidget],
+            ? [
+                textWidget,
+                SizedBox(width: Spacing.xs * scaleFactor),
+                imageWidget,
+              ]
+            : [
+                imageWidget,
+                SizedBox(width: Spacing.xs * scaleFactor),
+                textWidget,
+              ],
       ),
+    );
+  }
+}
+
+/// Auto-fit text widget that finds the largest font size that fits
+/// within the available space using TextPainter measurement.
+/// Figma v3: Ensures text is always fully visible without overflow.
+class _AutoFitText extends StatelessWidget {
+  const _AutoFitText({
+    required this.text,
+    required this.maxFontSize,
+    required this.minFontSize,
+    this.textAlign = TextAlign.center,
+  });
+
+  final String text;
+  final double maxFontSize;
+  final double minFontSize;
+  final TextAlign textAlign;
+
+  @override
+  Widget build(BuildContext context) {
+    // A11y: Account for system text scaling
+    final textScaler = MediaQuery.textScalerOf(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
+        final availableHeight = constraints.maxHeight;
+
+        // Apply text scaling to font size bounds
+        final scaledMax = textScaler.scale(maxFontSize);
+        final scaledMin = textScaler.scale(minFontSize);
+
+        // Find largest font size that fits
+        double fontSize = scaledMax;
+        while (fontSize >= scaledMin) {
+          final textPainter = TextPainter(
+            text: TextSpan(
+              text: text,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            textDirection: TextDirection.ltr,
+            maxLines: null,
+          );
+          textPainter.layout(maxWidth: availableWidth);
+
+          if (textPainter.height <= availableHeight) {
+            break; // Found a size that fits
+          }
+          fontSize -= 0.5; // Reduce incrementally
+        }
+
+        return Text(
+          text,
+          textAlign: textAlign,
+          maxLines: null,
+          overflow: TextOverflow.clip,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.w500,
+            color: DsColors.grayscaleBlack,
+          ),
+        );
+      },
     );
   }
 }
