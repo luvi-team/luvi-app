@@ -58,10 +58,10 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
                 SizedBox(height: spacing.topPadding),
                 // Header with progress bar
                 _buildHeader(context, l10n, colorScheme),
-                const Spacer(),
-                // Step label (Figma v2: "Frage 6 von 6" manuell)
+                // Step label directly under progressbar (like O1-O5)
+                SizedBox(height: Spacing.s),
                 _buildStepLabel(textTheme, colorScheme, l10n),
-                SizedBox(height: Spacing.m),
+                const Spacer(),
                 // Title
                 _buildTitle(textTheme, colorScheme, l10n),
                 SizedBox(height: Spacing.xl),

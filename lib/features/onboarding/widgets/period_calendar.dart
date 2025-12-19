@@ -353,23 +353,25 @@ class _DayCell extends StatelessWidget {
       label: _buildSemanticLabel(context),
       button: allowSelection,
       selected: isSelected,
-      child: GestureDetector(
+      child: InkResponse(
         onTap: allowSelection
             ? () {
                 HapticFeedback.lightImpact();
                 onTap();
               }
             : null,
+        radius: 24,
+        highlightShape: BoxShape.circle,
         child: SizedBox(
           width: 40,
-          height: 48, // Increased to fit HEUTE label (24px circle + 12px text + 4px gap)
+          height: 48, // Fits HEUTE label (32px circle + 12px text + 4px gap)
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: _isToday ? 24 : 32,
-                height: _isToday ? 24 : 32,
+                width: 32,
+                height: 32,
                 decoration: showPeriodCircle
                     ? BoxDecoration(
                         shape: BoxShape.circle,
@@ -393,10 +395,13 @@ class _DayCell extends StatelessWidget {
                             : colorScheme.onSurface.withValues(alpha: 0.3),
                     fontWeight: _isToday ? FontWeight.bold : FontWeight.normal,
                     fontSize: TypographyTokens.size14,
+                    // Stabilize vertical alignment across all day cells
+                    height: 1.0,
                   ),
                 ),
               ),
-              if (_isToday) ...[
+              // Always reserve space for HEUTE label to maintain consistent height
+              if (_isToday)
                 Text(
                   AppLocalizations.of(context)!.commonToday,
                   maxLines: 1,
@@ -408,8 +413,12 @@ class _DayCell extends StatelessWidget {
                     height: 1.0,
                     fontWeight: FontWeight.w600,
                   ),
+                )
+              else
+                // Invisible placeholder to reserve same space as HEUTE label
+                SizedBox(
+                  height: Sizes.calendarDayLabelHeight,
                 ),
-              ],
             ],
           ),
         ),

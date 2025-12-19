@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 
 /// Design system effect tokens for glass morphism and other visual effects.
 ///
@@ -38,47 +39,47 @@ class DsEffects {
   // ─── Enhanced Glassmorphism for Onboarding (Figma v3 2024-12) ───
   // These variants have stronger glass effect without affecting existing app styles
 
-  /// Strong Glass Card - 20% white opacity + white border for enhanced visibility
+  /// Strong Glass Card - 30% white opacity + white border for enhanced visibility
   /// Used for: O1 name input, O2 birthdate picker, O4/O5 goal/interest cards
   static BoxDecoration get glassCardStrong => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(16),
+        color: DsColors.white.withValues(alpha: 0.30),
+        borderRadius: BorderRadius.circular(Sizes.radiusL),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.4),
-          width: 1,
+          color: DsColors.white.withValues(alpha: 0.70),
+          width: 1.5,
         ),
       );
 
-  /// Strong Glass Pill - 20% white opacity + white border
-  /// Used for: O3 fitness level pills
+  /// Strong Glass Pill - 30% white opacity + white border
+  /// Used for: O3 fitness level pills (rounded-rect, not pill)
   static BoxDecoration get glassPillStrong => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(999),
+        color: DsColors.white.withValues(alpha: 0.30),
+        borderRadius: BorderRadius.circular(Sizes.radiusL),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.3),
-          width: 1,
+          color: DsColors.white.withValues(alpha: 0.60),
+          width: 1.5,
         ),
       );
 
-  /// Strong Glass Calendar - 40% white opacity + white border
+  /// Strong Glass Calendar - 50% white opacity + white border
   /// Used for: O7/O8 period calendar containers
   static BoxDecoration get glassCalendarStrong => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.4),
+        color: DsColors.white.withValues(alpha: 0.50),
         borderRadius: BorderRadius.circular(40),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.5),
-          width: 1,
+          color: DsColors.white.withValues(alpha: 0.70),
+          width: 1.5,
         ),
       );
 
-  /// Strong Glass Mini Calendar - 20% white opacity + white border
+  /// Strong Glass Mini Calendar - 30% white opacity + white border
   /// Used for: O6 calendar mini widget
   static BoxDecoration get glassMiniCalendarStrong => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.2),
+        color: DsColors.white.withValues(alpha: 0.30),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.4),
-          width: 1,
+          color: DsColors.white.withValues(alpha: 0.70),
+          width: 1.5,
         ),
       );
 

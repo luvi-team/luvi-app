@@ -33,7 +33,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
   // Widget-specific layout constants (Figma Calendar Mini specs)
   static const double _cellSize = 32.0;
   static const double _dayCircleSize = 28.0;
-  static const double _glowSize = 40.0;
+  static const double _glowSize = 50.0;
   static const double _weekdayFontSize = 12.0;
   static const double _dayFontSize = 14.0;
 
@@ -46,7 +46,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
       vsync: this,
     )..repeat(reverse: true);
 
-    _glowAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
+    _glowAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
   }
@@ -119,6 +119,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
       width: _cellSize,
       height: _cellSize,
       child: Stack(
+        clipBehavior: Clip.none, // Allow glow to extend beyond cell bounds
         alignment: Alignment.center,
         children: [
           // Pulsating glow effect for highlighted day (Figma v2)
@@ -134,10 +135,10 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
                     gradient: RadialGradient(
                       colors: [
                         DsColors.periodGlowPink.withValues(alpha: _glowAnimation.value),
-                        DsColors.periodGlowPinkLight.withValues(alpha: _glowAnimation.value * 0.5),
+                        DsColors.periodGlowPinkLight.withValues(alpha: _glowAnimation.value * 0.6),
                         DsColors.transparent,
                       ],
-                      stops: const [0.0, 0.5, 1.0],
+                      stops: const [0.0, 0.6, 1.0],
                     ),
                   ),
                 );

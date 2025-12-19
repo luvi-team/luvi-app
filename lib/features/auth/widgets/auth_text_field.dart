@@ -24,6 +24,8 @@ class AuthTextField extends StatelessWidget {
     this.textAlign = TextAlign.start,
     this.frameless = false,
     this.fontSize,
+    this.fontFamilyOverride,
+    this.fontWeightOverride,
   });
 
   final TextEditingController controller;
@@ -44,6 +46,12 @@ class AuthTextField extends StatelessWidget {
   /// Optional font size override (default: TypographyTokens.size14)
   final double? fontSize;
 
+  /// Optional font family override (e.g., FontFamilies.playfairDisplay for O1)
+  final String? fontFamilyOverride;
+
+  /// Optional font weight override (e.g., FontWeight.bold for O1)
+  final FontWeight? fontWeightOverride;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -51,6 +59,8 @@ class AuthTextField extends StatelessWidget {
     final resolvedFontSize = fontSize ?? TypographyTokens.size14;
     final inputStyle = theme.textTheme.bodySmall?.copyWith(
       fontSize: resolvedFontSize,
+      fontFamily: fontFamilyOverride,
+      fontWeight: fontWeightOverride,
       height: TypographyTokens.lineHeightRatio24on14,
       color: theme.colorScheme.onSurface,
     );

@@ -171,10 +171,10 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
                   child: Text(
                     l10n.onboarding06PeriodTitle,
                     style: textTheme.headlineMedium?.copyWith(
-                      fontFamily: FontFamilies.playfairDisplay,
+                      fontFamily: FontFamilies.figtree,
                       color: colorScheme.onSurface,
-                      fontSize: TypographyTokens.size24,
-                      height: TypographyTokens.lineHeightRatio32on24,
+                      fontSize: TypographyTokens.size20,
+                      height: TypographyTokens.lineHeightRatio28on20,
                     ),
                   ),
                 ),

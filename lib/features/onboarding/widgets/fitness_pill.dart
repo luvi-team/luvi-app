@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
@@ -45,18 +46,16 @@ class FitnessPill extends StatelessWidget {
               horizontal: Spacing.l,
               vertical: Spacing.m,
             ),
-            decoration: BoxDecoration(
-              // Glass effect: white with 20% opacity (Figma v3)
-              color: DsColors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(Sizes.radiusL),
-              // White borders instead of black for softer Figma look
-              border: Border.all(
-                color: selected
-                    ? DsColors.white.withValues(alpha: 0.5)
-                    : DsColors.white.withValues(alpha: 0.3),
-                width: selected ? 1.5 : 1,
-              ),
-            ),
+            decoration: selected
+                ? BoxDecoration(
+                    color: DsColors.white.withValues(alpha: 0.30),
+                    borderRadius: BorderRadius.circular(Sizes.radiusL),
+                    border: Border.all(
+                      color: DsColors.signature,
+                      width: 2.0,
+                    ),
+                  )
+                : DsEffects.glassPillStrong,
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(

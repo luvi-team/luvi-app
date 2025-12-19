@@ -66,43 +66,45 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
           gradient: DsGradients.onboardingStandard,
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              // Header + Subtitle (scrollable)
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: spacing.horizontalPadding,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: Spacing.m),
-                      _buildHeader(),
-                      SizedBox(height: spacing.headerToSubtitle),
-                      _buildSubtitle(),
-                    ],
-                  ),
-                ),
-              ),
-              // Picker (fixed at bottom)
-              Padding(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
                   horizontal: spacing.horizontalPadding,
                 ),
-                child: BirthdatePicker(
-                  initialDate: _date,
-                  onDateChanged: (d) => setState(() {
-                    _date = d;
-                    _hasInteracted = true;
-                  }),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: Spacing.m),
+                        _buildHeader(),
+                        SizedBox(height: spacing.headerToSubtitle),
+                        _buildSubtitle(),
+                        // Picker directly after subtitle (closer, as per Figma)
+                        SizedBox(height: Spacing.l),
+                        BirthdatePicker(
+                          initialDate: _date,
+                          onDateChanged: (d) => setState(() {
+                            _date = d;
+                            _hasInteracted = true;
+                          }),
+                        ),
+                        // Flexible spacer pushes CTA to bottom on tall screens
+                        const Spacer(),
+                        SizedBox(height: Spacing.m),
+                        // CTA Button UNDER Picker (Figma v2)
+                        Center(child: _buildCta()),
+                        SizedBox(height: Spacing.xl + safeBottom),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: Spacing.m),
-              // CTA Button UNDER Picker (Figma v2)
-              Center(child: _buildCta()),
-              SizedBox(height: Spacing.xl + safeBottom),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -145,7 +147,7 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
       child: Text(
         l10n.onboarding02CalloutBody,
         style: textTheme.bodySmall?.copyWith(
-          fontSize: TypographyTokens.size14,
+          fontSize: TypographyTokens.size16,
           color: colorScheme.onSurface,
         ),
         textAlign: TextAlign.center,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
@@ -51,18 +52,16 @@ class GoalCard extends StatelessWidget {
               horizontal: Spacing.m,
               vertical: Spacing.goalCardVertical,
             ),
-            decoration: BoxDecoration(
-              // Glass effect: white with 20% opacity (Figma v3)
-              color: DsColors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(Sizes.radiusL),
-              // White borders instead of black for softer Figma look
-              border: Border.all(
-                color: selected
-                    ? DsColors.white.withValues(alpha: 0.5)
-                    : DsColors.white.withValues(alpha: 0.3),
-                width: selected ? 1.5 : 1,
-              ),
-            ),
+            decoration: selected
+                ? BoxDecoration(
+                    color: DsColors.white.withValues(alpha: 0.30),
+                    borderRadius: BorderRadius.circular(Sizes.radiusL),
+                    border: Border.all(
+                      color: DsColors.signature,
+                      width: 2.0,
+                    ),
+                  )
+                : DsEffects.glassCardStrong,
             child: Row(
               children: [
                 if (icon != null) ...[

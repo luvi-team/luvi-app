@@ -92,5 +92,9 @@ class Sizes {
   /// HEUTE Label Font Size - klein für Einzeiler (Figma: 10px)
   static const double todayLabelFontSize = 10.0;
 
+  /// Calendar day cell label height (matches todayLabelFontSize for consistent alignment)
+  /// Used as placeholder height for non-HEUTE days to ensure uniform row height
+  static const double calendarDayLabelHeight = todayLabelFontSize;
+
   Sizes._();
 }

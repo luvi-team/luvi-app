@@ -5,6 +5,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
@@ -80,15 +81,17 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Container(
-        // Ensure gradient fills entire screen even with keyboard
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: DsGradients.onboardingStandard,
-        ),
-        child: SafeArea(
-        child: SingleChildScrollView(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          // Ensure gradient fills entire screen even with keyboard
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: DsGradients.onboardingStandard,
+          ),
+          child: SafeArea(
+          child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -111,6 +114,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
           ),
         ),
         ),
+      ),
       ),
     );
   }
@@ -143,6 +147,8 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
           autofocus: true,
           hintText: '',
           fontSize: Sizes.onboardingInputFontSize, // 18px (Figma v2)
+          fontFamilyOverride: FontFamilies.playfairDisplay,
+          fontWeightOverride: FontWeight.bold,
           onSubmitted: (_) {
             if (_hasText) {
               _handleContinue();

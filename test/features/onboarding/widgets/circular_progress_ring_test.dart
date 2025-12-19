@@ -11,6 +11,7 @@ Future<void> _pumpRing(
   double size = 200,
   GlobalKey<CircularProgressRingState>? ringKey,
   Locale locale = const Locale('de'),
+  bool isSpinning = true,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -23,6 +24,7 @@ Future<void> _pumpRing(
           duration: duration,
           onAnimationComplete: onAnimationComplete,
           size: size,
+          isSpinning: isSpinning,
         ),
       ),
     ),
@@ -53,7 +55,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 250));
     expect(find.textContaining('%'), findsOneWidget);
 
-    // Complete animation
+    // Complete animation (pump enough frames for progress to complete)
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('100%'), findsOneWidget);
   });
@@ -76,8 +78,9 @@ void main() {
   });
 
   testWidgets('has correct semantics in German', (tester) async {
-    await _pumpRing(tester, locale: const Locale('de'));
-    await tester.pumpAndSettle();
+    await _pumpRing(tester, locale: const Locale('de'), isSpinning: false);
+    // Use pump instead of pumpAndSettle to avoid infinite animation loop
+    await tester.pump();
 
     // Verify Semantics widget exists with the localized label
     final semanticsWidget = find.byWidgetPredicate(
@@ -89,8 +92,9 @@ void main() {
   });
 
   testWidgets('has correct semantics in English', (tester) async {
-    await _pumpRing(tester, locale: const Locale('en'));
-    await tester.pumpAndSettle();
+    await _pumpRing(tester, locale: const Locale('en'), isSpinning: false);
+    // Use pump instead of pumpAndSettle to avoid infinite animation loop
+    await tester.pump();
 
     // Verify Semantics widget exists with the localized label
     final semanticsWidget = find.byWidgetPredicate(
@@ -99,5 +103,22 @@ void main() {
           widget.properties.label == 'Loading progress',
     );
     expect(semanticsWidget, findsOneWidget);
+  });
+
+  testWidgets('contains Transform.rotate for rotation animation', (tester) async {
+    await _pumpRing(tester, isSpinning: true);
+    await tester.pump();
+
+    // Verify rotation Transform exists
+    expect(find.byType(Transform), findsWidgets);
+  });
+
+  testWidgets('stops rotation when isSpinning is false', (tester) async {
+    await _pumpRing(tester, isSpinning: false);
+    await tester.pump();
+
+    // Ring should still render without spinning
+    expect(find.byType(CircularProgressRing), findsOneWidget);
+    expect(find.text('0%'), findsOneWidget);
   });
 }

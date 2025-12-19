@@ -49,13 +49,26 @@ class _OnboardingSuccessScreenState
   O9AnimationState _state = O9AnimationState.animating;
   final GlobalKey<CircularProgressRingState> _progressKey = GlobalKey();
 
-  // Content cards layout constants (Figma O9 Success Screen specs)
+  // Content cards layout constants (Figma O9 Success Screen specs v3)
   static const double _cardsContainerHeight = 280.0;
+
+  // Card 1 (oben links, vertikal)
   static const double _card1Width = 150.0;
-  static const double _card2Width = 120.0;
-  static const double _card2TopOffset = 20.0;
+  static const double _card1ImageWidth = 92.0;
+  static const double _card1ImageHeight = 127.0;
+
+  // Card 2 (rechts, horizontal) - constrained width to prevent spanning screen
+  static const double _card2Width = 180.0;
+  static const double _card2Height = 120.0;
+  static const double _card2ImageWidth = 46.0;
+  static const double _card2ImageHeight = 90.0;
+  static const double _card2TopOffset = 60.0;
+
+  // Card 3 (unten, horizontal)
   static const double _card3Width = 133.0;
   static const double _card3Height = 114.0;
+  static const double _card3ImageWidth = 46.0;
+  static const double _card3ImageHeight = 90.0;
   static const double _card3LeftOffset = 20.0;
 
   void _onAnimationComplete() {
@@ -295,37 +308,46 @@ class _OnboardingSuccessScreenState
     return SizedBox(
       height: _cardsContainerHeight,
       child: Stack(
-        alignment: Alignment.center,
         children: [
-          // Card 1 - top left
+          // Card 1 - oben links (vertikal: Bild oben, Text unten)
           Positioned(
             left: 0,
             top: 0,
-            child: _ContentPreviewCard(
+            child: _VerticalContentCard(
               imagePath: 'assets/images/onboarding/content_card_1.png',
               text: l10n.onboardingContentCard1,
               width: _card1Width,
+              imageWidth: _card1ImageWidth,
+              imageHeight: _card1ImageHeight,
             ),
           ),
-          // Card 2 - top right
+          // Card 2 - rechts mittig (horizontal: Bild links, Text rechts)
+          // NOTE: Full text intentionally kept per Designer decision (Figma v3 review).
+          // Width constrained to _card2Width=180 to prevent overflow.
           Positioned(
             right: 0,
             top: _card2TopOffset,
-            child: _ContentPreviewCard(
+            child: _HorizontalContentCard(
               imagePath: 'assets/images/onboarding/content_card_2.png',
               text: l10n.onboardingContentCard2,
               width: _card2Width,
+              height: _card2Height,
+              imageWidth: _card2ImageWidth,
+              imageHeight: _card2ImageHeight,
             ),
           ),
-          // Card 3 - bottom left (Figma: 133×114px)
+          // Card 3 - unten links (horizontal: Text links, Bild rechts per Figma)
           Positioned(
             left: _card3LeftOffset,
             bottom: 0,
-            child: _ContentPreviewCard(
+            child: _HorizontalContentCard(
               imagePath: 'assets/images/onboarding/content_card_3.png',
               text: l10n.onboardingContentCard3,
               width: _card3Width,
               height: _card3Height,
+              imageWidth: _card3ImageWidth,
+              imageHeight: _card3ImageHeight,
+              imageOnRight: true,
             ),
           ),
         ],
@@ -345,6 +367,7 @@ class _OnboardingSuccessScreenState
           key: _progressKey,
           duration: const Duration(seconds: 3),
           onAnimationComplete: _onAnimationComplete,
+          isSpinning: _state != O9AnimationState.success,
         ),
         SizedBox(height: Spacing.l),
         Text(
@@ -382,59 +405,121 @@ class _OnboardingSuccessScreenState
   }
 }
 
-/// Content preview card widget for success screen (Figma O9)
-class _ContentPreviewCard extends StatelessWidget {
-  const _ContentPreviewCard({
+/// Vertical content preview card (Bild oben, Text unten) for O9 Card 1
+class _VerticalContentCard extends StatelessWidget {
+  const _VerticalContentCard({
     required this.imagePath,
     required this.text,
-    this.width = 140,
-    this.height,
+    required this.width,
+    required this.imageWidth,
+    required this.imageHeight,
   });
 
   final String imagePath;
   final String text;
   final double width;
-  final double? height;
+  final double imageWidth;
+  final double imageHeight;
 
-  // Widget-specific layout constants (Figma Success Screen specs)
-  static const double _imageHeight = 80.0;
   static const double _textFontSize = 12.0;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: height,
-      padding: const EdgeInsets.all(Spacing.xs),
+      padding: const EdgeInsets.all(Spacing.s),
       decoration: DsEffects.successCardGlass,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(Sizes.radiusM),
+            borderRadius: BorderRadius.circular(Sizes.radiusCard),
             child: Image.asset(
               imagePath,
-              width: width - (Spacing.xs * 2),
-              height: _imageHeight,
+              width: imageWidth,
+              height: imageHeight,
               fit: BoxFit.cover,
               errorBuilder: Assets.defaultImageErrorBuilder,
             ),
           ),
           const SizedBox(height: Spacing.xs),
-          Flexible(
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: _textFontSize,
-                fontWeight: FontWeight.w500,
-                color: DsColors.grayscaleBlack,
-              ),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: _textFontSize,
+              fontWeight: FontWeight.w500,
+              color: DsColors.grayscaleBlack,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Horizontal content preview card for O9 Card 2/3
+/// Supports image on left (default) or right via [imageOnRight] parameter
+class _HorizontalContentCard extends StatelessWidget {
+  const _HorizontalContentCard({
+    required this.imagePath,
+    required this.text,
+    this.width,
+    required this.height,
+    required this.imageWidth,
+    required this.imageHeight,
+    this.imageOnRight = false,
+  });
+
+  final String imagePath;
+  final String text;
+  final double? width;
+  final double height;
+  final double imageWidth;
+  final double imageHeight;
+  final bool imageOnRight;
+
+  static const double _textFontSize = 12.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final imageWidget = ClipRRect(
+      borderRadius: BorderRadius.circular(Sizes.radiusCard),
+      child: Image.asset(
+        imagePath,
+        width: imageWidth,
+        height: imageHeight,
+        fit: BoxFit.cover,
+        errorBuilder: Assets.defaultImageErrorBuilder,
+      ),
+    );
+
+    final textWidget = Flexible(
+      child: Text(
+        text,
+        textAlign: TextAlign.start,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: _textFontSize,
+          fontWeight: FontWeight.w500,
+          color: DsColors.grayscaleBlack,
+        ),
+      ),
+    );
+
+    return Container(
+      width: width,
+      height: height,
+      padding: const EdgeInsets.all(Spacing.s),
+      decoration: DsEffects.successCardGlass,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: imageOnRight
+            ? [textWidget, const SizedBox(width: Spacing.xs), imageWidget]
+            : [imageWidget, const SizedBox(width: Spacing.xs), textWidget],
       ),
     );
   }

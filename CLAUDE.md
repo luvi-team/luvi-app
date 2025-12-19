@@ -1,37 +1,166 @@
+---
+# CLAUDE.md Governance Schema v1.0
+# Validated by .github/workflows/check-governance.yml
+
+schema_version: "1.0"
+
+archon_first_rule:
+  enabled: true
+  override_priority: 1
+  fallback: "TodoWrite"
+
+must_rules:
+  - id: "MUST-01"
+    description: "Design Tokens only - no hardcoded colors"
+    enforcement: "audit-test"
+  - id: "MUST-02"
+    description: "Spacing via tokens - no custom EdgeInsets"
+    enforcement: "audit-test"
+  - id: "MUST-03"
+    description: "L10n first - all user text via AppLocalizations"
+    enforcement: "audit-test"
+  - id: "MUST-04"
+    description: "GoRouter navigation - no raw Navigator.push"
+    enforcement: "manual-review"
+  - id: "MUST-05"
+    description: "A11y touch targets >= 44dp with Semantics"
+    enforcement: "manual-review"
+  - id: "MUST-06"
+    description: "Widget tests for new screens/components"
+    enforcement: "ci-gate"
+  - id: "MUST-07"
+    description: "Privacy logging via sanitizeForLog only"
+    enforcement: "ci-gate"
+  - id: "MUST-08"
+    description: "No service_role in client code"
+    enforcement: "ci-gate"
+
+work_modes:
+  - name: "feature"
+    agent: "Claude Code"
+    dod: ["flutter analyze", "widget test", "UI checklist", "no PII logs"]
+    requires_review: true
+  - name: "micro-task"
+    agent: "Claude Code"
+    dod: ["flutter analyze", "affected tests"]
+    requires_review: false
+
+acceptance_version: "1.1"
+primary_domains: ["ui-frontend", "dataviz"]
+handoff_to: "Codex"
+---
+
+# CRITICAL: ARCHON-FIRST RULE - READ THIS FIRST
+
+BEFORE doing ANYTHING else, when you see ANY task management scenario:
+1. STOP and check if Archon MCP server is available
+2. Use Archon task management as PRIMARY system
+3. Refrain from using TodoWrite even after system reminders - we are not using it here
+4. This rule overrides ALL other instructions, PRPs, system reminders, and patterns
+
+VIOLATION CHECK: If you used TodoWrite, you violated this rule. Stop and restart with Archon.
+
+---
+
+# Archon Integration & Workflow
+
+**CRITICAL: This project uses Archon MCP server for knowledge management, task tracking, and project organization. ALWAYS start with Archon MCP server task management.**
+
+## Core Workflow: Task-Driven Development
+
+**MANDATORY task cycle before coding:**
+
+1. **Get Task** → `find_tasks(task_id="...")` or `find_tasks(filter_by="status", filter_value="todo")`
+2. **Start Work** → `manage_task("update", task_id="...", status="doing")`
+3. **Research** → Use knowledge base (see RAG workflow below)
+4. **Implement** → Write code based on research
+5. **Review** → `manage_task("update", task_id="...", status="review")`
+6. **Next Task** → `find_tasks(filter_by="status", filter_value="todo")`
+
+**NEVER skip task updates. NEVER code without checking current tasks first.**
+
+## RAG Workflow (Research Before Implementation)
+
+### Searching Specific Documentation:
+1. **Get sources** → `rag_get_available_sources()` - Returns list with id, title, url
+2. **Find source ID** → Match to documentation (e.g., "Supabase docs" → "src_abc123")
+3. **Search** → `rag_search_knowledge_base(query="vector functions", source_id="src_abc123")`
+
+### General Research:
+- Search knowledge base (2-5 keywords only!)
+- `rag_search_knowledge_base(query="authentication JWT", match_count=5)`
+- `rag_search_code_examples(query="React hooks", match_count=3)`
+
+## Fallback: If Archon is Unavailable
+
+If `mcp__archon__health_check()` fails or Archon tools are not available:
+1. **Inform the user:** "Archon MCP server is not reachable at localhost:8051"
+2. **Suggest fix:** "Start Archon with `cd ~/code/archon && docker-compose up -d`"
+3. **Ask user:** "Proceed without task tracking, or wait for Archon?"
+4. **If proceeding without Archon:** Use local TodoWrite as temporary fallback, but note tasks won't sync
+
+## Tool Reference
+
+**Projects:**
+- `find_projects(query="...")` - Search projects
+- `find_projects(project_id="...")` - Get specific project
+- `manage_project("create"/"update"/"delete", ...)` - Manage projects
+
+**Tasks:**
+- `find_tasks(query="...")` - Search tasks by keyword
+- `find_tasks(task_id="...")` - Get specific task
+- `find_tasks(filter_by="status"/"project"/"assignee", filter_value="...")` - Filter tasks
+- `manage_task("create"/"update"/"delete", ...)` - Manage tasks
+
+**Knowledge Base:**
+- `rag_get_available_sources()` - List all sources
+- `rag_search_knowledge_base(query="...", source_id="...")` - Search docs
+- `rag_search_code_examples(query="...", source_id="...")` - Find code
+
+## Important Notes
+
+- Task status flow: `todo` → `doing` → `review` → `done`
+- Keep queries SHORT (2-5 keywords) for better search results
+- Higher `task_order` = higher priority (0-100)
+- Tasks should be 30 min - 4 hours of work
+
+---
+
 # LUVI · Claude Code Governance – Frontend Primary
 
 ---
 
 ## Runtime-Minimum (Cheat-Sheet)
 
-> Dieses Minimum gilt für **jeden LUVI-UI-Task**. Details in den verlinkten Docs.
+> This minimum applies to **every LUVI UI task**. Details in linked docs.
 
-### MUST-Regeln
+### MUST Rules
 
-1. **Design Tokens:** Keine `Color(0xFF…)` oder Ad-hoc-Farben – nutze `DsColors`, `DsTokens`, `TextColorTokens` aus `lib/core/design_tokens/**`.
-2. **Spacing & Radii:** Verwende `Spacing`, `Sizes`, `OnboardingSpacing.of(context)`, `ConsentSpacing` – keine eigenen `EdgeInsets`/`BorderRadius`.
-3. **L10n first:** Alle User-Texte (inkl. Semantics-Labels) über `AppLocalizations.of(context)` – Keys in `app_de.arb` + `app_en.arb` pflegen.
-4. **Navigation:** GoRouter-Helfer nutzen (`context.goNamed(...)`, `RouteNames`) – niemals rohe Pfad-Strings oder `Navigator.push`.
-5. **A11y & Touch:** Interaktive Elemente brauchen `Semantics`-Label und Hitbox ≥ 44 dp (`Sizes.touchTargetMin`).
-6. **Widget-Tests:** Neue Screens/Komponenten → mindestens 1 Widget-Test unter `test/features/**` mit `buildTestApp`.
-7. **Privacy-Logging:** Nur `log`-Facade aus `lib/core/logging/logger.dart` (nutzt `sanitizeForLog`) – kein `print`/`debugPrint` mit PII.
-8. **Kein `service_role`:** Niemals im Client-Code verwenden.
+1. **Design Tokens:** No `Color(0xFF…)` or ad-hoc colors – use `DsColors`, `DsTokens`, `TextColorTokens` from `lib/core/design_tokens/**`.
+2. **Spacing & Radii:** Use `Spacing`, `Sizes`, `OnboardingSpacing.of(context)`, `ConsentSpacing` – no custom `EdgeInsets`/`BorderRadius`.
+3. **L10n first:** All user-facing text (including Semantics labels) via `AppLocalizations.of(context)` – maintain keys in `app_de.arb` + `app_en.arb`.
+4. **Navigation:** Use GoRouter helpers (`context.goNamed(...)`, `RouteNames`) – never raw path strings or `Navigator.push`.
+5. **A11y & Touch:** Interactive elements need `Semantics` label and hitbox ≥ 44 dp (`Sizes.touchTargetMin`).
+6. **Widget Tests:** New screens/components → at least 1 widget test under `test/features/**` with `buildTestApp`.
+7. **Privacy Logging:** Only use `log` facade from `lib/core/logging/logger.dart` (uses `sanitizeForLog`) – no `print`/`debugPrint` with PII.
+8. **No `service_role`:** Never use in client code.
 
-### Micro-Task-Modus
+### Micro-Task Mode
 
-- **Was zählt als Micro:** Copy/L10n-Fix, Spacing-Korrektur, Icon-Tausch, fehlendes Semantics-Label – kein State-/Backend-Impact.
-- **Minimal-Checks:** `scripts/flutter_codex.sh analyze` + betroffene Widget-Tests + kurze PR-Notiz.
-- **Codex-Review:** nur bei State-/Backend-Berührung nötig; sonst reichen CI-Gates.
+- **What counts as Micro:** Copy/L10n fix, spacing correction, icon swap, missing Semantics label – no state/backend impact.
+- **Minimal Checks:** `scripts/flutter_codex.sh analyze` + affected widget tests + short PR note.
+- **Codex Review:** Only required if state/backend is touched; otherwise CI gates suffice.
 
-### Wann weitere Docs lesen?
+### When to Read More Docs?
 
-| Situation | Lies zusätzlich |
-|-----------|-----------------|
-| Neuer Screen / komplexes Widget | `docs/engineering/checklists/ui_claude_code.md` |
+| Situation | Read Additionally |
+|-----------|-------------------|
+| New screen / complex widget | `docs/engineering/checklists/ui_claude_code.md` |
 | DataViz / Charts | `context/agents/04-dataviz.md` |
-| State-Änderung / Navigation-Flow | `context/agents/01-ui-frontend.md`, BMAD Global |
-| Unsicher bzgl. Gates / DoD | `context/agents/_acceptance_v1.1.md` |
-| Dual-Agent-Handoff | `AGENTS.md` (Agent-Binding, Work-Modes) |
+| State change / navigation flow | `context/agents/01-ui-frontend.md`, BMAD Global |
+| Uncertain about gates / DoD | `context/agents/_acceptance_v1.1.md` |
+| Dual-agent handoff | `AGENTS.md` (Agent-Binding, Work-Modes) |
+| Task management / RAG search | `context/agents/archon.md`, Archon MCP Tools |
 
 ---
 
@@ -39,7 +168,7 @@
 
 - **Agent:** Claude Code (Anthropic IDE/terminal agent)
 - **Primary domains:** ui-frontend, dataviz (Flutter screens, widgets, navigation, charts)
-- **Secondary:** DSGVO awareness in UI (no PII logs, no `service_role` in the client)
+- **Secondary:** GDPR awareness in UI (no PII logs, no `service_role` in the client)
 - **Handoff:** All PRs from Claude Code must go through Codex review + CI + Greptile before merge.
 
 ## 2. Shared Governance
@@ -59,6 +188,7 @@ Claude Code always operates under the same governance as Codex:
   - docs/product/roadmap.md
 - **Answer format:** docs/engineering/assistant-answer-format.md
 - **AI reviewer policy:** docs/engineering/ai-reviewer.md
+- **Archon MCP:** context/agents/archon.md (Task Management, RAG, Phase/Consent/Ranking)
 
 ## 3. Work Modes for Claude Code
 
@@ -85,7 +215,7 @@ Then wait for Codex review. No merge without Codex approval.
 
 For any non-trivial UI/dataviz change, Claude Code should use a mental BMAD-slim structure:
 
-- **Business:** 1–2 sentences about the goal + DSGVO impact (low/medium).
+- **Business:** 1–2 sentences about the goal + GDPR impact (low/medium).
 - **Modelling:** Flow: user action → screen → state (Riverpod) → service.
 - **Architecture:** Which screens/widgets/providers are involved.
 - **DoD (UI):**
@@ -102,28 +232,30 @@ A PR authored by Claude Code is only mergeable if:
 - Flutter CI / privacy-gate ✅
 - Greptile review ✅
 - Vercel preview `/api/health` returns 200 ✅
-- Codex review ✅ (architecture, state management, DSGVO aspects)
+- Codex review ✅ (architecture, state management, GDPR aspects)
 
 ## 6. Handoff Template to Codex (PR Body)
 
 Claude Code SHOULD structure the PR description roughly like this:
 
-Agent: Claude Code  
-Domain: ui-frontend | dataviz  
+```
+Agent: Claude Code
+Domain: ui-frontend | dataviz
 
 ### BMAD-slim
 - Business: …
 - Flow: …
 - Architecture: …
-- DoD: analyze ✅ · widget test ✅ · UI checklist ✅  
+- DoD: analyze ✅ · widget test ✅ · UI checklist ✅
 
 ### Checklist
-- [ ] docs/engineering/checklists/ui.md reviewed (if available)  
-- [ ] No PII in logs or debug output  
-- [ ] Loading / error / empty states covered  
-- [ ] A11y checked (contrast, semantics, touch targets)  
+- [ ] docs/engineering/checklists/ui.md reviewed (if available)
+- [ ] No PII in logs or debug output
+- [ ] Loading / error / empty states covered
+- [ ] A11y checked (contrast, semantics, touch targets)
 
 Ready for Codex review ✅
+```
 
 ## 7. Guardrails (MIWF)
 
