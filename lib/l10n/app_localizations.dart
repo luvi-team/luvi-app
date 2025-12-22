@@ -1349,6 +1349,18 @@ abstract class AppLocalizations {
   /// **'Too many requests right now. Please wait a moment and try again.'**
   String get consentSnackbarRateLimited;
 
+  /// Snackbar message when edge function is unreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'The service is temporarily unavailable. Please try again later.'**
+  String get consentSnackbarServiceUnavailable;
+
+  /// Snackbar message for HTTP 5xx errors.
+  ///
+  /// In en, this message translates to:
+  /// **'A server error occurred. Please try again later.'**
+  String get consentSnackbarServerError;
+
   /// Headline on the SignIn entry screen (glassmorphism card).
   ///
   /// In en, this message translates to:

@@ -130,9 +130,12 @@ class Consent02Screen extends ConsumerWidget {
         _navigateAfterConsent(context);
         return;
       }
-      final message = error.code == 'rate_limit'
-          ? l10n.consentSnackbarRateLimited
-          : l10n.consentSnackbarError;
+      final message = switch (error.code) {
+        'rate_limit' => l10n.consentSnackbarRateLimited,
+        'function_unavailable' => l10n.consentSnackbarServiceUnavailable,
+        'server_error' => l10n.consentSnackbarServerError,
+        _ => l10n.consentSnackbarError,
+      };
       _showConsentErrorSnackbar(context, message);
     } catch (error, stackTrace) {
       if (!context.mounted) return;

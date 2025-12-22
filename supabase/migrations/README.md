@@ -132,4 +132,29 @@ supabase migration list
 - CHECK constraints validate business rules
 - Indexes optimize common query patterns
 
-Following LUVI principle: "Engine darf nackt laufen  Daten nie" (Data protection is always active).
+Following LUVI principle: "Engine darf nackt laufen – Daten nie" (Data protection is always active).
+
+## Consent Change-Set Rule
+
+**CRITICAL**: Consent-related changes form an atomic change-set.
+
+### What counts as a "Consent Change"?
+
+Changes to **any** of the following components require coordinated deployment:
+
+| Component | Examples |
+|-----------|----------|
+| **DB Table** | `public.consents` (schema, constraints, RLS) |
+| **DB Function** | `public.log_consent_if_allowed` |
+| **Edge Function** | `supabase/functions/log_consent/` |
+| **Scopes Config** | `config/consent_scopes.json` |
+| **Migrations** | `*consent*.sql`, `*consents*.sql`, or RPC changes |
+
+**Why?** Format drift between App, Edge Function, and DB constraint causes silent failures.
+
+### Checklist before merging consent changes
+
+- [ ] Migration applied: `supabase db push`
+- [ ] Edge Function deployed: `supabase functions deploy log_consent`
+- [ ] Contract test passes: `deno test supabase/tests/log_consent.test.ts`
+- [ ] SSOT test passes: `deno test supabase/functions/log_consent/consent_scopes_ssot.test.ts`

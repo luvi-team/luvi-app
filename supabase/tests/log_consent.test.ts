@@ -98,6 +98,26 @@ Deno.test("log_consent: accepts valid POST requests", async () => {
   assertEquals(typeof data.request_id, "string");
 });
 
+Deno.test("log_consent: accepts canonical scopes object format with version alias", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      version: "v1.0.0", // App sends "version", not "policy_version" - test alias
+      scopes: { terms: true, analytics: true }, // CANONICAL Object-Format
+      source: "contract-test-canonical",
+      appVersion: "1.0.0-test",
+    }),
+  });
+
+  assertEquals(response.status, 201);
+  const data = await response.json();
+  assertEquals(data.ok, true);
+  assertExists(data.request_id);
+  assertEquals(typeof data.request_id, "string");
+});
+
 Deno.test("log_consent: rejects non-POST methods", async () => {
   const response = await fetch(FUNCTION_URL, {
     method: "GET",

@@ -892,6 +892,14 @@
   "@consentSnackbarRateLimited": {
     "description": "Snackbar text shown when consent logging is rate limited."
   },
+  "consentSnackbarServiceUnavailable": "The service is temporarily unavailable. Please try again later.",
+  "@consentSnackbarServiceUnavailable": {
+    "description": "Snackbar message when edge function is unreachable."
+  },
+  "consentSnackbarServerError": "A server error occurred. Please try again later.",
+  "@consentSnackbarServerError": {
+    "description": "Snackbar message for HTTP 5xx errors."
+  },
   "authSignInHeadline": "Don't miss out on becoming your best self!",
   "@authSignInHeadline": {
     "description": "Headline on the SignIn entry screen (glassmorphism card)."

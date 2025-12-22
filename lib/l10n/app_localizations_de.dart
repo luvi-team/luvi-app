@@ -668,6 +668,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
 
   @override
+  String get consentSnackbarServiceUnavailable => 'Der Dienst ist vorübergehend nicht erreichbar. Bitte versuche es später erneut.';
+
+  @override
+  String get consentSnackbarServerError => 'Ein Serverfehler ist aufgetreten. Bitte versuche es später erneut.';
+
+  @override
   String get authSignInHeadline => 'Verpasse es nicht, das Beste aus dir zu machen!';
 
   @override

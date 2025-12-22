@@ -892,6 +892,14 @@
   "@consentSnackbarRateLimited": {
     "description": "Snackbar-Hinweis bei Rate-Limit-Blockierungen während des Consent-Loggings."
   },
+  "consentSnackbarServiceUnavailable": "Der Dienst ist vorübergehend nicht erreichbar. Bitte versuche es später erneut.",
+  "@consentSnackbarServiceUnavailable": {
+    "description": "Snackbar-Hinweis wenn die Edge Function nicht erreichbar ist."
+  },
+  "consentSnackbarServerError": "Ein Serverfehler ist aufgetreten. Bitte versuche es später erneut.",
+  "@consentSnackbarServerError": {
+    "description": "Snackbar-Hinweis bei HTTP 5xx Fehlern."
+  },
   "authSignInHeadline": "Verpasse es nicht, das Beste aus dir zu machen!",
   "@authSignInHeadline": {
     "description": "Headline auf dem SignIn-Entry-Screen (Glassmorphism Card)."

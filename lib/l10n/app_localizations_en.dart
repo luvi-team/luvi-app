@@ -668,6 +668,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentSnackbarRateLimited => 'Too many requests right now. Please wait a moment and try again.';
 
   @override
+  String get consentSnackbarServiceUnavailable => 'The service is temporarily unavailable. Please try again later.';
+
+  @override
+  String get consentSnackbarServerError => 'A server error occurred. Please try again later.';
+
+  @override
   String get authSignInHeadline => 'Don\'t miss out on becoming your best self!';
 
   @override

@@ -26,53 +26,67 @@ class ConsentService {
     // Canonical format (SSOT): send scopes as a JSON object of boolean flags
     // instead of an array to avoid format drift in DB/event logs.
     final scopesMap = <String, bool>{for (final s in scopes) s: true};
-    final response = await Supabase.instance.client.functions.invoke(
-      'log_consent',
-      body: {'version': version, 'scopes': scopesMap},
-    );
 
-    final status = response.status;
-    final responseBody = _asJsonMap(response.data);
-    final requestId = responseBody?['request_id']?.toString();
-
-    final isSuccessStatus = status >= 200 && status < 300;
-    if (!isSuccessStatus) {
-      final serverError = responseBody?['error'] as String?;
-      final isRateLimited = status == 429;
-      final isUnauthorized = status == 401;
-      final message = isRateLimited
-          ? 'Consent logging is temporarily rate limited. Please retry later.'
-          : isUnauthorized
-          ? (serverError ?? 'Unauthorized')
-          : (serverError ?? 'Failed to log consent.');
-      log.w(
-        'log_consent failed (status=$status, request_id=${requestId ?? 'n/a'})',
-        tag: _logTag,
+    late final FunctionResponse response;
+    try {
+      response = await Supabase.instance.client.functions.invoke(
+        'log_consent',
+        body: {'version': version, 'scopes': scopesMap},
       );
+    } on FunctionException catch (e) {
+      // FunctionException is thrown for ALL non-2xx status codes.
+      // Status-based mapping to provide precise error codes.
+      final status = e.status;
+      log.w('log_consent failed (status=$status)', tag: _logTag);
+
+      if (status == 401) {
+        throw ConsentException(401, 'Unauthorized', code: 'unauthorized');
+      } else if (status == 429) {
+        throw ConsentException(429, 'Rate limit exceeded', code: 'rate_limit');
+      } else if (status >= 500) {
+        throw ConsentException(status, 'Server error', code: 'server_error');
+      } else if (status == 404) {
+        // Edge Function not deployed or not found
+        throw ConsentException(
+          404,
+          'Function not found',
+          code: 'function_unavailable',
+        );
+      } else {
+        // Other client errors (4xx)
+        throw ConsentException(
+          status,
+          'Client error',
+          code: 'client_error',
+        );
+      }
+    } catch (e) {
+      // Network/Transport errors (SocketException, TimeoutException, etc.)
+      // Classify as function_unavailable for consistent UX messaging.
+      log.w('log_consent network error', tag: _logTag, error: e.runtimeType);
       throw ConsentException(
-        status,
-        message,
-        code: isRateLimited
-            ? 'rate_limit'
-            : isUnauthorized
-            ? 'unauthorized'
-            : null,
+        503,
+        'Service unavailable',
+        code: 'function_unavailable',
       );
     }
 
+    // 2xx success - validate response payload
+    final responseBody = _asJsonMap(response.data);
     if (responseBody == null || responseBody['ok'] != true) {
       final payloadDiagnostics = _payloadDiagnostics(response.data);
       log.w(
-        'log_consent returned unexpected payload (status=$status, ok=${responseBody?['ok']}, payload=$payloadDiagnostics)',
+        'log_consent returned unexpected payload (status=${response.status}, ok=${responseBody?['ok']}, payload=$payloadDiagnostics)',
         tag: _logTag,
       );
       throw ConsentException(
-        status,
+        response.status,
         'log_consent returned an unexpected response payload.',
         code: 'unexpected_response',
       );
     }
 
+    final requestId = responseBody['request_id']?.toString();
     if (requestId != null) {
       log.i('log_consent succeeded (request_id=$requestId)', tag: _logTag);
     }
