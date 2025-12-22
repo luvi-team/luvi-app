@@ -326,7 +326,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
+    return new Response(JSON.stringify({ error: "scopes must be provided" }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -341,9 +341,27 @@ if (import.meta.main) {
     !Array.isArray(rawScopes)
   ) {
     const scopeMap = rawScopes as Record<string, unknown>;
-    normalizedScopes = Object.keys(scopeMap).filter((key) =>
-      Boolean(scopeMap[key])
-    );
+    const invalidValue = Object.values(scopeMap).find((v) => typeof v !== "boolean");
+    if (invalidValue != null) {
+      logMetric(requestId, "invalid", {
+        reason: "invalid_scopes_value_type",
+        providedType: typeof invalidValue,
+        ip_hash: ipHash,
+        ua_hash: uaHash,
+        hash_version: CONSENT_HASH_VERSION,
+      });
+      return new Response(
+        JSON.stringify({ error: "scopes object values must be boolean" }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "X-Request-Id": requestId,
+          },
+        },
+      );
+    }
+    normalizedScopes = Object.keys(scopeMap).filter((key) => scopeMap[key] === true);
   } else {
     logMetric(requestId, "invalid", {
       reason: "invalid_scopes_type",
@@ -353,7 +371,7 @@ if (import.meta.main) {
       hash_version: CONSENT_HASH_VERSION,
     });
     return new Response(
-      JSON.stringify({ error: "scopes must be provided as an array or object of enabled flags" }),
+      JSON.stringify({ error: "scopes must be provided as an array or object of boolean flags" }),
       {
         status: 400,
         headers: {
@@ -371,7 +389,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
+    return new Response(JSON.stringify({ error: "scopes must be non-empty" }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -421,7 +439,8 @@ if (import.meta.main) {
   const payload = {
     user_id: userResult.user.id,
     version: policyVersion,
-    scopes: validatedScopes,
+    scopes: Object.fromEntries(validatedScopes.map((s) => [s, true] as const)),
+    scope_count: validatedScopes.length,
   } as const;
 
   // Compute a deterministic pseudonym for metrics: prefer HMAC(user_id, salt)
@@ -497,7 +516,7 @@ if (import.meta.main) {
   const elapsed = Date.now() - started;
   logMetric(requestId, "success", {
     consent_id_hash: consentIdHash,
-    scopes_count: payload.scopes.length,
+    scopes_count: payload.scope_count,
     duration_ms: elapsed,
     rpc_latency_ms: rpcDuration,
     version: payload.version,
@@ -514,7 +533,7 @@ if (import.meta.main) {
     console.info("consent_recorded", {
       consent_id_hash: consentIdHash,
       version: payload.version,
-      scope_count: payload.scopes.length,
+      scope_count: payload.scope_count,
     });
   } catch (_) {
     // Ignore logging failures to avoid impacting the response path

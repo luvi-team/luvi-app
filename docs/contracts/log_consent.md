@@ -10,7 +10,9 @@ Zweck: Definiert den aktuellen Request/Response-Contract der Supabase Edge Funct
   - `Content-Type: application/json`
 - **Body (JSON)**:
   - `policy_version` (string, Pflicht) · Alias `version` wird akzeptiert
-  - `scopes` (string[], Pflicht) · Non-empty und nur Werte aus `health | analytics | marketing | ai_journal | terms`
+  - `scopes` (object, Pflicht) · Canonical: JSON-Objekt mit boolean-flags `{ "<scope_id>": true, ... }`
+    - Legacy (MVP-Compat): `string[]` wird akzeptiert, wird serverseitig in das Objekt-Format normalisiert
+    - Erlaubte Scope-IDs: `terms | health_processing | analytics | marketing | ai_journal | model_training`
   - `source` (string, optional) · Herkunft der Einwilligung (z.B. `contract-test`, `onboarding`)
   - `appVersion` (string, optional) · Client-Build zur Metrik-Korrelation
 - `user_id` wird nie übergeben, sondern aus dem JWT (`auth.getUser()`) gelesen.
@@ -25,7 +27,7 @@ Zweck: Definiert den aktuellen Request/Response-Contract der Supabase Edge Funct
 | --- | --- | --- |
 | 405 | Methode ≠ `POST` | `{ "error": "Method not allowed" }` + `X-Request-Id` |
 | 401 | `Authorization` fehlt oder Token ungültig | `{ "error": "Missing Authorization header" }` bzw. `{ "error": "Unauthorized" }` |
-| 400 | Invalides JSON, `policy_version` fehlt, `scopes` leer oder enthält unbekannte Werte | `{ "error": "Invalid request body" }`, `{ "error": "policy_version is required" }`, `{ "error": "scopes must be a non-empty array" }`, bzw. `{ "error": "Invalid scopes provided", "invalidScopes": [...] }` |
+| 400 | Invalides JSON, `policy_version` fehlt, `scopes` leer/invalid oder enthält unbekannte Werte | `{ "error": "Invalid request body" }`, `{ "error": "policy_version is required" }`, `{ "error": "scopes must be provided" }`, `{ "error": "scopes must be non-empty" }`, bzw. `{ "error": "Invalid scopes provided", "invalidScopes": [...] }` |
 | 429 | Sliding-Window-Limit verletzt (`CONSENT_RATE_LIMIT_WINDOW_SEC`/`CONSENT_RATE_LIMIT_MAX_REQUESTS`, Default 60s/20 Requests pro Nutzer) | `{ "error": "Rate limit exceeded" }` + `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining=0` |
 | 500 | RPC `log_consent_if_allowed` liefert Fehler | `{ "error": "Failed to log consent" }` |
 

@@ -1,9 +1,10 @@
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
 
 /// User goal options for onboarding O4 screen.
 ///
 /// These goals help personalize training and content recommendations.
-/// Serialized as enum names to Supabase JSONB.
+/// Serialized as stable IDs to Supabase JSONB.
 enum Goal {
   fitter, // "Fitter & stärker werden"
   energy, // "Mehr Energie im Alltag"
@@ -14,8 +15,18 @@ enum Goal {
 }
 
 extension GoalExtension on Goal {
-  /// Database key (enum name for consistency with FitnessLevel)
-  String get dbKey => name;
+  /// Canonical, stable ID persisted in Supabase.
+  GoalId get id => switch (this) {
+        Goal.fitter => GoalIds.fitter,
+        Goal.energy => GoalIds.energy,
+        Goal.sleep => GoalIds.sleep,
+        Goal.cycle => GoalIds.cycle,
+        Goal.longevity => GoalIds.longevity,
+        Goal.wellbeing => GoalIds.wellbeing,
+      };
+
+  /// Database key (legacy alias; use [id] for new code).
+  String get dbKey => id;
 
   /// Localized label for UI
   String label(AppLocalizations l10n) => switch (this) {
@@ -39,11 +50,15 @@ extension GoalExtension on Goal {
 
   /// Parse from database key
   static Goal? fromDbKey(String key) {
-    for (final goal in Goal.values) {
-      if (goal.dbKey == key) {
-        return goal;
-      }
-    }
-    return null;
+    final id = canonicalizeGoalId(key);
+    return switch (id) {
+      GoalIds.fitter => Goal.fitter,
+      GoalIds.energy => Goal.energy,
+      GoalIds.sleep => Goal.sleep,
+      GoalIds.cycle => Goal.cycle,
+      GoalIds.longevity => Goal.longevity,
+      GoalIds.wellbeing => Goal.wellbeing,
+      _ => null,
+    };
   }
 }

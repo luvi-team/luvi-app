@@ -261,6 +261,63 @@ class _UnauthenticatedBackendWriter implements OnboardingBackendWriter {
   }
 }
 
+/// Complete onboarding data but without cycle data (periodStart=null),
+/// to keep backend writes deterministic in tests.
+class _CompleteOnboardingNoCycleNotifier extends OnboardingNotifier {
+  @override
+  OnboardingData build() => OnboardingData(
+        name: 'Test User',
+        birthDate: DateTime(2000, 1, 15),
+        fitnessLevel: app.FitnessLevel.beginner,
+        selectedGoals: const [Goal.fitter],
+        selectedInterests: const [
+          Interest.strengthTraining,
+          Interest.cardio,
+          Interest.nutrition,
+        ],
+        periodStart: null,
+      );
+}
+
+/// Backend writer that captures args and fails at markComplete to avoid navigation.
+class _CapturingBackendWriter implements OnboardingBackendWriter {
+  String? lastFitnessLevel;
+  List<String>? lastGoals;
+  List<String>? lastInterests;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    lastFitnessLevel = fitnessLevel;
+    lastGoals = List<String>.from(goals);
+    lastInterests = List<String>.from(interests);
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    throw Exception('Cycle data should be skipped in this test');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    throw Exception('Stop before navigation');
+  }
+}
+
 void main() {
   TestConfig.ensureInitialized();
 
@@ -518,6 +575,35 @@ void main() {
         // Initially during animation - no retry button
         await tester.pump(const Duration(milliseconds: 500));
         expect(find.text('Try again'), findsNothing);
+      });
+    });
+
+    group('Stable IDs persistence', () {
+      testWidgets('writes canonical IDs (never UI labels)', (tester) async {
+        setTestScreenSize(tester);
+        final writer = _CapturingBackendWriter();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider
+                  .overrideWith(() => _CompleteOnboardingNoCycleNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(writer),
+            ],
+          ),
+        );
+
+        // Pump through animation and backend save attempt.
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        // markOnboardingComplete fails, so we end in error state.
+        expect(find.text('Try again'), findsOneWidget);
+
+        expect(writer.lastFitnessLevel, 'beginner');
+        expect(writer.lastGoals, ['fitter']);
+        expect(writer.lastInterests, ['strength_training', 'cardio', 'nutrition']);
       });
     });
 

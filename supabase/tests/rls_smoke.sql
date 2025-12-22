@@ -133,14 +133,15 @@ DECLARE
   has_constraint boolean;
   row_is_ok boolean;
   rpc_allowed boolean;
+  rpc_allowed_legacy boolean;
 BEGIN
   SELECT column_default INTO default_def
   FROM information_schema.columns
   WHERE table_schema = 'public'
     AND table_name = 'consents'
     AND column_name = 'scopes';
-  ASSERT default_def = '''[]''::jsonb',
-    'consents.scopes default must be ''[]''::jsonb (anti-drift with RPC)';
+  ASSERT default_def = '''{}''::jsonb',
+    'consents.scopes default must be ''{}''::jsonb (canonical object)';
 
   SELECT EXISTS (
     SELECT 1
@@ -149,24 +150,34 @@ BEGIN
     JOIN pg_namespace n ON n.oid = t.relnamespace
     WHERE n.nspname = 'public'
       AND t.relname = 'consents'
-      AND c.conname = 'consents_scopes_is_array'
+      AND c.conname = 'consents_scopes_is_object_bool'
   ) INTO has_constraint;
-  ASSERT has_constraint, 'consents_scopes_is_array constraint must exist';
+  ASSERT has_constraint, 'consents_scopes_is_object_bool constraint must exist';
 
-  SELECT jsonb_typeof(scopes) = 'array' AND scopes = '[]'::jsonb
+  SELECT jsonb_typeof(scopes) = 'object' AND scopes = '{}'::jsonb
   INTO row_is_ok
   FROM public.consents
   WHERE id = '00000000-0000-0000-0000-00000000c001';
-  ASSERT row_is_ok, 'consents.scopes must default to an empty JSONB array';
+  ASSERT row_is_ok, 'consents.scopes must default to an empty JSONB object';
 
+  SELECT public.log_consent_if_allowed(
+    (SELECT auth.uid()),
+    'rls-smoke',
+    '{"terms": true}'::jsonb,
+    1,
+    1000
+  ) INTO rpc_allowed;
+  ASSERT rpc_allowed, 'log_consent_if_allowed must accept canonical JSONB object scopes';
+
+  -- Backward compatibility: legacy array format is still accepted and normalized.
   SELECT public.log_consent_if_allowed(
     (SELECT auth.uid()),
     'rls-smoke',
     '["terms"]'::jsonb,
     1,
     1000
-  ) INTO rpc_allowed;
-  ASSERT rpc_allowed, 'log_consent_if_allowed must accept JSONB array scopes';
+  ) INTO rpc_allowed_legacy;
+  ASSERT rpc_allowed_legacy, 'log_consent_if_allowed must accept legacy JSONB array scopes';
 END $$;
 SELECT COUNT(*) >= 1 AS rls_allows
 FROM public.consents

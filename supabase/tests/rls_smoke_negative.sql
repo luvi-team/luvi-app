@@ -21,13 +21,43 @@ SELECT set_config(
   false
 );
 
--- Anti-Drift: consents.scopes must reject legacy object-map format.
+-- Anti-Drift: consents.scopes must reject legacy array format.
 DO $$
 BEGIN
   BEGIN
     INSERT INTO public.consents (user_id, scopes, version)
-    VALUES ((SELECT auth.uid()), '{}'::jsonb, 'rls-smoke-negative');
-    RAISE EXCEPTION 'Expected CHECK violation: consents.scopes must be a JSONB array';
+    VALUES ((SELECT auth.uid()), '["terms"]'::jsonb, 'rls-smoke-negative');
+    RAISE EXCEPTION 'Expected CHECK violation: consents.scopes must be a JSONB object';
+  EXCEPTION
+    WHEN check_violation THEN
+      NULL;
+    WHEN others THEN
+      RAISE EXCEPTION 'Expected check_violation (23514), got % (%).', SQLERRM, SQLSTATE;
+  END;
+END $$;
+
+-- Anti-Drift: consents.scopes must reject unknown scope IDs.
+DO $$
+BEGIN
+  BEGIN
+    INSERT INTO public.consents (user_id, scopes, version)
+    VALUES ((SELECT auth.uid()), '{"unknown_scope": true}'::jsonb, 'rls-smoke-negative');
+    RAISE EXCEPTION 'Expected CHECK violation: consents.scopes must only contain allowed keys';
+  EXCEPTION
+    WHEN check_violation THEN
+      NULL;
+    WHEN others THEN
+      RAISE EXCEPTION 'Expected check_violation (23514), got % (%).', SQLERRM, SQLSTATE;
+  END;
+END $$;
+
+-- Anti-Drift: consents.scopes must reject non-boolean values.
+DO $$
+BEGIN
+  BEGIN
+    INSERT INTO public.consents (user_id, scopes, version)
+    VALUES ((SELECT auth.uid()), '{"terms": "true"}'::jsonb, 'rls-smoke-negative');
+    RAISE EXCEPTION 'Expected CHECK violation: consents.scopes values must be boolean';
   EXCEPTION
     WHEN check_violation THEN
       NULL;

@@ -1,4 +1,5 @@
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
 
 /// Fitness level options for onboarding O3.
 /// DB constraint: fitness_level IN ('beginner', 'occasional', 'fit')
@@ -9,8 +10,15 @@ enum FitnessLevel {
 }
 
 extension FitnessLevelExtension on FitnessLevel {
-  /// Returns the DB key (enum name)
-  String get dbKey => name;
+  /// Canonical, stable ID persisted in Supabase.
+  FitnessLevelId get id => switch (this) {
+        FitnessLevel.beginner => FitnessLevelIds.beginner,
+        FitnessLevel.occasional => FitnessLevelIds.occasional,
+        FitnessLevel.fit => FitnessLevelIds.fit,
+      };
+
+  /// Returns the DB key (legacy alias; use [id] for new code).
+  String get dbKey => id;
 
   /// Returns the localized label for UI display
   String label(AppLocalizations l10n) => switch (this) {
@@ -18,6 +26,17 @@ extension FitnessLevelExtension on FitnessLevel {
         FitnessLevel.occasional => l10n.fitnessLevelOccasional,
         FitnessLevel.fit => l10n.fitnessLevelFit,
       };
+
+  /// Parse a stored ID (or legacy value) into a [FitnessLevel].
+  static FitnessLevel? fromStoredId(String? raw) {
+    final id = canonicalizeFitnessLevelId(raw);
+    return switch (id) {
+      FitnessLevelIds.beginner => FitnessLevel.beginner,
+      FitnessLevelIds.occasional => FitnessLevel.occasional,
+      FitnessLevelIds.fit => FitnessLevel.fit,
+      _ => null,
+    };
+  }
 
   /// Maps selection index (0, 1, 2, 3) to FitnessLevel.
   /// Index 3 ("unknown") maps to beginner as fallback.

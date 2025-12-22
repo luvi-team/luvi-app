@@ -23,9 +23,12 @@ class ConsentService {
     required String version,
     required List<String> scopes,
   }) async {
+    // Canonical format (SSOT): send scopes as a JSON object of boolean flags
+    // instead of an array to avoid format drift in DB/event logs.
+    final scopesMap = <String, bool>{for (final s in scopes) s: true};
     final response = await Supabase.instance.client.functions.invoke(
       'log_consent',
-      body: {'version': version, 'scopes': scopes},
+      body: {'version': version, 'scopes': scopesMap},
     );
 
     final status = response.status;

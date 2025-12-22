@@ -233,9 +233,11 @@ class _OnboardingSuccessScreenState
       await backendWriter.upsertProfile(
         displayName: data.name!,
         birthDate: birthDate,
+        // Prefer SSOT from onboarding state; fall back to the route-provided
+        // service enum which shares canonical names ('beginner'|'occasional'|'fit').
         fitnessLevel: data.fitnessLevel?.name ?? widget.fitnessLevel.name,
-        goals: data.selectedGoals.map((g) => g.dbKey).toList(),
-        interests: data.selectedInterests.map((i) => i.key).toList(),
+        goals: data.selectedGoals.map((g) => g.id).toList(),
+        interests: data.selectedInterests.map((i) => i.id).toList(),
       );
 
       // Save cycle data only if periodStart is available

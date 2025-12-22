@@ -1,4 +1,5 @@
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
 
 /// User interest categories for personalization (O5 screen).
 ///
@@ -14,15 +15,18 @@ enum Interest {
 }
 
 extension InterestExtension on Interest {
-  /// Database key (snake_case for Supabase)
-  String get key => switch (this) {
-        Interest.strengthTraining => 'strength_training',
-        Interest.cardio => 'cardio',
-        Interest.mobility => 'mobility',
-        Interest.nutrition => 'nutrition',
-        Interest.mindfulness => 'mindfulness',
-        Interest.hormonesCycle => 'hormones_cycle',
+  /// Canonical, stable ID persisted in Supabase.
+  InterestId get id => switch (this) {
+        Interest.strengthTraining => InterestIds.strengthTraining,
+        Interest.cardio => InterestIds.cardio,
+        Interest.mobility => InterestIds.mobility,
+        Interest.nutrition => InterestIds.nutrition,
+        Interest.mindfulness => InterestIds.mindfulness,
+        Interest.hormonesCycle => InterestIds.hormonesCycle,
       };
+
+  /// Database key (legacy alias; use [id] for new code).
+  String get key => id;
 
   /// Localized label for UI
   String label(AppLocalizations l10n) => switch (this) {
@@ -36,11 +40,15 @@ extension InterestExtension on Interest {
 
   /// Parse from database key
   static Interest? fromKey(String key) {
-    for (final interest in Interest.values) {
-      if (interest.key == key) {
-        return interest;
-      }
-    }
-    return null;
+    final id = canonicalizeInterestId(key);
+    return switch (id) {
+      InterestIds.strengthTraining => Interest.strengthTraining,
+      InterestIds.cardio => Interest.cardio,
+      InterestIds.mobility => Interest.mobility,
+      InterestIds.nutrition => Interest.nutrition,
+      InterestIds.mindfulness => Interest.mindfulness,
+      InterestIds.hormonesCycle => Interest.hormonesCycle,
+      _ => null,
+    };
   }
 }
