@@ -605,6 +605,42 @@ void main() {
         expect(writer.lastGoals, ['fitter']);
         expect(writer.lastInterests, ['strength_training', 'cardio', 'nutrition']);
       });
+
+      testWidgets('ignores route fitnessLevel=unknown and uses SSOT state',
+          (tester) async {
+        setTestScreenSize(tester);
+        final writer = _CapturingBackendWriter();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              initModeProvider.overrideWithValue(InitMode.test),
+              onboardingProvider
+                  .overrideWith(() => _CompleteOnboardingNoCycleNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(writer),
+            ],
+            child: MediaQuery(
+              data: const MediaQueryData(size: Size(_testWidth, _testHeight)),
+              child: MaterialApp(
+                theme: AppTheme.buildAppTheme(),
+                locale: const Locale('en'),
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                home: const OnboardingSuccessScreen(
+                  fitnessLevel: FitnessLevel.unknown,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(find.text('Try again'), findsOneWidget);
+        expect(writer.lastFitnessLevel, 'beginner');
+      });
     });
 
     group('Authentication check', () {

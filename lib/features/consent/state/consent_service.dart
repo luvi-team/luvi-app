@@ -39,8 +39,11 @@ class ConsentService {
     if (!isSuccessStatus) {
       final serverError = responseBody?['error'] as String?;
       final isRateLimited = status == 429;
+      final isUnauthorized = status == 401;
       final message = isRateLimited
           ? 'Consent logging is temporarily rate limited. Please retry later.'
+          : isUnauthorized
+          ? (serverError ?? 'Unauthorized')
           : (serverError ?? 'Failed to log consent.');
       log.w(
         'log_consent failed (status=$status, request_id=${requestId ?? 'n/a'})',
@@ -49,7 +52,11 @@ class ConsentService {
       throw ConsentException(
         status,
         message,
-        code: isRateLimited ? 'rate_limit' : null,
+        code: isRateLimited
+            ? 'rate_limit'
+            : isUnauthorized
+            ? 'unauthorized'
+            : null,
       );
     }
 

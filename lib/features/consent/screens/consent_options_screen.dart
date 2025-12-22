@@ -16,6 +16,7 @@ import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
@@ -400,8 +401,8 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     if (!_acquireBusy(ref)) {
       return;
     }
+    final scopes = _computeScopes(currentState);
     try {
-      final scopes = _computeScopes(currentState);
       await _acceptConsent(ref, scopes);
       final welcomeMarked = await _markWelcomeSeen(ref);
 
@@ -416,9 +417,16 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
       }
 
       if (!context.mounted) return;
-      _navigateToOnboarding(context);
+      _navigateAfterConsent(context);
     } on ConsentException catch (error) {
       if (!context.mounted) return;
+      if (error.code == 'unauthorized' || error.statusCode == 401) {
+        // FTUE: Consent happens before auth; defer server log until after login.
+        await _cachePreAuthConsent(ref, scopes: scopes);
+        if (!context.mounted) return;
+        _navigateAfterConsent(context);
+        return;
+      }
       final message = error.code == 'rate_limit'
           ? l10n.consentSnackbarRateLimited
           : l10n.consentSnackbarError;
@@ -662,8 +670,9 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
 }
 
 /// Navigate to Onboarding after consent is accepted.
-void _navigateToOnboarding(BuildContext context) {
-  context.go(Onboarding01Screen.routeName);
+void _navigateAfterConsent(BuildContext context) {
+  final isAuth = SupabaseService.isInitialized && SupabaseService.currentUser != null;
+  context.go(isAuth ? Onboarding01Screen.routeName : AuthSignInScreen.routeName);
 }
 
 void _reportUnexpectedConsentError(
@@ -678,4 +687,25 @@ void _reportUnexpectedConsentError(
     stack: stackTrace,
   );
   _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
+}
+
+Future<void> _cachePreAuthConsent(
+  WidgetRef ref, {
+  required List<String> scopes,
+}) async {
+  try {
+    final userState = await ref.read(userStateServiceProvider.future);
+    await userState.setPreAuthConsent(
+      acceptedConsentVersion: ConsentConfig.currentVersionInt,
+      policyVersion: ConsentConfig.currentVersion,
+      scopes: scopes,
+    );
+  } catch (error, stackTrace) {
+    log.w(
+      'consent_preauth_cache_failed',
+      tag: 'consent_options',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+  }
 }

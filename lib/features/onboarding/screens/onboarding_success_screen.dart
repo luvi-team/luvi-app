@@ -14,6 +14,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
+import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/model/goal.dart';
 import 'package:luvi_app/features/onboarding/model/interest.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
@@ -22,7 +23,10 @@ import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/data/onboarding_backend_writer.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
-import 'package:luvi_services/user_state_service.dart';
+import 'package:luvi_services/user_state_service.dart' as services;
+
+const String kErrOnboardingFitnessLevelUnknown =
+    'onboarding_fitness_level_unknown';
 
 /// Animation state machine for O9 success screen
 enum O9AnimationState {
@@ -40,7 +44,7 @@ class OnboardingSuccessScreen extends ConsumerStatefulWidget {
 
   static const routeName = '/onboarding/success';
 
-  final FitnessLevel fitnessLevel;
+  final services.FitnessLevel fitnessLevel;
 
   @override
   ConsumerState<OnboardingSuccessScreen> createState() =>
@@ -117,6 +121,23 @@ class _OnboardingSuccessScreenState
         return;
       }
 
+      final localFitnessLevel =
+          services.FitnessLevel.tryParse(onboardingData.fitnessLevel?.name);
+      if (localFitnessLevel == null ||
+          localFitnessLevel == services.FitnessLevel.unknown) {
+        log.w(
+          'onboarding_invalid_fitness_level',
+          tag: 'onboarding_success',
+          error: kErrOnboardingFitnessLevelUnknown,
+        );
+        if (mounted) {
+          setState(() {
+            _state = O9AnimationState.error;
+          });
+        }
+        return;
+      }
+
       // Backend-SSOT: User MUST be authenticated to complete onboarding
       final backendWriter = ref.read(onboardingBackendWriterProvider);
 
@@ -154,7 +175,7 @@ class _OnboardingSuccessScreenState
 
       // Local save (only after successful backend save for authenticated users)
       final userState = await tryOrNullAsync(
-        () => ref.read(userStateServiceProvider.future),
+        () => ref.read(services.userStateServiceProvider.future),
         tag: 'userState',
       );
 
@@ -178,7 +199,7 @@ class _OnboardingSuccessScreenState
       }
 
       await userState.markOnboardingComplete(
-        fitnessLevel: widget.fitnessLevel,
+        fitnessLevel: localFitnessLevel,
       );
 
       if (mounted) {
@@ -230,12 +251,19 @@ class _OnboardingSuccessScreenState
               : 0);
 
       // Save profile data (data.name is guaranteed non-null by isComplete)
+      final fitnessLevelId = data.fitnessLevel?.id;
+      if (fitnessLevelId == null) {
+        log.w(
+          'onboarding_invalid_fitness_level_id',
+          tag: 'onboarding_success',
+          error: kErrOnboardingFitnessLevelUnknown,
+        );
+        return false;
+      }
       await backendWriter.upsertProfile(
         displayName: data.name!,
         birthDate: birthDate,
-        // Prefer SSOT from onboarding state; fall back to the route-provided
-        // service enum which shares canonical names ('beginner'|'occasional'|'fit').
-        fitnessLevel: data.fitnessLevel?.name ?? widget.fitnessLevel.name,
+        fitnessLevel: fitnessLevelId,
         goals: data.selectedGoals.map((g) => g.id).toList(),
         interests: data.selectedInterests.map((i) => i.id).toList(),
       );

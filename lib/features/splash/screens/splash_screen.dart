@@ -13,6 +13,7 @@ import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
+import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
@@ -306,6 +307,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       await service.bindUser(uid);
     }
 
+    await _flushPreAuthConsentIfNeeded(service);
+
     final localAcceptedVersion = service.acceptedConsentVersionOrNull;
     final localHasSeenWelcome = service.hasSeenWelcomeOrNull;
 
@@ -448,6 +451,61 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       setState(() {
         _showUnknownUI = true;
       });
+    }
+  }
+
+  Future<void> _flushPreAuthConsentIfNeeded(UserStateService service) async {
+    final preAuthVersion = service.preAuthAcceptedConsentVersionOrNull;
+    final preAuthScopes = service.preAuthConsentScopesOrNull;
+    final preAuthPolicyVersion = service.preAuthConsentPolicyVersionOrNull;
+    if (preAuthVersion == null ||
+        preAuthVersion < ConsentConfig.currentVersionInt ||
+        preAuthScopes == null ||
+        preAuthScopes.isEmpty) {
+      return;
+    }
+
+    // Best-effort flush: do not block navigation on failure.
+    try {
+      await ref.read(consentServiceProvider).accept(
+            version: preAuthPolicyVersion ?? ConsentConfig.currentVersion,
+            scopes: preAuthScopes,
+          );
+    } catch (e, st) {
+      log.w(
+        'preauth_consent_log_failed',
+        tag: 'splash',
+        error: sanitizeError(e) ?? e.runtimeType,
+        stack: st,
+      );
+    }
+
+    var upsertOk = false;
+    try {
+      await SupabaseService.upsertConsentGate(
+        acceptedConsentVersion: preAuthVersion,
+        markWelcomeSeen: true,
+      );
+      upsertOk = true;
+    } catch (e, st) {
+      log.w(
+        'preauth_consent_gate_upsert_failed',
+        tag: 'splash',
+        error: sanitizeError(e) ?? e.runtimeType,
+        stack: st,
+      );
+    }
+
+    if (!upsertOk) return;
+    try {
+      await service.clearPreAuthConsent();
+    } catch (e, st) {
+      log.w(
+        'preauth_consent_cache_clear_failed',
+        tag: 'splash',
+        error: sanitizeError(e) ?? e.runtimeType,
+        stack: st,
+      );
     }
   }
 

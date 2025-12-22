@@ -8,6 +8,7 @@ import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
@@ -41,7 +42,7 @@ void main() {
     registerFallbackValue(<String>[]);
   });
 
-  testWidgets('Consent CTA logs scopes and navigates when accept succeeds', (
+  testWidgets('Consent CTA logs scopes and navigates to auth when accept succeeds pre-auth', (
     tester,
   ) async {
     final view = tester.view;
@@ -89,13 +90,8 @@ void main() {
     // This is correct behavior - we don't write to cache without a valid user.
     verifyNever(() => userState.markWelcomeSeen());
 
-    // Auth Flow Fix: After consent, user (already authenticated) goes to Onboarding, not Auth
-    // User is already logged in at this point (logged in before Welcome/Consent flow)
-    expect(
-      find.byType(Onboarding01Screen),
-      findsOneWidget,
-      reason: 'Consent02 should navigate to Onboarding01 (user is already authenticated)',
-    );
+    // FTUE: Consent happens before auth → navigate to Auth Sign-In.
+    expect(find.byType(AuthSignInScreen), findsOneWidget);
   });
 
   testWidgets(
@@ -149,12 +145,8 @@ void main() {
       // No false-positive warning snackbar should appear.
       expect(find.text(l10n.consentErrorSavingConsent), findsNothing);
 
-      // Navigation should still proceed to Onboarding.
-      expect(
-        find.byType(Onboarding01Screen),
-        findsOneWidget,
-        reason: 'When uid is null, local cache is skipped but navigation proceeds',
-      );
+      // FTUE: Consent happens before auth → navigate to Auth Sign-In.
+      expect(find.byType(AuthSignInScreen), findsOneWidget);
     },
   );
 
@@ -199,12 +191,8 @@ void main() {
     verifyNever(() => userState.markWelcomeSeen());
 
     expect(find.text(l10n.consentSnackbarRateLimited), findsOneWidget);
-    // Auth Flow Fix: check that navigation to onboarding did NOT happen (blocked by error)
-    expect(
-      find.byType(Onboarding01Screen),
-      findsNothing,
-      reason: 'Rate-limit error should block navigation to Onboarding',
-    );
+    // Rate-limit error blocks navigation.
+    expect(find.byType(AuthSignInScreen), findsNothing);
   });
 }
 
@@ -226,6 +214,10 @@ Future<void> _pumpConsentScreen(
       GoRoute(
         path: Onboarding01Screen.routeName,
         builder: (context, state) => const Onboarding01Screen(),
+      ),
+      GoRoute(
+        path: AuthSignInScreen.routeName,
+        builder: (context, state) => const AuthSignInScreen(),
       ),
     ],
     initialLocation: Consent02Screen.routeName,

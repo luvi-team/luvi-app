@@ -84,16 +84,6 @@ FitnessLevelId? canonicalizeFitnessLevelId(String? raw) {
     return normalized;
   }
 
-  // Best-effort legacy aliases (keep minimal; avoid storing labels).
-  switch (normalized) {
-    case 'not_fit':
-    case 'unfit':
-      return FitnessLevelIds.beginner;
-    case 'very_fit':
-    case 'advanced':
-      return FitnessLevelIds.fit;
-  }
-
   return null;
 }
 
@@ -128,4 +118,3 @@ InterestId? canonicalizeInterestId(String? raw) {
 
   return null;
 }
-

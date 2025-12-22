@@ -26,9 +26,6 @@ void main() {
     });
 
     test('Legacy values are canonicalized safely', () {
-      expect(FitnessLevelExtension.fromStoredId('unfit'), FitnessLevel.beginner);
-      expect(FitnessLevelExtension.fromStoredId('VERY_FIT'), FitnessLevel.fit);
-
       expect(GoalExtension.fromDbKey('well_being'), Goal.wellbeing);
       expect(GoalExtension.fromDbKey('SLEEP'), Goal.sleep);
 

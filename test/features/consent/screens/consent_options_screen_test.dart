@@ -9,6 +9,7 @@ import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
@@ -341,9 +342,9 @@ void main() {
     });
 
     // Bug Fix: Test for "Alles akzeptieren" race condition fix
-    // Verifies that tapping "Accept all" navigates to Onboarding, NOT blocking screen.
+    // Verifies that tapping "Accept all" navigates to Auth, NOT blocking screen.
     // Uses mocked ConsentService and UserStateService for full integration test.
-    testWidgets('Accept all button navigates to onboarding (race condition fix)', (tester) async {
+    testWidgets('Accept all button navigates to auth (race condition fix)', (tester) async {
       // Setup mocks
       final mockConsentService = _MockConsentService();
       final mockUserStateService = _MockUserStateService();
@@ -377,6 +378,10 @@ void main() {
           GoRoute(
             path: '/onboarding/01',
             builder: (context, state) => const Onboarding01Screen(),
+          ),
+          GoRoute(
+            path: '/auth/signin',
+            builder: (context, state) => const AuthSignInScreen(),
           ),
         ],
       );
@@ -423,8 +428,8 @@ void main() {
           reason: 'Accept all should NOT navigate to blocking screen (race condition fix)');
 
       // Should navigate to Onboarding01Screen
-      expect(find.byType(Onboarding01Screen), findsOneWidget,
-          reason: 'Accept all should navigate to Onboarding01 after consent');
+      expect(find.byType(AuthSignInScreen), findsOneWidget,
+          reason: 'Consent happens before auth → navigate to AuthSignIn');
 
       // Verify mocks were called correctly
       verify(
@@ -436,5 +441,102 @@ void main() {
       // Local cache writes are skipped when uid is null (test env has no real Supabase).
       verifyNever(() => mockUserStateService.markWelcomeSeen());
     });
+
+    testWidgets(
+      'Accept all navigates to auth when consent logging is unauthorized (pre-auth flow)',
+      (tester) async {
+        final mockConsentService = _MockConsentService();
+        final mockUserStateService = _MockUserStateService();
+
+        when(
+          () => mockConsentService.accept(
+            version: ConsentConfig.currentVersion,
+            scopes: any(named: 'scopes'),
+          ),
+        ).thenThrow(ConsentException(401, 'Unauthorized'));
+        when(() => mockUserStateService.bindUser(any())).thenAnswer((_) async {});
+        when(() => mockUserStateService.markWelcomeSeen()).thenAnswer((_) async {});
+        when(() => mockUserStateService.setAcceptedConsentVersion(any()))
+            .thenAnswer((_) async {});
+        when(
+          () => mockUserStateService.setPreAuthConsent(
+            acceptedConsentVersion: any(named: 'acceptedConsentVersion'),
+            policyVersion: any(named: 'policyVersion'),
+            scopes: any(named: 'scopes'),
+          ),
+        ).thenAnswer((_) async {});
+
+        final router = GoRouter(
+          initialLocation: '/consent/options',
+          routes: [
+            GoRoute(
+              path: '/consent/options',
+              builder: (context, state) => const ConsentOptionsScreen(
+                appLinks: TestConfig.defaultAppLinks,
+              ),
+            ),
+            GoRoute(
+              path: '/consent/blocking',
+              builder: (context, state) => const ConsentBlockingScreen(),
+            ),
+            GoRoute(
+              path: '/onboarding/01',
+              builder: (context, state) => const Onboarding01Screen(),
+            ),
+            GoRoute(
+              path: '/auth/signin',
+              builder: (context, state) => const AuthSignInScreen(),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              consentServiceProvider.overrideWithValue(mockConsentService),
+              userStateServiceProvider.overrideWith(
+                (ref) async => mockUserStateService,
+              ),
+            ],
+            child: MaterialApp.router(
+              theme: AppTheme.buildAppTheme(),
+              locale: const Locale('de'),
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              routerConfig: router,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final screenContext = tester.element(find.byType(ConsentOptionsScreen));
+        final l10n = AppLocalizations.of(screenContext)!;
+
+        // Scroll to enable "Alles akzeptieren" button (DSGVO scroll-gate).
+        await tester.drag(
+          find.byType(SingleChildScrollView),
+          const Offset(0, -500),
+        );
+        await tester.pumpAndSettle();
+
+        final acceptAllButton =
+            find.byKey(const Key('consent_options_btn_accept_all'));
+        expect(acceptAllButton, findsOneWidget);
+
+        await tester.tap(acceptAllButton);
+        await tester.pumpAndSettle();
+
+        // Unauthorized consent logging must not block navigation in the pre-auth flow.
+        expect(find.byType(AuthSignInScreen), findsOneWidget);
+        expect(find.text(l10n.consentSnackbarError), findsNothing);
+
+        verify(
+          () => mockConsentService.accept(
+            version: ConsentConfig.currentVersion,
+            scopes: any(named: 'scopes'),
+          ),
+        ).called(1);
+      },
+    );
   });
 }

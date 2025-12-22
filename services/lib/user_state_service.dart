@@ -7,6 +7,11 @@ const _keyHasSeenWelcome = 'has_seen_welcome';
 const _keyHasCompletedOnboarding = 'has_completed_onboarding';
 const _keyFitnessLevel = 'onboarding_fitness_level';
 const _keyAcceptedConsentVersion = 'accepted_consent_version';
+// Pre-auth (device-scoped) consent cache for FTUE: Consent happens before auth.
+// Cleared after a successful post-auth flush to server SSOT.
+const _keyPreAuthAcceptedConsentVersion = 'preauth_accepted_consent_version';
+const _keyPreAuthConsentScopes = 'preauth_consent_scopes';
+const _keyPreAuthConsentPolicyVersion = 'preauth_consent_policy_version';
 
 enum FitnessLevel {
   beginner,
@@ -160,6 +165,63 @@ class UserStateService {
       _scopedKey(_keyAcceptedConsentVersion) == null
           ? null
           : prefs.getInt(_scopedKey(_keyAcceptedConsentVersion)!);
+
+  /// Device-scoped pre-auth consent (FTUE).
+  ///
+  /// Used when users accept consent before signing in. After auth, Splash will
+  /// flush this to server SSOT (profiles + consent log) and clear it.
+  int? get preAuthAcceptedConsentVersionOrNull =>
+      prefs.getInt(_keyPreAuthAcceptedConsentVersion);
+
+  List<String>? get preAuthConsentScopesOrNull =>
+      prefs.getStringList(_keyPreAuthConsentScopes);
+
+  String? get preAuthConsentPolicyVersionOrNull =>
+      prefs.getString(_keyPreAuthConsentPolicyVersion);
+
+  Future<void> setPreAuthConsent({
+    required int acceptedConsentVersion,
+    required String policyVersion,
+    required List<String> scopes,
+  }) async {
+    if (acceptedConsentVersion <= 0) {
+      throw ArgumentError.value(
+        acceptedConsentVersion,
+        'acceptedConsentVersion',
+        'must be positive',
+      );
+    }
+    if (policyVersion.trim().isEmpty) {
+      throw ArgumentError.value(policyVersion, 'policyVersion', 'cannot be empty');
+    }
+    if (scopes.isEmpty) {
+      throw ArgumentError.value(scopes, 'scopes', 'must be non-empty');
+    }
+    final ok1 = await prefs.setInt(
+      _keyPreAuthAcceptedConsentVersion,
+      acceptedConsentVersion,
+    );
+    final ok2 = await prefs.setString(
+      _keyPreAuthConsentPolicyVersion,
+      policyVersion,
+    );
+    final ok3 = await prefs.setStringList(_keyPreAuthConsentScopes, scopes);
+    if (!ok1 || !ok2 || !ok3) {
+      throw StateError('Failed to persist pre-auth consent cache');
+    }
+  }
+
+  Future<void> clearPreAuthConsent() async {
+    try {
+      await prefs.remove(_keyPreAuthAcceptedConsentVersion);
+    } catch (_) {}
+    try {
+      await prefs.remove(_keyPreAuthConsentPolicyVersion);
+    } catch (_) {}
+    try {
+      await prefs.remove(_keyPreAuthConsentScopes);
+    } catch (_) {}
+  }
 
   Future<void> setHasCompletedOnboarding(bool value) async {
     final key = _scopedKey(_keyHasCompletedOnboarding);
