@@ -121,8 +121,22 @@ class _OnboardingSuccessScreenState
         return;
       }
 
-      final localFitnessLevel =
-          services.FitnessLevel.tryParse(onboardingData.fitnessLevel?.name);
+      final fitnessLevelId = onboardingData.fitnessLevel?.id;
+      if (fitnessLevelId == null) {
+        log.w(
+          'onboarding_invalid_fitness_level_id',
+          tag: 'onboarding_success',
+          error: kErrOnboardingFitnessLevelUnknown,
+        );
+        if (mounted) {
+          setState(() {
+            _state = O9AnimationState.error;
+          });
+        }
+        return;
+      }
+
+      final localFitnessLevel = services.FitnessLevel.tryParse(fitnessLevelId);
       if (localFitnessLevel == null ||
           localFitnessLevel == services.FitnessLevel.unknown) {
         log.w(
@@ -157,7 +171,8 @@ class _OnboardingSuccessScreenState
       }
 
       // Authenticated user - backend save MUST succeed
-      final supabaseSuccess = await _saveToSupabase(onboardingData, backendWriter);
+      final supabaseSuccess =
+          await _saveToSupabase(onboardingData, backendWriter, fitnessLevelId);
       if (!supabaseSuccess) {
         // Backend save failed - do NOT mark local as complete
         log.w(
@@ -232,13 +247,8 @@ class _OnboardingSuccessScreenState
   Future<bool> _saveToSupabase(
     OnboardingData data,
     OnboardingBackendWriter backendWriter,
+    String fitnessLevelId,
   ) async {
-    // Skip if not authenticated (returns true - nothing to do)
-    if (!backendWriter.isAuthenticated) {
-      log.d('onboarding_skip_supabase: not authenticated', tag: 'onboarding_success');
-      return true;
-    }
-
     try {
       // data.isComplete was verified in _performSave, so birthDate is guaranteed non-null
       final birthDate = data.birthDate!;
@@ -251,15 +261,6 @@ class _OnboardingSuccessScreenState
               : 0);
 
       // Save profile data (data.name is guaranteed non-null by isComplete)
-      final fitnessLevelId = data.fitnessLevel?.id;
-      if (fitnessLevelId == null) {
-        log.w(
-          'onboarding_invalid_fitness_level_id',
-          tag: 'onboarding_success',
-          error: kErrOnboardingFitnessLevelUnknown,
-        );
-        return false;
-      }
       await backendWriter.upsertProfile(
         displayName: data.name!,
         birthDate: birthDate,
