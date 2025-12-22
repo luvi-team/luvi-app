@@ -59,10 +59,12 @@ class _IncompleteOnboardingNotifier extends OnboardingNotifier {
 class _FailingBackendWriter implements OnboardingBackendWriter {
   int _callCount = 0;
   final bool failOnce;
+  int _markCompleteCallCount = 0;
 
   _FailingBackendWriter({this.failOnce = true});
 
   int get callCount => _callCount;
+  int get markCompleteCallCount => _markCompleteCallCount;
 
   @override
   bool get isAuthenticated => true;
@@ -93,13 +95,21 @@ class _FailingBackendWriter implements OnboardingBackendWriter {
     // Always succeed for cycle data
     return {'user_id': 'test-user'};
   }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    _markCompleteCallCount++;
+    return {'user_id': 'test-user', 'has_completed_onboarding': true};
+  }
 }
 
 /// Fake backend writer that always fails.
 class _AlwaysFailingBackendWriter implements OnboardingBackendWriter {
   int _callCount = 0;
+  int _markCompleteCallCount = 0;
 
   int get callCount => _callCount;
+  int get markCompleteCallCount => _markCompleteCallCount;
 
   @override
   bool get isAuthenticated => true;
@@ -124,6 +134,98 @@ class _AlwaysFailingBackendWriter implements OnboardingBackendWriter {
     required int age,
   }) async {
     throw Exception('Simulated permanent backend failure');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    _markCompleteCallCount++;
+    throw Exception('Simulated permanent backend failure');
+  }
+}
+
+/// Backend writer where profile succeeds but cycle_data fails.
+class _ProfileOkCycleFailWriter implements OnboardingBackendWriter {
+  int _profileCalls = 0;
+  int _cycleCalls = 0;
+  int _markCompleteCalls = 0;
+
+  int get profileCalls => _profileCalls;
+  int get cycleCalls => _cycleCalls;
+  int get markCompleteCalls => _markCompleteCalls;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    _profileCalls++;
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    _cycleCalls++;
+    throw Exception('Simulated cycle_data failure');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    _markCompleteCalls++;
+    return {'user_id': 'test-user', 'has_completed_onboarding': true};
+  }
+}
+
+/// Backend writer where profile fails (cycle would succeed).
+class _ProfileFailCycleOkWriter implements OnboardingBackendWriter {
+  int _profileCalls = 0;
+  int _cycleCalls = 0;
+  int _markCompleteCalls = 0;
+
+  int get profileCalls => _profileCalls;
+  int get cycleCalls => _cycleCalls;
+  int get markCompleteCalls => _markCompleteCalls;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    _profileCalls++;
+    throw Exception('Simulated profile failure');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    _cycleCalls++;
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    _markCompleteCalls++;
+    return {'user_id': 'test-user', 'has_completed_onboarding': true};
   }
 }
 
@@ -150,6 +252,11 @@ class _UnauthenticatedBackendWriter implements OnboardingBackendWriter {
     required DateTime lastPeriod,
     required int age,
   }) async {
+    return null;
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
     return null;
   }
 }
@@ -267,6 +374,8 @@ void main() {
         expect(find.text('Save failed. Please try again.'), findsOneWidget);
         // Backend should have been called
         expect(failingWriter.callCount, 1);
+        // Critical: must not mark onboarding complete when backend save fails.
+        expect(failingWriter.markCompleteCallCount, 0);
       });
 
       testWidgets('does not show success when save fails', (tester) async {
@@ -289,6 +398,59 @@ void main() {
 
         // Should be in error state, not success
         expect(find.text('Done!'), findsNothing);
+        // Critical: must not mark onboarding complete when backend save fails.
+        expect(failingWriter.markCompleteCallCount, 0);
+      });
+
+      testWidgets('Profile OK, Cycle FAIL → does NOT call markOnboardingComplete',
+          (tester) async {
+        setTestScreenSize(tester);
+        final failingWriter = _ProfileOkCycleFailWriter();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(failingWriter),
+            ],
+          ),
+        );
+
+        // Pump through animation and save attempt
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(find.text('Try again'), findsOneWidget);
+        expect(failingWriter.profileCalls, 1);
+        expect(failingWriter.cycleCalls, 1);
+        expect(failingWriter.markCompleteCalls, 0);
+      });
+
+      testWidgets('Profile FAIL, Cycle OK → does NOT call markOnboardingComplete',
+          (tester) async {
+        setTestScreenSize(tester);
+        final failingWriter = _ProfileFailCycleOkWriter();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(failingWriter),
+            ],
+          ),
+        );
+
+        // Pump through animation and save attempt
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(find.text('Try again'), findsOneWidget);
+        expect(failingWriter.profileCalls, 1);
+        // Cycle should not be called if profile fails first.
+        expect(failingWriter.cycleCalls, 0);
+        expect(failingWriter.markCompleteCalls, 0);
       });
     });
 
@@ -306,7 +468,9 @@ void main() {
               userStateServiceProvider.overrideWith((ref) async {
                 SharedPreferences.setMockInitialValues({});
                 final prefs = await SharedPreferences.getInstance();
-                return UserStateService(prefs: prefs);
+                final service = UserStateService(prefs: prefs);
+                await service.bindUser('test-user');
+                return service;
               }),
             ],
           ),

@@ -15,7 +15,7 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 ## Data Categories (PII / Health Data)
 - **PII (Art. 4 DSGVO):**
   - `public.profiles.display_name` (Name)
-  - `public.profiles.birth_date` (Geburtsdatum, optional)
+  - `public.profiles.birth_date` (Geburtsdatum; required wenn `has_completed_onboarding=true` · 16–120)
 - **Gesundheitsdaten (Art. 9 DSGVO / FemTech):**
   - `public.cycle_data`: `cycle_length`, `period_duration`, `last_period`, `age`, `cycle_regularity`
   - `public.daily_plan`: Mood/Energy/Symptoms/Notes etc. (bereits vorhanden)
@@ -58,14 +58,22 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 - `supabase/migrations/20251214193000_create_profiles_gate_ssot.sql`
 - `supabase/migrations/20251214193100_add_cycle_data_regularity.sql`
 - `supabase/migrations/20251214193200_harden_privileges_daily_plan_and_log_consent.sql`
+- `supabase/migrations/20251222112000_fix_cycle_data_constraint_drift.sql`
+- `supabase/migrations/20251222112100_harden_table_grants_least_privilege.sql`
+- `supabase/migrations/20251222112200_profiles_birth_date_gate_constraint.sql`
+- `supabase/migrations/20251222131000_profiles_set_accepted_consent_at_server_time.sql`
 
 ### RLS Smoke (Soll-Ausgabe)
-- `psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke.sql`
+- Option A (ohne `SUPABASE_DB_URL`, empfohlen): `.env.local` + `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`
+  - `set -a; source .env.local; set +a`
+  - `PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://postgres@db.${SUPABASE_PROJECT_REF}.supabase.co:5432/postgres?sslmode=require" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke.sql`
+  - `PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://postgres@db.${SUPABASE_PROJECT_REF}.supabase.co:5432/postgres?sslmode=require" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke_negative.sql`
+- Option B (falls vorhanden): `psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke.sql` (+ `_negative.sql`)
   - Erwartung: `profiles baseline must return zero rows without context` ✅
   - Erwartung: Insert/Select unter `ROLE authenticated` und `request.jwt.claims.sub=<user>` ✅
 
 ## Risks & Mitigations
-- **Mehr Persistenz von PII (Name/Geburtsdatum):** `birth_date` bleibt optional; Zugriff owner-only; Datenminimierung bevorzugen (z. B. Alter statt vollem Datum, falls funktional ausreichend).
+- **Mehr Persistenz von PII (Name/Geburtsdatum):** `birth_date` ist erforderlich, sobald Onboarding abgeschlossen ist; Zugriff owner-only; DB-CHECK erzwingt 16–120 (gate-sicher) und verhindert „completed ohne birthdate“.
 - **Cross-device Konsistenz:** serverseitige Gate-SSOT verhindert lokale Drift zwischen Geräten.
 - **Abuse/Noise durch anon RPC:** EXECUTE-Revokes reduzieren Angriffsfläche und vermeiden DB-Fehler-Spam.
 
@@ -73,4 +81,3 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 - Drop `profiles` table: `DROP TABLE IF EXISTS public.profiles;`
 - Drop `cycle_regularity` column: `ALTER TABLE public.cycle_data DROP COLUMN IF EXISTS cycle_regularity;`
 - Restore `log_consent_if_allowed` EXECUTE grants (nur falls benötigt) per neuem Revert-Migration-File.
-

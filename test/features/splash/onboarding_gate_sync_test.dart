@@ -81,13 +81,13 @@ void main() {
         expect(result, equals(onboardingRoute));
       });
 
-      test('remote null + local true → navigates to Home (offline-safe)', () {
+      test('remote null + local true → returns null (fail-safe, never Home)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: null,
           localGate: true,
           homeRoute: homeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, isNull);
       });
 
       test('remote null + local null → returns null (show Unknown UI)', () {

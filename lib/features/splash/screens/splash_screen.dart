@@ -6,7 +6,9 @@ import 'package:lottie/lottie.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
@@ -14,7 +16,6 @@ import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
-import 'package:luvi_app/features/splash/data/onboarding_gate_profile_reader.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
@@ -97,8 +98,9 @@ String? determineOnboardingGateRoute({
   if (remoteGate == false) return Onboarding01Screen.routeName;
 
   // Remote null (network unavailable) - use local as fallback
+  // Fail-safe: never route to Home when server SSOT is unavailable.
+  // Local cache may be stale or cross-account; only allow the safe direction.
   if (localGate == false) return Onboarding01Screen.routeName;
-  if (localGate == true) return homeRoute; // Offline-safe
 
   // Both null → truly unknown
   return null;
@@ -174,51 +176,60 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Widget _buildUnknownUI(BuildContext context, AppLocalizations l10n) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(Spacing.l),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.cloud_off_outlined,
               size: 64,
-              color: DsColors.textMuted,
+              color: DsColors.textPrimary,
               semanticLabel: l10n.splashGateUnknownTitle,
             ),
             const SizedBox(height: Spacing.l),
             Text(
               l10n.splashGateUnknownTitle,
-              style: textTheme.headlineSmall,
+              style: textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: Spacing.s),
+            const SizedBox(height: Spacing.m),
             Text(
               l10n.splashGateUnknownBody,
-              style: textTheme.bodyMedium?.copyWith(
-                color: DsColors.textMuted,
-              ),
+              style: textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: Spacing.xl),
-            // Primary: Retry (max 1 manual retry)
+            // Primary CTA: Retry (Welcome-style magenta pill button)
             SizedBox(
               width: double.infinity,
-              child: FilledButton(
+              child: WelcomeButton(
+                label: l10n.splashGateRetryCta,
                 onPressed: _hasUsedManualRetry ? null : _handleRetry,
-                child: Text(l10n.splashGateRetryCta),
               ),
             ),
-            const SizedBox(height: Spacing.s),
-            // Secondary: Start Onboarding
+            const SizedBox(height: Spacing.m),
+            // Secondary CTA: Sign out (outline style)
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
-                onPressed: _handleStartOnboarding,
-                child: Text(l10n.splashGateStartOnboardingCta),
+                onPressed: _handleSignOut,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: DsColors.welcomeButtonBg,
+                  side: const BorderSide(color: DsColors.welcomeButtonBg),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: Sizes.welcomeButtonPaddingVertical,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
+                  ),
+                ),
+                child: Text(l10n.splashGateSignOutCta),
               ),
             ),
           ],
@@ -237,9 +248,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _navigateAfterAnimation();
   }
 
-  void _handleStartOnboarding() {
+  Future<void> _handleSignOut() async {
     if (!mounted) return;
-    context.go(Onboarding01Screen.routeName);
+    try {
+      await SupabaseService.client.auth.signOut();
+    } catch (e, st) {
+      log.w('sign out failed', tag: 'splash', error: sanitizeError(e), stack: st);
+    }
+    if (mounted) {
+      context.go(AuthSignInScreen.routeName);
+    }
   }
 
   void _handleAnimationStatus(AnimationStatus status) {
@@ -281,27 +299,83 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       return;
     }
 
-    final acceptedVersion = service.acceptedConsentVersionOrNull;
-    final needsConsent = acceptedVersion == null ||
-        acceptedVersion < ConsentConfig.currentVersionInt;
+    // Ensure local cache is account-scoped to the currently authenticated user.
+    // This prevents gate leakage between accounts on the same device.
+    final uid = SupabaseService.currentUser?.id;
+    if (uid != null) {
+      await service.bindUser(uid);
+    }
+
+    final localAcceptedVersion = service.acceptedConsentVersionOrNull;
+    final localHasSeenWelcome = service.hasSeenWelcomeOrNull;
+
+    // Server SSOT: Try to fetch profiles row once and derive consent + onboarding
+    // gates from it. Local SharedPreferences are treated as read-through cache.
+    Map<String, dynamic>? remoteProfile;
+    bool remoteProfileLoaded = false;
+    try {
+      remoteProfile = await _fetchRemoteProfileWithRetry(useTimeout: useTimeout);
+      remoteProfileLoaded = true;
+    } catch (e, st) {
+      log.w('remote profile fetch failed',
+          tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+    }
+
+    // Fail-safe: if we can't fetch server SSOT, do not route based on local
+    // cache (prevents bypass in unknown/offline states). Let the user retry.
+    if (!remoteProfileLoaded) {
+      if (mounted) {
+        setState(() {
+          _showUnknownUI = true;
+        });
+      }
+      return;
+    }
+
+    final int? remoteAcceptedVersion = remoteProfileLoaded
+        ? (remoteProfile?['accepted_consent_version'] as int?)
+        : null;
+    final bool? remoteHasSeenWelcome = remoteProfileLoaded
+        ? (remoteProfile?['has_seen_welcome'] as bool?)
+        : null;
+
+    // Cache refresh: if server has a consent version, sync it locally.
+    if (remoteAcceptedVersion != null &&
+        (localAcceptedVersion == null ||
+            remoteAcceptedVersion > localAcceptedVersion)) {
+      try {
+        await service.setAcceptedConsentVersion(remoteAcceptedVersion);
+      } catch (e, st) {
+        log.w('local consent version sync failed',
+            tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+      }
+    }
+
+    // Cache refresh: welcome seen is monotonic, so sync true -> local.
+    if (remoteHasSeenWelcome == true && localHasSeenWelcome != true) {
+      try {
+        await service.markWelcomeSeen();
+      } catch (e, st) {
+        log.w('local welcome sync failed',
+            tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+      }
+    }
+
+    // Server is SSOT for consent: local cache must not bypass consent gating.
+    final needsConsent = remoteAcceptedVersion == null ||
+        remoteAcceptedVersion < ConsentConfig.currentVersionInt;
     if (needsConsent) {
+      if (!mounted || _hasNavigated) return;
       _hasNavigated = true;
       context.go(ConsentWelcome01Screen.routeName);
       return;
     }
 
-    // Consent OK - now sync onboarding gate with server SSOT
     final localGate = service.hasCompletedOnboardingOrNull;
-    bool? remoteGate;
-
-    try {
-      remoteGate = await _fetchRemoteOnboardingGateWithRetry(
-        useTimeout: useTimeout,
-      );
-    } catch (e, st) {
-      log.w('remote gate fetch failed',
-          tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
-    }
+    // Consent OK - now sync onboarding gate with server SSOT
+    // No profile row = new user.
+    bool? remoteGate =
+        (remoteProfile?['has_completed_onboarding'] as bool?) ?? false;
 
     if (!mounted || _hasNavigated) return;
 
@@ -336,9 +410,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       if (!mounted || _hasNavigated) return;
 
       try {
-        remoteGate = await _fetchRemoteOnboardingGateWithRetry(
-          useTimeout: useTimeout,
-        );
+        remoteProfile =
+            await _fetchRemoteProfileWithRetry(useTimeout: useTimeout);
+        remoteGate =
+            (remoteProfile?['has_completed_onboarding'] as bool?) ?? false;
       } catch (e, st) {
         log.w('race-retry fetch failed',
             tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
@@ -404,28 +479,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     }
   }
 
-  /// Fetches remote onboarding gate with retry logic.
-  ///
-  /// First attempt: 3 second timeout
-  /// Retry: 2 second timeout
-  Future<bool?> _fetchRemoteOnboardingGateWithRetry({
+  /// Fetches the server `public.profiles` row for the current user with retry
+  /// logic (server SSOT for consent + onboarding gates).
+  Future<Map<String, dynamic>?> _fetchRemoteProfileWithRetry({
     required bool useTimeout,
   }) async {
     const primaryTimeout = Duration(seconds: 3);
     const retryTimeout = Duration(seconds: 2);
 
-    final reader = ref.read(onboardingGateProfileReaderProvider);
-
     try {
-      final fetchFuture = reader.fetchRemoteOnboardingGate();
+      final fetchFuture = SupabaseService.getProfile();
       return useTimeout
           ? await fetchFuture.timeout(primaryTimeout)
           : await fetchFuture;
     } catch (e, st) {
-      log.w('remote gate fetch failed, retrying once',
+      log.w('remote profile fetch failed, retrying once',
           tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
-      // One retry with shorter timeout
-      final fetchFuture = reader.fetchRemoteOnboardingGate();
+      final fetchFuture = SupabaseService.getProfile();
       return useTimeout
           ? await fetchFuture.timeout(retryTimeout)
           : await fetchFuture;

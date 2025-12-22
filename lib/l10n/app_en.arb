@@ -1385,20 +1385,20 @@
     }
   },
 
-  "splashGateUnknownTitle": "Connection unavailable",
+  "splashGateUnknownTitle": "Brief interruption",
   "@splashGateUnknownTitle": {
-    "description": "Title shown when splash screen cannot determine onboarding state"
+    "description": "Empathetic title shown when splash screen cannot determine onboarding state"
   },
-  "splashGateUnknownBody": "We couldn't load your progress. Please check your internet connection.",
+  "splashGateUnknownBody": "To continue, we need an internet connection. Please check your connection.",
   "@splashGateUnknownBody": {
-    "description": "Body text shown when splash screen cannot determine onboarding state"
+    "description": "Empathetic body text shown when splash screen cannot determine onboarding state"
   },
   "splashGateRetryCta": "Try again",
   "@splashGateRetryCta": {
     "description": "Retry button label on splash unknown state UI"
   },
-  "splashGateStartOnboardingCta": "Start onboarding",
-  "@splashGateStartOnboardingCta": {
-    "description": "Start onboarding button label on splash unknown state UI"
+  "splashGateSignOutCta": "Sign out",
+  "@splashGateSignOutCta": {
+    "description": "Sign out button label on splash unknown state UI"
   }
 }

@@ -58,45 +58,125 @@ class UserStateService {
 
   final SharedPreferences prefs;
 
-  bool get hasSeenWelcome => prefs.getBool(_keyHasSeenWelcome) ?? false;
+  // Account-scope: All persisted keys must be user-scoped to avoid cross-account
+  // leakage when multiple users sign in on the same device.
+  String? _boundUserId;
+
+  String? get boundUserId => _boundUserId;
+
+  static const List<String> _legacyUnscopedKeys = [
+    _keyHasSeenWelcome,
+    _keyHasCompletedOnboarding,
+    _keyFitnessLevel,
+    _keyAcceptedConsentVersion,
+  ];
+
+  String? _scopedKey(String baseKey) {
+    final uid = _boundUserId;
+    if (uid == null || uid.isEmpty) return null;
+    return 'u:$uid:$baseKey';
+  }
+
+  static String _scopedKeyFor(String userId, String baseKey) =>
+      'u:$userId:$baseKey';
+
+  /// Bind this cache instance to a specific authenticated user.
+  ///
+  /// Security invariant:
+  /// - All keys are stored under a user-scoped prefix.
+  /// - When the bound user changes (including sign-out), previously bound
+  ///   gate keys are cleared so no gate state can bleed into another account.
+  Future<void> bindUser(String? userId) async {
+    if (_boundUserId == userId) return;
+
+    final previous = _boundUserId;
+
+    // Always remove legacy unscoped keys. We intentionally do NOT migrate them,
+    // because they may belong to a different account (cross-account leak risk).
+    for (final key in _legacyUnscopedKeys) {
+      try {
+        if (prefs.containsKey(key)) {
+          await prefs.remove(key);
+        }
+      } catch (_) {
+        // Best-effort: cache keys are non-critical and must not crash auth flows.
+      }
+    }
+
+    // Clear previous user's scoped keys on sign-out / account switch (privacy).
+    if (previous != null && previous.isNotEmpty) {
+      for (final baseKey in _legacyUnscopedKeys) {
+        try {
+          await prefs.remove(_scopedKeyFor(previous, baseKey));
+        } catch (_) {
+          // Best-effort
+        }
+      }
+    }
+
+    _boundUserId = userId;
+  }
+
+  bool get hasSeenWelcome =>
+      (_scopedKey(_keyHasSeenWelcome) == null)
+          ? false
+          : (prefs.getBool(_scopedKey(_keyHasSeenWelcome)!) ?? false);
 
   /// Returns whether the welcome has been seen, or null if the key is absent
   /// (unknown state). Useful for callers that want to treat "unknown"
   /// differently from an explicit false.
   bool? get hasSeenWelcomeOrNull {
-    if (!prefs.containsKey(_keyHasSeenWelcome)) return null;
-    return prefs.getBool(_keyHasSeenWelcome);
+    final key = _scopedKey(_keyHasSeenWelcome);
+    if (key == null) return null;
+    if (!prefs.containsKey(key)) return null;
+    return prefs.getBool(key);
   }
 
   bool get hasCompletedOnboarding =>
-      prefs.getBool(_keyHasCompletedOnboarding) ?? false;
+      (_scopedKey(_keyHasCompletedOnboarding) == null)
+          ? false
+          : (prefs.getBool(_scopedKey(_keyHasCompletedOnboarding)!) ?? false);
 
   /// Returns whether onboarding has been completed, or null if the key is
   /// absent
   /// (unknown state). Useful for callers that want to treat "unknown"
   /// differently from an explicit false.
   bool? get hasCompletedOnboardingOrNull {
-    if (!prefs.containsKey(_keyHasCompletedOnboarding)) return null;
-    return prefs.getBool(_keyHasCompletedOnboarding);
+    final key = _scopedKey(_keyHasCompletedOnboarding);
+    if (key == null) return null;
+    if (!prefs.containsKey(key)) return null;
+    return prefs.getBool(key);
   }
 
   FitnessLevel? get fitnessLevel =>
-      FitnessLevel.tryParse(prefs.getString(_keyFitnessLevel));
+      FitnessLevel.tryParse(
+        _scopedKey(_keyFitnessLevel) == null
+            ? null
+            : prefs.getString(_scopedKey(_keyFitnessLevel)!),
+      );
 
   /// Returns the accepted consent version, or null if not yet accepted.
   int? get acceptedConsentVersionOrNull =>
-      prefs.getInt(_keyAcceptedConsentVersion);
+      _scopedKey(_keyAcceptedConsentVersion) == null
+          ? null
+          : prefs.getInt(_scopedKey(_keyAcceptedConsentVersion)!);
 
   Future<void> setHasCompletedOnboarding(bool value) async {
-    final success = await prefs.setBool(_keyHasCompletedOnboarding, value);
+    final key = _scopedKey(_keyHasCompletedOnboarding);
+    if (key == null) {
+      throw StateError('UserStateService is not bound to a user');
+    }
+
+    final success = await prefs.setBool(key, value);
     if (!success) {
       throw StateError('Failed to persist onboarding completion flag');
     }
 
     // Optional consistency: if onboarding is explicitly false, also clear the
     // fitness level key so callers don't observe stale onboarding state.
-    if (!value && prefs.containsKey(_keyFitnessLevel)) {
-      final removed = await prefs.remove(_keyFitnessLevel);
+    final fitnessKey = _scopedKey(_keyFitnessLevel);
+    if (!value && fitnessKey != null && prefs.containsKey(fitnessKey)) {
+      final removed = await prefs.remove(fitnessKey);
       if (!removed) {
         throw StateError('Failed to clear onboarding fitness level');
       }
@@ -104,14 +184,22 @@ class UserStateService {
   }
 
   Future<void> setAcceptedConsentVersion(int version) async {
-    final success = await prefs.setInt(_keyAcceptedConsentVersion, version);
+    final key = _scopedKey(_keyAcceptedConsentVersion);
+    if (key == null) {
+      throw StateError('UserStateService is not bound to a user');
+    }
+    final success = await prefs.setInt(key, version);
     if (!success) {
       throw StateError('Failed to persist accepted consent version');
     }
   }
 
   Future<void> markWelcomeSeen() async {
-    final success = await prefs.setBool(_keyHasSeenWelcome, true);
+    final key = _scopedKey(_keyHasSeenWelcome);
+    if (key == null) {
+      throw StateError('UserStateService is not bound to a user');
+    }
+    final success = await prefs.setBool(key, true);
     if (!success) {
       throw StateError('Failed to persist welcome seen flag');
     }
@@ -120,21 +208,26 @@ class UserStateService {
   Future<void> markOnboardingComplete({
     required FitnessLevel fitnessLevel,
   }) async {
+    final completedKey = _scopedKey(_keyHasCompletedOnboarding);
+    final fitnessKey = _scopedKey(_keyFitnessLevel);
+    if (completedKey == null || fitnessKey == null) {
+      throw StateError('UserStateService is not bound to a user');
+    }
+
     // Write completion flag first, then persist fitness level. If the second
     // write fails, best-effort rollback the flag to avoid a partially
     // completed onboarding state.
-    final wroteFlag = await prefs.setBool(_keyHasCompletedOnboarding, true);
+    final wroteFlag = await prefs.setBool(completedKey, true);
     if (!wroteFlag) {
       throw StateError('Failed to persist onboarding completion flag');
     }
 
     try {
-      final wroteLevel =
-          await prefs.setString(_keyFitnessLevel, fitnessLevel.name);
+      final wroteLevel = await prefs.setString(fitnessKey, fitnessLevel.name);
       if (!wroteLevel) {
         // Best-effort rollback; ignore rollback failure and surface original error
         try {
-          await prefs.remove(_keyHasCompletedOnboarding);
+          await prefs.remove(completedKey);
         } catch (e) {
           // Best-effort log without depending on Flutter; keep service pure Dart.
           // ignore: avoid_print
@@ -147,7 +240,7 @@ class UserStateService {
     } catch (e) {
       // Rollback on exception as well
       try {
-        await prefs.remove(_keyHasCompletedOnboarding);
+        await prefs.remove(completedKey);
       } catch (rollbackErr) {
         // Best-effort log without depending on Flutter; keep service pure Dart.
         // ignore: avoid_print
@@ -165,7 +258,11 @@ class UserStateService {
   }
 
   Future<void> setFitnessLevel(FitnessLevel level) async {
-    final success = await prefs.setString(_keyFitnessLevel, level.name);
+    final key = _scopedKey(_keyFitnessLevel);
+    if (key == null) {
+      throw StateError('UserStateService is not bound to a user');
+    }
+    final success = await prefs.setString(key, level.name);
     if (!success) {
       throw StateError('Failed to persist fitness level');
     }
@@ -194,6 +291,15 @@ class UserStateService {
     await removeKey(_keyHasCompletedOnboarding);
     await removeKey(_keyFitnessLevel);
     await removeKey(_keyAcceptedConsentVersion);
+
+    // Also clear scoped keys for the currently bound user (if any).
+    final uid = _boundUserId;
+    if (uid != null && uid.isNotEmpty) {
+      await removeKey(_scopedKeyFor(uid, _keyHasSeenWelcome));
+      await removeKey(_scopedKeyFor(uid, _keyHasCompletedOnboarding));
+      await removeKey(_scopedKeyFor(uid, _keyFitnessLevel));
+      await removeKey(_scopedKeyFor(uid, _keyAcceptedConsentVersion));
+    }
 
     if (failures.isNotEmpty) {
       throw StateError(

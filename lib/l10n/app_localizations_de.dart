@@ -1009,14 +1009,14 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get splashGateUnknownTitle => 'Verbindung nicht möglich';
+  String get splashGateUnknownTitle => 'Kurze Unterbrechung';
 
   @override
-  String get splashGateUnknownBody => 'Wir konnten deinen Fortschritt nicht laden. Bitte prüfe deine Internetverbindung.';
+  String get splashGateUnknownBody => 'Um weiterzumachen, brauchen wir eine Internetverbindung. Prüfe kurz deine Verbindung.';
 
   @override
-  String get splashGateRetryCta => 'Erneut versuchen';
+  String get splashGateRetryCta => 'Nochmal probieren';
 
   @override
-  String get splashGateStartOnboardingCta => 'Onboarding starten';
+  String get splashGateSignOutCta => 'Abmelden';
 }

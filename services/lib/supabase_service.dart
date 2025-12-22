@@ -8,6 +8,10 @@ import 'init_exception.dart';
 import 'init_mode.dart';
 import 'logger.dart';
 
+/// Stable error IDs for analytics (Sentry/PostHog).
+const String kErrProfilesUpsertConsentGateNoRowReturned =
+    'profiles_upsert_consent_gate_no_row_returned';
+
 class SupabaseService {
   static bool _initialized = false;
   // A single gate to ensure only the first caller performs initialization and
@@ -343,8 +347,6 @@ class SupabaseService {
       'fitness_level': fitnessLevel,
       'goals': goals,
       'interests': interests,
-      'has_completed_onboarding': true,
-      'onboarding_completed_at': timestamp,
       'updated_at': timestamp,
     };
     final row = await client
@@ -353,6 +355,57 @@ class SupabaseService {
         .select()
         .single();
     return row;
+  }
+
+  /// Upsert consent gate state for the current user in `public.profiles`.
+  ///
+  /// SSOT: This is the server-side source of truth for consent version checks.
+  /// SharedPreferences may cache this value but must not be the primary truth.
+  ///
+  /// This does not touch onboarding completion.
+  static Future<Map<String, dynamic>?> upsertConsentGate({
+    required int acceptedConsentVersion,
+    bool markWelcomeSeen = true,
+  }) async {
+    final user = _ensureAuthenticated();
+    if (acceptedConsentVersion <= 0) {
+      throw ArgumentError.value(
+        acceptedConsentVersion,
+        'acceptedConsentVersion',
+        'must be positive',
+      );
+    }
+
+    // Intentionally do NOT accept a client-provided timestamp for
+    // `accepted_consent_at`. This is set server-side via a trigger/migration to
+    // avoid relying on device clock.
+    final timestamp = DateTime.now().toUtc().toIso8601String();
+
+    final insertPayload = <String, dynamic>{
+      'user_id': user.id,
+      'accepted_consent_version': acceptedConsentVersion,
+      'updated_at': timestamp,
+    };
+
+    if (markWelcomeSeen) {
+      insertPayload['has_seen_welcome'] = true;
+    }
+
+    // Use upsert to handle both insert and update atomically.
+    // This avoids race conditions and PGRST116 errors from empty result sets.
+    // onConflict: 'user_id' ensures we update if the row exists.
+    final result = await client
+        .from('profiles')
+        .upsert(insertPayload, onConflict: 'user_id')
+        .select()
+        .maybeSingle();
+
+    // Prevent "silent success" - if upsert returned no row, treat as failure.
+    // Caller catches all exceptions and shows warning snackbar.
+    if (result == null) {
+      throw StateError(kErrProfilesUpsertConsentGateNoRowReturned);
+    }
+    return result;
   }
 
   /// Upsert an account-scoped onboarding gate row for the current user in
@@ -370,19 +423,29 @@ class SupabaseService {
     }
 
     final timestamp = DateTime.now().toUtc().toIso8601String();
-    final payload = <String, dynamic>{
+    final insertPayload = <String, dynamic>{
       'user_id': user.id,
       'has_completed_onboarding': true,
       'onboarding_completed_at': timestamp,
       'updated_at': timestamp,
     };
+    final updatePayload = Map<String, dynamic>.from(insertPayload)
+      ..remove('user_id');
 
-    final row = await client
+    final updated = await client
         .from('profiles')
-        .upsert(payload, onConflict: 'user_id')
+        .update(updatePayload)
+        .eq('user_id', user.id)
         .select()
-        .single();
-    return row;
+        .maybeSingle();
+
+    if (updated == null) {
+      throw StateError(
+        'Cannot mark onboarding complete: profiles row missing for user.',
+      );
+    }
+
+    return updated;
   }
 
   /// Get user profile data

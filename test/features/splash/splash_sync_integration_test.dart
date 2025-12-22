@@ -222,7 +222,8 @@ void main() {
     });
 
     group('Remote unavailable (null) - local fallback scenarios', () {
-      test('remote null + local true → routes to Home (offline-safe)', () async {
+      test('remote null + local true → returns null (fail-safe, never Home)',
+          () async {
         final reader = AlwaysNullGateReader();
         final remoteGate = await reader.fetchRemoteOnboardingGate();
 
@@ -231,7 +232,7 @@ void main() {
           localGate: true,
           homeRoute: homeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, isNull);
       });
 
       test('remote null + local false → routes to Onboarding', () async {
@@ -271,13 +272,13 @@ void main() {
           remoteGate = null;
         }
 
-        // With local=true, should still route to Home (offline-safe)
+        // Fail-safe: never route to Home when remote is unavailable.
         final result = determineOnboardingGateRoute(
           remoteGate: remoteGate,
           localGate: true,
           homeRoute: homeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, isNull);
       });
 
       test('retry logic: first call fails, retry succeeds', () async {

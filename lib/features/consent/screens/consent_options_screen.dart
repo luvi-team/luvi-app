@@ -19,6 +19,7 @@ import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
+import 'package:luvi_services/supabase_service.dart';
 
 class _ConsentBtnBusyNotifier extends Notifier<bool> {
   @override
@@ -614,21 +615,50 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
 }
 
 Future<bool> _markWelcomeSeen(WidgetRef ref) async {
+  var ok = true;
+
+  // Server SSOT: write gate state when authenticated + initialized.
+  // In tests (or very early init) Supabase may not be ready; don't throw.
+  if (SupabaseService.isInitialized && SupabaseService.currentUser != null) {
+    try {
+      await SupabaseService.upsertConsentGate(
+        acceptedConsentVersion: ConsentConfig.currentVersionInt,
+        markWelcomeSeen: true,
+      );
+    } catch (error, stackTrace) {
+      ok = false;
+      log.w(
+        'consent_gate_upsert_failed',
+        tag: 'consent_options',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
+    }
+  }
+
+  // Local cache (best-effort). Only write if we have a valid user ID.
   try {
     final userState = await ref.read(userStateServiceProvider.future);
-    await userState.markWelcomeSeen();
-    // Also persist accepted consent version for version-gate checks
-    await userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt);
-    return true;
+    final uid = SupabaseService.currentUser?.id;
+    if (uid != null) {
+      await userState.bindUser(uid);
+      await userState.markWelcomeSeen();
+      await userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt);
+    } else {
+      // Debug: track edge case where uid is null (auth state race or test env).
+      log.d('consent_cache_skip_no_uid', tag: 'consent_options');
+    }
   } catch (error, stackTrace) {
+    ok = false;
     log.e(
       'consent_mark_welcome_failed',
       tag: 'consent_options',
       error: sanitizeError(error) ?? error.runtimeType,
       stack: stackTrace,
     );
-    return false;
   }
+
+  return ok;
 }
 
 /// Navigate to Onboarding after consent is accepted.

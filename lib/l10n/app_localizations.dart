@@ -2003,16 +2003,16 @@ abstract class AppLocalizations {
   /// **'{percent} percent'**
   String semanticProgressPercent(int percent);
 
-  /// Title shown when splash screen cannot determine onboarding state
+  /// Empathetic title shown when splash screen cannot determine onboarding state
   ///
   /// In en, this message translates to:
-  /// **'Connection unavailable'**
+  /// **'Brief interruption'**
   String get splashGateUnknownTitle;
 
-  /// Body text shown when splash screen cannot determine onboarding state
+  /// Empathetic body text shown when splash screen cannot determine onboarding state
   ///
   /// In en, this message translates to:
-  /// **'We couldn\'t load your progress. Please check your internet connection.'**
+  /// **'To continue, we need an internet connection. Please check your connection.'**
   String get splashGateUnknownBody;
 
   /// Retry button label on splash unknown state UI
@@ -2021,11 +2021,11 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get splashGateRetryCta;
 
-  /// Start onboarding button label on splash unknown state UI
+  /// Sign out button label on splash unknown state UI
   ///
   /// In en, this message translates to:
-  /// **'Start onboarding'**
-  String get splashGateStartOnboardingCta;
+  /// **'Sign out'**
+  String get splashGateSignOutCta;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

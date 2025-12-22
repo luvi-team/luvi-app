@@ -9,8 +9,10 @@ import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthState;
 import 'core/navigation/go_router_refresh_stream.dart' as luvi_refresh;
 import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 import 'core/config/app_links.dart';
 import 'core/navigation/password_recovery_navigation_driver.dart';
 import 'core/navigation/route_orientation_controller.dart';
@@ -102,6 +104,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   PasswordRecoveryNavigationDriver? _passwordRecoveryDriver;
   SupabaseDeepLinkHandler? _deepLinkHandler;
   ProviderSubscription<InitState>? _initOrchestrationSubscription;
+  StreamSubscription<AuthState>? _userStateAuthSyncSubscription;
 
   String get _initialLocation => kReleaseMode
       ? SplashScreen.routeName
@@ -135,6 +138,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   @override
   void dispose() {
     _initOrchestrationSubscription?.close();
+    unawaited(_userStateAuthSyncSubscription?.cancel());
     unawaited(_passwordRecoveryDriver?.dispose());
     unawaited(_deepLinkHandler?.dispose());
     _router.dispose();
@@ -258,6 +262,9 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         // 2. Recovery-Listener registrieren (MUSS vor pending URI!)
         _ensurePasswordRecoveryListener();
 
+        // 2b. UserStateService account-scope sync (auth change → bind/clear)
+        _ensureUserStateAuthSyncListener();
+
         // 3. ERST JETZT: Pending URI verarbeiten (Listener ist garantiert ready)
         final handler = _deepLinkHandler;
         if (handler != null && handler.hasPendingUri) {
@@ -289,6 +296,50 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         _router.go(CreateNewPasswordScreen.routeName);
       },
     );
+  }
+
+  /// Keeps UserStateService cache account-scoped by binding it to the current
+  /// authenticated user and clearing on sign-out/account switch.
+  ///
+  /// SSOT: `public.profiles` is the source of truth; this is only a cache, but
+  /// it must never leak between accounts.
+  void _ensureUserStateAuthSyncListener() {
+    if (_userStateAuthSyncSubscription != null || !SupabaseService.isInitialized) {
+      return;
+    }
+
+    // Bind once on startup (covers "already signed in" cases where no auth
+    // event is emitted immediately).
+    unawaited(() async {
+      try {
+        final service = await ref.read(userStateServiceProvider.future);
+        await service.bindUser(SupabaseService.currentUser?.id);
+      } catch (e) {
+        if (!kReleaseMode) {
+          log.w(
+            'user_state_bind_initial_failed',
+            tag: 'main',
+            error: sanitizeError(e) ?? e.runtimeType,
+          );
+        }
+      }
+    }());
+
+    _userStateAuthSyncSubscription =
+        SupabaseService.client.auth.onAuthStateChange.listen((authState) async {
+      try {
+        final service = await ref.read(userStateServiceProvider.future);
+        await service.bindUser(authState.session?.user.id);
+      } catch (e) {
+        if (!kReleaseMode) {
+          log.w(
+            'user_state_bind_failed',
+            tag: 'main',
+            error: sanitizeError(e) ?? e.runtimeType,
+          );
+        }
+      }
+    });
   }
 
 }

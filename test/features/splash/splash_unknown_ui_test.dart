@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
+import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
@@ -14,9 +16,9 @@ import '../../support/test_config.dart';
 ///
 /// This mirrors the `_buildUnknownUI` from SplashScreen but is testable.
 class _TestableUnknownUI extends StatefulWidget {
-  const _TestableUnknownUI({required this.onStartOnboarding});
+  const _TestableUnknownUI({required this.onSignOut});
 
-  final VoidCallback onStartOnboarding;
+  final VoidCallback onSignOut;
 
   @override
   State<_TestableUnknownUI> createState() => _TestableUnknownUIState();
@@ -35,51 +37,63 @@ class _TestableUnknownUIState extends State<_TestableUnknownUI> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: DsColors.welcomeWaveBg,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(Spacing.l),
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.cloud_off_outlined,
                 size: 64,
-                color: DsColors.textMuted,
+                color: DsColors.textPrimary,
                 semanticLabel: l10n.splashGateUnknownTitle,
               ),
               const SizedBox(height: Spacing.l),
               Text(
                 l10n.splashGateUnknownTitle,
-                style: textTheme.headlineSmall,
+                style: textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: Spacing.s),
+              const SizedBox(height: Spacing.m),
               Text(
                 l10n.splashGateUnknownBody,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: DsColors.textMuted,
-                ),
+                style: textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: Spacing.xl),
+              // Primary CTA: Retry (Welcome-style magenta pill button)
               SizedBox(
                 width: double.infinity,
-                child: FilledButton(
+                child: WelcomeButton(
+                  label: l10n.splashGateRetryCta,
                   onPressed: _hasUsedManualRetry ? null : _handleRetry,
-                  child: Text(l10n.splashGateRetryCta),
                 ),
               ),
-              const SizedBox(height: Spacing.s),
+              const SizedBox(height: Spacing.m),
+              // Secondary CTA: Sign out (outline style)
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: widget.onStartOnboarding,
-                  child: Text(l10n.splashGateStartOnboardingCta),
+                  onPressed: widget.onSignOut,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: DsColors.welcomeButtonBg,
+                    side: const BorderSide(color: DsColors.welcomeButtonBg),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: Sizes.welcomeButtonPaddingVertical,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(Sizes.radiusWelcomeButton),
+                    ),
+                  ),
+                  child: Text(l10n.splashGateSignOutCta),
                 ),
               ),
             ],
@@ -94,7 +108,7 @@ void main() {
   TestConfig.ensureInitialized();
 
   Widget buildTestApp({
-    required VoidCallback onStartOnboarding,
+    required VoidCallback onSignOut,
     Locale locale = const Locale('de'),
   }) {
     return ProviderScope(
@@ -103,7 +117,7 @@ void main() {
         locale: locale,
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: _TestableUnknownUI(onStartOnboarding: onStartOnboarding),
+        home: _TestableUnknownUI(onSignOut: onSignOut),
       ),
     );
   }
@@ -111,7 +125,7 @@ void main() {
   group('SplashScreen Unknown UI', () {
     testWidgets('renders all UI elements correctly (DE)', (tester) async {
       await tester.pumpWidget(buildTestApp(
-        onStartOnboarding: () {},
+        onSignOut: () {},
         locale: const Locale('de'),
       ));
       await tester.pumpAndSettle();
@@ -123,19 +137,19 @@ void main() {
       expect(find.text(l10n.splashGateUnknownTitle), findsOneWidget);
       expect(find.text(l10n.splashGateUnknownBody), findsOneWidget);
       expect(find.text(l10n.splashGateRetryCta), findsOneWidget);
-      expect(find.text(l10n.splashGateStartOnboardingCta), findsOneWidget);
+      expect(find.text(l10n.splashGateSignOutCta), findsOneWidget);
 
       // Verify icon is present
       expect(find.byIcon(Icons.cloud_off_outlined), findsOneWidget);
 
-      // Verify buttons are present
-      expect(find.byType(FilledButton), findsOneWidget);
+      // Verify buttons are present (WelcomeButton wraps ElevatedButton)
+      expect(find.byType(WelcomeButton), findsOneWidget);
       expect(find.byType(OutlinedButton), findsOneWidget);
     });
 
     testWidgets('renders all UI elements correctly (EN)', (tester) async {
       await tester.pumpWidget(buildTestApp(
-        onStartOnboarding: () {},
+        onSignOut: () {},
         locale: const Locale('en'),
       ));
       await tester.pumpAndSettle();
@@ -146,29 +160,29 @@ void main() {
       expect(find.text(l10n.splashGateUnknownTitle), findsOneWidget);
       expect(find.text(l10n.splashGateUnknownBody), findsOneWidget);
       expect(find.text(l10n.splashGateRetryCta), findsOneWidget);
-      expect(find.text(l10n.splashGateStartOnboardingCta), findsOneWidget);
+      expect(find.text(l10n.splashGateSignOutCta), findsOneWidget);
     });
 
     testWidgets('Retry button is enabled initially', (tester) async {
-      await tester.pumpWidget(buildTestApp(onStartOnboarding: () {}));
+      await tester.pumpWidget(buildTestApp(onSignOut: () {}));
       await tester.pumpAndSettle();
 
-      // Find the FilledButton (Retry)
-      final retryButton = tester.widget<FilledButton>(find.byType(FilledButton));
+      // Find the WelcomeButton (Retry)
+      final retryButton = tester.widget<WelcomeButton>(find.byType(WelcomeButton));
 
       // Button should be enabled (onPressed is not null)
       expect(retryButton.onPressed, isNotNull);
     });
 
     testWidgets('Retry button becomes disabled after click', (tester) async {
-      await tester.pumpWidget(buildTestApp(onStartOnboarding: () {}));
+      await tester.pumpWidget(buildTestApp(onSignOut: () {}));
       await tester.pumpAndSettle();
 
       final context = tester.element(find.byType(_TestableUnknownUI));
       final l10n = AppLocalizations.of(context)!;
 
       // Initial state: button enabled
-      var retryButton = tester.widget<FilledButton>(find.byType(FilledButton));
+      var retryButton = tester.widget<WelcomeButton>(find.byType(WelcomeButton));
       expect(retryButton.onPressed, isNotNull);
 
       // Tap the retry button
@@ -176,15 +190,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // After tap: button disabled (onPressed is null)
-      retryButton = tester.widget<FilledButton>(find.byType(FilledButton));
+      retryButton = tester.widget<WelcomeButton>(find.byType(WelcomeButton));
       expect(retryButton.onPressed, isNull);
     });
 
-    testWidgets('Start Onboarding button triggers callback', (tester) async {
+    testWidgets('Sign out button triggers callback', (tester) async {
       bool callbackTriggered = false;
 
       await tester.pumpWidget(buildTestApp(
-        onStartOnboarding: () {
+        onSignOut: () {
           callbackTriggered = true;
         },
       ));
@@ -193,16 +207,16 @@ void main() {
       final context = tester.element(find.byType(_TestableUnknownUI));
       final l10n = AppLocalizations.of(context)!;
 
-      // Tap Start Onboarding button
-      await tester.tap(find.text(l10n.splashGateStartOnboardingCta));
+      // Tap Sign out button
+      await tester.tap(find.text(l10n.splashGateSignOutCta));
       await tester.pumpAndSettle();
 
       expect(callbackTriggered, isTrue);
     });
 
-    testWidgets('Start Onboarding button remains enabled after Retry click',
+    testWidgets('Sign out button remains enabled after Retry click',
         (tester) async {
-      await tester.pumpWidget(buildTestApp(onStartOnboarding: () {}));
+      await tester.pumpWidget(buildTestApp(onSignOut: () {}));
       await tester.pumpAndSettle();
 
       final context = tester.element(find.byType(_TestableUnknownUI));
@@ -212,15 +226,15 @@ void main() {
       await tester.tap(find.text(l10n.splashGateRetryCta));
       await tester.pumpAndSettle();
 
-      // Start Onboarding should still be enabled
-      final startButton = tester.widget<OutlinedButton>(find.byType(OutlinedButton));
-      expect(startButton.onPressed, isNotNull);
+      // Sign out should still be enabled
+      final signOutButton = tester.widget<OutlinedButton>(find.byType(OutlinedButton));
+      expect(signOutButton.onPressed, isNotNull);
     });
 
     testWidgets('has correct semantics for accessibility', (tester) async {
       final handle = tester.ensureSemantics();
       try {
-        await tester.pumpWidget(buildTestApp(onStartOnboarding: () {}));
+        await tester.pumpWidget(buildTestApp(onSignOut: () {}));
         await tester.pumpAndSettle();
 
         final context = tester.element(find.byType(_TestableUnknownUI));
@@ -246,21 +260,20 @@ void main() {
           GoRoute(
             path: '/unknown',
             builder: (context, state) => _TestableUnknownUI(
-              onStartOnboarding: () => context.go(Onboarding01Screen.routeName),
+              onSignOut: () => context.go(AuthSignInScreen.routeName),
             ),
           ),
           GoRoute(
-            path: Onboarding01Screen.routeName,
+            path: AuthSignInScreen.routeName,
             builder: (context, state) => const Scaffold(
-              body: Center(child: Text('Onboarding01Screen')),
+              body: Center(child: Text('AuthSignInScreen')),
             ),
           ),
         ],
       );
     }
 
-    testWidgets('Start Onboarding navigates to Onboarding01Screen',
-        (tester) async {
+    testWidgets('Sign out navigates to AuthSignInScreen', (tester) async {
       final router = createTestRouter();
 
       await tester.pumpWidget(ProviderScope(
@@ -277,12 +290,12 @@ void main() {
       final context = tester.element(find.byType(_TestableUnknownUI));
       final l10n = AppLocalizations.of(context)!;
 
-      // Tap Start Onboarding
-      await tester.tap(find.text(l10n.splashGateStartOnboardingCta));
+      // Tap Sign out
+      await tester.tap(find.text(l10n.splashGateSignOutCta));
       await tester.pumpAndSettle();
 
-      // Should navigate to Onboarding01Screen
-      expect(find.text('Onboarding01Screen'), findsOneWidget);
+      // Should navigate to AuthSignInScreen
+      expect(find.text('AuthSignInScreen'), findsOneWidget);
     });
   });
 }

@@ -27,6 +27,7 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
+import 'package:luvi_app/features/profile/screens/profile_stub_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
@@ -335,10 +336,16 @@ final List<GoRoute> featureRoutes = [
       // to Splash. This is intentional: during loading, we delegate to Splash
       // which handles the loading screen properly.
       final service = asyncValue.whenOrNull(data: (s) => s);
+      final hasCompletedOnboarding = service?.hasCompletedOnboardingOrNull;
+      final acceptedConsentVersion = service?.acceptedConsentVersionOrNull;
+      final isStateKnown =
+          service != null &&
+          hasCompletedOnboarding != null &&
+          acceptedConsentVersion != null;
       return homeGuardRedirectWithConsent(
-        isStateKnown: service != null,
-        hasCompletedOnboarding: service?.hasCompletedOnboarding,
-        acceptedConsentVersion: service?.acceptedConsentVersionOrNull,
+        isStateKnown: isStateKnown,
+        hasCompletedOnboarding: hasCompletedOnboarding,
+        acceptedConsentVersion: acceptedConsentVersion,
         currentConsentVersion: ConsentConfig.currentVersionInt,
       );
     },
@@ -348,6 +355,11 @@ final List<GoRoute> featureRoutes = [
     path: CycleOverviewStubScreen.routeName,
     name: 'cycle_overview_stub',
     builder: (context, state) => const CycleOverviewStubScreen(),
+  ),
+  GoRoute(
+    path: ProfileStubScreen.routeName,
+    name: RouteNames.profil,
+    builder: (context, state) => const ProfileStubScreen(),
   ),
   GoRoute(
     path: WorkoutDetailStubScreen.route,

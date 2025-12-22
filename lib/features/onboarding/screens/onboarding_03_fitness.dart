@@ -15,6 +15,7 @@ import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart' hide FitnessLevel;
 import 'package:luvi_services/user_state_service.dart' as services show FitnessLevel;
+import 'package:luvi_services/supabase_service.dart';
 
 /// Onboarding03: Fitness level single-select screen (O3)
 /// Figma: 03_Onboarding (Fitnesslevel)
@@ -58,6 +59,10 @@ class _Onboarding03FitnessScreenState
       ref.read(onboardingProvider.notifier).setFitnessLevel(_selectedLevel!);
       // Also save to UserStateService for backward compatibility
       final userState = await ref.read(userStateServiceProvider.future);
+      final uid = SupabaseService.currentUser?.id;
+      if (uid != null) {
+        await userState.bindUser(uid);
+      }
       final serviceFitness =
           services.FitnessLevel.tryParse(_selectedLevel!.name) ??
               services.FitnessLevel.beginner;

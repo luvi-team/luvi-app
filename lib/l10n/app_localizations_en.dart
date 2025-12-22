@@ -1009,14 +1009,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get splashGateUnknownTitle => 'Connection unavailable';
+  String get splashGateUnknownTitle => 'Brief interruption';
 
   @override
-  String get splashGateUnknownBody => 'We couldn\'t load your progress. Please check your internet connection.';
+  String get splashGateUnknownBody => 'To continue, we need an internet connection. Please check your connection.';
 
   @override
   String get splashGateRetryCta => 'Try again';
 
   @override
-  String get splashGateStartOnboardingCta => 'Start onboarding';
+  String get splashGateSignOutCta => 'Sign out';
 }

@@ -21,6 +21,7 @@ import 'package:luvi_app/features/onboarding/widgets/circular_progress_ring.dart
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/data/onboarding_backend_writer.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
 
 /// Animation state machine for O9 success screen
@@ -171,6 +172,11 @@ class _OnboardingSuccessScreenState
         return;
       }
 
+      final uid = SupabaseService.currentUser?.id;
+      if (uid != null) {
+        await userState.bindUser(uid);
+      }
+
       await userState.markOnboardingComplete(
         fitnessLevel: widget.fitnessLevel,
       );
@@ -247,6 +253,11 @@ class _OnboardingSuccessScreenState
           tag: 'onboarding_success',
         );
       }
+
+      // IMPORTANT: Mark onboarding completion only after ALL backend writes
+      // succeed. This prevents "completed=true" on the server when a later
+      // write fails (save-loop / gate bypass risk).
+      await backendWriter.markOnboardingComplete();
 
       log.d('onboarding_supabase_save_success', tag: 'onboarding_success');
       return true;

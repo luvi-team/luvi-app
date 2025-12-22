@@ -26,6 +26,9 @@ abstract class OnboardingBackendWriter {
     required DateTime lastPeriod,
     required int age,
   });
+
+  /// Mark onboarding as completed in server SSOT (`public.profiles`).
+  Future<Map<String, dynamic>?> markOnboardingComplete();
 }
 
 /// Default implementation that delegates to SupabaseService.
@@ -65,6 +68,11 @@ class SupabaseOnboardingBackendWriter implements OnboardingBackendWriter {
       lastPeriod: lastPeriod,
       age: age,
     );
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() {
+    return SupabaseService.upsertOnboardingGate(hasCompletedOnboarding: true);
   }
 }
 

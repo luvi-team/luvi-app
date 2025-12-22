@@ -354,6 +354,8 @@ void main() {
           scopes: any(named: 'scopes'),
         ),
       ).thenAnswer((_) async {});
+      // Stub local cache methods (not called when uid is null in test env).
+      when(() => mockUserStateService.bindUser(any())).thenAnswer((_) async {});
       when(() => mockUserStateService.markWelcomeSeen()).thenAnswer((_) async {});
       when(() => mockUserStateService.setAcceptedConsentVersion(any()))
           .thenAnswer((_) async {});
@@ -431,7 +433,8 @@ void main() {
           scopes: any(named: 'scopes'),
         ),
       ).called(1);
-      verify(() => mockUserStateService.markWelcomeSeen()).called(1);
+      // Local cache writes are skipped when uid is null (test env has no real Supabase).
+      verifyNever(() => mockUserStateService.markWelcomeSeen());
     });
   });
 }
