@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/widgets/calendar_mini_widget.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
-import 'package:luvi_app/features/onboarding/widgets/onboarding_progress_bar.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -36,9 +33,6 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
     final spacing = OnboardingSpacing.of(context);
     final l10n = AppLocalizations.of(context)!;
 
@@ -56,14 +50,13 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: spacing.topPadding),
-                // Header with progress bar
-                _buildHeader(context, l10n, colorScheme),
-                // Step label directly under progressbar (like O1-O5)
-                SizedBox(height: Spacing.s),
-                _buildStepLabel(textTheme, colorScheme, l10n),
-                const Spacer(),
-                // Title
-                _buildTitle(textTheme, colorScheme, l10n),
+                // Figma v4: Use OnboardingHeader for consistent 18px spacing
+                OnboardingHeader(
+                  title: l10n.onboardingCycleIntroTitle,
+                  step: 6,
+                  totalSteps: kOnboardingTotalSteps,
+                  onBack: () => _handleBack(context),
+                ),
                 SizedBox(height: Spacing.xl),
                 // Calendar mini preview
                 const CalendarMiniWidget(highlightedDay: 25),
@@ -74,69 +67,6 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, AppLocalizations l10n, ColorScheme colorScheme) {
-    return Row(
-      children: [
-        // Back button (icon-only style, Figma O6)
-        BackButtonCircle(
-          onPressed: () => _handleBack(context),
-          iconColor: colorScheme.onSurface,
-          showCircle: false,
-          semanticLabel: l10n.authBackSemantic,
-        ),
-        const SizedBox(width: Spacing.s),
-        // Progress bar (Flexible prevents overflow)
-        Expanded(
-          child: Center(
-            child: OnboardingProgressBar(
-              currentStep: 6,
-              totalSteps: kOnboardingTotalSteps,
-            ),
-          ),
-        ),
-        const SizedBox(width: Spacing.s),
-        // Placeholder for symmetry
-        const SizedBox(width: Sizes.touchTargetMin),
-      ],
-    );
-  }
-
-  /// Step label "Frage 6 von 6" (Figma v2: manual, not via OnboardingHeader)
-  Widget _buildStepLabel(
-    TextTheme textTheme,
-    ColorScheme colorScheme,
-    AppLocalizations l10n,
-  ) {
-    return Text(
-      l10n.onboardingStepLabel(6, kOnboardingTotalSteps),
-      textAlign: TextAlign.center,
-      style: textTheme.bodySmall?.copyWith(
-        fontSize: TypographyTokens.size14,
-        color: colorScheme.onSurface.withValues(alpha: 0.7),
-      ),
-    );
-  }
-
-  Widget _buildTitle(
-    TextTheme textTheme,
-    ColorScheme colorScheme,
-    AppLocalizations l10n,
-  ) {
-    return Semantics(
-      header: true,
-      child: Text(
-        l10n.onboardingCycleIntroTitle,
-        textAlign: TextAlign.center,
-        style: textTheme.headlineMedium?.copyWith(
-          fontFamily: FontFamilies.playfairDisplay,
-          fontSize: TypographyTokens.size24,
-          height: TypographyTokens.lineHeightRatio32on24,
-          color: colorScheme.onSurface,
         ),
       ),
     );

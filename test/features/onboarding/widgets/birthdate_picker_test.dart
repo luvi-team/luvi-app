@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/features/onboarding/widgets/birthdate_picker.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
 
@@ -125,4 +128,48 @@ void main() {
     // Should render BirthdatePicker with German locale
     expect(find.byType(BirthdatePicker), findsOneWidget);
   });
+
+  testWidgets('uses OnboardingGlassCard with BackdropFilter blur', (tester) async {
+    await _pumpPicker(
+      tester,
+      initialDate: DateTime(2000, 6, 15),
+      onDateChanged: (_) {},
+    );
+
+    // Verify OnboardingGlassCard wrapper exists
+    expect(find.byType(OnboardingGlassCard), findsOneWidget);
+
+    // Verify BackdropFilter is INSIDE OnboardingGlassCard (real blur effect)
+    expect(
+      find.descendant(
+        of: find.byType(OnboardingGlassCard),
+        matching: find.byType(BackdropFilter),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('selection highlight uses transparent fill', (tester) async {
+    await _pumpPicker(
+      tester,
+      initialDate: DateTime(2000, 6, 15),
+      onDateChanged: (_) {},
+    );
+
+    final highlightFinder = find.byWidgetPredicate((widget) {
+      if (widget is! Container) return false;
+      final decoration = widget.decoration;
+      if (decoration is! BoxDecoration) return false;
+      return decoration.color == DsColors.transparent &&
+          decoration.borderRadius ==
+              BorderRadius.circular(Sizes.radiusPickerHighlight);
+    });
+
+    expect(
+      highlightFinder,
+      findsOneWidget,
+      reason: 'Selection highlight should be transparent with 14px radius',
+    );
+  });
+
 }

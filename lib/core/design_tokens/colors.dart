@@ -247,6 +247,24 @@ class DsColors {
   /// Success Card Glass Background (Figma: #E9D5FF @ 20%)
   /// Light purple/lavender with 20% opacity for content preview cards
   static const Color successCardGlass = Color(0x33E9D5FF);
+
+  /// Success Card 1 (left/top) - Purple (Figma: #E9D5FF @ 20%)
+  /// Alias of successCardGlass for semantic clarity
+  static const Color successCardPurple = successCardGlass;
+
+  /// Success Card 2 (right) - Cyan (Figma: #CFFAFE @ 20%)
+  static const Color successCardCyan = Color(0x33CFFAFE);
+
+  /// Success Card 3 (bottom) - Pink (Figma: #FCE7F3 @ 20%)
+  static const Color successCardPink = Color(0x33FCE7F3);
+
+  // ─── O6 Radial Gradient Colors (Figma O6 2024-12) ───
+
+  /// Period Glow 60% opacity (Figma: #FF6482 @ 60%)
+  static const Color periodGlow60 = Color(0x99FF6482);
+
+  /// Period Glow 10% opacity (Figma: #FF6482 @ 10%)
+  static const Color periodGlow10 = Color(0x1AFF6482);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.

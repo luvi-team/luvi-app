@@ -74,33 +74,51 @@ class OnboardingHeader extends StatelessWidget {
     ColorScheme colorScheme,
     AppLocalizations l10n,
   ) {
-    return Row(
-      children: [
-        // Back button (only if step > 1)
-        // showCircle: false for Figma O2-O8 icon-only style
-        if (showBackButton)
-          BackButtonCircle(
-            onPressed: onBack,
-            iconColor: colorScheme.onSurface,
-            showCircle: false,
-            semanticLabel: l10n.authBackSemantic,
-          )
-        else
-          const SizedBox(width: Sizes.touchTargetMin),
-        const SizedBox(width: Spacing.s),
-        // Progress bar (centered, takes remaining space)
-        Expanded(
-          child: Center(
-            child: OnboardingProgressBar(
-              currentStep: step,
-              totalSteps: totalSteps,
+    // Design Token for consistent height across all screens
+    const double progressBarHeight = Sizes.progressBarHeight;
+    // Back button offset to vertically center relative to progress bar
+    const double backButtonOffset =
+        (Sizes.touchTargetMin - progressBarHeight) / 2;
+
+    return SizedBox(
+      height: progressBarHeight, // Fixed height for consistent spacing
+      child: Stack(
+        clipBehavior: Clip.none, // BackButton may overflow
+        children: [
+          // Progress bar row (fills entire height)
+          Positioned.fill(
+            child: Row(
+              children: [
+                const SizedBox(width: Sizes.touchTargetMin),
+                const SizedBox(width: Spacing.s),
+                Expanded(
+                  child: Center(
+                    child: OnboardingProgressBar(
+                      currentStep: step,
+                      totalSteps: totalSteps,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: Spacing.s),
+                const SizedBox(width: Sizes.touchTargetMin),
+              ],
             ),
           ),
-        ),
-        // Spacer to balance the back button
-        const SizedBox(width: Spacing.s),
-        const SizedBox(width: Sizes.touchTargetMin),
-      ],
+          // Back button (overlaps, only when step > 1)
+          // showCircle: false for Figma O2-O8 icon-only style
+          if (showBackButton)
+            Positioned(
+              left: 0,
+              top: -backButtonOffset, // Offset upward for vertical centering
+              child: BackButtonCircle(
+                onPressed: onBack,
+                iconColor: colorScheme.onSurface,
+                showCircle: false,
+                semanticLabel: l10n.authBackSemantic,
+              ),
+            ),
+        ],
+      ),
     );
   }
 

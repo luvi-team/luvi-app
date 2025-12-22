@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
@@ -80,6 +81,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     final spacing = OnboardingSpacing.of(context);
 
     return Scaffold(
+      backgroundColor: DsColors.goldLight,
       resizeToAvoidBottomInset: true,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -96,7 +98,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: Spacing.m),
+                SizedBox(height: spacing.topPadding),
                 OnboardingHeader(
                   title: AppLocalizations.of(context)!.onboarding01Title,
                   semanticsLabel:
@@ -126,34 +128,42 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
 
-    // Figma specs: Glass container 340×88px, radius 16, ultra glass effect (v3)
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 340),
-      padding: const EdgeInsets.symmetric(
-        horizontal: Spacing.m,
-        vertical: Spacing.l,
-      ),
-      decoration: DsEffects.glassCardStrong,
+    // Figma specs: Glass container 340×88px, radius 16, BackdropFilter blur (v3)
+    return OnboardingGlassCard(
       child: Semantics(
         textField: true,
         label: l10n.onboarding01NameInputSemantic,
-        child: AuthTextField(
-          controller: _nameController,
-          frameless: true,
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.name,
-          textCapitalization: TextCapitalization.words,
-          textInputAction: TextInputAction.done,
-          autofocus: true,
-          hintText: '',
-          fontSize: Sizes.onboardingInputFontSize, // 18px (Figma v2)
-          fontFamilyOverride: FontFamilies.playfairDisplay,
-          fontWeightOverride: FontWeight.bold,
-          onSubmitted: (_) {
-            if (_hasText) {
-              _handleContinue();
-            }
-          },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.m,
+            vertical: Spacing.l,
+          ),
+          // Figma: Selection bg transparent, Cursor/Handle black
+          child: TextSelectionTheme(
+            data: const TextSelectionThemeData(
+              selectionColor: DsColors.transparent,
+              cursorColor: DsColors.grayscaleBlack,
+              selectionHandleColor: DsColors.grayscaleBlack,
+            ),
+            child: AuthTextField(
+              controller: _nameController,
+              frameless: true,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.name,
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.done,
+              autofocus: true,
+              hintText: '',
+              fontSize: Sizes.onboardingInputFontSize, // 18px (Figma v2)
+              fontFamilyOverride: FontFamilies.playfairDisplay,
+              fontWeightOverride: FontWeight.bold,
+              onSubmitted: (_) {
+                if (_hasText) {
+                  _handleContinue();
+                }
+              },
+            ),
+          ),
         ),
       ),
     );

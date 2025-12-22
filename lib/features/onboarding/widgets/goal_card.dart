@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 
 /// Goal card widget for onboarding multi-select screen.
 ///
@@ -46,46 +46,45 @@ class GoalCard extends StatelessWidget {
         color: DsColors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(Sizes.radiusL),
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Spacing.m,
-              vertical: Spacing.goalCardVertical,
-            ),
-            decoration: selected
-                ? BoxDecoration(
-                    color: DsColors.white.withValues(alpha: 0.30),
-                    borderRadius: BorderRadius.circular(Sizes.radiusL),
-                    border: Border.all(
-                      color: DsColors.signature,
-                      width: 2.0,
+          borderRadius: BorderRadius.circular(Sizes.radius16),
+          // B3: Use OnboardingGlassCard for real BackdropFilter blur effect
+          child: OnboardingGlassCard(
+            backgroundColor:
+                selected ? DsColors.transparent : null, // default 10% white
+            borderColor:
+                selected ? DsColors.buttonPrimary : null, // default 70% white
+            borderWidth: selected ? 2.0 : 1.5,
+            borderRadius: Sizes.radius16,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.m,
+                vertical: Spacing.goalCardVertical,
+              ),
+              child: Row(
+                children: [
+                  if (icon != null) ...[
+                    SizedBox(
+                      width: Sizes.iconM,
+                      height: Sizes.iconM,
+                      child: IconTheme(
+                        data: IconThemeData(color: theme.colorScheme.onSurface),
+                        child: icon!,
+                      ),
                     ),
-                  )
-                : DsEffects.glassCardStrong,
-            child: Row(
-              children: [
-                if (icon != null) ...[
-                  SizedBox(
-                    width: Sizes.iconM,
-                    height: Sizes.iconM,
-                    child: IconTheme(
-                      data: IconThemeData(color: theme.colorScheme.onSurface),
-                      child: icon!,
+                    const SizedBox(width: Spacing.goalCardIconGap),
+                  ],
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: TypographyTokens.size16,
+                        height: TypographyTokens.lineHeightRatio24on16,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: Spacing.goalCardIconGap),
                 ],
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: TypographyTokens.size16,
-                      height: TypographyTokens.lineHeightRatio24on16,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),

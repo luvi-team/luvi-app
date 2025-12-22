@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/effects.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Custom birthdate picker with three wheels (Month, Day, Year).
@@ -122,11 +122,11 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
 
     return Semantics(
       label: l10n.onboarding02PickerSemantic,
-      child: Container(
-        width: _containerWidth,
-        height: _containerHeight,
-        decoration: DsEffects.glassCardStrong,
-        child: Stack(
+      child: OnboardingGlassCard(
+        child: SizedBox(
+          width: _containerWidth,
+          height: _containerHeight,
+          child: Stack(
           children: [
             // Selection highlight - Figma v3: Asymmetric position (more right padding)
             Positioned(
@@ -138,7 +138,7 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
                 child: Container(
                   height: _highlightHeight,
                   decoration: BoxDecoration(
-                    color: DsColors.datePickerSelectionBg,
+                    color: DsColors.transparent,
                     borderRadius: BorderRadius.circular(Sizes.radiusPickerHighlight),
                   ),
                 ),
@@ -196,6 +196,7 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

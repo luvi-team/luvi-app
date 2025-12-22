@@ -56,21 +56,22 @@ class _OnboardingSuccessScreenState
   static const double _figmaBaseHeight = 852.0;
 
   // Figma v3 exact card positions and sizes
-  // Card 1 (oben links): x=66, y=81, 150×183
+  // All cards shifted up by 30px to move closer to top of screen
+  // Card 1 (oben links): x=66, y=51 (was 81), 150×183
   static const double _card1Left = 66.0;
-  static const double _card1Top = 81.0;
+  static const double _card1Top = 51.0; // 81 - 30
   static const double _card1Width = 150.0;
   static const double _card1Height = 183.0;
 
-  // Card 2 (rechts): x=227, y=210, 140×120
+  // Card 2 (rechts): x=227, y=180 (was 210), 140×120
   static const double _card2Left = 227.0;
-  static const double _card2Top = 210.0;
+  static const double _card2Top = 180.0; // 210 - 30
   static const double _card2Width = 140.0;
   static const double _card2Height = 120.0;
 
-  // Card 3 (unten links): x=79, y=282, 133×114
+  // Card 3 (unten links): x=79, y=252 (was 282), 133×114
   static const double _card3Left = 79.0;
-  static const double _card3Top = 282.0;
+  static const double _card3Top = 252.0; // 282 - 30
   static const double _card3Width = 133.0;
   static const double _card3Height = 114.0;
 
@@ -295,28 +296,41 @@ class _OnboardingSuccessScreenState
         decoration: const BoxDecoration(
           gradient: DsGradients.successScreen,
         ),
+        // B4: Restructure to position cards without horizontal padding
+        // Cards use absolute Figma coordinates, rest uses padding
         child: SafeArea(
-          child: Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
-            child: Column(
-              children: [
-                SizedBox(height: Spacing.xl),
-                // Content preview cards with fixed Figma-based height
-                SizedBox(
-                  height: _cardsContainerHeight * _scaleFactor(context),
-                  child: _buildContentCards(l10n),
+          child: Stack(
+            children: [
+              // Cards OHNE Padding (absolute Figma-Koordinaten)
+              _buildContentCards(l10n),
+              // Rest MIT Padding (Progress Ring, Button)
+              Positioned.fill(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: spacing.horizontalPadding,
+                  ),
+                  child: Column(
+                    children: [
+                      // Platzhalter für Cards-Bereich
+                      SizedBox(
+                        height: _cardsContainerHeight * _scaleFactor(context),
+                      ),
+                      // Figma v3 Fix 5: Flexible Spacer distribution for overflow prevention
+                      const Spacer(flex: 2),
+                      // Progress ring
+                      _buildProgressSection(textTheme, colorScheme, l10n),
+                      const Spacer(flex: 1),
+                      // Error retry button with reduced bottom padding
+                      if (_state == O9AnimationState.error) ...[
+                        _buildRetryButton(l10n),
+                        const SizedBox(height: Spacing.m), // Reduced from Spacing.xl
+                      ] else
+                        const SizedBox(height: Spacing.xl),
+                    ],
+                  ),
                 ),
-                const Spacer(),
-                // Progress ring
-                _buildProgressSection(textTheme, colorScheme, l10n),
-                const Spacer(),
-                // Error retry button (only shown on error)
-                if (_state == O9AnimationState.error)
-                  _buildRetryButton(l10n),
-                SizedBox(height: Spacing.xl),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -331,7 +345,7 @@ class _OnboardingSuccessScreenState
       clipBehavior: Clip.none,
       children: [
           // Card 1 - oben links (vertikal: Bild oben, Text unten)
-          // Figma v3: x=66, y=81, 150×183
+          // Figma v3: x=66, y=81, 150×183, Purple background
           Positioned(
             left: _card1Left * scale,
             top: _card1Top * scale,
@@ -341,10 +355,11 @@ class _OnboardingSuccessScreenState
               width: _card1Width * scale,
               height: _card1Height * scale,
               scaleFactor: scale,
+              decoration: DsEffects.successCardPurple,
             ),
           ),
           // Card 2 - rechts (horizontal: Bild links, Text rechts)
-          // Figma v3: x=227, y=210, 140×120
+          // Figma v3: x=227, y=210, 140×120, Cyan background
           Positioned(
             left: _card2Left * scale,
             top: _card2Top * scale,
@@ -354,10 +369,12 @@ class _OnboardingSuccessScreenState
               width: _card2Width * scale,
               height: _card2Height * scale,
               scaleFactor: scale,
+              decoration: DsEffects.successCardCyan,
             ),
           ),
           // Card 3 - unten links (horizontal: Text links, Bild rechts)
-          // Figma v3: x=79, y=282, 133×114
+          // Figma v3: x=79, y=282, 133×114, Pink background
+          // Plan v3 Final: Image closer to text via smaller gap
           Positioned(
             left: _card3Left * scale,
             top: _card3Top * scale,
@@ -368,6 +385,8 @@ class _OnboardingSuccessScreenState
               height: _card3Height * scale,
               scaleFactor: scale,
               imageOnRight: true,
+              gap: Spacing.successCard3Gap,
+              decoration: DsEffects.successCardPink,
             ),
           ),
         ],
@@ -392,9 +411,10 @@ class _OnboardingSuccessScreenState
         Text(
           _getStatusText(l10n),
           textAlign: TextAlign.center,
-          style: textTheme.bodyLarge?.copyWith(
-            color: colorScheme.onSurface,
+          style: TextStyle(
             fontSize: TypographyTokens.size16,
+            fontWeight: FontWeight.w500, // Figma v3: System Medium
+            color: DsColors.grayscaleBlack,
           ),
         ),
       ],
@@ -433,6 +453,7 @@ class _VerticalContentCard extends StatelessWidget {
     required this.width,
     required this.height,
     required this.scaleFactor,
+    required this.decoration,
   });
 
   final String imagePath;
@@ -440,6 +461,7 @@ class _VerticalContentCard extends StatelessWidget {
   final double width;
   final double height;
   final double scaleFactor;
+  final BoxDecoration decoration;
 
   // Figma v3: Base font sizes that scale with screen
   static const double _maxFontSize = 12.0;
@@ -447,16 +469,17 @@ class _VerticalContentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Figma v3: Image takes ~65% of card height, text gets remaining space
-    final padding = Spacing.s * scaleFactor;
-    final innerHeight = height - (padding * 2);
-    final imageHeight = innerHeight * 0.65;
+    // Figma v3: Use token-based padding (MUST-02 compliant)
+    final cardPadding = Spacing.successCard1Padding(scaleFactor);
+    // Figma v3: Use token-based image dimensions (92×127)
+    final imageWidth = Sizes.successCard1ImageWidth * scaleFactor;
+    final imageHeight = Sizes.successCard1ImageHeight * scaleFactor;
 
     return Container(
       width: width,
       height: height,
-      padding: EdgeInsets.all(padding),
-      decoration: DsEffects.successCardGlass,
+      padding: cardPadding,
+      decoration: decoration,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -464,13 +487,13 @@ class _VerticalContentCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(Sizes.radiusCard * scaleFactor),
             child: Image.asset(
               imagePath,
-              width: width - (padding * 2),
+              width: imageWidth,
               height: imageHeight,
               fit: BoxFit.cover,
               errorBuilder: Assets.defaultImageErrorBuilder,
             ),
           ),
-          SizedBox(height: Spacing.xs * scaleFactor),
+          SizedBox(height: Spacing.successCard1Gap * scaleFactor),
           // Auto-fit text takes remaining space
           Expanded(
             child: _AutoFitText(
@@ -496,7 +519,9 @@ class _HorizontalContentCard extends StatelessWidget {
     required this.width,
     required this.height,
     required this.scaleFactor,
+    required this.decoration,
     this.imageOnRight = false,
+    this.gap,
   });
 
   final String imagePath;
@@ -504,7 +529,10 @@ class _HorizontalContentCard extends StatelessWidget {
   final double width;
   final double height;
   final double scaleFactor;
+  final BoxDecoration decoration;
   final bool imageOnRight;
+  /// Custom gap between image and text. Defaults to Spacing.successCard2Gap.
+  final double? gap;
 
   // Figma v3: Base font sizes that scale with screen
   static const double _maxFontSize = 12.0;
@@ -512,17 +540,18 @@ class _HorizontalContentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Figma v3: Image takes ~45% of card width, text gets remaining space
-    final padding = Spacing.s * scaleFactor;
-    final innerHeight = height - (padding * 2);
-    final imageSize = min((width - (padding * 2)) * 0.45, innerHeight);
+    // Figma v3: Use token-based padding (MUST-02 compliant)
+    final cardPadding = Spacing.successCard2Padding(scaleFactor);
+    // Figma v3: Use token-based image dimensions (46×90)
+    final imageWidth = Sizes.successCardSmallImageWidth * scaleFactor;
+    final imageHeight = Sizes.successCardSmallImageHeight * scaleFactor;
 
     final imageWidget = ClipRRect(
       borderRadius: BorderRadius.circular(Sizes.radiusCard * scaleFactor),
       child: Image.asset(
         imagePath,
-        width: imageSize,
-        height: imageSize,
+        width: imageWidth,
+        height: imageHeight,
         fit: BoxFit.cover,
         errorBuilder: Assets.defaultImageErrorBuilder,
       ),
@@ -538,23 +567,26 @@ class _HorizontalContentCard extends StatelessWidget {
       ),
     );
 
+    // Use custom gap if provided, otherwise default to Card2 gap
+    final effectiveGap = (gap ?? Spacing.successCard2Gap) * scaleFactor;
+
     return Container(
       width: width,
       height: height,
-      padding: EdgeInsets.all(padding),
-      decoration: DsEffects.successCardGlass,
+      padding: cardPadding,
+      decoration: decoration,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: imageOnRight
             ? [
                 textWidget,
-                SizedBox(width: Spacing.xs * scaleFactor),
+                SizedBox(width: effectiveGap),
                 imageWidget,
               ]
             : [
                 imageWidget,
-                SizedBox(width: Spacing.xs * scaleFactor),
+                SizedBox(width: effectiveGap),
                 textWidget,
               ],
       ),

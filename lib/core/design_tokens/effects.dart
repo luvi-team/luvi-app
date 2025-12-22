@@ -84,14 +84,82 @@ class DsEffects {
       );
 
   /// Success Card Glass - Figma O9 specs: #E9D5FF @ 20%, 16px radius
-  /// Used for: O9 content preview cards
+  /// Used for: O9 content preview cards (deprecated - use individual card effects)
+  /// Note: No border per Figma O9 design
   static BoxDecoration get successCardGlass => BoxDecoration(
         color: DsColors.successCardGlass,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(Sizes.radius16),
+      );
+
+  /// O9 Success Card 1 (left/top) - Purple (#E9D5FF @ 20%), 16px radius
+  /// Figma v3: White border 70% opacity, 1.5px width
+  static BoxDecoration get successCardPurple => BoxDecoration(
+        color: DsColors.successCardPurple,
+        borderRadius: BorderRadius.circular(Sizes.radius16),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.3),
-          width: 1,
+          color: DsColors.white.withValues(alpha: 0.70),
+          width: 1.5,
         ),
+      );
+
+  /// O9 Success Card 2 (right) - Cyan (#CFFAFE @ 20%), 16px radius
+  /// Figma v3: White border 70% opacity, 1.5px width
+  static BoxDecoration get successCardCyan => BoxDecoration(
+        color: DsColors.successCardCyan,
+        borderRadius: BorderRadius.circular(Sizes.radius16),
+        border: Border.all(
+          color: DsColors.white.withValues(alpha: 0.70),
+          width: 1.5,
+        ),
+      );
+
+  /// O9 Success Card 3 (bottom) - Pink (#FCE7F3 @ 20%), 16px radius
+  /// Figma v3: White border 70% opacity, 1.5px width
+  static BoxDecoration get successCardPink => BoxDecoration(
+        color: DsColors.successCardPink,
+        borderRadius: BorderRadius.circular(Sizes.radius16),
+        border: Border.all(
+          color: DsColors.white.withValues(alpha: 0.70),
+          width: 1.5,
+        ),
+      );
+
+  // ─── Figma v3 Onboarding Effects (2024-12 Parity) ───
+  // These effects match Figma exactly - NO additional borders unless Figma specifies
+
+  /// O1 Name Input - 10% white opacity, 16px radius (Figma v3 exact)
+  /// Used for: Name text input container
+  static BoxDecoration get glassOnboardingInput10 => BoxDecoration(
+        color: DsColors.white.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(Sizes.radius16),
+      );
+
+  /// O2 Birthdate Picker - Transparent background, 16px radius (Figma v3 exact)
+  /// Used for: Birthdate picker container
+  static BoxDecoration get glassOnboardingPickerTransparent16 => BoxDecoration(
+        color: DsColors.transparent,
+        borderRadius: BorderRadius.circular(Sizes.radius16),
+      );
+
+  /// O3/O4/O5 Options - Transparent background, 16px radius (Figma v3 exact)
+  /// Used for: Fitness pills, Goal cards, Interest cards (unselected)
+  static BoxDecoration get glassOnboardingOptionTransparent16 => BoxDecoration(
+        color: DsColors.transparent,
+        borderRadius: BorderRadius.circular(Sizes.radius16),
+      );
+
+  /// O6 Mini Calendar - 10% white opacity, 24px radius (Figma v3 exact)
+  /// Used for: Calendar mini widget on cycle intro
+  static BoxDecoration get glassOnboardingMiniCalendar10 => BoxDecoration(
+        color: DsColors.white.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(Sizes.radius24),
+      );
+
+  /// O7/O8 Calendar - 30% white opacity, 40px radius (Figma v3 exact)
+  /// Used for: Period calendar containers
+  static BoxDecoration get glassOnboardingCalendar30 => BoxDecoration(
+        color: DsColors.white.withValues(alpha: 0.30),
+        borderRadius: BorderRadius.circular(Sizes.radiusXL),
       );
 
   // ─── Ultra-Strong Glass Effects (Figma v3 Polish 2024-12) ───

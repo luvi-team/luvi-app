@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/effects.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Mini calendar preview widget for the cycle intro screen (O6).
@@ -33,7 +34,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
   // Widget-specific layout constants (Figma Calendar Mini specs)
   static const double _cellSize = 32.0;
   static const double _dayCircleSize = 28.0;
-  static const double _glowSize = 70.0; // Figma v3: Larger glow for visibility
+  static const double _glowSize = 150.0; // v4.3: Larger glow per user request
   static const double _weekdayFontSize = 12.0;
   static const double _dayFontSize = 14.0;
 
@@ -42,7 +43,7 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
     super.initState();
     // Pulsating glow animation (Figma v2)
     _glowController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1000), // v4.3: Faster pulse
       vsync: this,
     )..repeat(reverse: true);
 
@@ -63,48 +64,123 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
     final l10n = AppLocalizations.of(context)!;
     return Semantics(
       label: l10n.semanticCalendarPreview,
-      child: Container(
-        padding: const EdgeInsets.all(Spacing.calendarMiniPadding),
-        decoration: DsEffects.glassMiniCalendarStrong,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Weekday header row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: _weekdayLabels
-                  .map((label) => SizedBox(
-                        width: _cellSize,
-                        child: Text(
-                          label,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: _weekdayFontSize,
-                            fontWeight: FontWeight.w500,
-                            color: DsColors.calendarWeekdayGray,
+      // B2: Use OnboardingGlassCard for real BackdropFilter blur + border
+      child: OnboardingGlassCard(
+        backgroundColor: DsColors.white.withValues(alpha: 0.10),
+        borderRadius: Sizes.radius24,
+        borderColor: DsColors.white.withValues(alpha: 0.70),
+        borderWidth: 1.5,
+        child: Padding(
+          padding: const EdgeInsets.all(Spacing.calendarMiniPadding),
+          // LayoutBuilder to calculate glow position based on grid width
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Grid-Layout calculation
+              final gridWidth = constraints.maxWidth;
+              final cellWidth = gridWidth / 7; // 7 columns
+
+              // Position of highlightedDay
+              final row = (widget.highlightedDay - 1) ~/ 7;
+              final col = (widget.highlightedDay - 1) % 7;
+
+              // Header height (Weekday-Row + Spacing)
+              final headerHeight = _weekdayFontSize + Spacing.xs;
+              // Row height (Cell + vertical padding)
+              final rowHeight = _cellSize + (Spacing.xxs * 2);
+
+              // Glow-Center Position
+              final glowLeft = (col * cellWidth) + (cellWidth / 2);
+              final glowTop =
+                  headerHeight + (row * rowHeight) + (_cellSize / 2);
+
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // 1. Glow FIRST (below in Stack, but visible through transparency)
+                  Positioned(
+                    left: glowLeft - (_glowSize / 2),
+                    top: glowTop - (_glowSize / 2),
+                    child: IgnorePointer(
+                      child: AnimatedBuilder(
+                        animation: _glowAnimation,
+                        builder: (context, child) {
+                          // v4.3: Pulsating for 150px glow
+                          final glowScale =
+                              0.95 + (_glowAnimation.value * 0.05);
+                          return Transform.scale(
+                            scale: glowScale,
+                            child: Container(
+                              width: _glowSize,
+                              height: _glowSize,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    // Figma v4.2: rgba(255, 100, 130, 0.60) - Core
+                                    DsColors.periodGlowPinkBase
+                                        .withValues(alpha: 0.6),
+                                    // Figma v4.2: rgba(255, 100, 130, 0.10) - Edge at 70%
+                                    DsColors.periodGlowPinkBase
+                                        .withValues(alpha: 0.1),
+                                    DsColors.transparent,
+                                  ],
+                                  stops: const [0.0, 0.7, 1.0], // Figma v4.2 exact
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  // 2. Grid (days on top)
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Weekday header row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: _weekdayLabels
+                            .map((label) => SizedBox(
+                                  width: _cellSize,
+                                  child: Text(
+                                    label,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: _weekdayFontSize,
+                                      fontWeight: FontWeight.w500,
+                                      color: DsColors.calendarWeekdayGray,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                      const SizedBox(height: Spacing.xs),
+                      // Calendar grid (simplified 5 rows)
+                      ...List.generate(5, (rowIndex) {
+                        return Padding(
+                          padding:
+                              const EdgeInsets.symmetric(vertical: Spacing.xxs),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: List.generate(7, (colIndex) {
+                              final dayNumber = rowIndex * 7 + colIndex + 1;
+                              if (dayNumber > 31) {
+                                return const SizedBox(
+                                    width: _cellSize, height: _cellSize);
+                              }
+                              return _buildDayCell(
+                                  dayNumber, widget.highlightedDay);
+                            }),
                           ),
-                        ),
-                      ))
-                  .toList(),
-            ),
-            const SizedBox(height: Spacing.xs),
-            // Calendar grid (simplified 5 rows)
-            ...List.generate(5, (rowIndex) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: Spacing.xxs),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: List.generate(7, (colIndex) {
-                    final dayNumber = rowIndex * 7 + colIndex + 1;
-                    if (dayNumber > 31) {
-                      return const SizedBox(width: _cellSize, height: _cellSize);
-                    }
-                    return _buildDayCell(dayNumber, widget.highlightedDay);
-                  }),
-                ),
+                        );
+                      }),
+                    ],
+                  ),
+                ],
               );
-            }),
-          ],
+            },
+          ),
         ),
       ),
     );
@@ -116,77 +192,47 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
     // Figma v2: Only text color change, no circle background
     final isInPeriodRange = day > highlightedDay && day <= 31;
 
+    // Glow is now rendered at parent Stack level via LayoutBuilder (Fix 3)
+    // This cell only renders the day number + white circle for highlighted
     return SizedBox(
       width: _cellSize,
       height: _cellSize,
-      child: Stack(
-        clipBehavior: Clip.none, // Allow glow to extend beyond cell bounds
-        alignment: Alignment.center,
-        children: [
-          // Pulsating glow effect for highlighted day (Figma v3)
-          // Pink glow around the highlighted day number
-          if (isHighlighted)
-            AnimatedBuilder(
-              animation: _glowAnimation,
-              builder: (context, child) {
-                // Minimum alpha 0.3 ensures glow is always visible
-                // Animation pulsates from 0.3 to 1.0 alpha
-                final glowAlpha = 0.3 + (_glowAnimation.value * 0.7);
-                return Container(
-                  width: _glowSize,
-                  height: _glowSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        // Figma v3: Pink glow with animated alpha (0.3 → 1.0)
-                        DsColors.periodGlowPinkBase.withValues(alpha: glowAlpha),
-                        DsColors.periodGlowPinkBase
-                            .withValues(alpha: glowAlpha * 0.5),
-                        DsColors.transparent,
-                      ],
-                      stops: const [0.0, 0.5, 1.0],
-                    ),
-                  ),
-                );
-              },
-            ),
-          // Day number - Figma v3: Scale animation for highlighted day
-          AnimatedBuilder(
-            animation: _glowAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                // Figma v3: Number scales from 1.0 to 1.15 with glow
-                scale: isHighlighted ? 1.0 + (_glowAnimation.value * 0.15) : 1.0,
-                child: Container(
-                  width: _dayCircleSize,
-                  height: _dayCircleSize,
-                  decoration: isHighlighted
-                      ? BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: DsColors.white,
-                        )
-                      : null, // No circle for period range days (Figma v3)
-                  child: Center(
-                    child: Text(
-                      '$day',
-                      style: TextStyle(
-                        fontSize: _dayFontSize,
-                        fontWeight:
-                            isHighlighted ? FontWeight.w600 : FontWeight.w400,
-                        color: isHighlighted
-                            ? DsColors.signature
-                            : isInPeriodRange
-                                ? DsColors.signature // Only text color change
-                                : DsColors.grayscaleBlack,
-                      ),
+      child: Center(
+        // Day number - Figma v3: Scale animation for highlighted day
+        child: AnimatedBuilder(
+          animation: _glowAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              // Figma v3: Number scales from 1.0 to 1.15 with glow
+              scale: isHighlighted ? 1.0 + (_glowAnimation.value * 0.15) : 1.0,
+              child: Container(
+                width: _dayCircleSize,
+                height: _dayCircleSize,
+                decoration: isHighlighted
+                    ? const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: DsColors.white,
+                      )
+                    : null, // No circle for period range days (Figma v3)
+                child: Center(
+                  child: Text(
+                    '$day',
+                    style: TextStyle(
+                      fontSize: _dayFontSize,
+                      fontWeight:
+                          isHighlighted ? FontWeight.w600 : FontWeight.w400,
+                      color: isHighlighted
+                          ? DsColors.signature
+                          : isInPeriodRange
+                              ? DsColors.signature // Only text color change
+                              : DsColors.grayscaleBlack,
                     ),
                   ),
                 ),
-              );
-            },
-          ),
-        ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

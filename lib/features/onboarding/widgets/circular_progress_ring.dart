@@ -119,6 +119,14 @@ class CircularProgressRingState extends State<CircularProgressRing>
     _progressController.value = value.clamp(0.0, 1.0);
   }
 
+  /// Animate progress to specific value smoothly
+  void animateToProgress(double value, {Duration? duration}) {
+    _progressController.animateTo(
+      value.clamp(0.0, 1.0),
+      duration: duration ?? const Duration(milliseconds: 500),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;

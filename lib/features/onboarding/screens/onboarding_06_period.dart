@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/effects.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -13,6 +13,7 @@ import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/custom_radio_check.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/period_calendar.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart' as services;
@@ -198,16 +199,14 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
   Widget _buildCalendarCard(DsTokens? dsTokens, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-      child: Container(
-        // Figma v3: Strong glass calendar effect (50% white + 70% border)
-        decoration: DsEffects.glassCalendarStrong,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(40),
-          child: PeriodCalendar(
-            selectedDate: _selectedDate,
-            onDateSelected: _handleDateSelected,
-            periodDays: const [], // No period days selected yet
-          ),
+      child: OnboardingGlassCard(
+        // Figma v3: 30% white opacity, 40px radius + BackdropFilter blur + border
+        backgroundColor: DsColors.white.withValues(alpha: 0.30),
+        borderRadius: Sizes.radiusXL,
+        child: PeriodCalendar(
+          selectedDate: _selectedDate,
+          onDateSelected: _handleDateSelected,
+          periodDays: const [], // No period days selected yet
         ),
       ),
     );

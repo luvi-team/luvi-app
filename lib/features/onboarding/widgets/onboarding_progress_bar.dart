@@ -27,8 +27,8 @@ class OnboardingProgressBar extends StatelessWidget {
 
   // Widget-specific layout constants (Figma Progress Bar specs v2)
   static const double _barWidth = Sizes.progressBarWidth; // 307px
-  static const double _barHeight = 18.0;
-  static const double _borderWidth = 1.0;
+  static const double _barHeight = Sizes.progressBarHeight; // 18px
+  static const double _borderWidth = 1.0; // Figma: 1px
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +40,11 @@ class OnboardingProgressBar extends StatelessWidget {
       child: SizedBox(
         width: _barWidth,
         height: _barHeight,
-        child: DecoratedBox(
+        // Container with decoration renders border OUTSIDE the clip area
+        // This fixes the border being clipped by ClipRRect
+        child: Container(
           decoration: BoxDecoration(
+            color: DsColors.white,
             borderRadius: BorderRadius.circular(Sizes.radiusXL),
             border: Border.all(
               color: DsColors.grayscaleBlack,
@@ -49,23 +52,16 @@ class OnboardingProgressBar extends StatelessWidget {
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(Sizes.radiusXL),
-            child: Stack(
-              children: [
-                // Background (white - Figma v2)
-                Container(
-                  color: DsColors.white,
+            // Inner radius = outer radius - border width for clean edges
+            borderRadius: BorderRadius.circular(Sizes.radiusXL - _borderWidth),
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: progress,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: DsColors.signature,
                 ),
-                // Progress fill
-                FractionallySizedBox(
-                  widthFactor: progress,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: DsColors.signature,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),

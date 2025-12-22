@@ -48,6 +48,16 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
   late DateTime _today;
   late List<DateTime> _months;
 
+  // B1: GlobalKey for scroll-to-current-month via ensureVisible
+  final GlobalKey _currentMonthKey = GlobalKey();
+
+  // B1: Current month index (8 months: 0-5 past, 6 current, 7 next)
+  static const int _currentMonthIndex = 6;
+
+  // B1: Retry limit for lazy-build fallback (max 3 attempts)
+  int _scrollRetryCount = 0;
+  static const int _maxScrollRetries = 3;
+
   @override
   void initState() {
     super.initState();
@@ -67,8 +77,9 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
     final months = <DateTime>[];
     final now = DateTime.now();
 
-    // Show 6 months back and current month (7 total)
-    for (int i = -6; i <= 0; i++) {
+    // Show 6 months back, current month, and next month (8 total)
+    // O8 End-Adjust mode needs next month for period-end selection across month boundaries
+    for (int i = -6; i <= 1; i++) {
       months.add(DateTime(now.year, now.month + i, 1));
     }
 
@@ -78,9 +89,30 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
   void _scrollToCurrentMonth() {
     if (!_scrollController.hasClients) return;
 
-    // Scroll to bottom (current month)
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
+    // B1 Guard: Skip if list too small to scroll
+    if (_scrollController.position.maxScrollExtent == 0) return;
+
+    // B1: Use GlobalKey + ensureVisible for reliable scroll positioning
+    // Fallback: If currentContext is null (lazy-build), trigger build first
+    if (_currentMonthKey.currentContext == null) {
+      if (_scrollRetryCount >= _maxScrollRetries) return;
+      _scrollRetryCount++;
+
+      // Jump to approximate position to trigger lazy build of current month
+      final approxOffset = _scrollController.position.maxScrollExtent * 0.75;
+      _scrollController.jumpTo(approxOffset);
+
+      // Retry after next frame when widget should be built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToCurrentMonth();
+      });
+      return;
+    }
+
+    // B1: Use ensureVisible for accurate scroll to current month
+    Scrollable.ensureVisible(
+      _currentMonthKey.currentContext!,
+      alignment: 0.0, // Top of viewport
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
@@ -105,7 +137,10 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
       itemCount: _months.length,
       itemBuilder: (context, index) {
         final month = _months[index];
+        // B1: Assign GlobalKey to current month for ensureVisible
+        final isCurrentMonth = index == _currentMonthIndex;
         return _MonthGrid(
+          key: isCurrentMonth ? _currentMonthKey : null,
           month: month,
           today: _today,
           selectedDate: widget.selectedDate,
@@ -125,6 +160,7 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
 
 class _MonthGrid extends StatelessWidget {
   const _MonthGrid({
+    super.key,
     required this.month,
     required this.today,
     required this.selectedDate,
@@ -270,7 +306,11 @@ class _MonthGrid extends StatelessWidget {
                 isSelected: _isSameDay(date, selectedDate),
                 isPeriodDay: _isPeriodDay(date),
                 isPeriodEnd: _isSameDay(date, periodEndDate),
-                allowSelection: !date.isAfter(today),
+                // End-Adjust mode: Only allow valid range (1-14 days from start)
+                // Start-Select mode: Only allow past dates
+                allowSelection: allowPeriodEndAdjustment
+                    ? _isInValidPeriodEndRange(date)
+                    : !date.isAfter(today),
                 allowPeriodEndAdjustment: allowPeriodEndAdjustment,
                 onTap: () => _handleDayTap(date),
                 colorScheme: colorScheme,
@@ -298,15 +338,23 @@ class _MonthGrid extends StatelessWidget {
     return false;
   }
 
-  void _handleDayTap(DateTime date) {
-    // Don't allow selecting future dates
-    if (date.isAfter(today)) return;
+  /// Returns true if date is valid period-end (1-14 days after selectedDate).
+  /// Used in End-Adjust mode (O7/O8) to limit selectable dates to valid range.
+  bool _isInValidPeriodEndRange(DateTime date) {
+    if (selectedDate == null) return false;
+    final daysDiff = date.difference(selectedDate!).inDays;
+    // Valid range: Same day (0) to 13 days after (=14 days total duration)
+    return daysDiff >= 0 && daysDiff <= 13;
+  }
 
+  void _handleDayTap(DateTime date) {
     if (allowPeriodEndAdjustment) {
-      // In O7 mode, tapping adjusts period end
+      // End-Adjust-Mode (O7/O8): Only allow taps within valid range
+      if (!_isInValidPeriodEndRange(date)) return;
       onPeriodEndChanged?.call(date);
     } else {
-      // In O6 mode, tapping selects period start
+      // Start-Select-Mode (O6): Only allow past dates
+      if (date.isAfter(today)) return;
       onDateSelected?.call(date);
     }
   }

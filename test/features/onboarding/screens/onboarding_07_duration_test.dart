@@ -9,11 +9,18 @@ import 'package:luvi_app/features/onboarding/widgets/period_calendar.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_app.dart';
 
+// Deterministic base date for flaky tests (mid-December 2025)
+// Used instead of DateTime.now() to prevent month-boundary flakiness
+final _baseDate = DateTime(2025, 12, 15);
+
 void main() {
   TestConfig.ensureInitialized();
 
   group('Onboarding07DurationScreen', () {
     testWidgets('renders without errors', (tester) async {
+      // Deterministic date: Fixed date for stable test (mid-December 2025)
+      final startDate = DateTime(2025, 12, 15);
+
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -23,7 +30,9 @@ void main() {
           ),
           GoRoute(
             path: Onboarding07DurationScreen.routeName,
-            builder: (context, state) => const Onboarding07DurationScreen(),
+            builder: (context, state) => Onboarding07DurationScreen(
+              periodStartDate: startDate,
+            ),
           ),
           GoRoute(
             path: OnboardingSuccessScreen.routeName,
@@ -42,8 +51,8 @@ void main() {
     });
 
     testWidgets('displays PeriodCalendar widget', (tester) async {
-      // Use a deterministic start date (3 days ago)
-      final startDate = DateTime.now().subtract(const Duration(days: 3));
+      // Deterministic date: Fixed date for stable test (mid-December 2025)
+      final startDate = DateTime(2025, 12, 12);
 
       final router = GoRouter(
         routes: [
@@ -76,7 +85,8 @@ void main() {
 
     testWidgets('calendar contains tappable day cells with InkResponse',
         (tester) async {
-      final startDate = DateTime.now().subtract(const Duration(days: 3));
+      // Deterministic date: Fixed date for stable test (mid-December 2025)
+      final startDate = DateTime(2025, 12, 12);
 
       final router = GoRouter(
         routes: [
@@ -109,8 +119,9 @@ void main() {
 
     testWidgets('tapping earlier day shortens period range (state change)',
         (tester) async {
-      // Deterministisches Datum: 10 Tage vor heute für stabilen Test
-      final startDate = DateTime.now().subtract(const Duration(days: 10));
+      // Deterministic date (10 days before _baseDate) to ensure calendar shows correct month
+      // This test requires period days to be visible and tappable
+      final startDate = _baseDate.subtract(const Duration(days: 10));
 
       final router = GoRouter(
         routes: [
@@ -169,5 +180,6 @@ void main() {
       // Screen sollte noch da sein (kein Crash)
       expect(find.byType(Onboarding07DurationScreen), findsOneWidget);
     });
+
   });
 }

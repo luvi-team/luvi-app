@@ -146,19 +146,26 @@ class _Onboarding03FitnessScreenState
 
   Widget _buildFitnessPills(AppLocalizations l10n, OnboardingSpacing spacing) {
     final levels = FitnessLevel.values;
+    final halfGap = spacing.pillsGap03 / 2;
 
     return Semantics(
       label: l10n.onboarding03FitnessSemantic,
-      child: Wrap(
-        spacing: spacing.pillsGap03,
-        runSpacing: spacing.pillsGap03,
-        alignment: WrapAlignment.center,
+      child: Row(
         children: levels.map((level) {
-          return FitnessPill(
-            key: Key('fitness_pill_${level.name}'),
-            label: level.label(l10n),
-            selected: _selectedLevel == level,
-            onTap: () => _selectLevel(level),
+          final index = levels.indexOf(level);
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: index == 0 ? 0 : halfGap,
+                right: index == levels.length - 1 ? 0 : halfGap,
+              ),
+              child: FitnessPill(
+                key: Key('fitness_pill_${level.name}'),
+                label: level.label(l10n),
+                selected: _selectedLevel == level,
+                onTap: () => _selectLevel(level),
+              ),
+            ),
           );
         }).toList(),
       ),

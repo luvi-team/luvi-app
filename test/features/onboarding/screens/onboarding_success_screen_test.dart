@@ -15,6 +15,10 @@ import 'package:luvi_services/user_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../support/test_config.dart';
 
+// Test screen dimensions (must match setTestScreenSize)
+const _testWidth = 430.0;
+const _testHeight = 932.0;
+
 /// Test notifier with complete OnboardingData for Backend-SSOT validation.
 class _CompleteOnboardingNotifier extends OnboardingNotifier {
   @override
@@ -28,7 +32,8 @@ class _CompleteOnboardingNotifier extends OnboardingNotifier {
           Interest.cardio,
           Interest.nutrition,
         ],
-        periodStart: DateTime.now().subtract(const Duration(days: 7)),
+        // Deterministic date: Fixed date (early December 2025) for stable test
+        periodStart: DateTime(2025, 12, 8),
       );
 }
 
@@ -45,7 +50,8 @@ class _IncompleteOnboardingNotifier extends OnboardingNotifier {
           Interest.cardio,
           Interest.nutrition,
         ],
-        periodStart: DateTime.now().subtract(const Duration(days: 7)),
+        // Deterministic date: Fixed date (early December 2025) for stable test
+        periodStart: DateTime(2025, 12, 8),
       );
 }
 
@@ -157,7 +163,7 @@ void main() {
 
   // Configure larger screen size for Figma O9 layout (280px cards container)
   void setTestScreenSize(WidgetTester tester) {
-    tester.view.physicalSize = const Size(430 * 3, 932 * 3);
+    tester.view.physicalSize = const Size(_testWidth * 3, _testHeight * 3);
     tester.view.devicePixelRatio = 3.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -175,7 +181,7 @@ void main() {
       ],
       // Use MediaQuery to set a larger surface for Figma O9 layout (280px cards)
       child: MediaQuery(
-        data: const MediaQueryData(size: Size(430, 932)),
+        data: const MediaQueryData(size: Size(_testWidth, _testHeight)),
         child: MaterialApp(
           theme: AppTheme.buildAppTheme(),
           locale: const Locale('en'),
