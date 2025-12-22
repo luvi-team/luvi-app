@@ -127,6 +127,9 @@ Deno.test("log_consent: rejects non-POST methods", async () => {
   assertEquals(response.status, 405);
   const data = await response.json();
   assertEquals(data.error, "Method not allowed");
+  assertExists(data.request_id);
+  assertEquals(typeof data.request_id, "string");
+  assertEquals(response.headers.get("x-request-id"), data.request_id);
 });
 
 Deno.test("log_consent: rejects malformed JSON payloads", async () => {
@@ -140,4 +143,7 @@ Deno.test("log_consent: rejects malformed JSON payloads", async () => {
   assertEquals(response.status, 400);
   const data = await response.json();
   assertEquals(data.error, "Invalid request body");
+  assertExists(data.request_id);
+  assertEquals(typeof data.request_id, "string");
+  assertEquals(response.headers.get("x-request-id"), data.request_id);
 });

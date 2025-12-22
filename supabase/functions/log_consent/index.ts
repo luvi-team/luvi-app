@@ -264,7 +264,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+    return new Response(JSON.stringify({ error: "Method not allowed", request_id: requestId }), {
       status: 405,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -278,10 +278,13 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Missing Authorization header" }), {
+    return new Response(
+      JSON.stringify({ error: "Missing Authorization header", request_id: requestId }),
+      {
       status: 401,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
-    });
+      },
+    );
   }
 
   let body: ConsentRequestPayload = {};
@@ -295,7 +298,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Invalid request body" }), {
+    return new Response(JSON.stringify({ error: "Invalid request body", request_id: requestId }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -312,10 +315,13 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "policy_version is required" }), {
+    return new Response(
+      JSON.stringify({ error: "policy_version is required", request_id: requestId }),
+      {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
-    });
+      },
+    );
   }
 
   const rawScopes = body.scopes;
@@ -326,7 +332,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "scopes must be provided" }), {
+    return new Response(JSON.stringify({ error: "scopes must be provided", request_id: requestId }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -351,7 +357,7 @@ if (import.meta.main) {
         hash_version: CONSENT_HASH_VERSION,
       });
       return new Response(
-        JSON.stringify({ error: "scopes object values must be boolean" }),
+        JSON.stringify({ error: "scopes object values must be boolean", request_id: requestId }),
         {
           status: 400,
           headers: {
@@ -370,8 +376,11 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(
-      JSON.stringify({ error: "scopes must be provided as an array or object of boolean flags" }),
+      return new Response(
+      JSON.stringify({
+        error: "scopes must be provided as an array or object of boolean flags",
+        request_id: requestId,
+      }),
       {
         status: 400,
         headers: {
@@ -389,7 +398,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "scopes must be non-empty" }), {
+    return new Response(JSON.stringify({ error: "scopes must be non-empty", request_id: requestId }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -407,10 +416,13 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Invalid scopes provided", invalidScopes }), {
+    return new Response(
+      JSON.stringify({ error: "Invalid scopes provided", invalidScopes, request_id: requestId }),
+      {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
-    });
+      },
+    );
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -430,7 +442,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    return new Response(JSON.stringify({ error: "Unauthorized", request_id: requestId }), {
       status: 401,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -478,7 +490,7 @@ if (import.meta.main) {
     });
     // Fire-and-forget: do not block response path on alert delivery
     maybeAlert(requestId, "error", { where: "consent_rpc" });
-    return new Response(JSON.stringify({ error: "Failed to log consent" }), {
+    return new Response(JSON.stringify({ error: "Failed to log consent", request_id: requestId }), {
       status: 500,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -501,7 +513,7 @@ if (import.meta.main) {
       consent_id_hash: consentIdHash,
       window_sec: RATE_LIMIT_WINDOW_SEC,
     });
-    return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
+    return new Response(JSON.stringify({ error: "Rate limit exceeded", request_id: requestId }), {
       status: 429,
       headers: {
         "Content-Type": "application/json",

@@ -37,7 +37,12 @@ class ConsentService {
       // FunctionException is thrown for ALL non-2xx status codes.
       // Status-based mapping to provide precise error codes.
       final status = e.status;
-      log.w('log_consent failed (status=$status)', tag: _logTag);
+      final errorBody = _asJsonMap(e.details);
+      final requestId = errorBody?['request_id']?.toString();
+      log.w(
+        'log_consent failed (status=$status, request_id=${requestId ?? 'n/a'})',
+        tag: _logTag,
+      );
 
       if (status == 401) {
         throw ConsentException(401, 'Unauthorized', code: 'unauthorized');
@@ -60,10 +65,15 @@ class ConsentService {
           code: 'client_error',
         );
       }
-    } catch (e) {
-      // Network/Transport errors (SocketException, TimeoutException, etc.)
+    } on Exception catch (error, stackTrace) {
+      // Network/transport errors (offline/DNS/timeout) are not FunctionException.
       // Classify as function_unavailable for consistent UX messaging.
-      log.w('log_consent network error', tag: _logTag, error: e.runtimeType);
+      log.w(
+        'log_consent invoke failed (transport)',
+        tag: _logTag,
+        error: error.runtimeType,
+        stack: stackTrace,
+      );
       throw ConsentException(
         503,
         'Service unavailable',
