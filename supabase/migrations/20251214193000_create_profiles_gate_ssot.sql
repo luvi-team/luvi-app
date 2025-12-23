@@ -96,4 +96,6 @@ create trigger update_profiles_updated_at
 revoke all on table public.profiles from anon;
 revoke all on table public.profiles from public;
 grant select, insert, update, delete on table public.profiles to authenticated;
+-- service_role for backend/admin operations (consistent with harden_table_grants)
+grant select, insert, update, delete on table public.profiles to service_role;
 

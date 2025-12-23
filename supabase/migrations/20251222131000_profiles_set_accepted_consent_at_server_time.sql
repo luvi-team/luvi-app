@@ -21,10 +21,10 @@ begin
   end if;
 
   if tg_op = 'INSERT' then
-    -- New row: set timestamp if not provided.
-    if new.accepted_consent_at is null then
-      new.accepted_consent_at = now();
-    end if;
+    -- New row: ALWAYS set server timestamp (overwrite any client value).
+    -- This ensures audit integrity regardless of client clock skew/tampering.
+    -- Client should not send accepted_consent_at; if it does, we ignore it.
+    new.accepted_consent_at = now();
     return new;
   end if;
 

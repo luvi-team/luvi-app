@@ -32,14 +32,22 @@ jobs:
           fi
 
           # Find closing delimiter (within first 50 lines)
+          # Step 1: tail -n +2 skips the opening "---" delimiter (line 1)
+          # Step 2: grep -n finds line numbers of "---" relative to tail output
+          # Step 3: head -1 | cut gets the first match's line number
           CLOSING_LINE=$(head -50 CLAUDE.md | tail -n +2 | grep -n "^---$" | head -1 | cut -d: -f1)
           if [ -z "$CLOSING_LINE" ]; then
             echo "::error::CLAUDE.md frontmatter missing closing delimiter (---)"
             exit 1
           fi
 
-          # Extract and validate YAML (Fix 6: validate frontmatter syntax)
+          # Extract and validate YAML
+          # Step 4: Add 1 to map back to original file line numbers (since tail shifted by 1)
           CLOSING_LINE=$((CLOSING_LINE + 1))
+          # Step 5: head -$CLOSING_LINE gets lines 1 through closing delimiter
+          # Step 6: tail -n +2 removes opening "---"
+          # Step 7: head -n -1 removes closing "---"
+          # Result: Pure YAML content between delimiters
           FRONTMATTER=$(head -$CLOSING_LINE CLAUDE.md | tail -n +2 | head -n -1)
           if ! echo "$FRONTMATTER" | python3 -c "import sys, yaml; yaml.safe_load(sys.stdin)" 2>/dev/null; then
             echo "::error::CLAUDE.md frontmatter contains invalid YAML"

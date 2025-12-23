@@ -136,6 +136,7 @@ class CircularProgressRingState extends State<CircularProgressRing>
       );
     }
     return SizedBox(
+      key: const Key('circular_progress_ring_container'),
       width: widget.size,
       height: widget.size,
       child: AnimatedBuilder(

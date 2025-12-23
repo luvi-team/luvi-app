@@ -9,7 +9,6 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
-import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
@@ -17,7 +16,6 @@ import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/period_calendar.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_services/user_state_service.dart' as services;
 
 /// Onboarding07: Period duration adjustment screen (O7)
 /// Figma: 07_Onboarding (Periode Dauer)
@@ -33,6 +31,7 @@ class Onboarding07DurationScreen extends ConsumerStatefulWidget {
   final DateTime? periodStartDate;
 
   static const routeName = '/onboarding/period-duration';
+  static const navName = 'onboarding_07_duration';
 
   @override
   ConsumerState<Onboarding07DurationScreen> createState() =>
@@ -62,6 +61,12 @@ class _Onboarding07DurationScreenState
     }
   }
 
+  /// Initializes period dates from widget params or state.
+  ///
+  /// If periodStart is null (navigation flow issue), a synthetic date
+  /// 7 days in the past is used as fallback to keep the app functional.
+  /// This is logged as a warning for investigation but does not block
+  /// the user flow.
   void _initializePeriodDates() {
     // Try widget param first, then OnboardingNotifier (for back navigation)
     final onboardingState = ref.read(onboardingProvider);
@@ -83,11 +88,15 @@ class _Onboarding07DurationScreenState
       );
       _updatePeriodDays();
     } else {
-      // Production fallback: Log for investigation, keep app functional
+      // Production fallback: Log for investigation, keep app functional.
+      // This can happen if user navigates directly to O7 without O6.
       log.w(
         'O7 fallback activated: periodStart is null. '
-        'savedDuration=$savedDuration. Navigation flow issue suspected.',
-        tag: 'Onboarding',
+        'savedDuration=$savedDuration, '
+        'widgetPeriodStart=${widget.periodStartDate}, '
+        'statePeriodStart=${onboardingState.periodStart}. '
+        'Navigation flow issue suspected - using synthetic date.',
+        tag: 'onboarding',
       );
       final now = DateTime.now();
       _periodStart = now.subtract(const Duration(days: 7));
@@ -133,20 +142,8 @@ class _Onboarding07DurationScreenState
     final duration = _periodDays.length;
     ref.read(onboardingProvider.notifier).setPeriodDuration(duration);
 
-    // Read FitnessLevel from OnboardingNotifier (SSOT for onboarding data)
-    final onboardingState = ref.read(onboardingProvider);
-    final appLevel = onboardingState.fitnessLevel ?? FitnessLevel.beginner;
-
-    // Map App-FitnessLevel to Service-FitnessLevel (routes.dart expects Service enum)
-    // Use tryParse for safety - if enum names ever diverge, fall back to beginner
-    final serviceLevel = services.FitnessLevel.tryParse(appLevel.name) ??
-        services.FitnessLevel.beginner;
-
-    // Navigate to Success Screen with Service-FitnessLevel
-    context.pushNamed(
-      OnboardingSuccessScreen.navName,
-      extra: serviceLevel,
-    );
+    // Navigate to Success Screen
+    context.pushNamed(OnboardingSuccessScreen.navName);
   }
 
   void _handleBack() {

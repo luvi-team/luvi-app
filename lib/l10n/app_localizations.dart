@@ -1049,6 +1049,12 @@ abstract class AppLocalizations {
   /// **'Start here'**
   String get authLoginCtaLinkAction;
 
+  /// Complete semantic label for the signup link on login screen. Translators have full control over sentence structure.
+  ///
+  /// In en, this message translates to:
+  /// **'New to LUVI? Start here'**
+  String get authLoginCtaLinkSemantic;
+
   /// Link label that navigates to the forgot-password flow.
   ///
   /// In en, this message translates to:

@@ -4,6 +4,18 @@ import 'package:luvi_app/features/onboarding/widgets/circular_progress_ring.dart
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
 
+/// Checks if a Matrix4 is approximately identity using epsilon comparison.
+/// Handles floating-point precision issues in animation tests.
+bool _isApproximatelyIdentity(Matrix4 matrix, {double epsilon = 1e-6}) {
+  final identity = Matrix4.identity();
+  for (int i = 0; i < 16; i++) {
+    if ((matrix.storage[i] - identity.storage[i]).abs() > epsilon) {
+      return false;
+    }
+  }
+  return true;
+}
+
 Future<void> _pumpRing(
   WidgetTester tester, {
   Duration duration = const Duration(seconds: 3),
@@ -37,7 +49,8 @@ void main() {
   testWidgets('renders with correct size and initial state', (tester) async {
     await _pumpRing(tester, size: 150);
 
-    final sizedBox = find.byType(SizedBox).first;
+    // Issue 9: Use stable Key instead of fragile find.byType().first
+    final sizedBox = find.byKey(const Key('circular_progress_ring_container'));
     final widget = tester.widget<SizedBox>(sizedBox);
 
     expect(widget.width, 150);
@@ -82,11 +95,15 @@ void main() {
     // Use pump instead of pumpAndSettle to avoid infinite animation loop
     await tester.pump();
 
+    // Issue 8: Get localized string from rendered widget context
+    final context = tester.element(find.byType(CircularProgressRing));
+    final l10n = AppLocalizations.of(context)!;
+
     // Verify Semantics widget exists with the localized label
     final semanticsWidget = find.byWidgetPredicate(
       (widget) =>
           widget is Semantics &&
-          widget.properties.label == 'Ladefortschritt',
+          widget.properties.label == l10n.semanticLoadingProgress,
     );
     expect(semanticsWidget, findsOneWidget);
   });
@@ -96,11 +113,15 @@ void main() {
     // Use pump instead of pumpAndSettle to avoid infinite animation loop
     await tester.pump();
 
+    // Issue 8: Get localized string from rendered widget context
+    final context = tester.element(find.byType(CircularProgressRing));
+    final l10n = AppLocalizations.of(context)!;
+
     // Verify Semantics widget exists with the localized label
     final semanticsWidget = find.byWidgetPredicate(
       (widget) =>
           widget is Semantics &&
-          widget.properties.label == 'Loading progress',
+          widget.properties.label == l10n.semanticLoadingProgress,
     );
     expect(semanticsWidget, findsOneWidget);
   });
@@ -111,12 +132,13 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     // Find Transform widget within CircularProgressRing with non-identity matrix
+    // Issue 7: Use tolerance-based comparison for floating-point precision
     final ringFinder = find.byType(CircularProgressRing);
     final rotationTransformFinder = find.descendant(
       of: ringFinder,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is Transform && widget.transform != Matrix4.identity(),
+            widget is Transform && !_isApproximatelyIdentity(widget.transform),
       ),
     );
 

@@ -50,10 +50,12 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
   static const double _unselectedOpacity = 0.5;
 
   /// Minimum year based on max age policy (120 years back)
-  int get _minimumYear => DateTime.now().year - kMaxAge;
+  /// Cached in initState to ensure consistent value during widget lifecycle.
+  late final int _minimumYear;
 
   /// Maximum year based on min age policy (16 years back)
-  int get _maximumYear => DateTime.now().year - kMinAge;
+  /// Cached in initState to ensure consistent value during widget lifecycle.
+  late final int _maximumYear;
 
   /// List of years in valid range (cached for performance)
   late final List<int> _years;
@@ -71,7 +73,12 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
   void initState() {
     super.initState();
 
-    // Cache years list once (Fix 1: avoid rebuilding on every access)
+    // Cache year bounds once to ensure consistent values during widget lifecycle
+    final now = DateTime.now();
+    _minimumYear = now.year - kMaxAge;
+    _maximumYear = now.year - kMinAge;
+
+    // Cache years list once (avoids rebuilding on every access)
     _years = List.generate(
       _maximumYear - _minimumYear + 1,
       (i) => _maximumYear - i,
@@ -113,7 +120,17 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
     final maxDay = _daysInMonth;
     if (_selectedDay > maxDay) {
       _selectedDay = maxDay;
-      _dayController.jumpToItem(_selectedDay - 1);
+      // Smooth animation for better UX when clamping invalid days
+      if (_dayController.hasClients) {
+        _dayController.animateToItem(
+          _selectedDay - 1,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      } else {
+        // Fallback if controller not attached (defensive)
+        _dayController.jumpToItem(_selectedDay - 1);
+      }
     }
 
     final newDate = DateTime(_selectedYear, _selectedMonth + 1, _selectedDay);
@@ -222,8 +239,10 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
       childDelegate: ListWheelChildBuilderDelegate(
         childCount: itemCount,
         builder: (context, index) {
-          // Fix 2: Remove hasClients guard - selectedItem is valid immediately
-          final isSelected = controller.selectedItem == index;
+          // Defensive guard: use initialItem if controller not yet attached
+          final isSelected = controller.hasClients
+              ? controller.selectedItem == index
+              : controller.initialItem == index;
           return Center(
             child: Text(
               itemBuilder(index),

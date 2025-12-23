@@ -63,8 +63,14 @@ class OnboardingProgressBar extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   widthFactor: progress,
                   child: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: DsColors.signature,
+                      borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(Sizes.radiusXL - _borderWidth),
+                        right: progress == 1.0
+                            ? Radius.circular(Sizes.radiusXL - _borderWidth)
+                            : Radius.zero,
+                      ),
                     ),
                   ),
                 ),

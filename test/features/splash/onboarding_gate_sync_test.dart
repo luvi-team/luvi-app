@@ -135,16 +135,8 @@ void main() {
         expect((result as RouteResolved).route, equals(customHome));
       });
 
-      // Note: "remote false + local null" scenario is tested in "Remote SSOT available" group
-      test('returns Onboarding01 when remote false and local false (consistent state)', () {
-        final result = determineOnboardingGateRoute(
-          remoteGate: false,
-          localGate: false,
-          homeRoute: _testHomeRoute,
-        );
-        expect(result, isA<RouteResolved>());
-        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
-      });
+      // Note: "remote false + local false" is tested in "Remote SSOT available" group (line 81)
+      // Note: "remote null + local false" is tested in "Remote unavailable" group (line 93)
 
       test('returns Onboarding01 when remote null and local false (offline fallback)', () {
         final result = determineOnboardingGateRoute(

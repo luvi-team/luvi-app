@@ -40,22 +40,17 @@ void main() {
     // Parent width 400px -> 80% = 320px, but capped at max 307px
     await _pumpProgressBar(tester, currentStep: 1, totalSteps: 5);
 
-    // Find the inner SizedBox created by the progress bar (inside LayoutBuilder)
-    final sizedBoxes = find.byType(SizedBox);
-    // The progress bar creates a SizedBox inside LayoutBuilder
-    // We need to find the one with the calculated width
-    SizedBox? progressBarSizedBox;
-    for (final element in sizedBoxes.evaluate()) {
-      final widget = element.widget as SizedBox;
-      if (widget.height == Sizes.progressBarHeight) {
-        progressBarSizedBox = widget;
-        break;
-      }
-    }
-
-    expect(progressBarSizedBox, isNotNull);
+    // Find the SizedBox scoped to OnboardingProgressBar (stable finder)
+    final progressBarFinder = find.descendant(
+      of: find.byType(OnboardingProgressBar),
+      matching: find.byWidgetPredicate(
+        (w) => w is SizedBox && w.height == Sizes.progressBarHeight,
+      ),
+    );
+    expect(progressBarFinder, findsOneWidget);
+    final progressBarSizedBox = tester.widget<SizedBox>(progressBarFinder);
     // 400 * 0.8 = 320, clamped to max 307
-    expect(progressBarSizedBox!.width, Sizes.progressBarMaxWidth);
+    expect(progressBarSizedBox.width, Sizes.progressBarMaxWidth);
     expect(progressBarSizedBox.height, Sizes.progressBarHeight);
   });
 
@@ -68,18 +63,17 @@ void main() {
       parentWidth: 300.0,
     );
 
-    SizedBox? progressBarSizedBox;
-    for (final element in find.byType(SizedBox).evaluate()) {
-      final widget = element.widget as SizedBox;
-      if (widget.height == Sizes.progressBarHeight) {
-        progressBarSizedBox = widget;
-        break;
-      }
-    }
-
-    expect(progressBarSizedBox, isNotNull);
+    // Find the SizedBox scoped to OnboardingProgressBar (stable finder)
+    final progressBarFinder = find.descendant(
+      of: find.byType(OnboardingProgressBar),
+      matching: find.byWidgetPredicate(
+        (w) => w is SizedBox && w.height == Sizes.progressBarHeight,
+      ),
+    );
+    expect(progressBarFinder, findsOneWidget);
+    final progressBarSizedBox = tester.widget<SizedBox>(progressBarFinder);
     // 300 * 0.8 = 240px
-    expect(progressBarSizedBox!.width, closeTo(240.0, 0.1));
+    expect(progressBarSizedBox.width, closeTo(240.0, 0.1));
   });
 
   testWidgets('shows correct progress for step 1 of 5', (tester) async {

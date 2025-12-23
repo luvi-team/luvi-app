@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
@@ -18,9 +21,6 @@ import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-/// Delay before navigation after successful signup (matches snackbar duration).
-const kSignupSuccessNavigationDelay = Duration(milliseconds: 1500);
 
 /// SignupScreen with Figma Auth UI v2 design.
 ///
@@ -45,6 +45,7 @@ class AuthSignupScreen extends ConsumerStatefulWidget {
 class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  Timer? _signupNavTimer;
 
   bool _obscurePassword = true;
   bool _isSubmitting = false;
@@ -54,6 +55,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _signupNavTimer?.cancel();
     super.dispose();
   }
 
@@ -91,14 +93,16 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.authSignupSuccess),
-          duration: const Duration(milliseconds: 1500),
+          duration: Timing.snackBarBrief,
         ),
       );
       // Short delay for user to see success message, then navigate
-      // (bounded delay avoids race condition from unbounded snackbar.closed)
-      await Future.delayed(kSignupSuccessNavigationDelay);
-      if (!mounted) return;
-      context.go(LoginScreen.routeName);
+      // Using cancellable Timer for safe disposal (avoids navigation after unmount)
+      _signupNavTimer?.cancel();
+      _signupNavTimer = Timer(Timing.snackBarBrief, () {
+        if (!mounted) return;
+        context.go(LoginScreen.routeName);
+      });
     } on AuthException catch (error, stackTrace) {
       log.e(
         'signup_failed_auth',

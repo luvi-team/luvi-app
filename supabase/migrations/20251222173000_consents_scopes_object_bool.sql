@@ -39,6 +39,14 @@
 -- TODO: Consider database-driven scope source (consent_scopes table) in future.
 -- Last synchronized: 2025-12-22 (v1.0 - 6 scopes)
 --
+-- SYNC CHECKLIST (for code reviewers when scope IDs change):
+-- [ ] config/consent_scopes.json updated?
+-- [ ] consents_scopes_keys_valid() updated? (line ~43)
+-- [ ] DO block backfill #1 (array->object) updated? (line ~86)
+-- [ ] DO block backfill #2 (object->object) updated? (line ~111)
+-- [ ] log_consent_if_allowed() updated? (line ~163)
+-- [ ] Flutter ConsentConfig updated?
+--
 -- Helper: allowed scope IDs
 create or replace function public.consents_scopes_keys_valid(p_scopes jsonb)
 returns boolean

@@ -508,6 +508,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authLoginCtaLinkAction => 'Hier starten';
 
   @override
+  String get authLoginCtaLinkSemantic => 'Neu bei LUVI? Hier starten';
+
+  @override
   String get authLoginForgot => 'Passwort vergessen?';
 
   @override

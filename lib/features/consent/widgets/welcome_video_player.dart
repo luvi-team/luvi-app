@@ -134,7 +134,9 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
         _controller!.pause();
         break;
       case AppLifecycleState.resumed:
-        _controller!.play();
+        _controller!.play().catchError((Object e, StackTrace stack) {
+          log.w('video_play_failed', tag: 'welcome_video', error: e, stack: stack);
+        });
         break;
     }
   }

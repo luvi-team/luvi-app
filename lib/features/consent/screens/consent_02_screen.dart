@@ -604,29 +604,32 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
   );
 }
 
-Future<bool> _markWelcomeSeen(WidgetRef ref) async {
-  var ok = true;
-
-  // Server SSOT: write gate state when authenticated + initialized.
-  // In tests (or very early init) Supabase may not be ready; don't throw.
-  if (SupabaseService.isInitialized && SupabaseService.currentUser != null) {
-    try {
-      await SupabaseService.upsertConsentGate(
-        acceptedConsentVersion: ConsentConfig.currentVersionInt,
-        markWelcomeSeen: true,
-      );
-    } catch (error, stackTrace) {
-      ok = false;
-      log.w(
-        'consent_gate_upsert_failed',
-        tag: 'consent02',
-        error: sanitizeError(error) ?? error.runtimeType,
-        stack: stackTrace,
-      );
-    }
+/// Server SSOT: upsert consent gate when authenticated.
+/// Returns true on success or if skipped (not ready), false on error.
+Future<bool> _upsertServerConsentGate() async {
+  if (!SupabaseService.isInitialized || SupabaseService.currentUser == null) {
+    return true; // Skip if not ready, not a failure
   }
+  try {
+    await SupabaseService.upsertConsentGate(
+      acceptedConsentVersion: ConsentConfig.currentVersionInt,
+      markWelcomeSeen: true,
+    );
+    return true;
+  } catch (error, stackTrace) {
+    log.w(
+      'consent_gate_upsert_failed',
+      tag: 'consent02',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    return false;
+  }
+}
 
-  // Local cache (best-effort). Only write if we have a valid user ID.
+/// Local cache: best-effort write for user state.
+/// Returns true on success, false on error.
+Future<bool> _updateLocalConsentCache(WidgetRef ref) async {
   try {
     final userState = await ref.read(userStateServiceProvider.future);
     final uid = SupabaseService.currentUser?.id;
@@ -638,17 +641,24 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
       // Debug: track edge case where uid is null (auth state race or test env).
       log.d('consent_cache_skip_no_uid', tag: 'consent02');
     }
+    return true;
   } catch (error, stackTrace) {
-    ok = false;
     log.e(
       'consent_mark_welcome_failed',
       tag: 'consent02',
       error: sanitizeError(error) ?? error.runtimeType,
       stack: stackTrace,
     );
+    return false;
   }
+}
 
-  return ok;
+/// Mark welcome as seen in both server and local cache.
+/// Returns true if at least one operation succeeded.
+Future<bool> _markWelcomeSeen(WidgetRef ref) async {
+  final serverOk = await _upsertServerConsentGate();
+  final localOk = await _updateLocalConsentCache(ref);
+  return serverOk || localOk;
 }
 
 /// Navigate to Onboarding after consent is accepted.

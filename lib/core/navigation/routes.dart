@@ -38,6 +38,7 @@ import 'package:luvi_services/user_state_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
@@ -238,21 +239,7 @@ final List<GoRoute> featureRoutes = [
   GoRoute(
     path: OnboardingSuccessScreen.routeName,
     name: 'onboarding_success',
-    redirect: (ctx, st) {
-      final extra = st.extra;
-      if (extra is FitnessLevel) {
-        return null; // ok
-      }
-      return Onboarding01Screen.routeName;
-    },
-    builder: (ctx, st) {
-      final fitnessLevel = st.extra;
-      if (fitnessLevel is! FitnessLevel) {
-        // Should never happen due to redirect, but defensive programming
-        throw StateError('OnboardingSuccessScreen requires FitnessLevel');
-      }
-      return OnboardingSuccessScreen(fitnessLevel: fitnessLevel);
-    },
+    builder: (ctx, st) => const OnboardingSuccessScreen(),
   ),
   GoRoute(
     path: OnboardingRoutes.done,
@@ -428,8 +415,24 @@ String? supabaseRedirectWithSession(
       state.matchedLocation.startsWith(CreateNewPasswordScreen.routeName);
   final isPasswordSuccessRoute = state.matchedLocation
       .startsWith(SuccessScreen.passwordSavedRoutePath);
-  final session = sessionOverride ??
-      (isInitialized ? SupabaseService.client.auth.currentSession : null);
+  // Session access with defensive try-catch for resilience
+  Session? session;
+  if (sessionOverride != null) {
+    session = sessionOverride;
+  } else if (isInitialized) {
+    try {
+      session = SupabaseService.client.auth.currentSession;
+    } catch (e, stack) {
+      // Log unexpected session access failure for observability
+      log.w(
+        'auth_redirect_session_access_failed',
+        tag: 'navigation',
+        error: e.runtimeType.toString(),
+        stack: stack,
+      );
+      session = null;
+    }
+  }
 
   if (isPasswordRecoveryRoute || isPasswordSuccessRoute) {
     return null;

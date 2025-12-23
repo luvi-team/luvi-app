@@ -63,8 +63,10 @@ class AppLinks {
     final scheme = _rawCallbackScheme.trim();
     final host = _rawCallbackHost.trim();
 
-    // Validate scheme and host are non-empty before constructing Uri
-    if (scheme.isNotEmpty && host.isNotEmpty) {
+    // Validate scheme and host are non-empty AND don't contain whitespace
+    final schemeValid = scheme.isNotEmpty && !scheme.contains(RegExp(r'\s'));
+    final hostValid = host.isNotEmpty && !host.contains(RegExp(r'\s'));
+    if (schemeValid && hostValid) {
       return Uri(scheme: scheme, host: host);
     }
 

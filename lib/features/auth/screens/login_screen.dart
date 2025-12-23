@@ -225,7 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Center(
               child: Semantics(
                 button: true,
-                label: '${l10n.authLoginCtaLinkPrefix} ${l10n.authLoginCtaLinkAction}',
+                label: l10n.authLoginCtaLinkSemantic,
                 child: TextButton(
                   key: const ValueKey('login_signup_link'),
                   onPressed: () => context.push(AuthSignupScreen.routeName),

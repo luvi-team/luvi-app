@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.dart';
 import 'package:luvi_app/features/onboarding/widgets/calendar_mini_widget.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
@@ -52,6 +53,9 @@ void main() {
       final context = tester.element(find.byType(Onboarding06CycleIntroScreen));
       final l10n = AppLocalizations.of(context)!;
 
+      // Verify German locale is active
+      expect(l10n.localeName, 'de', reason: 'German locale should be active');
+
       // Verify localized strings are displayed
       expect(find.text(l10n.onboardingCycleIntroTitle), findsOneWidget);
       expect(find.text(l10n.onboardingCycleIntroButton), findsOneWidget);
@@ -66,12 +70,16 @@ void main() {
       final context = tester.element(find.byType(Onboarding06CycleIntroScreen));
       final l10n = AppLocalizations.of(context)!;
 
-      // Verify button text exists
-      final buttonText = find.text(l10n.onboardingCycleIntroButton);
-      expect(buttonText, findsOneWidget);
+      // Find button by text within OnboardingButton
+      final buttonFinder = find.widgetWithText(
+        OnboardingButton,
+        l10n.onboardingCycleIntroButton,
+      );
+      expect(buttonFinder, findsOneWidget);
 
-      // Note: Navigation tests require GoRouter setup.
-      // Button tap testing is covered by integration tests.
+      // Verify button is enabled (isEnabled property)
+      final button = tester.widget<OnboardingButton>(buttonFinder);
+      expect(button.isEnabled, isTrue, reason: 'Continue button should be enabled');
     });
   });
 }

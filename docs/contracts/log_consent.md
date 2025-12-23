@@ -26,10 +26,23 @@ Zweck: Definiert den aktuellen Request/Response-Contract der Supabase Edge Funct
 | Status | Auslöser | Response |
 | --- | --- | --- |
 | 405 | Methode ≠ `POST` | `{ "error": "Method not allowed", "request_id": "<uuid>" }` + `X-Request-Id` |
-| 401 | `Authorization` fehlt oder Token ungültig | `{ "error": "Missing Authorization header", "request_id": "<uuid>" }` bzw. `{ "error": "Unauthorized", "request_id": "<uuid>" }` |
-| 400 | Invalides JSON, `policy_version` fehlt, `scopes` leer/invalid oder enthält unbekannte Werte | `{ "error": "Invalid request body", "request_id": "<uuid>" }`, `{ "error": "policy_version is required", "request_id": "<uuid>" }`, `{ "error": "scopes must be provided", "request_id": "<uuid>" }`, `{ "error": "scopes must be non-empty", "request_id": "<uuid>" }`, bzw. `{ "error": "Invalid scopes provided", "invalidScopes": [...], "request_id": "<uuid>" }` |
-| 429 | Sliding-Window-Limit verletzt (`CONSENT_RATE_LIMIT_WINDOW_SEC`/`CONSENT_RATE_LIMIT_MAX_REQUESTS`, Default 60s/20 Requests pro Nutzer) | `{ "error": "Rate limit exceeded", "request_id": "<uuid>" }` + `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining=0` |
+| 401 | `Authorization` fehlt oder Token ungültig | Siehe 401-Responses unten |
+| 400 | Invalides JSON, `policy_version` fehlt, `scopes` leer/invalid | Siehe 400-Responses unten |
+| 429 | Sliding-Window-Limit verletzt (Default 60s/20 Requests) | `{ "error": "Rate limit exceeded", "request_id": "<uuid>" }` + Headers |
 | 500 | RPC `log_consent_if_allowed` liefert Fehler | `{ "error": "Failed to log consent", "request_id": "<uuid>" }` |
+
+**401-Responses:**
+- `{ "error": "Missing Authorization header", "request_id": "<uuid>" }`
+- `{ "error": "Unauthorized", "request_id": "<uuid>" }`
+
+**400-Responses:**
+- `{ "error": "Invalid request body", "request_id": "<uuid>" }`
+- `{ "error": "policy_version is required", "request_id": "<uuid>" }`
+- `{ "error": "scopes must be provided", "request_id": "<uuid>" }`
+- `{ "error": "scopes must be non-empty", "request_id": "<uuid>" }`
+- `{ "error": "Invalid scopes provided", "invalidScopes": [...], "request_id": "<uuid>" }`
+
+**429-Headers:** `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining=0`
 
 Alle Fehler enthalten mindestens ein `error`-Feld, immer ein `request_id`-Feld und teilen sich den `X-Request-Id`-Header zur Log-Korrelation (Client kann `request_id` aus dem JSON nutzen, falls Header nicht zugreifbar ist).
 

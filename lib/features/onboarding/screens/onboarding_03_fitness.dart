@@ -15,8 +15,7 @@ import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_services/user_state_service.dart' hide FitnessLevel;
-import 'package:luvi_services/user_state_service.dart' as services show FitnessLevel;
+import 'package:luvi_services/user_state_service.dart' as user_state_svc;
 
 /// Onboarding03: Fitness level single-select screen (O3)
 /// Figma: 03_Onboarding (Fitnesslevel)
@@ -66,10 +65,10 @@ class _Onboarding03FitnessScreenState
       try {
         // Also save to UserStateService for backward compatibility
         // Note: bindUser is already called in main.dart auth state listener
-        final userState = await ref.read(userStateServiceProvider.future);
+        final userState = await ref.read(user_state_svc.userStateServiceProvider.future);
         final serviceFitness =
-            services.FitnessLevel.tryParse(_selectedLevel!.name) ??
-                services.FitnessLevel.beginner;
+            user_state_svc.FitnessLevel.tryParse(_selectedLevel!.name) ??
+                user_state_svc.FitnessLevel.beginner;
         await userState.setFitnessLevel(serviceFitness);
       } catch (e) {
         // Log error but proceed - data is saved in SSOT provider

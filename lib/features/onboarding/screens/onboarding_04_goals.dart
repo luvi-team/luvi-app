@@ -36,6 +36,9 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
   }
 
   void _handleContinue() {
+    // Defensive guard: validate selection before navigation
+    final selectedGoals = ref.read(onboardingProvider).selectedGoals;
+    if (selectedGoals.isEmpty) return;
     context.pushNamed(Onboarding05InterestsScreen.navName);
   }
 
@@ -129,32 +132,31 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
 
     return Semantics(
       label: l10n.onboarding04GoalsSemantic,
-      child: Column(
-        children: List.generate(
-          goals.length,
-          (index) {
-            final goal = goals[index];
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: index < goals.length - 1 ? spacing.cardGap : 0,
-              ),
-              child: GoalCard(
-                key: Key('onb_goal_${goal.name}'),
-                // Use canonical Goal.iconPath extension instead of local mapping
-                icon: ExcludeSemantics(
-                  child: SvgPicture.asset(
-                    goal.iconPath,
-                    width: iconSize,
-                    height: iconSize,
-                  ),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: goals.length,
+        itemBuilder: (context, index) {
+          final goal = goals[index];
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: index < goals.length - 1 ? spacing.cardGap : 0,
+            ),
+            child: GoalCard(
+              key: Key('onb_goal_${goal.name}'),
+              icon: ExcludeSemantics(
+                child: SvgPicture.asset(
+                  goal.iconPath,
+                  width: iconSize,
+                  height: iconSize,
                 ),
-                title: goal.label(l10n),
-                selected: selectedGoals.contains(goal),
-                onTap: () => _toggleGoal(goal),
               ),
-            );
-          },
-        ),
+              title: goal.label(l10n),
+              selected: selectedGoals.contains(goal),
+              onTap: () => _toggleGoal(goal),
+            ),
+          );
+        },
       ),
     );
   }

@@ -8,15 +8,15 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
-import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/custom_radio_check.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/period_calendar.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_services/user_state_service.dart' as services;
 
 /// Onboarding06: Period start calendar screen (O6)
 /// Figma: 06_Onboarding (Periode Start)
@@ -63,8 +63,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
       _selectedDate = date;
       _unknownSelected = false;
     });
-    // Auto-navigate to O7 Duration after selecting a date
-    _navigateToNextScreen();
+    // User will tap CTA to confirm and navigate (explicit UX)
   }
 
   void _handleUnknownToggle() {
@@ -82,31 +81,21 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     if (_selectedDate != null) {
       ref.read(onboardingProvider.notifier).setPeriodStart(_selectedDate!);
     }
-    // Navigate to O8 Period Duration Calendar
+    // Navigate to O7 Period Duration Calendar
     context.pushNamed(
-      'onboarding_07_duration',
+      Onboarding07DurationScreen.navName,
       extra: _selectedDate,
     );
   }
 
   /// Navigate directly to success screen when user selects "I don't remember"
-  /// Privacy-safe: clears period data and skips O8 to avoid implicit cycle data
+  /// Privacy-safe: clears period data and skips O7 to avoid implicit cycle data
   void _navigateToSuccessScreen() {
     // Clear period data in provider (privacy-safe)
     ref.read(onboardingProvider.notifier).clearPeriodStart();
 
-    // P0 FIX: Map App-FitnessLevel → Services-FitnessLevel (like O8)
-    // Router expects services.FitnessLevel, not app.FitnessLevel
-    final appLevel =
-        ref.read(onboardingProvider).fitnessLevel ?? FitnessLevel.beginner;
-    final serviceLevel = services.FitnessLevel.tryParse(appLevel.name) ??
-        services.FitnessLevel.beginner;
-
-    // Skip O8 and go directly to O9 Success
-    context.pushNamed(
-      'onboarding_success',
-      extra: serviceLevel,
-    );
+    // Skip O7 and go directly to O9 Success
+    context.pushNamed(OnboardingSuccessScreen.navName);
   }
 
   void _handleBack() {
@@ -223,15 +212,16 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
   }
 
   Widget _buildCta(AppLocalizations l10n) {
-    // Only show CTA when unknown is selected (navigation via explicit button)
-    if (!_unknownSelected) return const SizedBox.shrink();
+    // Show CTA when date selected OR unknown selected (explicit navigation)
+    final showCta = _selectedDate != null || _unknownSelected;
+    if (!showCta) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: OnboardingButton(
-        key: const Key('o6_cta_unknown'),
+        key: const Key('o6_cta'),
         label: l10n.commonContinue,
-        onPressed: _navigateToSuccessScreen,
+        onPressed: _unknownSelected ? _navigateToSuccessScreen : _navigateToNextScreen,
         isEnabled: true,
       ),
     );

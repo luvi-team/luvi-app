@@ -679,6 +679,10 @@
   "@authLoginCtaLinkAction": {
     "description": "Action link copy directing new users to the sign-up screen."
   },
+  "authLoginCtaLinkSemantic": "New to LUVI? Start here",
+  "@authLoginCtaLinkSemantic": {
+    "description": "Complete semantic label for the signup link on login screen. Translators have full control over sentence structure."
+  },
   "authLoginForgot": "Forgot password?",
   "@authLoginForgot": {
     "description": "Link label that navigates to the forgot-password flow."

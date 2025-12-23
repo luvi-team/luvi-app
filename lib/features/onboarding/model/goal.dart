@@ -26,7 +26,11 @@ extension GoalExtension on Goal {
         Goal.wellbeing => GoalIds.wellbeing,
       };
 
-  /// Database key (legacy alias; use [id] for new code).
+  /// Database key.
+  ///
+  /// @deprecated Use [id] instead. This getter is a legacy alias
+  /// maintained for backward compatibility.
+  @Deprecated('Use id instead. Will be removed in a future version.')
   String get dbKey => id;
 
   /// Localized label for UI

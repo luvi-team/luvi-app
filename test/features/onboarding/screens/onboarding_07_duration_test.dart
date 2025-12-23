@@ -100,7 +100,7 @@ void main() {
       // Default periodDuration is 5 days → expect at least 3 period days
       expect(beforeCount, greaterThanOrEqualTo(3));
 
-      // Find day 2 after startDate via semantics label (robust, exact date)
+      // Find day 1 after startDate via semantics label (robust, exact date)
       // Format: "d. MMMM yyyy, Periodentag" — e.g., "6. Dezember 2025, Periodentag"
       final targetDate = startDate.add(const Duration(days: 1));
       final formattedDate = DateFormat('d. MMMM yyyy', 'de').format(targetDate);

@@ -3,6 +3,22 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 
 /// Linear gradient background for Login, Reset, and NewPassword screens.
 ///
+/// **Usage Note:** This widget has no intrinsic size and relies on its parent
+/// to provide bounded constraints. It should be used with:
+/// - `Positioned.fill()` in a Stack (recommended)
+/// - `SizedBox.expand()` wrapper
+/// - Inside a parent with defined dimensions
+///
+/// Example:
+/// ```dart
+/// Stack(
+///   children: [
+///     Positioned.fill(child: AuthLinearGradientBackground()),
+///     // content...
+///   ],
+/// )
+/// ```
+///
 /// Figma Gradient Stops (top to bottom):
 /// - 18.37%: #D4B896 (authGradientBase)
 /// - 50.33%: #EDE1D3 (authGradientLight)

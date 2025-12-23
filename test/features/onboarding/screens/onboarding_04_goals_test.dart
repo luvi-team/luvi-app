@@ -151,5 +151,38 @@ void main() {
       // Verify navigation to O5
       expect(find.text('O5 Interests'), findsOneWidget);
     });
+
+    testWidgets(
+      '_handleContinue does not navigate when no goals selected (defensive guard)',
+      (tester) async {
+        await tester.pumpWidget(buildTestApp());
+        await tester.pumpAndSettle();
+
+        // Get container reference
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(Onboarding04GoalsScreen)),
+        );
+
+        // Verify no goals selected
+        expect(container.read(onboardingProvider).selectedGoals, isEmpty);
+
+        // Find CTA (even if disabled, test the defensive guard)
+        final ctaFinder = find.byKey(const Key('onb_cta'));
+        await tester.ensureVisible(ctaFinder);
+        await tester.pumpAndSettle();
+
+        // Verify button is disabled
+        final button = tester.widget<OnboardingButton>(ctaFinder);
+        expect(button.isEnabled, isFalse);
+
+        // Try to tap - should not navigate due to defensive guard
+        await tester.tap(ctaFinder, warnIfMissed: false);
+        await tester.pumpAndSettle();
+
+        // Verify still on O4 (did not navigate)
+        expect(find.byType(Onboarding04GoalsScreen), findsOneWidget);
+        expect(find.text('O5 Interests'), findsNothing);
+      },
+    );
   });
 }

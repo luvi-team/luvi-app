@@ -152,10 +152,19 @@ void main() {
           reason: 'Shield Semantics should wrap a Container');
 
       final container = containerWidget as Container;
-      if (container.decoration is BoxDecoration) {
-        final decoration = container.decoration as BoxDecoration;
+      // Explicitly assert decoration state instead of silently passing
+      // Either: no decoration at all (null) OR BoxDecoration without boxShadow
+      final decoration = container.decoration;
+      if (decoration == null) {
+        // No decoration = no BoxShadow (explicit pass)
+        expect(decoration, isNull,
+            reason: 'Shield container has no decoration (no BoxShadow possible)');
+      } else {
+        // Has decoration - must be BoxDecoration without boxShadow
+        expect(decoration, isA<BoxDecoration>(),
+            reason: 'Shield decoration should be BoxDecoration if present');
         expect(
-          decoration.boxShadow,
+          (decoration as BoxDecoration).boxShadow,
           anyOf(isNull, isEmpty),
           reason: 'Shield container should not have BoxShadow (Fix 5)',
         );

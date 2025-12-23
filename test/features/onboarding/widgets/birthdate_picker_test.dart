@@ -177,6 +177,10 @@ void main() {
     );
   });
 
+  // DESIGN TOKEN COUPLING: This test intentionally asserts against
+  // DsColors.transparent and Sizes.radiusPickerHighlight to enforce the
+  // visual spec. Updates to these design tokens will require updating this
+  // test. This is deliberate coupling, not an oversight.
   testWidgets('selection highlight uses transparent fill', (tester) async {
     await _pumpPicker(
       tester,

@@ -35,7 +35,9 @@ class _TestWrapperState extends State<_TestWrapper> {
       _retryCount++;
       _isRetrying = true;
     });
-    // Simulate async completion (in real app this triggers navigation)
+    // TEST NOTE: Future.delayed works deterministically in Flutter widget tests.
+    // tester.pump(Duration) advances the fake clock, triggering delayed futures.
+    // This is standard Flutter test practice - NOT real wall-clock timing.
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) setState(() => _isRetrying = false);
     });

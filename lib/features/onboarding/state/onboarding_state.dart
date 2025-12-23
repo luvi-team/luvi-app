@@ -129,18 +129,25 @@ class OnboardingNotifier extends _$OnboardingNotifier {
     state = state.copyWith(selectedGoals: goals);
   }
 
-  /// Toggle an interest selection (O5)
-  void toggleInterest(Interest interest) {
+  /// Toggle an interest selection (O5).
+  /// Returns true if the selection changed, false if the add was ignored
+  /// due to max selections limit.
+  bool toggleInterest(Interest interest) {
     final interests = List<Interest>.from(state.selectedInterests);
     if (interests.contains(interest)) {
       interests.remove(interest);
+      state = state.copyWith(selectedInterests: interests);
+      return true;
     } else {
       // Limit to kMaxInterestSelections (shared constant)
       if (interests.length < kMaxInterestSelections) {
         interests.add(interest);
+        state = state.copyWith(selectedInterests: interests);
+        return true;
       }
+      // Max reached, selection ignored
+      return false;
     }
-    state = state.copyWith(selectedInterests: interests);
   }
 
   /// Set period start date (O7)

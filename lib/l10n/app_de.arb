@@ -711,6 +711,10 @@
   "@authLoginCtaLinkAction": {
     "description": "Aktionslink zur Registrierung vom Login-Screen."
   },
+  "authLoginCtaLinkSemantic": "Neu bei LUVI? Hier starten",
+  "@authLoginCtaLinkSemantic": {
+    "description": "Vollständiges semantisches Label für den Registrierungslink auf dem Login-Screen. Übersetzer haben volle Kontrolle über die Satzstruktur."
+  },
   "authLoginForgot": "Passwort vergessen?",
   "@authLoginForgot": {
     "description": "Link zum Passwort-vergessen-Flow."

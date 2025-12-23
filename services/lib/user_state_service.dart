@@ -267,11 +267,18 @@ class UserStateService {
 
     // Optional consistency: if onboarding is explicitly false, also clear the
     // fitness level key so callers don't observe stale onboarding state.
+    // Best-effort cleanup: do not fail the primary operation if cleanup fails.
     final fitnessKey = _scopedKey(_keyFitnessLevel);
     if (!value && fitnessKey != null && prefs.containsKey(fitnessKey)) {
-      final removed = await prefs.remove(fitnessKey);
-      if (!removed) {
-        throw StateError('Failed to clear onboarding fitness level');
+      try {
+        final removed = await prefs.remove(fitnessKey);
+        if (!removed) {
+          log.w('Failed to clear fitness level key (best-effort cleanup)',
+              tag: 'UserStateService');
+        }
+      } catch (e, stack) {
+        log.w('Exception clearing fitness level key (best-effort cleanup)',
+            tag: 'UserStateService', error: e, stack: stack);
       }
     }
   }

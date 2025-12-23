@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_services/supabase_service.dart';
 
 part 'onboarding_gate_profile_reader.g.dart';
@@ -26,8 +27,15 @@ class DefaultOnboardingGateProfileReader implements OnboardingGateProfileReader 
     final Map<String, dynamic>? profile;
     try {
       profile = await SupabaseService.getProfile();
-    } catch (_) {
-      // Network error, timeout, etc. - return null per docstring contract
+    } catch (error, stackTrace) {
+      // Network error, timeout, etc. - return null per docstring contract.
+      // Log for observability while preserving return contract.
+      log.w(
+        'profile_fetch_failed',
+        tag: 'onboarding_gate',
+        error: error,
+        stack: stackTrace,
+      );
       return null;
     }
 

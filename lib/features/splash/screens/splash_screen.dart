@@ -133,9 +133,21 @@ OnboardingGateResult determineOnboardingGateRoute({
 }
 
 class SplashScreen extends ConsumerStatefulWidget {
-  const SplashScreen({super.key});
+  /// Creates a splash screen widget.
+  ///
+  /// [raceRetryDelay] controls the delay before retrying when a race condition
+  /// is detected (local=true, remote=false). Defaults to 500ms for production.
+  /// Tests can pass shorter durations for faster execution.
+  const SplashScreen({
+    super.key,
+    this.raceRetryDelay = const Duration(milliseconds: 500),
+  });
 
   static const String routeName = '/splash';
+
+  /// Delay before race-retry when local/remote state mismatch is detected.
+  /// Configurable via constructor for test isolation (no global state mutation).
+  final Duration raceRetryDelay;
 
   @override
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
@@ -146,20 +158,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   // Timeout constants for retry logic (Point 3: DRY extraction)
   static const _primaryTimeout = Duration(seconds: 3);
   static const _retryTimeout = Duration(seconds: 2);
-
-  /// Race-retry delay for handling sync lag between local and remote state.
-  /// Exposed for testing with shorter durations.
-  ///
-  /// **Test cleanup required:** Tests that modify this value MUST save the
-  /// original and restore it in tearDown/addTearDown to prevent cross-test
-  /// interference:
-  /// ```dart
-  /// final original = _SplashScreenState.raceRetryDelay;
-  /// addTearDown(() => _SplashScreenState.raceRetryDelay = original);
-  /// _SplashScreenState.raceRetryDelay = const Duration(milliseconds: 50);
-  /// ```
-  @visibleForTesting
-  static Duration raceRetryDelay = const Duration(milliseconds: 500);
 
   /// Maximum number of manual retries before disabling the button.
   static const int _maxManualRetries = 3;
@@ -435,7 +433,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Race-retry: local true + remote false → wait briefly and re-fetch
     // This handles race conditions where server hasn't synced yet
     if (gateResult is RaceRetryNeeded) {
-      await Future<void>.delayed(raceRetryDelay);
+      await Future<void>.delayed(widget.raceRetryDelay);
       if (!mounted || _hasNavigated) return;
 
       try {

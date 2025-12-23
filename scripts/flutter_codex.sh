@@ -72,8 +72,9 @@ else
   subcmd="$1"; shift || true
   if [[ "${subcmd}" == "analyze-test" ]]; then
     # Shortcut: run analyze then test sequentially.
-    # Note: Test-specific flags (--coverage, --reporter) are ignored by analyze.
-    "${SCRIPT_DIR}/flutter_codex.sh" analyze "$@"
+    # analyze runs without args (safe default - doesn't need test-specific flags)
+    # test receives all original args (--coverage, --reporter, etc.)
+    "${SCRIPT_DIR}/flutter_codex.sh" analyze
     "${SCRIPT_DIR}/flutter_codex.sh" test "$@"
     exit # Natural exit after successful completion (set -e handles failures)
   fi

@@ -1,3 +1,4 @@
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
 
@@ -42,7 +43,8 @@ extension FitnessLevelExtension on FitnessLevel {
   ///
   /// Valid indices: 0 (beginner), 1 (occasional), 2 (fit).
   /// Index 3 ("Weiß ich nicht" / unknown) and any out-of-range value
-  /// safely fallback to [FitnessLevel.beginner].
+  /// safely fallback to [FitnessLevel.beginner] in release builds.
+  /// A warning is logged for observability when fallback is triggered.
   static FitnessLevel fromSelectionIndex(int index) {
     assert(
       index >= 0 && index < FitnessLevel.values.length,
@@ -50,6 +52,10 @@ extension FitnessLevelExtension on FitnessLevel {
       '[0-${FitnessLevel.values.length - 1}], falling back to beginner',
     );
     if (index < 0 || index >= FitnessLevel.values.length) {
+      log.w(
+        'fitness_level_fallback: index $index out of range, using beginner',
+        tag: 'onboarding',
+      );
       return FitnessLevel.beginner;
     }
     return FitnessLevel.values[index];

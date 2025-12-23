@@ -41,14 +41,12 @@ enum O9AnimationState {
 /// Shows content preview cards, progress ring animation,
 /// then saves data and navigates to home.
 class OnboardingSuccessScreen extends ConsumerStatefulWidget {
-  const OnboardingSuccessScreen({super.key, required this.fitnessLevel});
+  const OnboardingSuccessScreen({super.key});
 
   static const routeName = '/onboarding/success';
 
   /// GoRoute name for pushNamed navigation
   static const navName = 'onboarding_success';
-
-  final services.FitnessLevel fitnessLevel;
 
   @override
   ConsumerState<OnboardingSuccessScreen> createState() =>
@@ -256,13 +254,7 @@ class _OnboardingSuccessScreenState
     try {
       // data.isComplete was verified in _performSave, so birthDate is guaranteed non-null
       final birthDate = data.birthDate!;
-      final now = DateTime.now();
-      final age = now.year -
-          birthDate.year -
-          ((now.month < birthDate.month ||
-                  (now.month == birthDate.month && now.day < birthDate.day))
-              ? 1
-              : 0);
+      final age = calculateAge(birthDate);
 
       // Save profile data (data.name is guaranteed non-null by isComplete)
       await backendWriter.upsertProfile(
@@ -308,42 +300,26 @@ class _OnboardingSuccessScreenState
   }
 
   void _handleRetry() {
-    // BUG FIX: Set state to animating (not saving) so animation runs correctly
+    // Set state to animating so animation runs correctly
     // Animation will trigger _onAnimationComplete which sets saving state
     setState(() {
       _state = O9AnimationState.animating;
     });
 
-    // Schedule check after widget tree rebuild to avoid race condition
-    // between setState and accessing _progressKey.currentState
+    // Single post-frame check after widget tree rebuild
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      // Animation restart if available - save triggers via onAnimationComplete
       final animationState = _progressKey.currentState;
       if (animationState != null) {
+        // Animation restart - save triggers via onAnimationComplete callback
         animationState.restart();
       } else {
-        // TODO(tech-debt): Investigate root cause why _progressKey.currentState
-        // can be null after first postFrameCallback. Possible causes:
-        // - Widget not in tree during error state
-        // - GlobalKey conflict
-        // - Build order timing issue
-        // Retry once more after another frame (defensive workaround)
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-
-          final retryState = _progressKey.currentState;
-          if (retryState != null) {
-            retryState.restart();
-          } else {
-            // Final fallback: direct save without animation
-            setState(() {
-              _state = O9AnimationState.saving;
-            });
-            _performSave();
-          }
+        // Fallback: direct save without animation (defensive programming)
+        setState(() {
+          _state = O9AnimationState.saving;
         });
+        _performSave();
       }
     });
   }

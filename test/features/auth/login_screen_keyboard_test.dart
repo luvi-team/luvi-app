@@ -12,6 +12,7 @@ import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../support/test_config.dart';
+import '../../support/test_view.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -36,13 +37,7 @@ void main() {
 
   group('Keyboard autofocus behavior', () {
     testWidgets('LoginScreen email field does NOT autofocus', (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(1080, 2340);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+      addTearDown(configureTestView(tester));
 
       await tester.pumpWidget(
         ProviderScope(
@@ -75,13 +70,7 @@ void main() {
     });
 
     testWidgets('AuthSignupScreen email field does NOT autofocus', (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(1080, 2340);
-      view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        view.resetPhysicalSize();
-        view.resetDevicePixelRatio();
-      });
+      addTearDown(configureTestView(tester));
 
       await tester.pumpWidget(
         ProviderScope(

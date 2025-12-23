@@ -64,6 +64,27 @@ BEGIN
   -- privileges for other owner roles (e.g. `supabase_admin`). Therefore:
   -- - Always fix defaults for the CURRENT ROLE (no `FOR ROLE`).
   -- - Best-effort attempt to fix for `supabase_admin` without failing the migration.
+  --
+  -- ============================================================================
+  -- ALTER DEFAULT PRIVILEGES ROLE DEPENDENCY NOTE
+  -- ============================================================================
+  -- IMPORTANT: ALTER DEFAULT PRIVILEGES only affects objects created by the
+  -- CURRENT ROLE (the role executing this statement).
+  --
+  -- In Supabase environments, tables are typically created by:
+  --   - `postgres` (local development with supabase start)
+  --   - `supabase_admin` (hosted Supabase platform)
+  --
+  -- If running this migration as a different role (e.g., `authenticated` or
+  -- migration runner), these changes WON'T apply to future tables.
+  --
+  -- DEPLOYMENT CHECKLIST:
+  -- 1. Run this migration as `postgres` or `supabase_admin`, OR
+  -- 2. Add equivalent blocks for those roles (attempted below for supabase_admin)
+  --
+  -- VERIFY after deployment: Check pg_default_acl to confirm privileges are set
+  -- for the role that creates tables in your environment.
+  -- ============================================================================
   ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM anon;
   ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM authenticated;
   ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM service_role;

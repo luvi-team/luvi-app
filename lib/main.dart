@@ -129,12 +129,12 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   @override
   void initState() {
     super.initState();
-    // 1. Deep-Link-Handler früh starten (queued URIs, KEIN processing)
+    // 1. Start deep-link handler early (queue URIs, DO NOT process yet)
     _initDeepLinkHandler();
-    // 2. Diagnostics-Listener (existing)
+    // 2. Diagnostics listener (existing)
     _listenForInitDiagnostics();
-    // 3. Orchestrierung via Listener (NICHT in build!)
-    // Ensures correct sequence: RouterRefresh → RecoveryListener → processPendingUri
+    // 3. Orchestration via listeners (NOT in build!)
+    // Ensures correct sequence: RouterRefresh -> RecoveryListener -> processPendingUri
     _setupInitOrchestration();
   }
 

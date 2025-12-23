@@ -1,4 +1,7 @@
-/// Shared constants for onboarding flows.
+// Shared constants for onboarding flows.
+
+// Re-export calculateAge from core for backward compatibility
+export 'package:luvi_app/core/utils/date_utils.dart' show calculateAge;
 const double kOnboardingPickerHeight = 198.0;
 
 /// Total number of onboarding questions (screens O1-O5 + cycle intro)
@@ -67,19 +70,6 @@ DateTime onboardingBirthdateMinDate([DateTime? reference]) {
   final today = reference ?? todayDateOnly;
   final baseDate = DateTime(today.year - kMaxAge - 1, today.month, today.day);
   return baseDate.add(const Duration(days: 1));
-}
-
-/// Calculates age from birthdate.
-/// Uses date-only semantics (consistent with [onboardingBirthdateMaxDate]/[onboardingBirthdateMinDate]).
-int calculateAge(DateTime birthDate, [DateTime? reference]) {
-  final now = reference ?? todayDateOnly;
-  int age = now.year - birthDate.year;
-  // Correction if birthday hasn't occurred yet this year
-  if (now.month < birthDate.month ||
-      (now.month == birthDate.month && now.day < birthDate.day)) {
-    age--;
-  }
-  return age;
 }
 
 /// Maximum number of years back a period start can be selected.

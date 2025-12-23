@@ -664,9 +664,13 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
     final userState = await ref.read(userStateServiceProvider.future);
     final uid = SupabaseService.currentUser?.id;
     if (uid != null) {
+      // bindUser MUST complete first - sets _boundUserId needed by other methods
       await userState.bindUser(uid);
-      await userState.markWelcomeSeen();
-      await userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt);
+      // These two are now independent and can run in parallel
+      await Future.wait([
+        userState.markWelcomeSeen(),
+        userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
+      ]);
     } else {
       // Debug: track edge case where uid is null (auth state race or test env).
       log.d('consent_cache_skip_no_uid', tag: 'consent_options');

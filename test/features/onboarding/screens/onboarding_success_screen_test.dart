@@ -353,9 +353,7 @@ void main() {
           locale: const Locale('en'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
-          home: const OnboardingSuccessScreen(
-            fitnessLevel: FitnessLevel.beginner,
-          ),
+          home: const OnboardingSuccessScreen(),
         ),
       ),
     );
@@ -631,9 +629,7 @@ void main() {
                 locale: const Locale('en'),
                 supportedLocales: AppLocalizations.supportedLocales,
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
-                home: const OnboardingSuccessScreen(
-                  fitnessLevel: FitnessLevel.unknown,
-                ),
+                home: const OnboardingSuccessScreen(),
               ),
             ),
           ),
