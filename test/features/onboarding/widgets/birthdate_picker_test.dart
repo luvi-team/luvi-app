@@ -69,18 +69,24 @@ void main() {
     final wheels = find.byType(ListWheelScrollView);
     expect(wheels, findsNWidgets(3));
 
-    // Scroll the first wheel (month) by one item
+    // Scroll the first wheel (month) by one item (drag UP = forward in list)
     await tester.drag(wheels.first, const Offset(0, -wheelItemHeight));
     await tester.pumpAndSettle();
 
     // Date should have changed
     expect(changedDate, isNotNull);
+    // Verify the month actually changed (scrolled forward by one)
+    // Initial: June 2000 (month 6) → After scroll: July 2000 (month 7)
+    expect(changedDate!.year, 2000, reason: 'Year should remain unchanged');
+    expect(changedDate!.month, 7, reason: 'Month should advance from June to July');
+    expect(changedDate!.day, 15, reason: 'Day should remain unchanged');
   });
 
   testWidgets('clamps date to valid age range', (tester) async {
     // Try to set a date below minimum age (kMinAge = 16)
     final now = DateTime.now();
     final tooYoung = DateTime(now.year - (kMinAge - 1), 1, 1); // 15 years old
+    final expectedClampedYear = now.year - kMinAge; // Maximum allowed birth year
 
     await _pumpPicker(
       tester,
@@ -97,6 +103,14 @@ void main() {
     // Verify three wheels are present (clamped date is displayed correctly)
     final wheels = find.byType(ListWheelScrollView);
     expect(wheels, findsNWidgets(3));
+
+    // Verify the year was clamped to the maximum allowed (minimum age boundary)
+    // The clamped year should be visible in the year wheel
+    expect(
+      find.text('$expectedClampedYear'),
+      findsWidgets,
+      reason: 'Clamped year $expectedClampedYear should be visible in year wheel',
+    );
   });
 
   testWidgets('has correct semantics in German', (tester) async {

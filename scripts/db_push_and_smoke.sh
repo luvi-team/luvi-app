@@ -64,9 +64,23 @@ export PGPASSWORD="${SUPABASE_DB_PASSWORD}"
 DB_HOST="db.${SUPABASE_PROJECT_REF}.supabase.co"
 DB_URL="postgresql://postgres@${DB_HOST}:5432/postgres?sslmode=require"
 
+# File existence checks for required SQL test files
+RLS_SMOKE="supabase/tests/rls_smoke.sql"
+RLS_SMOKE_NEG="supabase/tests/rls_smoke_negative.sql"
+
+if [[ ! -f "${RLS_SMOKE}" ]]; then
+  echo "[db-push-smoke] ERROR: Missing required test file: ${RLS_SMOKE}" >&2
+  exit 1
+fi
+
+if [[ ! -f "${RLS_SMOKE_NEG}" ]]; then
+  echo "[db-push-smoke] ERROR: Missing required test file: ${RLS_SMOKE_NEG}" >&2
+  exit 1
+fi
+
 echo "[db-push-smoke] running RLS smoke tests via ${DB_HOST}"
-psql "${DB_URL}" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke.sql
-psql "${DB_URL}" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke_negative.sql
+psql "${DB_URL}" -v ON_ERROR_STOP=1 -P pager=off -f "${RLS_SMOKE}"
+psql "${DB_URL}" -v ON_ERROR_STOP=1 -P pager=off -f "${RLS_SMOKE_NEG}"
 
 echo "[db-push-smoke] OK"
 

@@ -684,12 +684,18 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
   // Best-effort semantics: return true if AT LEAST ONE operation succeeded.
   // This allows navigation to continue even if server or local cache fails temporarily.
   // The caller shows a warning snackbar if this returns false, but does NOT block navigation.
+  if (serverSucceeded != localSucceeded) {
+    log.w(
+      'consent_persistence_partial: server=$serverSucceeded local=$localSucceeded',
+      tag: 'consent_options',
+    );
+  }
   return serverSucceeded || localSucceeded;
 }
 
 /// Navigate to Onboarding after consent is accepted.
 void _navigateAfterConsent(BuildContext context) {
-  final isAuth = SupabaseService.isInitialized && SupabaseService.currentUser != null;
+  final isAuth = SupabaseService.isAuthenticated;
   context.go(isAuth ? Onboarding01Screen.routeName : AuthSignInScreen.routeName);
 }
 

@@ -120,6 +120,28 @@ class VideoPlayerMock extends VideoPlayerPlatform {
     return Duration.zero;
   }
 
+  /// Returns a stream of video events for the given texture ID.
+  ///
+  /// **Important:** This mock uses `Stream.fromIterable()` which emits all
+  /// events synchronously when subscribed and then completes immediately.
+  /// This is suitable for testing initialization and simple lifecycle events.
+  ///
+  /// **Limitations:**
+  /// - Events emit synchronously, not over time
+  /// - Stream completes after emitting all events
+  /// - Not suitable for testing ongoing playback position updates
+  ///
+  /// For tests requiring ongoing event streams, consider:
+  /// 1. Using multiple `registerWith()` calls with different event sequences
+  /// 2. Testing state changes via widget rebuilds rather than stream events
+  ///
+  /// Example usage:
+  /// ```dart
+  /// VideoPlayerMock.registerWith(events: [
+  ///   VideoEvent(eventType: VideoEventType.initialized, ...),
+  ///   VideoEvent(eventType: VideoEventType.completed),
+  /// ]);
+  /// ```
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     final events = _events ??

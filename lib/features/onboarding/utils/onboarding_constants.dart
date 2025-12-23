@@ -100,3 +100,9 @@ DateTime onboardingPeriodStartMinDate([DateTime? reference]) {
 DateTime onboardingPeriodStartMaxDate([DateTime? reference]) {
   return reference ?? DateTime.now();
 }
+
+// ─── O9 Success Screen Timing ───
+
+/// Navigation delay after success animation completes.
+/// UX: Allows user to see the success state before transitioning to home.
+const Duration kOnboardingNavigationDelay = Duration(milliseconds: 500);

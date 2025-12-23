@@ -3,108 +3,53 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/features/splash/widgets/unknown_state_ui.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
-/// Extracted Unknown UI widget for isolated testing.
+/// Test wrapper that manages state for [UnknownStateUi] testing.
 ///
-/// IMPORTANT: This mirrors `_buildUnknownUI` from SplashScreen
-/// (lib/features/splash/screens/splash_screen.dart:222-284).
-/// If the production UI changes, update this test widget to match.
-/// This is a deliberate test-only copy for isolated widget testing.
-// TODO(sync-check): Keep in sync with SplashScreen._buildUnknownUI
-// Sync checklist: Icon, title, body text, button styling, disabled states
-// Last synced: 2024-12 (consent-onboarding-refactor-v3)
-class _TestableUnknownUI extends StatefulWidget {
-  const _TestableUnknownUI({required this.onSignOut});
-
+/// Mirrors production behavior with 3 max retries and isRetrying state.
+class _TestWrapper extends StatefulWidget {
+  const _TestWrapper({required this.onSignOut});
   final VoidCallback onSignOut;
 
   @override
-  State<_TestableUnknownUI> createState() => _TestableUnknownUIState();
+  State<_TestWrapper> createState() => _TestWrapperState();
 }
 
-class _TestableUnknownUIState extends State<_TestableUnknownUI> {
-  bool _hasUsedManualRetry = false;
+class _TestWrapperState extends State<_TestWrapper> {
+  static const _maxRetries = 3;
+  int _retryCount = 0;
+  bool _isRetrying = false;
+
+  bool get _canRetry => _retryCount < _maxRetries;
 
   void _handleRetry() {
-    if (!mounted) return;
+    if (!mounted || !_canRetry) return;
     setState(() {
-      _hasUsedManualRetry = true;
+      _retryCount++;
+      _isRetrying = true;
+    });
+    // Simulate async completion (in real app this triggers navigation)
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) setState(() => _isRetrying = false);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       backgroundColor: DsColors.welcomeWaveBg,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.cloud_off_outlined,
-                size: 64,
-                color: DsColors.textPrimary,
-                semanticLabel: l10n.splashGateUnknownTitle,
-              ),
-              const SizedBox(height: Spacing.l),
-              Text(
-                l10n.splashGateUnknownTitle,
-                style: textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: Spacing.m),
-              Text(
-                l10n.splashGateUnknownBody,
-                style: textTheme.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: Spacing.xl),
-              // Primary CTA: Retry (Welcome-style magenta pill button)
-              SizedBox(
-                width: double.infinity,
-                child: WelcomeButton(
-                  label: l10n.splashGateRetryCta,
-                  onPressed: _hasUsedManualRetry ? null : _handleRetry,
-                ),
-              ),
-              const SizedBox(height: Spacing.m),
-              // Secondary CTA: Sign out (outline style)
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: widget.onSignOut,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: DsColors.welcomeButtonBg,
-                    side: const BorderSide(color: DsColors.welcomeButtonBg),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: Sizes.welcomeButtonPaddingVertical,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(Sizes.radiusWelcomeButton),
-                    ),
-                  ),
-                  child: Text(l10n.splashGateSignOutCta),
-                ),
-              ),
-            ],
-          ),
-        ),
+      body: UnknownStateUi(
+        onRetry: _canRetry ? _handleRetry : null,
+        onSignOut: widget.onSignOut,
+        canRetry: _canRetry,
+        isRetrying: _isRetrying,
       ),
     );
   }
@@ -123,12 +68,12 @@ void main() {
         locale: locale,
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: _TestableUnknownUI(onSignOut: onSignOut),
+        home: _TestWrapper(onSignOut: onSignOut),
       ),
     );
   }
 
-  group('SplashScreen Unknown UI', () {
+  group('UnknownStateUi', () {
     testWidgets('renders all UI elements correctly (DE)', (tester) async {
       await tester.pumpWidget(buildTestApp(
         onSignOut: () {},
@@ -136,7 +81,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(_TestableUnknownUI));
+      final context = tester.element(find.byType(UnknownStateUi));
       final l10n = AppLocalizations.of(context)!;
 
       // Verify all text elements are present
@@ -160,7 +105,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(_TestableUnknownUI));
+      final context = tester.element(find.byType(UnknownStateUi));
       final l10n = AppLocalizations.of(context)!;
 
       expect(find.text(l10n.splashGateUnknownTitle), findsOneWidget);
@@ -174,30 +119,63 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the WelcomeButton (Retry)
-      final retryButton = tester.widget<WelcomeButton>(find.byType(WelcomeButton));
+      final retryButton =
+          tester.widget<WelcomeButton>(find.byType(WelcomeButton));
 
       // Button should be enabled (onPressed is not null)
       expect(retryButton.onPressed, isNotNull);
     });
 
-    testWidgets('Retry button becomes disabled after click', (tester) async {
+    testWidgets('Retry button disabled after 3 clicks (production behavior)',
+        (tester) async {
       await tester.pumpWidget(buildTestApp(onSignOut: () {}));
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(_TestableUnknownUI));
+      final context = tester.element(find.byType(UnknownStateUi));
       final l10n = AppLocalizations.of(context)!;
 
-      // Initial state: button enabled
-      var retryButton = tester.widget<WelcomeButton>(find.byType(WelcomeButton));
-      expect(retryButton.onPressed, isNotNull);
+      // Click retry 3 times
+      for (var i = 0; i < 3; i++) {
+        final retryButton =
+            tester.widget<WelcomeButton>(find.byType(WelcomeButton));
+        expect(retryButton.onPressed, isNotNull,
+            reason: 'Retry should be enabled before click ${i + 1}');
 
-      // Tap the retry button
-      await tester.tap(find.text(l10n.splashGateRetryCta));
+        await tester.tap(find.text(l10n.splashGateRetryCta));
+        await tester.pump(); // Process the setState
+        await tester.pump(const Duration(milliseconds: 150)); // Wait for async
+      }
+
+      // After 3 clicks, button should be disabled
+      final retryButton =
+          tester.widget<WelcomeButton>(find.byType(WelcomeButton));
+      expect(retryButton.onPressed, isNull,
+          reason: 'Retry should be disabled after 3 attempts');
+    });
+
+    testWidgets('shows loading spinner during retry', (tester) async {
+      await tester.pumpWidget(buildTestApp(onSignOut: () {}));
       await tester.pumpAndSettle();
 
-      // After tap: button disabled (onPressed is null)
-      retryButton = tester.widget<WelcomeButton>(find.byType(WelcomeButton));
-      expect(retryButton.onPressed, isNull);
+      final context = tester.element(find.byType(UnknownStateUi));
+      final l10n = AppLocalizations.of(context)!;
+
+      // Tap retry button
+      await tester.tap(find.text(l10n.splashGateRetryCta));
+      await tester.pump(); // Process setState (isRetrying = true)
+
+      // During retry, isLoading should be true
+      final retryButton =
+          tester.widget<WelcomeButton>(find.byType(WelcomeButton));
+      expect(retryButton.isLoading, isTrue,
+          reason: 'Button should show loading state during retry');
+
+      // After async completes, loading should be false
+      await tester.pump(const Duration(milliseconds: 150));
+      final retryButtonAfter =
+          tester.widget<WelcomeButton>(find.byType(WelcomeButton));
+      expect(retryButtonAfter.isLoading, isFalse,
+          reason: 'Button should stop loading after retry completes');
     });
 
     testWidgets('Sign out button triggers callback', (tester) async {
@@ -210,7 +188,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(_TestableUnknownUI));
+      final context = tester.element(find.byType(UnknownStateUi));
       final l10n = AppLocalizations.of(context)!;
 
       // Tap Sign out button
@@ -220,20 +198,24 @@ void main() {
       expect(callbackTriggered, isTrue);
     });
 
-    testWidgets('Sign out button remains enabled after Retry click',
+    testWidgets('Sign out button remains enabled after Retry clicks',
         (tester) async {
       await tester.pumpWidget(buildTestApp(onSignOut: () {}));
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(_TestableUnknownUI));
+      final context = tester.element(find.byType(UnknownStateUi));
       final l10n = AppLocalizations.of(context)!;
 
-      // Click Retry first
-      await tester.tap(find.text(l10n.splashGateRetryCta));
-      await tester.pumpAndSettle();
+      // Click Retry multiple times
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(find.text(l10n.splashGateRetryCta));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 150));
+      }
 
       // Sign out should still be enabled
-      final signOutButton = tester.widget<OutlinedButton>(find.byType(OutlinedButton));
+      final signOutButton =
+          tester.widget<OutlinedButton>(find.byType(OutlinedButton));
       expect(signOutButton.onPressed, isNotNull);
     });
 
@@ -243,7 +225,7 @@ void main() {
         await tester.pumpWidget(buildTestApp(onSignOut: () {}));
         await tester.pumpAndSettle();
 
-        final context = tester.element(find.byType(_TestableUnknownUI));
+        final context = tester.element(find.byType(UnknownStateUi));
         final l10n = AppLocalizations.of(context)!;
 
         // Icon should have semantic label
@@ -258,14 +240,14 @@ void main() {
     });
   });
 
-  group('SplashScreen Unknown UI Navigation', () {
+  group('UnknownStateUi Navigation', () {
     GoRouter createTestRouter() {
       return GoRouter(
         initialLocation: '/unknown',
         routes: [
           GoRoute(
             path: '/unknown',
-            builder: (context, state) => _TestableUnknownUI(
+            builder: (context, state) => _TestWrapper(
               onSignOut: () => context.go(AuthSignInScreen.routeName),
             ),
           ),
@@ -294,7 +276,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(_TestableUnknownUI));
+      final context = tester.element(find.byType(UnknownStateUi));
       final l10n = AppLocalizations.of(context)!;
 
       // Tap Sign out

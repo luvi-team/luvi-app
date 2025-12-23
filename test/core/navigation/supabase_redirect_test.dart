@@ -196,6 +196,36 @@ void main() {
 
         expect(result, isNull, reason: 'PasswordSuccess should always be allowed');
       });
+
+      test('allows PasswordRecovery with active session', () {
+        when(() => mockState.matchedLocation)
+            .thenReturn(CreateNewPasswordScreen.routeName);
+
+        final result = supabaseRedirectWithSession(
+          mockContext,
+          mockState,
+          sessionOverride: mockSession,
+          isInitializedOverride: true,
+        );
+
+        expect(result, isNull,
+            reason: 'PasswordRecovery should always be allowed (even with session)');
+      });
+
+      test('allows PasswordSuccess with active session', () {
+        when(() => mockState.matchedLocation)
+            .thenReturn(SuccessScreen.passwordSavedRoutePath);
+
+        final result = supabaseRedirectWithSession(
+          mockContext,
+          mockState,
+          sessionOverride: mockSession,
+          isInitializedOverride: true,
+        );
+
+        expect(result, isNull,
+            reason: 'PasswordSuccess should always be allowed (even with session)');
+      });
     });
 
     group('Edge cases', () {

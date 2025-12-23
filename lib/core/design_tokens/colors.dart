@@ -238,9 +238,9 @@ class DsColors {
 
   /// Period Glow Pink Light - 10% opacity (Figma: #FF6482 @ 0.1)
   ///
-  /// @Deprecated('Use periodGlow10 instead. Will be removed in v2.0.0')
   /// Migration: Find & replace `periodGlowPinkLight` → `periodGlow10`
   /// Note: Updated to canonical 10% value (0x1A=26/255=10.2%)
+  @Deprecated('Use periodGlow10 instead. Will be removed in v2.0.0')
   static const Color periodGlowPinkLight = Color(0x1AFF6482);
 
   /// Date Picker Selection Background (Figma: #F5F5F5)

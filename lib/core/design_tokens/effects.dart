@@ -91,7 +91,7 @@ class DsEffects {
   /// Used for: O6 calendar mini widget
   static BoxDecoration get glassMiniCalendarStrong => BoxDecoration(
         color: DsColors.white.withValues(alpha: _opacityMedium),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(Sizes.radius24),
         border: Border.all(
           color: DsColors.white.withValues(alpha: _borderOpacityStrong),
           width: 1.5,

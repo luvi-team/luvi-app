@@ -24,10 +24,34 @@ BEGIN
     RETURN;
   END IF;
 
+  -- Drop drifted constraints (too restrictive)
+  -- Drift: cycle_length >= 21, period_duration <= 10
   ALTER TABLE public.cycle_data
     DROP CONSTRAINT IF EXISTS chk_cycle_length;
-
   ALTER TABLE public.cycle_data
     DROP CONSTRAINT IF EXISTS chk_period_duration;
+
+  -- Re-create with SSOT bounds (less restrictive, no data issues)
+  -- SSOT: cycle_length > 0 AND <= 60, period_duration > 0 AND <= 15
+  -- Note: Any existing data that passed drift constraints will pass SSOT constraints
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'chk_cycle_length'
+      AND conrelid = 'public.cycle_data'::regclass
+  ) THEN
+    ALTER TABLE public.cycle_data
+      ADD CONSTRAINT chk_cycle_length
+      CHECK (cycle_length > 0 AND cycle_length <= 60);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'chk_period_duration'
+      AND conrelid = 'public.cycle_data'::regclass
+  ) THEN
+    ALTER TABLE public.cycle_data
+      ADD CONSTRAINT chk_period_duration
+      CHECK (period_duration > 0 AND period_duration <= 15);
+  END IF;
 END $$;
 

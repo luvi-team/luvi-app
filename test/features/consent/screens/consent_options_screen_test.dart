@@ -454,7 +454,7 @@ void main() {
       expect(find.byType(ConsentBlockingScreen), findsNothing,
           reason: 'Accept all should NOT navigate to blocking screen (race condition fix)');
 
-      // Should navigate to Onboarding01Screen
+      // Should navigate to AuthSignInScreen (pre-auth consent flow)
       expect(find.byType(AuthSignInScreen), findsOneWidget,
           reason: 'Consent happens before auth → navigate to AuthSignIn');
 

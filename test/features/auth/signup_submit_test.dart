@@ -48,10 +48,24 @@ void main() {
   );
 
   /// Finds the inner ElevatedButton inside a WelcomeButton wrapper.
-  Finder innerElevatedButton(Finder parent) => find.descendant(
-    of: parent,
-    matching: find.byType(ElevatedButton),
-  );
+  /// Asserts exactly one ElevatedButton exists to fail fast with a clear message.
+  ///
+  /// Note: The assertion runs on each call, providing immediate feedback if
+  /// the widget structure changes unexpectedly.
+  Finder innerElevatedButton(Finder parent) {
+    final finder = find.descendant(
+      of: parent,
+      matching: find.byType(ElevatedButton),
+    );
+    // Validate single match exists to provide clear failure message
+    expect(
+      finder,
+      findsOneWidget,
+      reason: 'Expected exactly one ElevatedButton inside WelcomeButton. '
+          'Structure may have changed.',
+    );
+    return finder;
+  }
 
   group('AuthSignupScreen submit behaviour', () {
     late GoRouter router;

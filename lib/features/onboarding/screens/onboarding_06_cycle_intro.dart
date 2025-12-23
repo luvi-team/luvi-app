@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
@@ -61,13 +60,13 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
                   totalSteps: kOnboardingTotalSteps,
                   onBack: () => _handleBack(context),
                 ),
-                SizedBox(height: Spacing.xl),
+                SizedBox(height: spacing.xl),
                 // Calendar mini preview
                 const CalendarMiniWidget(highlightedDay: 25),
                 const Spacer(),
                 // CTA Button (centered)
                 Center(child: _buildCta(context, l10n)),
-                SizedBox(height: Spacing.xl),
+                SizedBox(height: spacing.xl),
               ],
             ),
           ),

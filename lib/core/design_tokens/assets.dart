@@ -118,7 +118,7 @@ class _Images {
 
   // Consent Screen Assets
   final String consentIntroHero = 'assets/images/consent/consent_intro_hero.png';
-  final String consentShield = 'assets/images/consent/shield2.png';
+  // Note: Use Assets.consentImages.shield2 for shield assets (canonical path)
 
   // O8 Success Content Cards
   final String contentCard1 = 'assets/images/onboarding/content_card_1.png';

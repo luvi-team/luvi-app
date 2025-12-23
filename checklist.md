@@ -18,7 +18,7 @@ Sicheres, fail-safe Release des SSOT-Gate-Fixes:
 3. **Project Refs prüfen**: staging und prod müssen **unterschiedliche** `SUPABASE_PROJECT_REF`s haben.
 
 ### 1) Secrets Rotation (dev/staging/prod) (15–30 min)
-> **Wichtig:** Ein DB-Passwort wurde in einem Chat geteilt → Rotation ist Pflicht.
+> **Wichtig:** Bei Offenlegung von Zugangsdaten (z.B. in Chats, Logs oder Commits) ist eine Rotation der betroffenen Zugangsdaten Pflicht.
 
 Für **jede** Umgebung (dev, staging, prod) rotieren:
 1. **Postgres DB Password** (Supabase → Settings → Database).

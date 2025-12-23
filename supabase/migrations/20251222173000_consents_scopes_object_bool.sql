@@ -225,10 +225,14 @@ begin
     raise exception 'p_scopes must be an array (legacy) or object (canonical)';
   end if;
 
-  -- Defense-in-depth: only allow known scope IDs.
-  if not public.consents_scopes_keys_valid(normalized_scopes) then
-    raise exception 'p_scopes contains unknown scope IDs';
-  end if;
+  -- NOTE: Defense-in-depth validation intentionally commented out.
+  -- Both normalization paths (array lines 192-204, object lines 211-223)
+  -- filter to only known scope IDs via WHERE clause, making this check
+  -- currently unreachable. Kept as documentation for future refactors.
+  --
+  -- if not public.consents_scopes_keys_valid(normalized_scopes) then
+  --   raise exception 'p_scopes contains unknown scope IDs';
+  -- end if;
 
   if jsonb_object_length(normalized_scopes) < 1 then
     raise exception 'p_scopes must be non-empty';

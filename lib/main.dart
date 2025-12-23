@@ -106,6 +106,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   SupabaseDeepLinkHandler? _deepLinkHandler;
   ProviderSubscription<InitState>? _initOrchestrationSubscription;
   StreamSubscription<AuthState>? _userStateAuthSyncSubscription;
+  int _bindUserSequence = 0; // Sequence counter for auth state race condition prevention
   bool _orchestrationInProgress = false;
 
   String get _initialLocation => kReleaseMode
@@ -325,10 +326,16 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
 
     _userStateAuthSyncSubscription =
         SupabaseService.client.auth.onAuthStateChange.listen((authState) async {
+      // Race condition prevention: track sequence to skip stale results
+      final currentSequence = ++_bindUserSequence;
       try {
         final service = await ref.read(userStateServiceProvider.future);
+        // Skip if a newer auth event has superseded this one
+        if (currentSequence != _bindUserSequence) return;
         await service.bindUser(authState.session?.user.id);
       } catch (e) {
+        // Skip error handling if superseded by newer auth event
+        if (currentSequence != _bindUserSequence) return;
         // Always report to telemetry for production debugging
         Telemetry.maybeCaptureException(
           'user_state_bind_failed',

@@ -70,6 +70,8 @@ class OnboardingSpacing {
     // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
     required this.trophyToTitle,
     required this.titleToButton,
+    // Generic scaled spacing (mirrors Spacing.xl for responsive use)
+    required this.xl,
   });
 
   final double horizontalPadding;
@@ -150,6 +152,9 @@ class OnboardingSpacing {
   // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
   final double trophyToTitle;
   final double titleToButton;
+
+  // Generic scaled spacing (mirrors Spacing.xl = 32.0 for responsive use)
+  final double xl;
 
   static const double _designHeight = 926.0;
   static OnboardingSpacing of(BuildContext context) {
@@ -233,6 +238,8 @@ class OnboardingSpacing {
       // Success Screen specific spacing
       trophyToTitle: _trophyToTitle * effectiveHeightScale,
       titleToButton: _titleToButton * effectiveHeightScale,
+      // Generic scaled spacing
+      xl: _xl * effectiveHeightScale,
     );
   }
 
@@ -355,4 +362,7 @@ class OnboardingSpacing {
   static const double _trophyToTitle =
       _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px per ADR-0006)
   static const double _titleToButton = 66.0; // Title end → Button start
+
+  // Generic scaled spacing (mirrors Spacing.xl for responsive use)
+  static const double _xl = 32.0;
 }

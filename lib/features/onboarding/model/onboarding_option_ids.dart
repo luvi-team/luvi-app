@@ -109,6 +109,9 @@ InterestId? canonicalizeInterestId(String? raw) {
   final normalizedRaw = _normalizeRawId(raw);
   if (normalizedRaw == null) return null;
 
+  // Check legacy aliases BEFORE lowercasing. InterestIds.legacyAliases uses
+  // camelCase keys (e.g., 'strengthTraining', 'hormonesCycle') that were
+  // persisted in enum-name format. Lowercasing first would break the lookup.
   final alias = InterestIds.legacyAliases[normalizedRaw];
   if (alias != null) return alias;
 

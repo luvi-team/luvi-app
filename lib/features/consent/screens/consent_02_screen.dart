@@ -653,7 +653,7 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
 
 /// Navigate to Onboarding after consent is accepted.
 void _navigateAfterConsent(BuildContext context) {
-  final isAuth = SupabaseService.isInitialized && SupabaseService.currentUser != null;
+  final isAuth = SupabaseService.isAuthenticated;
   context.go(isAuth ? Onboarding01Screen.routeName : AuthSignInScreen.routeName);
 }
 

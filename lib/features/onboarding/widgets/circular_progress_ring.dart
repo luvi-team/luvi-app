@@ -129,7 +129,12 @@ class CircularProgressRingState extends State<CircularProgressRing>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) {
+      throw FlutterError(
+        'AppLocalizations not found. Ensure MaterialApp includes localization delegates.',
+      );
+    }
     return SizedBox(
       width: widget.size,
       height: widget.size,

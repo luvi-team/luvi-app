@@ -94,66 +94,66 @@ class AuthOutlineButton extends StatelessWidget {
         button: true,
         excludeSemantics: semanticLabel != null,
         child: ElevatedButton(
-        onPressed: onPressed == null
-            ? null
-            : () {
-                HapticFeedback.lightImpact();
-                onPressed!();
-              },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          foregroundColor: fgColor,
-          elevation: 0,
-          shadowColor: DsColors.transparent,
-          side: border != null ? BorderSide(color: border) : BorderSide.none,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Sizes.buttonHeightOutline / 2),
+          onPressed: onPressed == null
+              ? null
+              : () {
+                  HapticFeedback.lightImpact();
+                  onPressed!();
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bgColor,
+            foregroundColor: fgColor,
+            elevation: 0,
+            shadowColor: DsColors.transparent,
+            side: border != null ? BorderSide(color: border) : BorderSide.none,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Sizes.buttonHeightOutline / 2),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: Sizes.buttonPaddingHorizontal),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: Sizes.buttonPaddingHorizontal),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (svgAsset != null) ...[
-              SvgPicture.asset(
-                svgAsset!,
-                width: Sizes.iconM,
-                height: Sizes.iconM,
-                placeholderBuilder: (_) => SizedBox(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (svgAsset != null) ...[
+                SvgPicture.asset(
+                  svgAsset!,
                   width: Sizes.iconM,
                   height: Sizes.iconM,
-                ),
-                errorBuilder: (context, error, stackTrace) {
-                  log.e(
-                    'SVG asset load failed: $svgAsset',
-                    tag: 'AuthOutlineButton',
-                    error: error,
-                    stack: stackTrace,
-                  );
-                  return SizedBox(
+                  placeholderBuilder: (_) => SizedBox(
                     width: Sizes.iconM,
                     height: Sizes.iconM,
-                  );
-                },
-              ),
-              const SizedBox(width: Spacing.s),
-            ] else if (icon != null) ...[
-              Icon(icon, size: Sizes.iconM),
-              const SizedBox(width: Spacing.s),
-            ],
-            Flexible(
-              child: Text(
-                text,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: fgColor,
+                  ),
+                  errorBuilder: (context, error, stackTrace) {
+                    log.e(
+                      'SVG asset load failed: $svgAsset',
+                      tag: 'AuthOutlineButton',
+                      error: error,
+                      stack: stackTrace,
+                    );
+                    return SizedBox(
+                      width: Sizes.iconM,
+                      height: Sizes.iconM,
+                    );
+                  },
                 ),
-                overflow: TextOverflow.ellipsis,
+                const SizedBox(width: Spacing.s),
+              ] else if (icon != null) ...[
+                Icon(icon, size: Sizes.iconM),
+                const SizedBox(width: Spacing.s),
+              ],
+              Flexible(
+                child: Text(
+                  text,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: fgColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

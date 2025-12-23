@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as features;
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -92,9 +93,14 @@ void main() {
       );
       await tester.tap(elevatedButtonFinder);
 
-      // Pump for async submit + 300ms navigation delay
-      await tester.pump(); // setState after async
-      await tester.pump(const Duration(milliseconds: 350));
+      // Advance time for async operations:
+      // 1. pump() processes setState after form submission completes
+      // 2. pump(Duration) advances Future.delayed-based navigation timer
+      //    Uses Timing.feedbackNavigationDelayMs design token for consistency
+      // 3. pumpAndSettle() completes any remaining animations
+      // Note: pumpAndSettle alone doesn't advance Future.delayed timers
+      await tester.pump(); // Process setState after async
+      await tester.pump(Timing.feedbackNavigationDelay);
       await tester.pumpAndSettle();
 
       // Verify navigation to signin

@@ -14,6 +14,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../support/test_config.dart';
+import '../../../utils/riverpod_test_helpers.dart';
 
 // Test screen dimensions (must match setTestScreenSize)
 const _testWidth = 430.0;
@@ -335,14 +336,9 @@ void main() {
     });
   }
 
-  // Note: Riverpod's Override is a sealed class that is not publicly exported.
-  // Using `List<Override>` is not possible because the Override type is sealed
-  // and only internal Riverpod methods return it (e.g., provider.overrideWith()).
-  // Type-safety is maintained at runtime since only valid Override instances
-  // can be created through Riverpod's public API.
+  // See riverpod_test_helpers.dart for explanation of sealed Override type
   Widget buildTestApp({
-    // ignore: always_specify_types
-    List<dynamic> overrides = const [],
+    RiverpodOverrides overrides = kEmptyOverrides,
   }) {
     return ProviderScope(
       overrides: [
@@ -552,7 +548,10 @@ void main() {
         await tester.tap(find.text('Try again'));
         // Allow setState to rebuild widget
         await tester.pump();
-        // Animation restarts and runs for 3 seconds, drive animation with multiple pumps
+        // Note: pumpAndSettle() is unsuitable here because the 3-second animation
+        // triggers async save operations on completion. We need explicit timing
+        // control to ensure the animation completes and fires onAnimationComplete.
+        // Animation duration: 3s + buffer = 35 × 100ms = 3.5s total.
         for (int i = 0; i < 35; i++) {
           await tester.pump(const Duration(milliseconds: 100));
         }

@@ -198,12 +198,7 @@ class SupabaseDeepLinkHandler {
   /// Normalizes a path by trimming trailing slashes and converting to lowercase.
   /// Treats empty path and "/" as equivalent (both become "").
   String _normalizePath(String path) {
-    var normalized = path.toLowerCase();
-    while (normalized.endsWith('/') && normalized.length > 1) {
-      normalized = normalized.substring(0, normalized.length - 1);
-    }
-    // Treat "/" as empty path
-    if (normalized == '/') return '';
-    return normalized;
+    final normalized = path.toLowerCase().replaceAll(RegExp(r'/+$'), '');
+    return normalized.isEmpty ? '' : normalized;
   }
 }

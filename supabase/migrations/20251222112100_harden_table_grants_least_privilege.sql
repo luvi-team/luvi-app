@@ -81,6 +81,8 @@ BEGIN
       EXECUTE 'ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO service_role';
     EXCEPTION
       WHEN insufficient_privilege THEN
+        -- NOTE: If this warning appears, manual superuser execution may be required.
+        RAISE LOG 'LUVI_MIGRATION: Skipping ALTER DEFAULT PRIVILEGES for supabase_admin (insufficient_privilege)';
         RAISE WARNING 'Skipping ALTER DEFAULT PRIVILEGES for role supabase_admin (insufficient_privilege)';
     END;
   END IF;

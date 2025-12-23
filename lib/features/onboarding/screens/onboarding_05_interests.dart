@@ -46,6 +46,9 @@ class _Onboarding05InterestsScreenState
   }
 
   void _handleContinue() {
+    // Defensive guard: validate selection before navigation
+    final selectedInterests = ref.read(onboardingProvider).selectedInterests;
+    if (!_isValidSelection(selectedInterests)) return;
     context.pushNamed(Onboarding06CycleIntroScreen.navName);
   }
 

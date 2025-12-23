@@ -78,6 +78,20 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 - **Abuse/Noise durch anon RPC:** EXECUTE-Revokes reduzieren Angriffsfläche und vermeiden DB-Fehler-Spam.
 
 ## Backout / Revert (operational)
+
+### Database Changes
 - Drop `profiles` table: `DROP TABLE IF EXISTS public.profiles;`
 - Drop `cycle_regularity` column: `ALTER TABLE public.cycle_data DROP COLUMN IF EXISTS cycle_regularity;`
 - Restore `log_consent_if_allowed` EXECUTE grants (nur falls benötigt) per neuem Revert-Migration-File.
+
+### Data Migration Considerations
+**Note:** Data migrated from SharedPreferences to the server will be lost on rollback.
+This is acceptable because:
+1. Users can re-complete onboarding after revert
+2. No critical user data is lost (only onboarding preferences)
+3. Consent records in `public.consents` remain intact (audit trail preserved)
+
+**Pre-revert checklist:**
+- [ ] Take DB snapshot before executing DROP statements
+- [ ] Verify no active user sessions during revert window
+- [ ] Communicate rollback to affected users if necessary

@@ -15,7 +15,6 @@ class CustomRadioCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Figma v3: Use DsColors.signature (pink) for both states per design review.
-    // Both states intentionally identical; kept as const for potential future differentiation.
     const color = DsColors.signature;
 
     return Container(

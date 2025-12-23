@@ -60,18 +60,22 @@ class ProfileStubScreen extends ConsumerWidget {
       await userState.bindUser(null); // Clears all user-scoped state
     } catch (e, st) {
       // Best-effort local cleanup - log for diagnosis but don't block flow
-      log.w('profile cleanup failed', tag: 'ProfileStub', error: e, stack: st);
+      log.w('profile cleanup failed', tag: 'ProfileStub', error: sanitizeError(e), stack: st);
     }
 
     if (!context.mounted) return;
 
-    // Navigate first, THEN show snackbar (so it appears on new screen)
+    // Cache messenger and l10n BEFORE navigation (while context is valid)
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = serverFailed ? AppLocalizations.of(context)! : null;
+
+    // Navigate to auth screen
     context.goNamed(RouteNames.authSignIn);
 
-    // Show warning snackbar AFTER navigation (visible on sign-in screen)
-    if (serverFailed) {
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
+    // Show warning snackbar AFTER navigation (using cached messenger)
+    // MaterialApp's ScaffoldMessenger persists across route changes
+    if (serverFailed && l10n != null) {
+      messenger.showSnackBar(
         SnackBar(content: Text(l10n.signOutFailed)),
       );
     }

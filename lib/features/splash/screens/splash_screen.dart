@@ -6,9 +6,7 @@ import 'package:lottie/lottie.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/features/splash/widgets/unknown_state_ui.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
@@ -229,66 +227,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Widget _buildUnknownUI(BuildContext context, AppLocalizations l10n) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.cloud_off_outlined,
-              size: 64,
-              color: DsColors.textPrimary,
-              semanticLabel: l10n.splashGateUnknownTitle,
-            ),
-            const SizedBox(height: Spacing.l),
-            Text(
-              l10n.splashGateUnknownTitle,
-              style: textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Spacing.m),
-            Text(
-              l10n.splashGateUnknownBody,
-              style: textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Spacing.xl),
-            // Primary CTA: Retry (Welcome-style magenta pill button)
-            SizedBox(
-              width: double.infinity,
-              child: WelcomeButton(
-                label: l10n.splashGateRetryCta,
-                onPressed: _canRetry ? _handleRetry : null,
-                isLoading: _isRetrying,
-              ),
-            ),
-            const SizedBox(height: Spacing.m),
-            // Secondary CTA: Sign out (outline style)
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () { _handleSignOut(); },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: DsColors.welcomeButtonBg,
-                  side: const BorderSide(color: DsColors.welcomeButtonBg),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: Sizes.welcomeButtonPaddingVertical,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
-                  ),
-                ),
-                child: Text(l10n.splashGateSignOutCta),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return UnknownStateUi(
+      onRetry: _canRetry ? _handleRetry : null,
+      onSignOut: _handleSignOut,
+      canRetry: _canRetry,
+      isRetrying: _isRetrying,
     );
   }
 
@@ -335,8 +278,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _navigateAfterAnimation() async {
     if (_hasNavigated) return;
     // Avoid any async auth calls here; rely on immediate client state.
-    final isAuth =
-        SupabaseService.isInitialized && SupabaseService.currentUser != null;
+    final isAuth = SupabaseService.isAuthenticated;
     final isTestMode = ref.read(initModeProvider) == InitMode.test;
     final useTimeout = kReleaseMode && !isTestMode;
 

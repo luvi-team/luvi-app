@@ -8,6 +8,7 @@ import 'package:luvi_app/features/onboarding/model/goal.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_04_goals.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/init_mode.dart';
 import '../../../support/test_config.dart';
@@ -111,6 +112,11 @@ void main() {
       // Initially no goals selected - CTA should be disabled
       expect(container.read(onboardingProvider).selectedGoals, isEmpty);
 
+      // Verify button is actually disabled (OnboardingButton uses isEnabled)
+      final buttonBefore = tester.widget<OnboardingButton>(ctaFinder);
+      expect(buttonBefore.isEnabled, isFalse,
+          reason: 'CTA should be disabled when no goal selected');
+
       // Select a goal
       await tester.tap(find.byKey(const Key('onb_goal_energy')));
       await tester.pumpAndSettle();
@@ -120,6 +126,11 @@ void main() {
         container.read(onboardingProvider).selectedGoals,
         contains(Goal.energy),
       );
+
+      // Verify button is now enabled
+      final buttonAfter = tester.widget<OnboardingButton>(ctaFinder);
+      expect(buttonAfter.isEnabled, isTrue,
+          reason: 'CTA should be enabled after goal selection');
     });
 
     testWidgets('continue navigates to O5 interests screen', (tester) async {

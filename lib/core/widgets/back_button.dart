@@ -119,7 +119,6 @@ class BackButtonCircle extends StatelessWidget {
       decoration: BoxDecoration(
         color: resolvedBackground,
         shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-        borderRadius: isCircular ? null : BorderRadius.zero,
       ),
       alignment: Alignment.center,
       child: chevronIcon,

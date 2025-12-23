@@ -5,9 +5,11 @@ class TypographyTokens {
   static const double size12 = 12.0;
   static const double size14 = 14.0;
   static const double size16 = 16.0;
+  static const double size18 = 18.0;
   static const double size20 = 20.0;
   static const double size24 = 24.0;
   static const double size28 = 28.0;
+  static const double size30 = 30.0;
   static const double size32 = 32.0;
 
   static const double lineHeightRatio16on12 = 16 / 12;
@@ -26,6 +28,12 @@ class TypographyTokens {
 
   /// Onboarding header: 28px line-height on 20px font (ratio: 1.4)
   static const double lineHeightRatio28on20 = 28 / 20;
+
+  /// Consent intro title: 37.5px line-height on 30px font (ratio: 1.25)
+  static const double lineHeightRatio37_5on30 = 37.5 / 30;
+
+  /// Consent intro body: 29.25px line-height on 18px font (ratio: 1.625)
+  static const double lineHeightRatio29_25on18 = 29.25 / 18;
 }
 
 /// Shared font family identifiers to centralize typography references.
@@ -78,20 +86,22 @@ class AuthTypography {
 ///
 /// These constants define reusable text style parameters for consent screens.
 /// Use with theme.textTheme.copyWith() to maintain theme integration.
+///
+/// Values delegate to [TypographyTokens] to avoid maintenance drift.
 class ConsentTypography {
   const ConsentTypography._();
 
   // ─── Consent Intro Title (Playfair Display SemiBold 30px) ───
   /// Consent intro title fontSize (Figma: 30px)
-  static const double introTitleFontSize = 30.0;
+  static const double introTitleFontSize = TypographyTokens.size30;
 
   /// Consent intro title lineHeight ratio (Figma: 37.5/30 = 1.25)
-  static const double introTitleLineHeight = 37.5 / 30;
+  static const double introTitleLineHeight = TypographyTokens.lineHeightRatio37_5on30;
 
   // ─── Consent Intro Body (Figtree Regular 18px) ───
   /// Consent intro body fontSize (Figma: 18px)
-  static const double introBodyFontSize = 18.0;
+  static const double introBodyFontSize = TypographyTokens.size18;
 
   /// Consent intro body lineHeight ratio (Figma: 29.25/18 = 1.625)
-  static const double introBodyLineHeight = 29.25 / 18;
+  static const double introBodyLineHeight = TypographyTokens.lineHeightRatio29_25on18;
 }

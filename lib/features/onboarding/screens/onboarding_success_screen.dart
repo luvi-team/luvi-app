@@ -18,6 +18,7 @@ import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/model/goal.dart';
 import 'package:luvi_app/features/onboarding/model/interest.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/widgets/circular_progress_ring.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/data/onboarding_backend_writer.dart';
@@ -225,7 +226,7 @@ class _OnboardingSuccessScreenState
           _state = O9AnimationState.success;
         });
         // Navigate to home after short delay
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(kOnboardingNavigationDelay);
         if (mounted) {
           context.go(HeuteScreen.routeName);
         }

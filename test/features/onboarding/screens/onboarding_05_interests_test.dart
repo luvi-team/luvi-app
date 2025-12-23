@@ -8,6 +8,7 @@ import 'package:luvi_app/features/onboarding/model/interest.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/init_mode.dart';
 import '../../../support/test_config.dart';
@@ -104,8 +105,17 @@ void main() {
         tester.element(find.byType(Onboarding05InterestsScreen)),
       );
 
+      // Find CTA button
+      final ctaFinder = find.byKey(const Key('onb_cta'));
+      expect(ctaFinder, findsOneWidget);
+
       // Initially no interests selected - CTA should be disabled
       expect(container.read(onboardingProvider).selectedInterests, isEmpty);
+
+      // Verify button is actually disabled
+      final buttonInitial = tester.widget<OnboardingButton>(ctaFinder);
+      expect(buttonInitial.isEnabled, isFalse,
+          reason: 'CTA should be disabled with 0 interests');
 
       // Select 2 interests (still below minimum of 3)
       await tester.tap(find.byKey(const Key('onb_interest_strengthTraining')));
@@ -119,6 +129,11 @@ void main() {
         equals(2),
       );
 
+      // Verify button is still disabled with only 2
+      final buttonWith2 = tester.widget<OnboardingButton>(ctaFinder);
+      expect(buttonWith2.isEnabled, isFalse,
+          reason: 'CTA should be disabled with only 2 interests');
+
       // Select 3rd interest - now CTA should be enabled
       await tester.tap(find.byKey(const Key('onb_interest_mobility')));
       await tester.pumpAndSettle();
@@ -127,6 +142,11 @@ void main() {
         container.read(onboardingProvider).selectedInterests.length,
         equals(3),
       );
+
+      // Verify button is now enabled
+      final buttonWith3 = tester.widget<OnboardingButton>(ctaFinder);
+      expect(buttonWith3.isEnabled, isTrue,
+          reason: 'CTA should be enabled with 3+ interests');
     });
 
     testWidgets('cannot select more than 5 interests', (tester) async {

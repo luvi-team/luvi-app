@@ -1,3 +1,6 @@
+-- Ensure pgcrypto is available for digest() function
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- Fix: `jsonb_object_length(jsonb)` is not available; use an empty-object check.
 --
 -- This patches `public.log_consent_if_allowed` introduced/updated by

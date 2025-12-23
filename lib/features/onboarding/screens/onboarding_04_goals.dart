@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -128,20 +127,6 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
     // Goal enum values in display order
     final goals = Goal.values;
 
-    Widget iconForGoal(Goal goal) {
-      final assetPath = switch (goal) {
-        Goal.fitter => Assets.icons.onboarding.muscle,
-        Goal.energy => Assets.icons.onboarding.energy,
-        Goal.sleep => Assets.icons.onboarding.sleep,
-        Goal.cycle => Assets.icons.onboarding.calendar,
-        Goal.longevity => Assets.icons.onboarding.run,
-        Goal.wellbeing => Assets.icons.onboarding.happy,
-      };
-      return ExcludeSemantics(
-        child: SvgPicture.asset(assetPath, width: iconSize, height: iconSize),
-      );
-    }
-
     return Semantics(
       label: l10n.onboarding04GoalsSemantic,
       child: Column(
@@ -155,7 +140,14 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
               ),
               child: GoalCard(
                 key: Key('onb_goal_${goal.name}'),
-                icon: iconForGoal(goal),
+                // Use canonical Goal.iconPath extension instead of local mapping
+                icon: ExcludeSemantics(
+                  child: SvgPicture.asset(
+                    goal.iconPath,
+                    width: iconSize,
+                    height: iconSize,
+                  ),
+                ),
                 title: goal.label(l10n),
                 selected: selectedGoals.contains(goal),
                 onTap: () => _toggleGoal(goal),

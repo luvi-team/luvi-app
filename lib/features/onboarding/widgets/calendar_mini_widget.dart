@@ -15,9 +15,12 @@ class CalendarMiniWidget extends StatefulWidget {
   const CalendarMiniWidget({
     super.key,
     this.highlightedDay = 25,
-  });
+  }) : assert(
+         highlightedDay >= 1 && highlightedDay <= 31,
+         'highlightedDay must be between 1 and 31',
+       );
 
-  /// The day to highlight with the glow effect
+  /// The day to highlight with the glow effect (1-31)
   final int highlightedDay;
 
   @override
