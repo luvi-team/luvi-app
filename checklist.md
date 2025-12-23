@@ -37,6 +37,9 @@ Für **jede** Umgebung (dev, staging, prod) rotieren:
 **Pass/Fail:** Kein Secret wird in Git committed; App/Functions nutzen die neuen Werte ohne Ausfall.
 
 ### 2) DB Migration Push + Smoke (staging) (10–20 min)
+
+> **Security Note:** The `source` command below assumes `.env.staging.local` is a trusted, local-only file. Never source untrusted env files. For a safer alternative, see `scripts/run_dev.sh` which uses key-value parsing.
+
 1. Dry-run:
    - `set -a; source .env.staging.local; set +a`
    - `scripts/db_dry_run.sh`

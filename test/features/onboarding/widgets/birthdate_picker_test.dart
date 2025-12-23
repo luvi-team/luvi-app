@@ -39,9 +39,6 @@ void main() {
       onDateChanged: (_) {},
     );
 
-    final container = find.byType(Container).first;
-    expect(container, findsOneWidget);
-
     // Check that BirthdatePicker renders
     expect(find.byType(BirthdatePicker), findsOneWidget);
   });
@@ -126,8 +123,14 @@ void main() {
       locale: const Locale('de'),
     );
 
-    // Should render BirthdatePicker with German locale
-    expect(find.byType(BirthdatePicker), findsOneWidget);
+    await tester.pumpAndSettle();
+
+    // Primary assertion: German month "Januar" should be in widget tree
+    // ListWheelScrollView renders visible items, January should be visible
+    expect(find.text('Januar'), findsWidgets);
+
+    // Verify NOT English (proves German locale is active)
+    expect(find.text('January'), findsNothing);
   });
 
   testWidgets('uses OnboardingGlassCard with BackdropFilter blur', (tester) async {

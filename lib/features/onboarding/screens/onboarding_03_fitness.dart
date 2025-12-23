@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_04_goals.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/widgets/fitness_pill.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
@@ -28,6 +29,9 @@ class Onboarding03FitnessScreen extends ConsumerStatefulWidget {
 
   static const routeName = '/onboarding/03';
 
+  /// GoRoute name for pushNamed navigation
+  static const navName = 'onboarding_03_fitness';
+
   @override
   ConsumerState<Onboarding03FitnessScreen> createState() =>
       _Onboarding03FitnessScreenState();
@@ -40,7 +44,9 @@ class _Onboarding03FitnessScreenState
   @override
   void initState() {
     super.initState();
-    // Restore from OnboardingNotifier (back navigation)
+    // Riverpod ConsumerStatefulWidget: ref is available in initState.
+    // This is safe because WidgetRef is initialized before initState runs.
+    // See: https://riverpod.dev/docs/essentials/lifecycle
     final onboardingState = ref.read(onboardingProvider);
     if (onboardingState.fitnessLevel != null) {
       _selectedLevel = onboardingState.fitnessLevel;
@@ -74,7 +80,7 @@ class _Onboarding03FitnessScreenState
       }
     }
     // Navigate to O4 Goals
-    if (mounted) context.pushNamed('onboarding_04_goals');
+    if (mounted) context.pushNamed(Onboarding04GoalsScreen.navName);
   }
 
   void _handleBack() {

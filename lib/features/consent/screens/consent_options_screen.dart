@@ -302,17 +302,9 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                       key: const Key('consent_options_btn_accept_all'),
                       onPressed: hasScrolledToEnd
                           ? () async {
-                              // DSGVO: Only select VISIBLE optional scopes
-                              notifier.selectAllVisibleOptional();
-                              // Also select required
-                              if (state.choices[ConsentScope.health_processing] !=
-                                  true) {
-                                notifier.toggle(ConsentScope.health_processing);
-                              }
-                              if (state.choices[ConsentScope.terms] != true) {
-                                notifier.toggle(ConsentScope.terms);
-                              }
-                              // Navigate to onboarding after accepting all
+                              // Atomic: Accept all required + visible optional scopes
+                              // Avoids race condition from stale state closure
+                              notifier.acceptAll();
                               await _handleContinue(context, ref, l10n);
                             }
                           : null,

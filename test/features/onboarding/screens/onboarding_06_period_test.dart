@@ -69,8 +69,8 @@ void main() {
     testWidgets(
         'unknown toggle navigates to success with services.FitnessLevel',
         (tester) async {
-      // Router mit Success-Route die services.FitnessLevel erwartet
-      // Redirect zu O1 wie in routes.dart:237
+      // Router with success route expecting services.FitnessLevel
+      // Redirect to O1 as in routes.dart:237
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -92,14 +92,18 @@ void main() {
             path: OnboardingSuccessScreen.routeName,
             name: 'onboarding_success',
             redirect: (ctx, st) {
-              // PROD-NAH: Prüft ob extra services.FitnessLevel ist (wie routes.dart:237)
+              // PROD-LIKE: Checks if extra is services.FitnessLevel (like routes.dart:237)
               if (st.extra is services.FitnessLevel) return null;
-              return Onboarding01Screen.routeName; // Redirect zu O1 bei falschem Typ
+              return Onboarding01Screen.routeName; // Redirect to O1 on invalid type
             },
-            builder: (_, st) => Scaffold(
-              key: const Key('success_screen'),
-              body: Text('Success: ${(st.extra as services.FitnessLevel).name}'),
-            ),
+            builder: (_, st) {
+              // Fix 4: Null-safe cast with fallback
+              final fitness = st.extra as services.FitnessLevel?;
+              return Scaffold(
+                key: const Key('success_screen'),
+                body: Text('Success: ${fitness?.name ?? 'unknown'}'),
+              );
+            },
           ),
         ],
         initialLocation: Onboarding06PeriodScreen.routeName,
@@ -121,7 +125,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // L10n statt hardcodierter String
+      // L10n instead of hardcoded string
       final l10n = AppLocalizations.of(
         tester.element(find.byType(Onboarding06PeriodScreen)),
       )!;

@@ -19,6 +19,9 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+/// Delay before navigation after successful signup (allows user to see snackbar).
+const kSignupSuccessNavigationDelay = Duration(milliseconds: 800);
+
 /// SignupScreen with Figma Auth UI v2 design.
 ///
 /// Note: No Figma spec exists - design based on LoginScreen layout.
@@ -93,7 +96,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       );
       // Short delay for user to see success message, then navigate
       // (bounded delay avoids race condition from unbounded snackbar.closed)
-      await Future.delayed(const Duration(milliseconds: 800));
+      await Future.delayed(kSignupSuccessNavigationDelay);
       if (!mounted) return;
       context.go(LoginScreen.routeName);
     } on AuthException catch (error, stackTrace) {
@@ -266,7 +269,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
             Center(
               child: TextButton(
                 key: const ValueKey('signup_login_link'),
-                // Use context.go to replace stack consistently (same as line 92)
+                // Use context.go to replace stack consistently (clears auth screens)
                 onPressed: () => context.go(LoginScreen.routeName),
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,

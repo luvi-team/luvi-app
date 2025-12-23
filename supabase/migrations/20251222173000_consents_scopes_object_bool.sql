@@ -17,13 +17,26 @@
 -- - After this migration, unknown keys are rejected by CHECK constraints.
 
 -- IMPORTANT: SCOPE ID SYNCHRONIZATION REQUIRED
--- The allowed scope IDs below MUST match `config/consent_scopes.json`.
+-- ============================================
+-- The 6 allowed scope IDs are defined in 4 locations in this file:
+--   1. consents_scopes_keys_valid() function (line ~38)
+--   2. DO block backfill array->object (line ~77)
+--   3. DO block backfill object->object (line ~102)
+--   4. log_consent_if_allowed() RPC function (line ~183)
+--
+-- These MUST stay synchronized with `config/consent_scopes.json`.
+-- Scope IDs: terms, health_processing, analytics, marketing, ai_journal, model_training
+--
+-- WHY NOT CTE/VARIABLE?
+-- SQL functions are IMMUTABLE and cannot reference temp tables or session variables.
+-- This duplication is accepted technical debt with clear sync requirements.
+--
 -- When adding/removing scope IDs:
 -- 1. Update config/consent_scopes.json first
--- 2. Update this SQL function to match
+-- 2. Update ALL 4 locations in this file
 -- 3. Update any Flutter constants (ConsentConfig)
--- TODO: Consider migration to a database-driven scope source (consent_scopes table)
---       or a sync script to auto-generate this SQL from the JSON file.
+--
+-- TODO: Consider database-driven scope source (consent_scopes table) in future.
 -- Last synchronized: 2025-12-22 (v1.0 - 6 scopes)
 --
 -- Helper: allowed scope IDs

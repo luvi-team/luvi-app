@@ -35,13 +35,14 @@ void Function() _configureTestView(WidgetTester tester) {
 Widget _buildAuthRouterTestWidget({
   required GoRouter router,
   required AuthRepository mockAuthRepo,
+  Locale locale = const Locale('de'),
 }) {
   return ProviderScope(
     overrides: [authRepositoryProvider.overrideWithValue(mockAuthRepo)],
     child: MaterialApp.router(
       routerConfig: router,
       theme: AppTheme.buildAppTheme(),
-      locale: const Locale('de'),
+      locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -230,6 +231,32 @@ void main() {
         findsOneWidget,
         reason: 'ResetPasswordScreen should be accessible without session (whitelist)',
       );
+    });
+  });
+
+  group('Auth route whitelist (EN locale)', () {
+    testWidgets('LoginScreen renders correctly in English', (tester) async {
+      addTearDown(_configureTestView(tester));
+
+      final router = GoRouter(
+        routes: routes.featureRoutes,
+        initialLocation: LoginScreen.routeName,
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(_buildAuthRouterTestWidget(
+        router: router,
+        mockAuthRepo: mockRepo,
+        locale: const Locale('en'),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+
+      // Verify English L10n is active
+      final context = tester.element(find.byType(LoginScreen));
+      final l10n = AppLocalizations.of(context)!;
+      expect(l10n.localeName, 'en');
     });
   });
 }

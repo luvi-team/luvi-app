@@ -38,10 +38,12 @@ extension FitnessLevelExtension on FitnessLevel {
     };
   }
 
-  /// Maps selection index (0, 1, 2, 3) to FitnessLevel.
-  /// Index 3 ("unknown") maps to beginner as fallback.
+  /// Maps UI selection index to [FitnessLevel].
+  ///
+  /// Valid indices: 0 (beginner), 1 (occasional), 2 (fit).
+  /// Index 3 ("Weiß ich nicht" / unknown) and any out-of-range value
+  /// safely fallback to [FitnessLevel.beginner].
   static FitnessLevel fromSelectionIndex(int index) {
-    // Out-of-range indices (including "Weiß ich nicht" at index 3) default to beginner
     if (index < 0 || index >= FitnessLevel.values.length) {
       return FitnessLevel.beginner;
     }

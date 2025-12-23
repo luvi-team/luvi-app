@@ -38,15 +38,13 @@ void main() {
       expect(data.isComplete, isFalse);
     });
 
-    test('returns true when name is whitespace only (trimming handled by notifier)', () {
+    test('returns false when name is whitespace only', () {
       final data = validData().copyWith(name: '   ');
-      // Note: isComplete checks name!.isNotEmpty but not trim
-      // The actual check is: name != null && name!.isNotEmpty
-      // Whitespace-only strings are not empty, so this passes isComplete
-      // Trimming is handled by OnboardingNotifier.setName(), not by isComplete
+      // Defense-in-depth: isComplete now checks name!.trim().isNotEmpty
+      // This ensures whitespace-only names are rejected even if
+      // notifier.setName() trimming was somehow bypassed
       expect(data.name, '   ');
-      // Explicitly verify isComplete behavior for whitespace-only name
-      expect(data.isComplete, isTrue);
+      expect(data.isComplete, isFalse);
     });
 
     test('returns false when birthDate is null', () {
@@ -172,6 +170,71 @@ void main() {
       expect(data.selectedInterests.length, 6);
       // isComplete only checks >= 3, max is enforced by UI/notifier
       expect(data.isComplete, isTrue);
+    });
+  });
+
+  group('OnboardingData.copyWith clearPeriodStart', () {
+    test('copyWith can clear periodStart with clearPeriodStart flag', () {
+      final data = OnboardingData(
+        name: 'Test User',
+        birthDate: DateTime(2000, 1, 15),
+        fitnessLevel: FitnessLevel.beginner,
+        selectedGoals: const [Goal.fitter],
+        selectedInterests: const [
+          Interest.strengthTraining,
+          Interest.cardio,
+          Interest.nutrition,
+        ],
+        periodStart: DateTime.now().subtract(const Duration(days: 7)),
+      );
+      expect(data.periodStart, isNotNull);
+
+      final cleared = data.copyWith(clearPeriodStart: true);
+      expect(cleared.periodStart, isNull);
+      // Other fields should be preserved
+      expect(cleared.name, equals('Test User'));
+      expect(cleared.birthDate, isNotNull);
+      expect(cleared.fitnessLevel, equals(FitnessLevel.beginner));
+    });
+
+    test('copyWith preserves periodStart when clearPeriodStart is false', () {
+      final originalDate = DateTime.now().subtract(const Duration(days: 7));
+      final data = OnboardingData(
+        name: 'Test User',
+        birthDate: DateTime(2000, 1, 15),
+        fitnessLevel: FitnessLevel.beginner,
+        selectedGoals: const [Goal.fitter],
+        selectedInterests: const [
+          Interest.strengthTraining,
+          Interest.cardio,
+          Interest.nutrition,
+        ],
+        periodStart: originalDate,
+      );
+
+      final updated = data.copyWith(name: 'New Name');
+      expect(updated.periodStart, equals(originalDate));
+      expect(updated.name, equals('New Name'));
+    });
+
+    test('copyWith can set new periodStart value', () {
+      final originalDate = DateTime.now().subtract(const Duration(days: 7));
+      final newDate = DateTime.now().subtract(const Duration(days: 3));
+      final data = OnboardingData(
+        name: 'Test User',
+        birthDate: DateTime(2000, 1, 15),
+        fitnessLevel: FitnessLevel.beginner,
+        selectedGoals: const [Goal.fitter],
+        selectedInterests: const [
+          Interest.strengthTraining,
+          Interest.cardio,
+          Interest.nutrition,
+        ],
+        periodStart: originalDate,
+      );
+
+      final updated = data.copyWith(periodStart: newDate);
+      expect(updated.periodStart, equals(newDate));
     });
   });
 }

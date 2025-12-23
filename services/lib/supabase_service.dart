@@ -366,15 +366,24 @@ class SupabaseService {
         'invalid fitness level ID',
       );
     }
+    // Single-pass validation + normalization for goals
+    final normalizedGoals = <String>[];
     for (final goal in goals) {
-      if (!kValidGoalIds.contains(goal.toLowerCase())) {
+      final normalized = goal.toLowerCase();
+      if (!kValidGoalIds.contains(normalized)) {
         throw ArgumentError.value(goal, 'goals', 'invalid goal ID');
       }
+      normalizedGoals.add(normalized);
     }
+
+    // Single-pass validation + normalization for interests
+    final normalizedInterests = <String>[];
     for (final interest in interests) {
-      if (!kValidInterestIds.contains(interest.toLowerCase())) {
+      final normalized = interest.toLowerCase();
+      if (!kValidInterestIds.contains(normalized)) {
         throw ArgumentError.value(interest, 'interests', 'invalid interest ID');
       }
+      normalizedInterests.add(normalized);
     }
 
     // Normalize birthDate to UTC date-only
@@ -388,8 +397,8 @@ class SupabaseService {
       'display_name': displayName.trim(),
       'birth_date': _formatIsoDate(birthDateNormalized),
       'fitness_level': normalizedFitnessLevel,
-      'goals': goals.map((g) => g.toLowerCase()).toList(),
-      'interests': interests.map((i) => i.toLowerCase()).toList(),
+      'goals': normalizedGoals,
+      'interests': normalizedInterests,
       'updated_at': timestamp,
     };
     final row = await client

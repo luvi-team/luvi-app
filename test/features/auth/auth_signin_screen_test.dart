@@ -26,11 +26,11 @@ GoRouter _createRouter() {
   );
 }
 
-Widget _buildRouterHarness(GoRouter router) {
+Widget _buildRouterHarness(GoRouter router, {Locale locale = const Locale('de')}) {
   return ProviderScope(
     child: MaterialApp.router(
       routerConfig: router,
-      locale: const Locale('de'),
+      locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
     ),
@@ -84,5 +84,19 @@ void main() {
     await tester.tap(emailButton);
     await tester.pumpAndSettle();
     expect(find.text('LOGIN'), findsOneWidget);
+  });
+
+  testWidgets('AuthSignInScreen shows headline in English', (tester) async {
+    final router = _createRouter();
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(_buildRouterHarness(router, locale: const Locale('en')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AuthGlassCard), findsOneWidget);
+
+    final l10n = AppLocalizations.of(tester.element(find.byType(AuthSignInScreen)))!;
+    expect(l10n.localeName, 'en');
+    expect(find.text(l10n.authSignInHeadline), findsOneWidget);
   });
 }

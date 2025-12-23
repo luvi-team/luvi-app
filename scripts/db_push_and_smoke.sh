@@ -42,7 +42,8 @@ if ! command -v psql >/dev/null 2>&1; then
 fi
 
 echo "[db-push-smoke] linking project ref ${SUPABASE_PROJECT_REF}"
-supabase link --project-ref "${SUPABASE_PROJECT_REF}" --password "${SUPABASE_DB_PASSWORD}"
+# Security: Pass password via stdin (here-string) to avoid exposure in process listings
+supabase link --project-ref "${SUPABASE_PROJECT_REF}" <<< "${SUPABASE_DB_PASSWORD}"
 
 echo "[db-push-smoke] applying migrations (linked)"
 supabase db push --linked

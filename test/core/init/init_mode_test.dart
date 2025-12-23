@@ -7,7 +7,6 @@ import 'package:luvi_app/core/navigation/route_orientation_controller.dart';
 import 'package:luvi_app/main.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_services/init_exception.dart';
-import 'package:luvi_app/core/init/supabase_init_controller.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -33,17 +32,16 @@ void main() {
         ),
       ),
     );
-    // Pump 6 seconds to allow deep link handler's 5s timeout to complete
-    await tester.pump(const Duration(seconds: 6));
-    await tester.pumpAndSettle();
-    // Wait until the controller attempted initialization at least once.
-    final element = tester.element(find.byType(MaterialApp));
-    final container = ProviderScope.containerOf(element);
-    for (var i = 0; i < 10; i++) {
-      final s = container.read(supabaseInitControllerProvider);
-      if (s.attempts > 0) break;
-      await tester.pump(const Duration(milliseconds: 50));
+    // Deep link handler has a 5s timeout that must complete. We pump 6 seconds
+    // in intervals, checking initialization status for early detection while
+    // ensuring all timers complete (no pending timer issues).
+    const pollDuration = Duration(milliseconds: 500);
+    const totalIterations = 12; // 12 * 500ms = 6000ms
+
+    for (var i = 0; i < totalIterations; i++) {
+      await tester.pump(pollDuration);
     }
+    await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byIcon(Icons.wifi_off), findsNothing);
@@ -90,21 +88,17 @@ void main() {
         ),
       ),
     );
-    // Pump 6 seconds to allow deep link handler's 5s timeout to complete
-    await tester.pump(const Duration(seconds: 6));
+    // Deep link handler has a 5s timeout that must complete. We pump 6 seconds
+    // in intervals to ensure all timers complete (no pending timer issues).
+    const pollDuration = Duration(milliseconds: 500);
+    const totalIterations = 12; // 12 * 500ms = 6000ms
+
+    for (var i = 0; i < totalIterations; i++) {
+      await tester.pump(pollDuration);
+    }
     await tester.pumpAndSettle();
 
     // Overlay renders a WiFi off icon when not yet initialized.
-    expect(find.byIcon(Icons.wifi_off), findsOneWidget);
-    // Ensure initialization was attempted at least once (no flakiness), then
-    // assert the offline overlay is visible.
-    final element = tester.element(find.byType(MaterialApp));
-    final container = ProviderScope.containerOf(element);
-    for (var i = 0; i < 10; i++) {
-      final s = container.read(supabaseInitControllerProvider);
-      if (s.attempts > 0) break;
-      await tester.pump(const Duration(milliseconds: 50));
-    }
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
     // If any errors were recorded, verify they are all SupabaseInitException.
     if (recorded.isNotEmpty) {

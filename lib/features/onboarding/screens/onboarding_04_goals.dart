@@ -24,6 +24,7 @@ class Onboarding04GoalsScreen extends ConsumerStatefulWidget {
   const Onboarding04GoalsScreen({super.key});
 
   static const routeName = '/onboarding/04';
+  static const navName = 'onboarding_04_goals';
 
   @override
   ConsumerState<Onboarding04GoalsScreen> createState() => _Onboarding04GoalsScreenState();

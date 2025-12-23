@@ -1005,4 +1005,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get splashGateSignOutCta => 'Abmelden';
+
+  @override
+  String get signOutErrorRetry => 'Abmeldung fehlgeschlagen. Bitte erneut versuchen.';
+
+  @override
+  String get signOutFailed => 'Abmeldung fehlgeschlagen. Du kannst dich erneut anmelden.';
+
+  @override
+  String get retry => 'Erneut versuchen';
 }

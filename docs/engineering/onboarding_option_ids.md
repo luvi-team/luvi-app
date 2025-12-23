@@ -1,8 +1,8 @@
 # Onboarding Option IDs (SSOT)
 
-Ziel: Persistente Werte in Supabase müssen **stabile interne IDs** sein (keine UI‑Labels), damit Copy/Order‑Änderungen keine “Meaning Drift” verursachen.
+Goal: Persisted values in Supabase must use **stable internal IDs** (not UI labels) to prevent "meaning drift" when copy/order changes.
 
-SSOT‑Quelle (Code): `lib/features/onboarding/model/onboarding_option_ids.dart`.
+SSOT Source (Code): `lib/features/onboarding/model/onboarding_option_ids.dart`.
 
 ## `public.profiles.fitness_level` (text)
 - `beginner`
@@ -24,4 +24,3 @@ SSOT‑Quelle (Code): `lib/features/onboarding/model/onboarding_option_ids.dart`
 - `nutrition`
 - `mindfulness`
 - `hormones_cycle`
-

@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
@@ -68,6 +69,12 @@ class _Onboarding07DurationScreenState
     // Get saved duration from notifier or use default
     final savedDuration = onboardingState.periodDuration;
 
+    // Debug-only: Catch navigation flow issues early
+    assert(
+      _periodStart != null,
+      'O7: periodStart should be set by O6. Check navigation flow.',
+    );
+
     if (_periodStart != null) {
       // Calculate end date using saved duration or default
       _periodEnd = _periodStart!.add(
@@ -75,7 +82,12 @@ class _Onboarding07DurationScreenState
       );
       _updatePeriodDays();
     } else {
-      // If no start date provided, use a default
+      // Production fallback: Log for investigation, keep app functional
+      log.w(
+        'O7 fallback activated: periodStart is null. '
+        'savedDuration=$savedDuration. Navigation flow issue suspected.',
+        tag: 'Onboarding',
+      );
       final now = DateTime.now();
       _periodStart = now.subtract(const Duration(days: 7));
       _periodEnd = _periodStart!.add(

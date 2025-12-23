@@ -87,7 +87,7 @@ class Spacing {
   }
 
   /// Success Card 2/3 (horizontal cards) padding with scale factor.
-  /// Figma: 15px vertical, 5px left, 0px right (asymmetric)
+  /// Figma: 15px vertical, 5px left, 5px right
   static EdgeInsets successCard2Padding(double scale) {
     assert(scale > 0 && scale <= 10, 'scale must be between 0 (exclusive) and 10');
     return EdgeInsets.fromLTRB(

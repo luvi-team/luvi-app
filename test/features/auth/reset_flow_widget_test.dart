@@ -61,11 +61,49 @@ void main() {
       await tester.enterText(emailField, 'user@example.com');
       await tester.pump();
       expect(buttonWidget().onPressed, isNotNull);
+    });
 
-      // Note: Per Auth v2 refactoring, the reset flow shows a snackbar
-      // and navigates to /auth/signin instead of showing a success screen.
-      // TODO(auth-v2): Add navigation test with mocked AuthRepository
-      // See: test/features/auth/signup_submit_test.dart for mock pattern
+    testWidgets('successful reset navigates to signin', (tester) async {
+      // Test mode allows silent success without needing Supabase initialization
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            routerConfig: router,
+            theme: AppTheme.buildAppTheme(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Enter valid email
+      await tester.enterText(
+        find.byKey(const ValueKey('reset_email_field')),
+        'user@example.com',
+      );
+      await tester.pump();
+
+      // Tap submit button
+      final ctaFinder = find.byKey(const ValueKey('reset_cta'));
+      final elevatedButtonFinder = find.descendant(
+        of: ctaFinder,
+        matching: find.byType(ElevatedButton),
+      );
+      await tester.tap(elevatedButtonFinder);
+
+      // Pump for async submit + 300ms navigation delay
+      await tester.pump(); // setState after async
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pumpAndSettle();
+
+      // Verify navigation to signin
+      expect(
+        find.byKey(const ValueKey('auth_signin_screen')),
+        findsOneWidget,
+        reason: 'Should navigate to AuthSignInScreen after successful reset',
+      );
     });
   });
 }

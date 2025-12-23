@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'logger.dart';
+
 part 'user_state_service.g.dart';
 
 const _keyHasSeenWelcome = 'has_seen_welcome';
@@ -233,13 +235,22 @@ class UserStateService {
   Future<void> clearPreAuthConsent() async {
     try {
       await prefs.remove(_keyPreAuthAcceptedConsentVersion);
-    } catch (_) {}
+    } catch (e, stack) {
+      log.w('Failed to remove $_keyPreAuthAcceptedConsentVersion',
+          error: e, stack: stack);
+    }
     try {
       await prefs.remove(_keyPreAuthConsentPolicyVersion);
-    } catch (_) {}
+    } catch (e, stack) {
+      log.w('Failed to remove $_keyPreAuthConsentPolicyVersion',
+          error: e, stack: stack);
+    }
     try {
       await prefs.remove(_keyPreAuthConsentScopes);
-    } catch (_) {}
+    } catch (e, stack) {
+      log.w('Failed to remove $_keyPreAuthConsentScopes',
+          error: e, stack: stack);
+    }
   }
 
   Future<void> setHasCompletedOnboarding(bool value) async {

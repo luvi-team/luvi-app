@@ -39,8 +39,10 @@ void main() {
     expect(animatedContainer, findsOneWidget);
 
     final container = tester.widget<AnimatedContainer>(animatedContainer);
-    final decoration = container.decoration as BoxDecoration;
-    expect(decoration.color, DsColors.buttonPrimary);
+    final decoration = container.decoration;
+    expect(decoration, isA<BoxDecoration>());
+    final boxDecoration = decoration as BoxDecoration;
+    expect(boxDecoration.color, DsColors.buttonPrimary);
   });
 
   testWidgets('disabled button has gray color', (tester) async {
@@ -48,8 +50,10 @@ void main() {
 
     final animatedContainer = find.byType(AnimatedContainer);
     final container = tester.widget<AnimatedContainer>(animatedContainer);
-    final decoration = container.decoration as BoxDecoration;
-    expect(decoration.color, DsColors.gray300);
+    final decoration = container.decoration;
+    expect(decoration, isA<BoxDecoration>());
+    final boxDecoration = decoration as BoxDecoration;
+    expect(boxDecoration.color, DsColors.gray300);
   });
 
   testWidgets('calls onPressed when tapped and enabled', (tester) async {

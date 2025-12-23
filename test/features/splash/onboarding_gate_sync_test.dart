@@ -8,13 +8,18 @@ import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart
 // Point 11: Module-level test constants for route assertions
 const _testHomeRoute = HeuteScreen.routeName;
 const _testOnboardingRoute = Onboarding01Screen.routeName;
-const _testDefaultTarget = '/dashboard';
+const _testDefaultTarget = HeuteScreen.routeName; // Use canonical route constant
 const _testCurrentVersion = 1;
 
 /// Unit tests for the onboarding gate sync logic.
 ///
 /// Tests the `determineOnboardingGateRoute` helper function which decides
 /// navigation based on remote (server SSOT) and local state.
+///
+/// The function returns a sealed class [OnboardingGateResult] with three variants:
+/// - [RouteResolved]: Navigation target determined
+/// - [RaceRetryNeeded]: Local/remote mismatch, retry required
+/// - [StateUnknown]: Both gates null, cannot determine route
 void main() {
   group('determineOnboardingGateRoute', () {
 
@@ -25,7 +30,8 @@ void main() {
           localGate: null,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testHomeRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testHomeRoute));
       });
 
       test('remote true takes priority over local false', () {
@@ -34,7 +40,8 @@ void main() {
           localGate: false,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testHomeRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testHomeRoute));
       });
 
       test('remote true takes priority over local true (consistent)', () {
@@ -43,7 +50,8 @@ void main() {
           localGate: true,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testHomeRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testHomeRoute));
       });
 
       test('remote false + local null → navigates to Onboarding01 (first-time user)', () {
@@ -52,17 +60,18 @@ void main() {
           localGate: null,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testOnboardingRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testOnboardingRoute));
       });
 
-      test('remote false + local true → returns null (race-retry needed)', () {
+      test('remote false + local true → returns RaceRetryNeeded', () {
         // This triggers race-retry logic in the caller
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: true,
           homeRoute: _testHomeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<RaceRetryNeeded>());
       });
 
       test('remote false + local false → navigates to Onboarding01 (consistent)', () {
@@ -71,7 +80,8 @@ void main() {
           localGate: false,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testOnboardingRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testOnboardingRoute));
       });
     });
 
@@ -82,20 +92,21 @@ void main() {
           localGate: false,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testOnboardingRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testOnboardingRoute));
       });
 
-      test('remote null + local true → returns null (fail-safe, never Home)', () {
+      test('remote null + local true → returns StateUnknown (fail-safe, never Home)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: null,
           localGate: true,
           homeRoute: _testHomeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<StateUnknown>());
       });
 
-      test('remote null + local null → returns null (triggers _showUnknownUI with retry prompt)', () {
-        // When both remote and local are null, the function returns null.
+      test('remote null + local null → returns StateUnknown (triggers _showUnknownUI with retry prompt)', () {
+        // When both remote and local are null, the function returns StateUnknown.
         // The caller (SplashScreen) then shows the Unknown UI with:
         // - Retry button to attempt navigation again
         // - Sign out button to clear state and restart
@@ -104,7 +115,7 @@ void main() {
           localGate: null,
           homeRoute: _testHomeRoute,
         );
-        expect(result, isNull, reason: 'null signals caller to show Unknown UI');
+        expect(result, isA<StateUnknown>(), reason: 'StateUnknown signals caller to show Unknown UI');
       });
     });
 
@@ -116,7 +127,8 @@ void main() {
           localGate: null,
           homeRoute: customHome,
         );
-        expect(result, equals(customHome));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(customHome));
       });
 
       // Point 9: Split combined test into three separate tests for better failure isolation
@@ -126,7 +138,8 @@ void main() {
           localGate: null,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(Onboarding01Screen.routeName));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
       });
 
       test('returns Onboarding01 when remote false and local false (consistent state)', () {
@@ -135,7 +148,8 @@ void main() {
           localGate: false,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(Onboarding01Screen.routeName));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
       });
 
       test('returns Onboarding01 when remote null and local false (offline fallback)', () {
@@ -144,12 +158,13 @@ void main() {
           localGate: false,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(Onboarding01Screen.routeName));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
       });
     });
 
     group('Race-retry scenarios', () {
-      test('local true + remote false → returns null (triggers race-retry)', () {
+      test('local true + remote false → returns RaceRetryNeeded', () {
         // This scenario indicates potential race condition:
         // User completed onboarding locally but server hasn't synced yet
         final result = determineOnboardingGateRoute(
@@ -157,7 +172,7 @@ void main() {
           localGate: true,
           homeRoute: _testHomeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<RaceRetryNeeded>());
       });
 
       test('after race-retry: remote becomes true → would route to Home', () {
@@ -167,20 +182,21 @@ void main() {
           localGate: true,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testHomeRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testHomeRoute));
       });
 
-      test('after race-retry: remote still false → caller routes to Onboarding', () {
-        // After race-retry, determineOnboardingGateRoute still returns null
+      test('after race-retry: remote still false → still returns RaceRetryNeeded', () {
+        // After race-retry, determineOnboardingGateRoute still returns RaceRetryNeeded
         // But the caller (_navigateAfterAnimation) handles this case explicitly
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: true,
           homeRoute: _testHomeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<RaceRetryNeeded>());
         // Note: The actual routing to Onboarding happens in the caller
-        // when it detects (targetRoute == null && remoteGate == false)
+        // when it detects RaceRetryNeeded after retry
       });
 
       test('race-retry not triggered for first-time users', () {
@@ -190,7 +206,8 @@ void main() {
           localGate: null,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testOnboardingRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testOnboardingRoute));
       });
 
       test('race-retry not triggered when local is false', () {
@@ -200,7 +217,8 @@ void main() {
           localGate: false,
           homeRoute: _testHomeRoute,
         );
-        expect(result, equals(_testOnboardingRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(_testOnboardingRoute));
       });
     });
   });

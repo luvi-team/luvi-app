@@ -244,9 +244,11 @@ DateTime onboardingBirthdateMaxDate([DateTime? reference]) {
 
 /// Minimum birthdate (user cannot be older than 120)
 /// = (today - 121 years) + 1 day (prevents edge-case)
+/// Uses Duration.add() to avoid day overflow at month boundaries.
 DateTime onboardingBirthdateMinDate([DateTime? reference]) {
   final today = reference ?? todayDateOnly;
-  return DateTime(today.year - kMaxAge - 1, today.month, today.day + 1);
+  final baseDate = DateTime(today.year - kMaxAge - 1, today.month, today.day);
+  return baseDate.add(const Duration(days: 1));
 }
 ```
 

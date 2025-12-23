@@ -26,6 +26,14 @@ const int kDefaultCycleLength = 28;
 /// Default period duration in days
 const int kDefaultPeriodDuration = 7;
 
+// ─── Interest Selection (O5) ───
+
+/// Minimum number of interests required for O5
+const int kMinInterestSelections = 3;
+
+/// Maximum number of interests allowed for O5
+const int kMaxInterestSelections = 5;
+
 /// Returns today as date-only (no time component)
 DateTime get todayDateOnly {
   final now = DateTime.now();
@@ -39,18 +47,20 @@ DateTime onboardingBirthdateMaxDate([DateTime? reference]) {
   return DateTime(today.year - kMinAge, today.month, today.day);
 }
 
-/// Minimum birthdate (user cannot be older than [kMaxAge])
-/// = (today - kMaxAge - 1 years) + 1 day (prevents edge-case)
-/// Uses Duration.add() to avoid day overflow at month boundaries.
+/// Minimum birthdate (user cannot be older than [kMaxAge]).
+/// The +1 day offset prevents excluding users born exactly (kMaxAge+1) years ago
+/// due to leap-year or month-boundary rounding (e.g., Feb 29 birth on non-leap year).
+/// Duration.add() avoids DateTime constructor month/day overflow when subtracting years.
 DateTime onboardingBirthdateMinDate([DateTime? reference]) {
   final today = reference ?? todayDateOnly;
   final baseDate = DateTime(today.year - kMaxAge - 1, today.month, today.day);
   return baseDate.add(const Duration(days: 1));
 }
 
-/// Calculates age from birthdate
+/// Calculates age from birthdate.
+/// Uses date-only semantics (consistent with [onboardingBirthdateMaxDate]/[onboardingBirthdateMinDate]).
 int calculateAge(DateTime birthDate, [DateTime? reference]) {
-  final now = reference ?? DateTime.now();
+  final now = reference ?? todayDateOnly;
   int age = now.year - birthDate.year;
   // Correction if birthday hasn't occurred yet this year
   if (now.month < birthDate.month ||

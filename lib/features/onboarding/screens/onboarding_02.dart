@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_03_fitness.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/birthdate_picker.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
@@ -20,6 +21,9 @@ class Onboarding02Screen extends ConsumerStatefulWidget {
   const Onboarding02Screen({super.key});
 
   static const routeName = '/onboarding/02';
+
+  /// GoRoute name for pushNamed navigation
+  static const navName = 'onboarding_02';
 
   @override
   ConsumerState<Onboarding02Screen> createState() => _Onboarding02ScreenState();
@@ -162,7 +166,7 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
       onPressed: () {
         // Save birthDate to OnboardingNotifier
         ref.read(onboardingProvider.notifier).setBirthDate(_date);
-        context.pushNamed('onboarding_03_fitness');
+        context.pushNamed(Onboarding03FitnessScreen.navName);
       },
       isEnabled: _hasInteracted,
     );

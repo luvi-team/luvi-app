@@ -17,13 +17,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check CLAUDE.md frontmatter exists
+      - name: Check CLAUDE.md frontmatter exists and is valid
         run: |
+          # Check opening delimiter
           if ! head -1 CLAUDE.md | grep -q "^---$"; then
             echo "::error::CLAUDE.md must start with YAML frontmatter (---)"
             exit 1
           fi
-          echo "Frontmatter exists"
+
+          # Find closing delimiter (within first 50 lines)
+          CLOSING_LINE=$(head -50 CLAUDE.md | tail -n +2 | grep -n "^---$" | head -1 | cut -d: -f1)
+          if [ -z "$CLOSING_LINE" ]; then
+            echo "::error::CLAUDE.md frontmatter missing closing delimiter (---)"
+            exit 1
+          fi
+
+          # Extract and validate YAML (Fix 6: validate frontmatter syntax)
+          CLOSING_LINE=$((CLOSING_LINE + 1))
+          FRONTMATTER=$(head -$CLOSING_LINE CLAUDE.md | tail -n +2 | head -n -1)
+          if ! echo "$FRONTMATTER" | python3 -c "import sys, yaml; yaml.safe_load(sys.stdin)" 2>/dev/null; then
+            echo "::error::CLAUDE.md frontmatter contains invalid YAML"
+            exit 1
+          fi
+
+          echo "Frontmatter exists and is valid YAML"
 
       - name: Check acceptance version reference
         run: |

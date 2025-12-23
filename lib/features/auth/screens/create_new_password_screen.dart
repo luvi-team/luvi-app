@@ -124,8 +124,12 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   ///
   /// Per NIST SP 800-63B: Only checks minimum length. Character composition
   /// rules are explicitly discouraged by modern security guidance.
+  ///
+  /// UX Design: Empty field returns null (no inline error during typing).
+  /// This is intentional - we use "soft" validation during input and "strict"
+  /// validation on submit. The submit handler catches empty fields separately.
   String? _validateNewPasswordField(String value, AppLocalizations l10n) {
-    if (value.isEmpty) return null; // Don't show error for empty field on typing
+    if (value.isEmpty) return null; // UX: No error while user hasn't typed yet
     if (value.length < 8) return l10n.authErrPasswordTooShort;
     return null;
   }
@@ -225,6 +229,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       setState(() {
         _consecutiveFailures = 0;
         _lastFailureAt = null;
+        _newPasswordError = null;
+        _confirmPasswordError = null;
       });
       _backoffTicker?.cancel();
       context.goNamed(SuccessScreen.passwordSavedRouteName);

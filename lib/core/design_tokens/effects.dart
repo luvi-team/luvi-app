@@ -8,31 +8,46 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 class DsEffects {
   const DsEffects._();
 
+  // ─── Opacity Design Tokens ───
+  // Background opacity levels for glass morphism
+  static const double _opacityLight = 0.10; // 10% - subtle glass
+  static const double _opacityMedium = 0.30; // 30% - visible glass
+  static const double _opacityStrong = 0.50; // 50% - prominent glass
+  static const double _opacityUltra = 0.60; // 60% - solid glass
+  static const double _opacityDense = 0.70; // 70% - near-opaque
+
+  // Border opacity levels
+  static const double _borderOpacityMedium = 0.60; // 60%
+  static const double _borderOpacityStrong = 0.70; // 70%
+  static const double _borderOpacityUltra = 0.80; // 80%
+  static const double _borderOpacityMax = 0.85; // 85%
+  static const double _borderOpacityFull = 0.90; // 90%
+
   /// Glass Card Effect - 10% white opacity background with 16px radius
   /// Used for: Name input container (O1), BirthdatePicker container (O2)
   static BoxDecoration get glassCard => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.1),
+        color: DsColors.white.withValues(alpha: _opacityLight),
         borderRadius: BorderRadius.circular(16),
       );
 
   /// Glass Pill Effect - 10% white opacity background with full pill radius
   /// Used for: Fitness pills (O3), Interest pills (O5)
   static BoxDecoration get glassPill => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.1),
+        color: DsColors.white.withValues(alpha: _opacityLight),
         borderRadius: BorderRadius.circular(999),
       );
 
   /// Glass Calendar Container - 30% white opacity with 40px radius
   /// Used for: Period calendar containers (O7, O8)
   static BoxDecoration get glassCalendar => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.3),
+        color: DsColors.white.withValues(alpha: _opacityMedium),
         borderRadius: BorderRadius.circular(Sizes.radiusXL),
       );
 
   /// Glass Mini Calendar Container - 10% white opacity with 24px radius
   /// Used for: Calendar mini widget on cycle intro (O6)
   static BoxDecoration get glassMiniCalendar => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.1),
+        color: DsColors.white.withValues(alpha: _opacityLight),
         borderRadius: BorderRadius.circular(24),
       );
 
@@ -42,10 +57,10 @@ class DsEffects {
   /// Strong Glass Card - 30% white opacity + white border for enhanced visibility
   /// Used for: O1 name input, O2 birthdate picker, O4/O5 goal/interest cards
   static BoxDecoration get glassCardStrong => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.30),
+        color: DsColors.white.withValues(alpha: _opacityMedium),
         borderRadius: BorderRadius.circular(Sizes.radiusL),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.70),
+          color: DsColors.white.withValues(alpha: _borderOpacityStrong),
           width: 1.5,
         ),
       );
@@ -53,10 +68,10 @@ class DsEffects {
   /// Strong Glass Pill - 30% white opacity + white border
   /// Used for: O3 fitness level pills (rounded-rect, not pill)
   static BoxDecoration get glassPillStrong => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.30),
+        color: DsColors.white.withValues(alpha: _opacityMedium),
         borderRadius: BorderRadius.circular(Sizes.radiusL),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.60),
+          color: DsColors.white.withValues(alpha: _borderOpacityMedium),
           width: 1.5,
         ),
       );
@@ -64,10 +79,10 @@ class DsEffects {
   /// Strong Glass Calendar - 50% white opacity + white border
   /// Used for: O7/O8 period calendar containers
   static BoxDecoration get glassCalendarStrong => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.50),
+        color: DsColors.white.withValues(alpha: _opacityStrong),
         borderRadius: BorderRadius.circular(Sizes.radiusXL),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.70),
+          color: DsColors.white.withValues(alpha: _borderOpacityStrong),
           width: 1.5,
         ),
       );
@@ -75,17 +90,18 @@ class DsEffects {
   /// Strong Glass Mini Calendar - 30% white opacity + white border
   /// Used for: O6 calendar mini widget
   static BoxDecoration get glassMiniCalendarStrong => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.30),
+        color: DsColors.white.withValues(alpha: _opacityMedium),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.70),
+          color: DsColors.white.withValues(alpha: _borderOpacityStrong),
           width: 1.5,
         ),
       );
 
   /// Success Card Glass - Figma O9 specs: #E9D5FF @ 20%, 16px radius
-  /// Used for: O9 content preview cards (deprecated - use individual card effects)
+  /// @deprecated Use [successCardPurple], [successCardCyan], or [successCardPink] instead.
   /// Note: No border per Figma O9 design
+  @Deprecated('Use successCardPurple, successCardCyan, or successCardPink instead')
   static BoxDecoration get successCardGlass => BoxDecoration(
         color: DsColors.successCardGlass,
         borderRadius: BorderRadius.circular(Sizes.radius16),
@@ -97,7 +113,7 @@ class DsEffects {
         color: DsColors.successCardPurple,
         borderRadius: BorderRadius.circular(Sizes.radius16),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.70),
+          color: DsColors.white.withValues(alpha: _borderOpacityStrong),
           width: 1.5,
         ),
       );
@@ -108,7 +124,7 @@ class DsEffects {
         color: DsColors.successCardCyan,
         borderRadius: BorderRadius.circular(Sizes.radius16),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.70),
+          color: DsColors.white.withValues(alpha: _borderOpacityStrong),
           width: 1.5,
         ),
       );
@@ -119,7 +135,7 @@ class DsEffects {
         color: DsColors.successCardPink,
         borderRadius: BorderRadius.circular(Sizes.radius16),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.70),
+          color: DsColors.white.withValues(alpha: _borderOpacityStrong),
           width: 1.5,
         ),
       );
@@ -130,7 +146,7 @@ class DsEffects {
   /// O1 Name Input - 10% white opacity, 16px radius (Figma v3 exact)
   /// Used for: Name text input container
   static BoxDecoration get glassOnboardingInput10 => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.10),
+        color: DsColors.white.withValues(alpha: _opacityLight),
         borderRadius: BorderRadius.circular(Sizes.radius16),
       );
 
@@ -151,14 +167,14 @@ class DsEffects {
   /// O6 Mini Calendar - 10% white opacity, 24px radius (Figma v3 exact)
   /// Used for: Calendar mini widget on cycle intro
   static BoxDecoration get glassOnboardingMiniCalendar10 => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.10),
+        color: DsColors.white.withValues(alpha: _opacityLight),
         borderRadius: BorderRadius.circular(Sizes.radius24),
       );
 
   /// O7/O8 Calendar - 30% white opacity, 40px radius (Figma v3 exact)
   /// Used for: Period calendar containers
   static BoxDecoration get glassOnboardingCalendar30 => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.30),
+        color: DsColors.white.withValues(alpha: _opacityMedium),
         borderRadius: BorderRadius.circular(Sizes.radiusXL),
       );
 
@@ -168,10 +184,10 @@ class DsEffects {
   /// Ultra Glass Card - 60% white opacity + 85% white border, 2px width
   /// Used for: O1 name input, O2 birthdate picker (Figma v3 polish)
   static BoxDecoration get glassCardUltra => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.60),
+        color: DsColors.white.withValues(alpha: _opacityUltra),
         borderRadius: BorderRadius.circular(Sizes.radiusL),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.85),
+          color: DsColors.white.withValues(alpha: _borderOpacityMax),
           width: 2.0,
         ),
       );
@@ -179,10 +195,10 @@ class DsEffects {
   /// Ultra Glass Pill - 60% white opacity + 80% white border, 2px width
   /// Used for: O3 fitness level pills (Figma v3 polish)
   static BoxDecoration get glassPillUltra => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.60),
+        color: DsColors.white.withValues(alpha: _opacityUltra),
         borderRadius: BorderRadius.circular(Sizes.radiusL),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.80),
+          color: DsColors.white.withValues(alpha: _borderOpacityUltra),
           width: 2.0,
         ),
       );
@@ -190,10 +206,10 @@ class DsEffects {
   /// Ultra Glass Calendar - 70% white opacity + 90% white border, 2px width
   /// Used for: O7/O8 period calendar containers (Figma v3 polish)
   static BoxDecoration get glassCalendarUltra => BoxDecoration(
-        color: DsColors.white.withValues(alpha: 0.70),
+        color: DsColors.white.withValues(alpha: _opacityDense),
         borderRadius: BorderRadius.circular(Sizes.radiusXL),
         border: Border.all(
-          color: DsColors.white.withValues(alpha: 0.90),
+          color: DsColors.white.withValues(alpha: _borderOpacityFull),
           width: 2.0,
         ),
       );

@@ -1005,4 +1005,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splashGateSignOutCta => 'Sign out';
+
+  @override
+  String get signOutErrorRetry => 'Sign out failed. Please try again.';
+
+  @override
+  String get signOutFailed => 'Sign out failed. You can log in again.';
+
+  @override
+  String get retry => 'Retry';
 }

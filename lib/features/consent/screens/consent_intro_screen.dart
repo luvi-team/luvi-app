@@ -32,7 +32,6 @@ class ConsentIntroScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final mediaQuery = MediaQuery.of(context);
 
     return Scaffold(
       backgroundColor: DsColors.bgCream,
@@ -93,10 +92,9 @@ class ConsentIntroScreen extends StatelessWidget {
               ),
 
               // Bottom CTA (WelcomeButton - reused from existing component)
+              // Note: SafeArea already handles bottom inset, only add Spacing.l
               Padding(
-                padding: EdgeInsets.only(
-                  bottom: mediaQuery.padding.bottom + Spacing.l,
-                ),
+                padding: const EdgeInsets.only(bottom: Spacing.l),
                 child: SizedBox(
                   width: double.infinity,
                   child: Semantics(

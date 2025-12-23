@@ -78,7 +78,7 @@ BEGIN
       EXECUTE 'ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO service_role';
     EXCEPTION
       WHEN insufficient_privilege THEN
-        RAISE NOTICE 'Skipping ALTER DEFAULT PRIVILEGES for role supabase_admin (insufficient_privilege)';
+        RAISE WARNING 'Skipping ALTER DEFAULT PRIVILEGES for role supabase_admin (insufficient_privilege)';
     END;
   END IF;
 END $$;

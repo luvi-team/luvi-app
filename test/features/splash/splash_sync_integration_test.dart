@@ -180,6 +180,11 @@ void main() {
           );
           expect(
             result,
+            isA<RouteResolved>(),
+            reason: 'remote=true should return RouteResolved (local=$localGate)',
+          );
+          expect(
+            (result as RouteResolved).route,
             equals(homeRoute),
             reason: 'remote=true should route to Home (local=$localGate)',
           );
@@ -199,13 +204,18 @@ void main() {
           );
           expect(
             result,
+            isA<RouteResolved>(),
+            reason: 'remote=false, local=$localGate should return RouteResolved',
+          );
+          expect(
+            (result as RouteResolved).route,
             equals(Onboarding01Screen.routeName),
             reason: 'remote=false, local=$localGate should route to Onboarding',
           );
         }
       });
 
-      test('remote false + local true → returns null (race-retry needed)',
+      test('remote false + local true → returns RaceRetryNeeded',
           () async {
         final reader = AlwaysFalseGateReader();
         final remoteGate = await reader.fetchRemoteOnboardingGate();
@@ -216,13 +226,13 @@ void main() {
           localGate: true,
           homeRoute: homeRoute,
         );
-        expect(result, isNull,
+        expect(result, isA<RaceRetryNeeded>(),
             reason: 'remote=false, local=true should trigger race-retry');
       });
     });
 
     group('Remote unavailable (null) - local fallback scenarios', () {
-      test('remote null + local true → returns null (fail-safe, never Home)',
+      test('remote null + local true → returns StateUnknown (fail-safe, never Home)',
           () async {
         final reader = AlwaysNullGateReader();
         final remoteGate = await reader.fetchRemoteOnboardingGate();
@@ -232,7 +242,7 @@ void main() {
           localGate: true,
           homeRoute: homeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<StateUnknown>());
       });
 
       test('remote null + local false → routes to Onboarding', () async {
@@ -244,10 +254,11 @@ void main() {
           localGate: false,
           homeRoute: homeRoute,
         );
-        expect(result, equals(Onboarding01Screen.routeName));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
       });
 
-      test('remote null + local null → returns null (Unknown UI)', () async {
+      test('remote null + local null → returns StateUnknown (Unknown UI)', () async {
         final reader = AlwaysNullGateReader();
         final remoteGate = await reader.fetchRemoteOnboardingGate();
 
@@ -256,7 +267,7 @@ void main() {
           localGate: null,
           homeRoute: homeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<StateUnknown>());
       });
     });
 
@@ -278,7 +289,7 @@ void main() {
           localGate: true,
           homeRoute: homeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<StateUnknown>());
       });
 
       test('retry logic: first call fails, retry succeeds', () async {
@@ -305,7 +316,8 @@ void main() {
           localGate: null,
           homeRoute: homeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(homeRoute));
       });
     });
 
@@ -386,13 +398,13 @@ void main() {
         var remoteGate = await reader.fetchRemoteOnboardingGate();
         expect(remoteGate, isFalse);
 
-        // determineOnboardingGateRoute returns null (race-retry needed)
+        // determineOnboardingGateRoute returns RaceRetryNeeded
         var result = determineOnboardingGateRoute(
           remoteGate: remoteGate,
           localGate: localGate,
           homeRoute: homeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<RaceRetryNeeded>());
 
         // After 500ms delay, re-fetch: remote now true
         remoteGate = await reader.fetchRemoteOnboardingGate();
@@ -404,7 +416,8 @@ void main() {
           localGate: localGate,
           homeRoute: homeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(homeRoute));
         expect(reader.callCount, 2);
       });
 
@@ -417,31 +430,28 @@ void main() {
         var remoteGate = await reader.fetchRemoteOnboardingGate();
         expect(remoteGate, isFalse);
 
-        // determineOnboardingGateRoute returns null (race-retry needed)
+        // determineOnboardingGateRoute returns RaceRetryNeeded
         var result = determineOnboardingGateRoute(
           remoteGate: remoteGate,
           localGate: localGate,
           homeRoute: homeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<RaceRetryNeeded>());
 
         // After 500ms delay, re-fetch: remote still false
         remoteGate = await reader.fetchRemoteOnboardingGate();
         expect(remoteGate, isFalse);
 
-        // Still returns null (remote false + local true)
+        // Still returns RaceRetryNeeded (remote false + local true)
         result = determineOnboardingGateRoute(
           remoteGate: remoteGate,
           localGate: localGate,
           homeRoute: homeRoute,
         );
-        expect(result, isNull);
+        expect(result, isA<RaceRetryNeeded>());
 
         // Caller (_navigateAfterAnimation) handles this case:
-        // (targetRoute == null && remoteGate == false) → go to Onboarding
-        final shouldRouteToOnboarding = result == null && remoteGate == false;
-        expect(shouldRouteToOnboarding, isTrue);
-
+        // After retry, if still RaceRetryNeeded → go to Onboarding
         expect(reader.callCount, 2);
       });
 
@@ -457,7 +467,8 @@ void main() {
           localGate: localGate,
           homeRoute: homeRoute,
         );
-        expect(result, equals(Onboarding01Screen.routeName));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
       });
 
       test('no race-retry when both agree (local=false, remote=false)',
@@ -473,7 +484,8 @@ void main() {
           localGate: localGate,
           homeRoute: homeRoute,
         );
-        expect(result, equals(Onboarding01Screen.routeName));
+        expect(result, isA<RouteResolved>());
+        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
       });
     });
   });
@@ -513,16 +525,14 @@ void main() {
                   var remoteGate =
                       await gateReader.fetchRemoteOnboardingGate();
 
-                  var targetRoute = determineOnboardingGateRoute(
+                  var gateResult = determineOnboardingGateRoute(
                     remoteGate: remoteGate,
                     localGate: localGate,
                     homeRoute: homeRoute,
                   );
 
-                  // Race-retry condition: local true + remote false
-                  if (targetRoute == null &&
-                      localGate == true &&
-                      remoteGate == false) {
+                  // Race-retry condition: RaceRetryNeeded
+                  if (gateResult is RaceRetryNeeded) {
                     // Wait 100ms (simulated delay)
                     await Future<void>.delayed(
                         const Duration(milliseconds: 100));
@@ -532,20 +542,29 @@ void main() {
                         await gateReader.fetchRemoteOnboardingGate();
 
                     // Re-evaluate
-                    targetRoute = determineOnboardingGateRoute(
+                    gateResult = determineOnboardingGateRoute(
                       remoteGate: remoteGate,
                       localGate: localGate,
                       homeRoute: homeRoute,
                     );
 
-                    // If still null after retry, go to Onboarding
-                    if (targetRoute == null && remoteGate == false) {
+                    // If still RaceRetryNeeded after retry, go to Onboarding
+                    if (gateResult is RaceRetryNeeded) {
                       navigatedRoute = Onboarding01Screen.routeName;
                       return;
                     }
                   }
 
-                  navigatedRoute = targetRoute;
+                  // Handle result with pattern matching
+                  switch (gateResult) {
+                    case RouteResolved(:final route):
+                      navigatedRoute = route;
+                    case StateUnknown():
+                      navigatedRoute = null;
+                    case RaceRetryNeeded():
+                      // Already handled above
+                      break;
+                  }
                 },
                 child: const Text('Trigger'),
               );

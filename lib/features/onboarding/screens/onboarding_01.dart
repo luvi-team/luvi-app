@@ -13,6 +13,7 @@ import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart'
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -60,7 +61,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     // Save name to OnboardingNotifier
     ref.read(onboardingProvider.notifier).setName(_nameController.text.trim());
     // Navigate to O2
-    context.pushNamed('onboarding_02');
+    context.pushNamed(Onboarding02Screen.navName);
   }
 
   void _handleBack() {

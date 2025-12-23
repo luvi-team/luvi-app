@@ -14,7 +14,10 @@ import '../../support/test_config.dart';
 
 /// Extracted Unknown UI widget for isolated testing.
 ///
-/// This mirrors the `_buildUnknownUI` from SplashScreen but is testable.
+/// IMPORTANT: This mirrors `_buildUnknownUI` from SplashScreen
+/// (lib/features/splash/screens/splash_screen.dart:222-284).
+/// If the production UI changes, update this test widget to match.
+/// This is a deliberate test-only copy for isolated widget testing.
 class _TestableUnknownUI extends StatefulWidget {
   const _TestableUnknownUI({required this.onSignOut});
 

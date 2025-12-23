@@ -260,10 +260,11 @@ class DsColors {
 
   // ─── O6 Radial Gradient Colors (Figma O6 2024-12) ───
 
-  /// Period Glow 60% opacity (Figma: #FF6482 @ 60%)
-  static const Color periodGlow60 = Color(0x99FF6482);
+  /// Period Glow 60% opacity - alias for periodGlowPink (Fix 9: deduplicate)
+  static const Color periodGlow60 = periodGlowPink;
 
   /// Period Glow 10% opacity (Figma: #FF6482 @ 10%)
+  /// Note: Uses exact 10% (0x1A=26/255) vs periodGlowPinkLight's 0x19=25/255
   static const Color periodGlow10 = Color(0x1AFF6482);
 }
 

@@ -106,6 +106,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   SupabaseDeepLinkHandler? _deepLinkHandler;
   ProviderSubscription<InitState>? _initOrchestrationSubscription;
   StreamSubscription<AuthState>? _userStateAuthSyncSubscription;
+  bool _orchestrationInProgress = false;
 
   String get _initialLocation => kReleaseMode
       ? SplashScreen.routeName
@@ -256,20 +257,26 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
       supabaseInitControllerProvider,
       (prev, next) async {
         if (!SupabaseService.isInitialized) return;
+        // Reentrancy guard: prevent concurrent execution if provider emits rapidly
+        if (_orchestrationInProgress) return;
+        _orchestrationInProgress = true;
+        try {
+          // 1. Router-Refresh aktivieren (braucht Supabase-Client)
+          _routerRefreshNotifier.ensureSupabaseListener();
 
-        // 1. Router-Refresh aktivieren (braucht Supabase-Client)
-        _routerRefreshNotifier.ensureSupabaseListener();
+          // 2. Recovery-Listener registrieren (MUSS vor pending URI!)
+          _ensurePasswordRecoveryListener();
 
-        // 2. Recovery-Listener registrieren (MUSS vor pending URI!)
-        _ensurePasswordRecoveryListener();
+          // 2b. UserStateService account-scope sync (auth change → bind/clear)
+          _ensureUserStateAuthSyncListener();
 
-        // 2b. UserStateService account-scope sync (auth change → bind/clear)
-        _ensureUserStateAuthSyncListener();
-
-        // 3. ERST JETZT: Pending URI verarbeiten (Listener ist garantiert ready)
-        final handler = _deepLinkHandler;
-        if (handler != null && handler.hasPendingUri) {
-          unawaited(handler.processPendingUri());
+          // 3. ERST JETZT: Pending URI verarbeiten (Listener ist garantiert ready)
+          final handler = _deepLinkHandler;
+          if (handler != null && handler.hasPendingUri) {
+            unawaited(handler.processPendingUri());
+          }
+        } finally {
+          _orchestrationInProgress = false;
         }
       },
       fireImmediately: true, // Falls Supabase schon initialized

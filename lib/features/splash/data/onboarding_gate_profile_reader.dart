@@ -11,7 +11,8 @@ abstract class OnboardingGateProfileReader {
   ///
   /// Returns:
   /// - `true` if the user has completed onboarding (server SSOT)
-  /// - `false` if the user has not completed onboarding
+  /// - `false` if the user has not completed onboarding, OR if no profile exists
+  ///   yet (new user who hasn't completed onboarding)
   /// - `null` if the profile could not be fetched (network error, timeout, etc.)
   Future<bool?> fetchRemoteOnboardingGate();
 }

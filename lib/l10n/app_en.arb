@@ -1376,5 +1376,17 @@
   "splashGateSignOutCta": "Sign out",
   "@splashGateSignOutCta": {
     "description": "Sign out button label on splash unknown state UI"
+  },
+  "signOutErrorRetry": "Sign out failed. Please try again.",
+  "@signOutErrorRetry": {
+    "description": "Error message shown when sign out fails on splash screen"
+  },
+  "signOutFailed": "Sign out failed. You can log in again.",
+  "@signOutFailed": {
+    "description": "Warning snackbar when server sign out fails but local state was cleared"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
   }
 }

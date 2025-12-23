@@ -19,6 +19,9 @@ class SupabaseDeepLinkHandler {
   })  : _appLinks = appLinks ?? platform_links.AppLinks(),
         _allowedUri = allowedUri ?? config_links.AppLinks.authCallbackUri;
 
+  /// Timeout for initial deep link fetch. Exposed for testing.
+  static const deepLinkTimeout = Duration(seconds: 5);
+
   final platform_links.AppLinks _appLinks;
   final Uri _allowedUri;
   StreamSubscription<Uri?>? _subscription;
@@ -66,7 +69,7 @@ class SupabaseDeepLinkHandler {
     try {
       final initial = await _appLinks
           .getInitialLink()
-          .timeout(const Duration(seconds: 5));
+          .timeout(deepLinkTimeout);
       if (initial != null) {
         await _handleUri(initial);
       }
@@ -74,7 +77,7 @@ class SupabaseDeepLinkHandler {
       log.w(
         'supabase_deeplink_initial_timeout',
         tag: 'supabase_deeplink',
-        error: 'getInitialLink timed out after 5 seconds',
+        error: 'getInitialLink timed out after ${deepLinkTimeout.inSeconds}s',
         stack: stackTrace,
       );
     } catch (error, stackTrace) {

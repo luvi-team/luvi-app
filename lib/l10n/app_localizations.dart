@@ -2002,6 +2002,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign out'**
   String get splashGateSignOutCta;
+
+  /// Error message shown when sign out fails on splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out failed. Please try again.'**
+  String get signOutErrorRetry;
+
+  /// Warning snackbar when server sign out fails but local state was cleared
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out failed. You can log in again.'**
+  String get signOutFailed;
+
+  /// Generic retry button label
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

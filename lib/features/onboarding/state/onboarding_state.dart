@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/model/goal.dart';
 import 'package:luvi_app/features/onboarding/model/interest.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 
 part 'onboarding_state.g.dart';
 
@@ -47,7 +48,9 @@ class OnboardingData {
   /// Factory for empty initial state
   factory OnboardingData.empty() => const OnboardingData();
 
-  /// Copy with updated fields
+  /// Copy with updated fields.
+  /// Use [clearPeriodStart] to explicitly set periodStart to null
+  /// (for "I don't remember" flow in O6/O7).
   OnboardingData copyWith({
     String? name,
     DateTime? birthDate,
@@ -57,6 +60,7 @@ class OnboardingData {
     DateTime? periodStart,
     int? periodDuration,
     int? cycleLength,
+    bool clearPeriodStart = false,
   }) {
     return OnboardingData(
       name: name ?? this.name,
@@ -64,7 +68,7 @@ class OnboardingData {
       fitnessLevel: fitnessLevel ?? this.fitnessLevel,
       selectedGoals: selectedGoals ?? this.selectedGoals,
       selectedInterests: selectedInterests ?? this.selectedInterests,
-      periodStart: periodStart ?? this.periodStart,
+      periodStart: clearPeriodStart ? null : (periodStart ?? this.periodStart),
       periodDuration: periodDuration ?? this.periodDuration,
       cycleLength: cycleLength ?? this.cycleLength,
     );
@@ -72,14 +76,16 @@ class OnboardingData {
 
   /// Check if minimum required data is present for DB save.
   /// Note: periodStart is OPTIONAL to support "I don't remember" flow.
-  /// The interests <= 5 constraint is enforced by UI, not here.
+  /// The interests <= kMaxInterestSelections constraint is enforced by UI.
+  /// Defense-in-depth: trim() here ensures whitespace-only names are rejected
+  /// even if notifier.setName() trimming was bypassed.
   bool get isComplete =>
       name != null &&
-      name!.isNotEmpty &&
+      name!.trim().isNotEmpty &&
       birthDate != null &&
       fitnessLevel != null &&
       selectedGoals.isNotEmpty &&
-      selectedInterests.length >= 3;
+      selectedInterests.length >= kMinInterestSelections;
 }
 
 /// Riverpod notifier for onboarding state management.
@@ -122,8 +128,8 @@ class OnboardingNotifier extends _$OnboardingNotifier {
     if (interests.contains(interest)) {
       interests.remove(interest);
     } else {
-      // Limit to 5 max
-      if (interests.length < 5) {
+      // Limit to kMaxInterestSelections (shared constant)
+      if (interests.length < kMaxInterestSelections) {
         interests.add(interest);
       }
     }
@@ -145,13 +151,8 @@ class OnboardingNotifier extends _$OnboardingNotifier {
   /// Privacy-safe: ensures no implicit cycle data is created when user
   /// selects "unknown" option in O7.
   void clearPeriodStart() {
-    state = OnboardingData(
-      name: state.name,
-      birthDate: state.birthDate,
-      fitnessLevel: state.fitnessLevel,
-      selectedGoals: state.selectedGoals,
-      selectedInterests: state.selectedInterests,
-      periodStart: null,
+    state = state.copyWith(
+      clearPeriodStart: true,
       periodDuration: 7,
       cycleLength: 28,
     );

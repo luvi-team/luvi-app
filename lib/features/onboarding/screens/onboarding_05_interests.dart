@@ -33,16 +33,11 @@ class Onboarding05InterestsScreen extends ConsumerStatefulWidget {
 
 class _Onboarding05InterestsScreenState
     extends ConsumerState<Onboarding05InterestsScreen> {
-  /// Minimum number of interests required
-  static const int _minSelections = 3;
-
-  /// Maximum number of interests allowed
-  static const int _maxSelections = 5;
-
   /// Validation based on provider state (SSOT)
+  /// Uses shared constants from onboarding_constants.dart
   bool _isValidSelection(List<Interest> selectedInterests) {
     final count = selectedInterests.length;
-    return count >= _minSelections && count <= _maxSelections;
+    return count >= kMinInterestSelections && count <= kMaxInterestSelections;
   }
 
   /// Toggle interest - notifier enforces max=5 limit

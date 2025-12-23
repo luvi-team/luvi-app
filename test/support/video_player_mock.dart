@@ -15,9 +15,34 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 ///   });
 /// }
 /// ```
+///
+/// For lifecycle tests with custom events:
+/// ```dart
+/// setUp(() {
+///   VideoPlayerMock.setEvents([
+///     VideoEvent(eventType: VideoEventType.initialized, duration: Duration(seconds: 10), size: Size(1920, 1080)),
+///     VideoEvent(eventType: VideoEventType.completed),
+///   ]);
+/// });
+/// tearDown(() => VideoPlayerMock.resetEvents());
+/// ```
 class VideoPlayerMock extends VideoPlayerPlatform {
   static void registerWith() {
     VideoPlayerPlatform.instance = VideoPlayerMock();
+  }
+
+  // Configurable events for lifecycle tests
+  static List<VideoEvent>? _customEvents;
+
+  /// Configure events to emit for all texture IDs.
+  /// Call in setUp, reset in tearDown.
+  static void setEvents(List<VideoEvent> events) {
+    _customEvents = events;
+  }
+
+  /// Reset to default behavior (single initialized event).
+  static void resetEvents() {
+    _customEvents = null;
   }
 
   int _nextTextureId = 0;
@@ -86,13 +111,15 @@ class VideoPlayerMock extends VideoPlayerPlatform {
 
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
-    return Stream.value(
-      VideoEvent(
-        eventType: VideoEventType.initialized,
-        duration: const Duration(seconds: 1),
-        size: const Size(1920, 1080),
-      ),
-    );
+    final events = _customEvents ??
+        [
+          VideoEvent(
+            eventType: VideoEventType.initialized,
+            duration: const Duration(seconds: 1),
+            size: const Size(1920, 1080),
+          ),
+        ];
+    return Stream.fromIterable(events);
   }
 
   @override

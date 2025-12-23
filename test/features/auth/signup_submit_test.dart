@@ -218,8 +218,8 @@ void main() {
       expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
       expect(find.byKey(const ValueKey('auth_login_screen')), findsNothing);
 
-      // Advance past 800ms delay
-      await tester.pump(const Duration(milliseconds: 800));
+      // Advance past signup success navigation delay
+      await tester.pump(kSignupSuccessNavigationDelay);
       await tester.pumpAndSettle();
 
       // Now on login screen

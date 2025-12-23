@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -7,18 +8,19 @@ import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 
 /// Minimal profile stub screen with logout functionality for QA/MVP.
 ///
 /// This is a temporary screen that will be replaced with a full profile
 /// implementation later. Its primary purpose is to provide a logout option.
-class ProfileStubScreen extends StatelessWidget {
+class ProfileStubScreen extends ConsumerWidget {
   static const String routeName = '/profil';
 
   const ProfileStubScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.dashboardNavProfile)),
@@ -35,21 +37,42 @@ class ProfileStubScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
             ),
           ),
-          onPressed: () => _handleSignOut(context),
+          onPressed: () => _handleSignOut(context, ref),
           child: Text(l10n.splashGateSignOutCta),
         ),
       ),
     );
   }
 
-  Future<void> _handleSignOut(BuildContext context) async {
+  Future<void> _handleSignOut(BuildContext context, WidgetRef ref) async {
+    bool serverFailed = false;
+
     try {
       await SupabaseService.client.auth.signOut();
     } catch (e, st) {
+      serverFailed = true;
       log.w('sign out failed', tag: 'profile', error: sanitizeError(e), stack: st);
     }
-    if (context.mounted) {
-      context.goNamed(RouteNames.authSignIn);
+
+    // Always clear local state (even if server signOut failed)
+    try {
+      final userState = await ref.read(userStateServiceProvider.future);
+      await userState.bindUser(null); // Clears all user-scoped state
+    } catch (_) {
+      // Best-effort local cleanup
+    }
+
+    if (!context.mounted) return;
+
+    // Navigate first, THEN show snackbar (so it appears on new screen)
+    context.goNamed(RouteNames.authSignIn);
+
+    // Show warning snackbar AFTER navigation (visible on sign-in screen)
+    if (serverFailed) {
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.signOutFailed)),
+      );
     }
   }
 }

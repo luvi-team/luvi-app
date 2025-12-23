@@ -309,17 +309,25 @@ class _OnboardingSuccessScreenState
     setState(() {
       _state = O9AnimationState.animating;
     });
-    // Animation restart if available - save triggers via onAnimationComplete
-    // Fallback: Direct save if animation state unavailable
-    if (_progressKey.currentState != null) {
-      _progressKey.currentState!.restart();
-    } else {
-      // No animation available, directly save
-      setState(() {
-        _state = O9AnimationState.saving;
-      });
-      _performSave();
-    }
+
+    // Schedule check after widget tree rebuild to avoid race condition
+    // between setState and accessing _progressKey.currentState
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      // Animation restart if available - save triggers via onAnimationComplete
+      // Fallback: Direct save if animation state unavailable
+      final animationState = _progressKey.currentState;
+      if (animationState != null) {
+        animationState.restart();
+      } else {
+        // No animation available, directly save
+        setState(() {
+          _state = O9AnimationState.saving;
+        });
+        _performSave();
+      }
+    });
   }
 
   @override
@@ -449,7 +457,7 @@ class _OnboardingSuccessScreenState
           onAnimationComplete: _onAnimationComplete,
           isSpinning: _state != O9AnimationState.success,
         ),
-        SizedBox(height: Spacing.l),
+        const SizedBox(height: Spacing.l),
         Text(
           _getStatusText(l10n),
           textAlign: TextAlign.center,

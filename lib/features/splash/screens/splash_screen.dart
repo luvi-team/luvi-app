@@ -74,37 +74,64 @@ String determineFallbackRoute({required bool isAuth}) {
   return ConsentWelcome01Screen.routeName;
 }
 
+/// Result type for [determineOnboardingGateRoute].
+///
+/// Three outcomes:
+/// - [RouteResolved]: Navigation target determined
+/// - [RaceRetryNeeded]: Local/remote mismatch (remote=false, local=true), retry required
+/// - [StateUnknown]: Both gates null, cannot determine route
+sealed class OnboardingGateResult {
+  const OnboardingGateResult();
+}
+
+/// Navigation target has been determined.
+final class RouteResolved extends OnboardingGateResult {
+  const RouteResolved(this.route);
+  final String route;
+}
+
+/// Race condition detected: local=true but remote=false.
+/// Caller should retry after a short delay.
+final class RaceRetryNeeded extends OnboardingGateResult {
+  const RaceRetryNeeded();
+}
+
+/// Both remote and local gates are null - state is truly unknown.
+/// Caller should show fallback UI.
+final class StateUnknown extends OnboardingGateResult {
+  const StateUnknown();
+}
+
 /// Determines the onboarding gate outcome based on remote and local state.
 ///
 /// Returns:
-/// - Target route string if a clear decision can be made
-/// - `null` if state needs race-retry or is truly unknown
-///
-/// Note: When `remoteGate == false && localGate == true`, returns `null` to
-/// trigger race-retry logic (server may be out of sync due to race condition).
+/// - [RouteResolved] with home route if remote gate is true
+/// - [RouteResolved] with onboarding route if either gate is explicitly false
+/// - [RaceRetryNeeded] if remote=false but local=true (race condition)
+/// - [StateUnknown] if both gates are null
 @visibleForTesting
-String? determineOnboardingGateRoute({
+OnboardingGateResult determineOnboardingGateRoute({
   required bool? remoteGate,
   required bool? localGate,
   required String homeRoute,
 }) {
   // Remote SSOT takes priority when available
-  if (remoteGate == true) return homeRoute;
+  if (remoteGate == true) return RouteResolved(homeRoute);
 
   // Race-condition guard: local true + remote false → needs race-retry
   // Don't immediately route to Onboarding; let caller handle retry
-  if (remoteGate == false && localGate == true) return null;
+  if (remoteGate == false && localGate == true) return const RaceRetryNeeded();
 
   // Remote false + local not true → Onboarding (first-time user)
-  if (remoteGate == false) return Onboarding01Screen.routeName;
+  if (remoteGate == false) return RouteResolved(Onboarding01Screen.routeName);
 
   // Remote null (network unavailable) - use local as fallback
   // Fail-safe: never route to Home when server SSOT is unavailable.
   // Local cache may be stale or cross-account; only allow the safe direction.
-  if (localGate == false) return Onboarding01Screen.routeName;
+  if (localGate == false) return RouteResolved(Onboarding01Screen.routeName);
 
   // Both null → truly unknown
-  return null;
+  return const StateUnknown();
 }
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -127,12 +154,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @visibleForTesting
   static Duration raceRetryDelay = const Duration(milliseconds: 500);
 
+  /// Maximum number of manual retries before disabling the button.
+  static const int _maxManualRetries = 3;
+
   late final AnimationController _controller;
   bool _hasNavigated = false;
   bool _skipAnimation = false;
   bool _showUnknownUI = false;
-  bool _hasUsedManualRetry = false;
+  int _manualRetryCount = 0;
   bool _isRetrying = false;
+
+  /// Whether the user can retry (not exhausted attempts).
+  bool get _canRetry => _manualRetryCount < _maxManualRetries;
 
   @override
   void initState() {
@@ -221,7 +254,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               width: double.infinity,
               child: WelcomeButton(
                 label: l10n.splashGateRetryCta,
-                onPressed: _hasUsedManualRetry ? null : _handleRetry,
+                onPressed: _canRetry ? _handleRetry : null,
                 isLoading: _isRetrying,
               ),
             ),
@@ -251,9 +284,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   void _handleRetry() {
-    if (!mounted) return;
+    if (!mounted || !_canRetry) return;
     setState(() {
-      _hasUsedManualRetry = true;
+      _manualRetryCount++;
       _isRetrying = true;
       _showUnknownUI = false;
       _hasNavigated = false;
@@ -265,11 +298,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
     try {
       await SupabaseService.client.auth.signOut();
+      if (mounted) {
+        context.go(AuthSignInScreen.routeName);
+      }
     } catch (e, st) {
       log.w('sign out failed', tag: 'splash', error: sanitizeError(e), stack: st);
-    }
-    if (mounted) {
-      context.go(AuthSignInScreen.routeName);
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.signOutErrorRetry),
+            action: SnackBarAction(
+              label: l10n.retry,
+              onPressed: _handleSignOut,
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -316,10 +361,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // This prevents gate leakage between accounts on the same device.
     final uid = SupabaseService.currentUser?.id;
     if (uid != null) {
-      await service.bindUser(uid);
+      try {
+        await service.bindUser(uid);
+      } catch (e, st) {
+        log.e('bindUser failed for uid=$uid',
+            tag: 'splash', error: sanitizeError(e), stack: st);
+        // Abort navigation - user binding is critical for data isolation
+        if (mounted) {
+          setState(() => _showUnknownUI = true);
+        }
+        return;
+      }
     }
 
-    await _flushPreAuthConsentIfNeeded(service);
+    try {
+      await _flushPreAuthConsentIfNeeded(service);
+    } catch (e, st) {
+      log.w('flushPreAuthConsent failed',
+          tag: 'splash', error: sanitizeError(e), stack: st);
+      // Continue - consent flush is best-effort, not blocking
+    }
 
     final localAcceptedVersion = service.acceptedConsentVersionOrNull;
     final localHasSeenWelcome = service.hasSeenWelcomeOrNull;
@@ -413,8 +474,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (!mounted || _hasNavigated) return;
 
-    // Determine final route
-    var targetRoute = determineOnboardingGateRoute(
+    // Determine final route using sealed class result
+    var gateResult = determineOnboardingGateRoute(
       remoteGate: remoteGate,
       localGate: localGate,
       homeRoute: HeuteScreen.routeName,
@@ -422,7 +483,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     // Race-retry: local true + remote false → wait briefly and re-fetch
     // This handles race conditions where server hasn't synced yet
-    if (targetRoute == null && localGate == true && remoteGate == false) {
+    if (gateResult is RaceRetryNeeded) {
       await Future<void>.delayed(raceRetryDelay);
       if (!mounted || _hasNavigated) return;
 
@@ -441,33 +502,37 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       if (!mounted || _hasNavigated) return;
 
       // Re-evaluate after race-retry
-      targetRoute = determineOnboardingGateRoute(
+      gateResult = determineOnboardingGateRoute(
         remoteGate: remoteGate,
         localGate: localGate,
         homeRoute: HeuteScreen.routeName,
       );
 
-      // If still null after retry (remote still false, local true) → go to Onboarding
-      // This means server genuinely has false, not a race condition
-      if (targetRoute == null && remoteGate == false) {
+      // If still RaceRetryNeeded after retry (remote still false, local true)
+      // → go to Onboarding. Server genuinely has false, not a race condition.
+      if (gateResult is RaceRetryNeeded) {
         _hasNavigated = true;
         context.go(Onboarding01Screen.routeName);
         return;
       }
     }
 
-    if (targetRoute != null) {
-      _hasNavigated = true;
-      context.go(targetRoute);
-      return;
-    }
-
-    // Both remote and local are null → show Unknown UI
-    if (mounted) {
-      setState(() {
-        _isRetrying = false;
-        _showUnknownUI = true;
-      });
+    // Handle sealed class result with pattern matching
+    switch (gateResult) {
+      case RouteResolved(:final route):
+        _hasNavigated = true;
+        context.go(route);
+      case StateUnknown():
+        // Both remote and local are null → show Unknown UI
+        if (mounted) {
+          setState(() {
+            _isRetrying = false;
+            _showUnknownUI = true;
+          });
+        }
+      case RaceRetryNeeded():
+        // Already handled above, but included for exhaustiveness
+        break;
     }
   }
 
@@ -575,10 +640,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   void _performBackfill() {
     // Fire-and-forget, errors are logged but not propagated
     SupabaseService.upsertOnboardingGate(hasCompletedOnboarding: true)
+        .then((_) {
+          // Success - no action needed
+        })
         .catchError((Object e, StackTrace st) {
-      log.w('backfill to server failed',
-          tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
-      return null;
-    });
+          log.w('backfill to server failed',
+              tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+          // No return value - proper void handling
+        });
   }
 }

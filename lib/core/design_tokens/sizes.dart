@@ -113,12 +113,13 @@ class Sizes {
   /// Input Text Font Size (Figma: 18px)
   static const double onboardingInputFontSize = 18.0;
 
-  /// HEUTE Label Font Size - klein für Einzeiler (Figma: 10px)
+  /// HEUTE Label Font Size - small for single line (Figma: 10px)
   static const double todayLabelFontSize = 10.0;
 
-  /// Calendar day cell label height (matches todayLabelFontSize for consistent alignment)
-  /// Used as placeholder height for non-HEUTE days to ensure uniform row height
-  static const double calendarDayLabelHeight = todayLabelFontSize;
+  /// Calendar day cell label placeholder size.
+  /// Intentionally matches todayLabelFontSize to ensure uniform row height
+  /// across days with and without the "HEUTE" label. (Fix 10: renamed for clarity)
+  static const double calendarDayLabelSize = todayLabelFontSize;
 
   Sizes._();
 }

@@ -130,16 +130,17 @@ class CircularProgressRingState extends State<CircularProgressRing>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Semantics(
-      label: l10n.semanticLoadingProgress,
-      value: l10n.semanticProgressPercent(progressPercent),
-      child: SizedBox(
-        width: widget.size,
-        height: widget.size,
-        child: AnimatedBuilder(
-          animation: Listenable.merge([_progressController, _rotationController]),
-          builder: (context, child) {
-            return Stack(
+    return SizedBox(
+      width: widget.size,
+      height: widget.size,
+      child: AnimatedBuilder(
+        animation: Listenable.merge([_progressController, _rotationController]),
+        builder: (context, child) {
+          // Semantics inside AnimatedBuilder for reactive a11y updates
+          return Semantics(
+            label: l10n.semanticLoadingProgress,
+            value: l10n.semanticProgressPercent(progressPercent),
+            child: Stack(
               alignment: Alignment.center,
               children: [
                 // Background track (gray full circle)
@@ -175,9 +176,9 @@ class CircularProgressRingState extends State<CircularProgressRing>
                   ),
                 ),
               ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

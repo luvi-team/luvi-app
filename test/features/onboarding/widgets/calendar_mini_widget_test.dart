@@ -72,18 +72,25 @@ void main() {
       }
     });
 
-    // Test 6: Semantics Label
+    // Test 6: Semantics Label (Fix 5: specific to CalendarMiniWidget)
     testWidgets('has accessibility semantics label', (tester) async {
       await tester.pumpWidget(buildTestApp(
         home: const Scaffold(body: CalendarMiniWidget()),
       ));
       await tester.pump();
 
-      // German locale: "Kalendervorschau" or similar
-      final semantics = find.byWidgetPredicate(
-        (widget) => widget is Semantics && widget.properties.label != null,
+      // Verify CalendarMiniWidget exists
+      final calendarWidget = find.byType(CalendarMiniWidget);
+      expect(calendarWidget, findsOneWidget);
+
+      // Verify CalendarMiniWidget has Semantics descendant with non-null label
+      final semanticsWidget = find.descendant(
+        of: calendarWidget,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Semantics && widget.properties.label != null,
+        ),
       );
-      expect(semantics, findsWidgets);
+      expect(semanticsWidget, findsOneWidget);
     });
   });
 }

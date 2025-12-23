@@ -335,13 +335,16 @@ void main() {
     });
   }
 
+  // Note: Riverpod's Override is a sealed class not exported for direct use.
+  // Callers pass provider overrides (e.g., provider.overrideWith()) which
+  // are valid Override instances at runtime.
   Widget buildTestApp({
     List<dynamic> overrides = const [],
   }) {
     return ProviderScope(
       overrides: [
         initModeProvider.overrideWithValue(InitMode.test),
-        ...overrides,
+        for (final o in overrides) o,
       ],
       // Use MediaQuery to set a larger surface for Figma O9 layout (280px cards)
       child: MediaQuery(

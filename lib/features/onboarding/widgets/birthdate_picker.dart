@@ -55,9 +55,8 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
   /// Maximum year based on min age policy (16 years back)
   int get _maximumYear => DateTime.now().year - kMinAge;
 
-  /// List of years in valid range
-  List<int> get _years =>
-      List.generate(_maximumYear - _minimumYear + 1, (i) => _maximumYear - i);
+  /// List of years in valid range (cached for performance)
+  late final List<int> _years;
 
   /// Days in the selected month/year
   int get _daysInMonth => DateTime(_selectedYear, _selectedMonth + 1, 0).day;
@@ -71,6 +70,12 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
   @override
   void initState() {
     super.initState();
+
+    // Cache years list once (Fix 1: avoid rebuilding on every access)
+    _years = List.generate(
+      _maximumYear - _minimumYear + 1,
+      (i) => _maximumYear - i,
+    );
 
     // Clamp initial date to valid range
     final clampedDate = _clampDate(widget.initialDate);
@@ -217,8 +222,8 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
       childDelegate: ListWheelChildBuilderDelegate(
         childCount: itemCount,
         builder: (context, index) {
-          final isSelected = controller.hasClients &&
-              controller.selectedItem == index;
+          // Fix 2: Remove hasClients guard - selectedItem is valid immediately
+          final isSelected = controller.selectedItem == index;
           return Center(
             child: Text(
               itemBuilder(index),

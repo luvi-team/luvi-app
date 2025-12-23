@@ -138,13 +138,13 @@ class DsEffects {
   /// Glass card effect for onboarding components (O1, O3, O4, O5)
   /// Figma: backdrop-filter: blur(10px), background: rgba(255,255,255,0.1)
   static BoxDecoration get glassCard => BoxDecoration(
-    color: DsColors.white.withOpacity(0.1),
+    color: DsColors.white.withValues(alpha: 0.1),
     borderRadius: BorderRadius.circular(16),
   );
 
   /// Glass pill effect (fully rounded) for fitness pills
   static BoxDecoration get glassPill => BoxDecoration(
-    color: DsColors.white.withOpacity(0.1),
+    color: DsColors.white.withValues(alpha: 0.1),
     borderRadius: BorderRadius.circular(999),  // Figma: 33554400px = full round
   );
 
@@ -658,5 +658,3 @@ cycle_data: {
 - ✅ Quick-Reference Tabelle für Figma-Maße
 
 ---
-
-**Für vollständige Details siehe:** `/Users/arwinfarajpoory/.claude/plans/misty-hatching-pond.md`

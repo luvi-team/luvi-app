@@ -47,6 +47,21 @@ class Consent02Notifier extends _$Consent02Notifier {
     state = state.copyWith(choices: m);
   }
 
+  /// Atomically accepts all required + visible optional scopes.
+  /// Use this instead of multiple toggle() calls to avoid race conditions.
+  void acceptAll() {
+    final m = {...state.choices};
+    // Required scopes
+    for (final s in kRequiredConsentScopes) {
+      m[s] = true;
+    }
+    // Visible optional scopes (DSGVO-konform)
+    for (final s in kVisibleOptionalScopes) {
+      m[s] = true;
+    }
+    state = state.copyWith(choices: m);
+  }
+
   void clearAllOptional() {
     final m = {...state.choices};
     for (final s in ConsentScope.values) {

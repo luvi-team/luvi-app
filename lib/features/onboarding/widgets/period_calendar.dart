@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -43,10 +44,14 @@ class PeriodCalendar extends StatefulWidget {
   State<PeriodCalendar> createState() => _PeriodCalendarState();
 }
 
-class _PeriodCalendarState extends State<PeriodCalendar> {
+class _PeriodCalendarState extends State<PeriodCalendar>
+    with WidgetsBindingObserver {
   late ScrollController _scrollController;
   late DateTime _today;
   late List<DateTime> _months;
+
+  // O(1) lookup set for period days (Fix 1)
+  late Set<DateTime> _periodDaysSet;
 
   // B1: GlobalKey for scroll-to-current-month via ensureVisible
   final GlobalKey _currentMonthKey = GlobalKey();
@@ -61,8 +66,10 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _scrollController = ScrollController();
     _today = DateTime.now();
+    _periodDaysSet = _normalizePeriodDays(widget.periodDays);
 
     // Generate months for the past 6 months and current month
     _months = _generateMonths();
@@ -71,6 +78,39 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToCurrentMonth();
     });
+  }
+
+  /// Normalizes period days to date-only DateTime for O(1) Set lookup.
+  Set<DateTime> _normalizePeriodDays(List<DateTime> days) {
+    return days.map((d) => DateTime(d.year, d.month, d.day)).toSet();
+  }
+
+  @override
+  void didUpdateWidget(PeriodCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!listEquals(oldWidget.periodDays, widget.periodDays)) {
+      _periodDaysSet = _normalizePeriodDays(widget.periodDays);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshTodayIfNeeded();
+    }
+  }
+
+  /// Refreshes _today and regenerates months if date changed (Fix 3).
+  void _refreshTodayIfNeeded() {
+    final now = DateTime.now();
+    final newToday = DateTime(now.year, now.month, now.day);
+    final oldToday = DateTime(_today.year, _today.month, _today.day);
+    if (newToday != oldToday) {
+      setState(() {
+        _today = now;
+        _months = _generateMonths();
+      });
+    }
   }
 
   List<DateTime> _generateMonths() {
@@ -120,6 +160,7 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _scrollController.dispose();
     super.dispose();
   }
@@ -144,7 +185,7 @@ class _PeriodCalendarState extends State<PeriodCalendar> {
           month: month,
           today: _today,
           selectedDate: widget.selectedDate,
-          periodDays: widget.periodDays,
+          periodDaysSet: _periodDaysSet,
           periodEndDate: widget.periodEndDate,
           allowPeriodEndAdjustment: widget.allowPeriodEndAdjustment,
           onDateSelected: widget.onDateSelected,
@@ -164,7 +205,7 @@ class _MonthGrid extends StatelessWidget {
     required this.month,
     required this.today,
     required this.selectedDate,
-    required this.periodDays,
+    required this.periodDaysSet,
     required this.periodEndDate,
     required this.allowPeriodEndAdjustment,
     required this.onDateSelected,
@@ -177,7 +218,7 @@ class _MonthGrid extends StatelessWidget {
   final DateTime month;
   final DateTime today;
   final DateTime? selectedDate;
-  final List<DateTime> periodDays;
+  final Set<DateTime> periodDaysSet;
   final DateTime? periodEndDate;
   final bool allowPeriodEndAdjustment;
   final ValueChanged<DateTime>? onDateSelected;
@@ -344,11 +385,10 @@ class _MonthGrid extends StatelessWidget {
         date.day == other.day;
   }
 
+  /// O(1) lookup using pre-computed normalized Set.
   bool _isPeriodDay(DateTime date) {
-    for (final periodDay in periodDays) {
-      if (_isSameDay(date, periodDay)) return true;
-    }
-    return false;
+    final normalized = DateTime(date.year, date.month, date.day);
+    return periodDaysSet.contains(normalized);
   }
 
   /// Returns true if date is valid period-end (1-14 days after selectedDate).
@@ -481,7 +521,7 @@ class _DayCell extends StatelessWidget {
                 // Invisible placeholder to reserve same space as HEUTE label
                 // Height matches HEUTE text line height for grid consistency
                 SizedBox(
-                  height: Sizes.calendarDayLabelHeight,
+                  height: Sizes.calendarDayLabelSize,
                 ),
             ],
           ),
@@ -492,8 +532,14 @@ class _DayCell extends StatelessWidget {
 
   String _buildSemanticLabel(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    final dayLabel = DateFormat('d. MMMM yyyy', locale).format(date);
+    String dayLabel;
+    try {
+      final locale = Localizations.localeOf(context).toLanguageTag();
+      dayLabel = DateFormat('d. MMMM yyyy', locale).format(date);
+    } catch (e) {
+      // Fallback for malformed locale or date (FormatException, ArgumentError)
+      dayLabel = date.toIso8601String().split('T').first;
+    }
     if (_isToday) {
       return '${l10n.periodCalendarSemanticToday}, $dayLabel';
     }
