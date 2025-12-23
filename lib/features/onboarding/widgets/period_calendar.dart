@@ -223,27 +223,40 @@ class _MonthGrid extends StatelessWidget {
     );
   }
 
+  /// English fallback month names for locale errors.
+  static const _fallbackMonths = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
   String _formatMonthName(BuildContext context, DateTime date) {
     try {
       final locale = Localizations.localeOf(context).toLanguageTag();
       return DateFormat('MMMM', locale).format(date);
-    } catch (_) {
-      // English fallback (intl should handle all common locales)
-      const months = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-      ];
-      return months[date.month - 1];
+    } on FormatException catch (e) {
+      // DateFormat parsing failed - log in debug and use fallback
+      assert(() {
+        debugPrint('DateFormat FormatException: $e');
+        return true;
+      }());
+      return _fallbackMonths[date.month - 1];
+    } on ArgumentError catch (e) {
+      // Invalid locale or pattern - log in debug and use fallback
+      assert(() {
+        debugPrint('DateFormat ArgumentError: $e');
+        return true;
+      }());
+      return _fallbackMonths[date.month - 1];
     }
   }
 

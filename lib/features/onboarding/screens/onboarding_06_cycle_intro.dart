@@ -18,6 +18,9 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
 
   static const routeName = '/onboarding/cycle-intro';
 
+  /// Route name for pushNamed navigation (matches GoRouter name parameter)
+  static const navName = 'onboarding_06_cycle_intro';
+
   void _handleContinue(BuildContext context) {
     context.pushNamed('onboarding_06_period');
   }

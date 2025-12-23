@@ -64,10 +64,19 @@ class SupabaseDeepLinkHandler {
 
   Future<void> _handleInitialUri() async {
     try {
-      final initial = await _appLinks.getInitialLink();
+      final initial = await _appLinks
+          .getInitialLink()
+          .timeout(const Duration(seconds: 5));
       if (initial != null) {
         await _handleUri(initial);
       }
+    } on TimeoutException catch (_, stackTrace) {
+      log.w(
+        'supabase_deeplink_initial_timeout',
+        tag: 'supabase_deeplink',
+        error: 'getInitialLink timed out after 5 seconds',
+        stack: stackTrace,
+      );
     } catch (error, stackTrace) {
       log.w(
         'supabase_deeplink_initial_error',
@@ -128,15 +137,16 @@ class SupabaseDeepLinkHandler {
     final pending = _pendingUri;
     if (pending == null) return;
 
-    _pendingUri = null;
-
     if (!SupabaseService.isInitialized) {
       log.w(
         'supabase_deeplink_pending_skipped: Supabase still not initialized',
         tag: 'supabase_deeplink',
       );
-      return;
+      return; // Keep _pendingUri intact for retry
     }
+
+    // Only clear after confirming we can process
+    _pendingUri = null;
 
     log.i(
       'supabase_deeplink_pending_processing: Processing queued URI',

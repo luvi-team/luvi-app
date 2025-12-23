@@ -14,10 +14,9 @@ class CustomRadioCheck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Figma v3: Use full DsColors.signature (pink) for both states
-    // Matches CTA button color per design review
-    final activeColor = DsColors.signature;
-    final inactiveColor = DsColors.signature;
+    // Figma v3: Use DsColors.signature (pink) for both states per design review.
+    // Both states intentionally identical; kept as const for potential future differentiation.
+    const color = DsColors.signature;
 
     return Container(
       width: 24,
@@ -25,7 +24,7 @@ class CustomRadioCheck extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: selected ? activeColor : inactiveColor,
+          color: color,
           width: 2,
         ),
       ),
@@ -34,9 +33,9 @@ class CustomRadioCheck extends StatelessWidget {
               child: Container(
                 width: 14,
                 height: 14,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: activeColor,
+                  color: color,
                 ),
               ),
             )

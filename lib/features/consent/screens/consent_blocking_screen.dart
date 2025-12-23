@@ -52,7 +52,7 @@ class ConsentBlockingScreen extends StatelessWidget {
                             maxHeight: mediaQuery.size.height * 0.35,
                           ),
                           child: Image.asset(
-                            Assets.consentIcons.shield2,
+                            Assets.consentImages.shield2,
                             fit: BoxFit.contain,
                             errorBuilder: Assets.defaultImageErrorBuilder,
                           ),

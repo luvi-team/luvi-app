@@ -17,15 +17,13 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String onboardingStepLabel(int current, int total) {
-    return 'Frage $current von $total';
-  }
-
-  @override
   String get onboarding01Instruction => 'Wie soll ich dich nennen?';
 
   @override
   String get onboarding01NameInputSemantic => 'Name eingeben';
+
+  @override
+  String get onboarding01NameHint => 'Dein Vorname';
 
   @override
   String onboarding02Title(String name) {
@@ -315,7 +313,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding05Callout => 'Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.';
 
   @override
-  String get onboarding07Title => 'Wie ist dein Zyklus so?';
+  String get onboarding07Title => 'Wie regelmäßig ist dein Zyklus?';
 
   @override
   String get onboarding07OptionsSemantic => 'Zyklusregelmäßigkeit auswählen';
@@ -780,7 +778,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentIntroCtaSemantic => 'Weiter zur Datenschutz-Einwilligung';
 
   @override
-  String get consentOptionsTitle => 'Du und LUVI';
+  String get consentOptionsTitle => 'Deine Datenschutz-Einstellungen';
 
   @override
   String get consentOptionsSubtitle => 'Sicher gespeichert, streng geschützt. DSGVO, EU-Hosting';
@@ -810,7 +808,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentOptionsTermsSuffix => ' zur Kenntnis genommen.';
 
   @override
-  String get consentOptionsAnalyticsText => 'Ich damit einverstanden, dass LUVI pseudonymisierte Nutzungs- und Gerätedaten (z.B. Crash-Infos, Performance, genutzte Funktionen) verarbeitet, um Fehler zu beheben und die App zu verbessern.\nWiderruf jederzeit unter Profil → Datenschutz.';
+  String get consentOptionsAnalyticsText => 'Ich bin damit einverstanden, dass LUVI pseudonymisierte Nutzungs- und Gerätedaten (z.B. Crash-Infos, Performance, genutzte Funktionen) verarbeitet, um Fehler zu beheben und die App zu verbessern.';
+
+  @override
+  String get consentOptionsAnalyticsRevoke => 'Widerruf jederzeit unter Profil → Datenschutz.';
 
   @override
   String get consentOptionsCtaContinue => 'Weiter';
@@ -864,24 +865,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding04GoalsSubtitle => 'Du kannst mehrere auswählen.';
 
   @override
-  String get onboarding04GoalFitter => 'Fitter & stärker werden';
-
-  @override
-  String get onboarding04GoalEnergy => 'Mehr Energie im Alltag';
-
-  @override
-  String get onboarding04GoalSleep => 'Besser schlafen und Stress reduzieren';
-
-  @override
-  String get onboarding04GoalCycle => 'Zyklus & Hormone verstehen';
-
-  @override
-  String get onboarding04GoalLongevity => 'Langfristige Gesundheit und Longevity';
-
-  @override
-  String get onboarding04GoalWellbeing => 'Mich einfach wohlfühlen';
-
-  @override
   String get onboarding04GoalsSemantic => 'Ziele auswählen';
 
   @override
@@ -903,7 +886,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding06PeriodSubheader => 'Du kannst das später ändern.';
 
   @override
-  String get onboarding07DurationTitle => 'Wir haben die Dauer geschätzt. Tippe auf den Tag, um anzupassen.';
+  String get onboarding07DurationTitle => 'Sieht das richtig aus?';
+
+  @override
+  String get onboarding07DurationSubtitle => 'Wir haben die Dauer geschätzt. Tippe auf den Tag, um anzupassen.';
 
   @override
   String get onboarding08SuccessLoading => 'Wir stellen deine Ergebnisse zusammen...';
@@ -917,25 +903,25 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingDefaultName => 'Du';
 
   @override
-  String get weekdayMondayShort => 'M';
+  String get weekdayMondayShort => 'Mo';
 
   @override
-  String get weekdayTuesdayShort => 'D';
+  String get weekdayTuesdayShort => 'Di';
 
   @override
-  String get weekdayWednesdayShort => 'M';
+  String get weekdayWednesdayShort => 'Mi';
 
   @override
-  String get weekdayThursdayShort => 'D';
+  String get weekdayThursdayShort => 'Do';
 
   @override
-  String get weekdayFridayShort => 'F';
+  String get weekdayFridayShort => 'Fr';
 
   @override
-  String get weekdaySaturdayShort => 'S';
+  String get weekdaySaturdayShort => 'Sa';
 
   @override
-  String get weekdaySundayShort => 'S';
+  String get weekdaySundayShort => 'So';
 
   @override
   String get periodCalendarSemanticToday => 'Heute';
@@ -945,12 +931,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get periodCalendarSemanticPeriodDay => 'Periodentag';
-
-  @override
-  String get consent02SectionRequired => 'ERFORDERLICH';
-
-  @override
-  String get consent02SectionOptional => 'OPTIONAL';
 
   @override
   String get onboardingCycleIntroTitle => 'Damit LUVI für dich passt, brauchen wir noch deinen Zyklusstart.';

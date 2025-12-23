@@ -47,8 +47,10 @@ void main() {
     );
 
     expect(find.text('Ready for LUVI?'), findsOneWidget);
-    // New format: "Frage X von Y" instead of "X/Y"
-    expect(find.text('Frage 1 von 5'), findsOneWidget);
+    // New format: "Frage X von Y" instead of "X/Y" - use L10n for locale-independence
+    final context = tester.element(find.byType(OnboardingHeader));
+    final l10n = AppLocalizations.of(context)!;
+    expect(find.text(l10n.onboardingProgressLabel(1, 5)), findsOneWidget);
     // Back button is hidden on step 1 (correct behavior)
     expect(find.byType(BackButtonCircle), findsNothing);
 

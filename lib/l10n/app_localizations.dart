@@ -107,12 +107,6 @@ abstract class AppLocalizations {
   /// **'Step {current} of {total}'**
   String onboardingStepSemantic(int current, int total);
 
-  /// Visual step label for onboarding screens (Figma v2).
-  ///
-  /// In en, this message translates to:
-  /// **'Question {current} of {total}'**
-  String onboardingStepLabel(int current, int total);
-
   /// Instruction copy asking the user for their preferred name on step 1.
   ///
   /// In en, this message translates to:
@@ -124,6 +118,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your name'**
   String get onboarding01NameInputSemantic;
+
+  /// Placeholder hint text for name input field on onboarding screen 01
+  ///
+  /// In en, this message translates to:
+  /// **'Your first name'**
+  String get onboarding01NameHint;
 
   /// Personalized header title for onboarding step 2 (birthday). Contains forced line break to match Figma layout.
   ///
@@ -662,7 +662,7 @@ abstract class AppLocalizations {
   /// Header title for onboarding step 7 (cycle regularity).
   ///
   /// In en, this message translates to:
-  /// **'What is your cycle like?'**
+  /// **'How regular is your cycle?'**
   String get onboarding07Title;
 
   /// Semantics label announcing the cycle regularity options list on step 7.
@@ -1568,7 +1568,7 @@ abstract class AppLocalizations {
   /// Title for consent options screen (C2)
   ///
   /// In en, this message translates to:
-  /// **'You and LUVI'**
+  /// **'Your Privacy Choices'**
   String get consentOptionsTitle;
 
   /// Subtitle for consent options screen (C2)
@@ -1610,7 +1610,7 @@ abstract class AppLocalizations {
   /// Conjunction between terms and privacy links on C2
   ///
   /// In en, this message translates to:
-  /// **' and have read the '**
+  /// **' and the '**
   String get consentOptionsTermsConjunction;
 
   /// Privacy policy link text on C2
@@ -1625,11 +1625,17 @@ abstract class AppLocalizations {
   /// **'.'**
   String get consentOptionsTermsSuffix;
 
-  /// Analytics consent text on C2
+  /// Analytics consent main text on C2
   ///
   /// In en, this message translates to:
-  /// **'I agree that LUVI processes pseudonymized usage and device data (e.g. crash info, performance, features used) to fix bugs and improve the app.\nRevoke anytime under Profile → Privacy.'**
+  /// **'I agree that LUVI processes pseudonymized usage and device data (e.g. crash info, performance, features used) to fix bugs and improve the app.'**
   String get consentOptionsAnalyticsText;
+
+  /// Analytics consent revocation instruction on C2
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke anytime under Profile → Privacy.'**
+  String get consentOptionsAnalyticsRevoke;
 
   /// Continue button label on C2
   ///
@@ -1721,42 +1727,6 @@ abstract class AppLocalizations {
   /// **'You can select multiple.'**
   String get onboarding04GoalsSubtitle;
 
-  /// Goal: Get fitter and stronger
-  ///
-  /// In en, this message translates to:
-  /// **'Get fitter & stronger'**
-  String get onboarding04GoalFitter;
-
-  /// Goal: More energy in daily life
-  ///
-  /// In en, this message translates to:
-  /// **'More energy in daily life'**
-  String get onboarding04GoalEnergy;
-
-  /// Goal: Better sleep and stress reduction
-  ///
-  /// In en, this message translates to:
-  /// **'Sleep better and reduce stress'**
-  String get onboarding04GoalSleep;
-
-  /// Goal: Understand cycle and hormones
-  ///
-  /// In en, this message translates to:
-  /// **'Understand cycle & hormones'**
-  String get onboarding04GoalCycle;
-
-  /// Goal: Long-term health and longevity
-  ///
-  /// In en, this message translates to:
-  /// **'Long-term health and longevity'**
-  String get onboarding04GoalLongevity;
-
-  /// Goal: Simply feel good
-  ///
-  /// In en, this message translates to:
-  /// **'Simply feel good'**
-  String get onboarding04GoalWellbeing;
-
   /// Semantics label for goals selection
   ///
   /// In en, this message translates to:
@@ -1799,11 +1769,17 @@ abstract class AppLocalizations {
   /// **'You can change this later.'**
   String get onboarding06PeriodSubheader;
 
-  /// Title for period duration adjustment screen (O7)
+  /// Question title for period duration adjustment screen (O7)
+  ///
+  /// In en, this message translates to:
+  /// **'Does this look right?'**
+  String get onboarding07DurationTitle;
+
+  /// Instructional subtitle for period duration screen (O7)
   ///
   /// In en, this message translates to:
   /// **'We\'ve estimated the duration. Tap a day to adjust.'**
-  String get onboarding07DurationTitle;
+  String get onboarding07DurationSubtitle;
 
   /// Loading text on success screen (O8)
   ///
@@ -1823,46 +1799,46 @@ abstract class AppLocalizations {
   /// **'you'**
   String get onboardingDefaultName;
 
-  /// Single letter abbreviation for Monday
+  /// Two-letter abbreviation for Monday
   ///
   /// In en, this message translates to:
-  /// **'M'**
+  /// **'Mo'**
   String get weekdayMondayShort;
 
-  /// Single letter abbreviation for Tuesday
+  /// Two-letter abbreviation for Tuesday
   ///
   /// In en, this message translates to:
-  /// **'T'**
+  /// **'Tu'**
   String get weekdayTuesdayShort;
 
-  /// Single letter abbreviation for Wednesday
+  /// Two-letter abbreviation for Wednesday
   ///
   /// In en, this message translates to:
-  /// **'W'**
+  /// **'We'**
   String get weekdayWednesdayShort;
 
-  /// Single letter abbreviation for Thursday
+  /// Two-letter abbreviation for Thursday
   ///
   /// In en, this message translates to:
-  /// **'T'**
+  /// **'Th'**
   String get weekdayThursdayShort;
 
-  /// Single letter abbreviation for Friday
+  /// Two-letter abbreviation for Friday
   ///
   /// In en, this message translates to:
-  /// **'F'**
+  /// **'Fr'**
   String get weekdayFridayShort;
 
-  /// Single letter abbreviation for Saturday
+  /// Two-letter abbreviation for Saturday
   ///
   /// In en, this message translates to:
-  /// **'S'**
+  /// **'Sa'**
   String get weekdaySaturdayShort;
 
-  /// Single letter abbreviation for Sunday
+  /// Two-letter abbreviation for Sunday
   ///
   /// In en, this message translates to:
-  /// **'S'**
+  /// **'Su'**
   String get weekdaySundayShort;
 
   /// Semantic label for today in period calendar
@@ -1882,18 +1858,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'period day'**
   String get periodCalendarSemanticPeriodDay;
-
-  /// Section header for required consents
-  ///
-  /// In en, this message translates to:
-  /// **'REQUIRED'**
-  String get consent02SectionRequired;
-
-  /// Section header for optional consents
-  ///
-  /// In en, this message translates to:
-  /// **'OPTIONAL'**
-  String get consent02SectionOptional;
 
   /// Title for cycle intro screen (O6)
   ///

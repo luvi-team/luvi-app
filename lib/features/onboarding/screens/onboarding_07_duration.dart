@@ -7,7 +7,6 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
@@ -43,11 +42,22 @@ class _Onboarding07DurationScreenState
   late DateTime? _periodStart;
   late DateTime _periodEnd;
   late List<DateTime> _periodDays;
+  bool _didInitialize = false;
 
   @override
   void initState() {
     super.initState();
-    _initializePeriodDates();
+    // Initialization moved to didChangeDependencies
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // A1: Moved from initState to ensure widget is fully mounted before accessing Riverpod
+    if (!_didInitialize) {
+      _didInitialize = true;
+      _initializePeriodDates();
+    }
   }
 
   void _initializePeriodDates() {
@@ -141,7 +151,7 @@ class _Onboarding07DurationScreenState
     final textTheme = theme.textTheme;
     final spacing = OnboardingSpacing.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final dsTokens = theme.extension<DsTokens>();
+    // A2: Removed unused dsTokens variable
 
     return Scaffold(
       body: Container(
@@ -159,7 +169,7 @@ class _Onboarding07DurationScreenState
               _buildHeader(textTheme, colorScheme, spacing, l10n),
               SizedBox(height: Spacing.m),
               Expanded(
-                child: _buildCalendarCard(dsTokens, l10n),
+                child: _buildCalendarCard(l10n),
               ),
               SizedBox(height: Spacing.l),
               Center(child: _buildCta(l10n)),
@@ -208,7 +218,7 @@ class _Onboarding07DurationScreenState
     );
   }
 
-  Widget _buildCalendarCard(DsTokens? dsTokens, AppLocalizations l10n) {
+  Widget _buildCalendarCard(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: OnboardingGlassCard(

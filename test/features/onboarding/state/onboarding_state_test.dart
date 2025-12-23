@@ -38,15 +38,15 @@ void main() {
       expect(data.isComplete, isFalse);
     });
 
-    test('returns false when name is whitespace only', () {
+    test('returns true when name is whitespace only (trimming handled by notifier)', () {
       final data = validData().copyWith(name: '   ');
       // Note: isComplete checks name!.isNotEmpty but not trim
       // The actual check is: name != null && name!.isNotEmpty
-      // Whitespace-only strings are not empty, so this should pass isComplete
-      // but the service trims it. Let's verify actual behavior:
+      // Whitespace-only strings are not empty, so this passes isComplete
+      // Trimming is handled by OnboardingNotifier.setName(), not by isComplete
       expect(data.name, '   ');
-      // isNotEmpty returns true for whitespace, so isComplete is true here
-      // This is acceptable - the service handles trimming
+      // Explicitly verify isComplete behavior for whitespace-only name
+      expect(data.isComplete, isTrue);
     });
 
     test('returns false when birthDate is null', () {
@@ -148,6 +148,29 @@ void main() {
         periodStart: DateTime.now().subtract(const Duration(days: 7)),
       );
       expect(data.selectedInterests.length, 5);
+      expect(data.isComplete, isTrue);
+    });
+
+    test('returns true with 6 interests (UI enforces max, not isComplete)', () {
+      // Boundary test: >5 interests. isComplete only checks >= 3.
+      // Max limit (5) is enforced by UI/notifier, not by OnboardingData.isComplete
+      final data = OnboardingData(
+        name: 'Test User',
+        birthDate: DateTime(2000, 1, 15),
+        fitnessLevel: FitnessLevel.beginner,
+        selectedGoals: const [Goal.fitter],
+        selectedInterests: const [
+          Interest.strengthTraining,
+          Interest.cardio,
+          Interest.nutrition,
+          Interest.mobility,
+          Interest.mindfulness,
+          Interest.hormonesCycle, // 6th - exceeds UI max
+        ],
+        periodStart: DateTime.now().subtract(const Duration(days: 7)),
+      );
+      expect(data.selectedInterests.length, 6);
+      // isComplete only checks >= 3, max is enforced by UI/notifier
       expect(data.isComplete, isTrue);
     });
   });

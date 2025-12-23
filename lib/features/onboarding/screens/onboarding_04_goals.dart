@@ -9,6 +9,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/onboarding/model/goal.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_03_fitness.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/goal_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
@@ -29,32 +30,13 @@ class Onboarding04GoalsScreen extends ConsumerStatefulWidget {
 }
 
 class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScreen> {
-  final Set<Goal> _selectedGoals = {};
-
-  @override
-  void initState() {
-    super.initState();
-    // Restore from OnboardingNotifier (back navigation)
-    final onboardingState = ref.read(onboardingProvider);
-    if (onboardingState.selectedGoals.isNotEmpty) {
-      _selectedGoals.addAll(onboardingState.selectedGoals);
-    }
-  }
-
+  /// Toggle goal - notifier is SSOT, no local state
   void _toggleGoal(Goal goal) {
-    setState(() {
-      if (_selectedGoals.contains(goal)) {
-        _selectedGoals.remove(goal);
-      } else {
-        _selectedGoals.add(goal);
-      }
-    });
-    // Sync to OnboardingNotifier
     ref.read(onboardingProvider.notifier).toggleGoal(goal);
   }
 
   void _handleContinue() {
-    context.pushNamed('onboarding_05_interests');
+    context.pushNamed(Onboarding05InterestsScreen.navName);
   }
 
   void _handleBack() {
@@ -73,6 +55,11 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
     final textTheme = theme.textTheme;
     final spacing = OnboardingSpacing.of(context);
     final l10n = AppLocalizations.of(context)!;
+
+    // SSOT: Watch provider for selected goals
+    final selectedGoals = ref.watch(
+      onboardingProvider.select((state) => state.selectedGoals),
+    );
 
     return Scaffold(
       body: Container(
@@ -98,9 +85,9 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
                 SizedBox(height: Spacing.m),
                 _buildSubtitle(textTheme, colorScheme, l10n),
                 SizedBox(height: spacing.headerToFirstCard),
-                _buildGoalList(spacing, l10n, theme),
+                _buildGoalList(spacing, l10n, theme, selectedGoals),
                 SizedBox(height: spacing.lastCardToCta),
-                Center(child: _buildCta(l10n)),
+                Center(child: _buildCta(l10n, selectedGoals)),
                 SizedBox(height: Spacing.xl),
               ],
             ),
@@ -133,6 +120,7 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
     OnboardingSpacing spacing,
     AppLocalizations l10n,
     ThemeData theme,
+    List<Goal> selectedGoals,
   ) {
     final iconSize = theme.iconTheme.size ?? TypographyTokens.size20;
 
@@ -168,7 +156,7 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
                 key: Key('onb_goal_${goal.name}'),
                 icon: iconForGoal(goal),
                 title: goal.label(l10n),
-                selected: _selectedGoals.contains(goal),
+                selected: selectedGoals.contains(goal),
                 onTap: () => _toggleGoal(goal),
               ),
             );
@@ -178,14 +166,12 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
     );
   }
 
-  Widget _buildCta(AppLocalizations l10n) {
-    final ctaLabel = l10n.commonContinue;
-
+  Widget _buildCta(AppLocalizations l10n, List<Goal> selectedGoals) {
     return OnboardingButton(
       key: const Key('onb_cta'),
-      label: ctaLabel,
+      label: l10n.commonContinue,
       onPressed: _handleContinue,
-      isEnabled: _selectedGoals.isNotEmpty,
+      isEnabled: selectedGoals.isNotEmpty,
     );
   }
 }

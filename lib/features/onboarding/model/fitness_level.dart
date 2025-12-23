@@ -41,12 +41,11 @@ extension FitnessLevelExtension on FitnessLevel {
   /// Maps selection index (0, 1, 2, 3) to FitnessLevel.
   /// Index 3 ("unknown") maps to beginner as fallback.
   static FitnessLevel fromSelectionIndex(int index) {
-    // Onboarding08 has 4 options, but enum only has 3 values
-    // Option 3 ("Weiß ich nicht") should default to beginner
-    if (index >= FitnessLevel.values.length) {
+    // Out-of-range indices (including "Weiß ich nicht" at index 3) default to beginner
+    if (index < 0 || index >= FitnessLevel.values.length) {
       return FitnessLevel.beginner;
     }
-    return FitnessLevel.values[index.clamp(0, FitnessLevel.values.length - 1)];
+    return FitnessLevel.values[index];
   }
 
   /// Maps FitnessLevel to selection index (null-safe).

@@ -104,6 +104,33 @@ void main() {
       expect(find.text(l10n.consentOptionsSubtitle), findsOneWidget);
     });
 
+    // D4: C12 - Analytics consent shows revoke instruction separately
+    testWidgets('analytics consent shows revoke instruction separately (C12)', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            theme: AppTheme.buildAppTheme(),
+            home: const ConsentOptionsScreen(
+              appLinks: TestConfig.defaultAppLinks,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final screenContext = tester.element(find.byType(ConsentOptionsScreen));
+      final l10n = AppLocalizations.of(screenContext)!;
+
+      // Verify analytics main text is present
+      expect(find.text(l10n.consentOptionsAnalyticsText), findsOneWidget);
+
+      // Verify revoke instruction is displayed separately (C12 fix)
+      expect(find.text(l10n.consentOptionsAnalyticsRevoke), findsOneWidget);
+    });
+
     testWidgets('has correct semantics header', (tester) async {
       final handle = tester.ensureSemantics();
       try {

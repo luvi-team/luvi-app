@@ -10,7 +10,7 @@ LIMIT 1
 \gset
 \if :{?test_user_id}
 \else
-\echo 'rls_smoke.sql benötigt mindestens einen auth.users-Datensatz (sonst schlagen FK-Inserts fehl).'
+\echo 'rls_smoke.sql requires at least one auth.users record (otherwise FK inserts will fail).'
 \quit 1
 \endif
 
@@ -301,53 +301,53 @@ SELECT set_config(
   json_build_object('sub', :'test_user_id', 'role', 'authenticated')::text,
   false
 );
-	INSERT INTO public.profiles (
-	  user_id,
-	  display_name,
-	  birth_date,
-	  fitness_level,
-	  goals,
-	  interests,
-	  has_seen_welcome,
-	  has_completed_onboarding,
-	  accepted_consent_version,
-	  onboarding_completed_at
-	)
-	VALUES (
-	  (SELECT auth.uid()),
-	  'rls-smoke',
-	  '1990-01-01',
-	  'beginner',
-	  '[]'::jsonb,
-	  '[]'::jsonb,
-	  true,
-	  true,
-	  1,
-	  now()
-	)
-	ON CONFLICT (user_id) DO UPDATE
-	SET display_name = EXCLUDED.display_name,
-	    birth_date = EXCLUDED.birth_date,
-	    fitness_level = EXCLUDED.fitness_level,
-	    goals = EXCLUDED.goals,
-	    interests = EXCLUDED.interests,
-	    has_seen_welcome = EXCLUDED.has_seen_welcome,
-	    has_completed_onboarding = EXCLUDED.has_completed_onboarding,
-	    accepted_consent_version = EXCLUDED.accepted_consent_version,
-	    onboarding_completed_at = EXCLUDED.onboarding_completed_at;
-	SELECT accepted_consent_at IS NOT NULL AS accepted_consent_at_set
-	FROM public.profiles
-	WHERE user_id = (SELECT auth.uid());
-	DO $$
-	DECLARE
-	  accepted_consent_at_set boolean;
-	BEGIN
-	  SELECT accepted_consent_at IS NOT NULL INTO accepted_consent_at_set
-	  FROM public.profiles
-	  WHERE user_id = (SELECT auth.uid());
-	  ASSERT accepted_consent_at_set,
-	    'profiles.accepted_consent_at must be set server-side when consent version is written';
-	END $$;
+INSERT INTO public.profiles (
+  user_id,
+  display_name,
+  birth_date,
+  fitness_level,
+  goals,
+  interests,
+  has_seen_welcome,
+  has_completed_onboarding,
+  accepted_consent_version,
+  onboarding_completed_at
+)
+VALUES (
+  (SELECT auth.uid()),
+  'rls-smoke',
+  '1990-01-01',
+  'beginner',
+  '[]'::jsonb,
+  '[]'::jsonb,
+  true,
+  true,
+  1,
+  now()
+)
+ON CONFLICT (user_id) DO UPDATE
+SET display_name = EXCLUDED.display_name,
+    birth_date = EXCLUDED.birth_date,
+    fitness_level = EXCLUDED.fitness_level,
+    goals = EXCLUDED.goals,
+    interests = EXCLUDED.interests,
+    has_seen_welcome = EXCLUDED.has_seen_welcome,
+    has_completed_onboarding = EXCLUDED.has_completed_onboarding,
+    accepted_consent_version = EXCLUDED.accepted_consent_version,
+    onboarding_completed_at = EXCLUDED.onboarding_completed_at;
+SELECT accepted_consent_at IS NOT NULL AS accepted_consent_at_set
+FROM public.profiles
+WHERE user_id = (SELECT auth.uid());
+DO $$
+DECLARE
+  accepted_consent_at_set boolean;
+BEGIN
+  SELECT accepted_consent_at IS NOT NULL INTO accepted_consent_at_set
+  FROM public.profiles
+  WHERE user_id = (SELECT auth.uid());
+  ASSERT accepted_consent_at_set,
+    'profiles.accepted_consent_at must be set server-side when consent version is written';
+END $$;
 SELECT COUNT(*) = 1 AS rls_allows
 FROM public.profiles
 WHERE user_id = (SELECT auth.uid());

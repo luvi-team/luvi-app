@@ -666,14 +666,33 @@ class _AutoFitText extends StatelessWidget {
         final scaledMax = textScaler.scale(maxFontSize);
         final scaledMin = textScaler.scale(minFontSize);
 
-        // Find largest font size that fits
-        double fontSize = scaledMax;
-        while (fontSize >= scaledMin) {
+        // Guard against inverted ranges
+        if (scaledMin > scaledMax) {
+          return Text(
+            text,
+            textAlign: textAlign,
+            maxLines: null,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontSize: scaledMin,
+              fontWeight: FontWeight.w500,
+              color: DsColors.grayscaleBlack,
+            ),
+          );
+        }
+
+        // Binary search for largest font size that fits (O(log n) vs O(n))
+        double lo = scaledMin;
+        double hi = scaledMax;
+        double fontSize = scaledMin;
+
+        while (hi - lo > 0.5) {
+          final mid = (lo + hi) / 2;
           final textPainter = TextPainter(
             text: TextSpan(
               text: text,
               style: TextStyle(
-                fontSize: fontSize,
+                fontSize: mid,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -683,9 +702,11 @@ class _AutoFitText extends StatelessWidget {
           textPainter.layout(maxWidth: availableWidth);
 
           if (textPainter.height <= availableHeight) {
-            break; // Found a size that fits
+            fontSize = mid; // This size fits, try larger
+            lo = mid;
+          } else {
+            hi = mid; // Too big, try smaller
           }
-          fontSize -= 0.5; // Reduce incrementally
         }
 
         return Text(

@@ -163,8 +163,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(l10n.authResetEmailSent),
+                                    duration: const Duration(seconds: 3),
                                   ),
                                 );
+                                // Brief delay to ensure user sees feedback before navigation
+                                await Future<void>.delayed(const Duration(milliseconds: 300));
+                                if (!context.mounted) return;
                                 context.go(AuthSignInScreen.routeName);
                               },
                             );

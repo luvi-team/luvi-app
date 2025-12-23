@@ -16,7 +16,17 @@
 -- - Unknown keys are dropped during backfill (MVP-safe normalization).
 -- - After this migration, unknown keys are rejected by CHECK constraints.
 
--- Helper: allowed scope IDs (must match `config/consent_scopes.json`).
+-- IMPORTANT: SCOPE ID SYNCHRONIZATION REQUIRED
+-- The allowed scope IDs below MUST match `config/consent_scopes.json`.
+-- When adding/removing scope IDs:
+-- 1. Update config/consent_scopes.json first
+-- 2. Update this SQL function to match
+-- 3. Update any Flutter constants (ConsentConfig)
+-- TODO: Consider migration to a database-driven scope source (consent_scopes table)
+--       or a sync script to auto-generate this SQL from the JSON file.
+-- Last synchronized: 2025-12-22 (v1.0 - 6 scopes)
+--
+-- Helper: allowed scope IDs
 create or replace function public.consents_scopes_keys_valid(p_scopes jsonb)
 returns boolean
 language sql
@@ -84,6 +94,7 @@ begin
   --    - Keep only known keys
   --    - Coerce common non-boolean representations safely
   --    - Store only enabled scopes (value=true)
+  -- Point 8: Skip already-canonical rows to avoid unnecessary writes
   update public.consents c
   set scopes = (
     select coalesce(jsonb_object_agg(e.key, true), '{}'::jsonb)
@@ -105,7 +116,11 @@ begin
       end
     )
   )
-  where jsonb_typeof(c.scopes) = 'object';
+  where jsonb_typeof(c.scopes) = 'object'
+    and not (
+      public.consents_scopes_keys_valid(c.scopes)
+      and public.consents_scopes_values_boolean(c.scopes)
+    );
 
   get diagnostics v_coerced = row_count;
   if v_coerced > 0 then
@@ -160,10 +175,19 @@ begin
   end if;
 
   -- Normalize legacy formats to canonical object.
+  -- Point 7: Filter unknown scope IDs during array normalization (consistent with backfill)
   if jsonb_typeof(p_scopes) = 'array' then
     normalized_scopes := (
       select coalesce(jsonb_object_agg(v, true), '{}'::jsonb)
       from jsonb_array_elements_text(p_scopes) v
+      where v in (
+        'terms',
+        'health_processing',
+        'analytics',
+        'marketing',
+        'ai_journal',
+        'model_training'
+      )
     );
   elsif jsonb_typeof(p_scopes) = 'object' then
     -- Require boolean values only; store only enabled scopes.

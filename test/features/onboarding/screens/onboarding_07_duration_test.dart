@@ -148,36 +148,36 @@ void main() {
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
-      // Zähle Periodentage via Semantics-Label (robust, unabhängig von Monat)
+      // Count period days via semantics label (robust, month-independent)
       final periodDayPattern = RegExp(r'Periodentag');
       int countPeriodDays() {
         return find.bySemanticsLabel(periodDayPattern).evaluate().length;
       }
 
       final beforeCount = countPeriodDays();
-      // Default periodDuration ist 5 Tage → erwarte mindestens 3 Periodentage
+      // Default periodDuration is 5 days → expect at least 3 period days
       expect(beforeCount, greaterThanOrEqualTo(3));
 
-      // Finde Tag 2 nach startDate via Semantics-Label (robust, exaktes Datum)
+      // Find day 2 after startDate via semantics label (robust, exact date)
       // Format: "17. Dezember 2024, Periodentag" (per period_calendar.dart)
       final targetDate = startDate.add(const Duration(days: 1));
       final formattedDate = DateFormat('d. MMMM yyyy', 'de').format(targetDate);
       final targetSemantics = RegExp('$formattedDate, Periodentag');
       final dayFinder = find.bySemanticsLabel(targetSemantics);
 
-      // Test MUSS fehlschlagen wenn kein Tag gefunden wird (kein if-Safeguard)
+      // Test MUST fail if no day found (no if-safeguard)
       expect(dayFinder, findsOneWidget,
           reason: 'Target period day must be found by Semantics label');
 
       await tester.tap(dayFinder);
       await tester.pumpAndSettle();
 
-      // Nach Tap: weniger Periodentage
+      // After tap: fewer period days
       final afterCount = countPeriodDays();
       expect(afterCount, lessThan(beforeCount),
           reason: 'Tapping earlier day should shorten period range');
 
-      // Screen sollte noch da sein (kein Crash)
+      // Screen should still be present (no crash)
       expect(find.byType(Onboarding07DurationScreen), findsOneWidget);
     });
 

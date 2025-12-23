@@ -65,12 +65,30 @@ void main() {
 
   setUp(() {
     mockRepo = _MockAuthRepository();
+
+    // Primary stub for test scenarios
     when(
       () => mockRepo.signInWithPassword(
         email: any(named: 'email'),
         password: any(named: 'password'),
       ),
     ).thenThrow(AuthException('invalid credentials'));
+
+    // Fallback stubs to prevent unmocked invocation errors
+    when(
+      () => mockRepo.signUp(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+        data: any(named: 'data'),
+      ),
+    ).thenThrow(AuthException('not stubbed'));
+
+    when(() => mockRepo.signOut()).thenAnswer((_) async {});
+
+    when(() => mockRepo.currentSession).thenReturn(null);
+
+    when(() => mockRepo.authStateChanges())
+        .thenAnswer((_) => const Stream.empty());
   });
 
   group('Auth route whitelist (navigation without session)', () {

@@ -118,11 +118,21 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
+  // Timeout constants for retry logic (Point 3: DRY extraction)
+  static const _primaryTimeout = Duration(seconds: 3);
+  static const _retryTimeout = Duration(seconds: 2);
+
+  /// Race-retry delay for handling sync lag between local and remote state.
+  /// Exposed for testing with shorter durations.
+  @visibleForTesting
+  static Duration raceRetryDelay = const Duration(milliseconds: 500);
+
   late final AnimationController _controller;
   bool _hasNavigated = false;
   bool _skipAnimation = false;
   bool _showUnknownUI = false;
   bool _hasUsedManualRetry = false;
+  bool _isRetrying = false;
 
   @override
   void initState() {
@@ -212,6 +222,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               child: WelcomeButton(
                 label: l10n.splashGateRetryCta,
                 onPressed: _hasUsedManualRetry ? null : _handleRetry,
+                isLoading: _isRetrying,
               ),
             ),
             const SizedBox(height: Spacing.m),
@@ -243,6 +254,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
     setState(() {
       _hasUsedManualRetry = true;
+      _isRetrying = true;
       _showUnknownUI = false;
       _hasNavigated = false;
     });
@@ -329,6 +341,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!remoteProfileLoaded) {
       if (mounted) {
         setState(() {
+          _isRetrying = false;
           _showUnknownUI = true;
         });
       }
@@ -376,9 +389,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     final localGate = service.hasCompletedOnboardingOrNull;
     // Consent OK - now sync onboarding gate with server SSOT
-    // No profile row = new user.
-    bool? remoteGate =
-        (remoteProfile?['has_completed_onboarding'] as bool?) ?? false;
+    // Point 2: Preserve null semantics - no profile row = genuinely unknown
+    var remoteGate = remoteProfile == null
+        ? null
+        : remoteProfile['has_completed_onboarding'] as bool?;
 
     if (!mounted || _hasNavigated) return;
 
@@ -409,14 +423,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Race-retry: local true + remote false → wait briefly and re-fetch
     // This handles race conditions where server hasn't synced yet
     if (targetRoute == null && localGate == true && remoteGate == false) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      await Future<void>.delayed(raceRetryDelay);
       if (!mounted || _hasNavigated) return;
 
       try {
         remoteProfile =
             await _fetchRemoteProfileWithRetry(useTimeout: useTimeout);
-        remoteGate =
-            (remoteProfile?['has_completed_onboarding'] as bool?) ?? false;
+        // Point 2: Preserve null semantics on race-retry as well
+        remoteGate = remoteProfile == null
+            ? null
+            : remoteProfile['has_completed_onboarding'] as bool?;
       } catch (e, st) {
         log.w('race-retry fetch failed',
             tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
@@ -449,6 +465,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Both remote and local are null → show Unknown UI
     if (mounted) {
       setState(() {
+        _isRetrying = false;
         _showUnknownUI = true;
       });
     }
@@ -516,13 +533,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<UserStateService> _loadUserStateWithRetry({
     required bool useTimeout,
   }) async {
-    const primaryTimeout = Duration(seconds: 3);
-    const retryTimeout = Duration(seconds: 2);
-
     try {
       final serviceFuture = ref.read(userStateServiceProvider.future);
       return useTimeout
-          ? await serviceFuture.timeout(primaryTimeout)
+          ? await serviceFuture.timeout(_primaryTimeout)
           : await serviceFuture;
     } catch (e, st) {
       log.w('state load failed, retrying once',
@@ -532,7 +546,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       // One retry with shorter timeout
       final serviceFuture = ref.read(userStateServiceProvider.future);
       return useTimeout
-          ? await serviceFuture.timeout(retryTimeout)
+          ? await serviceFuture.timeout(_retryTimeout)
           : await serviceFuture;
     }
   }
@@ -542,20 +556,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<Map<String, dynamic>?> _fetchRemoteProfileWithRetry({
     required bool useTimeout,
   }) async {
-    const primaryTimeout = Duration(seconds: 3);
-    const retryTimeout = Duration(seconds: 2);
-
     try {
       final fetchFuture = SupabaseService.getProfile();
       return useTimeout
-          ? await fetchFuture.timeout(primaryTimeout)
+          ? await fetchFuture.timeout(_primaryTimeout)
           : await fetchFuture;
     } catch (e, st) {
       log.w('remote profile fetch failed, retrying once',
           tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
       final fetchFuture = SupabaseService.getProfile();
       return useTimeout
-          ? await fetchFuture.timeout(retryTimeout)
+          ? await fetchFuture.timeout(_retryTimeout)
           : await fetchFuture;
     }
   }

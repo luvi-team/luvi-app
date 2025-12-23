@@ -181,9 +181,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
       setState(() {
         switch (validation.error!) {
           case AuthPasswordValidationError.emptyFields:
-            _newPasswordError = newPw.isEmpty ? l10n.authErrPasswordEmpty : null;
+            // Consistent with snackbar message (authErrPasswordInvalid)
+            _newPasswordError = newPw.isEmpty ? l10n.authErrPasswordInvalid : null;
             _confirmPasswordError =
-                confirmPw.isEmpty ? l10n.authErrPasswordEmpty : null;
+                confirmPw.isEmpty ? l10n.authErrPasswordInvalid : null;
           case AuthPasswordValidationError.mismatch:
             _newPasswordError = null;
             _confirmPasswordError = l10n.authPasswordMismatchError;

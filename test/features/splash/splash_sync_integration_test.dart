@@ -523,7 +523,7 @@ void main() {
                   if (targetRoute == null &&
                       localGate == true &&
                       remoteGate == false) {
-                    // Wait 500ms (simulated delay)
+                    // Wait 100ms (simulated delay)
                     await Future<void>.delayed(
                         const Duration(milliseconds: 100));
 

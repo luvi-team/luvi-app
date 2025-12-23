@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:luvi_app/core/analytics/telemetry.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -310,20 +311,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
 
     // Bind once on startup (covers "already signed in" cases where no auth
     // event is emitted immediately).
-    unawaited(() async {
-      try {
-        final service = await ref.read(userStateServiceProvider.future);
-        await service.bindUser(SupabaseService.currentUser?.id);
-      } catch (e) {
-        if (!kReleaseMode) {
-          log.w(
-            'user_state_bind_initial_failed',
-            tag: 'main',
-            error: sanitizeError(e) ?? e.runtimeType,
-          );
-        }
-      }
-    }());
+    unawaited(_bindInitialUser());
 
     _userStateAuthSyncSubscription =
         SupabaseService.client.auth.onAuthStateChange.listen((authState) async {
@@ -331,6 +319,16 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         final service = await ref.read(userStateServiceProvider.future);
         await service.bindUser(authState.session?.user.id);
       } catch (e) {
+        // Always report to telemetry for production debugging
+        Telemetry.maybeCaptureException(
+          'user_state_bind_failed',
+          error: e,
+          data: {
+            'auth_event': authState.event.name,
+            'has_session': authState.session != null,
+            'has_user_id': authState.session?.user.id != null,
+          },
+        );
         if (!kReleaseMode) {
           log.w(
             'user_state_bind_failed',
@@ -340,6 +338,30 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         }
       }
     });
+  }
+
+  /// Binds the initial user state on startup.
+  Future<void> _bindInitialUser() async {
+    try {
+      final service = await ref.read(userStateServiceProvider.future);
+      await service.bindUser(SupabaseService.currentUser?.id);
+    } catch (e) {
+      // Always report to telemetry for production debugging
+      Telemetry.maybeCaptureException(
+        'user_state_bind_initial_failed',
+        error: e,
+        data: {
+          'has_current_user': SupabaseService.currentUser != null,
+        },
+      );
+      if (!kReleaseMode) {
+        log.w(
+          'user_state_bind_initial_failed',
+          tag: 'main',
+          error: sanitizeError(e) ?? e.runtimeType,
+        );
+      }
+    }
   }
 
 }

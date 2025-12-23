@@ -34,26 +34,35 @@ class OnboardingButton extends StatelessWidget {
     return Semantics(
       button: true,
       enabled: enabled,
-      child: GestureDetector(
-        onTap: enabled ? onPressed : null,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(
-            vertical: Spacing.m,
-            horizontal: Spacing.onboardingButtonHorizontal,
-          ),
-          decoration: BoxDecoration(
-            color: enabled ? DsColors.buttonPrimary : DsColors.gray300,
-            borderRadius: BorderRadius.circular(Sizes.radiusXL),
-            // Figma v3: No shadow on CTA buttons (matches Welcome screens)
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: enabled ? DsColors.white : DsColors.gray500,
-              fontSize: Sizes.onboardingButtonFontSize, // 20px (Figma v2)
-              fontWeight: FontWeight.w600,
+      label: label, // Explicit semantic label for screen readers
+      child: Material(
+        color: DsColors.transparent,
+        child: InkWell(
+          onTap: enabled ? onPressed : null,
+          borderRadius: BorderRadius.circular(Sizes.radiusXL),
+          splashColor: DsColors.white.withValues(alpha: 0.2),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(
+              vertical: Spacing.m,
+              horizontal: Spacing.onboardingButtonHorizontal,
+            ),
+            decoration: BoxDecoration(
+              color: enabled ? DsColors.buttonPrimary : DsColors.gray300,
+              borderRadius: BorderRadius.circular(Sizes.radiusXL),
+              // Figma v3: No shadow on CTA buttons (matches Welcome screens)
+            ),
+            child: ExcludeSemantics(
+              // Prevent duplicate screen reader announcements
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: enabled ? DsColors.white : DsColors.gray500,
+                  fontSize: Sizes.onboardingButtonFontSize, // 20px (Figma v2)
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ),

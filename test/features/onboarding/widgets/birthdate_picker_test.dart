@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/widgets/birthdate_picker.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -77,9 +78,9 @@ void main() {
   });
 
   testWidgets('clamps date to valid age range', (tester) async {
-    // Try to set a date that's too recent (under 16 years old)
+    // Try to set a date below minimum age (kMinAge = 16)
     final now = DateTime.now();
-    final tooYoung = DateTime(now.year - 10, 1, 1);
+    final tooYoung = DateTime(now.year - (kMinAge - 1), 1, 1); // 15 years old
 
     await _pumpPicker(
       tester,

@@ -49,5 +49,39 @@ void main() {
         expect(level.dbKey, level.name);
       }
     });
+
+    test('all selectable service FitnessLevel values map back to app FitnessLevel via fromStoredId', () {
+      // Verify that every selectable services.FitnessLevel can be mapped back to app.FitnessLevel
+      // This ensures the service enum hasn't gained selectable values the app doesn't handle
+      // Note: services.FitnessLevel.unknown is a sentinel value and should NOT map to app enum
+      final selectableLevels = services.FitnessLevel.values
+          .where((level) => level != services.FitnessLevel.unknown);
+
+      for (final serviceLevel in selectableLevels) {
+        final appLevel = app.FitnessLevelExtension.fromStoredId(serviceLevel.name);
+        expect(
+          appLevel,
+          isNotNull,
+          reason: 'services.FitnessLevel.${serviceLevel.name} should map to app.FitnessLevel',
+        );
+        expect(
+          appLevel!.name,
+          serviceLevel.name,
+          reason: 'Reverse-mapped enum should have matching name',
+        );
+      }
+    });
+
+    test('service FitnessLevel.unknown returns null from fromStoredId (sentinel value)', () {
+      // unknown is a sentinel value that should NOT map to a valid app.FitnessLevel
+      final appLevel = app.FitnessLevelExtension.fromStoredId(
+        services.FitnessLevel.unknown.name,
+      );
+      expect(
+        appLevel,
+        isNull,
+        reason: 'services.FitnessLevel.unknown is a sentinel and should return null',
+      );
+    });
   });
 }

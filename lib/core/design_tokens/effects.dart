@@ -26,7 +26,7 @@ class DsEffects {
   /// Used for: Period calendar containers (O7, O8)
   static BoxDecoration get glassCalendar => BoxDecoration(
         color: DsColors.white.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(Sizes.radiusXL),
       );
 
   /// Glass Mini Calendar Container - 10% white opacity with 24px radius
@@ -65,7 +65,7 @@ class DsEffects {
   /// Used for: O7/O8 period calendar containers
   static BoxDecoration get glassCalendarStrong => BoxDecoration(
         color: DsColors.white.withValues(alpha: 0.50),
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(Sizes.radiusXL),
         border: Border.all(
           color: DsColors.white.withValues(alpha: 0.70),
           width: 1.5,

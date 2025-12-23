@@ -275,6 +275,7 @@ void main() {
 
     testWidgets('Sign out navigates to AuthSignInScreen', (tester) async {
       final router = createTestRouter();
+      addTearDown(router.dispose);
 
       await tester.pumpWidget(ProviderScope(
         overrides: [initModeProvider.overrideWithValue(InitMode.test)],

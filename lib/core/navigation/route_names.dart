@@ -3,5 +3,5 @@ class RouteNames {
 
   static const String login = 'login';
   static const String authSignIn = 'auth_signin';
-  static const String profil = 'profil';
+  static const String profile = 'profil';  // Keep route value as 'profil' for URL
 }

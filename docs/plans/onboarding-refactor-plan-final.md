@@ -103,12 +103,12 @@ static LinearGradient get onboardingSuccess => LinearGradient(
 ```dart
 class DsEffects {
   static BoxDecoration get glassCard => BoxDecoration(
-    color: Colors.white.withOpacity(0.1),
+    color: Colors.white.withValues(alpha: 0.1),
     borderRadius: BorderRadius.circular(16),
   );
 
   static BoxDecoration get glassPill => BoxDecoration(
-    color: Colors.white.withOpacity(0.1),
+    color: Colors.white.withValues(alpha: 0.1),
     borderRadius: BorderRadius.circular(999),
   );
 }

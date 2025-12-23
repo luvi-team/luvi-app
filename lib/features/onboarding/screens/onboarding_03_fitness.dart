@@ -57,16 +57,21 @@ class _Onboarding03FitnessScreenState
     if (_selectedLevel != null) {
       // Save to OnboardingNotifier (SSOT)
       ref.read(onboardingProvider.notifier).setFitnessLevel(_selectedLevel!);
-      // Also save to UserStateService for backward compatibility
-      final userState = await ref.read(userStateServiceProvider.future);
-      final uid = SupabaseService.currentUser?.id;
-      if (uid != null) {
-        await userState.bindUser(uid);
+      try {
+        // Also save to UserStateService for backward compatibility
+        final userState = await ref.read(userStateServiceProvider.future);
+        final uid = SupabaseService.currentUser?.id;
+        if (uid != null) {
+          await userState.bindUser(uid);
+        }
+        final serviceFitness =
+            services.FitnessLevel.tryParse(_selectedLevel!.name) ??
+                services.FitnessLevel.beginner;
+        await userState.setFitnessLevel(serviceFitness);
+      } catch (e) {
+        // Log error but proceed - data is saved in SSOT provider
+        debugPrint('Failed to sync fitness level to UserStateService: $e');
       }
-      final serviceFitness =
-          services.FitnessLevel.tryParse(_selectedLevel!.name) ??
-              services.FitnessLevel.beginner;
-      await userState.setFitnessLevel(serviceFitness);
     }
     // Navigate to O4 Goals
     if (mounted) context.pushNamed('onboarding_04_goals');
@@ -156,8 +161,9 @@ class _Onboarding03FitnessScreenState
     return Semantics(
       label: l10n.onboarding03FitnessSemantic,
       child: Row(
-        children: levels.map((level) {
-          final index = levels.indexOf(level);
+        children: levels.asMap().entries.map((entry) {
+          final index = entry.key;
+          final level = entry.value;
           return Expanded(
             child: Padding(
               padding: EdgeInsets.only(

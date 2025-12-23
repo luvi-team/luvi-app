@@ -111,7 +111,6 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
     );
   }
 
-
   void _handleBack() {
     final router = GoRouter.of(context);
     if (router.canPop()) {

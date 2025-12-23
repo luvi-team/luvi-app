@@ -23,7 +23,12 @@ class ConsentIntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    assert(
+      l10n != null,
+      'Missing AppLocalizations in ConsentIntroScreen — '
+      'ensure Localizations widget is provided in widget tree.',
+    );
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
@@ -43,7 +48,7 @@ class ConsentIntroScreen extends StatelessWidget {
                   children: [
                     // Illustration (Figma: 265 x 303 px, scalable)
                     Semantics(
-                      label: l10n.consentIntroIllustrationSemantic,
+                      label: l10n!.consentIntroIllustrationSemantic,
                       child: Image.asset(
                         Assets.images.consentIntroHero,
                         width: 265,

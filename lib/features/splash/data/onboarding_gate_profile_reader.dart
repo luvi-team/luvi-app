@@ -25,11 +25,14 @@ class DefaultOnboardingGateProfileReader implements OnboardingGateProfileReader 
     final profile = await SupabaseService.getProfile();
     // No profile row = new user = hasn't completed onboarding
     if (profile == null) return false;
-    return profile['has_completed_onboarding'] as bool?;
+
+    final raw = profile['has_completed_onboarding'];
+    // Defensive: only accept bool, treat anything else as unset
+    return raw is bool ? raw : null;
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 OnboardingGateProfileReader onboardingGateProfileReader(Ref ref) {
   return const DefaultOnboardingGateProfileReader();
 }

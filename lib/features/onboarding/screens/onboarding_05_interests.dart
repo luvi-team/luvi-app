@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/model/interest.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_04_goals.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/goal_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
@@ -22,6 +23,9 @@ class Onboarding05InterestsScreen extends ConsumerStatefulWidget {
 
   static const routeName = '/onboarding/05';
 
+  /// GoRoute name for pushNamed navigation
+  static const navName = 'onboarding_05_interests';
+
   @override
   ConsumerState<Onboarding05InterestsScreen> createState() =>
       _Onboarding05InterestsScreenState();
@@ -29,44 +33,25 @@ class Onboarding05InterestsScreen extends ConsumerStatefulWidget {
 
 class _Onboarding05InterestsScreenState
     extends ConsumerState<Onboarding05InterestsScreen> {
-  final Set<Interest> _selectedInterests = {};
-
   /// Minimum number of interests required
   static const int _minSelections = 3;
 
   /// Maximum number of interests allowed
   static const int _maxSelections = 5;
 
-  @override
-  void initState() {
-    super.initState();
-    // Restore from OnboardingNotifier (back navigation)
-    final onboardingState = ref.read(onboardingProvider);
-    if (onboardingState.selectedInterests.isNotEmpty) {
-      _selectedInterests.addAll(onboardingState.selectedInterests);
-    }
-  }
-
-  bool get _isValidSelection {
-    final count = _selectedInterests.length;
+  /// Validation based on provider state (SSOT)
+  bool _isValidSelection(List<Interest> selectedInterests) {
+    final count = selectedInterests.length;
     return count >= _minSelections && count <= _maxSelections;
   }
 
+  /// Toggle interest - notifier enforces max=5 limit
   void _toggleInterest(Interest interest) {
-    setState(() {
-      if (_selectedInterests.contains(interest)) {
-        _selectedInterests.remove(interest);
-      } else if (_selectedInterests.length < _maxSelections) {
-        _selectedInterests.add(interest);
-      }
-    });
-    // Sync to OnboardingNotifier
     ref.read(onboardingProvider.notifier).toggleInterest(interest);
   }
 
   void _handleContinue() {
-    // Navigate to O6 Cycle Intro
-    context.pushNamed('onboarding_06_cycle_intro');
+    context.pushNamed(Onboarding06CycleIntroScreen.navName);
   }
 
   void _handleBack() {
@@ -85,6 +70,11 @@ class _Onboarding05InterestsScreenState
     final textTheme = theme.textTheme;
     final spacing = OnboardingSpacing.of(context);
     final l10n = AppLocalizations.of(context)!;
+
+    // SSOT: Watch provider for selected interests
+    final selectedInterests = ref.watch(
+      onboardingProvider.select((state) => state.selectedInterests),
+    );
 
     return Scaffold(
       body: Container(
@@ -110,9 +100,9 @@ class _Onboarding05InterestsScreenState
                 SizedBox(height: Spacing.m),
                 _buildSubtitle(textTheme, colorScheme, l10n),
                 SizedBox(height: spacing.headerToFirstCard),
-                _buildInterestList(spacing, l10n),
+                _buildInterestList(spacing, l10n, selectedInterests),
                 SizedBox(height: spacing.lastCardToCta),
-                Center(child: _buildCta(l10n)),
+                Center(child: _buildCta(l10n, selectedInterests)),
                 SizedBox(height: Spacing.xl),
               ],
             ),
@@ -141,7 +131,11 @@ class _Onboarding05InterestsScreenState
     );
   }
 
-  Widget _buildInterestList(OnboardingSpacing spacing, AppLocalizations l10n) {
+  Widget _buildInterestList(
+    OnboardingSpacing spacing,
+    AppLocalizations l10n,
+    List<Interest> selectedInterests,
+  ) {
     final interests = Interest.values;
 
     return Semantics(
@@ -158,7 +152,7 @@ class _Onboarding05InterestsScreenState
               child: GoalCard(
                 key: Key('onb_interest_${interest.name}'),
                 title: interest.label(l10n),
-                selected: _selectedInterests.contains(interest),
+                selected: selectedInterests.contains(interest),
                 onTap: () => _toggleInterest(interest),
               ),
             );
@@ -168,14 +162,12 @@ class _Onboarding05InterestsScreenState
     );
   }
 
-  Widget _buildCta(AppLocalizations l10n) {
-    final ctaLabel = l10n.commonContinue;
-
+  Widget _buildCta(AppLocalizations l10n, List<Interest> selectedInterests) {
     return OnboardingButton(
       key: const Key('onb_cta'),
-      label: ctaLabel,
+      label: l10n.commonContinue,
       onPressed: _handleContinue,
-      isEnabled: _isValidSelection,
+      isEnabled: _isValidSelection(selectedInterests),
     );
   }
 }

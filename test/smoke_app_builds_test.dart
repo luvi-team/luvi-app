@@ -17,6 +17,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(child: MyApp(orientationController: controller)),
     );
+    // Pump 6 seconds to allow deep link handler's 5s timeout to complete
+    await tester.pump(const Duration(seconds: 6));
     await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);

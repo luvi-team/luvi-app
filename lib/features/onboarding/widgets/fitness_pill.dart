@@ -3,7 +3,6 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 
 /// Horizontal pill widget for fitness level selection (O3).
@@ -24,13 +23,6 @@ class FitnessPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final dsTokens = theme.extension<DsTokens>();
-    if (dsTokens == null) {
-      throw FlutterError(
-        'DsTokens extension not found in theme. '
-        'Ensure DsTokens is registered via ThemeData.extensions in app_theme.dart',
-      );
-    }
 
     return Semantics(
       label: label,

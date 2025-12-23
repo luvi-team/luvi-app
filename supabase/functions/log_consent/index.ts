@@ -348,7 +348,7 @@ if (import.meta.main) {
   ) {
     const scopeMap = rawScopes as Record<string, unknown>;
     const invalidValue = Object.values(scopeMap).find((v) => typeof v !== "boolean");
-    if (invalidValue != null) {
+    if (invalidValue !== undefined) {
       logMetric(requestId, "invalid", {
         reason: "invalid_scopes_value_type",
         providedType: typeof invalidValue,
@@ -528,7 +528,7 @@ if (import.meta.main) {
   const elapsed = Date.now() - started;
   logMetric(requestId, "success", {
     consent_id_hash: consentIdHash,
-    scopes_count: payload.scope_count,
+    scope_count: payload.scope_count,
     duration_ms: elapsed,
     rpc_latency_ms: rpcDuration,
     version: payload.version,

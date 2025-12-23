@@ -7,7 +7,6 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
@@ -35,14 +34,25 @@ class Onboarding06PeriodScreen extends ConsumerStatefulWidget {
 class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScreen> {
   DateTime? _selectedDate;
   bool _unknownSelected = false;
+  bool _didRestoreState = false;
 
   @override
   void initState() {
     super.initState();
-    // Restore from OnboardingNotifier (back navigation)
-    final onboardingState = ref.read(onboardingProvider);
-    if (onboardingState.periodStart != null) {
-      _selectedDate = onboardingState.periodStart;
+    // State restoration moved to didChangeDependencies
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // A1: Restore from OnboardingNotifier (back navigation)
+    // Moved from initState to ensure widget is fully mounted before accessing Riverpod
+    if (!_didRestoreState) {
+      _didRestoreState = true;
+      final onboardingState = ref.read(onboardingProvider);
+      if (onboardingState.periodStart != null) {
+        _selectedDate = onboardingState.periodStart;
+      }
     }
   }
 
@@ -56,16 +66,14 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
   }
 
   void _handleUnknownToggle() {
+    // A3: One-way action - once selected, navigate immediately
+    if (_unknownSelected) return; // Already selected, ignore subsequent taps
+
     setState(() {
-      _unknownSelected = !_unknownSelected;
-      if (_unknownSelected) {
-        _selectedDate = null;
-      }
+      _unknownSelected = true;
+      _selectedDate = null;
     });
-    // Auto-navigate when "I don't remember" is selected
-    if (_unknownSelected) {
-      _navigateToSuccessScreen();
-    }
+    _navigateToSuccessScreen();
   }
 
   void _navigateToNextScreen() {
@@ -116,7 +124,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     final textTheme = theme.textTheme;
     final spacing = OnboardingSpacing.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final dsTokens = theme.extension<DsTokens>();
+    // A2: Removed unused dsTokens variable
 
     return Scaffold(
       body: Container(
@@ -134,7 +142,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
               _buildHeader(textTheme, colorScheme, spacing, l10n),
               SizedBox(height: Spacing.m),
               Expanded(
-                child: _buildCalendarCard(dsTokens, l10n),
+                child: _buildCalendarCard(l10n),
               ),
               _buildUnknownOption(textTheme, colorScheme, l10n),
               SizedBox(height: Spacing.xl),
@@ -196,7 +204,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     );
   }
 
-  Widget _buildCalendarCard(DsTokens? dsTokens, AppLocalizations l10n) {
+  Widget _buildCalendarCard(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: OnboardingGlassCard(
@@ -222,7 +230,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
       child: Semantics(
         label: l10n.onboarding06PeriodUnknown,
         button: true,
-        selected: _unknownSelected,
+        checked: _unknownSelected, // A4: Use checked for toggleable controls
         child: InkWell(
           onTap: _handleUnknownToggle,
           borderRadius: BorderRadius.circular(Sizes.radiusM),

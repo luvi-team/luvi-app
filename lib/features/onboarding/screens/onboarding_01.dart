@@ -153,7 +153,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.done,
               autofocus: true,
-              hintText: '',
+              hintText: l10n.onboarding01NameHint,
               fontSize: Sizes.onboardingInputFontSize, // 18px (Figma v2)
               fontFamilyOverride: FontFamilies.playfairDisplay,
               fontWeightOverride: FontWeight.bold,

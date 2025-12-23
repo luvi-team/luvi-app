@@ -76,21 +76,27 @@ class Spacing {
 
   /// Success Card 1 (left/top) padding with scale factor.
   /// Figma: 4px top, 7px horizontal, 13px bottom
-  static EdgeInsets successCard1Padding(double scale) => EdgeInsets.fromLTRB(
-        successCard1PaddingHorizontal * scale,
-        successCard1PaddingTop * scale,
-        successCard1PaddingHorizontal * scale,
-        successCard1PaddingBottom * scale,
-      );
+  static EdgeInsets successCard1Padding(double scale) {
+    assert(scale > 0 && scale <= 10, 'scale must be between 0 (exclusive) and 10');
+    return EdgeInsets.fromLTRB(
+      successCard1PaddingHorizontal * scale,
+      successCard1PaddingTop * scale,
+      successCard1PaddingHorizontal * scale,
+      successCard1PaddingBottom * scale,
+    );
+  }
 
   /// Success Card 2/3 (horizontal cards) padding with scale factor.
   /// Figma: 15px vertical, 5px left, 0px right (asymmetric)
-  static EdgeInsets successCard2Padding(double scale) => EdgeInsets.fromLTRB(
-        successCard2PaddingLeft * scale,
-        successCard2PaddingVertical * scale,
-        successCard2PaddingRight * scale,
-        successCard2PaddingVertical * scale,
-      );
+  static EdgeInsets successCard2Padding(double scale) {
+    assert(scale > 0 && scale <= 10, 'scale must be between 0 (exclusive) and 10');
+    return EdgeInsets.fromLTRB(
+      successCard2PaddingLeft * scale,
+      successCard2PaddingVertical * scale,
+      successCard2PaddingRight * scale,
+      successCard2PaddingVertical * scale,
+    );
+  }
 
   Spacing._();
 }

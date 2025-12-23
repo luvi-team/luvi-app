@@ -12,6 +12,29 @@ import 'logger.dart';
 const String kErrProfilesUpsertConsentGateNoRowReturned =
     'profiles_upsert_consent_gate_no_row_returned';
 
+/// Canonical IDs for fitness levels (matches public.profiles.fitness_level).
+const Set<String> kValidFitnessLevelIds = {'beginner', 'occasional', 'fit'};
+
+/// Canonical IDs for goals (matches public.profiles.goals JSONB array).
+const Set<String> kValidGoalIds = {
+  'fitter',
+  'energy',
+  'sleep',
+  'cycle',
+  'longevity',
+  'wellbeing',
+};
+
+/// Canonical IDs for interests (matches public.profiles.interests JSONB array).
+const Set<String> kValidInterestIds = {
+  'strength_training',
+  'cardio',
+  'mobility',
+  'nutrition',
+  'mindfulness',
+  'hormones_cycle',
+};
+
 class SupabaseService {
   static bool _initialized = false;
   // A single gate to ensure only the first caller performs initialization and
@@ -81,13 +104,11 @@ class SupabaseService {
     }
     if (authConfig != null) {
       if (_initialized) {
-        log.w(
-          'authConfig ignored: SupabaseService already initialized',
-          tag: 'supabase_service',
+        throw StateError(
+          'authConfig cannot be set after SupabaseService is initialized',
         );
-      } else {
-        _authDeepLinkConfig = authConfig;
       }
+      _authDeepLinkConfig = authConfig;
     }
   }
 
@@ -307,6 +328,7 @@ class SupabaseService {
   /// Upsert user profile data from onboarding
   ///
   /// Saves display name, birth date, goals, and interests to profiles table.
+  /// Validates all canonical IDs before persisting to prevent invalid data.
   static Future<Map<String, dynamic>?> upsertProfile({
     required String displayName,
     required DateTime birthDate,
@@ -334,6 +356,27 @@ class SupabaseService {
         'age must be between ${ageConfig.minAge} and ${ageConfig.maxAge}',
       );
     }
+
+    // Validate canonical IDs to prevent invalid data persistence
+    final normalizedFitnessLevel = fitnessLevel.toLowerCase();
+    if (!kValidFitnessLevelIds.contains(normalizedFitnessLevel)) {
+      throw ArgumentError.value(
+        fitnessLevel,
+        'fitnessLevel',
+        'invalid fitness level ID',
+      );
+    }
+    for (final goal in goals) {
+      if (!kValidGoalIds.contains(goal.toLowerCase())) {
+        throw ArgumentError.value(goal, 'goals', 'invalid goal ID');
+      }
+    }
+    for (final interest in interests) {
+      if (!kValidInterestIds.contains(interest.toLowerCase())) {
+        throw ArgumentError.value(interest, 'interests', 'invalid interest ID');
+      }
+    }
+
     // Normalize birthDate to UTC date-only
     final bdLocal = birthDate.toLocal();
     final birthDateNormalized =
@@ -344,9 +387,9 @@ class SupabaseService {
       'user_id': user.id,
       'display_name': displayName.trim(),
       'birth_date': _formatIsoDate(birthDateNormalized),
-      'fitness_level': fitnessLevel,
-      'goals': goals,
-      'interests': interests,
+      'fitness_level': normalizedFitnessLevel,
+      'goals': goals.map((g) => g.toLowerCase()).toList(),
+      'interests': interests.map((i) => i.toLowerCase()).toList(),
       'updated_at': timestamp,
     };
     final row = await client

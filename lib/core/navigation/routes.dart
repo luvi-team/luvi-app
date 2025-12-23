@@ -358,7 +358,7 @@ final List<GoRoute> featureRoutes = [
   ),
   GoRoute(
     path: ProfileStubScreen.routeName,
-    name: RouteNames.profil,
+    name: RouteNames.profile,
     builder: (context, state) => const ProfileStubScreen(),
   ),
   GoRoute(

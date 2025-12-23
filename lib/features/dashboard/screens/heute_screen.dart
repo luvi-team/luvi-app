@@ -373,7 +373,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
             _activeTabIndex = index;
           });
           if (index == 3) {
-            context.goNamed(RouteNames.profil);
+            context.goNamed(RouteNames.profile);
           }
         },
         onSyncTap: () {

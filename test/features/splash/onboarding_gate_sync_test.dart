@@ -5,50 +5,54 @@ import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 
+// Point 11: Module-level test constants for route assertions
+const _testHomeRoute = HeuteScreen.routeName;
+const _testOnboardingRoute = Onboarding01Screen.routeName;
+const _testDefaultTarget = '/dashboard';
+const _testCurrentVersion = 1;
+
 /// Unit tests for the onboarding gate sync logic.
 ///
 /// Tests the `determineOnboardingGateRoute` helper function which decides
 /// navigation based on remote (server SSOT) and local state.
 void main() {
   group('determineOnboardingGateRoute', () {
-    const homeRoute = HeuteScreen.routeName;
-    const onboardingRoute = Onboarding01Screen.routeName;
 
     group('Remote SSOT available (remote != null)', () {
       test('remote true → navigates to Home', () {
         final result = determineOnboardingGateRoute(
           remoteGate: true,
           localGate: null,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, equals(_testHomeRoute));
       });
 
       test('remote true takes priority over local false', () {
         final result = determineOnboardingGateRoute(
           remoteGate: true,
           localGate: false,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, equals(_testHomeRoute));
       });
 
       test('remote true takes priority over local true (consistent)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: true,
           localGate: true,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, equals(_testHomeRoute));
       });
 
       test('remote false + local null → navigates to Onboarding01 (first-time user)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: null,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(onboardingRoute));
+        expect(result, equals(_testOnboardingRoute));
       });
 
       test('remote false + local true → returns null (race-retry needed)', () {
@@ -56,7 +60,7 @@ void main() {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: true,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
         expect(result, isNull);
       });
@@ -65,9 +69,9 @@ void main() {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: false,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(onboardingRoute));
+        expect(result, equals(_testOnboardingRoute));
       });
     });
 
@@ -76,27 +80,31 @@ void main() {
         final result = determineOnboardingGateRoute(
           remoteGate: null,
           localGate: false,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(onboardingRoute));
+        expect(result, equals(_testOnboardingRoute));
       });
 
       test('remote null + local true → returns null (fail-safe, never Home)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: null,
           localGate: true,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
         expect(result, isNull);
       });
 
-      test('remote null + local null → returns null (show Unknown UI)', () {
+      test('remote null + local null → returns null (triggers _showUnknownUI with retry prompt)', () {
+        // When both remote and local are null, the function returns null.
+        // The caller (SplashScreen) then shows the Unknown UI with:
+        // - Retry button to attempt navigation again
+        // - Sign out button to clear state and restart
         final result = determineOnboardingGateRoute(
           remoteGate: null,
           localGate: null,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, isNull);
+        expect(result, isNull, reason: 'null signals caller to show Unknown UI');
       });
     });
 
@@ -111,30 +119,32 @@ void main() {
         expect(result, equals(customHome));
       });
 
-      test('returns Onboarding01 for first-time user scenarios', () {
-        // Remote false + local null (first-time user)
-        final firstTimeResult = determineOnboardingGateRoute(
+      // Point 9: Split combined test into three separate tests for better failure isolation
+      test('returns Onboarding01 when remote false and local null (first-time user)', () {
+        final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: null,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(firstTimeResult, equals(Onboarding01Screen.routeName));
+        expect(result, equals(Onboarding01Screen.routeName));
+      });
 
-        // Remote false + local false (consistent state)
-        final consistentResult = determineOnboardingGateRoute(
+      test('returns Onboarding01 when remote false and local false (consistent state)', () {
+        final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: false,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(consistentResult, equals(Onboarding01Screen.routeName));
+        expect(result, equals(Onboarding01Screen.routeName));
+      });
 
-        // Local false fallback (offline)
-        final localResult = determineOnboardingGateRoute(
+      test('returns Onboarding01 when remote null and local false (offline fallback)', () {
+        final result = determineOnboardingGateRoute(
           remoteGate: null,
           localGate: false,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(localResult, equals(Onboarding01Screen.routeName));
+        expect(result, equals(Onboarding01Screen.routeName));
       });
     });
 
@@ -145,7 +155,7 @@ void main() {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: true,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
         expect(result, isNull);
       });
@@ -155,9 +165,9 @@ void main() {
         final result = determineOnboardingGateRoute(
           remoteGate: true,
           localGate: true,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(homeRoute));
+        expect(result, equals(_testHomeRoute));
       });
 
       test('after race-retry: remote still false → caller routes to Onboarding', () {
@@ -166,7 +176,7 @@ void main() {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: true,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
         expect(result, isNull);
         // Note: The actual routing to Onboarding happens in the caller
@@ -178,9 +188,9 @@ void main() {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: null,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(onboardingRoute));
+        expect(result, equals(_testOnboardingRoute));
       });
 
       test('race-retry not triggered when local is false', () {
@@ -188,25 +198,22 @@ void main() {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: false,
-          homeRoute: homeRoute,
+          homeRoute: _testHomeRoute,
         );
-        expect(result, equals(onboardingRoute));
+        expect(result, equals(_testOnboardingRoute));
       });
     });
   });
 
   group('determineTargetRoute - existing tests', () {
     // Ensure existing routing logic still works
-    const defaultTarget = '/dashboard';
-    const currentVersion = 1;
-
     test('unauth user always goes to AuthSignIn', () {
       final result = determineTargetRoute(
         isAuth: false,
-        acceptedConsentVersion: currentVersion,
-        currentConsentVersion: currentVersion,
+        acceptedConsentVersion: _testCurrentVersion,
+        currentConsentVersion: _testCurrentVersion,
         hasCompletedOnboarding: true,
-        defaultTarget: defaultTarget,
+        defaultTarget: _testDefaultTarget,
       );
       expect(result, equals(AuthSignInScreen.routeName));
     });
@@ -215,9 +222,9 @@ void main() {
       final result = determineTargetRoute(
         isAuth: true,
         acceptedConsentVersion: null,
-        currentConsentVersion: currentVersion,
+        currentConsentVersion: _testCurrentVersion,
         hasCompletedOnboarding: true,
-        defaultTarget: defaultTarget,
+        defaultTarget: _testDefaultTarget,
       );
       expect(result, equals(ConsentWelcome01Screen.routeName));
     });
@@ -225,10 +232,10 @@ void main() {
     test('auth user with valid consent but no onboarding goes to Onboarding', () {
       final result = determineTargetRoute(
         isAuth: true,
-        acceptedConsentVersion: currentVersion,
-        currentConsentVersion: currentVersion,
+        acceptedConsentVersion: _testCurrentVersion,
+        currentConsentVersion: _testCurrentVersion,
         hasCompletedOnboarding: false,
-        defaultTarget: defaultTarget,
+        defaultTarget: _testDefaultTarget,
       );
       expect(result, equals(Onboarding01Screen.routeName));
     });
@@ -236,12 +243,12 @@ void main() {
     test('auth user with all gates passed goes to defaultTarget', () {
       final result = determineTargetRoute(
         isAuth: true,
-        acceptedConsentVersion: currentVersion,
-        currentConsentVersion: currentVersion,
+        acceptedConsentVersion: _testCurrentVersion,
+        currentConsentVersion: _testCurrentVersion,
         hasCompletedOnboarding: true,
-        defaultTarget: defaultTarget,
+        defaultTarget: _testDefaultTarget,
       );
-      expect(result, equals(defaultTarget));
+      expect(result, equals(_testDefaultTarget));
     });
   });
 

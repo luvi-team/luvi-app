@@ -27,7 +27,7 @@ final class OnboardingGateProfileReaderProvider
         argument: null,
         retry: null,
         name: r'onboardingGateProfileReaderProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -56,4 +56,4 @@ final class OnboardingGateProfileReaderProvider
 }
 
 String _$onboardingGateProfileReaderHash() =>
-    r'783db0a310dde472c6feb11361c77ecc29853e01';
+    r'1f7338faec2c75fe2551abeff14071eeafc75e04';

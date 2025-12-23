@@ -231,7 +231,7 @@ class _ConsentTopBar extends StatelessWidget {
           // Shield Icon (Header)
           ExcludeSemantics(
             child: Image.asset(
-              Assets.consentIcons.shield1,
+              Assets.consentImages.shield1,
               width: 80,
               height: 80,
             ),

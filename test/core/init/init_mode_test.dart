@@ -33,6 +33,8 @@ void main() {
         ),
       ),
     );
+    // Pump 6 seconds to allow deep link handler's 5s timeout to complete
+    await tester.pump(const Duration(seconds: 6));
     await tester.pumpAndSettle();
     // Wait until the controller attempted initialization at least once.
     final element = tester.element(find.byType(MaterialApp));
@@ -88,8 +90,10 @@ void main() {
         ),
       ),
     );
+    // Pump 6 seconds to allow deep link handler's 5s timeout to complete
+    await tester.pump(const Duration(seconds: 6));
     await tester.pumpAndSettle();
-    
+
     // Overlay renders a WiFi off icon when not yet initialized.
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
     // Ensure initialization was attempted at least once (no flakiness), then

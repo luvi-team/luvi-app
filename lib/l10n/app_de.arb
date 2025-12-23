@@ -16,18 +16,6 @@
       }
     }
   },
-  "onboardingStepLabel": "Frage {current} von {total}",
-  "@onboardingStepLabel": {
-    "description": "Visual step label for onboarding screens (Figma v2).",
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "onboarding01Instruction": "Wie soll ich dich nennen?",
   "@onboarding01Instruction": {
     "description": "Instruction copy asking the user for their preferred name on step 1."
@@ -35,6 +23,10 @@
   "onboarding01NameInputSemantic": "Name eingeben",
   "@onboarding01NameInputSemantic": {
     "description": "Semantics label for the name input field on step 1."
+  },
+  "onboarding01NameHint": "Dein Vorname",
+  "@onboarding01NameHint": {
+    "description": "Placeholder hint text for name input field on onboarding screen 01"
   },
   "onboarding02Title": "Hey {name},\nwann hast du Geburtstag?",
   "@onboarding02Title": {
@@ -481,7 +473,7 @@
   "@onboarding05Callout": {
     "description": "Callout copy explaining why period duration is needed on step 5."
   },
-  "onboarding07Title": "Wie ist dein Zyklus so?",
+  "onboarding07Title": "Wie regelmäßig ist dein Zyklus?",
   "@onboarding07Title": {
     "description": "Header title for onboarding step 7 (cycle regularity)."
   },
@@ -1051,7 +1043,7 @@
     "description": "Semantics label for consent intro continue button"
   },
 
-  "consentOptionsTitle": "Du und LUVI",
+  "consentOptionsTitle": "Deine Datenschutz-Einstellungen",
   "@consentOptionsTitle": {
     "description": "Title for consent options screen (C2)"
   },
@@ -1091,9 +1083,13 @@
   "@consentOptionsTermsSuffix": {
     "description": "Suffix after privacy link on C2"
   },
-  "consentOptionsAnalyticsText": "Ich damit einverstanden, dass LUVI pseudonymisierte Nutzungs- und Gerätedaten (z.B. Crash-Infos, Performance, genutzte Funktionen) verarbeitet, um Fehler zu beheben und die App zu verbessern.\nWiderruf jederzeit unter Profil → Datenschutz.",
+  "consentOptionsAnalyticsText": "Ich bin damit einverstanden, dass LUVI pseudonymisierte Nutzungs- und Gerätedaten (z.B. Crash-Infos, Performance, genutzte Funktionen) verarbeitet, um Fehler zu beheben und die App zu verbessern.",
   "@consentOptionsAnalyticsText": {
-    "description": "Analytics consent text on C2"
+    "description": "Analytics consent main text on C2"
+  },
+  "consentOptionsAnalyticsRevoke": "Widerruf jederzeit unter Profil → Datenschutz.",
+  "@consentOptionsAnalyticsRevoke": {
+    "description": "Analytics consent revocation instruction on C2"
   },
   "consentOptionsCtaContinue": "Weiter",
   "@consentOptionsCtaContinue": {
@@ -1171,30 +1167,6 @@
   "@onboarding04GoalsSubtitle": {
     "description": "Subtitle for goals screen"
   },
-  "onboarding04GoalFitter": "Fitter & stärker werden",
-  "@onboarding04GoalFitter": {
-    "description": "Goal: Get fitter and stronger"
-  },
-  "onboarding04GoalEnergy": "Mehr Energie im Alltag",
-  "@onboarding04GoalEnergy": {
-    "description": "Goal: More energy in daily life"
-  },
-  "onboarding04GoalSleep": "Besser schlafen und Stress reduzieren",
-  "@onboarding04GoalSleep": {
-    "description": "Goal: Better sleep and stress reduction"
-  },
-  "onboarding04GoalCycle": "Zyklus & Hormone verstehen",
-  "@onboarding04GoalCycle": {
-    "description": "Goal: Understand cycle and hormones"
-  },
-  "onboarding04GoalLongevity": "Langfristige Gesundheit und Longevity",
-  "@onboarding04GoalLongevity": {
-    "description": "Goal: Long-term health and longevity"
-  },
-  "onboarding04GoalWellbeing": "Mich einfach wohlfühlen",
-  "@onboarding04GoalWellbeing": {
-    "description": "Goal: Simply feel good"
-  },
   "onboarding04GoalsSemantic": "Ziele auswählen",
   "@onboarding04GoalsSemantic": {
     "description": "Semantics label for goals selection"
@@ -1226,9 +1198,13 @@
     "description": "Subheader hint for period start screen (O6)"
   },
 
-  "onboarding07DurationTitle": "Wir haben die Dauer geschätzt. Tippe auf den Tag, um anzupassen.",
+  "onboarding07DurationTitle": "Sieht das richtig aus?",
   "@onboarding07DurationTitle": {
-    "description": "Title for period duration adjustment screen (O7)"
+    "description": "Question title for period duration adjustment screen (O7)"
+  },
+  "onboarding07DurationSubtitle": "Wir haben die Dauer geschätzt. Tippe auf den Tag, um anzupassen.",
+  "@onboarding07DurationSubtitle": {
+    "description": "Instructional subtitle for period duration screen (O7)"
   },
 
   "onboarding08SuccessLoading": "Wir stellen deine Ergebnisse zusammen...",
@@ -1253,33 +1229,33 @@
   "@onboardingDefaultName": {
     "description": "Default name used when user name is not available"
   },
-  "weekdayMondayShort": "M",
+  "weekdayMondayShort": "Mo",
   "@weekdayMondayShort": {
-    "description": "Single letter abbreviation for Monday"
+    "description": "Two-letter abbreviation for Monday"
   },
-  "weekdayTuesdayShort": "D",
+  "weekdayTuesdayShort": "Di",
   "@weekdayTuesdayShort": {
-    "description": "Single letter abbreviation for Tuesday"
+    "description": "Two-letter abbreviation for Tuesday"
   },
-  "weekdayWednesdayShort": "M",
+  "weekdayWednesdayShort": "Mi",
   "@weekdayWednesdayShort": {
-    "description": "Single letter abbreviation for Wednesday"
+    "description": "Two-letter abbreviation for Wednesday"
   },
-  "weekdayThursdayShort": "D",
+  "weekdayThursdayShort": "Do",
   "@weekdayThursdayShort": {
-    "description": "Single letter abbreviation for Thursday"
+    "description": "Two-letter abbreviation for Thursday"
   },
-  "weekdayFridayShort": "F",
+  "weekdayFridayShort": "Fr",
   "@weekdayFridayShort": {
-    "description": "Single letter abbreviation for Friday"
+    "description": "Two-letter abbreviation for Friday"
   },
-  "weekdaySaturdayShort": "S",
+  "weekdaySaturdayShort": "Sa",
   "@weekdaySaturdayShort": {
-    "description": "Single letter abbreviation for Saturday"
+    "description": "Two-letter abbreviation for Saturday"
   },
-  "weekdaySundayShort": "S",
+  "weekdaySundayShort": "So",
   "@weekdaySundayShort": {
-    "description": "Single letter abbreviation for Sunday"
+    "description": "Two-letter abbreviation for Sunday"
   },
   "periodCalendarSemanticToday": "Heute",
   "@periodCalendarSemanticToday": {
@@ -1292,14 +1268,6 @@
   "periodCalendarSemanticPeriodDay": "Periodentag",
   "@periodCalendarSemanticPeriodDay": {
     "description": "Semantic label for period day in calendar"
-  },
-  "consent02SectionRequired": "ERFORDERLICH",
-  "@consent02SectionRequired": {
-    "description": "Section header for required consents"
-  },
-  "consent02SectionOptional": "OPTIONAL",
-  "@consent02SectionOptional": {
-    "description": "Section header for optional consents"
   },
 
   "onboardingCycleIntroTitle": "Damit LUVI für dich passt, brauchen wir noch deinen Zyklusstart.",

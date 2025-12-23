@@ -150,12 +150,7 @@ void main() {
   ) async {
     addTearDown(_configureTestView(tester));
 
-    when(
-      () => mockRepo.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      ),
-    ).thenThrow(AuthException('invalid credentials'));
+    // signInWithPassword stub already defined in setUp
 
     final router = GoRouter(
       routes: routes.featureRoutes,

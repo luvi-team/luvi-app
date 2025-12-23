@@ -5,6 +5,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 /// Unified auth button with pill shape for SignIn screen.
 ///
@@ -113,10 +114,18 @@ class AuthOutlineButton extends StatelessWidget {
                   width: Sizes.iconM,
                   height: Sizes.iconM,
                 ),
-                errorBuilder: (context, error, stackTrace) => SizedBox(
-                  width: Sizes.iconM,
-                  height: Sizes.iconM,
-                ),
+                errorBuilder: (context, error, stackTrace) {
+                  log.e(
+                    'SVG asset load failed: $svgAsset',
+                    tag: 'AuthOutlineButton',
+                    error: error,
+                    stack: stackTrace,
+                  );
+                  return SizedBox(
+                    width: Sizes.iconM,
+                    height: Sizes.iconM,
+                  );
+                },
               ),
               const SizedBox(width: Spacing.s),
             ] else if (icon != null) ...[

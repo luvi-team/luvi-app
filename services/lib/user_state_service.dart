@@ -122,10 +122,10 @@ class UserStateService {
     _boundUserId = userId;
   }
 
-  bool get hasSeenWelcome =>
-      (_scopedKey(_keyHasSeenWelcome) == null)
-          ? false
-          : (prefs.getBool(_scopedKey(_keyHasSeenWelcome)!) ?? false);
+  bool get hasSeenWelcome {
+    final key = _scopedKey(_keyHasSeenWelcome);
+    return key == null ? false : (prefs.getBool(key) ?? false);
+  }
 
   /// Returns whether the welcome has been seen, or null if the key is absent
   /// (unknown state). Useful for callers that want to treat "unknown"
@@ -137,10 +137,10 @@ class UserStateService {
     return prefs.getBool(key);
   }
 
-  bool get hasCompletedOnboarding =>
-      (_scopedKey(_keyHasCompletedOnboarding) == null)
-          ? false
-          : (prefs.getBool(_scopedKey(_keyHasCompletedOnboarding)!) ?? false);
+  bool get hasCompletedOnboarding {
+    final key = _scopedKey(_keyHasCompletedOnboarding);
+    return key == null ? false : (prefs.getBool(key) ?? false);
+  }
 
   /// Returns whether onboarding has been completed, or null if the key is
   /// absent
@@ -153,18 +153,16 @@ class UserStateService {
     return prefs.getBool(key);
   }
 
-  FitnessLevel? get fitnessLevel =>
-      FitnessLevel.tryParse(
-        _scopedKey(_keyFitnessLevel) == null
-            ? null
-            : prefs.getString(_scopedKey(_keyFitnessLevel)!),
-      );
+  FitnessLevel? get fitnessLevel {
+    final key = _scopedKey(_keyFitnessLevel);
+    return FitnessLevel.tryParse(key == null ? null : prefs.getString(key));
+  }
 
   /// Returns the accepted consent version, or null if not yet accepted.
-  int? get acceptedConsentVersionOrNull =>
-      _scopedKey(_keyAcceptedConsentVersion) == null
-          ? null
-          : prefs.getInt(_scopedKey(_keyAcceptedConsentVersion)!);
+  int? get acceptedConsentVersionOrNull {
+    final key = _scopedKey(_keyAcceptedConsentVersion);
+    return key == null ? null : prefs.getInt(key);
+  }
 
   /// Device-scoped pre-auth consent (FTUE).
   ///
@@ -197,17 +195,38 @@ class UserStateService {
     if (scopes.isEmpty) {
       throw ArgumentError.value(scopes, 'scopes', 'must be non-empty');
     }
-    final ok1 = await prefs.setInt(
-      _keyPreAuthAcceptedConsentVersion,
-      acceptedConsentVersion,
-    );
-    final ok2 = await prefs.setString(
-      _keyPreAuthConsentPolicyVersion,
-      policyVersion,
-    );
-    final ok3 = await prefs.setStringList(_keyPreAuthConsentScopes, scopes);
-    if (!ok1 || !ok2 || !ok3) {
-      throw StateError('Failed to persist pre-auth consent cache');
+
+    // Track which keys were written for rollback on failure
+    final writtenKeys = <String>[];
+
+    try {
+      final ok1 = await prefs.setInt(
+        _keyPreAuthAcceptedConsentVersion,
+        acceptedConsentVersion,
+      );
+      if (!ok1) throw StateError('Failed to write consent version');
+      writtenKeys.add(_keyPreAuthAcceptedConsentVersion);
+
+      final ok2 = await prefs.setString(
+        _keyPreAuthConsentPolicyVersion,
+        policyVersion,
+      );
+      if (!ok2) throw StateError('Failed to write policy version');
+      writtenKeys.add(_keyPreAuthConsentPolicyVersion);
+
+      final ok3 = await prefs.setStringList(_keyPreAuthConsentScopes, scopes);
+      if (!ok3) throw StateError('Failed to write consent scopes');
+      // Success - all written
+    } catch (e) {
+      // Rollback: remove any keys that were successfully written
+      for (final key in writtenKeys) {
+        try {
+          await prefs.remove(key);
+        } catch (_) {
+          // Best-effort rollback, ignore failures
+        }
+      }
+      rethrow;
     }
   }
 

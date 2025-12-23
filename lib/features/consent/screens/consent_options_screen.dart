@@ -153,7 +153,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                       child: Semantics(
                         label: l10n.consentOptionsShieldSemantic,
                         child: Image.asset(
-                          Assets.consentIcons.shield1,
+                          Assets.consentImages.shield1,
                           width: 209,
                           height: 117,
                           fit: BoxFit.contain,
@@ -233,10 +233,11 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     _SectionHeader(title: l10n.consentOptionsSectionOptional),
                     const SizedBox(height: Spacing.s),
 
-                    // Analytics Consent
+                    // Analytics Consent (C12: footnote for revoke instructions)
                     _ConsentCheckboxRow(
                       key: const Key('consent_options_analytics'),
                       text: l10n.consentOptionsAnalyticsText,
+                      footnote: l10n.consentOptionsAnalyticsRevoke,
                       selected: state.choices[ConsentScope.analytics] == true,
                       onTap: () => notifier.toggle(ConsentScope.analytics),
                       semanticSection: l10n.consentOptionsSectionOptional,
@@ -268,7 +269,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     child: ElevatedButton(
                       key: const Key('consent_options_btn_continue'),
                       onPressed: !isNextBusy
-                          ? () async => _handleContinue(context, ref, state, l10n)
+                          ? () async => _handleContinue(context, ref, l10n)
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: DsColors.buttonPrimary,
@@ -312,7 +313,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                                 notifier.toggle(ConsentScope.terms);
                               }
                               // Navigate to onboarding after accepting all
-                              await _handleContinue(context, ref, state, l10n);
+                              await _handleContinue(context, ref, l10n);
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
@@ -381,12 +382,9 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
   Future<void> _handleContinue(
     BuildContext context,
     WidgetRef ref,
-    Consent02State state,
     AppLocalizations l10n,
   ) async {
-    // CRITICAL: Read FRESH state from provider, not the stale parameter.
-    // This fixes race condition when "Alles akzeptieren" mutates state
-    // immediately before calling this function.
+    // Always read fresh state from provider to avoid stale closure captures.
     final currentState = ref.read(consent02Provider);
 
     // Check if required consents are accepted (using fresh state)
@@ -479,6 +477,7 @@ class _SectionHeader extends StatelessWidget {
 /// Consent checkbox row (Text + Checkbox on right)
 class _ConsentCheckboxRow extends StatelessWidget {
   final String text;
+  final String? footnote; // C12: Optional footnote text (e.g. revoke instructions)
   final Widget? trailing;
   final bool selected;
   final VoidCallback onTap;
@@ -488,6 +487,7 @@ class _ConsentCheckboxRow extends StatelessWidget {
   const _ConsentCheckboxRow({
     super.key,
     required this.text,
+    this.footnote,
     this.trailing,
     required this.selected,
     required this.onTap,
@@ -522,23 +522,41 @@ class _ConsentCheckboxRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(Sizes.radiusM),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: Spacing.xs),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: trailing == null
-                    ? Text(text, style: textStyle)
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(text, style: textStyle),
-                          trailing!,
-                        ],
-                      ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: trailing == null
+                        ? Text(text, style: textStyle)
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(text, style: textStyle),
+                              trailing!,
+                            ],
+                          ),
+                  ),
+                  const SizedBox(width: Spacing.m),
+                  // Checkbox (Figma: 24x24, Circle)
+                  _ConsentCircleCheckbox(selected: selected),
+                ],
               ),
-              const SizedBox(width: Spacing.m),
-              // Checkbox (Figma: 24x24, Circle)
-              _ConsentCircleCheckbox(selected: selected),
+              // C12: Optional footnote displayed below the checkbox row
+              if (footnote != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: Spacing.xs),
+                  child: Text(
+                    footnote!,
+                    style: TextStyle(
+                      fontFamily: FontFamilies.figtree,
+                      fontSize: 12,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -626,9 +644,11 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
 }
 
 Future<bool> _markWelcomeSeen(WidgetRef ref) async {
-  var ok = true;
+  // Point 12: Explicit success tracking for each operation
+  var serverSucceeded = true;
+  var localSucceeded = true;
 
-  // Server SSOT: write gate state when authenticated + initialized.
+  // 1. Server SSOT: write gate state when authenticated + initialized.
   // In tests (or very early init) Supabase may not be ready; don't throw.
   if (SupabaseService.isInitialized && SupabaseService.currentUser != null) {
     try {
@@ -637,7 +657,7 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
         markWelcomeSeen: true,
       );
     } catch (error, stackTrace) {
-      ok = false;
+      serverSucceeded = false;
       log.w(
         'consent_gate_upsert_failed',
         tag: 'consent_options',
@@ -647,7 +667,7 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
     }
   }
 
-  // Local cache (best-effort). Only write if we have a valid user ID.
+  // 2. Local cache: best-effort write if user ID available.
   try {
     final userState = await ref.read(userStateServiceProvider.future);
     final uid = SupabaseService.currentUser?.id;
@@ -660,7 +680,7 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
       log.d('consent_cache_skip_no_uid', tag: 'consent_options');
     }
   } catch (error, stackTrace) {
-    ok = false;
+    localSucceeded = false;
     log.e(
       'consent_mark_welcome_failed',
       tag: 'consent_options',
@@ -669,7 +689,10 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
     );
   }
 
-  return ok;
+  // Best-effort semantics: return true if AT LEAST ONE operation succeeded.
+  // This allows navigation to continue even if server or local cache fails temporarily.
+  // The caller shows a warning snackbar if this returns false, but does NOT block navigation.
+  return serverSucceeded || localSucceeded;
 }
 
 /// Navigate to Onboarding after consent is accepted.

@@ -74,39 +74,36 @@ class BackButtonCircle extends StatelessWidget {
               customBorder: shape,
               child: Center(
                 // Visible component equals [renderedSize]; tap target stays >= Sizes.touchTargetMin.
-                child: showCircle
-                    ? Container(
-                        width: renderedSize,
-                        height: renderedSize,
-                        decoration: BoxDecoration(
-                          color: resolvedBackground,
-                          shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-                          borderRadius: isCircular ? null : BorderRadius.zero,
-                        ),
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: iconSize,
-                          height: iconSize,
-                          child: SvgPicture.string(
-                            _chevronSvg,
-                            colorFilter: ColorFilter.mode(
-                              resolvedIconColor,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        ),
-                      )
-                    : SizedBox(
-                        width: iconSize,
-                        height: iconSize,
-                        child: SvgPicture.string(
-                          _chevronSvg,
-                          colorFilter: ColorFilter.mode(
-                            resolvedIconColor,
-                            BlendMode.srcIn,
-                          ),
+                child: Builder(
+                  builder: (context) {
+                    // Extract chevron icon to avoid duplication (DRY)
+                    final chevronIcon = SizedBox(
+                      width: iconSize,
+                      height: iconSize,
+                      child: SvgPicture.string(
+                        _chevronSvg,
+                        colorFilter: ColorFilter.mode(
+                          resolvedIconColor,
+                          BlendMode.srcIn,
                         ),
                       ),
+                    );
+
+                    return showCircle
+                        ? Container(
+                            width: renderedSize,
+                            height: renderedSize,
+                            decoration: BoxDecoration(
+                              color: resolvedBackground,
+                              shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
+                              borderRadius: isCircular ? null : BorderRadius.zero,
+                            ),
+                            alignment: Alignment.center,
+                            child: chevronIcon,
+                          )
+                        : chevronIcon;
+                  },
+                ),
               ),
             ),
           ),

@@ -29,8 +29,6 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
   late AnimationController _glowController;
   late Animation<double> _glowAnimation;
 
-  static const _weekdayLabels = ['M', 'D', 'M', 'D', 'F', 'S', 'S'];
-
   // Widget-specific layout constants (Figma Calendar Mini specs)
   static const double _cellSize = 32.0;
   static const double _dayCircleSize = 28.0;
@@ -57,6 +55,38 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
   void dispose() {
     _glowController.dispose();
     super.dispose();
+  }
+
+  /// Returns localized weekday labels (Mon-Sun).
+  List<String> _buildWeekdayLabels(AppLocalizations l10n) {
+    return [
+      l10n.weekdayMondayShort,
+      l10n.weekdayTuesdayShort,
+      l10n.weekdayWednesdayShort,
+      l10n.weekdayThursdayShort,
+      l10n.weekdayFridayShort,
+      l10n.weekdaySaturdayShort,
+      l10n.weekdaySundayShort,
+    ];
+  }
+
+  /// Builds the 5-row calendar grid for days 1-31.
+  List<Widget> _buildCalendarRows(int highlightedDay) {
+    return List.generate(5, (rowIndex) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: Spacing.xxs),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(7, (colIndex) {
+            final dayNumber = rowIndex * 7 + colIndex + 1;
+            if (dayNumber > 31) {
+              return const SizedBox(width: _cellSize, height: _cellSize);
+            }
+            return _buildDayCell(dayNumber, highlightedDay);
+          }),
+        ),
+      );
+    });
   }
 
   @override
@@ -137,10 +167,10 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Weekday header row
+                      // Weekday header row (localized)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: _weekdayLabels
+                        children: _buildWeekdayLabels(l10n)
                             .map((label) => SizedBox(
                                   width: _cellSize,
                                   child: Text(
@@ -156,25 +186,8 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
                             .toList(),
                       ),
                       const SizedBox(height: Spacing.xs),
-                      // Calendar grid (simplified 5 rows)
-                      ...List.generate(5, (rowIndex) {
-                        return Padding(
-                          padding:
-                              const EdgeInsets.symmetric(vertical: Spacing.xxs),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: List.generate(7, (colIndex) {
-                              final dayNumber = rowIndex * 7 + colIndex + 1;
-                              if (dayNumber > 31) {
-                                return const SizedBox(
-                                    width: _cellSize, height: _cellSize);
-                              }
-                              return _buildDayCell(
-                                  dayNumber, widget.highlightedDay);
-                            }),
-                          ),
-                        );
-                      }),
+                      // Calendar grid (5 rows for days 1-31)
+                      ..._buildCalendarRows(widget.highlightedDay),
                     ],
                   ),
                 ],

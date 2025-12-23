@@ -130,24 +130,32 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      // Find all Containers in the widget tree
-      final containerFinder = find.byType(Container);
+      final context = tester.element(find.byType(ConsentBlockingScreen));
+      final l10n = AppLocalizations.of(context)!;
 
-      // Check that no Container has a BoxShadow decoration
-      bool foundShadow = false;
-      for (final element in containerFinder.evaluate()) {
-        final container = element.widget as Container;
-        if (container.decoration is BoxDecoration) {
-          final decoration = container.decoration as BoxDecoration;
-          if (decoration.boxShadow != null && decoration.boxShadow!.isNotEmpty) {
-            foundShadow = true;
-            break;
-          }
-        }
+      // Find the shield via its Semantics label (targeted, not broad Container scan)
+      final shieldSemantics = find.bySemanticsLabel(l10n.consentBlockingShieldSemantic);
+      expect(shieldSemantics, findsOneWidget,
+          reason: 'Shield should have Semantics label');
+
+      // Find the Semantics widget and get the Container that is its direct child
+      // Widget structure: Semantics(child: Container(child: Image))
+      final semanticsWidget = tester.widget<Semantics>(shieldSemantics);
+      final containerWidget = semanticsWidget.child;
+
+      // Verify the child is a Container and check for BoxShadow
+      expect(containerWidget, isA<Container>(),
+          reason: 'Shield Semantics should wrap a Container');
+
+      final container = containerWidget as Container;
+      if (container.decoration is BoxDecoration) {
+        final decoration = container.decoration as BoxDecoration;
+        expect(
+          decoration.boxShadow == null || decoration.boxShadow!.isEmpty,
+          isTrue,
+          reason: 'Shield container should not have BoxShadow (Fix 5)',
+        );
       }
-
-      expect(foundShadow, isFalse,
-          reason: 'Shield image should not have BoxShadow decoration (Fix 5)');
     });
   });
 }

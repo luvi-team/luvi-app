@@ -155,7 +155,7 @@ If `mcp__archon__health_check()` fails or Archon tools are not available:
 | Situation | Read Additionally |
 |-----------|-------------------|
 | New screen / complex widget | `docs/engineering/checklists/ui_claude_code.md` |
-| DataViz / Charts | `context/agents/04-dataviz.md` |
+| dataviz / Charts | `context/agents/04-dataviz.md` |
 | State change / navigation flow | `context/agents/01-ui-frontend.md`, BMAD Global |
 | Uncertain about gates / DoD | `context/agents/_acceptance_v1.1.md` |
 | Dual-agent handoff | `AGENTS.md` (Agent-Binding, Work-Modes) |

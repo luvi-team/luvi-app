@@ -1,8 +1,8 @@
 # Consent & Onboarding Refactor Plan
 
 > **Agent:** Claude Code
-> **Erstellt:** 2024-12-14
-> **Zuletzt aktualisiert:** 2024-12-15 (Runde 9 - ALLE BLOCKER RESOLVED)
+> **Erstellt:** 2025-12-14
+> **Zuletzt aktualisiert:** 2025-12-15 (Runde 9 - ALLE BLOCKER RESOLVED)
 > **Status:** ✅ READY FOR IMPLEMENTATION (alle Entscheidungen getroffen)
 > **Bewertung:** 9.5/10 (nach 31 Review-Korrekturen, 0 Blocker, 3 resolved)
 
@@ -865,8 +865,8 @@ Future<void> _handleLeaveApp(BuildContext context, WidgetRef ref) async {
 
 #### Age-Berechnung (aus birth_date)
 ```dart
-int calculateAge(DateTime birthDate) {
-  final now = DateTime.now();
+int calculateAge(DateTime birthDate, [DateTime? referenceDate]) {
+  final now = referenceDate ?? DateTime.now();
   int age = now.year - birthDate.year;
   // Korrektur wenn Geburtstag noch nicht war
   if (now.month < birthDate.month ||

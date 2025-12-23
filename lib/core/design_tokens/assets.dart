@@ -18,7 +18,7 @@ class Assets {
   static const images = _Images();
   static const videos = _Videos();
   static const animations = _Animations();
-  static const consentIcons = _ConsentIcons();
+  static const consentImages = _ConsentImages();
 
   /// Default error builder for dashboard `Image.asset` widgets.
   /// Renders a neutral placeholder so layout stays stable when assets fail.
@@ -168,8 +168,8 @@ class _OnboardingIcons {
   final String happy = 'assets/icons/onboarding/ic_happy.svg';
 }
 
-class _ConsentIcons {
-  const _ConsentIcons();
+class _ConsentImages {
+  const _ConsentImages();
 
   final String shield1 = 'assets/images/consent/shield1.png';  // C2
   final String shield2 = 'assets/images/consent/shield2.png';  // C3

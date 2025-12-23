@@ -43,7 +43,8 @@ jobs:
         run: |
           COUNT=$(grep -c 'id: "MUST-' CLAUDE.md || echo "0")
           if [ "$COUNT" -lt 5 ]; then
-            echo "::warning::Less than 5 MUST rules found ($COUNT)"
+            echo "::error::Less than 5 MUST rules found ($COUNT)"
+            exit 1
           else
             echo "Found $COUNT MUST rules"
           fi
