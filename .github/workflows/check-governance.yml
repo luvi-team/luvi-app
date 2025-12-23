@@ -1,6 +1,6 @@
 # Check Governance Documentation
 # Validates CLAUDE.md and AGENTS.md have proper structure
-# MVP version: Pure Bash, zero dependencies, ~10s runtime
+# Requires: python3 with yaml module for frontmatter validation (ubuntu-latest provides this)
 name: Check Governance Docs
 
 on:
@@ -19,6 +19,12 @@ jobs:
 
       - name: Check CLAUDE.md frontmatter exists and is valid
         run: |
+          # Check CLAUDE.md exists
+          if [ ! -f "CLAUDE.md" ]; then
+            echo "::error::CLAUDE.md not found"
+            exit 1
+          fi
+
           # Check opening delimiter
           if ! head -1 CLAUDE.md | grep -q "^---$"; then
             echo "::error::CLAUDE.md must start with YAML frontmatter (---)"
@@ -44,7 +50,8 @@ jobs:
 
       - name: Check acceptance version reference
         run: |
-          VERSION=$(grep -oP 'acceptance_version:\s*"\K[0-9]+\.[0-9]+' CLAUDE.md | head -1)
+          # Extract acceptance_version (handles: "1.1", '1.1', or 1.1)
+          VERSION=$(grep -oP "acceptance_version:\s*['\"]?\K[0-9]+\.[0-9]+" CLAUDE.md | head -1)
           if [ -z "$VERSION" ]; then
             echo "::error::No acceptance_version found in CLAUDE.md frontmatter"
             exit 1

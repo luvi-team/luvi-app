@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/features/onboarding/widgets/calendar_mini_widget.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_app.dart';
 
@@ -14,7 +15,7 @@ void main() {
       await tester.pumpWidget(buildTestApp(
         home: const Scaffold(body: CalendarMiniWidget()),
       ));
-      await tester.pump(); // Animation läuft - kein pumpAndSettle
+      await tester.pump(); // Animation is running - do not use pumpAndSettle
 
       expect(find.byType(CalendarMiniWidget), findsOneWidget);
     });
@@ -83,14 +84,19 @@ void main() {
       final calendarWidget = find.byType(CalendarMiniWidget);
       expect(calendarWidget, findsOneWidget);
 
-      // Verify CalendarMiniWidget has Semantics descendant with non-null label
-      final semanticsWidget = find.descendant(
+      // Get L10n for expected label
+      final context = tester.element(find.byType(CalendarMiniWidget));
+      final l10n = AppLocalizations.of(context)!;
+
+      // Find and verify Semantics widget label matches L10n value
+      final semanticsFinder = find.descendant(
         of: calendarWidget,
-        matching: find.byWidgetPredicate(
-          (widget) => widget is Semantics && widget.properties.label != null,
-        ),
+        matching: find.byType(Semantics),
       );
-      expect(semanticsWidget, findsOneWidget);
+      expect(semanticsFinder, findsOneWidget);
+
+      final semantics = tester.widget<Semantics>(semanticsFinder);
+      expect(semantics.properties.label, l10n.semanticCalendarPreview);
     });
   });
 }

@@ -23,12 +23,7 @@ class ConsentIntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    assert(
-      l10n != null,
-      'Missing AppLocalizations in ConsentIntroScreen — '
-      'ensure Localizations widget is provided in widget tree.',
-    );
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
@@ -47,7 +42,7 @@ class ConsentIntroScreen extends StatelessWidget {
                   children: [
                     // Illustration (Figma: 265 x 303 px, scalable)
                     Semantics(
-                      label: l10n!.consentIntroIllustrationSemantic,
+                      label: l10n.consentIntroIllustrationSemantic,
                       child: Image.asset(
                         Assets.images.consentIntroHero,
                         width: 265,
@@ -68,8 +63,8 @@ class ConsentIntroScreen extends StatelessWidget {
                           color: colorScheme.onSurface,
                           fontFamily: FontFamilies.playfairDisplay,
                           fontWeight: FontWeight.w600,
-                          fontSize: 30,
-                          height: 37.5 / 30, // Line height from Figma
+                          fontSize: ConsentTypography.introTitleFontSize,
+                          height: ConsentTypography.introTitleLineHeight,
                         ),
                       ),
                     ),
@@ -83,8 +78,8 @@ class ConsentIntroScreen extends StatelessWidget {
                         color: colorScheme.onSurface,
                         fontFamily: FontFamilies.figtree,
                         fontWeight: FontWeight.w400,
-                        fontSize: 18,
-                        height: 29.25 / 18, // Line height from Figma
+                        fontSize: ConsentTypography.introBodyFontSize,
+                        height: ConsentTypography.introBodyLineHeight,
                       ),
                     ),
                   ],

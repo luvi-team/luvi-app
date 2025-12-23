@@ -123,7 +123,11 @@ void main() {
       expect(find.text('ConsentOptionsScreen'), findsOneWidget);
     });
 
-    // Fix 5: Shield should not have BoxShadow
+    // Figma Spec: Consent Blocking Shield (Fix 5)
+    // Visual requirement: Shield image must NOT have BoxShadow decoration
+    // This test inspects widget tree directly because golden tests are not configured.
+    // If widget structure changes, update the tree traversal path.
+    // Reference: consent_blocking_screen.dart Fix 5
     testWidgets('Shield image has no BoxShadow decoration (Fix 5)', (tester) async {
       await tester.pumpWidget(buildTestApp(
         router: createTestRouter(),
@@ -151,8 +155,8 @@ void main() {
       if (container.decoration is BoxDecoration) {
         final decoration = container.decoration as BoxDecoration;
         expect(
-          decoration.boxShadow == null || decoration.boxShadow!.isEmpty,
-          isTrue,
+          decoration.boxShadow,
+          anyOf(isNull, isEmpty),
           reason: 'Shield container should not have BoxShadow (Fix 5)',
         );
       }

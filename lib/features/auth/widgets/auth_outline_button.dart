@@ -23,6 +23,7 @@ class AuthOutlineButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.borderColor,
+    this.semanticLabel,
   });
 
   final String text;
@@ -40,6 +41,10 @@ class AuthOutlineButton extends StatelessWidget {
 
   /// Border color (default: authOutlineBorder, null = no border for filled buttons)
   final Color? borderColor;
+
+  /// Optional semantic label for screen readers (defaults to [text] if not provided).
+  /// Use this when the icon conveys extra meaning not in the visible text.
+  final String? semanticLabel;
 
   /// Factory constructor for Apple Sign In button (black with white text)
   factory AuthOutlineButton.apple({
@@ -84,7 +89,11 @@ class AuthOutlineButton extends StatelessWidget {
     return SizedBox(
       height: Sizes.buttonHeightOutline,
       width: double.infinity,
-      child: ElevatedButton(
+      child: Semantics(
+        label: semanticLabel,
+        button: true,
+        excludeSemantics: semanticLabel != null,
+        child: ElevatedButton(
         onPressed: onPressed == null
             ? null
             : () {
@@ -144,6 +153,7 @@ class AuthOutlineButton extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

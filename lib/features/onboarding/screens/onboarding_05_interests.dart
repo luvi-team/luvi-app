@@ -135,24 +135,24 @@ class _Onboarding05InterestsScreenState
 
     return Semantics(
       label: l10n.onboarding05InterestsSemantic,
-      child: Column(
-        children: List.generate(
-          interests.length,
-          (index) {
-            final interest = interests[index];
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: index < interests.length - 1 ? spacing.cardGap : 0,
-              ),
-              child: GoalCard(
-                key: Key('onb_interest_${interest.name}'),
-                title: interest.label(l10n),
-                selected: selectedInterests.contains(interest),
-                onTap: () => _toggleInterest(interest),
-              ),
-            );
-          },
-        ),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: interests.length,
+        itemBuilder: (context, index) {
+          final interest = interests[index];
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: index < interests.length - 1 ? spacing.cardGap : 0,
+            ),
+            child: GoalCard(
+              key: Key('onb_interest_${interest.name}'),
+              title: interest.label(l10n),
+              selected: selectedInterests.contains(interest),
+              onTap: () => _toggleInterest(interest),
+            ),
+          );
+        },
       ),
     );
   }

@@ -237,7 +237,11 @@ class DsColors {
   static const Color periodGlowPink = Color(0x99FF6482);
 
   /// Period Glow Pink Light - 10% opacity (Figma: #FF6482 @ 0.1)
-  static const Color periodGlowPinkLight = Color(0x19FF6482);
+  ///
+  /// @Deprecated('Use periodGlow10 instead. Will be removed in v2.0.0')
+  /// Migration: Find & replace `periodGlowPinkLight` → `periodGlow10`
+  /// Note: Updated to canonical 10% value (0x1A=26/255=10.2%)
+  static const Color periodGlowPinkLight = Color(0x1AFF6482);
 
   /// Date Picker Selection Background (Figma: #F5F5F5)
   static const Color datePickerSelectionBg = Color(0xFFF5F5F5);
@@ -263,8 +267,9 @@ class DsColors {
   /// Period Glow 60% opacity - alias for periodGlowPink (Fix 9: deduplicate)
   static const Color periodGlow60 = periodGlowPink;
 
-  /// Period Glow 10% opacity (Figma: #FF6482 @ 10%)
-  /// Note: Uses exact 10% (0x1A=26/255) vs periodGlowPinkLight's 0x19=25/255
+  /// Period Glow 10% opacity - canonical value (Figma: #FF6482 @ 10%)
+  /// 0x1A = 26/255 = 10.2% (closest integer to true 10%)
+  /// Prefer this over deprecated periodGlowPinkLight.
   static const Color periodGlow10 = Color(0x1AFF6482);
 }
 

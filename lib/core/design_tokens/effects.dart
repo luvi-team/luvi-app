@@ -27,14 +27,14 @@ class DsEffects {
   /// Used for: Name input container (O1), BirthdatePicker container (O2)
   static BoxDecoration get glassCard => BoxDecoration(
         color: DsColors.white.withValues(alpha: _opacityLight),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(Sizes.radiusCard),
       );
 
   /// Glass Pill Effect - 10% white opacity background with full pill radius
   /// Used for: Fitness pills (O3), Interest pills (O5)
   static BoxDecoration get glassPill => BoxDecoration(
         color: DsColors.white.withValues(alpha: _opacityLight),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(Sizes.radiusPill),
       );
 
   /// Glass Calendar Container - 30% white opacity with 40px radius
@@ -48,7 +48,7 @@ class DsEffects {
   /// Used for: Calendar mini widget on cycle intro (O6)
   static BoxDecoration get glassMiniCalendar => BoxDecoration(
         color: DsColors.white.withValues(alpha: _opacityLight),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(Sizes.radius24),
       );
 
   // ─── Enhanced Glassmorphism for Onboarding (Figma v3 2024-12) ───

@@ -133,32 +133,28 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
                     child: IgnorePointer(
                       child: AnimatedBuilder(
                         animation: _glowAnimation,
+                        // Static child avoids rebuilding Container on each tick
+                        child: Container(
+                          width: _glowSize,
+                          height: _glowSize,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                // Figma v4.2: rgba(255, 100, 130, 0.60) - Core
+                                DsColors.periodGlowPinkBase.withValues(alpha: 0.6),
+                                // Figma v4.2: rgba(255, 100, 130, 0.10) - Edge at 70%
+                                DsColors.periodGlowPinkBase.withValues(alpha: 0.1),
+                                DsColors.transparent,
+                              ],
+                              stops: const [0.0, 0.7, 1.0], // Figma v4.2 exact
+                            ),
+                          ),
+                        ),
                         builder: (context, child) {
                           // v4.3: Pulsating for 150px glow
-                          final glowScale =
-                              0.95 + (_glowAnimation.value * 0.05);
-                          return Transform.scale(
-                            scale: glowScale,
-                            child: Container(
-                              width: _glowSize,
-                              height: _glowSize,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    // Figma v4.2: rgba(255, 100, 130, 0.60) - Core
-                                    DsColors.periodGlowPinkBase
-                                        .withValues(alpha: 0.6),
-                                    // Figma v4.2: rgba(255, 100, 130, 0.10) - Edge at 70%
-                                    DsColors.periodGlowPinkBase
-                                        .withValues(alpha: 0.1),
-                                    DsColors.transparent,
-                                  ],
-                                  stops: const [0.0, 0.7, 1.0], // Figma v4.2 exact
-                                ),
-                              ),
-                            ),
-                          );
+                          final glowScale = 0.95 + (_glowAnimation.value * 0.05);
+                          return Transform.scale(scale: glowScale, child: child);
                         },
                       ),
                     ),
@@ -205,40 +201,50 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
     // Figma v2: Only text color change, no circle background
     final isInPeriodRange = day > highlightedDay && day <= 31;
 
-    // Glow is now rendered at parent Stack level via LayoutBuilder (Fix 3)
-    // This cell only renders the day number + white circle for highlighted
+    // Performance optimization: Only animate the highlighted cell
+    // Non-highlighted cells render statically without AnimatedBuilder overhead
+    if (!isHighlighted) {
+      return SizedBox(
+        width: _cellSize,
+        height: _cellSize,
+        child: Center(
+          child: Text(
+            '$day',
+            style: TextStyle(
+              fontSize: _dayFontSize,
+              fontWeight: FontWeight.w400,
+              color: isInPeriodRange ? DsColors.signature : DsColors.grayscaleBlack,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Highlighted cell: animated with scale effect
     return SizedBox(
       width: _cellSize,
       height: _cellSize,
       child: Center(
-        // Day number - Figma v3: Scale animation for highlighted day
         child: AnimatedBuilder(
           animation: _glowAnimation,
           builder: (context, child) {
             return Transform.scale(
               // Figma v3: Number scales from 1.0 to 1.15 with glow
-              scale: isHighlighted ? 1.0 + (_glowAnimation.value * 0.15) : 1.0,
+              scale: 1.0 + (_glowAnimation.value * 0.15),
               child: Container(
                 width: _dayCircleSize,
                 height: _dayCircleSize,
-                decoration: isHighlighted
-                    ? const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: DsColors.white,
-                      )
-                    : null, // No circle for period range days (Figma v3)
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: DsColors.white,
+                ),
                 child: Center(
                   child: Text(
                     '$day',
                     style: TextStyle(
                       fontSize: _dayFontSize,
-                      fontWeight:
-                          isHighlighted ? FontWeight.w600 : FontWeight.w400,
-                      color: isHighlighted
-                          ? DsColors.signature
-                          : isInPeriodRange
-                              ? DsColors.signature // Only text color change
-                              : DsColors.grayscaleBlack,
+                      fontWeight: FontWeight.w600,
+                      color: DsColors.signature,
                     ),
                   ),
                 ),

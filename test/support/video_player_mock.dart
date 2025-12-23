@@ -19,31 +19,42 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 /// For lifecycle tests with custom events:
 /// ```dart
 /// setUp(() {
-///   VideoPlayerMock.setEvents([
+///   VideoPlayerMock.registerWith(events: [
 ///     VideoEvent(eventType: VideoEventType.initialized, duration: Duration(seconds: 10), size: Size(1920, 1080)),
 ///     VideoEvent(eventType: VideoEventType.completed),
 ///   ]);
 /// });
-/// tearDown(() => VideoPlayerMock.resetEvents());
+/// // No tearDown needed - each registerWith() creates fresh instance
 /// ```
 class VideoPlayerMock extends VideoPlayerPlatform {
-  static void registerWith() {
-    VideoPlayerPlatform.instance = VideoPlayerMock();
+  /// Creates a VideoPlayerMock with optional custom events.
+  ///
+  /// If [events] is null, default initialized event is emitted.
+  VideoPlayerMock({List<VideoEvent>? events}) : _events = events;
+
+  /// Register a new VideoPlayerMock instance.
+  ///
+  /// Each call creates a fresh instance, avoiding state leakage between tests.
+  ///
+  /// Usage:
+  /// ```dart
+  /// setUp(() {
+  ///   VideoPlayerMock.registerWith();
+  /// });
+  ///
+  /// // Or with custom events:
+  /// setUp(() {
+  ///   VideoPlayerMock.registerWith(events: [
+  ///     VideoEvent(eventType: VideoEventType.completed),
+  ///   ]);
+  /// });
+  /// ```
+  static void registerWith({List<VideoEvent>? events}) {
+    VideoPlayerPlatform.instance = VideoPlayerMock(events: events);
   }
 
-  // Configurable events for lifecycle tests
-  static List<VideoEvent>? _customEvents;
-
-  /// Configure events to emit for all texture IDs.
-  /// Call in setUp, reset in tearDown.
-  static void setEvents(List<VideoEvent> events) {
-    _customEvents = events;
-  }
-
-  /// Reset to default behavior (single initialized event).
-  static void resetEvents() {
-    _customEvents = null;
-  }
+  /// Custom events for this mock instance (null = default initialized event).
+  final List<VideoEvent>? _events;
 
   int _nextTextureId = 0;
   final Map<int, String> _dataSources = {};
@@ -111,7 +122,7 @@ class VideoPlayerMock extends VideoPlayerPlatform {
 
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
-    final events = _customEvents ??
+    final events = _events ??
         [
           VideoEvent(
             eventType: VideoEventType.initialized,

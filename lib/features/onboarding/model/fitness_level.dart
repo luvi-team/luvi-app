@@ -44,6 +44,11 @@ extension FitnessLevelExtension on FitnessLevel {
   /// Index 3 ("Weiß ich nicht" / unknown) and any out-of-range value
   /// safely fallback to [FitnessLevel.beginner].
   static FitnessLevel fromSelectionIndex(int index) {
+    assert(
+      index >= 0 && index < FitnessLevel.values.length,
+      'FitnessLevel.fromSelectionIndex: index $index out of range '
+      '[0-${FitnessLevel.values.length - 1}], falling back to beginner',
+    );
     if (index < 0 || index >= FitnessLevel.values.length) {
       return FitnessLevel.beginner;
     }

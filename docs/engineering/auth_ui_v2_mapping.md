@@ -397,15 +397,17 @@ class AuthGradientTokens extends ThemeExtension<AuthGradientTokens> {
 
 ## Offene TODOs
 
-| # | Bereich | Frage/Aktion |
-|---|---------|--------------|
-| 1 | **Button Height** | Figma: 56px vs Token: 50px – neuen Token `buttonHeightL` erstellen? |
-| 2 | **Glass Opacity** | Figma: 10% vs `GlassTokens`: 55% – separater Auth-Token? |
-| 3 | **Conic Gradient** | Flutter-Implementierung für transformierten Conic Gradient prüfen |
-| 4 | **Success Glow** | Beige Glow-Effekt für Checkmark – CustomPainter oder Image? |
-| 5 | **Font Inkonsistenz** | NewPassword Input 2 nutzt Inter statt Figtree – Figma-Bug? |
-| 6 | **Headline Magenta** | Neue Farbe #9F2B68 in DsColors aufnehmen |
-| 7 | **Radial Gradient Transform** | Figma-Matrix in Flutter RadialGradient umrechnen |
+> **Tracking:** Diese TODOs werden als GitHub Issues verwaltet.
+
+| # | Bereich | Frage/Aktion | Issue |
+|---|---------|--------------|-------|
+| 1 | **Button Height** | Figma: 56px vs Token: 50px – neuen Token `buttonHeightL` erstellen? | [#105](https://github.com/luvi-team/luvi-app/issues/105) |
+| 2 | **Glass Opacity** | Figma: 10% vs `GlassTokens`: 55% – separater Auth-Token? | [#106](https://github.com/luvi-team/luvi-app/issues/106) |
+| 3 | **Conic Gradient** | Flutter-Implementierung für transformierten Conic Gradient prüfen | [#101](https://github.com/luvi-team/luvi-app/issues/101) |
+| 4 | **Success Glow** | Beige Glow-Effekt für Checkmark – CustomPainter oder Image? | [#102](https://github.com/luvi-team/luvi-app/issues/102) |
+| 5 | **Font Inkonsistenz** | NewPassword Input 2 nutzt Inter statt Figtree – Figma-Bug? | [#103](https://github.com/luvi-team/luvi-app/issues/103) |
+| 6 | **Headline Magenta** | Neue Farbe #9F2B68 in DsColors aufnehmen | [#107](https://github.com/luvi-team/luvi-app/issues/107) |
+| 7 | **Radial Gradient Transform** | Figma-Matrix in Flutter RadialGradient umrechnen | [#104](https://github.com/luvi-team/luvi-app/issues/104) |
 
 ---
 

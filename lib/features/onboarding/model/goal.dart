@@ -1,3 +1,4 @@
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
 
@@ -38,14 +39,14 @@ extension GoalExtension on Goal {
         Goal.wellbeing => l10n.goalWellbeing,
       };
 
-  /// Icon asset path for this goal
+  /// Icon asset path for this goal (uses centralized Assets for compile-time safety)
   String get iconPath => switch (this) {
-        Goal.fitter => 'assets/icons/onboarding/ic_muscle.svg',
-        Goal.energy => 'assets/icons/onboarding/ic_energy.svg',
-        Goal.sleep => 'assets/icons/onboarding/ic_sleep.svg',
-        Goal.cycle => 'assets/icons/onboarding/ic_calendar.svg',
-        Goal.longevity => 'assets/icons/onboarding/ic_run.svg',
-        Goal.wellbeing => 'assets/icons/onboarding/ic_happy.svg',
+        Goal.fitter => Assets.icons.onboarding.muscle,
+        Goal.energy => Assets.icons.onboarding.energy,
+        Goal.sleep => Assets.icons.onboarding.sleep,
+        Goal.cycle => Assets.icons.onboarding.calendar,
+        Goal.longevity => Assets.icons.onboarding.run,
+        Goal.wellbeing => Assets.icons.onboarding.happy,
       };
 
   /// Parse from database key

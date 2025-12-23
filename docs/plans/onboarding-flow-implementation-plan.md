@@ -201,10 +201,10 @@ DateTime onboardingBirthdateMaxDate([DateTime? reference]) {
   return DateTime(today.year - kMinAge, today.month, today.day);
 }
 
-/// Minimum birthdate (user cannot be older than 120)
+/// Minimum birthdate (user cannot be older than 120 years)
 DateTime onboardingBirthdateMinDate([DateTime? reference]) {
   final today = reference ?? todayDateOnly;
-  return DateTime(today.year - kMaxAge - 1, today.month, today.day + 1);
+  return DateTime(today.year - kMaxAge, today.month, today.day);
 }
 
 /// Default cycle length (MVP assumption)

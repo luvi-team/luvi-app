@@ -49,6 +49,9 @@ BEGIN
         'GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.%I TO service_role',
         table_name
       );
+
+      -- Defense-in-depth: Idempotent RLS enable (ensures RLS is on even if earlier migration failed)
+      EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', table_name);
     END IF;
   END LOOP;
 

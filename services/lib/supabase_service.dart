@@ -100,6 +100,11 @@ class SupabaseService {
     SupabaseAuthDeepLinkConfig? authConfig,
   }) {
     if (validationConfig != null) {
+      if (_initialized) {
+        throw StateError(
+          'validationConfig cannot be set after SupabaseService is initialized',
+        );
+      }
       _validationConfig = validationConfig;
     }
     if (authConfig != null) {
@@ -366,25 +371,29 @@ class SupabaseService {
         'invalid fitness level ID',
       );
     }
-    // Single-pass validation + normalization for goals
-    final normalizedGoals = <String>[];
+    // Single-pass validation + normalization + deduplication for goals
+    // Using Set to prevent duplicates (e.g., ['fitter', 'Fitter'] → ['fitter'])
+    final normalizedGoalsSet = <String>{};
     for (final goal in goals) {
       final normalized = goal.toLowerCase();
       if (!kValidGoalIds.contains(normalized)) {
         throw ArgumentError.value(goal, 'goals', 'invalid goal ID');
       }
-      normalizedGoals.add(normalized);
+      normalizedGoalsSet.add(normalized);
     }
+    final normalizedGoals = normalizedGoalsSet.toList();
 
-    // Single-pass validation + normalization for interests
-    final normalizedInterests = <String>[];
+    // Single-pass validation + normalization + deduplication for interests
+    // Using Set to prevent duplicates (e.g., ['yoga', 'Yoga'] → ['yoga'])
+    final normalizedInterestsSet = <String>{};
     for (final interest in interests) {
       final normalized = interest.toLowerCase();
       if (!kValidInterestIds.contains(normalized)) {
         throw ArgumentError.value(interest, 'interests', 'invalid interest ID');
       }
-      normalizedInterests.add(normalized);
+      normalizedInterestsSet.add(normalized);
     }
+    final normalizedInterests = normalizedInterestsSet.toList();
 
     // Normalize birthDate to UTC date-only
     final bdLocal = birthDate.toLocal();

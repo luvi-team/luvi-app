@@ -41,9 +41,20 @@ if ! command -v psql >/dev/null 2>&1; then
   exit 127
 fi
 
+# Cleanup: unlink project on exit (only if link succeeded)
+LINKED=false
+cleanup() {
+  if [[ "$LINKED" == "true" ]]; then
+    echo "[db-push-smoke] unlinking project"
+    supabase unlink 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT
+
 echo "[db-push-smoke] linking project ref ${SUPABASE_PROJECT_REF}"
 # Security: Pass password via stdin (here-string) to avoid exposure in process listings
 supabase link --project-ref "${SUPABASE_PROJECT_REF}" <<< "${SUPABASE_DB_PASSWORD}"
+LINKED=true
 
 echo "[db-push-smoke] applying migrations (linked)"
 supabase db push --linked

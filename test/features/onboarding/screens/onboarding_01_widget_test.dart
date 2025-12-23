@@ -26,7 +26,7 @@ void main() {
           ),
           GoRoute(
             path: Onboarding02Screen.routeName,
-            name: 'onboarding_02',
+            name: Onboarding02Screen.navName,
             builder: (context, state) =>
                 const Scaffold(body: Text('Onboarding 02')),
           ),

@@ -32,6 +32,13 @@ class SupabaseDeepLinkHandler {
   /// This preserves deep links that arrive before Supabase is ready.
   Uri? _pendingUri;
 
+  /// Counter for monitoring overwritten deep links in production.
+  /// Exposed for testing and analytics integration.
+  int _overwrittenUriCount = 0;
+
+  /// Returns the count of overwritten pending URIs (for analytics/monitoring).
+  int get overwrittenUriCount => _overwrittenUriCount;
+
   Future<void> start() async {
     if (_disposed) {
       throw StateError(
@@ -62,6 +69,7 @@ class SupabaseDeepLinkHandler {
   Future<void> dispose() async {
     await _subscription?.cancel();
     _subscription = null;
+    _pendingUri = null; // Clear pending URI to release references
     _disposed = true;
   }
 
@@ -94,6 +102,15 @@ class SupabaseDeepLinkHandler {
     if (uri == null) return;
     if (!_matchesAllowed(uri)) return;
     if (!SupabaseService.isInitialized) {
+      // Detect and log when a pending URI is being overwritten
+      if (_pendingUri != null) {
+        _overwrittenUriCount++;
+        log.w(
+          'supabase_deeplink_overwritten: Previous pending URI replaced '
+          '(count: $_overwrittenUriCount)',
+          tag: 'supabase_deeplink_overwritten',
+        );
+      }
       // NOTE: Last-one-wins design - if multiple deep links arrive before
       // Supabase init completes, only the most recent URI is preserved.
       // This is acceptable for MVP as deep links are rare events and the
@@ -170,8 +187,23 @@ class SupabaseDeepLinkHandler {
     }
     // Also validate path if the allowed URI specifies one
     if (_allowedUri.path.isNotEmpty) {
-      return uri.path.toLowerCase() == _allowedUri.path.toLowerCase();
+      // Normalize paths by trimming trailing slashes for comparison
+      final normalizedUriPath = _normalizePath(uri.path);
+      final normalizedAllowedPath = _normalizePath(_allowedUri.path);
+      return normalizedUriPath == normalizedAllowedPath;
     }
     return true;
+  }
+
+  /// Normalizes a path by trimming trailing slashes and converting to lowercase.
+  /// Treats empty path and "/" as equivalent (both become "").
+  String _normalizePath(String path) {
+    var normalized = path.toLowerCase();
+    while (normalized.endsWith('/') && normalized.length > 1) {
+      normalized = normalized.substring(0, normalized.length - 1);
+    }
+    // Treat "/" as empty path
+    if (normalized == '/') return '';
+    return normalized;
   }
 }

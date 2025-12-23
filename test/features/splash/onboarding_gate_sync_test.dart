@@ -8,7 +8,11 @@ import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart
 // Point 11: Module-level test constants for route assertions
 const _testHomeRoute = HeuteScreen.routeName;
 const _testOnboardingRoute = Onboarding01Screen.routeName;
-const _testDefaultTarget = _testHomeRoute; // Alias: same destination, different test context
+
+/// Default navigation target after all gates pass (currently maps to Home).
+/// Kept as separate constant for semantic clarity in tests.
+const _testDefaultTarget = _testHomeRoute;
+
 const _testCurrentVersion = 1;
 
 /// Unit tests for the onboarding gate sync logic.
@@ -131,17 +135,7 @@ void main() {
         expect((result as RouteResolved).route, equals(customHome));
       });
 
-      // Point 9: Split combined test into three separate tests for better failure isolation
-      test('returns Onboarding01 when remote false and local null (first-time user)', () {
-        final result = determineOnboardingGateRoute(
-          remoteGate: false,
-          localGate: null,
-          homeRoute: _testHomeRoute,
-        );
-        expect(result, isA<RouteResolved>());
-        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
-      });
-
+      // Note: "remote false + local null" scenario is tested in "Remote SSOT available" group
       test('returns Onboarding01 when remote false and local false (consistent state)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: false,

@@ -41,6 +41,12 @@ class GoalIds {
     longevity,
     wellbeing,
   };
+
+  /// Legacy alias map for values that were previously persisted differently.
+  /// Keys are normalized/lowercased.
+  static const Map<String, GoalId> legacyAliases = {
+    'well_being': wellbeing,
+  };
 }
 
 class InterestIds {
@@ -96,12 +102,7 @@ GoalId? canonicalizeGoalId(String? raw) {
   }
 
   // Best-effort legacy aliases.
-  switch (normalized) {
-    case 'well_being':
-      return GoalIds.wellbeing;
-  }
-
-  return null;
+  return GoalIds.legacyAliases[normalized];
 }
 
 InterestId? canonicalizeInterestId(String? raw) {

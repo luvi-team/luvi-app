@@ -16,7 +16,10 @@ void main() {
   TestConfig.ensureInitialized();
 
   // Note: Riverpod's Override is a sealed class not exported for direct use.
-  // Callers pass provider overrides which are valid Override instances at runtime.
+  // Callers pass provider overrides (e.g., provider.overrideWith()) which are
+  // valid Override instances at runtime. Using List<dynamic> is required because
+  // Dart cannot express "any valid Override subtype" in the public API.
+  // Runtime type safety is enforced by ProviderScope which rejects invalid entries.
   Widget buildTestApp({
     Widget? home,
     GoRouter? router,

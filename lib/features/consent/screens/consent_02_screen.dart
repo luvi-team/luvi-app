@@ -275,7 +275,8 @@ class ConsentChoiceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      // Add extra bottom padding to prevent sticky footer from obscuring content
+      // Extra bottom padding to clear sticky footer overlay.
+      // See ConsentSpacing.footerEstimatedHeight for sync with footer widget.
       padding: ConsentSpacing.listPadding.copyWith(
         bottom: ConsentSpacing.listPaddingBottom +
             ConsentSpacing.footerEstimatedHeight,

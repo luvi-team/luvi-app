@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
@@ -74,10 +75,12 @@ void main() {
 
     expect(find.byType(BackButtonCircle), findsOneWidget);
 
+    // Combined SizedBox: touchTargetMin + Spacing.s on each side
+    final combinedWidth = Sizes.touchTargetMin + Spacing.s;
     final spacingBoxes = find.byWidgetPredicate(
-      (widget) => widget is SizedBox && widget.width == Spacing.s,
+      (widget) => widget is SizedBox && widget.width == combinedWidth,
     );
-    // Two spacing boxes wrap the title on both sides.
+    // Two combined spacing boxes wrap the progress bar on both sides.
     expect(spacingBoxes, findsNWidgets(2));
   });
 

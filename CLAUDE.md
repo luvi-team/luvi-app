@@ -237,7 +237,7 @@ A PR authored by Claude Code is only mergeable if:
 
 Claude Code SHOULD structure the PR description roughly like this:
 
-```
+```markdown
 Agent: Claude Code
 Domain: ui-frontend | dataviz
 

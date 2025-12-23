@@ -10,7 +10,7 @@ LIMIT 1
 \gset
 \if :{?test_user_id}
 \else
-\echo 'rls_smoke_negative.sql benötigt mindestens einen auth.users-Datensatz (sonst schlagen FK-Inserts fehl).'
+\echo 'rls_smoke_negative.sql requires at least one auth.users record (otherwise FK inserts will fail).'
 \quit 1
 \endif
 
@@ -105,7 +105,8 @@ BEGIN
   END;
 END $$;
 
--- Policy: birth_date required when has_completed_onboarding=true (16–120).
+-- Policy: birth_date required when has_completed_onboarding=true.
+-- Note: Age bounds (16-120) are enforced separately in constraints, not tested here.
 DO $$
 BEGIN
   BEGIN

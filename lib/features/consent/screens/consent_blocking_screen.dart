@@ -40,7 +40,7 @@ class ConsentBlockingScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      SizedBox(height: Spacing.xl),
+                      const SizedBox(height: Spacing.xl),
 
                       // Shield Icon (Figma: 321 x 249 px, constrained for small screens)
                       // Fix 5: Shadow removed per user request
@@ -58,7 +58,7 @@ class ConsentBlockingScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: Spacing.xl),
+                      const SizedBox(height: Spacing.xl),
 
                       // Title (Figma: Playfair Display SemiBold 30px)
                       Semantics(
@@ -89,7 +89,7 @@ class ConsentBlockingScreen extends StatelessWidget {
                           height: 29.25 / 18,
                         ),
                       ),
-                      SizedBox(height: Spacing.xl),
+                      const SizedBox(height: Spacing.xl),
                     ],
                   ),
                 ),

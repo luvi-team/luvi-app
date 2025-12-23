@@ -74,41 +74,55 @@ class BackButtonCircle extends StatelessWidget {
               customBorder: shape,
               child: Center(
                 // Visible component equals [renderedSize]; tap target stays >= Sizes.touchTargetMin.
-                child: Builder(
-                  builder: (context) {
-                    // Extract chevron icon to avoid duplication (DRY)
-                    final chevronIcon = SizedBox(
-                      width: iconSize,
-                      height: iconSize,
-                      child: SvgPicture.string(
-                        _chevronSvg,
-                        colorFilter: ColorFilter.mode(
-                          resolvedIconColor,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    );
-
-                    return showCircle
-                        ? Container(
-                            width: renderedSize,
-                            height: renderedSize,
-                            decoration: BoxDecoration(
-                              color: resolvedBackground,
-                              shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-                              borderRadius: isCircular ? null : BorderRadius.zero,
-                            ),
-                            alignment: Alignment.center,
-                            child: chevronIcon,
-                          )
-                        : chevronIcon;
-                  },
+                child: _buildIcon(
+                  showCircle: showCircle,
+                  renderedSize: renderedSize,
+                  resolvedBackground: resolvedBackground,
+                  isCircular: isCircular,
+                  iconSize: iconSize,
+                  resolvedIconColor: resolvedIconColor,
                 ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  /// Builds the chevron icon, optionally wrapped in a circular/rectangular container.
+  Widget _buildIcon({
+    required bool showCircle,
+    required double renderedSize,
+    required Color resolvedBackground,
+    required bool isCircular,
+    required double iconSize,
+    required Color resolvedIconColor,
+  }) {
+    final chevronIcon = SizedBox(
+      width: iconSize,
+      height: iconSize,
+      child: SvgPicture.string(
+        _chevronSvg,
+        colorFilter: ColorFilter.mode(
+          resolvedIconColor,
+          BlendMode.srcIn,
+        ),
+      ),
+    );
+
+    if (!showCircle) return chevronIcon;
+
+    return Container(
+      width: renderedSize,
+      height: renderedSize,
+      decoration: BoxDecoration(
+        color: resolvedBackground,
+        shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: isCircular ? null : BorderRadius.zero,
+      ),
+      alignment: Alignment.center,
+      child: chevronIcon,
     );
   }
 }

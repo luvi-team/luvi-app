@@ -9,7 +9,6 @@ import '../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Reset password flow', () {
     late GoRouter router;

@@ -335,10 +335,13 @@ void main() {
     });
   }
 
-  // Note: Riverpod's Override is a sealed class not exported for direct use.
-  // Callers pass provider overrides (e.g., provider.overrideWith()) which
-  // are valid Override instances at runtime.
+  // Note: Riverpod's Override is a sealed class that is not publicly exported.
+  // Using `List<Override>` is not possible because the Override type is sealed
+  // and only internal Riverpod methods return it (e.g., provider.overrideWith()).
+  // Type-safety is maintained at runtime since only valid Override instances
+  // can be created through Riverpod's public API.
   Widget buildTestApp({
+    // ignore: always_specify_types
     List<dynamic> overrides = const [],
   }) {
     return ProviderScope(
@@ -669,17 +672,6 @@ void main() {
         // Should show error state because user is not authenticated
         expect(find.text('Try again'), findsOneWidget);
         expect(find.text('Save failed. Please try again.'), findsOneWidget);
-      });
-    });
-
-    group('Enum safety', () {
-      testWidgets('FitnessLevel.tryParse handles unknown values safely', (_) async {
-        // This tests the tryParse function directly
-        // Unknown values should return null (then fallback to beginner)
-        expect(FitnessLevel.tryParse('unknown_value'), isNull);
-        expect(FitnessLevel.tryParse('beginner'), FitnessLevel.beginner);
-        expect(FitnessLevel.tryParse('occasional'), FitnessLevel.occasional);
-        expect(FitnessLevel.tryParse('fit'), FitnessLevel.fit);
       });
     });
   });

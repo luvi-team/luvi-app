@@ -83,6 +83,8 @@ void main() {
 
     await tester.tap(emailButton);
     await tester.pumpAndSettle();
+    // Navigation verified via UI - 'LOGIN' text only appears on LoginScreen route
+    // Note: Router uses push(), so UI verification is more reliable than state checks
     expect(find.text('LOGIN'), findsOneWidget);
   });
 

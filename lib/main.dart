@@ -275,6 +275,9 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
           if (handler != null && handler.hasPendingUri) {
             unawaited(handler.processPendingUri());
           }
+        } catch (e, st) {
+          // Log critical initialization failure (don't rethrow - would crash app)
+          log.e('Init orchestration failed', tag: 'Main', error: e, stack: st);
         } finally {
           _orchestrationInProgress = false;
         }

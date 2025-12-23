@@ -10,16 +10,23 @@ part 'onboarding_state.g.dart';
 /// Immutable data class holding all onboarding form state.
 @immutable
 class OnboardingData {
-  const OnboardingData({
+  /// Creates an immutable OnboardingData instance.
+  /// Lists are wrapped with [List.unmodifiable] to enforce immutability.
+  OnboardingData({
     this.name,
     this.birthDate,
     this.fitnessLevel,
-    this.selectedGoals = const [],
-    this.selectedInterests = const [],
+    List<Goal>? selectedGoals,
+    List<Interest>? selectedInterests,
     this.periodStart,
-    this.periodDuration = 7,
-    this.cycleLength = 28,
-  });
+    this.periodDuration = kDefaultPeriodDuration,
+    this.cycleLength = kDefaultCycleLength,
+  })  : selectedGoals = selectedGoals != null
+            ? List<Goal>.unmodifiable(selectedGoals)
+            : const <Goal>[],
+        selectedInterests = selectedInterests != null
+            ? List<Interest>.unmodifiable(selectedInterests)
+            : const <Interest>[];
 
   /// User's display name
   final String? name;
@@ -46,7 +53,7 @@ class OnboardingData {
   final int cycleLength;
 
   /// Factory for empty initial state
-  factory OnboardingData.empty() => const OnboardingData();
+  factory OnboardingData.empty() => OnboardingData();
 
   /// Copy with updated fields.
   /// Use [clearPeriodStart] to explicitly set periodStart to null
@@ -143,8 +150,10 @@ class OnboardingNotifier extends _$OnboardingNotifier {
 
   /// Set period duration (O8)
   void setPeriodDuration(int days) {
-    // Clamp to valid range 1-14
-    state = state.copyWith(periodDuration: days.clamp(1, 14));
+    // Clamp to valid range (kMinPeriodDuration-kMaxPeriodDuration)
+    state = state.copyWith(
+      periodDuration: days.clamp(kMinPeriodDuration, kMaxPeriodDuration),
+    );
   }
 
   /// Clear period start date (for "I don't remember" flow)
@@ -153,8 +162,8 @@ class OnboardingNotifier extends _$OnboardingNotifier {
   void clearPeriodStart() {
     state = state.copyWith(
       clearPeriodStart: true,
-      periodDuration: 7,
-      cycleLength: 28,
+      periodDuration: kDefaultPeriodDuration,
+      cycleLength: kDefaultCycleLength,
     );
   }
 

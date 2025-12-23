@@ -13,6 +13,32 @@ import '../../../support/test_app.dart';
 // Used instead of DateTime.now() to prevent month-boundary flakiness
 final _baseDate = DateTime(2025, 12, 15);
 
+/// Creates a test router for Onboarding07DurationScreen tests.
+/// Extracted to reduce duplication across test cases.
+GoRouter _createTestRouter(DateTime startDate) {
+  return GoRouter(
+    routes: [
+      GoRoute(
+        path: Onboarding06PeriodScreen.routeName,
+        builder: (context, state) =>
+            const Scaffold(body: Text('Onboarding 06')),
+      ),
+      GoRoute(
+        path: Onboarding07DurationScreen.routeName,
+        builder: (context, state) => Onboarding07DurationScreen(
+          periodStartDate: startDate,
+        ),
+      ),
+      GoRoute(
+        path: OnboardingSuccessScreen.routeName,
+        builder: (context, state) =>
+            const Scaffold(body: Text('Success Screen')),
+      ),
+    ],
+    initialLocation: Onboarding07DurationScreen.routeName,
+  );
+}
+
 void main() {
   TestConfig.ensureInitialized();
 
@@ -20,28 +46,7 @@ void main() {
     testWidgets('renders without errors', (tester) async {
       // Deterministic date: Fixed date for stable test (mid-December 2025)
       final startDate = DateTime(2025, 12, 15);
-
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: Onboarding06PeriodScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Onboarding 06')),
-          ),
-          GoRoute(
-            path: Onboarding07DurationScreen.routeName,
-            builder: (context, state) => Onboarding07DurationScreen(
-              periodStartDate: startDate,
-            ),
-          ),
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Success Screen')),
-          ),
-        ],
-        initialLocation: Onboarding07DurationScreen.routeName,
-      );
+      final router = _createTestRouter(startDate);
 
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
@@ -53,28 +58,7 @@ void main() {
     testWidgets('displays PeriodCalendar widget', (tester) async {
       // Deterministic date: Fixed date for stable test (mid-December 2025)
       final startDate = DateTime(2025, 12, 12);
-
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: Onboarding06PeriodScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Onboarding 06')),
-          ),
-          GoRoute(
-            path: Onboarding07DurationScreen.routeName,
-            builder: (context, state) => Onboarding07DurationScreen(
-              periodStartDate: startDate,
-            ),
-          ),
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Success Screen')),
-          ),
-        ],
-        initialLocation: Onboarding07DurationScreen.routeName,
-      );
+      final router = _createTestRouter(startDate);
 
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
@@ -87,28 +71,7 @@ void main() {
         (tester) async {
       // Deterministic date: Fixed date for stable test (mid-December 2025)
       final startDate = DateTime(2025, 12, 12);
-
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: Onboarding06PeriodScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Onboarding 06')),
-          ),
-          GoRoute(
-            path: Onboarding07DurationScreen.routeName,
-            builder: (context, state) => Onboarding07DurationScreen(
-              periodStartDate: startDate,
-            ),
-          ),
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Success Screen')),
-          ),
-        ],
-        initialLocation: Onboarding07DurationScreen.routeName,
-      );
+      final router = _createTestRouter(startDate);
 
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
@@ -122,28 +85,7 @@ void main() {
       // Deterministic date (10 days before _baseDate) to ensure calendar shows correct month
       // This test requires period days to be visible and tappable
       final startDate = _baseDate.subtract(const Duration(days: 10));
-
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: Onboarding06PeriodScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Onboarding 06')),
-          ),
-          GoRoute(
-            path: Onboarding07DurationScreen.routeName,
-            builder: (context, state) => Onboarding07DurationScreen(
-              periodStartDate: startDate,
-            ),
-          ),
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Success Screen')),
-          ),
-        ],
-        initialLocation: Onboarding07DurationScreen.routeName,
-      );
+      final router = _createTestRouter(startDate);
 
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
@@ -159,7 +101,7 @@ void main() {
       expect(beforeCount, greaterThanOrEqualTo(3));
 
       // Find day 2 after startDate via semantics label (robust, exact date)
-      // Format: "17. Dezember 2024, Periodentag" (per period_calendar.dart)
+      // Format: "d. MMMM yyyy, Periodentag" — e.g., "6. Dezember 2025, Periodentag"
       final targetDate = startDate.add(const Duration(days: 1));
       final formattedDate = DateFormat('d. MMMM yyyy', 'de').format(targetDate);
       final targetSemantics = RegExp('$formattedDate, Periodentag');

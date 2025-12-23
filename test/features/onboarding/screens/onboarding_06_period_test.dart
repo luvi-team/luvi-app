@@ -59,7 +59,18 @@ void main() {
         initialLocation: Onboarding06PeriodScreen.routeName,
       );
 
-      await tester.pumpWidget(buildTestApp(router: router));
+      // Use ProviderScope with deterministic onboarding state
+      // (consistent with second test pattern, lines 112-125)
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            initModeProvider.overrideWithValue(InitMode.test),
+            onboardingProvider
+                .overrideWith(() => _OnboardingNotifierWithFitness()),
+          ],
+          child: buildLocalizedApp(router: router),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Verify screen rendered
@@ -130,6 +141,10 @@ void main() {
         tester.element(find.byType(Onboarding06PeriodScreen)),
       )!;
       await tester.tap(find.text(l10n.onboarding06PeriodUnknown));
+      await tester.pumpAndSettle();
+
+      // Tap CTA button to trigger navigation (toggle only shows button, doesn't navigate)
+      await tester.tap(find.byKey(const Key('o6_cta_unknown')));
       await tester.pumpAndSettle();
 
       // ASSERTION: Success-Screen wird angezeigt mit korrektem FitnessLevel

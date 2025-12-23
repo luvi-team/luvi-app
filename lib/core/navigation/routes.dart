@@ -224,7 +224,7 @@ final List<GoRoute> featureRoutes = [
   ),
   GoRoute(
     path: Onboarding06PeriodScreen.routeName,
-    name: 'onboarding_06_period',
+    name: Onboarding06PeriodScreen.navName,
     builder: (ctx, st) => const Onboarding06PeriodScreen(),
   ),
   GoRoute(

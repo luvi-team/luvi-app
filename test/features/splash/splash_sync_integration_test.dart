@@ -576,12 +576,15 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Trigger the race-retry logic
-      await tester.tap(find.byKey(const Key('trigger')));
-
-      // Allow async operations to complete
-      await tester.pump(const Duration(milliseconds: 50));
-      await tester.pump(const Duration(milliseconds: 100));
+      // Use runAsync for real async operations (Flutter recommended pattern).
+      // The widget's 100ms delay runs in real time. We use 500ms buffer (5x)
+      // to ensure completion even on slow CI machines. This is the standard
+      // approach for testing async callbacks without production code changes.
+      await tester.runAsync(() async {
+        await tester.tap(find.byKey(const Key('trigger')));
+        // 5x buffer: 500ms >> 100ms widget delay for CI resilience
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+      });
       await tester.pumpAndSettle();
 
       // Verify: Reader was called twice (first false, then true)

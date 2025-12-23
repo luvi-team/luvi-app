@@ -127,6 +127,8 @@ class _PeriodCalendarState extends State<PeriodCalendar>
   }
 
   void _scrollToCurrentMonth() {
+    // Safety: bail if widget was disposed before callback fires
+    if (!mounted) return;
     if (!_scrollController.hasClients) return;
 
     // B1 Guard: Skip if list too small to scroll
@@ -144,6 +146,7 @@ class _PeriodCalendarState extends State<PeriodCalendar>
 
       // Retry after next frame when widget should be built
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return; // Check again inside callback
         _scrollToCurrentMonth();
       });
       return;
@@ -160,6 +163,8 @@ class _PeriodCalendarState extends State<PeriodCalendar>
 
   @override
   void dispose() {
+    // Saturate to prevent any pending callbacks from scheduling more retries
+    _scrollRetryCount = _maxScrollRetries;
     WidgetsBinding.instance.removeObserver(this);
     _scrollController.dispose();
     super.dispose();

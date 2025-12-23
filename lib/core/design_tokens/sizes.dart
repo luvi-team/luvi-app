@@ -11,6 +11,10 @@ class Sizes {
   /// Mini Calendar radius (Figma O6: 24px)
   static const double radius24 = 24.0;
 
+  /// Pill/Capsule radius - full pill shape (Figma: 999px)
+  /// Use for true pill-shaped elements like fitness pills, interest pills.
+  static const double radiusPill = 999.0;
+
   // ─── O9 Success Screen Image Sizes (Figma O9 2024-12) ───
 
   /// Success Card 1 (left/top) image width (Figma: 92px)
@@ -87,8 +91,9 @@ class Sizes {
 
   // ─── Auth Back Button (Figma Auth UI v2) ───
 
-  /// Auth Back Button Icon Size (Figma: 32×30.5px)
+  /// Auth Back Button Icon Size (Figma: 32×30.5px, normalized to 32px square)
   /// Used for back chevron icon in Auth screens without circle background.
+  /// Note: Figma shows non-square dimensions; 32px used as square touch target.
   static const double authBackIconSize = 32.0;
 
   // ─── Loading Indicator (Button spinner) ───
@@ -101,8 +106,14 @@ class Sizes {
 
   // ─── Onboarding Specific (Figma Onboarding v2) ───
 
-  /// Progress Bar Width (Figma: 307px)
-  static const double progressBarWidth = 307.0;
+  /// Progress Bar Max Width (Figma: 307px)
+  static const double progressBarMaxWidth = 307.0;
+
+  /// Calculate responsive progress bar width.
+  /// Returns 80% of available width, capped at [progressBarMaxWidth].
+  static double progressBarWidthFor(double availableWidth) {
+    return (availableWidth * 0.80).clamp(0.0, progressBarMaxWidth);
+  }
 
   /// Progress Bar Height (Figma: 18px)
   static const double progressBarHeight = 18.0;

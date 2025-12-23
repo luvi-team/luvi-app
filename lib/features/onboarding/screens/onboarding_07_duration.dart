@@ -11,6 +11,7 @@ import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
@@ -116,9 +117,10 @@ class _Onboarding07DurationScreenState
     if (_periodStart == null) return;
     if (newEndDate.isBefore(_periodStart!)) return;
 
-    // Limit period duration to reasonable range (1-14 days)
+    // Limit period duration to maximum 14 days
+    // Note: minimum 1 day is guaranteed by the isBefore check above
     final duration = newEndDate.difference(_periodStart!).inDays + 1;
-    if (duration < 1 || duration > 14) return;
+    if (duration > 14) return;
 
     setState(() {
       _periodEnd = newEndDate;
@@ -142,7 +144,7 @@ class _Onboarding07DurationScreenState
 
     // Navigate to Success Screen with Service-FitnessLevel
     context.pushNamed(
-      'onboarding_success',
+      OnboardingSuccessScreen.navName,
       extra: serviceLevel,
     );
   }

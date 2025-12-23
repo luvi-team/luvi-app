@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../support/test_config.dart';
+import '../../../support/test_view.dart';
 
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
@@ -16,17 +16,6 @@ import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
-
-/// Configures test view size. Returns teardown function to reset.
-void Function() _configureTestView(WidgetTester tester) {
-  final view = tester.view;
-  view.physicalSize = const Size(1080, 2340);
-  view.devicePixelRatio = 1.0;
-  return () {
-    view.resetPhysicalSize();
-    view.resetDevicePixelRatio();
-  };
-}
 
 void main() {
   TestConfig.ensureInitialized();
@@ -44,7 +33,7 @@ void main() {
   });
 
   testWidgets('LoginScreen shows headline and button', (tester) async {
-    addTearDown(_configureTestView(tester));
+    addTearDown(configureTestView(tester));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -70,7 +59,7 @@ void main() {
   testWidgets('CTA enabled before submit; disables on field errors', (
     tester,
   ) async {
-    addTearDown(_configureTestView(tester));
+    addTearDown(configureTestView(tester));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -99,7 +88,7 @@ void main() {
   });
 
   testWidgets('shows signup link with correct text', (tester) async {
-    addTearDown(_configureTestView(tester));
+    addTearDown(configureTestView(tester));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -148,7 +137,7 @@ void main() {
   testWidgets('tapping signup link navigates to AuthSignupScreen', (
     tester,
   ) async {
-    addTearDown(_configureTestView(tester));
+    addTearDown(configureTestView(tester));
 
     // signInWithPassword stub already defined in setUp
 
@@ -166,12 +155,7 @@ void main() {
           theme: AppTheme.buildAppTheme(),
           locale: const Locale('de'),
           supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
         ),
       ),
     );

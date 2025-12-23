@@ -17,19 +17,9 @@ import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../support/test_config.dart';
+import '../../support/test_view.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
-
-/// Configures test view size. Returns teardown function to reset.
-void Function() _configureTestView(WidgetTester tester) {
-  final view = tester.view;
-  view.physicalSize = const Size(1080, 2340);
-  view.devicePixelRatio = 1.0;
-  return () {
-    view.resetPhysicalSize();
-    view.resetDevicePixelRatio();
-  };
-}
 
 /// Builds a test widget with router, mocked auth repo, and standard localization.
 Widget _buildAuthRouterTestWidget({
@@ -94,7 +84,7 @@ void main() {
 
   group('Auth route whitelist (navigation without session)', () {
     testWidgets('LoginScreen → SignupScreen navigation works', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -133,7 +123,7 @@ void main() {
     });
 
     testWidgets('LoginScreen → ResetPasswordScreen navigation works', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -165,7 +155,7 @@ void main() {
     });
 
     testWidgets('AuthSignInScreen is accessible', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -188,7 +178,7 @@ void main() {
     });
 
     testWidgets('AuthSignupScreen is directly accessible', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -211,7 +201,7 @@ void main() {
     });
 
     testWidgets('ResetPasswordScreen is directly accessible', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -236,7 +226,7 @@ void main() {
 
   group('Auth route whitelist (EN locale)', () {
     testWidgets('LoginScreen renders correctly in English', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,

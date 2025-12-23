@@ -49,6 +49,9 @@ Diese Änderung behebt bestätigte DB-Drifts in Supabase/Postgres, um:
 ## Backout / Undo (operational snippets)
 ```sql
 -- 1) Re-add drift constraints (nur falls unbedingt nötig; nicht empfohlen)
+-- WARNING: These are the DRIFTED bounds (cycle_length 21-60, period_duration 1-10),
+-- NOT the SSOT bounds (cycle_length > 0 && <= 60, period_duration > 0 && <= 15).
+-- Only apply as emergency backout if absolutely necessary.
 ALTER TABLE public.cycle_data
   ADD CONSTRAINT chk_cycle_length CHECK (cycle_length >= 21 AND cycle_length <= 60);
 ALTER TABLE public.cycle_data

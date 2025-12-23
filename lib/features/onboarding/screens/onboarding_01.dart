@@ -31,15 +31,25 @@ class Onboarding01Screen extends ConsumerStatefulWidget {
 class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
   final _nameController = TextEditingController();
   bool _hasText = false;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
     _nameController.addListener(_onTextChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     // Restore state from Notifier (for back navigation)
-    final onboardingState = ref.read(onboardingProvider);
-    if (onboardingState.name != null && onboardingState.name!.isNotEmpty) {
-      _nameController.text = onboardingState.name!;
+    // Moved from initState to ensure widget is fully mounted before accessing Riverpod
+    if (!_initialized) {
+      _initialized = true;
+      final onboardingState = ref.read(onboardingProvider);
+      if (onboardingState.name != null && onboardingState.name!.isNotEmpty) {
+        _nameController.text = onboardingState.name!;
+      }
     }
   }
 

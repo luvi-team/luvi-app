@@ -44,6 +44,9 @@ class OnboardingSuccessScreen extends ConsumerStatefulWidget {
 
   static const routeName = '/onboarding/success';
 
+  /// GoRoute name for pushNamed navigation
+  static const navName = 'onboarding_success';
+
   final services.FitnessLevel fitnessLevel;
 
   @override
@@ -316,16 +319,30 @@ class _OnboardingSuccessScreenState
       if (!mounted) return;
 
       // Animation restart if available - save triggers via onAnimationComplete
-      // Fallback: Direct save if animation state unavailable
       final animationState = _progressKey.currentState;
       if (animationState != null) {
         animationState.restart();
       } else {
-        // No animation available, directly save
-        setState(() {
-          _state = O9AnimationState.saving;
+        // TODO(tech-debt): Investigate root cause why _progressKey.currentState
+        // can be null after first postFrameCallback. Possible causes:
+        // - Widget not in tree during error state
+        // - GlobalKey conflict
+        // - Build order timing issue
+        // Retry once more after another frame (defensive workaround)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+
+          final retryState = _progressKey.currentState;
+          if (retryState != null) {
+            retryState.restart();
+          } else {
+            // Final fallback: direct save without animation
+            setState(() {
+              _state = O9AnimationState.saving;
+            });
+            _performSave();
+          }
         });
-        _performSave();
       }
     });
   }

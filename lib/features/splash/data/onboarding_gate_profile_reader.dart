@@ -23,7 +23,14 @@ class DefaultOnboardingGateProfileReader implements OnboardingGateProfileReader 
 
   @override
   Future<bool?> fetchRemoteOnboardingGate() async {
-    final profile = await SupabaseService.getProfile();
+    final Map<String, dynamic>? profile;
+    try {
+      profile = await SupabaseService.getProfile();
+    } catch (_) {
+      // Network error, timeout, etc. - return null per docstring contract
+      return null;
+    }
+
     // No profile row = new user = hasn't completed onboarding
     if (profile == null) return false;
 

@@ -10,6 +10,7 @@ Future<void> _pumpProgressBar(
   required int currentStep,
   required int totalSteps,
   Locale locale = const Locale('de'),
+  double parentWidth = 400.0, // Default parent width for testing
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -17,9 +18,14 @@ Future<void> _pumpProgressBar(
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: Scaffold(
-        body: OnboardingProgressBar(
-          currentStep: currentStep,
-          totalSteps: totalSteps,
+        body: Center(
+          child: SizedBox(
+            width: parentWidth,
+            child: OnboardingProgressBar(
+              currentStep: currentStep,
+              totalSteps: totalSteps,
+            ),
+          ),
         ),
       ),
     ),
@@ -29,14 +35,51 @@ Future<void> _pumpProgressBar(
 void main() {
   TestConfig.ensureInitialized();
 
-  testWidgets('renders with correct size', (tester) async {
+  testWidgets('renders with responsive size (80% of parent, max 307px)',
+      (tester) async {
+    // Parent width 400px -> 80% = 320px, but capped at max 307px
     await _pumpProgressBar(tester, currentStep: 1, totalSteps: 5);
 
-    final sizedBox = find.byType(SizedBox).first;
-    final widget = tester.widget<SizedBox>(sizedBox);
+    // Find the inner SizedBox created by the progress bar (inside LayoutBuilder)
+    final sizedBoxes = find.byType(SizedBox);
+    // The progress bar creates a SizedBox inside LayoutBuilder
+    // We need to find the one with the calculated width
+    SizedBox? progressBarSizedBox;
+    for (final element in sizedBoxes.evaluate()) {
+      final widget = element.widget as SizedBox;
+      if (widget.height == Sizes.progressBarHeight) {
+        progressBarSizedBox = widget;
+        break;
+      }
+    }
 
-    expect(widget.width, Sizes.progressBarWidth); // 307px (Figma v2)
-    expect(widget.height, 18);
+    expect(progressBarSizedBox, isNotNull);
+    // 400 * 0.8 = 320, clamped to max 307
+    expect(progressBarSizedBox!.width, Sizes.progressBarMaxWidth);
+    expect(progressBarSizedBox.height, Sizes.progressBarHeight);
+  });
+
+  testWidgets('renders smaller width for narrow parent', (tester) async {
+    // Parent width 300px -> 80% = 240px (below max, so no clamping)
+    await _pumpProgressBar(
+      tester,
+      currentStep: 1,
+      totalSteps: 5,
+      parentWidth: 300.0,
+    );
+
+    SizedBox? progressBarSizedBox;
+    for (final element in find.byType(SizedBox).evaluate()) {
+      final widget = element.widget as SizedBox;
+      if (widget.height == Sizes.progressBarHeight) {
+        progressBarSizedBox = widget;
+        break;
+      }
+    }
+
+    expect(progressBarSizedBox, isNotNull);
+    // 300 * 0.8 = 240px
+    expect(progressBarSizedBox!.width, closeTo(240.0, 0.1));
   });
 
   testWidgets('shows correct progress for step 1 of 5', (tester) async {

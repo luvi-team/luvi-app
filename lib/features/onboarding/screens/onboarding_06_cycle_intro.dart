@@ -4,6 +4,7 @@ import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
 import 'package:luvi_app/features/onboarding/widgets/calendar_mini_widget.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
@@ -22,7 +23,7 @@ class Onboarding06CycleIntroScreen extends StatelessWidget {
   static const navName = 'onboarding_06_cycle_intro';
 
   void _handleContinue(BuildContext context) {
-    context.pushNamed('onboarding_06_period');
+    context.pushNamed(Onboarding06PeriodScreen.navName);
   }
 
   void _handleBack(BuildContext context) {

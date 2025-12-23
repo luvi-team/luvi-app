@@ -50,6 +50,9 @@ void main() {
       final context = tester.element(find.byType(ConsentIntroScreen));
       final l10n = AppLocalizations.of(context)!;
 
+      // Verify locale is correct before checking strings
+      expect(l10n.localeName, 'de');
+
       // Verify title and body text
       expect(find.text(l10n.consentIntroTitle), findsOneWidget);
       expect(find.text(l10n.consentIntroBody), findsOneWidget);
@@ -65,6 +68,9 @@ void main() {
 
       final context = tester.element(find.byType(ConsentIntroScreen));
       final l10n = AppLocalizations.of(context)!;
+
+      // Verify locale is correct before checking strings
+      expect(l10n.localeName, 'en');
 
       expect(find.text(l10n.consentIntroTitle), findsOneWidget);
       expect(find.text(l10n.consentIntroBody), findsOneWidget);

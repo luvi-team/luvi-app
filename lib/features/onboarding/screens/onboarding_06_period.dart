@@ -12,6 +12,7 @@ import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/custom_radio_check.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/period_calendar.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -25,6 +26,7 @@ class Onboarding06PeriodScreen extends ConsumerStatefulWidget {
   const Onboarding06PeriodScreen({super.key});
 
   static const routeName = '/onboarding/period-start';
+  static const navName = 'onboarding_06_period';
 
   @override
   ConsumerState<Onboarding06PeriodScreen> createState() =>
@@ -66,14 +68,13 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
   }
 
   void _handleUnknownToggle() {
-    // A3: One-way action - once selected, navigate immediately
-    if (_unknownSelected) return; // Already selected, ignore subsequent taps
-
+    // Reversible toggle - user can toggle on/off, navigation via explicit CTA
     setState(() {
-      _unknownSelected = true;
-      _selectedDate = null;
+      _unknownSelected = !_unknownSelected;
+      if (_unknownSelected) {
+        _selectedDate = null;
+      }
     });
-    _navigateToSuccessScreen();
   }
 
   void _navigateToNextScreen() {
@@ -145,6 +146,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
                 child: _buildCalendarCard(l10n),
               ),
               _buildUnknownOption(textTheme, colorScheme, l10n),
+              _buildCta(l10n),
               SizedBox(height: Spacing.xl),
             ],
           ),
@@ -216,6 +218,21 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
           onDateSelected: _handleDateSelected,
           periodDays: const [], // No period days selected yet
         ),
+      ),
+    );
+  }
+
+  Widget _buildCta(AppLocalizations l10n) {
+    // Only show CTA when unknown is selected (navigation via explicit button)
+    if (!_unknownSelected) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+      child: OnboardingButton(
+        key: const Key('o6_cta_unknown'),
+        label: l10n.commonContinue,
+        onPressed: _navigateToSuccessScreen,
+        isEnabled: true,
       ),
     );
   }

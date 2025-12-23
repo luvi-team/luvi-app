@@ -151,6 +151,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   /// Race-retry delay for handling sync lag between local and remote state.
   /// Exposed for testing with shorter durations.
+  ///
+  /// **Test cleanup required:** Tests that modify this value MUST save the
+  /// original and restore it in tearDown/addTearDown to prevent cross-test
+  /// interference:
+  /// ```dart
+  /// final original = _SplashScreenState.raceRetryDelay;
+  /// addTearDown(() => _SplashScreenState.raceRetryDelay = original);
+  /// _SplashScreenState.raceRetryDelay = const Duration(milliseconds: 50);
+  /// ```
   @visibleForTesting
   static Duration raceRetryDelay = const Duration(milliseconds: 500);
 
@@ -263,7 +272,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
-                onPressed: _handleSignOut,
+                onPressed: () { _handleSignOut(); },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: DsColors.welcomeButtonBg,
                   side: const BorderSide(color: DsColors.welcomeButtonBg),
@@ -310,7 +319,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             content: Text(l10n.signOutErrorRetry),
             action: SnackBarAction(
               label: l10n.retry,
-              onPressed: _handleSignOut,
+              onPressed: () { _handleSignOut(); },
             ),
           ),
         );

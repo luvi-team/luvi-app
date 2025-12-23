@@ -35,8 +35,18 @@ class DsGradients {
     stops: [0.04, 0.52, 0.98],
   );
 
-  /// Consent Screen Background - Solid cream color as gradient for consistency
-  /// Use when a gradient container is needed but solid color is desired
+  /// Consent Screen Background Color - solid cream (Figma: #FFF8F0)
+  ///
+  /// Use this for direct color access when gradient API is not required.
+  /// Preferred over [consentBackground] for simple backgrounds.
+  static const Color consentBackgroundColor = DsColors.bgCream;
+
+  /// Consent Screen Background as Gradient - for gradient container compatibility.
+  ///
+  /// This is intentionally a "degenerate" gradient with identical colors.
+  /// Use [consentBackgroundColor] instead when possible. This gradient exists
+  /// for consumers that require a Gradient type (e.g., Container.decoration
+  /// with gradient parameter).
   static const LinearGradient consentBackground = LinearGradient(
     colors: [
       DsColors.bgCream,

@@ -161,7 +161,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Verify CTA is enabled (birthDate pre-set → _hasInteracted = true in initState)
+    // Verify CTA is enabled when birthDate is pre-set
     final cta = find.byKey(const Key('onb_cta'));
     expect(cta, findsOneWidget);
     expect(tester.widget<OnboardingButton>(cta).isEnabled, isTrue);

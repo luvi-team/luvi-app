@@ -207,10 +207,19 @@ begin
     if not public.consents_scopes_values_boolean(p_scopes) then
       raise exception 'p_scopes must be an object with boolean values only';
     end if;
+    -- Filter: keep only enabled AND allowed scope IDs (consistent with array-path)
     normalized_scopes := (
       select coalesce(jsonb_object_agg(e.key, true), '{}'::jsonb)
       from jsonb_each(p_scopes) as e(key, value)
       where e.value = 'true'::jsonb
+        and e.key in (
+          'terms',
+          'health_processing',
+          'analytics',
+          'marketing',
+          'ai_journal',
+          'model_training'
+        )
     );
   else
     raise exception 'p_scopes must be an array (legacy) or object (canonical)';

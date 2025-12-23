@@ -19,8 +19,8 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Delay before navigation after successful signup (allows user to see snackbar).
-const kSignupSuccessNavigationDelay = Duration(milliseconds: 800);
+/// Delay before navigation after successful signup (matches snackbar duration).
+const kSignupSuccessNavigationDelay = Duration(milliseconds: 1500);
 
 /// SignupScreen with Figma Auth UI v2 design.
 ///

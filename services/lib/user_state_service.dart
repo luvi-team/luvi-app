@@ -218,6 +218,7 @@ class UserStateService {
 
       final ok3 = await prefs.setStringList(_keyPreAuthConsentScopes, scopes);
       if (!ok3) throw StateError('Failed to write consent scopes');
+      writtenKeys.add(_keyPreAuthConsentScopes);
       // Success - all written
     } catch (e) {
       // Rollback: remove any keys that were successfully written

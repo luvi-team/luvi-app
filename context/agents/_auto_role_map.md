@@ -9,7 +9,7 @@ Operativer Prozess: BMAD → PRP.
 - api-backend: Edge Function, Service, API, Backend, Consent-Log, Webhook, Rate-Limit, Gateway, Endpunkt, Schnittstelle, Server
 - db-admin: RLS, Migration, SQL, Supabase, Policy, Trigger, Database, Schema, Postgres, Datenbank, Tabelle, View, Richtlinie
 - dataviz: Chart, Dashboard, Visualization, Metric, Graph, Plot, Analytics, PostHog, Visualisierung, Diagramm, Metrik
-- qa-dsgvo: Privacy, DSGVO, Review, Compliance, PII, Consent, GDPR, Data-Protection, Audit, Datenschutz, Einwilligung, Pruefung
+- qa-dsgvo: Privacy, DSGVO, Review, Compliance, PII, Consent, GDPR, Data-Protection, Audit, Datenschutz, Einwilligung, Pruefung, Prüfung
 
 ## Priorität bei Multi‑Match
 - P1 (höchste): db-admin (Security/RLS), qa-dsgvo (DSGVO/Privacy)

@@ -55,8 +55,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 250));
     expect(find.textContaining('%'), findsOneWidget);
 
-    // Complete animation (pump enough frames for progress to complete)
-    await tester.pump(const Duration(milliseconds: 300));
+    // Complete animation (remaining 250ms to reach 500ms total)
+    await tester.pump(const Duration(milliseconds: 250));
     expect(find.text('100%'), findsOneWidget);
   });
 
@@ -107,13 +107,17 @@ void main() {
 
   testWidgets('contains Transform.rotate for rotation animation', (tester) async {
     await _pumpRing(tester, isSpinning: true);
-    await tester.pump();
+    // Pump time to advance rotation animation (non-zero angle = non-identity matrix)
+    await tester.pump(const Duration(milliseconds: 100));
 
-    // Find Transform widget with non-identity rotation matrix
-    // Note: Multiple Transforms may exist (e.g., FadeTransition uses Transform internally)
-    final rotationTransformFinder = find.byWidgetPredicate(
-      (widget) =>
-          widget is Transform && widget.transform != Matrix4.identity(),
+    // Find Transform widget within CircularProgressRing with non-identity matrix
+    final ringFinder = find.byType(CircularProgressRing);
+    final rotationTransformFinder = find.descendant(
+      of: ringFinder,
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is Transform && widget.transform != Matrix4.identity(),
+      ),
     );
 
     expect(rotationTransformFinder, findsAtLeastNWidgets(1));

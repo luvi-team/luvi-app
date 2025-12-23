@@ -58,8 +58,9 @@ class ProfileStubScreen extends ConsumerWidget {
     try {
       final userState = await ref.read(userStateServiceProvider.future);
       await userState.bindUser(null); // Clears all user-scoped state
-    } catch (_) {
-      // Best-effort local cleanup
+    } catch (e, st) {
+      // Best-effort local cleanup - log for diagnosis but don't block flow
+      log.w('profile cleanup failed', tag: 'ProfileStub', error: e, stack: st);
     }
 
     if (!context.mounted) return;

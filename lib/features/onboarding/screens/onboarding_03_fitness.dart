@@ -13,10 +13,10 @@ import 'package:luvi_app/features/onboarding/widgets/fitness_pill.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart' hide FitnessLevel;
 import 'package:luvi_services/user_state_service.dart' as services show FitnessLevel;
-import 'package:luvi_services/supabase_service.dart';
 
 /// Onboarding03: Fitness level single-select screen (O3)
 /// Figma: 03_Onboarding (Fitnesslevel)
@@ -65,18 +65,19 @@ class _Onboarding03FitnessScreenState
       ref.read(onboardingProvider.notifier).setFitnessLevel(_selectedLevel!);
       try {
         // Also save to UserStateService for backward compatibility
+        // Note: bindUser is already called in main.dart auth state listener
         final userState = await ref.read(userStateServiceProvider.future);
-        final uid = SupabaseService.currentUser?.id;
-        if (uid != null) {
-          await userState.bindUser(uid);
-        }
         final serviceFitness =
             services.FitnessLevel.tryParse(_selectedLevel!.name) ??
                 services.FitnessLevel.beginner;
         await userState.setFitnessLevel(serviceFitness);
       } catch (e) {
         // Log error but proceed - data is saved in SSOT provider
-        debugPrint('Failed to sync fitness level to UserStateService: $e');
+        log.w(
+          'Failed to sync fitness level to UserStateService',
+          tag: 'Onboarding',
+          error: e,
+        );
       }
     }
     // Navigate to O4 Goals

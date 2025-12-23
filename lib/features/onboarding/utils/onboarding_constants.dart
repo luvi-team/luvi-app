@@ -26,6 +26,14 @@ const int kDefaultCycleLength = 28;
 /// Default period duration in days
 const int kDefaultPeriodDuration = 7;
 
+// ─── Period Duration Bounds (O7) ───
+
+/// Minimum period duration in days
+const int kMinPeriodDuration = 1;
+
+/// Maximum period duration in days
+const int kMaxPeriodDuration = 14;
+
 // ─── Interest Selection (O5) ───
 
 /// Minimum number of interests required for O5
@@ -34,7 +42,11 @@ const int kMinInterestSelections = 3;
 /// Maximum number of interests allowed for O5
 const int kMaxInterestSelections = 5;
 
-/// Returns today as date-only (no time component)
+/// Returns today as date-only (no time component).
+///
+/// NOTE: For critical date comparisons across multiple calls within the same
+/// operation, consider passing an explicit reference date to avoid edge cases
+/// around midnight boundaries.
 DateTime get todayDateOnly {
   final now = DateTime.now();
   return DateTime(now.year, now.month, now.day);

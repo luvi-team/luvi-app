@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
@@ -89,8 +88,7 @@ class OnboardingHeader extends StatelessWidget {
           Positioned.fill(
             child: Row(
               children: [
-                const SizedBox(width: Sizes.touchTargetMin),
-                const SizedBox(width: Spacing.s),
+                const SizedBox(width: Sizes.touchTargetMin + Spacing.s),
                 Expanded(
                   child: Center(
                     child: OnboardingProgressBar(
@@ -99,8 +97,7 @@ class OnboardingHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: Spacing.s),
-                const SizedBox(width: Sizes.touchTargetMin),
+                const SizedBox(width: Spacing.s + Sizes.touchTargetMin),
               ],
             ),
           ),
@@ -134,7 +131,7 @@ class OnboardingHeader extends StatelessWidget {
         stepLabel,
         textAlign: TextAlign.center,
         style: textTheme.bodySmall?.copyWith(
-          color: DsColors.grayscaleBlack,
+          color: colorScheme.onSurfaceVariant, // Theme-aware color
           fontSize: TypographyTokens.size14,
         ),
       ),
