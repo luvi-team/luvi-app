@@ -18,6 +18,9 @@ import '../../support/test_config.dart';
 /// (lib/features/splash/screens/splash_screen.dart:222-284).
 /// If the production UI changes, update this test widget to match.
 /// This is a deliberate test-only copy for isolated widget testing.
+// TODO(sync-check): Keep in sync with SplashScreen._buildUnknownUI
+// Sync checklist: Icon, title, body text, button styling, disabled states
+// Last synced: 2024-12 (consent-onboarding-refactor-v3)
 class _TestableUnknownUI extends StatefulWidget {
   const _TestableUnknownUI({required this.onSignOut});
 

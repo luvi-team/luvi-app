@@ -8,7 +8,7 @@ import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart
 // Point 11: Module-level test constants for route assertions
 const _testHomeRoute = HeuteScreen.routeName;
 const _testOnboardingRoute = Onboarding01Screen.routeName;
-const _testDefaultTarget = HeuteScreen.routeName; // Use canonical route constant
+const _testDefaultTarget = _testHomeRoute; // Alias: same destination, different test context
 const _testCurrentVersion = 1;
 
 /// Unit tests for the onboarding gate sync logic.

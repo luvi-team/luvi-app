@@ -109,8 +109,14 @@ void main() {
     await _pumpRing(tester, isSpinning: true);
     await tester.pump();
 
-    // Verify rotation Transform exists
-    expect(find.byType(Transform), findsWidgets);
+    // Find Transform widget with non-identity rotation matrix
+    // Note: Multiple Transforms may exist (e.g., FadeTransition uses Transform internally)
+    final rotationTransformFinder = find.byWidgetPredicate(
+      (widget) =>
+          widget is Transform && widget.transform != Matrix4.identity(),
+    );
+
+    expect(rotationTransformFinder, findsAtLeastNWidgets(1));
   });
 
   testWidgets('stops rotation when isSpinning is false', (tester) async {
