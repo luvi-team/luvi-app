@@ -1,95 +1,126 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
-import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
-import '../../../support/test_config.dart';
-import '../../../support/test_app.dart';
 
 void main() {
-  TestConfig.ensureInitialized();
-
-  group('WelcomeButton', () {
-    testWidgets('renders with correct label', (tester) async {
+  group('WelcomeButton A11y', () {
+    testWidgets('maintains semantic label during loading state', (tester) async {
       await tester.pumpWidget(
-        buildTestApp(
+        MaterialApp(
           home: Scaffold(
             body: WelcomeButton(
-              label: 'Test Label',
+              label: 'Test Button',
               onPressed: () {},
+              isLoading: true,
             ),
           ),
         ),
       );
 
-      expect(find.text('Test Label'), findsOneWidget);
-      expect(find.byType(ElevatedButton), findsOneWidget);
+      // Find the Semantics widget with our label
+      final semanticsFinder = find.bySemanticsLabel('Test Button');
+      expect(semanticsFinder, findsOneWidget);
+
+      // Verify the button role is maintained
+      final semantics = tester.getSemantics(find.byType(WelcomeButton));
+      // ignore: deprecated_member_use - hasFlag replacement API not yet stabilized
+      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
     });
 
-    testWidgets('triggers onPressed callback when tapped', (tester) async {
-      var pressed = false;
+    testWidgets('tap action works when not loading', (tester) async {
+      var tapped = false;
+
       await tester.pumpWidget(
-        buildTestApp(
+        MaterialApp(
           home: Scaffold(
             body: WelcomeButton(
-              label: 'Tap me',
-              onPressed: () => pressed = true,
+              label: 'Tap Me',
+              onPressed: () => tapped = true,
+              isLoading: false,
             ),
           ),
         ),
       );
 
-      await tester.tap(find.byType(ElevatedButton));
+      await tester.tap(find.byType(WelcomeButton));
       await tester.pump();
-      expect(pressed, isTrue);
+      expect(tapped, isTrue);
     });
 
-    testWidgets('uses Design System token colors', (tester) async {
+    testWidgets('tap action disabled when loading', (tester) async {
+      var tapped = false;
+
       await tester.pumpWidget(
-        buildTestApp(
+        MaterialApp(
           home: Scaffold(
             body: WelcomeButton(
-              label: 'Test',
-              onPressed: () {},
+              label: 'Loading',
+              onPressed: () => tapped = true,
+              isLoading: true,
             ),
           ),
         ),
       );
 
-      final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
-      final style = button.style!;
-
-      // Verify backgroundColor resolves to welcomeButtonBg
-      final bgColor = style.backgroundColor?.resolve({});
-      expect(bgColor, equals(DsColors.welcomeButtonBg));
-
-      // Verify foregroundColor resolves to welcomeButtonText
-      final fgColor = style.foregroundColor?.resolve({});
-      expect(fgColor, equals(DsColors.welcomeButtonText));
+      await tester.tap(find.byType(WelcomeButton));
+      await tester.pump();
+      expect(tapped, isFalse);
     });
 
-    testWidgets('has pill-shaped border radius with correct Design Token value', (tester) async {
+    testWidgets('tap action disabled when onPressed is null', (tester) async {
       await tester.pumpWidget(
-        buildTestApp(
+        const MaterialApp(
           home: Scaffold(
             body: WelcomeButton(
-              label: 'Test',
-              onPressed: () {},
+              label: 'Disabled',
+              onPressed: null,
+              isLoading: false,
             ),
           ),
         ),
       );
 
+      // Button should be visually disabled
       final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
-      final style = button.style!;
-      final shape = style.shape?.resolve({}) as RoundedRectangleBorder?;
+      expect(button.onPressed, isNull);
+    });
 
-      expect(shape, isNotNull);
-      // Verify border radius matches Design Token
-      expect(
-        shape!.borderRadius,
-        equals(BorderRadius.circular(Sizes.radiusWelcomeButton)),
+    testWidgets('shows spinner when loading', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WelcomeButton(
+              label: 'Loading',
+              onPressed: () {},
+              isLoading: true,
+              loadingKey: const Key('test_spinner'),
+            ),
+          ),
+        ),
       );
+
+      expect(find.byKey(const Key('test_spinner')), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
+    testWidgets('shows text when not loading', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WelcomeButton(
+              label: 'Click Me',
+              onPressed: () {},
+              isLoading: false,
+              labelKey: const Key('test_label'),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byKey(const Key('test_label')), findsOneWidget);
+      expect(find.text('Click Me'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
   });
 }

@@ -2,7 +2,8 @@
 
 This is the index for Codex (/status) and onboarding.
 
-This repository works with two active dev agents:
+This repository works with three active dev agents:
+- **Gemini** – Architect & Orchestrator for system-wide analysis, planning, and governance.
 - **Codex CLI** – Backend/API, Supabase/DB administration, Privacy/QA, and technical reviewer.
 - **Claude Code** – UI-Frontend & Dataviz (Flutter screens, widgets, charts) with GDPR awareness.
 
@@ -85,6 +86,7 @@ Role Selection
 
 ## Agent-Binding (Roles → Agents)
 
+- **architect-orchestrator** → Primary: Gemini, Review: Human
 - `ui-frontend` → Primary: Claude Code (Frontend/Dataviz), Review: Codex
 - `dataviz` → Primary: Claude Code, Review: Codex
 - `api-backend` → Primary: Codex

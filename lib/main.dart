@@ -27,10 +27,14 @@ import 'core/init/init_mode.dart' show initModeProvider;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 import 'core/init/init_diagnostics.dart';
 import 'core/init/supabase_deep_link_handler.dart';
+import 'features/consent/config/consent_config.dart';
 
 // TODO(arwin): Greptile status check smoke test
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Drift-Check: Verify ConsentConfig version constants are in sync (debug only)
+  ConsentConfig.assertVersionsMatch();
   // Portrait-only as default app orientation during development and MVP.
   // TODO(video-orientation): Register fullscreen routes in [RouteOrientationController.routeOverrides] when landscape is required.
   final orientationController = RouteOrientationController(

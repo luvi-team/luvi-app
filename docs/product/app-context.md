@@ -252,11 +252,12 @@ Langfristig kann LUVI diese Pipeline nutzen, um immer mehr Säulen in die Tiefe 
   - läuft an EU-Edge, stateless
   - keine PII-Persistenz in Prompts
 - **Agenten-Governance & Wissen (Archon/MCP):**
-  - zentrale, versionierte Wissensbasis:
-    - Phase-/Zyklus-Definitionen
-    - Consent-Texte
-    - Ranking-Regeln & Heuristiken
-  - KI-Tools greifen konsistent auf Archon zu
+  - Das Projekt wird von drei primären KI-Agenten entwickelt:
+    - **Gemini:** Architekt & Orchestrator für Systemplanung und Governance.
+    - **Codex:** Spezialist für Backend, Datenbank und Security-Reviews.
+    - **Claude Code:** Spezialist für das Flutter Frontend (UI/Dataviz).
+  - Ihre Zusammenarbeit und Rollen sind in `AGENTS.md` und `GEMINI.md`/`CLAUDE.md` definiert.
+  - **Archon/MCP** dient als zentrale, versionierte Wissensbasis (Single Source of Truth) für alle Agenten.
 - **LLM-Observability (Langfuse):**
   - protokolliert KI-Aufrufe (Prompts, Token/Kosten, Latenz)
   - hilft bei Qualitätssicherung & Kostenkontrolle

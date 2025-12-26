@@ -11,7 +11,6 @@ import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
-import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
@@ -313,7 +312,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       try {
         await service.bindUser(uid);
       } catch (e, st) {
-        log.e('bindUser failed for uid=$uid',
+        log.e('bindUser failed',
             tag: 'splash', error: sanitizeError(e), stack: st);
         // Abort navigation - user binding is critical for data isolation
         if (mounted) {
@@ -321,14 +320,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         }
         return;
       }
-    }
-
-    try {
-      await _flushPreAuthConsentIfNeeded(service);
-    } catch (e, st) {
-      log.w('flushPreAuthConsent failed',
-          tag: 'splash', error: sanitizeError(e), stack: st);
-      // Continue - consent flush is best-effort, not blocking
     }
 
     final localAcceptedVersion = service.acceptedConsentVersionOrNull;
@@ -365,27 +356,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         ? (remoteProfile?['has_seen_welcome'] as bool?)
         : null;
 
-    // Cache refresh: if server has a consent version, sync it locally.
-    if (remoteAcceptedVersion != null &&
-        (localAcceptedVersion == null ||
-            remoteAcceptedVersion > localAcceptedVersion)) {
-      try {
-        await service.setAcceptedConsentVersion(remoteAcceptedVersion);
-      } catch (e, st) {
-        log.w('local consent version sync failed',
-            tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
-      }
-    }
-
-    // Cache refresh: welcome seen is monotonic, so sync true -> local.
-    if (remoteHasSeenWelcome == true && localHasSeenWelcome != true) {
-      try {
-        await service.markWelcomeSeen();
-      } catch (e, st) {
-        log.w('local welcome sync failed',
-            tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
-      }
-    }
+    // Cache refresh: sync remote gates to local cache (P2.3 extracted)
+    await _syncRemoteCacheToLocal(
+      service: service,
+      remoteAcceptedVersion: remoteAcceptedVersion,
+      remoteHasSeenWelcome: remoteHasSeenWelcome,
+      localAcceptedVersion: localAcceptedVersion,
+      localHasSeenWelcome: localHasSeenWelcome,
+    );
 
     // Server is SSOT for consent: local cache must not bypass consent gating.
     final needsConsent = remoteAcceptedVersion == null ||
@@ -423,48 +401,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (!mounted || _hasNavigated) return;
 
-    // Determine final route using sealed class result
-    var gateResult = determineOnboardingGateRoute(
-      remoteGate: remoteGate,
+    // Evaluate onboarding gate with race-retry support (P2.3 extracted)
+    final gateResult = await _evaluateOnboardingGateWithRetry(
+      initialRemoteGate: remoteGate,
       localGate: localGate,
-      homeRoute: HeuteScreen.routeName,
+      useTimeout: useTimeout,
     );
 
-    // Race-retry: local true + remote false → wait briefly and re-fetch
-    // This handles race conditions where server hasn't synced yet
-    if (gateResult is RaceRetryNeeded) {
-      await Future<void>.delayed(widget.raceRetryDelay);
-      if (!mounted || _hasNavigated) return;
-
-      try {
-        remoteProfile =
-            await _fetchRemoteProfileWithRetry(useTimeout: useTimeout);
-        // Point 2: Preserve null semantics on race-retry as well
-        remoteGate = remoteProfile == null
-            ? null
-            : remoteProfile['has_completed_onboarding'] as bool?;
-      } catch (e, st) {
-        log.w('race-retry fetch failed',
-            tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
-      }
-
-      if (!mounted || _hasNavigated) return;
-
-      // Re-evaluate after race-retry
-      gateResult = determineOnboardingGateRoute(
-        remoteGate: remoteGate,
-        localGate: localGate,
-        homeRoute: HeuteScreen.routeName,
-      );
-
-      // If still RaceRetryNeeded after retry (remote still false, local true)
-      // → go to Onboarding. Server genuinely has false, not a race condition.
-      if (gateResult is RaceRetryNeeded) {
-        _hasNavigated = true;
-        context.go(Onboarding01Screen.routeName);
-        return;
-      }
-    }
+    if (!mounted || _hasNavigated) return;
 
     // Handle sealed class result with pattern matching
     switch (gateResult) {
@@ -480,63 +424,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           });
         }
       case RaceRetryNeeded():
-        // Already handled above, but included for exhaustiveness
+        // Already handled in _evaluateOnboardingGateWithRetry, but for exhaustiveness
         break;
-    }
-  }
-
-  Future<void> _flushPreAuthConsentIfNeeded(UserStateService service) async {
-    final preAuthVersion = service.preAuthAcceptedConsentVersionOrNull;
-    final preAuthScopes = service.preAuthConsentScopesOrNull;
-    final preAuthPolicyVersion = service.preAuthConsentPolicyVersionOrNull;
-    if (preAuthVersion == null ||
-        preAuthVersion < ConsentConfig.currentVersionInt ||
-        preAuthScopes == null ||
-        preAuthScopes.isEmpty) {
-      return;
-    }
-
-    // Best-effort flush: do not block navigation on failure.
-    try {
-      await ref.read(consentServiceProvider).accept(
-            version: preAuthPolicyVersion ?? ConsentConfig.currentVersion,
-            scopes: preAuthScopes,
-          );
-    } catch (e, st) {
-      log.w(
-        'preauth_consent_log_failed',
-        tag: 'splash',
-        error: sanitizeError(e) ?? e.runtimeType,
-        stack: st,
-      );
-    }
-
-    var upsertOk = false;
-    try {
-      await SupabaseService.upsertConsentGate(
-        acceptedConsentVersion: preAuthVersion,
-        markWelcomeSeen: true,
-      );
-      upsertOk = true;
-    } catch (e, st) {
-      log.w(
-        'preauth_consent_gate_upsert_failed',
-        tag: 'splash',
-        error: sanitizeError(e) ?? e.runtimeType,
-        stack: st,
-      );
-    }
-
-    if (!upsertOk) return;
-    try {
-      await service.clearPreAuthConsent();
-    } catch (e, st) {
-      log.w(
-        'preauth_consent_cache_clear_failed',
-        tag: 'splash',
-        error: sanitizeError(e) ?? e.runtimeType,
-        stack: st,
-      );
     }
   }
 
@@ -597,5 +486,88 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
           // No return value - proper void handling
         });
+  }
+
+  /// Syncs remote profile gates to local cache (P2.3 helper).
+  ///
+  /// Updates local consent version and welcome flag if remote has newer data.
+  /// Best-effort: failures are logged but not propagated.
+  Future<void> _syncRemoteCacheToLocal({
+    required UserStateService service,
+    required int? remoteAcceptedVersion,
+    required bool? remoteHasSeenWelcome,
+    required int? localAcceptedVersion,
+    required bool? localHasSeenWelcome,
+  }) async {
+    // Consent version sync: remote > local → update local
+    if (remoteAcceptedVersion != null &&
+        (localAcceptedVersion == null ||
+            remoteAcceptedVersion > localAcceptedVersion)) {
+      try {
+        await service.setAcceptedConsentVersion(remoteAcceptedVersion);
+      } catch (e, st) {
+        log.w('local consent version sync failed',
+            tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+      }
+    }
+
+    // Welcome sync: monotonic, true from remote → sync to local
+    if (remoteHasSeenWelcome == true && localHasSeenWelcome != true) {
+      try {
+        await service.markWelcomeSeen();
+      } catch (e, st) {
+        log.w('local welcome sync failed',
+            tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+      }
+    }
+  }
+
+  /// Evaluates onboarding gate with race-retry support (P2.3 helper).
+  ///
+  /// Returns the final [OnboardingGateResult] after handling race conditions.
+  /// If remote=false and local=true, waits briefly and re-fetches.
+  Future<OnboardingGateResult> _evaluateOnboardingGateWithRetry({
+    required bool? initialRemoteGate,
+    required bool? localGate,
+    required bool useTimeout,
+  }) async {
+    var remoteGate = initialRemoteGate;
+
+    var gateResult = determineOnboardingGateRoute(
+      remoteGate: remoteGate,
+      localGate: localGate,
+      homeRoute: HeuteScreen.routeName,
+    );
+
+    // Race-retry: local true + remote false → wait briefly and re-fetch
+    if (gateResult is RaceRetryNeeded) {
+      await Future<void>.delayed(widget.raceRetryDelay);
+      if (!mounted) return const StateUnknown();
+
+      try {
+        final remoteProfile =
+            await _fetchRemoteProfileWithRetry(useTimeout: useTimeout);
+        remoteGate = remoteProfile == null
+            ? null
+            : remoteProfile['has_completed_onboarding'] as bool?;
+      } catch (e, st) {
+        log.w('race-retry fetch failed',
+            tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+      }
+
+      // Re-evaluate after race-retry
+      gateResult = determineOnboardingGateRoute(
+        remoteGate: remoteGate,
+        localGate: localGate,
+        homeRoute: HeuteScreen.routeName,
+      );
+
+      // If still RaceRetryNeeded after retry → go to Onboarding
+      if (gateResult is RaceRetryNeeded) {
+        return RouteResolved(Onboarding01Screen.routeName);
+      }
+    }
+
+    return gateResult;
   }
 }

@@ -11,6 +11,7 @@
 - DB-Admin: Migrations & RLS-Policies & Docs; Kein service_role im Client
 - QA/DSGVO: Privacy-Review (docs/privacy/reviews/<id>.md)
 
-## Dual-Agent Review
-- PRs von Claude Code (`ui-frontend`, `dataviz`): Required Checks (Flutter CI analyze-test, privacy-gate, Greptile Review, Vercel Health) **plus** manuelles Codex-Review (Architektur, State, DSGVO) vor Merge.
-- PRs von Codex (`api-backend`, `db-admin`, `qa-dsgvo`): gleiche Required Checks + Greptile; optional Claude-Code-UI-Review, falls nicht-triviale UI-Anteile enthalten sind.
+## Multi-Agent Review
+- **Architect-Level (Gemini):** PRs von Gemini (`architect-orchestrator`), die Governance oder Architektur betreffen (z.B. ADRs, `bmad/global.md`), erfordern ein manuelles Review durch einen **Human Architect/Lead Dev**.
+- **Dual-Agent (Claude → Codex):** PRs von Claude Code (`ui-frontend`, `dataviz`) erfordern die Standard-CI-Checks **plus** ein manuelles Codex-Review (Architektur, State, DSGVO) vor dem Merge.
+- **Codex-Internal:** PRs von Codex (`api-backend`, `db-admin`, `qa-dsgvo`) erfordern die Standard-CI-Checks. Ein Review durch Claude Code ist optional, falls signifikante UI-Anteile betroffen sind.

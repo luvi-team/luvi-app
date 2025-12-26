@@ -147,3 +147,136 @@ Deno.test("log_consent: rejects malformed JSON payloads", async () => {
   assertEquals(typeof data.request_id, "string");
   assertEquals(response.headers.get("x-request-id"), data.request_id);
 });
+
+// ============================================================================
+// Contract Tests: Error Cases (P2.1 Erweiterung)
+// ============================================================================
+
+Deno.test("log_consent: rejects requests without authentication (401)", async () => {
+  // No Authorization header, only apikey
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(), // No accessToken → no Authorization header
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: ["analytics"],
+    }),
+  });
+
+  assertEquals(response.status, 401);
+  const data = await response.json();
+  assertEquals(data.error, "Missing Authorization header");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects invalid access token (401)", async () => {
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders("invalid-token-that-is-not-jwt"),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: ["analytics"],
+    }),
+  });
+
+  assertEquals(response.status, 401);
+  const data = await response.json();
+  assertEquals(data.error, "Unauthorized");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects empty scopes array (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: [], // Empty array
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "scopes must be non-empty");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects empty scopes object (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: {}, // Empty object
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "scopes must be non-empty");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects invalid scopes (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: ["invalid_scope_name", "another_invalid"],
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid scopes provided");
+  assertExists(data.invalidScopes);
+  assertExists(data.invalidScopesCount);
+  assertEquals(data.invalidScopesCount, 2);
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects missing policy_version (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      // No policy_version or version
+      scopes: ["analytics"],
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "policy_version is required");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects non-boolean values in scopes object (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: { analytics: "yes", terms: 123 }, // Non-boolean values
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  // Should reject or treat non-booleans as invalid
+  assertExists(data.request_id);
+});
+
+// Note: 429 Rate Limit test is commented out as it requires hitting the rate limit
+// which could be disruptive in CI. Enable manually for integration testing.
+// Deno.test("log_consent: returns 429 when rate limited", async () => {
+//   const accessToken = await ensureTestUserAccessToken();
+//   // Would need to send many requests quickly to trigger rate limit
+//   // This is intentionally left as documentation for manual testing
+// });

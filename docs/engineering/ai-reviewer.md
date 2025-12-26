@@ -184,20 +184,24 @@ After each PR:
 The goal is a reviewer that consistently surfaces **high-value issues** (bugs, risks, architectural smells) with minimal noise.
 
 ---
-## 8. Dual-Agent Review (Claude Code → Codex)
+## 8. Multi-Agent Review Workflow
 
-1. Claude Code erstellt einen PR für UI/Frontend-/Dataviz-Arbeit mit kurzer BMAD-slim-Zusammenfassung, relevanten Checklisten und Testnachweisen.
-2. CI läuft wie gewohnt (`Flutter CI / analyze-test`, `Flutter CI / privacy-gate`, `Vercel Preview Health`).
-3. `Greptile Review` wird automatisch ausgeführt und muss grün sein.
-4. Codex führt ein manuelles Review durch mit Fokus auf:
-   - Architektur-Konsistenz (GoRouter, Feature-First-Struktur, SSOT-Verlinkungen),
-   - State-Management/Riverpod (saubere Provider-Lifecycles, keine Leaks),
-   - DSGVO/Privacy (keine PII-Logs, kein `service_role`, Consent-Flows konsistent),
-   - Tests (≥1 Widget-Test für neue Screens/Komponenten, sinnvolle coverage),
-   - grundlegende A11y (Kontrast, Semantik, Touch-Targets).
-5. Merge erst, wenn **alle** Gates grün sind: CI + Greptile + Codex-Review.
+Der Review-Prozess ist je nach Autor des PRs unterschiedlich, um eine angemessene Kontrolle sicherzustellen.
 
-Optional: Falls ein Codex-PR nicht-triviale UI-Anteile enthält, kann Claude Code spiegelbildlich ein UI-Review durchführen (kein required gate, aber empfohlen).
+### Workflow 1: Gemini (Architect) → Human Review
+- **Autor:** Gemini
+- **Fokus:** Änderungen an der Governance (`*.md`-Dateien), Architektur (ADRs) oder systemweite Refactorings.
+- **Review-Prozess:** CI-Gates (`Greptile`) + ein zwingendes manuelles Review durch einen **Human Architect/Lead Dev**.
+
+### Workflow 2: Claude Code (Frontend) → Codex Review
+- **Autor:** Claude Code
+- **Fokus:** UI/Dataviz-Implementierungen.
+- **Review-Prozess:** CI-Gates (`Greptile`) + ein zwingendes manuelles Review durch **Codex** (fokussiert auf Architektur, State, DSGVO, Tests).
+
+### Workflow 3: Codex (Backend) → Peer Review
+- **Autor:** Codex
+- **Fokus:** Backend, DB, Privacy.
+- **Review-Prozess:** CI-Gates (`Greptile`). Ein optionales Review durch Claude Code wird empfohlen, falls die Änderungen sichtbare UI-Auswirkungen haben.
 
 ## 9. For Codex CLI (sole agent)
 

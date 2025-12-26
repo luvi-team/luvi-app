@@ -409,15 +409,24 @@ if (import.meta.main) {
   );
 
   if (invalidScopes.length > 0) {
+    // Defense: Clamp invalidScopes to prevent log bloat/noise from large payloads
+    const MAX_LOGGED_INVALID_SCOPES = 10;
+    const clampedInvalidScopes = invalidScopes.slice(0, MAX_LOGGED_INVALID_SCOPES);
     logMetric(requestId, "invalid", {
       reason: "invalid_scopes",
-      invalidScopes,
+      invalidScopes: clampedInvalidScopes,
+      invalidScopesCount: invalidScopes.length,
       ip_hash: ipHash,
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
     return new Response(
-      JSON.stringify({ error: "Invalid scopes provided", invalidScopes, request_id: requestId }),
+      JSON.stringify({
+        error: "Invalid scopes provided",
+        invalidScopes: clampedInvalidScopes,
+        invalidScopesCount: invalidScopes.length,
+        request_id: requestId,
+      }),
       {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },

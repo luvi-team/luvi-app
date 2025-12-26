@@ -232,7 +232,8 @@ final List<GoRoute> featureRoutes = [
     path: Onboarding07DurationScreen.routeName,
     name: 'onboarding_07_duration',
     builder: (ctx, st) {
-      final periodStart = st.extra as DateTime?;
+      // Defensiver Cast: Verhindert Crash bei falschem extra-Typ
+      final periodStart = st.extra is DateTime ? st.extra as DateTime : null;
       return Onboarding07DurationScreen(periodStartDate: periodStart);
     },
   ),
@@ -325,10 +326,12 @@ final List<GoRoute> featureRoutes = [
       final service = asyncValue.whenOrNull(data: (s) => s);
       final hasCompletedOnboarding = service?.hasCompletedOnboardingOrNull;
       final acceptedConsentVersion = service?.acceptedConsentVersionOrNull;
+      // State is known when service loaded AND onboarding state determined.
+      // Consent-null is semantically meaningful ("needs consent") and handled
+      // by homeGuardRedirectWithConsent directly - no Splash hop needed.
       final isStateKnown =
           service != null &&
-          hasCompletedOnboarding != null &&
-          acceptedConsentVersion != null;
+          hasCompletedOnboarding != null;
       return homeGuardRedirectWithConsent(
         isStateKnown: isStateKnown,
         hasCompletedOnboarding: hasCompletedOnboarding,

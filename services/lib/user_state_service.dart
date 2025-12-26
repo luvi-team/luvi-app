@@ -9,11 +9,6 @@ const _keyHasSeenWelcome = 'has_seen_welcome';
 const _keyHasCompletedOnboarding = 'has_completed_onboarding';
 const _keyFitnessLevel = 'onboarding_fitness_level';
 const _keyAcceptedConsentVersion = 'accepted_consent_version';
-// Pre-auth (device-scoped) consent cache for FTUE: Consent happens before auth.
-// Cleared after a successful post-auth flush to server SSOT.
-const _keyPreAuthAcceptedConsentVersion = 'preauth_accepted_consent_version';
-const _keyPreAuthConsentScopes = 'preauth_consent_scopes';
-const _keyPreAuthConsentPolicyVersion = 'preauth_consent_policy_version';
 
 enum FitnessLevel {
   beginner,
@@ -166,94 +161,6 @@ class UserStateService {
     return key == null ? null : prefs.getInt(key);
   }
 
-  /// Device-scoped pre-auth consent (FTUE).
-  ///
-  /// Used when users accept consent before signing in. After auth, Splash will
-  /// flush this to server SSOT (profiles + consent log) and clear it.
-  int? get preAuthAcceptedConsentVersionOrNull =>
-      prefs.getInt(_keyPreAuthAcceptedConsentVersion);
-
-  List<String>? get preAuthConsentScopesOrNull =>
-      prefs.getStringList(_keyPreAuthConsentScopes);
-
-  String? get preAuthConsentPolicyVersionOrNull =>
-      prefs.getString(_keyPreAuthConsentPolicyVersion);
-
-  Future<void> setPreAuthConsent({
-    required int acceptedConsentVersion,
-    required String policyVersion,
-    required List<String> scopes,
-  }) async {
-    if (acceptedConsentVersion <= 0) {
-      throw ArgumentError.value(
-        acceptedConsentVersion,
-        'acceptedConsentVersion',
-        'must be positive',
-      );
-    }
-    if (policyVersion.trim().isEmpty) {
-      throw ArgumentError.value(policyVersion, 'policyVersion', 'cannot be empty');
-    }
-    if (scopes.isEmpty) {
-      throw ArgumentError.value(scopes, 'scopes', 'must be non-empty');
-    }
-
-    // Track which keys were written for rollback on failure
-    final writtenKeys = <String>[];
-
-    try {
-      final ok1 = await prefs.setInt(
-        _keyPreAuthAcceptedConsentVersion,
-        acceptedConsentVersion,
-      );
-      if (!ok1) throw StateError('Failed to write consent version');
-      writtenKeys.add(_keyPreAuthAcceptedConsentVersion);
-
-      final ok2 = await prefs.setString(
-        _keyPreAuthConsentPolicyVersion,
-        policyVersion,
-      );
-      if (!ok2) throw StateError('Failed to write policy version');
-      writtenKeys.add(_keyPreAuthConsentPolicyVersion);
-
-      final ok3 = await prefs.setStringList(_keyPreAuthConsentScopes, scopes);
-      if (!ok3) throw StateError('Failed to write consent scopes');
-      writtenKeys.add(_keyPreAuthConsentScopes);
-      // Success - all written
-    } catch (e) {
-      // Rollback: remove any keys that were successfully written
-      for (final key in writtenKeys) {
-        try {
-          await prefs.remove(key);
-        } catch (_) {
-          // Best-effort rollback, ignore failures
-        }
-      }
-      rethrow;
-    }
-  }
-
-  Future<void> clearPreAuthConsent() async {
-    try {
-      await prefs.remove(_keyPreAuthAcceptedConsentVersion);
-    } catch (e, stack) {
-      log.w('Failed to remove $_keyPreAuthAcceptedConsentVersion',
-          error: e, stack: stack);
-    }
-    try {
-      await prefs.remove(_keyPreAuthConsentPolicyVersion);
-    } catch (e, stack) {
-      log.w('Failed to remove $_keyPreAuthConsentPolicyVersion',
-          error: e, stack: stack);
-    }
-    try {
-      await prefs.remove(_keyPreAuthConsentScopes);
-    } catch (e, stack) {
-      log.w('Failed to remove $_keyPreAuthConsentScopes',
-          error: e, stack: stack);
-    }
-  }
-
   Future<void> setHasCompletedOnboarding(bool value) async {
     final key = _scopedKey(_keyHasCompletedOnboarding);
     if (key == null) {
@@ -329,11 +236,8 @@ class UserStateService {
         try {
           await prefs.remove(completedKey);
         } catch (e) {
-          // Best-effort log without depending on Flutter; keep service pure Dart.
-          // ignore: avoid_print
-          print(
-            '[UserStateService] Rollback failed during markOnboardingComplete: $e',
-          );
+          log.w('Rollback failed during markOnboardingComplete',
+              tag: 'UserStateService', error: e);
         }
         throw StateError('Failed to persist fitness level');
       }
@@ -342,11 +246,8 @@ class UserStateService {
       try {
         await prefs.remove(completedKey);
       } catch (rollbackErr) {
-        // Best-effort log without depending on Flutter; keep service pure Dart.
-        // ignore: avoid_print
-        print(
-          '[UserStateService] Rollback failed during markOnboardingComplete: $rollbackErr',
-        );
+        log.w('Rollback failed during markOnboardingComplete',
+            tag: 'UserStateService', error: rollbackErr);
       }
       // Rethrow original error (preserve type if StateError, otherwise wrap)
       if (e is StateError) {

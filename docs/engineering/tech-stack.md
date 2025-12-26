@@ -27,9 +27,17 @@
 
 ### 1.2 AI-Coding (Primary & Review)
 
+- **Gemini**  
+  **Funktion:** Primärer Agent für Architektur, Orchestrierung und systemweite Analysen. Erstellt Epics und pflegt Governance-Dokumente.
+  **Einsatz:** Planung, System-Analyse, Refactoring-Strategien.
+
 - **Codex CLI**  
-  **Funktion:** Primärer AI-Code-Assistent (Plan & Review, BMAD → PRP, Multi-File/Migrations).  
-  **Einsatz:** Daily Dev + Planung/Refactor; formales PR-Review via **Greptile Review** (Required Check); optional lokaler CodeRabbit-Preflight vor dem Push (Details: `docs/engineering/ai-reviewer.md`).
+  **Funktion:** Spezialisierter AI-Code-Assistent für Backend, DB und Privacy. Fungiert als Review-Agent für Frontend-PRs.
+  **Einsatz:** Daily Dev + Planung/Refactor (Backend/DB); formales PR-Review via **Greptile Review** (Required Check).
+
+- **Claude Code**  
+  **Funktion:** Spezialisierter AI-Agent für das Flutter-Frontend (UI und DataViz).
+  **Einsatz:** Implementierung von Screens, Widgets und Charts gemäß `CLAUDE.md`.
 
 - **CodeRabbit (nur lokal)**  
   **Funktion:** Lokales Pre-PR-Review (CLI/IDE).  
@@ -163,7 +171,9 @@
 
 | Tool/Komponente                 | Kategorie        | Status             | Funktion/Kernnutzen                                  | Herkunft   |
 |---------------------------------|------------------|--------------------|------------------------------------------------------|-----------|
-| **Codex CLI**                   | Dev-AI           | Bestätigt          | Agentisches Coding (daily driver)                    | Video     |
+| **Gemini**                      | Dev-AI (Arch)    | Neu                | Architektur & Orchestrierung, Planung                | Session   |
+| **Codex CLI**                   | Dev-AI (Back)    | Bestätigt          | Agentisches Coding (Backend/DB/Privacy)              | Video     |
+| **Claude Code**                 | Dev-AI (Front)   | Bestätigt          | UI/Dataviz Implementierung                           | Session   |
 | **Archon (MCP)**                | Knowledge/SSOT   | Neu                | Dossiers/Policies + MCP-Bridge für AI-Kontext        | Video     |
 | **Langfuse**                    | LLM Observability| Neu                | Traces/Costs/Latency/Evals                           | Video     |
 | **Supabase (EU) + pgvector**    | DB/Auth          | Beibehalten        | SQL + Vektor + RLS                                   | Baseline  |

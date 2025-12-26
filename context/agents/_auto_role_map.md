@@ -5,6 +5,7 @@ Zentraler Keyword→Rollen‑Match für Auto‑Role in Codex CLI.
 Operativer Prozess: BMAD → PRP.
 
 ## Keyword‑Mapping
+- architect-orchestrator: Architecture, Governance, Planning, Epic, Refactoring, System, Orchestration, Architektur, Planung, Roadmap, Struktur
 - ui-frontend: Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter, Bildschirm, Ansicht, Oberfläche, Design
 - api-backend: Edge Function, Service, API, Backend, Consent-Log, Webhook, Rate-Limit, Gateway, Endpunkt, Schnittstelle, Server
 - db-admin: RLS, Migration, SQL, Supabase, Policy, Trigger, Database, Schema, Postgres, Datenbank, Tabelle, View, Richtlinie
@@ -12,6 +13,7 @@ Operativer Prozess: BMAD → PRP.
 - qa-dsgvo: Privacy, DSGVO, Review, Compliance, PII, Consent, GDPR, Data-Protection, Audit, Datenschutz, Einwilligung, Pruefung, Prüfung
 
 ## Priorität bei Multi‑Match
+- P0 (Strategic): architect-orchestrator (Governance/Architektur)
 - P1 (höchste): db-admin (Security/RLS), qa-dsgvo (DSGVO/Privacy)
 - P2 (mittel): api-backend (Backend‑Logik)
 - P3 (niedrig): ui-frontend, dataviz (UI/Visualization)
@@ -28,6 +30,7 @@ Operativer Prozess: BMAD → PRP.
 
 | Rolle        | Primary Agent |
 |--------------|---------------|
+| architect-orchestrator | Gemini |
 | ui-frontend  | Claude Code   |
 | dataviz      | Claude Code   |
 | api-backend  | Codex         |

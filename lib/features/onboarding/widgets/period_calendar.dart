@@ -9,6 +9,25 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
+/// Configuration record for _DayCell to reduce parameter bloat.
+/// Groups 11 parameters into a single immutable config object.
+typedef DayCellConfig = ({
+  // Date state
+  DateTime date,
+  DateTime today,
+  bool isSelected,
+  bool isPeriodDay,
+  bool isPeriodEnd,
+  // Interaction
+  bool allowSelection,
+  bool allowPeriodEndAdjustment,
+  VoidCallback onTap,
+  // Theme
+  ColorScheme colorScheme,
+  TextTheme textTheme,
+  CyclePhaseTokens? phaseTokens,
+});
+
 /// A scrollable month-grid calendar for period tracking in onboarding.
 /// Figma: Shows multiple months with selectable days.
 class PeriodCalendar extends StatefulWidget {
@@ -360,21 +379,23 @@ class _MonthGrid extends StatelessWidget {
 
               final date = DateTime(month.year, month.month, dayNumber);
               return _DayCell(
-                date: date,
-                today: today,
-                isSelected: _isSameDay(date, selectedDate),
-                isPeriodDay: _isPeriodDay(date),
-                isPeriodEnd: _isSameDay(date, periodEndDate),
-                // End-Adjust mode: Only allow valid range (1-14 days from start)
-                // Start-Select mode: Only allow past dates
-                allowSelection: allowPeriodEndAdjustment
-                    ? _isInValidPeriodEndRange(date)
-                    : !date.isAfter(today),
-                allowPeriodEndAdjustment: allowPeriodEndAdjustment,
-                onTap: () => _handleDayTap(date),
-                colorScheme: colorScheme,
-                textTheme: textTheme,
-                phaseTokens: phaseTokens,
+                config: (
+                  date: date,
+                  today: today,
+                  isSelected: _isSameDay(date, selectedDate),
+                  isPeriodDay: _isPeriodDay(date),
+                  isPeriodEnd: _isSameDay(date, periodEndDate),
+                  // End-Adjust mode: Only allow valid range (1-14 days from start)
+                  // Start-Select mode: Only allow past dates
+                  allowSelection: allowPeriodEndAdjustment
+                      ? _isInValidPeriodEndRange(date)
+                      : !date.isAfter(today),
+                  allowPeriodEndAdjustment: allowPeriodEndAdjustment,
+                  onTap: () => _handleDayTap(date),
+                  colorScheme: colorScheme,
+                  textTheme: textTheme,
+                  phaseTokens: phaseTokens,
+                ),
               );
             }),
           ),
@@ -419,51 +440,30 @@ class _MonthGrid extends StatelessWidget {
 }
 
 class _DayCell extends StatelessWidget {
-  const _DayCell({
-    required this.date,
-    required this.today,
-    required this.isSelected,
-    required this.isPeriodDay,
-    required this.isPeriodEnd,
-    required this.allowSelection,
-    required this.allowPeriodEndAdjustment,
-    required this.onTap,
-    required this.colorScheme,
-    required this.textTheme,
-    required this.phaseTokens,
-  });
+  const _DayCell({required this.config});
 
-  final DateTime date;
-  final DateTime today;
-  final bool isSelected;
-  final bool isPeriodDay;
-  final bool isPeriodEnd;
-  final bool allowSelection;
-  final bool allowPeriodEndAdjustment;
-  final VoidCallback onTap;
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
-  final CyclePhaseTokens? phaseTokens;
+  /// Single config record replaces 11 individual parameters (P2.2 refactor).
+  final DayCellConfig config;
 
   bool get _isToday =>
-      date.year == today.year &&
-      date.month == today.month &&
-      date.day == today.day;
+      config.date.year == config.today.year &&
+      config.date.month == config.today.month &&
+      config.date.day == config.today.day;
 
   @override
   Widget build(BuildContext context) {
     final periodColor = DsColors.signature;
-    final showPeriodCircle = isPeriodDay || isSelected;
+    final showPeriodCircle = config.isPeriodDay || config.isSelected;
 
     return Semantics(
       label: _buildSemanticLabel(context),
-      button: allowSelection,
-      selected: isSelected,
+      button: config.allowSelection,
+      selected: config.isSelected,
       child: InkResponse(
-        onTap: allowSelection
+        onTap: config.allowSelection
             ? () {
                 HapticFeedback.lightImpact();
-                onTap();
+                config.onTap();
               }
             : null,
         radius: 24,
@@ -491,14 +491,15 @@ class _DayCell extends StatelessWidget {
                     : null,
                 alignment: Alignment.center,
                 child: Text(
-                  date.day.toString(),
-                  style: textTheme.bodyMedium?.copyWith(
+                  config.date.day.toString(),
+                  style: config.textTheme.bodyMedium?.copyWith(
                     // Figma v3: Red text for selected/period days
-                    color: (isSelected || isPeriodDay)
+                    color: (config.isSelected || config.isPeriodDay)
                         ? DsColors.signature
-                        : allowSelection
-                            ? colorScheme.onSurface
-                            : colorScheme.onSurface.withValues(alpha: 0.3),
+                        : config.allowSelection
+                            ? config.colorScheme.onSurface
+                            : config.colorScheme.onSurface
+                                .withValues(alpha: 0.3),
                     fontWeight: _isToday ? FontWeight.bold : FontWeight.normal,
                     fontSize: TypographyTokens.size14,
                     // Stabilize vertical alignment across all day cells
@@ -540,18 +541,18 @@ class _DayCell extends StatelessWidget {
     String dayLabel;
     try {
       final locale = Localizations.localeOf(context).toLanguageTag();
-      dayLabel = DateFormat('d. MMMM yyyy', locale).format(date);
+      dayLabel = DateFormat('d. MMMM yyyy', locale).format(config.date);
     } catch (e) {
       // Fallback for malformed locale or date (FormatException, ArgumentError)
-      dayLabel = date.toIso8601String().split('T').first;
+      dayLabel = config.date.toIso8601String().split('T').first;
     }
     if (_isToday) {
       return '${l10n.periodCalendarSemanticToday}, $dayLabel';
     }
-    if (isSelected) {
+    if (config.isSelected) {
       return '$dayLabel, ${l10n.periodCalendarSemanticSelected}';
     }
-    if (isPeriodDay) {
+    if (config.isPeriodDay) {
       return '$dayLabel, ${l10n.periodCalendarSemanticPeriodDay}';
     }
     return dayLabel;

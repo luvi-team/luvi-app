@@ -485,13 +485,6 @@ void main() {
         when(() => mockUserStateService.markWelcomeSeen()).thenAnswer((_) async {});
         when(() => mockUserStateService.setAcceptedConsentVersion(any()))
             .thenAnswer((_) async {});
-        when(
-          () => mockUserStateService.setPreAuthConsent(
-            acceptedConsentVersion: any(named: 'acceptedConsentVersion'),
-            policyVersion: any(named: 'policyVersion'),
-            scopes: any(named: 'scopes'),
-          ),
-        ).thenAnswer((_) async {});
 
         final router = GoRouter(
           initialLocation: '/consent/options',

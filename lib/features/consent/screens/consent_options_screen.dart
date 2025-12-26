@@ -411,10 +411,9 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     } on ConsentException catch (error) {
       if (!context.mounted) return;
       if (error.code == 'unauthorized' || error.statusCode == 401) {
-        // FTUE: Consent happens before auth; defer server log until after login.
-        await _cachePreAuthConsent(ref, scopes: scopes);
+        // Session abgelaufen → User zu Auth redirecten
         if (!context.mounted) return;
-        _navigateAfterConsent(context);
+        context.go(AuthSignInScreen.routeName);
         return;
       }
       final message = switch (error.code) {
@@ -513,7 +512,8 @@ class _ConsentCheckboxRow extends StatelessWidget {
         },
         borderRadius: BorderRadius.circular(Sizes.radiusM),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: Spacing.xs),
+          // A11y-Fix: Mindesthöhe ≥44px (WCAG/iOS HIG) statt ~32px mit Spacing.xs
+          padding: EdgeInsets.symmetric(vertical: Spacing.m),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -717,23 +717,3 @@ void _reportUnexpectedConsentError(
   _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
 }
 
-Future<void> _cachePreAuthConsent(
-  WidgetRef ref, {
-  required List<String> scopes,
-}) async {
-  try {
-    final userState = await ref.read(userStateServiceProvider.future);
-    await userState.setPreAuthConsent(
-      acceptedConsentVersion: ConsentConfig.currentVersionInt,
-      policyVersion: ConsentConfig.currentVersion,
-      scopes: scopes,
-    );
-  } catch (error, stackTrace) {
-    log.w(
-      'consent_preauth_cache_failed',
-      tag: 'consent_options',
-      error: sanitizeError(error) ?? error.runtimeType,
-      stack: stackTrace,
-    );
-  }
-}

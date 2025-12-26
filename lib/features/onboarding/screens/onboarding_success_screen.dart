@@ -23,6 +23,7 @@ import 'package:luvi_app/features/onboarding/widgets/circular_progress_ring.dart
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/data/onboarding_backend_writer.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart' as services;
 
@@ -103,143 +104,147 @@ class _OnboardingSuccessScreenState
     _performSave();
   }
 
+  /// Main save pipeline (P2.3b refactor).
+  ///
+  /// Phases: Validate → Auth Check → Backend Save → Local Save → Navigate
   Future<void> _performSave() async {
     try {
-      // Read all onboarding data from OnboardingNotifier
-      final onboardingData = ref.read(onboardingProvider);
+      // Phase 1: Validate onboarding data
+      final validationResult = _validateOnboardingData();
+      if (validationResult == null) return; // Error state already set
+      final (onboardingData, fitnessLevelId, localFitnessLevel) =
+          validationResult;
 
-      // Backend-SSOT: Validate data completeness FIRST (no fallback values)
-      if (!onboardingData.isComplete) {
-        log.w(
-          'onboarding_data_incomplete',
-          tag: 'onboarding_success',
-          error: 'Onboarding data is incomplete. Cannot proceed.',
-        );
-        if (mounted) {
-          setState(() {
-            _state = O9AnimationState.error;
-          });
-        }
-        return;
-      }
-
-      final fitnessLevelId = onboardingData.fitnessLevel?.id;
-      if (fitnessLevelId == null) {
-        log.w(
-          'onboarding_invalid_fitness_level_id',
-          tag: 'onboarding_success',
-          error: kErrOnboardingFitnessLevelUnknown,
-        );
-        if (mounted) {
-          setState(() {
-            _state = O9AnimationState.error;
-          });
-        }
-        return;
-      }
-
-      final localFitnessLevel = services.FitnessLevel.tryParse(fitnessLevelId);
-      if (localFitnessLevel == null ||
-          localFitnessLevel == services.FitnessLevel.unknown) {
-        log.w(
-          'onboarding_invalid_fitness_level',
-          tag: 'onboarding_success',
-          error: kErrOnboardingFitnessLevelUnknown,
-        );
-        if (mounted) {
-          setState(() {
-            _state = O9AnimationState.error;
-          });
-        }
-        return;
-      }
-
-      // Backend-SSOT: User MUST be authenticated to complete onboarding
+      // Phase 2: Auth check with redirect (P2.3b "Back to Auth" path)
       final backendWriter = ref.read(onboardingBackendWriterProvider);
-
-      // Block unauthenticated users from completing onboarding
       if (!backendWriter.isAuthenticated) {
         log.w(
           'onboarding_not_authenticated',
           tag: 'onboarding_success',
-          error: 'User not authenticated. Cannot complete onboarding.',
+          error: 'User not authenticated. Redirecting to auth.',
         );
         if (mounted) {
-          setState(() {
-            _state = O9AnimationState.error;
-          });
+          // P2.3b: Redirect to auth instead of showing error
+          context.go(AuthSignInScreen.routeName);
         }
         return;
       }
 
-      // Authenticated user - backend save MUST succeed
+      // Phase 3: Backend save (must succeed before local)
       final supabaseSuccess =
           await _saveToSupabase(onboardingData, backendWriter, fitnessLevelId);
       if (!supabaseSuccess) {
-        // Backend save failed - do NOT mark local as complete
         log.w(
           'onboarding_backend_save_failed',
           tag: 'onboarding_success',
           error: 'Backend save failed. Local completion blocked.',
         );
-        if (mounted) {
-          setState(() {
-            _state = O9AnimationState.error;
-          });
-        }
+        _setErrorState();
         return;
       }
 
-      // Local save (only after successful backend save for authenticated users)
-      final userState = await tryOrNullAsync(
-        () => ref.read(services.userStateServiceProvider.future),
-        tag: 'userState',
-      );
-
-      if (userState == null) {
-        log.w(
-          'onboarding_user_state_unavailable',
-          tag: 'onboarding_success',
-          error: 'Cannot complete onboarding: user state service unavailable',
-        );
-        if (mounted) {
-          setState(() {
-            _state = O9AnimationState.error;
-          });
-        }
-        return;
-      }
-
-      final uid = SupabaseService.currentUser?.id;
-      if (uid != null) {
-        await userState.bindUser(uid);
-      }
-
-      await userState.markOnboardingComplete(
-        fitnessLevel: localFitnessLevel,
-      );
-
-      if (mounted) {
-        setState(() {
-          _state = O9AnimationState.success;
-        });
-        // Navigate to home after short delay
-        await Future.delayed(kOnboardingNavigationDelay);
-        if (mounted) {
-          context.go(HeuteScreen.routeName);
-        }
-      }
+      // Phase 4: Local save + navigation
+      await _performLocalSaveAndNavigate(localFitnessLevel);
     } catch (error, stackTrace) {
       log.e(
         'onboarding_mark_complete_failed',
         error: sanitizeError(error) ?? error.runtimeType,
         stack: stackTrace,
       );
+      _setErrorState();
+    }
+  }
+
+  /// Validates onboarding data completeness (P2.3b helper).
+  ///
+  /// Returns tuple of (data, fitnessLevelId, localFitnessLevel) on success,
+  /// or null if validation fails (error state is set internally).
+  (OnboardingData, String, services.FitnessLevel)? _validateOnboardingData() {
+    final onboardingData = ref.read(onboardingProvider);
+
+    // Backend-SSOT: Validate data completeness FIRST (no fallback values)
+    if (!onboardingData.isComplete) {
+      log.w(
+        'onboarding_data_incomplete',
+        tag: 'onboarding_success',
+        error: 'Onboarding data is incomplete. Cannot proceed.',
+      );
+      _setErrorState();
+      return null;
+    }
+
+    final fitnessLevelId = onboardingData.fitnessLevel?.id;
+    if (fitnessLevelId == null) {
+      log.w(
+        'onboarding_invalid_fitness_level_id',
+        tag: 'onboarding_success',
+        error: kErrOnboardingFitnessLevelUnknown,
+      );
+      _setErrorState();
+      return null;
+    }
+
+    final localFitnessLevel = services.FitnessLevel.tryParse(fitnessLevelId);
+    if (localFitnessLevel == null ||
+        localFitnessLevel == services.FitnessLevel.unknown) {
+      log.w(
+        'onboarding_invalid_fitness_level',
+        tag: 'onboarding_success',
+        error: kErrOnboardingFitnessLevelUnknown,
+      );
+      _setErrorState();
+      return null;
+    }
+
+    return (onboardingData, fitnessLevelId, localFitnessLevel);
+  }
+
+  /// Performs local state save and navigates to home (P2.3b helper).
+  Future<void> _performLocalSaveAndNavigate(
+    services.FitnessLevel localFitnessLevel,
+  ) async {
+    final userState = await tryOrNullAsync(
+      () => ref.read(services.userStateServiceProvider.future),
+      tag: 'userState',
+    );
+
+    if (userState == null) {
+      log.w(
+        'onboarding_user_state_unavailable',
+        tag: 'onboarding_success',
+        error: 'Cannot complete onboarding: user state service unavailable',
+      );
+      _setErrorState();
+      return;
+    }
+
+    final uid = SupabaseService.currentUser?.id;
+    if (uid != null) {
+      await userState.bindUser(uid);
+    }
+
+    await userState.markOnboardingComplete(
+      fitnessLevel: localFitnessLevel,
+    );
+
+    if (mounted) {
+      setState(() {
+        _state = O9AnimationState.success;
+      });
+      // Navigate to home after short delay
+      await Future.delayed(kOnboardingNavigationDelay);
       if (mounted) {
-        setState(() {
-          _state = O9AnimationState.error;
-        });
+        context.go(HeuteScreen.routeName);
       }
+    }
+  }
+
+  /// Sets error state if widget is still mounted.
+  void _setErrorState() {
+    if (mounted) {
+      setState(() {
+        _state = O9AnimationState.error;
+      });
     }
   }
 
