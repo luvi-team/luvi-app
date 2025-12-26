@@ -143,6 +143,30 @@ void main() {
         );
       });
 
+      test('redirects Welcome routes to AuthSignIn without session', () {
+        when(() => mockState.matchedLocation).thenReturn('/onboarding/w1');
+
+        final result = supabaseRedirectWithSession(mockContext, mockState);
+
+        expect(
+          result,
+          equals(AuthSignInScreen.routeName),
+          reason: 'Welcome routes without session should redirect to AuthSignIn',
+        );
+      });
+
+      test('redirects Consent routes to AuthSignIn without session', () {
+        when(() => mockState.matchedLocation).thenReturn('/consent/02');
+
+        final result = supabaseRedirectWithSession(mockContext, mockState);
+
+        expect(
+          result,
+          equals(AuthSignInScreen.routeName),
+          reason: 'Consent routes without session should redirect to AuthSignIn',
+        );
+      });
+
       test('redirects unknown route to AuthSignIn without session', () {
         when(() => mockState.matchedLocation).thenReturn('/unknown/route');
 
@@ -163,22 +187,6 @@ void main() {
         final result = supabaseRedirectWithSession(mockContext, mockState);
 
         expect(result, isNull, reason: 'Splash should always be allowed');
-      });
-
-      test('allows Welcome routes without session', () {
-        when(() => mockState.matchedLocation).thenReturn('/onboarding/w1');
-
-        final result = supabaseRedirectWithSession(mockContext, mockState);
-
-        expect(result, isNull, reason: 'Welcome routes should always be allowed');
-      });
-
-      test('allows Consent routes without session', () {
-        when(() => mockState.matchedLocation).thenReturn('/consent/02');
-
-        final result = supabaseRedirectWithSession(mockContext, mockState);
-
-        expect(result, isNull, reason: 'Consent routes should always be allowed');
       });
 
       test('allows PasswordRecovery without session', () {

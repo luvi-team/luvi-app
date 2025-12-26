@@ -38,8 +38,7 @@ The following data is provided for your analysis:
 
 **Output File Path** where your final JSON output must be written:
 ```
-!{echo  $GITHUB_ENV}
-```
+!{echo $GITHUB_ENV}
 
 ## Execution Workflow
 

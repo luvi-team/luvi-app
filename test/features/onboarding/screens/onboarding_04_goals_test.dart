@@ -184,5 +184,39 @@ void main() {
         expect(find.text('O5 Interests'), findsNothing);
       },
     );
+
+    testWidgets(
+      'subtitle uses ExcludeSemantics to prevent duplicate announcement',
+      (tester) async {
+        await tester.pumpWidget(buildTestApp());
+        await tester.pumpAndSettle();
+
+        // Get l10n from context (pattern from codebase)
+        final screenContext =
+            tester.element(find.byType(Onboarding04GoalsScreen));
+        final l10n = AppLocalizations.of(screenContext);
+        expect(l10n, isNotNull, reason: 'AppLocalizations must be available');
+
+        // Find Semantics widget with subtitle label
+        final subtitleSemantics = find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.label == l10n!.onboarding04GoalsSubtitle,
+        );
+
+        expect(subtitleSemantics, findsOneWidget,
+            reason: 'Subtitle should have Semantics wrapper with label');
+
+        // Find ExcludeSemantics widget that wraps the subtitle Text
+        final excludeSemanticsInSubtitle = find.descendant(
+          of: subtitleSemantics,
+          matching: find.byType(ExcludeSemantics),
+        );
+
+        expect(excludeSemanticsInSubtitle, findsOneWidget,
+            reason:
+                'Subtitle should wrap Text in ExcludeSemantics to prevent duplicate announcement');
+      },
+    );
   });
 }

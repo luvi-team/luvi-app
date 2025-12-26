@@ -410,8 +410,6 @@ String? supabaseRedirectWithSession(
   final isSigningUp = state.matchedLocation.startsWith(AuthSignupScreen.routeName);
   final isResettingPassword = state.matchedLocation.startsWith(ResetPasswordScreen.routeName);
   final isOnboarding = isOnboardingRoute(state.matchedLocation);
-  final isWelcome = isWelcomeRoute(state.matchedLocation);
-  final isConsent = isConsentRoute(state.matchedLocation);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
   final isPasswordRecoveryRoute =
@@ -438,10 +436,6 @@ String? supabaseRedirectWithSession(
   }
 
   if (isPasswordRecoveryRoute || isPasswordSuccessRoute) {
-    return null;
-  }
-
-  if (isWelcome || isConsent) {
     return null;
   }
 

@@ -32,7 +32,7 @@ class CustomRadioCheck extends StatelessWidget {
               child: Container(
                 width: 14,
                 height: 14,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: color,
                 ),

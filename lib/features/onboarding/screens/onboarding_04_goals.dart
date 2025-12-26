@@ -107,13 +107,15 @@ class _Onboarding04GoalsScreenState extends ConsumerState<Onboarding04GoalsScree
   ) {
     return Semantics(
       label: l10n.onboarding04GoalsSubtitle,
-      child: Text(
-        l10n.onboarding04GoalsSubtitle,
-        textAlign: TextAlign.center,
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurface,
-          fontSize: TypographyTokens.size16,
-          height: TypographyTokens.lineHeightRatio24on16,
+      child: ExcludeSemantics(
+        child: Text(
+          l10n.onboarding04GoalsSubtitle,
+          textAlign: TextAlign.center,
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontSize: TypographyTokens.size16,
+            height: TypographyTokens.lineHeightRatio24on16,
+          ),
         ),
       ),
     );

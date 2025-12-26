@@ -15,6 +15,7 @@ import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/period_calendar.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Onboarding07: Period duration adjustment screen (O7)
@@ -126,10 +127,10 @@ class _Onboarding07DurationScreenState
     if (_periodStart == null) return;
     if (newEndDate.isBefore(_periodStart!)) return;
 
-    // Limit period duration to maximum 14 days
+    // Limit period duration to maximum allowed days
     // Note: minimum 1 day is guaranteed by the isBefore check above
     final duration = newEndDate.difference(_periodStart!).inDays + 1;
-    if (duration > 14) return;
+    if (duration > kMaxPeriodDuration) return;
 
     setState(() {
       _periodEnd = newEndDate;

@@ -7,7 +7,7 @@ This repository works with three active dev agents:
 - **Codex CLI** – Backend/API, Supabase/DB administration, Privacy/QA, and technical reviewer.
 - **Claude Code** – UI-Frontend & Dataviz (Flutter screens, widgets, charts) with GDPR awareness.
 
-Both agents share the same SSOT sources: `AGENTS.md`, `context/agents/*` including `01–05`, `_acceptance_v1.1.md`, BMAD (`docs/bmad/global.md` + Sprint BMADs), `docs/product/app-context.md`, `docs/product/roadmap.md`, `docs/engineering/assistant-answer-format.md`, `docs/engineering/ai-reviewer.md`.
+All three agents share the same SSOT sources: `AGENTS.md`, `context/agents/*` including `01–05`, `_acceptance_v1.1.md`, BMAD (`docs/bmad/global.md` + Sprint BMADs), `docs/product/app-context.md`, `docs/product/roadmap.md`, `docs/engineering/assistant-answer-format.md`, `docs/engineering/ai-reviewer.md`.
 
 Scope & Usage: Applies from repo root recursively; Default Auto-Role; Mixed tasks via `role: …`; SSOT Acceptance v1.1.
 

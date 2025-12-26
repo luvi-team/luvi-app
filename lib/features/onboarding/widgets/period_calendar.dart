@@ -7,7 +7,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
 /// Configuration record for _DayCell to reduce parameter bloat.
 /// Groups 11 parameters into a single immutable config object.
@@ -326,7 +326,7 @@ class _MonthGrid extends StatelessWidget {
   }
 
   Widget _buildWeekdayHeaders(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.l10n;
     final weekdays = [
       l10n.weekdayMondayShort,
       l10n.weekdayTuesdayShort,
@@ -512,7 +512,7 @@ class _DayCell extends StatelessWidget {
               // Always reserve space for HEUTE label to maintain consistent height
               if (_isToday)
                 Text(
-                  AppLocalizations.of(context)!.commonToday,
+                  context.l10n.commonToday,
                   maxLines: 1,
                   softWrap: false,
                   style: TextStyle(
@@ -537,7 +537,7 @@ class _DayCell extends StatelessWidget {
   }
 
   String _buildSemanticLabel(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.l10n;
     String dayLabel;
     try {
       final locale = Localizations.localeOf(context).toLanguageTag();

@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import 'app_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -49,5 +51,22 @@ extension AppLocalizationsAuthAdditions on AppLocalizations {
           other: 'Please wait $seconds seconds before retrying.',
         );
     }
+  }
+}
+
+/// Safe accessor for AppLocalizations via BuildContext.
+/// Provides clear debug assertion when localizations are not configured.
+extension BuildContextL10n on BuildContext {
+  /// Returns AppLocalizations with descriptive error in debug mode if not found.
+  ///
+  /// Usage: `final l10n = context.l10n;`
+  AppLocalizations get l10n {
+    final localizations = AppLocalizations.of(this);
+    assert(
+      localizations != null,
+      'No AppLocalizations found in context. '
+      'Ensure MaterialApp includes localizationsDelegates and supportedLocales.',
+    );
+    return localizations!;
   }
 }

@@ -152,7 +152,9 @@ Changes to **any** of the following components require coordinated deployment:
 
 **Why?** Format drift between App, Edge Function, and DB constraint causes silent failures.
 
-### Checklist before merging consent changes
+### Deployment Checklist for Consent Changes
+
+> **Note:** These steps are performed **after merge** during deployment, not during PR review.
 
 - [ ] Migration applied: `supabase db push`
 - [ ] Edge Function deployed: `supabase functions deploy log_consent`

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
+import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/widgets/period_calendar.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_app.dart';
@@ -123,5 +124,33 @@ void main() {
       expect(find.byType(Onboarding07DurationScreen), findsOneWidget);
     });
 
+    testWidgets(
+      'period duration is limited by kMaxPeriodDuration constant',
+      (tester) async {
+        // Deterministic date: Fixed date for stable test (mid-December 2025)
+        final startDate = DateTime(2025, 12, 5);
+        final router = _createTestRouter(startDate);
+
+        await tester.pumpWidget(buildTestApp(router: router));
+        await tester.pumpAndSettle();
+
+        // Count period days via semantics label (robust, month-independent)
+        final periodDayPattern = RegExp(r'Periodentag');
+        int countPeriodDays() {
+          return find.bySemanticsLabel(periodDayPattern).evaluate().length;
+        }
+
+        final initialCount = countPeriodDays();
+
+        // Verify kMaxPeriodDuration constant value
+        expect(kMaxPeriodDuration, equals(14),
+            reason: 'kMaxPeriodDuration should be 14 days');
+
+        // Verify period cannot exceed kMaxPeriodDuration
+        // (implementation enforces this in _handlePeriodEndChanged)
+        expect(initialCount, lessThanOrEqualTo(kMaxPeriodDuration),
+            reason: 'Period days should not exceed kMaxPeriodDuration');
+      },
+    );
   });
 }

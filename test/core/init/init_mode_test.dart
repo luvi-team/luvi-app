@@ -11,6 +11,19 @@ import 'package:luvi_services/init_exception.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  /// Pumps the widget tree for 6 seconds in 500ms intervals to allow
+  /// deep link handler's 5s timeout to complete without pending timers.
+  Future<void> pumpWithPolling(
+    WidgetTester tester, {
+    Duration pollDuration = const Duration(milliseconds: 500),
+    int totalIterations = 12,
+  }) async {
+    for (var i = 0; i < totalIterations; i++) {
+      await tester.pump(pollDuration);
+    }
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('InitMode.test bypasses init overlay', (tester) async {
     // Ensure bridge reflects test mode and provider override also set to test.
     final prev = InitModeBridge.resolve;
@@ -32,16 +45,9 @@ void main() {
         ),
       ),
     );
-    // Deep link handler has a 5s timeout that must complete. We pump 6 seconds
-    // in intervals, checking initialization status for early detection while
-    // ensuring all timers complete (no pending timer issues).
-    const pollDuration = Duration(milliseconds: 500);
-    const totalIterations = 12; // 12 * 500ms = 6000ms
 
-    for (var i = 0; i < totalIterations; i++) {
-      await tester.pump(pollDuration);
-    }
-    await tester.pumpAndSettle();
+    // Deep link handler has a 5s timeout that must complete.
+    await pumpWithPolling(tester);
 
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byIcon(Icons.wifi_off), findsNothing);
@@ -88,15 +94,9 @@ void main() {
         ),
       ),
     );
-    // Deep link handler has a 5s timeout that must complete. We pump 6 seconds
-    // in intervals to ensure all timers complete (no pending timer issues).
-    const pollDuration = Duration(milliseconds: 500);
-    const totalIterations = 12; // 12 * 500ms = 6000ms
 
-    for (var i = 0; i < totalIterations; i++) {
-      await tester.pump(pollDuration);
-    }
-    await tester.pumpAndSettle();
+    // Deep link handler has a 5s timeout that must complete.
+    await pumpWithPolling(tester);
 
     // Overlay renders a WiFi off icon when not yet initialized.
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
