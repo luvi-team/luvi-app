@@ -147,13 +147,15 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
 
     return Semantics(
       label: l10n.onboarding02CalloutSemantic,
-      child: Text(
-        l10n.onboarding02CalloutBody,
-        style: textTheme.bodySmall?.copyWith(
-          fontSize: TypographyTokens.size16,
-          color: colorScheme.onSurface,
+      child: ExcludeSemantics(
+        child: Text(
+          l10n.onboarding02CalloutBody,
+          style: textTheme.bodySmall?.copyWith(
+            fontSize: TypographyTokens.size16,
+            color: colorScheme.onSurface,
+          ),
+          textAlign: TextAlign.center,
         ),
-        textAlign: TextAlign.center,
       ),
     );
   }

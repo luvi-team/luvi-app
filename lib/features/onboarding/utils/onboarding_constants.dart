@@ -56,10 +56,16 @@ DateTime get todayDateOnly {
 }
 
 /// Maximum birthdate (user must be at least [kMinAge] years old)
-/// = today - kMinAge years
+/// = today - kMinAge years, with explicit day clamping for leap year edge cases.
+/// Uses _daysInMonth + clamp pattern to prevent DateTime constructor overflow
+/// when today is Feb 29 but target year is not a leap year.
 DateTime onboardingBirthdateMaxDate([DateTime? reference]) {
   final today = reference ?? todayDateOnly;
-  return DateTime(today.year - kMinAge, today.month, today.day);
+  final targetYear = today.year - kMinAge;
+  // Clamp day to valid range for target month (handles Feb 29 → Feb 28)
+  final maxDay = _daysInMonth(targetYear, today.month);
+  final safeDay = today.day.clamp(1, maxDay);
+  return DateTime(targetYear, today.month, safeDay);
 }
 
 /// Minimum birthdate (user cannot be older than [kMaxAge]).
