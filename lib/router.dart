@@ -275,8 +275,8 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
         // Defense-in-Depth: Ensure consent AND onboarding are complete.
         final container = ProviderScope.containerOf(context, listen: false);
         final asyncValue = container.read(userStateServiceProvider);
-        // While loading, allow navigation to proceed - guard will re-run on refresh
-        if (asyncValue.isLoading) return null;
+        // While loading, redirect to splash to prevent flicker
+        if (asyncValue.isLoading) return RoutePaths.splash;
         final service = asyncValue.whenOrNull(data: (s) => s);
         final hasCompletedOnboarding = service?.hasCompletedOnboardingOrNull;
         final acceptedConsentVersion = service?.acceptedConsentVersionOrNull;

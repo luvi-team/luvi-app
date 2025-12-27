@@ -219,9 +219,17 @@ class _OnboardingSuccessScreenState
     }
 
     final uid = SupabaseService.currentUser?.id;
-    if (uid != null) {
-      await userState.bindUser(uid);
+    if (uid == null) {
+      log.w(
+        'onboarding_uid_unavailable',
+        tag: 'onboarding_success',
+        error: 'Cannot complete onboarding: Supabase user ID unavailable',
+      );
+      _setErrorState();
+      return;
     }
+
+    await userState.bindUser(uid);
 
     await userState.markOnboardingComplete(
       fitnessLevel: localFitnessLevel,

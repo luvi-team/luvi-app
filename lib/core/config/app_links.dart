@@ -65,11 +65,12 @@ class AppLinks {
       try {
         return Uri(scheme: scheme, host: host);
       } on FormatException catch (e) {
-        // Edge case: Uri construction failed despite validation, fall through
+        // Edge case: Uri construction failed despite validation
         log.w(
           'app_links_uri_format_error',
           error: 'Uri format error for scheme="$scheme", host="$host": $e',
         );
+        return Uri(scheme: 'luvi', host: 'auth-callback');
       }
     }
 
