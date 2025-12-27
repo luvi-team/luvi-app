@@ -71,7 +71,7 @@ void main() {
         final result = determineTargetRoute(
           isAuth: true,
           acceptedConsentVersion: 1,
-          currentConsentVersion: 2, // version increased
+          currentConsentVersion: 2, // Version erhöht
           hasCompletedOnboarding: true,
           defaultTarget: defaultTarget,
         );
