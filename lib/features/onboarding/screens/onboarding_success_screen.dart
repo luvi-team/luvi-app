@@ -706,13 +706,17 @@ class _AutoFitText extends StatelessWidget {
             textDirection: TextDirection.ltr,
             maxLines: null,
           );
-          textPainter.layout(maxWidth: availableWidth);
+          try {
+            textPainter.layout(maxWidth: availableWidth);
 
-          if (textPainter.height <= availableHeight) {
-            fontSize = mid; // This size fits, try larger
-            lo = mid;
-          } else {
-            hi = mid; // Too big, try smaller
+            if (textPainter.height <= availableHeight) {
+              fontSize = mid; // This size fits, try larger
+              lo = mid;
+            } else {
+              hi = mid; // Too big, try smaller
+            }
+          } finally {
+            textPainter.dispose();
           }
         }
 

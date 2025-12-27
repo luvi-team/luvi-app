@@ -71,10 +71,15 @@ DateTime onboardingBirthdateMaxDate([DateTime? reference]) {
 /// Minimum birthdate (user cannot be older than [kMaxAge]).
 /// The +1 day offset prevents excluding users born exactly (kMaxAge+1) years ago
 /// due to leap-year or month-boundary rounding (e.g., Feb 29 birth on non-leap year).
-/// Duration.add() avoids DateTime constructor month/day overflow when subtracting years.
+/// Uses _daysInMonth + clamp pattern to prevent DateTime constructor overflow
+/// when today is Feb 29 but target year is not a leap year.
 DateTime onboardingBirthdateMinDate([DateTime? reference]) {
   final today = reference ?? todayDateOnly;
-  final baseDate = DateTime(today.year - kMaxAge - 1, today.month, today.day);
+  final targetYear = today.year - kMaxAge - 1;
+  // Clamp day to valid range for target month (handles Feb 29 -> Feb 28)
+  final maxDay = _daysInMonth(targetYear, today.month);
+  final safeDay = today.day.clamp(1, maxDay);
+  final baseDate = DateTime(targetYear, today.month, safeDay);
   return baseDate.add(const Duration(days: 1));
 }
 

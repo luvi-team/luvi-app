@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Defense-in-depth: ensure caller can only log consent for auth.uid().
 -- Keeps the existing log_consent_if_allowed logic unchanged except for the
--- explicit auth.uid() match check.
+-- explicit auth.uid() match check (no `service_role` bypass).
 
 create or replace function public.log_consent_if_allowed(
   p_user_id uuid,
@@ -25,15 +25,13 @@ begin
   if p_user_id is null then
     raise exception 'p_user_id must be a non-null valid uuid';
   end if;
-  if current_user <> 'service_role' then
-    if auth.uid() is null then
-      raise exception 'auth.uid() must be available'
-        using errcode = '42501';
-    end if;
-    if p_user_id is distinct from auth.uid() then
-      raise exception 'p_user_id must match auth.uid()'
-        using errcode = '42501';
-    end if;
+  if auth.uid() is null then
+    raise exception 'auth.uid() must be available'
+      using errcode = '42501';
+  end if;
+  if p_user_id is distinct from auth.uid() then
+    raise exception 'p_user_id must match auth.uid()'
+      using errcode = '42501';
   end if;
   if p_version is null or btrim(p_version) = '' then
     raise exception 'p_version must be provided';
@@ -43,18 +41,35 @@ begin
   end if;
 
   if jsonb_typeof(p_scopes) = 'array' then
+    if exists (
+      select 1
+      from jsonb_array_elements_text(p_scopes) v
+      where not public.consents_scopes_keys_valid(jsonb_build_object(v, true))
+    ) then
+      raise exception 'p_scopes contains unknown scope IDs';
+    end if;
     normalized_scopes := (
       select coalesce(jsonb_object_agg(v, true), '{}'::jsonb)
       from jsonb_array_elements_text(p_scopes) v
+      where public.consents_scopes_keys_valid(jsonb_build_object(v, true))
     );
   elsif jsonb_typeof(p_scopes) = 'object' then
     if not public.consents_scopes_values_boolean(p_scopes) then
       raise exception 'p_scopes must be an object with boolean values only';
     end if;
+    if exists (
+      select 1
+      from jsonb_each(p_scopes) as e(key, value)
+      where e.value = 'true'::jsonb
+        and not public.consents_scopes_keys_valid(jsonb_build_object(e.key, true))
+    ) then
+      raise exception 'p_scopes contains unknown scope IDs';
+    end if;
     normalized_scopes := (
       select coalesce(jsonb_object_agg(e.key, true), '{}'::jsonb)
       from jsonb_each(p_scopes) as e(key, value)
       where e.value = 'true'::jsonb
+        and public.consents_scopes_keys_valid(jsonb_build_object(e.key, true))
     );
   else
     raise exception 'p_scopes must be an array (legacy) or object (canonical)';
@@ -94,3 +109,6 @@ begin
   return true;
 end;
 $$;
+
+-- Consent logging must run in end-user context; do not expose this RPC to `service_role`.
+revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer) from service_role;

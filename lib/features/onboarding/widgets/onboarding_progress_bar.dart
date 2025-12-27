@@ -67,7 +67,8 @@ class OnboardingProgressBar extends StatelessWidget {
                       color: DsColors.signature,
                       borderRadius: BorderRadius.horizontal(
                         left: Radius.circular(Sizes.radiusXL - _borderWidth),
-                        right: progress == 1.0
+                        // Use integer comparison to avoid floating-point precision issues
+                        right: currentStep == totalSteps
                             ? Radius.circular(Sizes.radiusXL - _borderWidth)
                             : Radius.zero,
                       ),

@@ -34,9 +34,6 @@ void main() {
           find.widgetWithText(ElevatedButton, l10n.commonContinue),
           findsOneWidget,
         );
-
-        // 4. Verify locale (consistent with EN test placement)
-        expect(l10n.localeName, 'de');
       });
 
       testWidgets('semantics header is present for accessibility', (

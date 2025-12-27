@@ -28,7 +28,12 @@ class AuthTextField extends StatelessWidget {
     this.fontSize,
     this.fontFamilyOverride,
     this.fontWeightOverride,
-  });
+  })  : assert(fontSize == null || fontSize > 0, 'fontSize must be > 0'),
+        assert(fontSize == null || fontSize < 1000, 'fontSize must be < 1000'),
+        assert(
+          fontFamilyOverride == null || fontFamilyOverride != '',
+          'fontFamilyOverride must be non-empty if provided',
+        );
 
   final TextEditingController controller;
   final String hintText;

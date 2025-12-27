@@ -47,7 +47,7 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 - `public.daily_plan` wird auf **FORCE RLS** gehärtet und `anon`-Table-Privileges werden entzogen (Defense-in-depth).
 
 ### log_consent_if_allowed (Hardening)
-- `public.log_consent_if_allowed(...)` wird von `public/anon` entprivilegiert (EXECUTE), bleibt für `authenticated`/`service_role` ausführbar.
+- `public.log_consent_if_allowed(...)` wird von `public/anon` entprivilegiert (EXECUTE), bleibt für `authenticated` ausführbar (Owner-Guard: `p_user_id == auth.uid()`; kein `service_role`-Bypass).
 
 ## Logging / Telemetry (PII-Safety)
 - Keine PII/Health-Daten in App-Logs oder Edge-Logs ausgeben.

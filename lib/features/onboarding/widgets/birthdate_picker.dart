@@ -121,16 +121,15 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
     final maxDay = _daysInMonth;
     if (_selectedDay > maxDay) {
       _selectedDay = maxDay;
-      // Smooth animation for better UX when clamping invalid days
+      // Smooth animation for better UX when clamping invalid days.
+      // Note: _onDateChanged is only called from wheel callbacks where
+      // controllers are always attached, so hasClients check is defensive.
       if (_dayController.hasClients) {
         _dayController.animateToItem(
           _selectedDay - 1,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
-      } else {
-        // Fallback if controller not attached (defensive)
-        _dayController.jumpToItem(_selectedDay - 1);
       }
     }
 
