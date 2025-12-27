@@ -73,7 +73,13 @@ class _CalendarMiniWidgetState extends State<CalendarMiniWidget>
     ];
   }
 
-  /// Builds the 5-row calendar grid for days 1-31.
+  /// Builds a 5-row calendar grid for days 1-31.
+  ///
+  /// NOTE: This is an intentional simplified layout for the cycle intro preview.
+  /// Days are displayed sequentially (1-31) without regard to actual weekday
+  /// alignment. This stylized representation focuses on visualizing the
+  /// menstrual period concept rather than providing accurate calendar navigation.
+  /// See Figma O6 specs for design rationale.
   List<Widget> _buildCalendarRows(int highlightedDay) {
     return List.generate(5, (rowIndex) {
       return Padding(

@@ -33,6 +33,10 @@ begin
     select coalesce(jsonb_agg(e.key order by e.key), '[]'::jsonb)
     from jsonb_each(c.scopes) as e(key, value)
     where e.value = 'true'::jsonb
+       or (
+         jsonb_typeof(e.value) = 'string'
+         and lower(e.value #>> '{}') = 'true'
+       )
   )
   where jsonb_typeof(c.scopes) = 'object';
 

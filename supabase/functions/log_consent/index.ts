@@ -366,10 +366,16 @@ if (import.meta.main) {
     !Array.isArray(rawScopes)
   ) {
     const scopeMap = rawScopes as Record<string, unknown>;
-    const invalidValue = Object.values(scopeMap).find((v) => typeof v !== "boolean");
-    if (invalidValue !== undefined) {
+    // Use Object.entries() to correctly detect non-boolean values including undefined
+    // (Object.values().find() returns undefined for undefined values, causing false negatives)
+    const invalidEntry = Object.entries(scopeMap).find(
+      ([, v]) => typeof v !== "boolean"
+    );
+    if (invalidEntry) {
+      const [invalidKey, invalidValue] = invalidEntry;
       logMetric(requestId, "invalid", {
         reason: "invalid_scopes_value_type",
+        invalidKey,
         providedType: typeof invalidValue,
         ip_hash: ipHash,
         ua_hash: uaHash,

@@ -514,8 +514,7 @@ void main() {
     group('K10.3: Retry functionality', () {
       testWidgets('retry button triggers new save attempt', (tester) async {
         setTestScreenSize(tester);
-        // Initialize SharedPreferences mock BEFORE buildTestApp to prevent race condition
-        SharedPreferences.setMockInitialValues({});
+        // SharedPreferences already initialized in setUp()
         final failingWriter = _FailingBackendWriter(failOnce: true);
 
         await tester.pumpWidget(

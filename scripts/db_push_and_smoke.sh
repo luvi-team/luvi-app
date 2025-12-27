@@ -41,9 +41,14 @@ if ! command -v psql >/dev/null 2>&1; then
   exit 127
 fi
 
-# Cleanup: unlink project on exit (only if link succeeded)
+# Cleanup: unlink project on exit and remove temp pgpass file
 LINKED=false
+PGPASSFILE=""
 cleanup() {
+  # Remove pgpass file if it exists (security: don't leave credentials on disk)
+  if [[ -n "${PGPASSFILE:-}" && -f "${PGPASSFILE}" ]]; then
+    rm -f "${PGPASSFILE}"
+  fi
   if [[ "$LINKED" == "true" ]]; then
     echo "[db-push-smoke] unlinking project"
     supabase unlink 2>/dev/null || true
@@ -60,8 +65,14 @@ echo "[db-push-smoke] applying migrations (linked)"
 supabase db push --linked
 
 export PGCONNECT_TIMEOUT=10
-export PGPASSWORD="${SUPABASE_DB_PASSWORD}"
 DB_HOST="db.${SUPABASE_PROJECT_REF}.supabase.co"
+
+# Security: Use pgpass file instead of PGPASSWORD env var to avoid exposure in process listings
+PGPASSFILE=$(mktemp)
+echo "${DB_HOST}:5432:postgres:postgres:${SUPABASE_DB_PASSWORD}" > "${PGPASSFILE}"
+chmod 600 "${PGPASSFILE}"
+export PGPASSFILE
+
 DB_URL="postgresql://postgres@${DB_HOST}:5432/postgres?sslmode=require"
 
 # File existence checks for required SQL test files
