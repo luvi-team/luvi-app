@@ -76,10 +76,9 @@ void main() {
     });
 
     testWidgets(
-        'unknown toggle navigates to success screen (fitnessLevel from state)',
+        'tapping unknown toggle and CTA button navigates to success screen',
         (tester) async {
-      // Router with success route - fitnessLevel is now read from Riverpod state,
-      // not from route extra (as per Issue 1 CodeRabbit fix)
+      // Router with success route - fitnessLevel is read from Riverpod state
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -104,7 +103,7 @@ void main() {
         initialLocation: Onboarding06PeriodScreen.routeName,
       );
 
-      // buildLocalizedApp statt MaterialApp.router direkt (Theme/Tokens)
+      // Use buildLocalizedApp instead of MaterialApp.router directly (Theme/Tokens)
       await tester.pumpWidget(
         ProviderScope(
           overrides: [

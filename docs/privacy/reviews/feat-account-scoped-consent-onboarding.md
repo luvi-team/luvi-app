@@ -47,7 +47,7 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 - `public.daily_plan` wird auf **FORCE RLS** gehärtet und `anon`-Table-Privileges werden entzogen (Defense-in-depth).
 
 ### log_consent_if_allowed (Hardening)
-- `public.log_consent_if_allowed(...)` wird von `public/anon` entprivilegiert (EXECUTE), bleibt für `authenticated` ausführbar (Owner-Guard: `p_user_id == auth.uid()`; kein `service_role`-Bypass).
+- `public.log_consent_if_allowed(...)` wird von `public/anon` entprivilegiert (EXECUTE), bleibt für `authenticated` ausführbar (Owner-Guard: `p_user_id == auth.uid()`; kein `service_role`-Bypass; `service_role` EXECUTE entzogen via Patch-Migration).
 
 ## Logging / Telemetry (PII-Safety)
 - Keine PII/Health-Daten in App-Logs oder Edge-Logs ausgeben.
@@ -62,6 +62,8 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 - `supabase/migrations/20251222112100_harden_table_grants_least_privilege.sql`
 - `supabase/migrations/20251222112200_profiles_birth_date_gate_constraint.sql`
 - `supabase/migrations/20251222131000_profiles_set_accepted_consent_at_server_time.sql`
+- `supabase/migrations/20251226191139_log_consent_auth_uid_check.sql`
+- `supabase/migrations/20251227141500_log_consent_patch_harden_owner_guard_and_scopes.sql`
 
 ### RLS Smoke (Soll-Ausgabe)
 - Option A (ohne `SUPABASE_DB_URL`, empfohlen): `.env.local` + `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`

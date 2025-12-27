@@ -113,7 +113,7 @@ jobs:
       - name: 'Run Gemini Issue Analysis'
         id: 'gemini_issue_analysis'
         if: steps.find_issues.outputs.issues_to_triage != '[]'
-        uses: 'google-github-actions/run-gemini-cli@v0' # ratchet:exclude
+        uses: 'google-github-actions/run-gemini-cli@v0.1.14'
         env:
           GITHUB_TOKEN: '' # Do not pass any auth token here since this runs on untrusted inputs
           ISSUES_TO_TRIAGE: '${{ steps.find_issues.outputs.issues_to_triage }}'
@@ -203,9 +203,10 @@ jobs:
               .map((label) => label.trim())
               .sort()
 
-            // Parse out the triaged issues
-            const triagedIssues = (JSON.parse(process.env.TRIAGED_ISSUES || '{}'))
-              .sort((a, b) => a.issue_number - b.issue_number)
+            // Parse out the triaged issues with array fallback and type guard
+            const parsed = JSON.parse(process.env.TRIAGED_ISSUES || '[]');
+            const triagedIssues = (Array.isArray(parsed) ? parsed : [])
+              .sort((a, b) => a.issue_number - b.issue_number);
 
             core.debug(`Triaged issues: ${JSON.stringify(triagedIssues)}`);
 

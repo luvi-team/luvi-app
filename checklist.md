@@ -41,7 +41,7 @@ Für **jede** Umgebung (dev, staging, prod) rotieren:
 > **Security Note:** Never source untrusted env files directly. Use key-value parsing instead.
 
 1. Dry-run:
-   - Load env: `export $(grep -v '^#' .env.staging.local | xargs)`
+   - Load env: `set -a; source .env.staging.local; set +a`
    - Run: `scripts/db_dry_run.sh`
 2. Apply + Smoke:
    - `scripts/db_push_and_smoke.sh .env.staging.local`
