@@ -74,7 +74,9 @@ class _Onboarding07DurationScreenState
     _periodStart = widget.periodStartDate ?? onboardingState.periodStart;
 
     // Get saved duration from notifier or use default
-    final savedDuration = onboardingState.periodDuration;
+    final savedDuration = onboardingState.periodDuration > 0
+        ? onboardingState.periodDuration
+        : kDefaultPeriodDuration;
 
     // Debug-only: Catch navigation flow issues early
     assert(
