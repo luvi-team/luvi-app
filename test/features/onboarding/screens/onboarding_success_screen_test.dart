@@ -407,6 +407,10 @@ void main() {
       });
     });
 
+    // NOTE: Redirect behavior (context.go to AuthSignInScreen) cannot be
+    // verified in widget tests because GoRouter doesn't actually navigate
+    // in test environments. Verify redirect behavior in integration tests.
+
     group('K10.2: Backend save failure', () {
       testWidgets('shows error state when backend save fails', (tester) async {
         setTestScreenSize(tester);
@@ -641,39 +645,6 @@ void main() {
 
         expect(find.text('Try again'), findsOneWidget);
         expect(writer.lastFitnessLevel, 'beginner');
-      });
-    });
-
-    // NOTE: Redirect behavior (context.go to AuthSignInScreen) cannot be
-    // verified in widget tests because GoRouter doesn't actually navigate
-    // in test environments. The implementation at
-    // onboarding_success_screen.dart:120-131 handles this case correctly:
-    // when !isAuthenticated, it calls context.go(AuthSignInScreen.routeName)
-    // and returns early. Verify redirect behavior in integration tests.
-
-    group('Backend save failure', () {
-      testWidgets('shows error state when backend save fails',
-          (tester) async {
-        setTestScreenSize(tester);
-        await tester.pumpWidget(
-          buildTestApp(
-            overrides: [
-              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
-              // User IS authenticated but save throws exception
-              onboardingBackendWriterProvider
-                  .overrideWithValue(_ProfileFailCycleOkWriter()),
-            ],
-          ),
-        );
-
-        // Pump through animation (3 seconds) and check for error state
-        await tester.pump(const Duration(seconds: 4));
-        await tester.pump(const Duration(milliseconds: 100));
-        await tester.pump(const Duration(milliseconds: 100));
-
-        // Should show error state because backend save failed
-        expect(find.text('Try again'), findsOneWidget);
-        expect(find.text('Save failed. Please try again.'), findsOneWidget);
       });
     });
   });

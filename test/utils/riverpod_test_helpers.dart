@@ -23,7 +23,15 @@
 library;
 
 /// Type alias for Riverpod overrides list.
-/// Use this when building test apps with ProviderScope.
+///
+/// NOTE: This uses `List<dynamic>` intentionally because Riverpod's `Override`
+/// type is sealed and not publicly exported. Type-safety is maintained because:
+/// 1. Individual overrides ARE type-safe via `.overrideWith()`, `.overrideWithValue()`
+/// 2. Only valid Override instances can be created through Riverpod's public API
+/// 3. This is a known limitation - see Riverpod GitHub discussions
+///
+/// The alternative (creating typed mock subclasses) would add significant
+/// complexity for no practical benefit since runtime safety is already ensured.
 typedef RiverpodOverrides = List<dynamic>;
 
 /// Empty overrides constant for tests without custom providers.
