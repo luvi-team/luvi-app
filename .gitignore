@@ -178,3 +178,44 @@ google_oauth_*
 
 .gemini/
 gha-creds-*.json
+
+# ===========================================
+# Sensitive Business & Security Documents
+# (lokal behalten, nicht auf GitHub)
+# ===========================================
+
+# === HIGH RISK: Business Strategy ===
+docs/product/
+docs/bmad/
+
+# === HIGH RISK: Security & Privacy ===
+docs/privacy/
+docs/contracts/
+docs/dev/supabase_auth_settings.md
+
+# === HIGH RISK: Complete Context Folder ===
+context/
+
+# === MEDIUM RISK: Internal Engineering ===
+docs/engineering/auth_flow_bugfix_plan.md
+docs/engineering/auth_refactoring_plan.md
+docs/engineering/auth_ui_v2_mapping.md
+docs/engineering/gold-standard-workflow.md
+docs/engineering/tech-stack.md
+docs/engineering/ai-reviewer.md
+
+# === MEDIUM RISK: Plans & Audits ===
+docs/plans/
+docs/audits/
+docs/adr/
+docs/traycer/
+
+# === MEDIUM RISK: Business Logic ===
+docs/ranking_heuristic.md
+docs/phase_definitions.md
+docs/LUVI_Dossiers_v1.0.md
+
+# === MEDIUM RISK: AI Governance ===
+CLAUDE.md
+AGENTS.md
+.claude/
