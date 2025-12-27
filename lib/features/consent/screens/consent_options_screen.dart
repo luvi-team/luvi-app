@@ -411,7 +411,6 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
       if (!context.mounted) return;
       if (error.code == 'unauthorized' || error.statusCode == 401) {
         // Session abgelaufen → User zu Auth redirecten
-        if (!context.mounted) return;
         context.go(AuthSignInScreen.routeName);
         return;
       }

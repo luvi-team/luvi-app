@@ -1,11 +1,12 @@
--- Ensure `profiles.accepted_consent_at` is set server-side when the user
--- accepts consent (accepted_consent_version is written).
+-- Follow-up migration:
+-- `20251222131000_profiles_set_accepted_consent_at_server_time` created a trigger
+-- that only fires on UPDATEs of `accepted_consent_version`. That makes the
+-- `accepted_consent_at` backfill branch unreachable when fixing legacy rows.
 --
--- Rationale:
--- - `accepted_consent_at` is used for audit/diagnostics and must not rely on
---   client device time (clock skew / tampering).
--- - The client writes `accepted_consent_version` only after successful
---   `log_consent` and does NOT send `accepted_consent_at`.
+-- This migration updates the trigger to fire on all UPDATEs so we can backfill
+-- `accepted_consent_at` whenever:
+-- - `accepted_consent_version` is present (already accepted), and
+-- - `accepted_consent_at` is still null.
 --
 -- Idempotent: uses CREATE OR REPLACE and DROP IF EXISTS.
 
@@ -28,8 +29,13 @@ begin
     return new;
   end if;
 
-  -- UPDATE: only set when version is newly set or changed.
+  -- UPDATE:
+  -- - Set when consent version is newly set or changed.
+  -- - Backfill when `accepted_consent_at` is missing for an already accepted
+  --   consent version (e.g. legacy rows / previous bug).
   if old.accepted_consent_version is distinct from new.accepted_consent_version then
+    new.accepted_consent_at = now();
+  elsif old.accepted_consent_at is null and new.accepted_consent_at is null then
     new.accepted_consent_at = now();
   end if;
 
@@ -39,7 +45,8 @@ $$;
 
 drop trigger if exists set_profiles_accepted_consent_at on public.profiles;
 create trigger set_profiles_accepted_consent_at
-  before insert or update of accepted_consent_version
+  before insert or update
   on public.profiles
   for each row
   execute function public.set_profiles_accepted_consent_at();
+

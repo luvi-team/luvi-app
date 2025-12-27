@@ -129,8 +129,8 @@ void main() {
 
     test('AlwaysFailingGateReader throws', () async {
       final reader = AlwaysFailingGateReader();
-      expect(
-        () => reader.fetchRemoteOnboardingGate(),
+      await expectLater(
+        reader.fetchRemoteOnboardingGate(),
         throwsException,
       );
     });
@@ -153,7 +153,7 @@ void main() {
       );
 
       // First call throws
-      expect(() => reader.fetchRemoteOnboardingGate(), throwsException);
+      await expectLater(reader.fetchRemoteOnboardingGate(), throwsException);
       expect(reader.callCount, 1);
 
       // Second call succeeds

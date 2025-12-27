@@ -1013,15 +1013,15 @@
     }
   },
 
-  "fitnessLevelBeginner": "Not fit",
+  "fitnessLevelBeginner": "Just starting",
   "@fitnessLevelBeginner": {
     "description": "Fitness level label for beginners (maps to DB: beginner)"
   },
-  "fitnessLevelOccasional": "Fit",
+  "fitnessLevelOccasional": "Occasionally active",
   "@fitnessLevelOccasional": {
     "description": "Fitness level label for occasional trainers (maps to DB: occasional)"
   },
-  "fitnessLevelFit": "Very fit",
+  "fitnessLevelFit": "Very active",
   "@fitnessLevelFit": {
     "description": "Fitness level label for fit users (maps to DB: fit)"
   },

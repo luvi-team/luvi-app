@@ -1,11 +1,15 @@
+-- Patch migration for `public.log_consent_if_allowed` after earlier scope-hardening
+-- migrations were already applied.
+--
+-- Goals:
+-- - Do not silently drop invalid scope keys during normalization.
+-- - Validate scope keys up-front and raise a descriptive error listing invalid keys.
+-- - For object/boolean input, validate ALL keys before filtering by value=true.
+--
+-- Idempotent: uses CREATE OR REPLACE.
+
 -- Ensure pgcrypto is available for digest() function
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
--- Fix: `jsonb_object_length(jsonb)` is not available; use an empty-object check.
---
--- This patches `public.log_consent_if_allowed` introduced/updated by
--- `20251222173000_consents_scopes_object_bool.sql` to validate non-empty scopes
--- without relying on `jsonb_object_length`.
 
 create or replace function public.log_consent_if_allowed(
   p_user_id uuid,
@@ -28,6 +32,17 @@ begin
   if p_user_id is null then
     raise exception 'p_user_id must be a non-null valid uuid';
   end if;
+
+  -- Defense-in-depth: always enforce end-user context (no `service_role` bypass).
+  if auth.uid() is null then
+    raise exception 'auth.uid() must be available'
+      using errcode = '42501';
+  end if;
+  if p_user_id is distinct from auth.uid() then
+    raise exception 'p_user_id must match auth.uid()'
+      using errcode = '42501';
+  end if;
+
   if p_version is null or btrim(p_version) = '' then
     raise exception 'p_version must be provided';
   end if;
@@ -60,6 +75,7 @@ begin
       raise exception 'p_scopes must be an object with boolean values only';
     end if;
 
+    -- Validate ALL keys (even if value=false) to avoid confusing "empty" errors.
     invalid_scope_ids := array(
       select distinct e.key
       from jsonb_each(p_scopes) as e(key, value)
@@ -113,3 +129,7 @@ begin
   return true;
 end;
 $$;
+
+-- Least-privilege: this RPC must not be callable by `service_role`.
+revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer) from service_role;
+
