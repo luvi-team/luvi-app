@@ -112,6 +112,11 @@ jobs:
             }
 
       - name: 'Acknowledge request'
+        if: |-
+          ${{ steps.extract_command.outputs.command != 'fallthrough' }}
+      - name: 'Acknowledge request'
+        if: |-
+          ${{ steps.extract_command.outputs.command != 'fallthrough' }}
         env:
           GITHUB_TOKEN: '${{ steps.mint_identity_token.outputs.token || secrets.GITHUB_TOKEN || github.token }}'
           ISSUE_NUMBER: '${{ github.event.pull_request.number || github.event.issue.number }}'
@@ -122,7 +127,6 @@ jobs:
           gh issue comment "${ISSUE_NUMBER}" \
             --body "${MESSAGE}" \
             --repo "${REPOSITORY}"
-
   review:
     needs: 'dispatch'
     if: |-

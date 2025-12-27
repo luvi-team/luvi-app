@@ -76,7 +76,7 @@ String determineFallbackRoute({required bool isAuth}) {
 /// Three outcomes:
 /// - [RouteResolved]: Navigation target determined
 /// - [RaceRetryNeeded]: Local/remote mismatch (remote=false, local=true), retry required
-/// - [StateUnknown]: Both gates null, cannot determine route
+/// - [StateUnknown]: Both gates null, or remote null with local true (offline but locally positive)
 sealed class OnboardingGateResult {
   const OnboardingGateResult();
 }
@@ -93,8 +93,8 @@ final class RaceRetryNeeded extends OnboardingGateResult {
   const RaceRetryNeeded();
 }
 
-/// Both remote and local gates are null - state is truly unknown.
-/// Caller should show fallback UI.
+/// State is truly unknown: both gates null, or remote null with local true.
+/// Caller should show fallback UI (never route to Home when server SSOT unavailable).
 final class StateUnknown extends OnboardingGateResult {
   const StateUnknown();
 }
@@ -105,7 +105,7 @@ final class StateUnknown extends OnboardingGateResult {
 /// - [RouteResolved] with home route if remote gate is true
 /// - [RouteResolved] with onboarding route if either gate is explicitly false
 /// - [RaceRetryNeeded] if remote=false but local=true (race condition)
-/// - [StateUnknown] if both gates are null
+/// - [StateUnknown] if both gates are null, or if remote is null and local is true
 @visibleForTesting
 OnboardingGateResult determineOnboardingGateRoute({
   required bool? remoteGate,

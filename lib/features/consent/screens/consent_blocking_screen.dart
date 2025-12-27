@@ -115,7 +115,7 @@ class ConsentBlockingScreen extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: FontFamilies.figtree,
                         fontWeight: FontWeight.w700,
-                        fontSize: 18,
+                        fontSize: ConsentTypography.introBodyFontSize,
                       ),
                     ),
                   ),

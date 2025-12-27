@@ -97,7 +97,14 @@ void main() {
 
     expect(find.byType(AuthGlassCard), findsOneWidget);
 
-    final l10n = AppLocalizations.of(tester.element(find.byType(AuthSignInScreen)))!;
+    final l10nOrNull =
+        AppLocalizations.of(tester.element(find.byType(AuthSignInScreen)));
+    expect(
+      l10nOrNull,
+      isNotNull,
+      reason: 'AppLocalizations should be available in context',
+    );
+    final l10n = l10nOrNull!;
     expect(l10n.localeName, 'en');
     expect(find.text(l10n.authSignInHeadline), findsOneWidget);
   });

@@ -26,13 +26,13 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 
 ### SSOT: Route Paths
 - **`lib/core/navigation/route_paths.dart`** ist die Single Source of Truth für alle Route-Pfade.
-- Alle Pfade werden als Konstanten definiert: `RoutePaths.splash`, `RoutePaths.authLogin`, etc.
+- Alle Pfade werden als Konstanten definiert: `RoutePaths.splash`, `RoutePaths.authSignIn`, `RoutePaths.login`, etc.
 - Screen-Klassen können zusätzlich `static const routeName` für Rückwärtskompatibilität behalten.
 
 ### Router-Komposition
 - **`lib/router.dart`** (außerhalb von core/) enthält die GoRouter-Komposition.
 - Importiert Feature-Screens und verdrahtet sie mit RoutePaths-Konstanten.
-- Entry-Points (`main.dart`, `main_auth_entry.dart`) nutzen `createRouter()`.
+- Entry-Points (`main.dart`, `main_auth_entry.dart`) nutzen entweder `createRouter()` (Standard) oder erstellen einen eigenen `GoRouter` mit `routes: buildAppRoutes(ref)`, wenn zusätzliche Router-Wiring-Optionen (z. B. `refreshListenable`, `observers`) benötigt werden.
 
 ### Routes-Helpers (Core)
 - **`lib/core/navigation/routes.dart`** enthält NUR Redirect-Helpers:
@@ -40,7 +40,7 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 - **Keine Feature-Imports** in core/navigation/ - das wäre eine Clean Architecture Violation.
 
 ### Best Practices
-- Keine harten Pfad-Literale im Code: `context.go(RoutePaths.home)` statt `context.go('/heute')`.
+- Keine harten Pfad-Literale im Code: `context.go(RoutePaths.heute)` statt `context.go('/heute')`.
 - Widgets navigieren via RoutePaths, niemals via Screen-Import.
 - Parametrisierte Routes: `RoutePaths.workoutDetail.replaceFirst(':id', workoutId)`.
 

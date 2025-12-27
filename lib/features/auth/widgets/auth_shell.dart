@@ -71,7 +71,7 @@ class AuthShell extends StatelessWidget {
 
           // Main content with SafeArea
           // NOTE: bottom: false is intentional - bottom safe area insets are handled
-          // manually at lines 109-111 (no CTA case) and 123-126 (with CTA case)
+          // manually at lines 112-114 (no CTA case) and 126-128 (with CTA case)
           // to allow for different padding strategies based on whether a bottomCta exists.
           SafeArea(
             bottom: false,

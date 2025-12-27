@@ -56,6 +56,7 @@ void main() {
         ],
         initialLocation: Onboarding06PeriodScreen.routeName,
       );
+      addTearDown(router.dispose);
 
       // Use ProviderScope with deterministic onboarding state
       // (consistent with second test pattern, lines 112-125)
@@ -102,6 +103,7 @@ void main() {
         ],
         initialLocation: Onboarding06PeriodScreen.routeName,
       );
+      addTearDown(router.dispose);
 
       // Use buildLocalizedApp instead of MaterialApp.router directly (Theme/Tokens)
       await tester.pumpWidget(
