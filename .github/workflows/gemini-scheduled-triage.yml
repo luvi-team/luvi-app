@@ -198,7 +198,9 @@ jobs:
         with:
           # Use the provided token so that the "gemini-cli" is the actor in the
           # log for what changed the labels.
+          github-token: '${{ steps.mint_identity_token.outputs.token || secrets.GITHUB_TOKEN || github.token }}'
           script: |-
+            // Parse the available labels
             const availableLabels = (process.env.AVAILABLE_LABELS || '').split(',')
               .map((label) => label.trim())
               .filter((label) => label.length > 0)
@@ -230,6 +232,7 @@ jobs:
                 .map((label) => label.trim())
                 .filter((label) => availableLabels.includes(label))
                 .sort();
+
               core.debug(`Identified labels to set: ${JSON.stringify(labelsToSet)}`);
 
               if (labelsToSet.length === 0) {
@@ -253,10 +256,5 @@ jobs:
                 repo: context.repo.repo,
                 issue_number: issueNumber,
                 labels: mergedLabels,
-             await github.rest.issues.setLabels({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               issue_number: issueNumber,
-               labels: mergedLabels,
-             });
-           }
+              });
+            }
