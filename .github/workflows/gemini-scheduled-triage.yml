@@ -198,6 +198,7 @@ jobs:
         with:
           # Use the provided token so that the "gemini-cli" is the actor in the
           # log for what changed the labels.
+          script: |-
             const availableLabels = (process.env.AVAILABLE_LABELS || '').split(',')
               .map((label) => label.trim())
               .filter((label) => label.length > 0)
@@ -253,4 +254,5 @@ jobs:
                 issue_number: issueNumber,
                 labels: mergedLabels,
               });
+            }
             }

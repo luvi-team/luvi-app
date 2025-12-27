@@ -169,11 +169,8 @@ jobs:
   fallthrough:
     needs:
       - 'dispatch'
-      - 'review'
-      - 'triage'
-      - 'invoke'
     if: |-
-      ${{ always() && !cancelled() && (failure() || needs.dispatch.outputs.command == 'fallthrough') }}
+      ${{ always() && !cancelled() && needs.dispatch.outputs.command == 'fallthrough' }}
     runs-on: 'ubuntu-latest'
     permissions:
       contents: 'read'

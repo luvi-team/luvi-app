@@ -5,9 +5,12 @@ import 'package:luvi_app/core/logging/logger.dart';
 void main() {
   group('Logger', () {
     late List<String> capturedLogs;
+    late DebugPrintCallback originalDebugPrint;
 
     setUp(() {
       capturedLogs = [];
+      // Save original debugPrint before overwriting
+      originalDebugPrint = debugPrint;
       // Capture debugPrint output for verification
       debugPrint = (String? message, {int? wrapWidth}) {
         if (message != null) capturedLogs.add(message);
@@ -15,8 +18,8 @@ void main() {
     });
 
     tearDown(() {
-      // Restore default debugPrint behavior
-      debugPrint = debugPrintThrottled;
+      // Restore original debugPrint behavior
+      debugPrint = originalDebugPrint;
     });
 
     group('basic logging methods', () {

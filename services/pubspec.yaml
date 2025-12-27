@@ -19,9 +19,9 @@ dependencies:
   supabase_flutter: ^2.10.3
 
 dev_dependencies:
-  # Note: build_runner pinned to ^2.4.14 for compatibility with riverpod_generator ^3.0.3
-  # (newer build_runner versions require analyzer >=8.0.0 which conflicts)
-  build_runner: ^2.4.14
+  # Note: build_runner pinned to ^2.7.1 for compatibility with riverpod_generator ^3.0.3
+  # (build_runner >=2.10.0 requires analyzer >=8.0.0 which conflicts with riverpod_generator)
+  build_runner: ^2.7.1
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter

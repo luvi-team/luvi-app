@@ -52,9 +52,9 @@ class WelcomeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A11y-Fix: MergeSemantics ensures the label is correctly exposed to screen
-    // readers while preserving ElevatedButton's tap action. Stack+Opacity pattern
-    // keeps the Text in semantic tree even during loading.
+    // A11y-Fix: Outer Semantics widget provides the accessible label for screen
+    // readers. ExcludeSemantics removes inner Text from semantic tree to prevent
+    // duplicate announcements. Stack+Opacity keeps Text in WIDGET tree for layout.
     return MergeSemantics(
       child: Semantics(
         label: label,
