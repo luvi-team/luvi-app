@@ -14,9 +14,9 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
-import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
-import 'package:luvi_app/features/onboarding/model/goal.dart';
-import 'package:luvi_app/features/onboarding/model/interest.dart';
+import 'package:luvi_app/features/onboarding/domain/fitness_level.dart';
+import 'package:luvi_app/features/onboarding/domain/goal.dart';
+import 'package:luvi_app/features/onboarding/domain/interest.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 import 'package:luvi_app/features/onboarding/widgets/circular_progress_ring.dart';
@@ -219,9 +219,17 @@ class _OnboardingSuccessScreenState
     }
 
     final uid = SupabaseService.currentUser?.id;
-    if (uid != null) {
-      await userState.bindUser(uid);
+    if (uid == null) {
+      log.w(
+        'onboarding_uid_unavailable',
+        tag: 'onboarding_success',
+        error: 'Cannot complete onboarding: Supabase user ID unavailable',
+      );
+      _setErrorState();
+      return;
     }
+
+    await userState.bindUser(uid);
 
     await userState.markOnboardingComplete(
       fitnessLevel: localFitnessLevel,

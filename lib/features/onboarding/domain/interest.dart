@@ -1,5 +1,5 @@
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
+import 'package:luvi_app/features/onboarding/domain/onboarding_option_ids.dart';
 
 /// User interest categories for personalization (O5 screen).
 ///

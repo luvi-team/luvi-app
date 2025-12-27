@@ -8,9 +8,9 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 
 // Conditional remote loader: IO vs Web
-import 'remote_loader_base.dart'
-    if (dart.library.io) 'remote_loader_io.dart'
-    if (dart.library.html) 'remote_loader_web.dart';
+import '../utils/remote_loader_base.dart'
+    if (dart.library.io) '../utils/remote_loader_io.dart'
+    if (dart.library.html) '../utils/remote_loader_web.dart';
 
 typedef RemoteMarkdownFetcher = Future<String?> Function(
   Uri uri, {

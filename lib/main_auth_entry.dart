@@ -3,10 +3,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'core/navigation/route_paths.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/screens/auth_signin_screen.dart';
-import 'core/navigation/routes.dart' as routes;
 import 'l10n/app_localizations.dart';
+import 'router.dart' as app_router;
 
 /// Preview entrypoint to boot directly into Auth screens without global redirects.
 /// Use --dart-define=INITIAL_LOCATION=/auth/reset to start at a specific route.
@@ -14,25 +14,32 @@ void main() {
   runApp(const ProviderScope(child: _AuthSignInPreviewApp()));
 }
 
-class _AuthSignInPreviewApp extends StatefulWidget {
+class _AuthSignInPreviewApp extends ConsumerStatefulWidget {
   const _AuthSignInPreviewApp();
 
   static const _initialLocation = String.fromEnvironment(
     'INITIAL_LOCATION',
-    defaultValue: AuthSignInScreen.routeName,
+    defaultValue: RoutePaths.authSignIn,
   );
 
   @override
-  State<_AuthSignInPreviewApp> createState() => _AuthSignInPreviewAppState();
+  ConsumerState<_AuthSignInPreviewApp> createState() =>
+      _AuthSignInPreviewAppState();
 }
 
-class _AuthSignInPreviewAppState extends State<_AuthSignInPreviewApp> {
+class _AuthSignInPreviewAppState extends ConsumerState<_AuthSignInPreviewApp> {
   // Router persists across rebuilds to maintain navigation state
-  late final GoRouter _router = GoRouter(
-    routes: routes.featureRoutes,
-    // No redirect here so we can preview without auth/session
-    initialLocation: _AuthSignInPreviewApp._initialLocation,
-  );
+  late GoRouter _router; // Initialized in initState where ref is available
+
+  @override
+  void initState() {
+    super.initState();
+    _router = GoRouter(
+      routes: app_router.buildAppRoutes(ref),
+      // No redirect here so we can preview without auth/session
+      initialLocation: _AuthSignInPreviewApp._initialLocation,
+    );
+  }
 
   @override
   void dispose() {

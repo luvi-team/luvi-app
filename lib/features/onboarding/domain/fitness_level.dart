@@ -1,6 +1,6 @@
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
+import 'package:luvi_app/features/onboarding/domain/onboarding_option_ids.dart';
 
 /// Fitness level options for onboarding O3.
 /// DB constraint: fitness_level IN ('beginner', 'occasional', 'fit')

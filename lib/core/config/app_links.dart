@@ -1,10 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/logging/logger.dart';
-import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
-import 'package:luvi_app/features/legal/legal_viewer.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Shared app link constants (non-instance based)
 class AppLinks {
@@ -70,11 +65,12 @@ class AppLinks {
       try {
         return Uri(scheme: scheme, host: host);
       } on FormatException catch (e) {
-        // Edge case: Uri construction failed despite validation, fall through
+        // Edge case: Uri construction failed despite validation
         log.w(
           'app_links_uri_format_error',
           error: 'Uri format error for scheme="$scheme", host="$host": $e',
         );
+        return Uri(scheme: 'luvi', host: 'auth-callback');
       }
     }
 
@@ -252,78 +248,6 @@ class ProdAppLinks extends AppLinksApi {
 /// higher in the widget tree for custom environments.
 final appLinksProvider = Provider<AppLinksApi>((ref) => const ProdAppLinks());
 
-/// Opens a legal link externally when valid, otherwise falls back to
-/// an in-app Markdown viewer bundled with the app.
-Future<void> openPrivacy(
-  BuildContext context, {
-  AppLinksApi appLinks = const ProdAppLinks(),
-  String? title,
-}) async {
-  final l10n = AppLocalizations.of(context);
-  final resolvedTitle =
-      title ?? l10n?.privacyPolicyTitle ?? 'Privacy Policy';
-  await _openLegal(
-    context,
-    uri: appLinks.privacyPolicy,
-    isValid: appLinks.hasValidPrivacy,
-    fallbackAsset: 'assets/legal/privacy.md',
-    title: resolvedTitle,
-    appLinks: appLinks,
-  );
-}
-
-/// Opens a legal link externally when valid, otherwise falls back to
-/// an in-app Markdown viewer bundled with the app.
-Future<void> openTerms(
-  BuildContext context, {
-  AppLinksApi appLinks = const ProdAppLinks(),
-  String? title,
-}) async {
-  final l10n = AppLocalizations.of(context);
-  final resolvedTitle =
-      title ?? l10n?.termsOfServiceTitle ?? 'Terms of Service';
-  await _openLegal(
-    context,
-    uri: appLinks.termsOfService,
-    isValid: appLinks.hasValidTerms,
-    fallbackAsset: 'assets/legal/terms.md',
-    title: resolvedTitle,
-    appLinks: appLinks,
-  );
-}
-
-Future<void> _openLegal(
-  BuildContext context, {
-  required Uri uri,
-  required bool isValid,
-  required String fallbackAsset,
-  required String title,
-  required AppLinksApi appLinks,
-}) async {
-  // Try external if valid; if it throws or returns false, fall back to in-app
-  if (isValid) {
-    try {
-      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (ok) return;
-    } catch (error, stackTrace) {
-      log.w(
-        'legal_link_launch_failed',
-        tag: 'legal_links',
-        error: sanitizeError(error) ?? error.runtimeType,
-        stack: stackTrace,
-      );
-      // proceed to fallback
-    }
-  }
-  if (!context.mounted) return;
-  // Fallback to in-app Markdown viewer
-  await Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (_) => LegalViewer.asset(
-        fallbackAsset,
-        title: title,
-        appLinks: appLinks,
-      ),
-    ),
-  );
-}
+// NOTE: openPrivacy() and openTerms() have been moved to
+// lib/core/config/legal_actions.dart to break the import cycle with
+// features/legal/legal_viewer.dart.

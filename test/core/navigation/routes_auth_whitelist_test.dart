@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:luvi_app/core/navigation/routes.dart' as routes;
+import 'package:luvi_app/router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -87,7 +87,7 @@ void main() {
       addTearDown(configureTestView(tester));
 
       final router = GoRouter(
-        routes: routes.featureRoutes,
+        routes: testAppRoutes,
         initialLocation: LoginScreen.routeName,
       );
       addTearDown(router.dispose);
@@ -126,7 +126,7 @@ void main() {
       addTearDown(configureTestView(tester));
 
       final router = GoRouter(
-        routes: routes.featureRoutes,
+        routes: testAppRoutes,
         initialLocation: LoginScreen.routeName,
       );
       addTearDown(router.dispose);
@@ -158,7 +158,7 @@ void main() {
       addTearDown(configureTestView(tester));
 
       final router = GoRouter(
-        routes: routes.featureRoutes,
+        routes: testAppRoutes,
         initialLocation: AuthSignInScreen.routeName,
       );
       addTearDown(router.dispose);
@@ -181,7 +181,7 @@ void main() {
       addTearDown(configureTestView(tester));
 
       final router = GoRouter(
-        routes: routes.featureRoutes,
+        routes: testAppRoutes,
         initialLocation: AuthSignupScreen.routeName,
       );
       addTearDown(router.dispose);
@@ -204,7 +204,7 @@ void main() {
       addTearDown(configureTestView(tester));
 
       final router = GoRouter(
-        routes: routes.featureRoutes,
+        routes: testAppRoutes,
         initialLocation: ResetPasswordScreen.routeName,
       );
       addTearDown(router.dispose);
@@ -229,7 +229,7 @@ void main() {
       addTearDown(configureTestView(tester));
 
       final router = GoRouter(
-        routes: routes.featureRoutes,
+        routes: testAppRoutes,
         initialLocation: LoginScreen.routeName,
       );
       addTearDown(router.dispose);

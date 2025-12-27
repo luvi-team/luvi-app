@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:luvi_app/core/logging/logger.dart';
+
 /// IO implementation using HttpClient.
 Future<String?> fetchRemoteMarkdown(
   Uri uri, {
@@ -30,9 +32,14 @@ Future<String?> fetchRemoteMarkdown(
     return result;
   } on Object catch (error, stackTrace) {
     // Return null on any failure to keep caller contract consistent (nullable on error).
-    // Optionally log with context for diagnostics; avoid throwing to prevent mixed contracts.
-    stderr.writeln('fetchRemoteMarkdown failed for $uri: $error');
-    stderr.writeln(stackTrace);
+    // Log with context for diagnostics via structured logger (PII-sanitized).
+    const log = Logger();
+    log.w(
+      'fetchRemoteMarkdown failed for $uri',
+      tag: 'RemoteLoader',
+      error: error,
+      stack: stackTrace,
+    );
     return null;
   } finally {
     // Always close the client to avoid resource leaks.

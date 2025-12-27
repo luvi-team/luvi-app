@@ -5,14 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
-import 'package:luvi_app/core/navigation/routes.dart' as features;
+import 'package:luvi_app/router.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
 void main() {
   TestConfig.ensureInitialized();
-  test('featureRoutes contains signup route path', () {
-    final route = features.featureRoutes.firstWhere(
+  test('testAppRoutes contains signup route path', () {
+    final route = testAppRoutes.whereType<GoRoute>().firstWhere(
       (route) => route.path == AuthSignupScreen.routeName,
     );
     expect(route.name, 'signup');
@@ -22,7 +22,7 @@ void main() {
     tester,
   ) async {
     final router = GoRouter(
-      routes: features.featureRoutes,
+      routes: testAppRoutes,
       initialLocation: AuthSignupScreen.routeName,
     );
     addTearDown(router.dispose);

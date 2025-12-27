@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:luvi_app/features/consent/model/consent_types.dart';
+import 'package:luvi_app/features/consent/domain/consent_types.dart';
 
 void main() {
   late Set<String> jsonIds;

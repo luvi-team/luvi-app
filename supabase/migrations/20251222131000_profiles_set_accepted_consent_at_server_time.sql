@@ -28,11 +28,8 @@ begin
     return new;
   end if;
 
-  -- UPDATE: only set when version is newly set or changed, or when previously
-  -- missing (backfill).
+  -- UPDATE: only set when version is newly set or changed.
   if old.accepted_consent_version is distinct from new.accepted_consent_version then
-    new.accepted_consent_at = now();
-  elsif old.accepted_consent_at is null and new.accepted_consent_at is null then
     new.accepted_consent_at = now();
   end if;
 
@@ -46,4 +43,3 @@ create trigger set_profiles_accepted_consent_at
   on public.profiles
   for each row
   execute function public.set_profiles_accepted_consent_at();
-

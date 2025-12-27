@@ -2,7 +2,7 @@
 
 Goal: Persisted values in Supabase must use **stable internal IDs** (not UI labels) to prevent "meaning drift" when copy/order changes.
 
-SSOT Source (Code): `lib/features/onboarding/model/onboarding_option_ids.dart`.
+SSOT Source (Code): `lib/features/onboarding/domain/onboarding_option_ids.dart`.
 
 ## `public.profiles.fitness_level` (text)
 - `beginner`

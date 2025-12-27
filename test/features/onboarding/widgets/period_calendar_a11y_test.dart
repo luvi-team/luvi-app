@@ -37,24 +37,23 @@ void main() {
       final inkResponses = find.byType(InkResponse);
       expect(inkResponses, findsWidgets);
 
-      // Check at least one InkResponse has correct parent SizedBox width
-      // The SizedBox is the immediate parent of InkResponse in _DayCell
-      bool foundValidHitArea = false;
+      // Evaluate once to avoid multiple iterations
+      final elements = inkResponses.evaluate().toList();
 
-      for (final element in inkResponses.evaluate()) {
-        // Find ancestor SizedBox with valid hit area
+      // Count cells that meet the touch target requirement
+      int validCellCount = 0;
+      for (final element in elements) {
         final sizedBox = element.findAncestorWidgetOfExactType<SizedBox>();
         if (sizedBox != null &&
             sizedBox.width != null &&
             sizedBox.width! >= Sizes.touchTargetMin) {
-          foundValidHitArea = true;
-          break;
+          validCellCount++;
         }
       }
 
-      // Assert that at least one day cell meets the touch target requirement
-      expect(foundValidHitArea, isTrue,
-          reason: 'At least one day cell must meet 44dp touch target');
+      // All day cells must meet the touch target requirement (WCAG compliance)
+      expect(validCellCount, equals(elements.length),
+          reason: 'All ${elements.length} day cells must meet 44dp touch target');
 
       // Verify Sizes.touchTargetMin is 44
       expect(Sizes.touchTargetMin, equals(44.0),

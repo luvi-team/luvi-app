@@ -6,7 +6,7 @@ import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// C1 - Consent Intro Screen

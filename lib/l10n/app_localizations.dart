@@ -1526,19 +1526,19 @@ abstract class AppLocalizations {
   /// Fitness level label for beginners (maps to DB: beginner)
   ///
   /// In en, this message translates to:
-  /// **'Not fit'**
+  /// **'Just starting'**
   String get fitnessLevelBeginner;
 
   /// Fitness level label for occasional trainers (maps to DB: occasional)
   ///
   /// In en, this message translates to:
-  /// **'Fit'**
+  /// **'Occasionally active'**
   String get fitnessLevelOccasional;
 
   /// Fitness level label for fit users (maps to DB: fit)
   ///
   /// In en, this message translates to:
-  /// **'Very fit'**
+  /// **'Very active'**
   String get fitnessLevelFit;
 
   /// Title for consent intro screen (C1)

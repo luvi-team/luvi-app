@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/onboarding/model/interest.dart';
+import 'package:luvi_app/features/onboarding/domain/interest.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';

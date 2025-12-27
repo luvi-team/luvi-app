@@ -1,6 +1,6 @@
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
+import 'package:luvi_app/features/onboarding/domain/onboarding_option_ids.dart';
 
 /// User goal options for onboarding O4 screen.
 ///

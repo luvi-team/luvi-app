@@ -6,7 +6,7 @@ library remote_loader_io_test;
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/legal/remote_loader_io.dart';
+import 'package:luvi_app/features/legal/utils/remote_loader_io.dart';
 
 Uri _buildUri(HttpServer server) {
   final host = server.address.host;

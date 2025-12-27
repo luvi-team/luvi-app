@@ -5,16 +5,16 @@ import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/onboarding/data/onboarding_backend_writer.dart';
-import 'package:luvi_app/features/onboarding/model/fitness_level.dart' as app;
-import 'package:luvi_app/features/onboarding/model/goal.dart';
-import 'package:luvi_app/features/onboarding/model/interest.dart';
+import 'package:luvi_app/features/onboarding/domain/fitness_level.dart' as app;
+import 'package:luvi_app/features/onboarding/domain/goal.dart';
+import 'package:luvi_app/features/onboarding/domain/interest.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../support/test_config.dart';
-import '../../../utils/riverpod_test_helpers.dart';
+import '../../../support/riverpod_test_helpers.dart';
 
 // Test screen dimensions (must match setTestScreenSize)
 const _testWidth = 430.0;
@@ -319,6 +319,45 @@ class _CapturingBackendWriter implements OnboardingBackendWriter {
   }
 }
 
+/// Backend writer that succeeds completely (for testing uid==null edge case).
+/// Profile succeeds, markOnboardingComplete succeeds.
+/// Used with _CompleteOnboardingNoCycleNotifier to skip cycle data.
+class _SucceedingBackendWriter implements OnboardingBackendWriter {
+  int profileCalls = 0;
+  int markCompleteCalls = 0;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    profileCalls++;
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    markCompleteCalls++;
+    return {'user_id': 'test-user', 'has_completed_onboarding': true};
+  }
+}
+
 void main() {
   TestConfig.ensureInitialized();
 
@@ -613,7 +652,7 @@ void main() {
         expect(writer.lastInterests, ['strength_training', 'cardio', 'nutrition']);
       });
 
-      testWidgets('ignores route fitnessLevel=unknown and uses SSOT state',
+      testWidgets('uses SSOT state for fitnessLevel',
           (tester) async {
         setTestScreenSize(tester);
         final writer = _CapturingBackendWriter();
@@ -645,6 +684,53 @@ void main() {
 
         expect(find.text('Try again'), findsOneWidget);
         expect(writer.lastFitnessLevel, 'beginner');
+      });
+    });
+
+    group('K10.4: UID null edge case', () {
+      testWidgets(
+          'shows error state when SupabaseService.currentUser?.id is null',
+          (tester) async {
+        // Test scenario: Backend save succeeds, but SupabaseService.currentUser?.id
+        // is null in test mode (no real Supabase connection). This should trigger
+        // the explicit uid null check added to _performLocalSaveAndNavigate.
+        setTestScreenSize(tester);
+        final writer = _SucceedingBackendWriter();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              // Complete onboarding data without cycle data (deterministic)
+              onboardingProvider
+                  .overrideWith(() => _CompleteOnboardingNoCycleNotifier()),
+              // Backend writer that succeeds for profile + markComplete
+              onboardingBackendWriterProvider.overrideWithValue(writer),
+              // Provide working userStateService (so userState != null path passes)
+              userStateServiceProvider.overrideWith((ref) async {
+                final prefs = await SharedPreferences.getInstance();
+                return UserStateService(prefs: prefs);
+              }),
+            ],
+          ),
+        );
+
+        // Pump through animation (3s) and save attempt
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        // Backend calls should have been made
+        expect(writer.profileCalls, 1,
+            reason: 'Backend profile save should be called');
+        expect(writer.markCompleteCalls, 1,
+            reason: 'Backend markOnboardingComplete should be called');
+
+        // Error state should be shown because SupabaseService.currentUser?.id
+        // is null in test mode, triggering the explicit uid null check
+        expect(find.text('Try again'), findsOneWidget,
+            reason: 'Should show error state when uid is null');
+        expect(find.text('Save failed. Please try again.'), findsOneWidget,
+            reason: 'Should show error message for uid null case');
       });
     });
   });

@@ -14,7 +14,7 @@ import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.d
 import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// LoginScreen with Figma Auth UI v2 design.

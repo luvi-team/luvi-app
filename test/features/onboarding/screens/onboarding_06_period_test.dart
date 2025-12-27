@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
-import 'package:luvi_app/features/onboarding/model/fitness_level.dart' as app;
-import 'package:luvi_app/features/onboarding/model/goal.dart';
-import 'package:luvi_app/features/onboarding/model/interest.dart';
+import 'package:luvi_app/features/onboarding/domain/fitness_level.dart' as app;
+import 'package:luvi_app/features/onboarding/domain/goal.dart';
+import 'package:luvi_app/features/onboarding/domain/interest.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart';
@@ -56,6 +56,7 @@ void main() {
         ],
         initialLocation: Onboarding06PeriodScreen.routeName,
       );
+      addTearDown(router.dispose);
 
       // Use ProviderScope with deterministic onboarding state
       // (consistent with second test pattern, lines 112-125)
@@ -102,6 +103,7 @@ void main() {
         ],
         initialLocation: Onboarding06PeriodScreen.routeName,
       );
+      addTearDown(router.dispose);
 
       // Use buildLocalizedApp instead of MaterialApp.router directly (Theme/Tokens)
       await tester.pumpWidget(

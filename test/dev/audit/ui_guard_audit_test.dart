@@ -41,7 +41,7 @@ void main() {
       'lib/features/onboarding/screens/onboarding_07.dart',
       'lib/features/consent/widgets/localized_builder.dart',
       'lib/features/consent/widgets/welcome_shell.dart',
-      'lib/features/consent/model/consent_types.dart',
+      'lib/features/consent/domain/consent_types.dart',
       'lib/features/auth/state/login_state.dart',
       'lib/features/auth/widgets/login_header.dart',
       'lib/features/cycle/widgets/cycle_inline_calendar.dart',

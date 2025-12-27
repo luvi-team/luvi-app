@@ -7,6 +7,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../core/design_tokens/assets.dart';
 import '../../../core/design_tokens/sizes.dart';
 import '../../../core/design_tokens/typography.dart';
+import '../../../core/navigation/route_paths.dart';
 import '../../../core/theme/app_theme.dart';
 
 const double _tileHeight = 150.0; // Figma: 150px
@@ -143,7 +144,7 @@ class TopRecommendationTile extends StatelessWidget {
   ) {
     final borderRadius = BorderRadius.circular(Sizes.radiusL);
     return InkWell(
-      onTap: () => context.go('/workout/$workoutId'),
+      onTap: () => context.go(RoutePaths.workoutDetail.replaceFirst(':id', workoutId)),
       borderRadius: borderRadius,
       child: Container(
         constraints: const BoxConstraints.tightFor(height: _tileHeight),

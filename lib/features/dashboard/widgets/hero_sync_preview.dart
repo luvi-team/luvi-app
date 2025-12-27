@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 const double _infoCardHeight = 112;
@@ -73,7 +73,7 @@ class HeroSyncPreview extends StatelessWidget {
               subtitle: subtitle,
               containerRadius: containerRadius,
               onMoreTap: () {
-                context.go(LuviSyncJournalStubScreen.route);
+                context.go(RoutePaths.luviSync);
               },
             ),
           ],

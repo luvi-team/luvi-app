@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/config/legal_actions.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
@@ -55,10 +55,9 @@ final _scrolledToEndProvider =
 ///
 /// Route: /consent/options
 class ConsentOptionsScreen extends ConsumerStatefulWidget {
-  const ConsentOptionsScreen({super.key, required this.appLinks});
+  const ConsentOptionsScreen({super.key});
 
   static const String routeName = '/consent/options';
-  final AppLinksApi appLinks;
 
   @override
   ConsumerState<ConsentOptionsScreen> createState() =>
@@ -355,14 +354,14 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
       parts: [
         LinkTextPart(
           l10n.consentOptionsTermsLink,
-          onTap: () => openTerms(context, appLinks: widget.appLinks),
+          onTap: () => openTerms(context, ref),
           bold: true,
           color: DsColors.signature,
         ),
         LinkTextPart(l10n.consentOptionsTermsConjunction),
         LinkTextPart(
           l10n.consentOptionsPrivacyLink,
-          onTap: () => openPrivacy(context, appLinks: widget.appLinks),
+          onTap: () => openPrivacy(context, ref),
           bold: true,
           color: DsColors.signature,
         ),
@@ -412,7 +411,6 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
       if (!context.mounted) return;
       if (error.code == 'unauthorized' || error.statusCode == 401) {
         // Session abgelaufen → User zu Auth redirecten
-        if (!context.mounted) return;
         context.go(AuthSignInScreen.routeName);
         return;
       }

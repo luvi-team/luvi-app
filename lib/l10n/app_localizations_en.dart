@@ -757,13 +757,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get fitnessLevelBeginner => 'Not fit';
+  String get fitnessLevelBeginner => 'Just starting';
 
   @override
-  String get fitnessLevelOccasional => 'Fit';
+  String get fitnessLevelOccasional => 'Occasionally active';
 
   @override
-  String get fitnessLevelFit => 'Very fit';
+  String get fitnessLevelFit => 'Very active';
 
   @override
   String get consentIntroTitle => 'Let\'s personalize LUVI for you';

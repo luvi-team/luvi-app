@@ -156,6 +156,8 @@ jobs:
       - name: 'Capture triaged issues'
         id: 'capture_triage'
         if: steps.gemini_issue_analysis.conclusion == 'success'
+        env:
+          TRIAGED_ISSUES: '${{ steps.gemini_issue_analysis.outputs.triaged_issues }}'
         run: |-
           if [ -n "${TRIAGED_ISSUES:-}" ]; then
             echo "triaged_issues=${TRIAGED_ISSUES}" >> "${GITHUB_OUTPUT}"
@@ -201,7 +203,8 @@ jobs:
             // Parse the available labels
             const availableLabels = (process.env.AVAILABLE_LABELS || '').split(',')
               .map((label) => label.trim())
-              .sort()
+              .filter((label) => label.length > 0)
+              .sort();
 
             // Parse out the triaged issues with array fallback and type guard
             const parsed = JSON.parse(process.env.TRIAGED_ISSUES || '[]');
@@ -228,7 +231,7 @@ jobs:
               let labelsToSet = (issue.labels_to_set || [])
                 .map((label) => label.trim())
                 .filter((label) => availableLabels.includes(label))
-                .sort()
+                .sort();
 
               core.debug(`Identified labels to set: ${JSON.stringify(labelsToSet)}`);
 
