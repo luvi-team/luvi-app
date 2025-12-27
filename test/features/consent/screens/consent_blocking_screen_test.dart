@@ -169,9 +169,7 @@ void main() {
       // Either: no decoration at all (null) OR BoxDecoration without boxShadow
       final decoration = container.decoration;
       if (decoration == null) {
-        // No decoration = no BoxShadow (explicit pass)
-        expect(decoration, isNull,
-            reason: 'Shield container has no decoration (no BoxShadow possible)');
+        // No decoration = no BoxShadow possible (implicit pass, no assertion needed)
       } else {
         // Has decoration - must be BoxDecoration without boxShadow
         expect(decoration, isA<BoxDecoration>(),

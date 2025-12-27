@@ -36,7 +36,7 @@ jobs:
       pull-requests: 'read'
     outputs:
       available_labels: '${{ steps.get_labels.outputs.available_labels }}'
-      triaged_issues: '${{ env.TRIAGED_ISSUES }}'
+      triaged_issues: '${{ steps.capture_triage.outputs.triaged_issues }}'
     steps:
       - name: 'Get repository labels'
         id: 'get_labels'
@@ -144,6 +144,16 @@ jobs:
             }
           prompt: '/gemini-scheduled-triage'
 
+      - name: 'Capture triaged issues'
+        id: 'capture_triage'
+        if: steps.gemini_issue_analysis.conclusion == 'success'
+        run: |-
+          if [ -n "${TRIAGED_ISSUES:-}" ]; then
+            echo "triaged_issues=${TRIAGED_ISSUES}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "triaged_issues=[]" >> "${GITHUB_OUTPUT}"
+          fi
+
   label:
     runs-on: 'ubuntu-latest'
     needs:
@@ -219,10 +229,19 @@ jobs:
 
               core.debug(`Setting labels on issue #${issueNumber} to ${labelsToSet.join(', ')} (${issue.explanation || 'no explanation'})`)
 
+              // Fetch existing labels and merge with new ones to preserve manual labels
+              const existingLabels = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+              });
+              const existingLabelNames = existingLabels.data.map(l => l.name);
+              const mergedLabels = [...new Set([...existingLabelNames, ...labelsToSet])];
+
               await github.rest.issues.setLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
-                labels: labelsToSet,
+                labels: mergedLabels,
               });
             }

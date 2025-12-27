@@ -21,10 +21,31 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  /// Creates a GoRouter for testing. Caller must dispose via addTearDown.
+  GoRouter createTestRouter({Widget? home}) {
+    return GoRouter(
+      initialLocation: Onboarding03FitnessScreen.routeName,
+      routes: [
+        GoRoute(
+          path: Onboarding03FitnessScreen.routeName,
+          name: Onboarding03FitnessScreen.navName,
+          builder: (context, state) =>
+              home ?? const Onboarding03FitnessScreen(),
+        ),
+        GoRoute(
+          path: Onboarding04GoalsScreen.routeName,
+          name: Onboarding04GoalsScreen.navName,
+          builder: (context, state) => const Scaffold(
+            body: Center(child: Text('O4 Goals')),
+          ),
+        ),
+      ],
+    );
+  }
+
   /// Builds test app with OnboardingO3 screen.
   Widget buildTestApp({
-    Widget? home,
-    GoRouter? router,
+    required GoRouter router,
     List<dynamic> overrides = const [],
   }) {
     return ProviderScope(
@@ -37,39 +58,25 @@ void main() {
         locale: const Locale('de'),
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        routerConfig: router ??
-            GoRouter(
-              initialLocation: Onboarding03FitnessScreen.routeName,
-              routes: [
-                GoRoute(
-                  path: Onboarding03FitnessScreen.routeName,
-                  name: Onboarding03FitnessScreen.navName,
-                  builder: (context, state) =>
-                      home ?? const Onboarding03FitnessScreen(),
-                ),
-                GoRoute(
-                  path: Onboarding04GoalsScreen.routeName,
-                  name: Onboarding04GoalsScreen.navName,
-                  builder: (context, state) => const Scaffold(
-                    body: Center(child: Text('O4 Goals')),
-                  ),
-                ),
-              ],
-            ),
+        routerConfig: router,
       ),
     );
   }
 
   group('Onboarding03FitnessScreen', () {
     testWidgets('renders without errors', (tester) async {
-      await tester.pumpWidget(buildTestApp());
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       expect(find.byType(Onboarding03FitnessScreen), findsOneWidget);
     });
 
     testWidgets('displays all 3 fitness level pills', (tester) async {
-      await tester.pumpWidget(buildTestApp());
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Verify all 3 fitness pills are rendered
@@ -79,7 +86,9 @@ void main() {
     });
 
     testWidgets('tapping pill selects level and updates state', (tester) async {
-      await tester.pumpWidget(buildTestApp());
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Get container reference
@@ -106,7 +115,9 @@ void main() {
 
     testWidgets('continue button disabled when no level selected',
         (tester) async {
-      await tester.pumpWidget(buildTestApp());
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Find CTA button
@@ -121,7 +132,9 @@ void main() {
 
     testWidgets('continue button enabled after selecting level',
         (tester) async {
-      await tester.pumpWidget(buildTestApp());
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Find CTA button - initially disabled
@@ -142,7 +155,9 @@ void main() {
     });
 
     testWidgets('tapping continue navigates to O4 Goals', (tester) async {
-      await tester.pumpWidget(buildTestApp());
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Select a level first
@@ -160,7 +175,9 @@ void main() {
     });
 
     testWidgets('selecting different pill changes selection', (tester) async {
-      await tester.pumpWidget(buildTestApp());
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Select beginner
@@ -182,9 +199,11 @@ void main() {
     });
 
     testWidgets('displays personalized title with user name', (tester) async {
-      await tester.pumpWidget(buildTestApp(
+      final router = createTestRouter(
         home: const Onboarding03FitnessScreen(userName: 'TestUser'),
-      ));
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Title should contain the user name

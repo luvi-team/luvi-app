@@ -237,7 +237,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
       child: Semantics(
         label: l10n.onboarding06PeriodUnknown,
         button: true,
-        checked: _unknownSelected, // A4: Use checked for toggleable controls
+        toggled: _unknownSelected, // A4: Use toggled for on/off switches (not checked)
         child: InkWell(
           onTap: _handleUnknownToggle,
           borderRadius: BorderRadius.circular(Sizes.radiusM),

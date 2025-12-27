@@ -94,7 +94,8 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
     _monthController = FixedExtentScrollController(initialItem: _selectedMonth);
     _dayController = FixedExtentScrollController(initialItem: _selectedDay - 1);
     _yearController = FixedExtentScrollController(
-      initialItem: _years.indexOf(_selectedYear),
+      // Defensive clamp: indexOf returns -1 if not found (edge case)
+      initialItem: _years.indexOf(_selectedYear).clamp(0, _years.length - 1),
     );
   }
 

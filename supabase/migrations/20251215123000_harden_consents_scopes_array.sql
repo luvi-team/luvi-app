@@ -4,6 +4,9 @@
 -- - Table default was `'{}'::jsonb` (object), which allowed drift.
 -- - `public.log_consent_if_allowed(...)` validates `p_scopes` as a JSONB array
 --   and inserts into `public.consents.scopes`.
+-- - NOTE: This legacy array constraint is intentionally dropped by
+--   `20251222173000_consents_scopes_object_bool.sql` before converting `scopes`
+--   to the canonical SSOT format (JSONB object<boolean>).
 -- - This migration aligns the table schema with the RPC contract by:
 --   1) Backfilling legacy object rows into arrays of enabled keys
 --   2) Setting the column default to `'[]'::jsonb`
@@ -55,4 +58,3 @@ begin
     add constraint consents_scopes_is_array
       check (jsonb_typeof(scopes) = 'array');
 end $$;
-

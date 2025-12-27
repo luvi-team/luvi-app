@@ -42,20 +42,12 @@ void main() {
       bool foundValidHitArea = false;
 
       for (final element in inkResponses.evaluate()) {
-        // Walk up to find parent SizedBox
-        Element? current = element;
-        while (current != null) {
-          if (current.widget is SizedBox) {
-            final sizedBox = current.widget as SizedBox;
-            if (sizedBox.width != null && sizedBox.width! >= Sizes.touchTargetMin) {
-              foundValidHitArea = true;
-              break;
-            }
-          }
-          current = current.findAncestorRenderObjectOfType<RenderObject>() != null
-              ? null // Stop at render boundary
-              : null;
-          break; // Only check immediate ancestor
+        // Find ancestor SizedBox with valid hit area
+        final sizedBox = element.findAncestorWidgetOfExactType<SizedBox>();
+        if (sizedBox != null &&
+            sizedBox.width != null &&
+            sizedBox.width! >= Sizes.touchTargetMin) {
+          foundValidHitArea = true;
         }
         if (foundValidHitArea) break;
       }

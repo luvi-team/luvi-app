@@ -13,13 +13,15 @@ class ConsentConfig {
 
   /// Validates version constants are synchronized.
   /// Called at app startup to catch drift early.
+  /// Throws [StateError] in all builds (debug + release) if versions don't match.
   static void assertVersionsMatch() {
-    assert(
-      currentVersion.startsWith('v$currentVersionInt.'),
-      'ConsentConfig version drift: currentVersion="$currentVersion" '
-      'does not match currentVersionInt=$currentVersionInt. '
-      'Update both constants together.',
-    );
+    if (!currentVersion.startsWith('v$currentVersionInt.')) {
+      throw StateError(
+        'ConsentConfig version drift: currentVersion="$currentVersion" '
+        'does not match currentVersionInt=$currentVersionInt. '
+        'Update both constants together.',
+      );
+    }
   }
 
   // For APIs/analytics that expect string names.

@@ -17,6 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install PyYAML
+        run: pip install pyyaml
+
       - name: Check CLAUDE.md frontmatter exists and is valid
         run: |
           # Check CLAUDE.md exists

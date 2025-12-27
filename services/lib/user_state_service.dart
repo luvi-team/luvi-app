@@ -88,13 +88,13 @@ class UserStateService {
   /// - All keys are stored under a user-scoped prefix.
   /// - When the bound user changes (including sign-out), previously bound
   ///   gate keys are cleared so no gate state can bleed into another account.
+  /// - Legacy unscoped keys are ALWAYS removed (even on same-user re-bind).
   Future<void> bindUser(String? userId) async {
-    if (_boundUserId == userId) return;
-
     final previous = _boundUserId;
 
-    // Always remove legacy unscoped keys. We intentionally do NOT migrate them,
-    // because they may belong to a different account (cross-account leak risk).
+    // 1. Always remove legacy unscoped keys FIRST (before early return check).
+    // We intentionally do NOT migrate them, because they may belong to a
+    // different account (cross-account leak risk).
     for (final key in _legacyUnscopedKeys) {
       try {
         if (prefs.containsKey(key)) {
@@ -105,7 +105,10 @@ class UserStateService {
       }
     }
 
-    // Clear previous user's scoped keys on sign-out / account switch (privacy).
+    // 2. Early return if same user (AFTER legacy cleanup).
+    if (previous == userId) return;
+
+    // 3. Clear previous user's scoped keys on sign-out / account switch (privacy).
     if (previous != null && previous.isNotEmpty) {
       for (final baseKey in _legacyUnscopedKeys) {
         try {
