@@ -34,11 +34,11 @@ jobs:
             exit 1
           fi
 
-          # Find closing delimiter (within first 50 lines)
+          # Find closing delimiter (within first 100 lines)
           # Step 1: tail -n +2 skips the opening "---" delimiter (line 1)
           # Step 2: grep -n finds line numbers of "---" relative to tail output
           # Step 3: head -1 | cut gets the first match's line number
-          CLOSING_LINE=$(head -50 CLAUDE.md | tail -n +2 | grep -n "^---$" | head -1 | cut -d: -f1)
+          CLOSING_LINE=$(head -100 CLAUDE.md | tail -n +2 | grep -n "^---$" | head -1 | cut -d: -f1)
           if [ -z "$CLOSING_LINE" ]; then
             echo "::error::CLAUDE.md frontmatter missing closing delimiter (---)"
             exit 1

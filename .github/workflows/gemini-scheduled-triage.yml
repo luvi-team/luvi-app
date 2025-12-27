@@ -1,21 +1,30 @@
 name: '📋 Gemini Scheduled Issue Triage'
 
 on:
-  schedule:
-    - cron: '0 * * * *' # Runs every hour
-  pull_request:
-    branches:
-      - 'main'
-      - 'release/**/*'
-    paths:
-      - '.github/workflows/gemini-scheduled-triage.yml'
-  push:
-    branches:
-      - 'main'
-      - 'release/**/*'
-    paths:
-      - '.github/workflows/gemini-scheduled-triage.yml'
+  # NOTE: Automatic triggers disabled until GCP/Gemini is configured.
+  # To re-enable, uncomment schedule/push/pull_request blocks below.
+  # See: https://github.com/google-github-actions/run-gemini-cli
+  #
+  # schedule:
+  #   - cron: '0 * * * *' # Runs every hour
+  # pull_request:
+  #   branches:
+  #     - 'main'
+  #     - 'release/**/*'
+  #   paths:
+  #     - '.github/workflows/gemini-scheduled-triage.yml'
+  # push:
+  #   branches:
+  #     - 'main'
+  #     - 'release/**/*'
+  #   paths:
+  #     - '.github/workflows/gemini-scheduled-triage.yml'
   workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual triage run'
+        required: false
+        type: string
 
 concurrency:
   group: '${{ github.workflow }}'
