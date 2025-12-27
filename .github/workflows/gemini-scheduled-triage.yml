@@ -253,6 +253,10 @@ jobs:
                 repo: context.repo.repo,
                 issue_number: issueNumber,
                 labels: mergedLabels,
-              });
-            }
-            }
+             await github.rest.issues.setLabels({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               issue_number: issueNumber,
+               labels: mergedLabels,
+             });
+           }
