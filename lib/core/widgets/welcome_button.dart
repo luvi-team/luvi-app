@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/design_tokens/colors.dart';
-import '../../../core/design_tokens/sizes.dart';
+import '../design_tokens/colors.dart';
+import '../design_tokens/sizes.dart';
 
 /// Pill-shaped primary CTA button for Welcome and Auth screens.
 ///

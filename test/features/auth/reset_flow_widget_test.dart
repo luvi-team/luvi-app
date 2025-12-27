@@ -96,11 +96,11 @@ void main() {
       // Advance time for async operations:
       // 1. pump() processes setState after form submission completes
       // 2. pump(Duration) advances Future.delayed-based navigation timer
-      //    Uses Timing.feedbackNavigationDelayMs design token for consistency
+      //    Uses Timing.snackBarBrief so navigation waits for SnackBar to complete
       // 3. pumpAndSettle() completes any remaining animations
       // Note: pumpAndSettle alone doesn't advance Future.delayed timers
       await tester.pump(); // Process setState after async
-      await tester.pump(Timing.feedbackNavigationDelay);
+      await tester.pump(Timing.snackBarBrief);
       await tester.pumpAndSettle();
 
       // Verify navigation to signin

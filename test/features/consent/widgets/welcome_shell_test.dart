@@ -7,7 +7,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import '../../../support/test_config.dart';

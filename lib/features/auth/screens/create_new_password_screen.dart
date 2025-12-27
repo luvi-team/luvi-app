@@ -13,7 +13,7 @@ import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
 import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
 import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 

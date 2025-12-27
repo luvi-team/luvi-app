@@ -201,9 +201,7 @@ jobs:
             const availableLabels = (process.env.AVAILABLE_LABELS || '').split(',')
               .map((label) => label.trim())
               .filter((label) => label.length > 0)
-              .sort()
-              .map((label) => label.trim())
-              .sort()
+              .sort();
 
             // Parse out the triaged issues with array fallback and type guard
             const parsed = JSON.parse(process.env.TRIAGED_ISSUES || '[]');
@@ -230,8 +228,7 @@ jobs:
               let labelsToSet = (issue.labels_to_set || [])
                 .map((label) => label.trim())
                 .filter((label) => availableLabels.includes(label))
-                .sort()
-
+                .sort();
               core.debug(`Identified labels to set: ${JSON.stringify(labelsToSet)}`);
 
               if (labelsToSet.length === 0) {

@@ -4,7 +4,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../core/design_tokens/spacing.dart';
 import '../../../core/design_tokens/typography.dart';
-import 'welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 
 class WelcomeShell extends StatelessWidget {
   WelcomeShell({

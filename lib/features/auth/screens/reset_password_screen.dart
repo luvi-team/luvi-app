@@ -12,7 +12,7 @@ import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
 import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// ResetPasswordScreen with Figma Auth UI v2 design.
@@ -167,8 +167,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                     duration: Timing.snackBarBrief,
                                   ),
                                 );
-                                // Delay aligned with SnackBar duration for consistent UX
-                                await Future<void>.delayed(Timing.feedbackNavigationDelay);
+                                // Delay matches SnackBar duration so navigation occurs after message completes
+                                await Future<void>.delayed(Timing.snackBarBrief);
                                 if (!context.mounted) return;
                                 context.go(AuthSignInScreen.routeName);
                               },

@@ -6,7 +6,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/features/auth/widgets/auth_radial_gradient_background.dart';
 import 'package:luvi_app/features/auth/widgets/glow_checkmark.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// SuccessScreen with Figma Auth UI v2 design.

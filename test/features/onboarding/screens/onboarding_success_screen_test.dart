@@ -613,7 +613,7 @@ void main() {
         expect(writer.lastInterests, ['strength_training', 'cardio', 'nutrition']);
       });
 
-      testWidgets('ignores route fitnessLevel=unknown and uses SSOT state',
+      testWidgets('uses SSOT state for fitnessLevel',
           (tester) async {
         setTestScreenSize(tester);
         final writer = _CapturingBackendWriter();

@@ -31,7 +31,13 @@ class OnboardingProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) {
+      throw FlutterError(
+        'AppLocalizations not found in context. Ensure MaterialApp has '
+        'localizationsDelegates and supportedLocales configured.',
+      );
+    }
     final progress = currentStep / totalSteps;
 
     return LayoutBuilder(

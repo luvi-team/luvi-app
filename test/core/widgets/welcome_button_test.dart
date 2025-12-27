@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 
 void main() {
   group('WelcomeButton A11y', () {

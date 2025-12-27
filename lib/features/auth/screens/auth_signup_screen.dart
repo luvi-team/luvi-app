@@ -17,7 +17,7 @@ import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
 import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
 import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_button.dart';
+import 'package:luvi_app/core/widgets/welcome_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
