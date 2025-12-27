@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
+
+/// Onboarding CTA button widget matching Figma v3 specs.
+///
+/// Figma v3 specs:
+/// - Padding: 16px vertical, 40px horizontal
+/// - Border radius: 40
+/// - Shadow: None (flat design, matches Welcome screens)
+/// - Disabled state: DsColors.gray300
+class OnboardingButton extends StatelessWidget {
+  const OnboardingButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.isEnabled = true,
+  });
+
+  /// Button label text
+  final String label;
+
+  /// Callback when button is pressed
+  final VoidCallback? onPressed;
+
+  /// Whether the button is enabled
+  final bool isEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = isEnabled && onPressed != null;
+
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: label, // Explicit semantic label for screen readers
+      child: Material(
+        color: DsColors.transparent,
+        child: InkWell(
+          onTap: enabled ? onPressed : null,
+          borderRadius: BorderRadius.circular(Sizes.radiusXL),
+          splashColor: DsColors.white.withValues(alpha: 0.2),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(
+              vertical: Spacing.m,
+              horizontal: Spacing.onboardingButtonHorizontal,
+            ),
+            decoration: BoxDecoration(
+              color: enabled ? DsColors.buttonPrimary : DsColors.gray300,
+              borderRadius: BorderRadius.circular(Sizes.radiusXL),
+              // Figma v3: No shadow on CTA buttons (matches Welcome screens)
+            ),
+            child: ExcludeSemantics(
+              // Prevent duplicate screen reader announcements
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: enabled ? DsColors.white : DsColors.gray500,
+                  fontSize: Sizes.onboardingButtonFontSize, // 20px (Figma v2)
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

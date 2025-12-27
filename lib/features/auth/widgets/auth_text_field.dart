@@ -1,3 +1,5 @@
+import 'dart:math' show max;
+
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -23,7 +25,15 @@ class AuthTextField extends StatelessWidget {
     this.scrollPadding = EdgeInsets.zero,
     this.textAlign = TextAlign.start,
     this.frameless = false,
-  });
+    this.fontSize,
+    this.fontFamilyOverride,
+    this.fontWeightOverride,
+  })  : assert(fontSize == null || fontSize > 0, 'fontSize must be > 0'),
+        assert(fontSize == null || fontSize < 1000, 'fontSize must be < 1000'),
+        assert(
+          fontFamilyOverride == null || fontFamilyOverride != '',
+          'fontFamilyOverride must be non-empty if provided',
+        );
 
   final TextEditingController controller;
   final String hintText;
@@ -40,13 +50,28 @@ class AuthTextField extends StatelessWidget {
   final TextAlign textAlign;
   final bool frameless;
 
+  /// Optional font size override (default: TypographyTokens.size14)
+  final double? fontSize;
+
+  /// Optional font family override (e.g., FontFamilies.playfairDisplay for O1)
+  final String? fontFamilyOverride;
+
+  /// Optional font weight override (e.g., FontWeight.bold for O1)
+  final FontWeight? fontWeightOverride;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final resolvedFontSize = fontSize ?? TypographyTokens.size14;
+    // Design spec: 24px line height for 14px base font, scale proportionally.
+    // Enforce min 1.2 multiplier to prevent text clipping at large font sizes.
+    const designLineHeightPx = 24.0;
     final inputStyle = theme.textTheme.bodySmall?.copyWith(
-      fontSize: TypographyTokens.size14,
-      height: TypographyTokens.lineHeightRatio24on14,
+      fontSize: resolvedFontSize,
+      fontFamily: fontFamilyOverride,
+      fontWeight: fontWeightOverride,
+      height: max(1.2, designLineHeightPx / resolvedFontSize),
       color: theme.colorScheme.onSurface,
     );
     final resolvedHintStyle = inputStyle?.copyWith(color: tokens.grayscale500);

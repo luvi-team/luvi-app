@@ -8,6 +8,25 @@ import 'package:luvi_app/core/navigation/routes.dart' as features;
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
+Future<void> _pumpSignupWidget(
+  WidgetTester tester,
+  GoRouter router, {
+  Locale locale = const Locale('de'),
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      child: MaterialApp.router(
+        routerConfig: router,
+        theme: AppTheme.buildAppTheme(),
+        locale: locale,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
 void main() {
   TestConfig.ensureInitialized();
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -19,18 +38,7 @@ void main() {
     );
     addTearDown(router.dispose);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp.router(
-          routerConfig: router,
-          theme: AppTheme.buildAppTheme(),
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await _pumpSignupWidget(tester, router);
 
     // Screen renders
     expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
@@ -55,5 +63,22 @@ void main() {
 
     // Login link is present
     expect(find.byKey(const ValueKey('signup_login_link')), findsOneWidget);
+  });
+
+  testWidgets('AuthSignupScreen renders correctly in English', (tester) async {
+    final router = GoRouter(
+      routes: features.featureRoutes,
+      initialLocation: AuthSignupScreen.routeName,
+    );
+    addTearDown(router.dispose);
+
+    await _pumpSignupWidget(tester, router, locale: const Locale('en'));
+
+    expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
+
+    // Verify English L10n is active
+    final context = tester.element(find.byType(AuthSignupScreen));
+    final l10n = AppLocalizations.of(context)!;
+    expect(l10n.localeName, 'en');
   });
 }

@@ -8,7 +8,9 @@ import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_02_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_02_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_welcome_03_screen.dart';
@@ -16,15 +18,16 @@ import 'package:luvi_app/features/consent/screens/consent_welcome_04_screen.dart
 import 'package:luvi_app/features/consent/screens/consent_welcome_05_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_03.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_04.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_05.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_06.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_07.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_08.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_03_fitness.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_04_goals.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
+import 'package:luvi_app/features/profile/screens/profile_stub_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
@@ -35,6 +38,7 @@ import 'package:luvi_services/user_state_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 // Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
@@ -164,15 +168,28 @@ final List<GoRoute> featureRoutes = [
     name: 'welcome5',
     builder: (context, state) => const ConsentWelcome05Screen(),
   ),
+  // C1 - Consent Intro Screen (Route: /consent/02 - mapped from W5 for backwards compatibility)
   GoRoute(
-    path: Consent02Screen.routeName,
-    name: 'consent02',
+    path: ConsentIntroScreen.routeName,
+    name: 'consent_intro',
+    builder: (context, state) => const ConsentIntroScreen(),
+  ),
+  // C2 - Consent Options Screen
+  GoRoute(
+    path: ConsentOptionsScreen.routeName,
+    name: 'consent_options',
     builder: (context, state) {
       // Obtain AppLinks via Riverpod to enable DI and testing.
       final container = ProviderScope.containerOf(context, listen: false);
       final appLinks = container.read(appLinksProvider);
-      return Consent02Screen(appLinks: appLinks);
+      return ConsentOptionsScreen(appLinks: appLinks);
     },
+  ),
+  // C3 - Consent Blocking Screen
+  GoRoute(
+    path: ConsentBlockingScreen.routeName,
+    name: 'consent_blocking',
+    builder: (context, state) => const ConsentBlockingScreen(),
   ),
   GoRoute(
     path: Onboarding01Screen.routeName,
@@ -184,54 +201,46 @@ final List<GoRoute> featureRoutes = [
     name: 'onboarding_02',
     builder: (ctx, st) => const Onboarding02Screen(),
   ),
+  // Onboarding screens (refactored flow)
   GoRoute(
-    path: Onboarding03Screen.routeName,
-    name: 'onboarding_03',
-    builder: (ctx, st) => const Onboarding03Screen(),
+    path: Onboarding03FitnessScreen.routeName,
+    name: 'onboarding_03_fitness',
+    builder: (ctx, st) => const Onboarding03FitnessScreen(),
   ),
   GoRoute(
-    path: Onboarding04Screen.routeName,
-    name: 'onboarding_04',
-    builder: (ctx, st) => const Onboarding04Screen(),
+    path: Onboarding04GoalsScreen.routeName,
+    name: 'onboarding_04_goals',
+    builder: (ctx, st) => const Onboarding04GoalsScreen(),
   ),
   GoRoute(
-    path: Onboarding05Screen.routeName,
-    name: 'onboarding_05',
-    builder: (ctx, st) => const Onboarding05Screen(),
+    path: Onboarding05InterestsScreen.routeName,
+    name: 'onboarding_05_interests',
+    builder: (ctx, st) => const Onboarding05InterestsScreen(),
+  ),
+  // O6: Cycle Intro Screen (NEU - zwischen O5 und O7)
+  GoRoute(
+    path: Onboarding06CycleIntroScreen.routeName,
+    name: 'onboarding_06_cycle_intro',
+    builder: (ctx, st) => const Onboarding06CycleIntroScreen(),
   ),
   GoRoute(
-    path: Onboarding06Screen.routeName,
-    name: 'onboarding_06',
-    builder: (ctx, st) => const Onboarding06Screen(),
+    path: Onboarding06PeriodScreen.routeName,
+    name: Onboarding06PeriodScreen.navName,
+    builder: (ctx, st) => const Onboarding06PeriodScreen(),
   ),
   GoRoute(
-    path: Onboarding07Screen.routeName,
-    name: 'onboarding_07',
-    builder: (ctx, st) => const Onboarding07Screen(),
-  ),
-  GoRoute(
-    path: Onboarding08Screen.routeName,
-    name: 'onboarding_08',
-    builder: (ctx, st) => const Onboarding08Screen(),
+    path: Onboarding07DurationScreen.routeName,
+    name: 'onboarding_07_duration',
+    builder: (ctx, st) {
+      // Defensiver Cast: Verhindert Crash bei falschem extra-Typ
+      final periodStart = st.extra is DateTime ? st.extra as DateTime : null;
+      return Onboarding07DurationScreen(periodStartDate: periodStart);
+    },
   ),
   GoRoute(
     path: OnboardingSuccessScreen.routeName,
     name: 'onboarding_success',
-    redirect: (ctx, st) {
-      final extra = st.extra;
-      if (extra is FitnessLevel) {
-        return null; // ok
-      }
-      return Onboarding01Screen.routeName;
-    },
-    builder: (ctx, st) {
-      final fitnessLevel = st.extra;
-      if (fitnessLevel is! FitnessLevel) {
-        // Should never happen due to redirect, but defensive programming
-        throw StateError('OnboardingSuccessScreen requires FitnessLevel');
-      }
-      return OnboardingSuccessScreen(fitnessLevel: fitnessLevel);
-    },
+    builder: (ctx, st) => const OnboardingSuccessScreen(),
   ),
   GoRoute(
     path: OnboardingRoutes.done,
@@ -315,10 +324,18 @@ final List<GoRoute> featureRoutes = [
       // to Splash. This is intentional: during loading, we delegate to Splash
       // which handles the loading screen properly.
       final service = asyncValue.whenOrNull(data: (s) => s);
+      final hasCompletedOnboarding = service?.hasCompletedOnboardingOrNull;
+      final acceptedConsentVersion = service?.acceptedConsentVersionOrNull;
+      // State is known when service loaded AND onboarding state determined.
+      // Consent-null is semantically meaningful ("needs consent") and handled
+      // by homeGuardRedirectWithConsent directly - no Splash hop needed.
+      final isStateKnown =
+          service != null &&
+          hasCompletedOnboarding != null;
       return homeGuardRedirectWithConsent(
-        isStateKnown: service != null,
-        hasCompletedOnboarding: service?.hasCompletedOnboarding,
-        acceptedConsentVersion: service?.acceptedConsentVersionOrNull,
+        isStateKnown: isStateKnown,
+        hasCompletedOnboarding: hasCompletedOnboarding,
+        acceptedConsentVersion: acceptedConsentVersion,
         currentConsentVersion: ConsentConfig.currentVersionInt,
       );
     },
@@ -328,6 +345,11 @@ final List<GoRoute> featureRoutes = [
     path: CycleOverviewStubScreen.routeName,
     name: 'cycle_overview_stub',
     builder: (context, state) => const CycleOverviewStubScreen(),
+  ),
+  GoRoute(
+    path: ProfileStubScreen.routeName,
+    name: RouteNames.profile,
+    builder: (context, state) => const ProfileStubScreen(),
   ),
   GoRoute(
     path: WorkoutDetailStubScreen.route,
@@ -388,22 +410,32 @@ String? supabaseRedirectWithSession(
   final isSigningUp = state.matchedLocation.startsWith(AuthSignupScreen.routeName);
   final isResettingPassword = state.matchedLocation.startsWith(ResetPasswordScreen.routeName);
   final isOnboarding = isOnboardingRoute(state.matchedLocation);
-  final isWelcome = isWelcomeRoute(state.matchedLocation);
-  final isConsent = isConsentRoute(state.matchedLocation);
   final isDashboard = state.matchedLocation.startsWith(HeuteScreen.routeName);
   final isSplash = state.matchedLocation == SplashScreen.routeName;
   final isPasswordRecoveryRoute =
       state.matchedLocation.startsWith(CreateNewPasswordScreen.routeName);
   final isPasswordSuccessRoute = state.matchedLocation
       .startsWith(SuccessScreen.passwordSavedRoutePath);
-  final session = sessionOverride ??
-      (isInitialized ? SupabaseService.client.auth.currentSession : null);
-
-  if (isPasswordRecoveryRoute || isPasswordSuccessRoute) {
-    return null;
+  // Session access with defensive try-catch for resilience
+  Session? session;
+  if (sessionOverride != null) {
+    session = sessionOverride;
+  } else if (isInitialized) {
+    try {
+      session = SupabaseService.client.auth.currentSession;
+    } catch (e, stack) {
+      // Log unexpected session access failure for observability
+      log.w(
+        'auth_redirect_session_access_failed',
+        tag: 'navigation',
+        error: e.runtimeType.toString(),
+        stack: stack,
+      );
+      session = null;
+    }
   }
 
-  if (isWelcome || isConsent) {
+  if (isPasswordRecoveryRoute || isPasswordSuccessRoute) {
     return null;
   }
 

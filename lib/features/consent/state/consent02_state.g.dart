@@ -7,7 +7,7 @@ part of 'consent02_state.dart';
 // **************************************************************************
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, invalid_use_of_internal_member
+// ignore_for_file: type=lint, type=warning
 
 @ProviderFor(Consent02Notifier)
 const consent02Provider = Consent02NotifierProvider._();
@@ -41,7 +41,7 @@ final class Consent02NotifierProvider
   }
 }
 
-String _$consent02NotifierHash() => r'7500239d9ae6bd8417df06ccea74eae01712f826';
+String _$consent02NotifierHash() => r'0aa65d7acf332dee7de8bf6f75062ba2b8e09ba3';
 
 abstract class _$Consent02Notifier extends $Notifier<Consent02State> {
   Consent02State build();

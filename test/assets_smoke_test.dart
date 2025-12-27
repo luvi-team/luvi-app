@@ -9,8 +9,8 @@ void main() {
   TestConfig.ensureInitialized();
 
   group('Asset smoke tests', () {
-    test('loads onboarding success trophy image', () async {
-      final data = await rootBundle.load(Assets.images.onboardingSuccessTrophy);
+    test('loads onboarding content card image', () async {
+      final data = await rootBundle.load(Assets.images.onboardingContentCard1);
       expect(data.lengthInBytes, greaterThan(0));
     });
 

@@ -77,16 +77,16 @@ void main() {
         final context = tester.element(find.byType(ConsentWelcome02Screen));
         final l10n = AppLocalizations.of(context)!;
 
-        // 3. Assertions against REAL L10n values
+        // 3. Verify locale first (consistent with DE test)
+        expect(l10n.localeName, 'en');
+
+        // 4. Assertions against REAL L10n values
         expect(find.text(l10n.welcome02Title), findsOneWidget);
         expect(find.text(l10n.welcome02Subtitle), findsOneWidget);
         expect(
           find.widgetWithText(ElevatedButton, l10n.commonContinue),
           findsOneWidget,
         );
-
-        // 4. Verify it's actually English locale
-        expect(l10n.localeName, 'en');
       });
     });
   });

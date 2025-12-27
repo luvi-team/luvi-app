@@ -14,7 +14,7 @@ Die Claude-Agentenprinzipien wurden erfolgreich auf Codex übertragen. Alle Agen
   - Preamble ergänzt (Auto-Role Default, explicit role: … für Misch-Tasks)
   - Required-Checks & SSOT-Verweis aufgenommen
 - `CLAUDE.md` als **Legacy** gekennzeichnet (Interop-Hinweis)
-- Neues SSOT `context/agents/_acceptance_v1.md` angelegt (Version 1.0, identischer Acceptance-Block)
+- Neues SSOT `context/archive/agents/_acceptance_v1.md` angelegt (Version 1.0, identischer Acceptance-Block; inzwischen archiviert zugunsten von `_acceptance_v1.1.md`)
 
 ### Impact
 - Governance dauerhaft im Repo verankert → wirkt automatisch in neuen Codex-Sessions und PRs

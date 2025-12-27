@@ -63,9 +63,19 @@ class AppLinks {
     final scheme = _rawCallbackScheme.trim();
     final host = _rawCallbackHost.trim();
 
-    // Validate scheme and host are non-empty before constructing Uri
-    if (scheme.isNotEmpty && host.isNotEmpty) {
-      return Uri(scheme: scheme, host: host);
+    // Validate scheme and host are non-empty AND don't contain whitespace
+    final schemeValid = scheme.isNotEmpty && !scheme.contains(RegExp(r'\s'));
+    final hostValid = host.isNotEmpty && !host.contains(RegExp(r'\s'));
+    if (schemeValid && hostValid) {
+      try {
+        return Uri(scheme: scheme, host: host);
+      } on FormatException catch (e) {
+        // Edge case: Uri construction failed despite validation, fall through
+        log.w(
+          'app_links_uri_format_error',
+          error: 'Uri format error for scheme="$scheme", host="$host": $e',
+        );
+      }
     }
 
     // Single consolidated warning for invalid scheme/host configuration

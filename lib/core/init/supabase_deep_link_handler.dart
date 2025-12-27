@@ -19,6 +19,9 @@ class SupabaseDeepLinkHandler {
   })  : _appLinks = appLinks ?? platform_links.AppLinks(),
         _allowedUri = allowedUri ?? config_links.AppLinks.authCallbackUri;
 
+  /// Timeout for initial deep link fetch. Exposed for testing.
+  static const deepLinkTimeout = Duration(seconds: 5);
+
   final platform_links.AppLinks _appLinks;
   final Uri _allowedUri;
   StreamSubscription<Uri?>? _subscription;
@@ -28,6 +31,13 @@ class SupabaseDeepLinkHandler {
   /// Pending URI to be processed when Supabase initialization completes.
   /// This preserves deep links that arrive before Supabase is ready.
   Uri? _pendingUri;
+
+  /// Counter for monitoring overwritten deep links in production.
+  /// Exposed for testing and analytics integration.
+  int _overwrittenUriCount = 0;
+
+  /// Returns the count of overwritten pending URIs (for analytics/monitoring).
+  int get overwrittenUriCount => _overwrittenUriCount;
 
   Future<void> start() async {
     if (_disposed) {
@@ -59,15 +69,25 @@ class SupabaseDeepLinkHandler {
   Future<void> dispose() async {
     await _subscription?.cancel();
     _subscription = null;
+    _pendingUri = null; // Clear pending URI to release references
     _disposed = true;
   }
 
   Future<void> _handleInitialUri() async {
     try {
-      final initial = await _appLinks.getInitialLink();
+      final initial = await _appLinks
+          .getInitialLink()
+          .timeout(deepLinkTimeout);
       if (initial != null) {
         await _handleUri(initial);
       }
+    } on TimeoutException catch (_, stackTrace) {
+      log.w(
+        'supabase_deeplink_initial_timeout',
+        tag: 'supabase_deeplink',
+        error: 'getInitialLink timed out after ${deepLinkTimeout.inSeconds}s',
+        stack: stackTrace,
+      );
     } catch (error, stackTrace) {
       log.w(
         'supabase_deeplink_initial_error',
@@ -82,6 +102,15 @@ class SupabaseDeepLinkHandler {
     if (uri == null) return;
     if (!_matchesAllowed(uri)) return;
     if (!SupabaseService.isInitialized) {
+      // Detect and log when a pending URI is being overwritten
+      if (_pendingUri != null) {
+        _overwrittenUriCount++;
+        log.w(
+          'supabase_deeplink_overwritten: Previous pending URI replaced '
+          '(count: $_overwrittenUriCount)',
+          tag: 'supabase_deeplink_overwritten',
+        );
+      }
       // NOTE: Last-one-wins design - if multiple deep links arrive before
       // Supabase init completes, only the most recent URI is preserved.
       // This is acceptable for MVP as deep links are rare events and the
@@ -128,15 +157,16 @@ class SupabaseDeepLinkHandler {
     final pending = _pendingUri;
     if (pending == null) return;
 
-    _pendingUri = null;
-
     if (!SupabaseService.isInitialized) {
       log.w(
         'supabase_deeplink_pending_skipped: Supabase still not initialized',
         tag: 'supabase_deeplink',
       );
-      return;
+      return; // Keep _pendingUri intact for retry
     }
+
+    // Only clear after confirming we can process
+    _pendingUri = null;
 
     log.i(
       'supabase_deeplink_pending_processing: Processing queued URI',
@@ -157,8 +187,18 @@ class SupabaseDeepLinkHandler {
     }
     // Also validate path if the allowed URI specifies one
     if (_allowedUri.path.isNotEmpty) {
-      return uri.path.toLowerCase() == _allowedUri.path.toLowerCase();
+      // Normalize paths by trimming trailing slashes for comparison
+      final normalizedUriPath = _normalizePath(uri.path);
+      final normalizedAllowedPath = _normalizePath(_allowedUri.path);
+      return normalizedUriPath == normalizedAllowedPath;
     }
     return true;
+  }
+
+  /// Normalizes a path by trimming trailing slashes and converting to lowercase.
+  /// Treats empty path and "/" as equivalent (both become "").
+  String _normalizePath(String path) {
+    final normalized = path.toLowerCase().replaceAll(RegExp(r'/+$'), '');
+    return normalized.isEmpty ? '' : normalized;
   }
 }

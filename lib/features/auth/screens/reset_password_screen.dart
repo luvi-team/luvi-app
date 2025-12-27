@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
@@ -163,8 +164,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(l10n.authResetEmailSent),
+                                    duration: Timing.snackBarBrief,
                                   ),
                                 );
+                                // Delay aligned with SnackBar duration for consistent UX
+                                await Future<void>.delayed(Timing.feedbackNavigationDelay);
+                                if (!context.mounted) return;
                                 context.go(AuthSignInScreen.routeName);
                               },
                             );

@@ -19,22 +19,23 @@ If you follow it, you minimize: regressions, privacy mistakes, review ping-pong.
 
 > Idee: "Wer macht was?" ist klar, damit nicht *alle alles* machen.
 
-### 1.1 Codex CLI (Dev + Review Agent, Backend/DB/Privacy-first)
+### 1.1 Gemini (Architect & Orchestrator)
+
+- **Fokus:** System-Architektur, Governance, komplexe Planung, Refactoring-Strategien.
+- **Startpunkt:** `GEMINI.md`.
+- **Aufgabe:** Erstellt Epics, aktualisiert SSOTs und zerlegt Aufgaben für Codex/Claude.
+
+### 1.2 Codex CLI (Dev + Review Agent, Backend/DB/Privacy-first)
 
 - **Fokus:** Backend, DB, RLS, Privacy/QA, Contracts, harte Gates, CI/Checks.
 - Arbeitet CLI-first und liefert PRP/patches, inkl. Tests/Proof.
 - Wenn UI/Frontend betroffen ist: kann reviewen (oder harte DoD/Gates durchsetzen).
 
-### 1.2 Claude Code (Dev Agent, UI/Frontend + DataViz)
+### 1.3 Claude Code (Dev Agent, UI/Frontend + DataViz)
 
 - **Fokus:** Flutter UI, Widgets, Navigation, Design Tokens, A11y, DataViz.
 - Startpunkt/"Runtime-Minimum" für Claude Code Sessions: `CLAUDE.md` (operativer Ablauf).
 - UI-Regeln als SSOT: `docs/engineering/checklists/ui_claude_code.md` (nicht in PRs duplizieren).
-
-### 1.3 Opus (Audit Agent)
-
-- Macht Audit nach Implementation: Logik, Edge Cases, DoD, Privacy, Naming, Architektur.
-- Output: 5–10 konkrete Findings (Severity + File+Line), plus konkrete Fix-Vorschläge.
 
 ### 1.4 Traycer (Plan Agent)
 
@@ -112,9 +113,9 @@ Vor Merge müssen grün sein:
    - Micro / Normal / High Impact (DB/PII/AI/Security = High)
 
 2. **Plan**
-   - Micro: Mini-Plan (3 bullets) reicht
-   - Normal: BMAD-slim
-   - Medium/High: Traycer-Plan + BMAD
+   - **Architect (Optional):** Gemini plant Epics/Architektur.
+   - **Feature:** Traycer-Plan + BMAD.
+   - **Micro:** Mini-Plan (3 bullets).
 
 3. **Implement**
    - Dev-Agent je Domäne:
@@ -127,7 +128,7 @@ Vor Merge müssen grün sein:
    - Health-Gate (wenn API/Edge/Deploy relevant)
 
 5. **Review**
-   - Greptile + (Codex/Opus Review je nach Setup)
+   - Greptile + (Codex Review bei UI-PRs) + (Human Review bei Gemini-PRs)
 
 6. **Merge**
 
@@ -135,6 +136,7 @@ Vor Merge müssen grün sein:
 
 ## 7) Tooling (was wir einsetzen)
 
+- **Gemini:** Architektur & Orchestrierung, Governance-Updates.
 - **Codex CLI:** Implementation/Review (Backend/DB/Privacy), läuft über Wrapper-Scripts.
 - **Claude Code:** Implementation (UI/Dataviz), folgt `CLAUDE.md` Runtime-Minimum + UI-Checklist SSOT.
 - **Archon/MCP:** Tasks + RAG zu SSOTs (wenn verfügbar); sonst Repo-SSOT-Fallback.

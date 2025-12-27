@@ -1,7 +1,7 @@
 // Contract tests for the log_consent Edge Function.
 // These tests assert the current contract (request payload + responses).
 
-import { assertEquals, assertExists } from "https://deno.land/std@0.168.0/testing/asserts.ts";
+import { assert, assertEquals, assertExists } from "https://deno.land/std@0.224.0/testing/asserts.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "http://localhost:54321";
@@ -98,6 +98,26 @@ Deno.test("log_consent: accepts valid POST requests", async () => {
   assertEquals(typeof data.request_id, "string");
 });
 
+Deno.test("log_consent: accepts canonical scopes object format with version alias", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      version: "v1.0.0", // App sends "version", not "policy_version" - test alias
+      scopes: { terms: true, analytics: true }, // CANONICAL Object-Format
+      source: "contract-test-canonical",
+      appVersion: "1.0.0-test",
+    }),
+  });
+
+  assertEquals(response.status, 201);
+  const data = await response.json();
+  assertEquals(data.ok, true);
+  assertExists(data.request_id);
+  assertEquals(typeof data.request_id, "string");
+});
+
 Deno.test("log_consent: rejects non-POST methods", async () => {
   const response = await fetch(FUNCTION_URL, {
     method: "GET",
@@ -107,6 +127,9 @@ Deno.test("log_consent: rejects non-POST methods", async () => {
   assertEquals(response.status, 405);
   const data = await response.json();
   assertEquals(data.error, "Method not allowed");
+  assertExists(data.request_id);
+  assertEquals(typeof data.request_id, "string");
+  assertEquals(response.headers.get("x-request-id"), data.request_id);
 });
 
 Deno.test("log_consent: rejects malformed JSON payloads", async () => {
@@ -120,4 +143,218 @@ Deno.test("log_consent: rejects malformed JSON payloads", async () => {
   assertEquals(response.status, 400);
   const data = await response.json();
   assertEquals(data.error, "Invalid request body");
+  assertExists(data.request_id);
+  assertEquals(typeof data.request_id, "string");
+  assertEquals(response.headers.get("x-request-id"), data.request_id);
 });
+
+// ============================================================================
+// Contract Tests: Error Cases (P2.1 Erweiterung)
+// ============================================================================
+
+Deno.test("log_consent: rejects requests without authentication (401)", async () => {
+  // No Authorization header, only apikey
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(), // No accessToken → no Authorization header
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: ["analytics"],
+    }),
+  });
+
+  assertEquals(response.status, 401);
+  const data = await response.json();
+  assertEquals(data.error, "Missing Authorization header");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects invalid access token (401)", async () => {
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders("invalid-token-that-is-not-jwt"),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: ["analytics"],
+    }),
+  });
+
+  assertEquals(response.status, 401);
+  const data = await response.json();
+  assertEquals(data.error, "Unauthorized");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects empty scopes array (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: [], // Empty array
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "scopes must be non-empty");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects empty scopes object (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: {}, // Empty object
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "scopes must be non-empty");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects invalid scopes (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: ["invalid_scope_name", "another_invalid"],
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid scopes provided");
+  assertExists(data.invalidScopes);
+  assertExists(data.invalidScopesCount);
+  assertEquals(data.invalidScopesCount, 2);
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: truncates extremely long invalid scopes in response", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const longScope = "x".repeat(1000);
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: [longScope],
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid scopes provided");
+  assertEquals(Array.isArray(data.invalidScopes), true);
+  assertEquals(data.invalidScopes.length, 1);
+
+  const returnedScope = data.invalidScopes[0];
+  const maxExpectedLength = 203; // 200 chars + "..."
+  assert(typeof returnedScope === "string", "Expected scope to be a string");
+  assert(
+    returnedScope.length <= maxExpectedLength,
+    `Expected scope to be truncated to ${maxExpectedLength} chars, got ${returnedScope.length}`,
+  );
+  assert(returnedScope.endsWith("..."), "Expected truncated scope to end with '...'");
+  assertEquals(data.invalidScopesCount, 1);
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: caps invalidScopes array at MAX_LOGGED_INVALID_SCOPES", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const manyScopes = Array.from({ length: 20 }, (_, i) => `invalid_scope_${i}`);
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: manyScopes,
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid scopes provided");
+  assertEquals(data.invalidScopes.length, 10);
+  assertEquals(data.invalidScopesCount, 20);
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: non-string scopes are converted to type tokens", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: [{ nested: "object" }, [1, 2, 3], 42, null, true],
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid scopes provided");
+  assertEquals(data.invalidScopesCount, 5);
+  assertEquals(data.invalidScopes[0], "[object]");
+  assertEquals(data.invalidScopes[1], "[array]");
+  assertEquals(data.invalidScopes[2], "[number]");
+  assertEquals(data.invalidScopes[3], "[null]");
+  assertEquals(data.invalidScopes[4], "[boolean]");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects missing policy_version (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      // No policy_version or version
+      scopes: ["analytics"],
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "policy_version is required");
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: rejects non-boolean values in scopes object (400)", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: { analytics: "yes", terms: 123 }, // Non-boolean values
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "scopes object values must be boolean");
+  assertExists(data.request_id);
+  // invalidScopes are only returned for invalid scope IDs, not for value-type errors
+  assertEquals("invalidScopes" in data, false);
+});
+
+// Note: 429 Rate Limit test is commented out as it requires hitting the rate limit
+// which could be disruptive in CI. Enable manually for integration testing.
+// Deno.test("log_consent: returns 429 when rate limited", async () => {
+//   const accessToken = await ensureTestUserAccessToken();
+//   // Would need to send many requests quickly to trigger rate limit
+//   // This is intentionally left as documentation for manual testing
+// });

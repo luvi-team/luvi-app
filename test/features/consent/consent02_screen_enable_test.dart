@@ -30,7 +30,11 @@ void main() {
 
       // Tap required cards via deterministic keys
       final health = find.byKey(const Key('consent02_card_required_health'));
-      final terms = find.byKey(const Key('consent02_card_required_terms'));
+      // Use skipOffstage for items that may be outside the viewport
+      final terms = find.byKey(
+        const Key('consent02_card_required_terms'),
+        skipOffstage: false,
+      );
 
       // AI Journal is optional now
       final list = find.byType(Scrollable);
@@ -38,9 +42,11 @@ void main() {
       expect(terms, findsOneWidget);
       await tester.tap(health);
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(terms, 200, scrollable: list);
-      // Nudge list a bit more so the card center isn't under the sticky CTA
-      await tester.drag(list, const Offset(0, 120));
+      // Scroll to make terms visible and not obscured by sticky footer
+      await tester.scrollUntilVisible(terms, 300, scrollable: list);
+      await tester.pumpAndSettle();
+      // Ensure terms card is fully visible before tapping
+      await tester.ensureVisible(terms);
       await tester.pumpAndSettle();
       await tester.tap(terms);
       await tester.pumpAndSettle();
@@ -69,18 +75,21 @@ void main() {
       final screenContext = tester.element(find.byType(Consent02Screen));
       final container = ProviderScope.containerOf(screenContext, listen: false);
       final stateAfterSelect = container.read(consent02Provider);
-      expect(stateAfterSelect.allOptionalSelected, isTrue);
+      // DSGVO: Only visible optional scopes are selected (analytics only in MVP)
+      expect(stateAfterSelect.allVisibleOptionalSelected, isTrue);
       expect(stateAfterSelect.choices[ConsentScope.analytics], isTrue);
-      expect(stateAfterSelect.choices[ConsentScope.marketing], isTrue);
-      expect(stateAfterSelect.choices[ConsentScope.model_training], isTrue);
-      expect(stateAfterSelect.choices[ConsentScope.ai_journal], isTrue);
+      // Hidden scopes remain unset (DSGVO-konform)
+      expect(stateAfterSelect.choices[ConsentScope.marketing], isFalse);
+      expect(stateAfterSelect.choices[ConsentScope.model_training], isFalse);
+      expect(stateAfterSelect.choices[ConsentScope.ai_journal], isFalse);
 
       await tester.tap(allAcceptFinder);
       await tester.pumpAndSettle();
 
       final stateAfterClear = container.read(consent02Provider);
-      expect(stateAfterClear.allOptionalSelected, isFalse);
+      expect(stateAfterClear.allVisibleOptionalSelected, isFalse);
       expect(stateAfterClear.choices[ConsentScope.analytics], isFalse);
+      // Hidden scopes remain unset
       expect(stateAfterClear.choices[ConsentScope.marketing], isFalse);
       expect(stateAfterClear.choices[ConsentScope.model_training], isFalse);
       expect(stateAfterClear.choices[ConsentScope.ai_journal], isFalse);

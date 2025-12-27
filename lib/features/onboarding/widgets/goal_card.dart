@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/onboarding/widgets/custom_radio_check.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 
 /// Goal card widget for onboarding multi-select screen.
 ///
@@ -42,51 +43,48 @@ class GoalCard extends StatelessWidget {
       label: title,
       checked: selected,
       child: Material(
-        color: Colors.transparent,
+        color: DsColors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(Sizes.radiusL),
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Spacing.m,
-              vertical: Spacing.goalCardVertical,
-            ),
-            decoration: BoxDecoration(
-              color: dsTokens.cardSurface, // #F7F7F8
-              borderRadius: BorderRadius.circular(Sizes.radiusL),
-              border: selected
-                  ? Border.all(
-                      color: dsTokens.cardBorderSelected, // #1C1411
-                      width: 1,
-                    )
-                  : null,
-            ),
-            child: Row(
-              children: [
-                if (icon != null) ...[
-                  SizedBox(
-                    width: Sizes.iconM,
-                    height: Sizes.iconM,
-                    child: IconTheme(
-                      data: IconThemeData(color: theme.colorScheme.onSurface),
-                      child: icon!,
+          borderRadius: BorderRadius.circular(Sizes.radius16),
+          // B3: Use OnboardingGlassCard for real BackdropFilter blur effect
+          child: OnboardingGlassCard(
+            backgroundColor:
+                selected ? DsColors.transparent : null, // default 10% white
+            borderColor:
+                selected ? DsColors.buttonPrimary : null, // default 70% white
+            borderWidth: selected ? 2.0 : 1.5,
+            borderRadius: Sizes.radius16,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.m,
+                vertical: Spacing.goalCardVertical,
+              ),
+              child: Row(
+                children: [
+                  if (icon != null) ...[
+                    SizedBox(
+                      width: Sizes.iconM,
+                      height: Sizes.iconM,
+                      child: IconTheme(
+                        data: IconThemeData(color: theme.colorScheme.onSurface),
+                        child: icon!,
+                      ),
+                    ),
+                    const SizedBox(width: Spacing.goalCardIconGap),
+                  ],
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: TypographyTokens.size16,
+                        height: TypographyTokens.lineHeightRatio24on16,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: Spacing.goalCardIconGap),
                 ],
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: TypographyTokens.size16,
-                      height: TypographyTokens.lineHeightRatio24on16,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: Spacing.m),
-                CustomRadioCheck(selected: selected),
-              ],
+              ),
             ),
           ),
         ),

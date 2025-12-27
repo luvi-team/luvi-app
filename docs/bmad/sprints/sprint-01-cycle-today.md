@@ -4,7 +4,7 @@
 
 - Zeitraum: TODO
 - Fokus/Thema: Zyklus-Logik & Today-Badge (Home + Kalender)
-- Relevante Dossiers/ADRs: Phase-Definitionen, LUVI_Dossiers (Phase), ADR-0002 (Least-Privilege & RLS), Roadmap S1
+- Relevante Dossiers/ADRs: Phase-Definitionen, ADR-0002 (Least-Privilege & RLS), Roadmap S1
 - DSGVO-Impact-Schwerpunkte (Low/Medium/High + warum): Medium – CycleData sind sensibel, aber Lifestyle-orientiert, kein Medizinprodukt; RLS owner-based, kein `service_role`
 
 ## 1. Business/Ziel
@@ -74,7 +74,7 @@
 
 - 3.3 Abhängigkeiten (Use-Cases, Screen-Contracts, Dossiers, ADRs, Runbooks):
   - `docs/product/screens/heute.md` – Screen-Contract für Today/Home inkl. Week-Strip und Hinweise.
-  - Phase-Definitionen (`docs/phase_definitions.md`) und Phase-Teil der `docs/LUVI_Dossiers_v1.0.md` – Namen/Dauern/Wechselkriterien als Grundlage für `compute_cycle_info`.
+  - Phase-Definitionen (`docs/phase_definitions.md`) – Namen/Dauern/Wechselkriterien als Grundlage für `compute_cycle_info`.
   - BMAD Global (Kap. 2 Modellierung, Kap. 3 Architektur) – Domänen- und Systemkontext.
   - Roadmap S1 (Zyklus-Logik & Home-Bindung) – Zielbild und Performance-Anforderung.
   - ADR-0002 (Least-Privilege & RLS) – Zugriffsvorgaben für `cycle_data`.
@@ -126,7 +126,7 @@
 - Roadmap-Sprint: `docs/product/roadmap.md` (Abschnitt „S1 — Zyklus-Logik & Home-Bindung (deterministisch)`)
 - Relevante Use-Cases (`docs/product/use-cases.md`): TODO – passenden Today/Cycle-Use-Case verlinken
 - Relevante Screen-Contracts (`docs/product/screens/*.md`): `docs/product/screens/heute.md`
-- Relevante Dossiers (`docs/LUVI_Dossiers_v1.0.md`, Phase-/Consent-/Ranking-Docs): `docs/LUVI_Dossiers_v1.0.md` (Phase-Teil), `docs/phase_definitions.md`
+- Relevante Dossiers (Phase/Consent/Ranking): `docs/phase_definitions.md`, `docs/consent_texts.md`, `docs/ranking_heuristic.md`
 - Relevante ADRs: `context/ADR/0002-least-privilege-rls.md`
 - Traycer-Plan-File (falls gespeichert, z. B. `docs/traycer/sprint-XX-*.md`): TODO – Traycer-Plan verlinken
 - Checklisten/DoD: `docs/definition-of-done.md`, `docs/engineering/checklists/ui.md`, `docs/engineering/checklists/db.md`, `docs/engineering/checklists/privacy.md`, `docs/analytics/taxonomy.md`

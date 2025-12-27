@@ -52,6 +52,10 @@ class DsColors {
   /// Hex: #FFB9B9
   static const Color phaseMenstruation = Color(0xFFFFB9B9);
 
+  /// Cycle phase: menstruation dark (fallback for progress indicators).
+  /// Hex: #8B3A62
+  static const Color phaseMenstruationDark = Color(0xFF8B3A62);
+
   /// Dashboard wave overlay tint (30% opacity blush pink from Figma).
   /// Hex: #FADCDC @ 0x4D alpha.
   static const Color waveOverlayPink = Color(0x4DFADCDC);
@@ -163,6 +167,110 @@ class DsColors {
 
   /// Fully transparent color for backgrounds that should show through.
   static const Color transparent = Color(0x00000000);
+
+  /// Shadow color for elevated components (20% black opacity).
+  /// Used for: OnboardingButton drop shadow
+  static const Color shadowMedium = Color(0x33000000);
+
+  // ─── Consent & Onboarding Specific (Figma Refactor 2024-12) ───
+
+  /// Consent Background Cream (Figma: #FAEEE0)
+  /// Alias: Same as welcomeWaveBg for consistency
+  static const Color bgCream = welcomeWaveBg;
+
+  /// Gradient Light Gold (Figma: #EDE1D3)
+  /// Alias: Same as authGradientLight for consistency
+  static const Color goldLight = authGradientLight;
+
+  /// Gradient Medium Gold (Figma: #D4B896)
+  /// Alias: Same as authGradientBase for consistency
+  static const Color goldMedium = authGradientBase;
+
+  /// Signature Magenta (Figma: #9F2B68)
+  /// Used for links, progress indicators, period markers
+  /// Alias: Same as headlineMagenta for consistency
+  static const Color signature = headlineMagenta;
+
+  /// Primary Button Background (Figma: #A8406F)
+  /// Alias: Same as welcomeButtonBg for consistency
+  static const Color buttonPrimary = welcomeButtonBg;
+
+  /// Gray 300 - Secondary Button Background (Figma: #DCDCDC)
+  static const Color gray300 = Color(0xFFDCDCDC);
+
+  /// Gray 500 - Secondary Button Text (Figma: #525252)
+  static const Color gray500 = Color(0xFF525252);
+
+  /// Divider Color (Figma: #A1A1A1)
+  static const Color divider = Color(0xFFA1A1A1);
+
+  // ─── Consent Checkbox Specific (Figma Consent Options Screen) ───
+
+  /// Consent Checkbox Border (Figma: #B0B0B0)
+  static const Color consentCheckboxBorder = Color(0xFFB0B0B0);
+
+  /// Consent Checkbox Selected Fill (Figma: #A8406F)
+  /// Alias: Same as buttonPrimary for consistency
+  static const Color consentCheckboxSelected = buttonPrimary;
+
+  /// Consent Checkbox Background (Figma: #FFFFFF)
+  /// Alias: Same as grayscaleWhite for consistency
+  static const Color consentCheckboxBackground = grayscaleWhite;
+
+  /// Divider Gray (Figma: #A1A1A1)
+  /// Alias: Same as divider for semantic clarity
+  static const Color dividerGray = divider;
+
+  // ─── Calendar/Period Picker Specific (Figma Onboarding 2024-12) ───
+
+  /// Calendar Weekday Header Gray (Figma: #99A1AF)
+  static const Color calendarWeekdayGray = Color(0xFF99A1AF);
+
+  /// Today Label Gray (Figma: #6A7282)
+  static const Color todayLabelGray = Color(0xFF6A7282);
+
+  /// Period Glow Pink Base - 100% opacity for animation control (Figma: #FF6482)
+  /// Use this when alpha is animated programmatically via .withValues(alpha:)
+  static const Color periodGlowPinkBase = Color(0xFFFF6482);
+
+  /// Period Glow Pink - 60% opacity (Figma: #FF6482 @ 0.6)
+  static const Color periodGlowPink = Color(0x99FF6482);
+
+  /// Period Glow Pink Light - 10% opacity (Figma: #FF6482 @ 0.1)
+  ///
+  /// Migration: Find & replace `periodGlowPinkLight` → `periodGlow10`
+  /// Note: Updated to canonical 10% value (0x1A=26/255=10.2%)
+  @Deprecated('Use periodGlow10 instead. Will be removed in v2.0.0')
+  static const Color periodGlowPinkLight = Color(0x1AFF6482);
+
+  /// Date Picker Selection Background (Figma: #F5F5F5)
+  static const Color datePickerSelectionBg = Color(0xFFF5F5F5);
+
+  // ─── Onboarding Success Screen (Figma O9 2024-12) ───
+
+  /// Success Card Glass Background (Figma: #E9D5FF @ 20%)
+  /// Light purple/lavender with 20% opacity for content preview cards
+  static const Color successCardGlass = Color(0x33E9D5FF);
+
+  /// Success Card 1 (left/top) - Purple (Figma: #E9D5FF @ 20%)
+  /// Alias of successCardGlass for semantic clarity
+  static const Color successCardPurple = successCardGlass;
+
+  /// Success Card 2 (right) - Cyan (Figma: #CFFAFE @ 20%)
+  static const Color successCardCyan = Color(0x33CFFAFE);
+
+  /// Success Card 3 (bottom) - Pink (Figma: #FCE7F3 @ 20%)
+  static const Color successCardPink = Color(0x33FCE7F3);
+
+  // ─── O6 Radial Gradient Colors (Figma O6 2024-12) ───
+
+  /// Period Glow 60% opacity - alias for periodGlowPink (Fix 9: deduplicate)
+  static const Color periodGlow60 = periodGlowPink;
+
+  /// Period Glow 10% opacity - canonical value (Figma: #FF6482 @ 10%)
+  /// 0x1A = 26/255 = 10.2% (closest integer to true 10%)
+  /// Prefer this over deprecated periodGlowPinkLight.
+  static const Color periodGlow10 = Color(0x1AFF6482);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.

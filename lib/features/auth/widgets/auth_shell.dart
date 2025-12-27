@@ -70,64 +70,68 @@ class AuthShell extends StatelessWidget {
           Positioned.fill(child: background),
 
           // Main content with SafeArea
+          // NOTE: bottom: false is intentional - bottom safe area insets are handled
+          // manually at lines 109-111 (no CTA case) and 123-126 (with CTA case)
+          // to allow for different padding strategies based on whether a bottomCta exists.
           SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              // Back button row (if shown)
-              // Note: assertion guarantees onBackPressed != null when showBackButton is true
-              if (showBackButton)
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: horizontalPadding,
-                    top: AuthLayout.backButtonTopInset,
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: BackButtonCircle(
-                      key: const ValueKey('backButtonCircle'),
-                      onPressed: onBackPressed!,
-                      // Figma: Back button without circle background, 32×30.5px icon
-                      backgroundColor: DsColors.transparent,
-                      iconColor: DsColors.textPrimary,
-                      iconSize: Sizes.authBackIconSize,
+            bottom: false,
+            child: Column(
+              children: [
+                // Back button row (if shown)
+                // Note: assertion guarantees onBackPressed != null when showBackButton is true
+                if (showBackButton)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: horizontalPadding,
+                      top: AuthLayout.backButtonTopInset,
+                    ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: BackButtonCircle(
+                        key: const ValueKey('backButtonCircle'),
+                        onPressed: onBackPressed!,
+                        // Figma: Back button without circle background, 32×30.5px icon
+                        backgroundColor: DsColors.transparent,
+                        iconColor: DsColors.textPrimary,
+                        iconSize: Sizes.authBackIconSize,
+                      ),
                     ),
                   ),
+
+                // Scrollable content area
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: EdgeInsets.only(
+                      left: horizontalPadding,
+                      right: horizontalPadding,
+                      // Add bottom safe area padding when no bottomCta is present
+                      // to prevent content from being obscured by home indicator
+                      bottom: bottomCta == null
+                          ? MediaQuery.of(context).padding.bottom
+                          : 0,
+                    ),
+                    child: child,
+                  ),
                 ),
 
-              // Scrollable content area
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: EdgeInsets.only(
-                    left: horizontalPadding,
-                    right: horizontalPadding,
-                    // Add bottom safe area padding when no bottomCta is present
-                    // to prevent content from being obscured by home indicator
-                    bottom: bottomCta == null
-                        ? MediaQuery.of(context).padding.bottom
-                        : 0,
+                // Bottom CTA (if provided)
+                if (bottomCta != null)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: horizontalPadding,
+                      right: horizontalPadding,
+                      bottom:
+                          MediaQuery.of(context).padding.bottom +
+                          AuthLayout.ctaBottomInset,
+                    ),
+                    child: bottomCta,
                   ),
-                  child: child,
-                ),
-              ),
-
-              // Bottom CTA (if provided)
-              if (bottomCta != null)
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: horizontalPadding,
-                    right: horizontalPadding,
-                    bottom: MediaQuery.of(context).padding.bottom +
-                        AuthLayout.ctaBottomInset,
-                  ),
-                  child: bottomCta,
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
         ],
       ),
     );

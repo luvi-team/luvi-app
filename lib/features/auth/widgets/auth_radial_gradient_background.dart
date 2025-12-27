@@ -3,6 +3,22 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 
 /// Radial gradient background for authentication screens.
 ///
+/// **Usage Note:** This widget has no intrinsic size and relies on its parent
+/// to provide bounded constraints. It should be used with:
+/// - `Positioned.fill()` in a Stack (recommended)
+/// - `SizedBox.expand()` wrapper
+/// - Inside a parent with defined dimensions
+///
+/// Example:
+/// ```dart
+/// Stack(
+///   children: [
+///     Positioned.fill(child: AuthRadialGradientBackground()),
+///     // content...
+///   ],
+/// )
+/// ```
+///
 /// Figma Gradient Details:
 /// - Type: Radial Gradient
 /// - Center: (197, 230.5) - approximately upper-center of screen

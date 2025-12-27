@@ -52,39 +52,62 @@ class WelcomeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ElevatedButton provides built-in button semantics with child text as label.
-    // No explicit Semantics wrapper needed.
-    return ElevatedButton(
-      // Auth-Flow Bugfix: Dezentes haptisches Feedback bei Button-Tap
-      onPressed: isLoading || onPressed == null
-          ? null
-          : () {
-              HapticFeedback.lightImpact();
-              onPressed!();
-            },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: DsColors.welcomeButtonBg,
-        foregroundColor: DsColors.welcomeButtonText,
-        disabledBackgroundColor: DsColors.welcomeButtonBg.withValues(alpha: 0.5),
-        disabledForegroundColor: DsColors.welcomeButtonText.withValues(alpha: 0.7),
-        padding: EdgeInsets.symmetric(
-          vertical: Sizes.welcomeButtonPaddingVertical,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
+    // A11y-Fix: MergeSemantics ensures the label is correctly exposed to screen
+    // readers while preserving ElevatedButton's tap action. Stack+Opacity pattern
+    // keeps the Text in semantic tree even during loading.
+    return MergeSemantics(
+      child: Semantics(
+        label: label,
+        button: true,
+        enabled: !isLoading && onPressed != null,
+        child: ElevatedButton(
+          onPressed: isLoading || onPressed == null
+              ? null
+              : () {
+                  HapticFeedback.lightImpact();
+                  onPressed!();
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: DsColors.welcomeButtonBg,
+            foregroundColor: DsColors.welcomeButtonText,
+            disabledBackgroundColor:
+                DsColors.welcomeButtonBg.withValues(alpha: 0.5),
+            disabledForegroundColor:
+                DsColors.welcomeButtonText.withValues(alpha: 0.7),
+            padding: EdgeInsets.symmetric(
+              vertical: Sizes.welcomeButtonPaddingVertical,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Sizes.radiusWelcomeButton),
+            ),
+          ),
+          child: ExcludeSemantics(
+            // Exclude inner Text semantics since MergeSemantics provides the label
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Text always in tree for layout, but invisible during loading
+                Opacity(
+                  opacity: isLoading ? 0 : 1,
+                  child: Text(label, key: labelKey),
+                ),
+                // Spinner only visible during loading
+                if (isLoading)
+                  SizedBox(
+                    key: loadingKey,
+                    height: Sizes.loadingIndicatorSize,
+                    width: Sizes.loadingIndicatorSize,
+                    child: CircularProgressIndicator(
+                      strokeWidth: Sizes.loadingIndicatorStroke,
+                      valueColor:
+                          const AlwaysStoppedAnimation(DsColors.welcomeButtonText),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
-      child: isLoading
-          ? SizedBox(
-              key: loadingKey,
-              height: Sizes.loadingIndicatorSize,
-              width: Sizes.loadingIndicatorSize,
-              child: CircularProgressIndicator(
-                strokeWidth: Sizes.loadingIndicatorStroke,
-                valueColor: const AlwaysStoppedAnimation(DsColors.welcomeButtonText),
-              ),
-            )
-          : Text(label, key: labelKey),
     );
   }
 }

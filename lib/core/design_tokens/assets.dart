@@ -18,6 +18,7 @@ class Assets {
   static const images = _Images();
   static const videos = _Videos();
   static const animations = _Animations();
+  static const consentImages = _ConsentImages();
 
   /// Default error builder for dashboard `Image.asset` widgets.
   /// Renders a neutral placeholder so layout stays stable when assets fail.
@@ -34,6 +35,7 @@ class _Icons {
   const _Icons();
 
   final _DashboardStatIcons dashboard = const _DashboardStatIcons();
+  final _OnboardingIcons onboarding = const _OnboardingIcons();
 
   // Auth/Social icons
   final String googleG = 'assets/icons/google_g.svg';
@@ -93,10 +95,13 @@ class _Images {
   final String meditation = 'assets/images/dashboard/meditation.png';
   final String stretching = 'assets/images/dashboard/stretching.png';
 
-  // Onboarding Success Screen trophy (A11y fallback when reduceMotion is true)
-  // PNG format keeps static illustration crisp when animation is disabled
-  final String onboardingSuccessTrophy =
-      'assets/images/onboarding/onboarding_success_trophy.png';
+  // Onboarding Success Screen content preview cards
+  final String onboardingContentCard1 =
+      'assets/images/onboarding/content_card_1.png';
+  final String onboardingContentCard2 =
+      'assets/images/onboarding/content_card_2.png';
+  final String onboardingContentCard3 =
+      'assets/images/onboarding/content_card_3.png';
 
   // Welcome/Consent hero assets (images only; videos in _Videos)
   // Note: welcomeHero01 removed – Screen 1 now uses video
@@ -110,6 +115,10 @@ class _Images {
 
   /// Fallback poster for Welcome Screen 5 video (A11y + error state)
   final String welcomeFallback05 = _kWelcomeFallback05;
+
+  // Consent Screen Assets
+  final String consentIntroHero = 'assets/images/consent/consent_intro_hero.png';
+  // Note: Use Assets.consentImages.shield2 for shield assets (canonical path)
 }
 
 class _Videos {
@@ -141,4 +150,22 @@ class _DashboardStatIcons {
   final String run = 'assets/icons/dashboard/run.svg';
   final String time = 'assets/icons/dashboard/time.svg';
   final String heartRateGlyph = 'assets/icons/dashboard/Heart Rate Icon.svg';
+}
+
+class _OnboardingIcons {
+  const _OnboardingIcons();
+
+  final String muscle = 'assets/icons/onboarding/ic_muscle.svg';
+  final String energy = 'assets/icons/onboarding/ic_energy.svg';
+  final String sleep = 'assets/icons/onboarding/ic_sleep.svg';
+  final String calendar = 'assets/icons/onboarding/ic_calendar.svg';
+  final String run = 'assets/icons/onboarding/ic_run.svg';
+  final String happy = 'assets/icons/onboarding/ic_happy.svg';
+}
+
+class _ConsentImages {
+  const _ConsentImages();
+
+  final String shield1 = 'assets/images/consent/shield1.png';  // C2
+  final String shield2 = 'assets/images/consent/shield2.png';  // C3
 }

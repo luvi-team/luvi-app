@@ -22,12 +22,12 @@ class _MockBuildContext extends Mock implements BuildContext {}
 
 class _MockSession extends Mock implements Session {}
 
-/// Unit-Tests für supabaseRedirectWithSession
+/// Unit tests for supabaseRedirectWithSession
 ///
-/// Diese Tests decken die kritischen Redirect-Szenarien ab:
-/// 1. session == null + Auth-Routes → return null (erlauben)
+/// These tests cover critical redirect scenarios:
+/// 1. session == null + Auth routes → return null (allow)
 /// 2. session != null + Login/AuthSignIn → return SplashScreen.routeName
-/// 3. session == null + non-Auth-Route → return AuthSignInScreen.routeName
+/// 3. session == null + non-Auth route → return AuthSignInScreen.routeName
 void main() {
   TestConfig.ensureInitialized();
 
@@ -42,7 +42,7 @@ void main() {
   });
 
   group('supabaseRedirectWithSession', () {
-    group('Szenario 1: session == null + Auth-Routes → allow', () {
+    group('Scenario 1: session == null + Auth routes → allow', () {
       test('allows LoginScreen without session', () {
         when(() => mockState.matchedLocation).thenReturn(LoginScreen.routeName);
 
@@ -76,7 +76,7 @@ void main() {
       });
     });
 
-    group('Szenario 2: session != null + Login/AuthSignIn → redirect to Splash', () {
+    group('Scenario 2: session != null + Login/AuthSignIn → redirect to Splash', () {
       test('redirects LoginScreen to Splash with skipAnimation when session exists', () {
         when(() => mockState.matchedLocation).thenReturn(LoginScreen.routeName);
 
@@ -130,7 +130,7 @@ void main() {
       });
     });
 
-    group('Szenario 3: session == null + non-Auth-Route → redirect to AuthSignIn', () {
+    group('Scenario 3: session == null + non-Auth route → redirect to AuthSignIn', () {
       test('redirects Dashboard to AuthSignIn without session', () {
         when(() => mockState.matchedLocation).thenReturn(HeuteScreen.routeName);
 
@@ -140,6 +140,30 @@ void main() {
           result,
           equals(AuthSignInScreen.routeName),
           reason: 'Dashboard without session should redirect to AuthSignIn',
+        );
+      });
+
+      test('redirects Welcome routes to AuthSignIn without session', () {
+        when(() => mockState.matchedLocation).thenReturn('/onboarding/w1');
+
+        final result = supabaseRedirectWithSession(mockContext, mockState);
+
+        expect(
+          result,
+          equals(AuthSignInScreen.routeName),
+          reason: 'Welcome routes without session should redirect to AuthSignIn',
+        );
+      });
+
+      test('redirects Consent routes to AuthSignIn without session', () {
+        when(() => mockState.matchedLocation).thenReturn('/consent/02');
+
+        final result = supabaseRedirectWithSession(mockContext, mockState);
+
+        expect(
+          result,
+          equals(AuthSignInScreen.routeName),
+          reason: 'Consent routes without session should redirect to AuthSignIn',
         );
       });
 
@@ -165,22 +189,6 @@ void main() {
         expect(result, isNull, reason: 'Splash should always be allowed');
       });
 
-      test('allows Welcome routes without session', () {
-        when(() => mockState.matchedLocation).thenReturn('/onboarding/w1');
-
-        final result = supabaseRedirectWithSession(mockContext, mockState);
-
-        expect(result, isNull, reason: 'Welcome routes should always be allowed');
-      });
-
-      test('allows Consent routes without session', () {
-        when(() => mockState.matchedLocation).thenReturn('/consent/02');
-
-        final result = supabaseRedirectWithSession(mockContext, mockState);
-
-        expect(result, isNull, reason: 'Consent routes should always be allowed');
-      });
-
       test('allows PasswordRecovery without session', () {
         when(() => mockState.matchedLocation).thenReturn(CreateNewPasswordScreen.routeName);
 
@@ -195,6 +203,36 @@ void main() {
         final result = supabaseRedirectWithSession(mockContext, mockState);
 
         expect(result, isNull, reason: 'PasswordSuccess should always be allowed');
+      });
+
+      test('allows PasswordRecovery with active session', () {
+        when(() => mockState.matchedLocation)
+            .thenReturn(CreateNewPasswordScreen.routeName);
+
+        final result = supabaseRedirectWithSession(
+          mockContext,
+          mockState,
+          sessionOverride: mockSession,
+          isInitializedOverride: true,
+        );
+
+        expect(result, isNull,
+            reason: 'PasswordRecovery should always be allowed (even with session)');
+      });
+
+      test('allows PasswordSuccess with active session', () {
+        when(() => mockState.matchedLocation)
+            .thenReturn(SuccessScreen.passwordSavedRoutePath);
+
+        final result = supabaseRedirectWithSession(
+          mockContext,
+          mockState,
+          sessionOverride: mockSession,
+          isInitializedOverride: true,
+        );
+
+        expect(result, isNull,
+            reason: 'PasswordSuccess should always be allowed (even with session)');
       });
     });
 

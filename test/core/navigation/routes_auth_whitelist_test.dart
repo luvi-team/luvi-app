@@ -17,31 +17,22 @@ import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../support/test_config.dart';
+import '../../support/test_view.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
-
-/// Configures test view size. Returns teardown function to reset.
-void Function() _configureTestView(WidgetTester tester) {
-  final view = tester.view;
-  view.physicalSize = const Size(1080, 2340);
-  view.devicePixelRatio = 1.0;
-  return () {
-    view.resetPhysicalSize();
-    view.resetDevicePixelRatio();
-  };
-}
 
 /// Builds a test widget with router, mocked auth repo, and standard localization.
 Widget _buildAuthRouterTestWidget({
   required GoRouter router,
   required AuthRepository mockAuthRepo,
+  Locale locale = const Locale('de'),
 }) {
   return ProviderScope(
     overrides: [authRepositoryProvider.overrideWithValue(mockAuthRepo)],
     child: MaterialApp.router(
       routerConfig: router,
       theme: AppTheme.buildAppTheme(),
-      locale: const Locale('de'),
+      locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -65,17 +56,35 @@ void main() {
 
   setUp(() {
     mockRepo = _MockAuthRepository();
+
+    // Primary stub for test scenarios
     when(
       () => mockRepo.signInWithPassword(
         email: any(named: 'email'),
         password: any(named: 'password'),
       ),
     ).thenThrow(AuthException('invalid credentials'));
+
+    // Fallback stubs to prevent unmocked invocation errors
+    when(
+      () => mockRepo.signUp(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+        data: any(named: 'data'),
+      ),
+    ).thenThrow(AuthException('not stubbed'));
+
+    when(() => mockRepo.signOut()).thenAnswer((_) async {});
+
+    when(() => mockRepo.currentSession).thenReturn(null);
+
+    when(() => mockRepo.authStateChanges())
+        .thenAnswer((_) => const Stream.empty());
   });
 
   group('Auth route whitelist (navigation without session)', () {
     testWidgets('LoginScreen → SignupScreen navigation works', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -114,7 +123,7 @@ void main() {
     });
 
     testWidgets('LoginScreen → ResetPasswordScreen navigation works', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -146,7 +155,7 @@ void main() {
     });
 
     testWidgets('AuthSignInScreen is accessible', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -169,7 +178,7 @@ void main() {
     });
 
     testWidgets('AuthSignupScreen is directly accessible', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -192,7 +201,7 @@ void main() {
     });
 
     testWidgets('ResetPasswordScreen is directly accessible', (tester) async {
-      addTearDown(_configureTestView(tester));
+      addTearDown(configureTestView(tester));
 
       final router = GoRouter(
         routes: routes.featureRoutes,
@@ -212,6 +221,32 @@ void main() {
         findsOneWidget,
         reason: 'ResetPasswordScreen should be accessible without session (whitelist)',
       );
+    });
+  });
+
+  group('Auth route whitelist (EN locale)', () {
+    testWidgets('LoginScreen renders correctly in English', (tester) async {
+      addTearDown(configureTestView(tester));
+
+      final router = GoRouter(
+        routes: routes.featureRoutes,
+        initialLocation: LoginScreen.routeName,
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(_buildAuthRouterTestWidget(
+        router: router,
+        mockAuthRepo: mockRepo,
+        locale: const Locale('en'),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+
+      // Verify English L10n is active
+      final context = tester.element(find.byType(LoginScreen));
+      final l10n = AppLocalizations.of(context)!;
+      expect(l10n.localeName, 'en');
     });
   });
 }

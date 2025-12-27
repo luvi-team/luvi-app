@@ -95,10 +95,10 @@ abstract class AppLocalizations {
     Locale('en')
   ];
 
-  /// Header title for onboarding step 1.
+  /// Header title for onboarding step 1 (Figma v3). Contains forced line break.
   ///
   /// In en, this message translates to:
-  /// **'Tell me about yourself 💜'**
+  /// **'Welcome!\nWhat should we call you?'**
   String get onboarding01Title;
 
   /// Spoken step indicator for onboarding progress.
@@ -119,11 +119,17 @@ abstract class AppLocalizations {
   /// **'Enter your name'**
   String get onboarding01NameInputSemantic;
 
-  /// Header title for onboarding step 2 (birthday). Includes a forced line break to match the Figma layout; keep the newline when translating.
+  /// Placeholder hint text for name input field on onboarding screen 01
   ///
   /// In en, this message translates to:
-  /// **'When is your\nbirthday?'**
-  String get onboarding02Title;
+  /// **'Your first name'**
+  String get onboarding01NameHint;
+
+  /// Personalized header title for onboarding step 2 (birthday). Contains forced line break to match Figma layout.
+  ///
+  /// In en, this message translates to:
+  /// **'Hey {name},\nwhen is your birthday?'**
+  String onboarding02Title(String name);
 
   /// Accessibility announcement for the onboarding 02 callout info box.
   ///
@@ -274,6 +280,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start now'**
   String get commonStartNow;
+
+  /// Uppercase label for today's date in calendar widgets.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY'**
+  String get commonToday;
 
   /// Greeting shown in the dashboard header.
   ///
@@ -650,7 +662,7 @@ abstract class AppLocalizations {
   /// Header title for onboarding step 7 (cycle regularity).
   ///
   /// In en, this message translates to:
-  /// **'What is your cycle like?'**
+  /// **'How regular is your cycle?'**
   String get onboarding07Title;
 
   /// Semantics label announcing the cycle regularity options list on step 7.
@@ -1037,6 +1049,12 @@ abstract class AppLocalizations {
   /// **'Start here'**
   String get authLoginCtaLinkAction;
 
+  /// Complete semantic label for the signup link on login screen. Translators have full control over sentence structure.
+  ///
+  /// In en, this message translates to:
+  /// **'New to LUVI? Start here'**
+  String get authLoginCtaLinkSemantic;
+
   /// Link label that navigates to the forgot-password flow.
   ///
   /// In en, this message translates to:
@@ -1337,6 +1355,18 @@ abstract class AppLocalizations {
   /// **'Too many requests right now. Please wait a moment and try again.'**
   String get consentSnackbarRateLimited;
 
+  /// Snackbar message when edge function is unreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'The service is temporarily unavailable. Please try again later.'**
+  String get consentSnackbarServiceUnavailable;
+
+  /// Snackbar message for HTTP 5xx errors.
+  ///
+  /// In en, this message translates to:
+  /// **'A server error occurred. Please try again later.'**
+  String get consentSnackbarServerError;
+
   /// Headline on the SignIn entry screen (glassmorphism card).
   ///
   /// In en, this message translates to:
@@ -1444,6 +1474,558 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Registration successful! You can now sign in.'**
   String get authSignupSuccess;
+
+  /// Interest option: strength training and muscle building
+  ///
+  /// In en, this message translates to:
+  /// **'Strength training & muscle building'**
+  String get interestStrengthTraining;
+
+  /// Interest option: cardio and endurance
+  ///
+  /// In en, this message translates to:
+  /// **'Cardio & endurance'**
+  String get interestCardio;
+
+  /// Interest option: flexibility and mobility
+  ///
+  /// In en, this message translates to:
+  /// **'Flexibility & mobility'**
+  String get interestMobility;
+
+  /// Interest option: nutrition and supplements
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition & supplements'**
+  String get interestNutrition;
+
+  /// Interest option: mindfulness and recovery
+  ///
+  /// In en, this message translates to:
+  /// **'Mindfulness & recovery'**
+  String get interestMindfulness;
+
+  /// Interest option: hormones and menstrual cycle
+  ///
+  /// In en, this message translates to:
+  /// **'Hormones & cycle'**
+  String get interestHormonesCycle;
+
+  /// Error message when user is too young for the app.
+  ///
+  /// In en, this message translates to:
+  /// **'You must be at least {minAge} years old.'**
+  String onboarding02AgeTooYoung(int minAge);
+
+  /// Error message when user's age exceeds maximum.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum age is {maxAge} years.'**
+  String onboarding02AgeTooOld(int maxAge);
+
+  /// Fitness level label for beginners (maps to DB: beginner)
+  ///
+  /// In en, this message translates to:
+  /// **'Not fit'**
+  String get fitnessLevelBeginner;
+
+  /// Fitness level label for occasional trainers (maps to DB: occasional)
+  ///
+  /// In en, this message translates to:
+  /// **'Fit'**
+  String get fitnessLevelOccasional;
+
+  /// Fitness level label for fit users (maps to DB: fit)
+  ///
+  /// In en, this message translates to:
+  /// **'Very fit'**
+  String get fitnessLevelFit;
+
+  /// Title for consent intro screen (C1)
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s personalize LUVI for you'**
+  String get consentIntroTitle;
+
+  /// Body text for consent intro screen (C1)
+  ///
+  /// In en, this message translates to:
+  /// **'To personalize LUVI for you, we first need your okay.'**
+  String get consentIntroBody;
+
+  /// CTA button label for consent intro screen
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get consentIntroCtaLabel;
+
+  /// Semantics label for consent intro illustration
+  ///
+  /// In en, this message translates to:
+  /// **'Illustration: Hand holding a pen to sign'**
+  String get consentIntroIllustrationSemantic;
+
+  /// Semantics label for consent intro continue button
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to privacy consent'**
+  String get consentIntroCtaSemantic;
+
+  /// Title for consent options screen (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'Your Privacy Choices'**
+  String get consentOptionsTitle;
+
+  /// Subtitle for consent options screen (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'Securely stored, strictly protected. GDPR, EU hosting'**
+  String get consentOptionsSubtitle;
+
+  /// Section header for required consents on C2
+  ///
+  /// In en, this message translates to:
+  /// **'REQUIRED'**
+  String get consentOptionsSectionRequired;
+
+  /// Section header for optional consents on C2
+  ///
+  /// In en, this message translates to:
+  /// **'OPTIONAL'**
+  String get consentOptionsSectionOptional;
+
+  /// Health processing consent text on C2
+  ///
+  /// In en, this message translates to:
+  /// **'I agree that LUVI processes my health and cycle data to give me cycle-aware recommendations.'**
+  String get consentOptionsHealthText;
+
+  /// Prefix before terms link on C2
+  ///
+  /// In en, this message translates to:
+  /// **'I accept the '**
+  String get consentOptionsTermsPrefix;
+
+  /// Terms of service link text on C2
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get consentOptionsTermsLink;
+
+  /// Conjunction between terms and privacy links on C2
+  ///
+  /// In en, this message translates to:
+  /// **' and the '**
+  String get consentOptionsTermsConjunction;
+
+  /// Privacy policy link text on C2
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get consentOptionsPrivacyLink;
+
+  /// Suffix after privacy link on C2
+  ///
+  /// In en, this message translates to:
+  /// **'.'**
+  String get consentOptionsTermsSuffix;
+
+  /// Analytics consent main text on C2
+  ///
+  /// In en, this message translates to:
+  /// **'I agree that LUVI processes pseudonymized usage and device data (e.g. crash info, performance, features used) to fix bugs and improve the app.'**
+  String get consentOptionsAnalyticsText;
+
+  /// Analytics consent revocation instruction on C2
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke anytime under Profile → Privacy.'**
+  String get consentOptionsAnalyticsRevoke;
+
+  /// Continue button label on C2
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get consentOptionsCtaContinue;
+
+  /// Accept all button label on C2
+  ///
+  /// In en, this message translates to:
+  /// **'Accept all'**
+  String get consentOptionsCtaAcceptAll;
+
+  /// Semantics label for selected checkbox on C2
+  ///
+  /// In en, this message translates to:
+  /// **'{section}: {text}. Selected'**
+  String consentOptionsCheckboxSelectedSemantic(String section, String text);
+
+  /// Semantics label for unselected checkbox on C2
+  ///
+  /// In en, this message translates to:
+  /// **'{section}: {text}. Not selected'**
+  String consentOptionsCheckboxUnselectedSemantic(String section, String text);
+
+  /// Semantics label for shield icon on C2
+  ///
+  /// In en, this message translates to:
+  /// **'Shield icon for data protection'**
+  String get consentOptionsShieldSemantic;
+
+  /// Title for consent blocking screen (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Your consent makes LUVI possible'**
+  String get consentBlockingTitle;
+
+  /// Body text for consent blocking screen (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'LUVI needs your cycle and health data to show you cycle-based content and recommendations. Without this processing, we cannot provide the service.'**
+  String get consentBlockingBody;
+
+  /// Back button label on consent blocking screen (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Back & Agree'**
+  String get consentBlockingCtaBack;
+
+  /// Semantics label for back button on consent blocking screen
+  ///
+  /// In en, this message translates to:
+  /// **'Back to consent'**
+  String get consentBlockingCtaSemantic;
+
+  /// Accessibility label for shield icon on consent blocking screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Shield icon for data protection'**
+  String get consentBlockingShieldSemantic;
+
+  /// Personalized title for fitness level screen (O3)
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, how fit do you feel?'**
+  String onboarding03FitnessTitle(String name);
+
+  /// Subtitle explaining why fitness level is needed
+  ///
+  /// In en, this message translates to:
+  /// **'So we can choose the right intensity for you.'**
+  String get onboarding03FitnessSubtitle;
+
+  /// Semantics label for fitness level options
+  ///
+  /// In en, this message translates to:
+  /// **'Select fitness level'**
+  String get onboarding03FitnessSemantic;
+
+  /// Title for goals multi-select screen (O4)
+  ///
+  /// In en, this message translates to:
+  /// **'What are your goals?'**
+  String get onboarding04GoalsTitle;
+
+  /// Subtitle for goals screen
+  ///
+  /// In en, this message translates to:
+  /// **'You can select multiple.'**
+  String get onboarding04GoalsSubtitle;
+
+  /// Semantics label for goals selection
+  ///
+  /// In en, this message translates to:
+  /// **'Select goals'**
+  String get onboarding04GoalsSemantic;
+
+  /// Title for interests multi-select screen (O5)
+  ///
+  /// In en, this message translates to:
+  /// **'What interests you?'**
+  String get onboarding05InterestsTitle;
+
+  /// Subtitle explaining interest selection (3-5 required)
+  ///
+  /// In en, this message translates to:
+  /// **'Choose 3–5 so your feed fits right away.'**
+  String get onboarding05InterestsSubtitle;
+
+  /// Semantics label for interests selection
+  ///
+  /// In en, this message translates to:
+  /// **'Select interests'**
+  String get onboarding05InterestsSemantic;
+
+  /// Title for period start calendar screen (O6)
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the day your last period started.'**
+  String get onboarding06PeriodTitle;
+
+  /// Option when user doesn't remember period start date
+  ///
+  /// In en, this message translates to:
+  /// **'I don\'t remember'**
+  String get onboarding06PeriodUnknown;
+
+  /// Subheader hint for period start screen (O6)
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later.'**
+  String get onboarding06PeriodSubheader;
+
+  /// Question title for period duration adjustment screen (O7)
+  ///
+  /// In en, this message translates to:
+  /// **'Does this look right?'**
+  String get onboarding07DurationTitle;
+
+  /// Instructional subtitle for period duration screen (O7)
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ve estimated the duration. Tap a day to adjust.'**
+  String get onboarding07DurationSubtitle;
+
+  /// Loading text on success screen (O8)
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re putting your results together...'**
+  String get onboarding08SuccessLoading;
+
+  /// Progress indicator label showing current question
+  ///
+  /// In en, this message translates to:
+  /// **'Question {current} of {total}'**
+  String onboardingProgressLabel(int current, int total);
+
+  /// Default name used when user name is not available
+  ///
+  /// In en, this message translates to:
+  /// **'you'**
+  String get onboardingDefaultName;
+
+  /// Two-letter abbreviation for Monday
+  ///
+  /// In en, this message translates to:
+  /// **'Mo'**
+  String get weekdayMondayShort;
+
+  /// Two-letter abbreviation for Tuesday
+  ///
+  /// In en, this message translates to:
+  /// **'Tu'**
+  String get weekdayTuesdayShort;
+
+  /// Two-letter abbreviation for Wednesday
+  ///
+  /// In en, this message translates to:
+  /// **'We'**
+  String get weekdayWednesdayShort;
+
+  /// Two-letter abbreviation for Thursday
+  ///
+  /// In en, this message translates to:
+  /// **'Th'**
+  String get weekdayThursdayShort;
+
+  /// Two-letter abbreviation for Friday
+  ///
+  /// In en, this message translates to:
+  /// **'Fr'**
+  String get weekdayFridayShort;
+
+  /// Two-letter abbreviation for Saturday
+  ///
+  /// In en, this message translates to:
+  /// **'Sa'**
+  String get weekdaySaturdayShort;
+
+  /// Two-letter abbreviation for Sunday
+  ///
+  /// In en, this message translates to:
+  /// **'Su'**
+  String get weekdaySundayShort;
+
+  /// Semantic label for today in period calendar
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get periodCalendarSemanticToday;
+
+  /// Semantic label for selected day in period calendar
+  ///
+  /// In en, this message translates to:
+  /// **'selected'**
+  String get periodCalendarSemanticSelected;
+
+  /// Semantic label for period day in calendar
+  ///
+  /// In en, this message translates to:
+  /// **'period day'**
+  String get periodCalendarSemanticPeriodDay;
+
+  /// Title for cycle intro screen (O6)
+  ///
+  /// In en, this message translates to:
+  /// **'To personalize LUVI for you, we need your cycle start.'**
+  String get onboardingCycleIntroTitle;
+
+  /// CTA button on cycle intro screen
+  ///
+  /// In en, this message translates to:
+  /// **'Okay, let\'s go'**
+  String get onboardingCycleIntroButton;
+
+  /// Loading text during progress animation on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re putting together your plans...'**
+  String get onboardingSuccessLoading;
+
+  /// Saving text on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get onboardingSuccessSaving;
+
+  /// Completion text on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'Done!'**
+  String get onboardingSuccessComplete;
+
+  /// Error text when save fails on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'Save failed. Please try again.'**
+  String get onboardingSaveError;
+
+  /// Retry button label on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get onboardingRetryButton;
+
+  /// Text for content preview card 1 on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'Do I need more iron during my period?'**
+  String get onboardingContentCard1;
+
+  /// Text for content preview card 2 on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'How do I train during ovulation?'**
+  String get onboardingContentCard2;
+
+  /// Text for content preview card 3 on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'How can I reduce my stress?'**
+  String get onboardingContentCard3;
+
+  /// Goal label: Get fitter and stronger
+  ///
+  /// In en, this message translates to:
+  /// **'Get fitter & stronger'**
+  String get goalFitter;
+
+  /// Goal label: More energy in daily life
+  ///
+  /// In en, this message translates to:
+  /// **'More energy in daily life'**
+  String get goalEnergy;
+
+  /// Goal label: Better sleep and stress reduction
+  ///
+  /// In en, this message translates to:
+  /// **'Better sleep and stress reduction'**
+  String get goalSleep;
+
+  /// Goal label: Understand cycle and hormones
+  ///
+  /// In en, this message translates to:
+  /// **'Understand cycle & hormones'**
+  String get goalCycle;
+
+  /// Goal label: Long-term health and longevity
+  ///
+  /// In en, this message translates to:
+  /// **'Long-term health and longevity'**
+  String get goalLongevity;
+
+  /// Goal label: Simply feel good
+  ///
+  /// In en, this message translates to:
+  /// **'Simply feel good'**
+  String get goalWellbeing;
+
+  /// Common back button label
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get commonBack;
+
+  /// Semantics label for calendar preview widget
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar preview for cycle tracking'**
+  String get semanticCalendarPreview;
+
+  /// Semantics label for loading progress indicator
+  ///
+  /// In en, this message translates to:
+  /// **'Loading progress'**
+  String get semanticLoadingProgress;
+
+  /// Semantics value for progress percentage
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} percent'**
+  String semanticProgressPercent(int percent);
+
+  /// Empathetic title shown when splash screen cannot determine onboarding state
+  ///
+  /// In en, this message translates to:
+  /// **'Brief interruption'**
+  String get splashGateUnknownTitle;
+
+  /// Empathetic body text shown when splash screen cannot determine onboarding state
+  ///
+  /// In en, this message translates to:
+  /// **'To continue, we need an internet connection. Please check your connection.'**
+  String get splashGateUnknownBody;
+
+  /// Retry button label on splash unknown state UI
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get splashGateRetryCta;
+
+  /// Sign out button label on splash unknown state UI
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get splashGateSignOutCta;
+
+  /// Error message shown when sign out fails on splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out failed. Please try again.'**
+  String get signOutErrorRetry;
+
+  /// Warning snackbar when server sign out fails but local state was cleared
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out failed. You can log in again.'**
+  String get signOutFailed;
+
+  /// Generic retry button label
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

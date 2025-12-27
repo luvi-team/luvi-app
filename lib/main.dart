@@ -4,13 +4,16 @@ import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:luvi_app/core/analytics/telemetry.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthState;
 import 'core/navigation/go_router_refresh_stream.dart' as luvi_refresh;
 import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_services/user_state_service.dart';
 import 'core/config/app_links.dart';
 import 'core/navigation/password_recovery_navigation_driver.dart';
 import 'core/navigation/route_orientation_controller.dart';
@@ -24,10 +27,14 @@ import 'core/init/init_mode.dart' show initModeProvider;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 import 'core/init/init_diagnostics.dart';
 import 'core/init/supabase_deep_link_handler.dart';
+import 'features/consent/config/consent_config.dart';
 
 // TODO(arwin): Greptile status check smoke test
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Drift-Check: Verify ConsentConfig version constants are in sync (debug only)
+  ConsentConfig.assertVersionsMatch();
   // Portrait-only as default app orientation during development and MVP.
   // TODO(video-orientation): Register fullscreen routes in [RouteOrientationController.routeOverrides] when landscape is required.
   final orientationController = RouteOrientationController(
@@ -102,6 +109,9 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   PasswordRecoveryNavigationDriver? _passwordRecoveryDriver;
   SupabaseDeepLinkHandler? _deepLinkHandler;
   ProviderSubscription<InitState>? _initOrchestrationSubscription;
+  StreamSubscription<AuthState>? _userStateAuthSyncSubscription;
+  int _bindUserSequence = 0; // Sequence counter for auth state race condition prevention
+  bool _orchestrationInProgress = false;
 
   String get _initialLocation => kReleaseMode
       ? SplashScreen.routeName
@@ -123,18 +133,19 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   @override
   void initState() {
     super.initState();
-    // 1. Deep-Link-Handler früh starten (queued URIs, KEIN processing)
+    // 1. Start deep-link handler early (queue URIs, DO NOT process yet)
     _initDeepLinkHandler();
-    // 2. Diagnostics-Listener (existing)
+    // 2. Diagnostics listener (existing)
     _listenForInitDiagnostics();
-    // 3. Orchestrierung via Listener (NICHT in build!)
-    // Ensures correct sequence: RouterRefresh → RecoveryListener → processPendingUri
+    // 3. Orchestration via listeners (NOT in build!)
+    // Ensures correct sequence: RouterRefresh -> RecoveryListener -> processPendingUri
     _setupInitOrchestration();
   }
 
   @override
   void dispose() {
     _initOrchestrationSubscription?.close();
+    unawaited(_userStateAuthSyncSubscription?.cancel());
     unawaited(_passwordRecoveryDriver?.dispose());
     unawaited(_deepLinkHandler?.dispose());
     _router.dispose();
@@ -249,19 +260,31 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
   void _setupInitOrchestration() {
     _initOrchestrationSubscription = ref.listenManual<InitState>(
       supabaseInitControllerProvider,
-      (prev, next) {
+      (prev, next) async {
         if (!SupabaseService.isInitialized) return;
+        // Reentrancy guard: prevent concurrent execution if provider emits rapidly
+        if (_orchestrationInProgress) return;
+        _orchestrationInProgress = true;
+        try {
+          // 1. Router-Refresh aktivieren (braucht Supabase-Client)
+          _routerRefreshNotifier.ensureSupabaseListener();
 
-        // 1. Router-Refresh aktivieren (braucht Supabase-Client)
-        _routerRefreshNotifier.ensureSupabaseListener();
+          // 2. Recovery-Listener registrieren (MUSS vor pending URI!)
+          _ensurePasswordRecoveryListener();
 
-        // 2. Recovery-Listener registrieren (MUSS vor pending URI!)
-        _ensurePasswordRecoveryListener();
+          // 2b. UserStateService account-scope sync (auth change → bind/clear)
+          _ensureUserStateAuthSyncListener();
 
-        // 3. ERST JETZT: Pending URI verarbeiten (Listener ist garantiert ready)
-        final handler = _deepLinkHandler;
-        if (handler != null && handler.hasPendingUri) {
-          unawaited(handler.processPendingUri());
+          // 3. ERST JETZT: Pending URI verarbeiten (Listener ist garantiert ready)
+          final handler = _deepLinkHandler;
+          if (handler != null && handler.hasPendingUri) {
+            unawaited(handler.processPendingUri());
+          }
+        } catch (e, st) {
+          // Log critical initialization failure (don't rethrow - would crash app)
+          log.e('Init orchestration failed', tag: 'Main', error: e, stack: st);
+        } finally {
+          _orchestrationInProgress = false;
         }
       },
       fireImmediately: true, // Falls Supabase schon initialized
@@ -289,6 +312,77 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
         _router.go(CreateNewPasswordScreen.routeName);
       },
     );
+  }
+
+  /// Keeps UserStateService cache account-scoped by binding it to the current
+  /// authenticated user and clearing on sign-out/account switch.
+  ///
+  /// SSOT: `public.profiles` is the source of truth; this is only a cache, but
+  /// it must never leak between accounts.
+  void _ensureUserStateAuthSyncListener() {
+    if (_userStateAuthSyncSubscription != null || !SupabaseService.isInitialized) {
+      return;
+    }
+
+    // Bind once on startup (covers "already signed in" cases where no auth
+    // event is emitted immediately).
+    unawaited(_bindInitialUser());
+
+    _userStateAuthSyncSubscription =
+        SupabaseService.client.auth.onAuthStateChange.listen((authState) async {
+      // Race condition prevention: track sequence to skip stale results
+      final currentSequence = ++_bindUserSequence;
+      try {
+        final service = await ref.read(userStateServiceProvider.future);
+        // Skip if a newer auth event has superseded this one
+        if (currentSequence != _bindUserSequence) return;
+        await service.bindUser(authState.session?.user.id);
+      } catch (e) {
+        // Skip error handling if superseded by newer auth event
+        if (currentSequence != _bindUserSequence) return;
+        // Always report to telemetry for production debugging
+        Telemetry.maybeCaptureException(
+          'user_state_bind_failed',
+          error: e,
+          data: {
+            'auth_event': authState.event.name,
+            'has_session': authState.session != null,
+            'has_user_id': authState.session?.user.id != null,
+          },
+        );
+        if (!kReleaseMode) {
+          log.w(
+            'user_state_bind_failed',
+            tag: 'main',
+            error: sanitizeError(e) ?? e.runtimeType,
+          );
+        }
+      }
+    });
+  }
+
+  /// Binds the initial user state on startup.
+  Future<void> _bindInitialUser() async {
+    try {
+      final service = await ref.read(userStateServiceProvider.future);
+      await service.bindUser(SupabaseService.currentUser?.id);
+    } catch (e) {
+      // Always report to telemetry for production debugging
+      Telemetry.maybeCaptureException(
+        'user_state_bind_initial_failed',
+        error: e,
+        data: {
+          'has_current_user': SupabaseService.currentUser != null,
+        },
+      );
+      if (!kReleaseMode) {
+        log.w(
+          'user_state_bind_initial_failed',
+          tag: 'main',
+          error: sanitizeError(e) ?? e.runtimeType,
+        );
+      }
+    }
   }
 
 }

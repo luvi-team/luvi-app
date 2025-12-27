@@ -5,6 +5,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 
 /// Unified auth button with pill shape for SignIn screen.
 ///
@@ -22,6 +23,7 @@ class AuthOutlineButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.borderColor,
+    this.semanticLabel,
   });
 
   final String text;
@@ -39,6 +41,10 @@ class AuthOutlineButton extends StatelessWidget {
 
   /// Border color (default: authOutlineBorder, null = no border for filled buttons)
   final Color? borderColor;
+
+  /// Optional semantic label for screen readers (defaults to [text] if not provided).
+  /// Use this when the icon conveys extra meaning not in the visible text.
+  final String? semanticLabel;
 
   /// Factory constructor for Apple Sign In button (black with white text)
   factory AuthOutlineButton.apple({
@@ -83,57 +89,70 @@ class AuthOutlineButton extends StatelessWidget {
     return SizedBox(
       height: Sizes.buttonHeightOutline,
       width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onPressed == null
-            ? null
-            : () {
-                HapticFeedback.lightImpact();
-                onPressed!();
-              },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          foregroundColor: fgColor,
-          elevation: 0,
-          shadowColor: DsColors.transparent,
-          side: border != null ? BorderSide(color: border) : BorderSide.none,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Sizes.buttonHeightOutline / 2),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: Sizes.buttonPaddingHorizontal),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (svgAsset != null) ...[
-              SvgPicture.asset(
-                svgAsset!,
-                width: Sizes.iconM,
-                height: Sizes.iconM,
-                placeholderBuilder: (_) => SizedBox(
-                  width: Sizes.iconM,
-                  height: Sizes.iconM,
-                ),
-                errorBuilder: (context, error, stackTrace) => SizedBox(
-                  width: Sizes.iconM,
-                  height: Sizes.iconM,
-                ),
-              ),
-              const SizedBox(width: Spacing.s),
-            ] else if (icon != null) ...[
-              Icon(icon, size: Sizes.iconM),
-              const SizedBox(width: Spacing.s),
-            ],
-            Flexible(
-              child: Text(
-                text,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: fgColor,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
+      child: Semantics(
+        label: semanticLabel,
+        button: true,
+        excludeSemantics: semanticLabel != null,
+        child: ElevatedButton(
+          onPressed: onPressed == null
+              ? null
+              : () {
+                  HapticFeedback.lightImpact();
+                  onPressed!();
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bgColor,
+            foregroundColor: fgColor,
+            elevation: 0,
+            shadowColor: DsColors.transparent,
+            side: border != null ? BorderSide(color: border) : BorderSide.none,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Sizes.buttonHeightOutline / 2),
             ),
-          ],
+            padding: const EdgeInsets.symmetric(horizontal: Sizes.buttonPaddingHorizontal),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (svgAsset != null) ...[
+                SvgPicture.asset(
+                  svgAsset!,
+                  width: Sizes.iconM,
+                  height: Sizes.iconM,
+                  placeholderBuilder: (_) => SizedBox(
+                    width: Sizes.iconM,
+                    height: Sizes.iconM,
+                  ),
+                  errorBuilder: (context, error, stackTrace) {
+                    log.e(
+                      'SVG asset load failed: $svgAsset',
+                      tag: 'AuthOutlineButton',
+                      error: error,
+                      stack: stackTrace,
+                    );
+                    return SizedBox(
+                      width: Sizes.iconM,
+                      height: Sizes.iconM,
+                    );
+                  },
+                ),
+                const SizedBox(width: Spacing.s),
+              ] else if (icon != null) ...[
+                Icon(icon, size: Sizes.iconM),
+                const SizedBox(width: Spacing.s),
+              ],
+              Flexible(
+                child: Text(
+                  text,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: fgColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -60,6 +60,8 @@ dependencies:
   lottie: ^3.3.2
   shared_preferences: ^2.5.3
   http: ^1.5.0
+  luvi_core:
+    path: core
   luvi_services:
     path: services
   flutter_secure_storage: ^9.2.2
@@ -72,8 +74,11 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   riverpod_generator: ^3.0.3
+  # Note: build_runner pinned to ^2.7.1 for compatibility with riverpod_generator ^3.0.3
+  # (build_runner >=2.10.0 requires analyzer >=8.0.0 which conflicts with riverpod_generator)
   build_runner: ^2.7.1
   mocktail: ^1.0.4
+  video_player_platform_interface: ^6.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -97,6 +102,7 @@ flutter:
     - assets/icons/
       # requires: assets/icons/google_g.svg (official multicolor Google 'G')
     - assets/icons/dashboard/
+    - assets/icons/onboarding/
     - assets/animations/
     - assets/legal/
     - assets/videos/welcome/

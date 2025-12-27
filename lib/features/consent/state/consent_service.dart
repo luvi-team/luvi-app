@@ -1,6 +1,24 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Returns shape-only diagnostics for payload (type + keys).
+/// CRITICAL: Never log payload values - only structure for debugging.
+/// Exposed for testing via @visibleForTesting.
+@visibleForTesting
+String payloadDiagnosticsShapeOnly(dynamic payload) {
+  if (payload == null) return 'type=null';
+  if (payload is Map) {
+    final keys = payload.keys.take(20).map((k) => k.toString()).toList()..sort();
+    final keysSuffix = payload.keys.length > 20 ? '...' : '';
+    return 'type=Map, keys=[${keys.join(', ')}$keysSuffix]';
+  }
+  if (payload is List) {
+    return 'type=List, length=${payload.length}';
+  }
+  return 'type=${payload.runtimeType}';
+}
 
 class ConsentException implements Exception {
   ConsentException(this.statusCode, this.message, {this.code});
@@ -23,46 +41,80 @@ class ConsentService {
     required String version,
     required List<String> scopes,
   }) async {
-    final response = await Supabase.instance.client.functions.invoke(
-      'log_consent',
-      body: {'version': version, 'scopes': scopes},
-    );
+    // Canonical format (SSOT): send scopes as a JSON object of boolean flags
+    // instead of an array to avoid format drift in DB/event logs.
+    final scopesMap = <String, bool>{for (final s in scopes) s: true};
 
-    final status = response.status;
-    final responseBody = _asJsonMap(response.data);
-    final requestId = responseBody?['request_id']?.toString();
-
-    final isSuccessStatus = status >= 200 && status < 300;
-    if (!isSuccessStatus) {
-      final serverError = responseBody?['error'] as String?;
-      final isRateLimited = status == 429;
-      final message = isRateLimited
-          ? 'Consent logging is temporarily rate limited. Please retry later.'
-          : (serverError ?? 'Failed to log consent.');
+    late final FunctionResponse response;
+    try {
+      response = await Supabase.instance.client.functions.invoke(
+        'log_consent',
+        body: {'version': version, 'scopes': scopesMap},
+      );
+    } on FunctionException catch (e) {
+      // FunctionException is thrown for ALL non-2xx status codes.
+      // Status-based mapping to provide precise error codes.
+      final status = e.status;
+      final errorBody = _asJsonMap(e.details);
+      final requestId = errorBody?['request_id']?.toString();
       log.w(
         'log_consent failed (status=$status, request_id=${requestId ?? 'n/a'})',
         tag: _logTag,
       );
+
+      if (status == 401) {
+        throw ConsentException(401, 'Unauthorized', code: 'unauthorized');
+      } else if (status == 429) {
+        throw ConsentException(429, 'Rate limit exceeded', code: 'rate_limit');
+      } else if (status >= 500) {
+        throw ConsentException(status, 'Server error', code: 'server_error');
+      } else if (status == 404) {
+        // Edge Function not deployed or not found
+        throw ConsentException(
+          404,
+          'Function not found',
+          code: 'function_unavailable',
+        );
+      } else {
+        // Other client errors (4xx)
+        throw ConsentException(
+          status,
+          'Client error',
+          code: 'client_error',
+        );
+      }
+    } on Exception catch (error, stackTrace) {
+      // Network/transport errors (offline/DNS/timeout) are not FunctionException.
+      // Classify as function_unavailable for consistent UX messaging.
+      log.w(
+        'log_consent invoke failed (transport)',
+        tag: _logTag,
+        error: error.runtimeType,
+        stack: stackTrace,
+      );
       throw ConsentException(
-        status,
-        message,
-        code: isRateLimited ? 'rate_limit' : null,
+        503,
+        'Service unavailable',
+        code: 'function_unavailable',
       );
     }
 
+    // 2xx success - validate response payload
+    final responseBody = _asJsonMap(response.data);
     if (responseBody == null || responseBody['ok'] != true) {
-      final payloadDiagnostics = _payloadDiagnostics(response.data);
+      final diagnostics = payloadDiagnosticsShapeOnly(response.data);
       log.w(
-        'log_consent returned unexpected payload (status=$status, ok=${responseBody?['ok']}, payload=$payloadDiagnostics)',
+        'log_consent returned unexpected payload (status=${response.status}, ok=${responseBody?['ok']}, payload=$diagnostics)',
         tag: _logTag,
       );
       throw ConsentException(
-        status,
+        response.status,
         'log_consent returned an unexpected response payload.',
         code: 'unexpected_response',
       );
     }
 
+    final requestId = responseBody['request_id']?.toString();
     if (requestId != null) {
       log.i('log_consent succeeded (request_id=$requestId)', tag: _logTag);
     }
@@ -78,13 +130,6 @@ class ConsentService {
     return null;
   }
 
-  String _payloadDiagnostics(dynamic payload) {
-    if (payload == null) return 'type=null, preview=null';
-    final preview = payload.toString();
-    final truncatedPreview =
-        preview.length <= 200 ? preview : '${preview.substring(0, 200)}...';
-    return 'type=${payload.runtimeType}, preview=$truncatedPreview';
-  }
 }
 
 /// Riverpod provider for [ConsentService] to support DI and testability.

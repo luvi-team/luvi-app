@@ -10,7 +10,9 @@ Zweck: Definiert den aktuellen Request/Response-Contract der Supabase Edge Funct
   - `Content-Type: application/json`
 - **Body (JSON)**:
   - `policy_version` (string, Pflicht) · Alias `version` wird akzeptiert
-  - `scopes` (string[], Pflicht) · Non-empty und nur Werte aus `health | analytics | marketing | ai_journal | terms`
+  - `scopes` (object, Pflicht) · Canonical: JSON-Objekt mit boolean-flags `{ "<scope_id>": true, ... }`
+    - Legacy (MVP-Compat): `string[]` wird akzeptiert, wird serverseitig in das Objekt-Format normalisiert
+    - Erlaubte Scope-IDs: `terms | health_processing | analytics | marketing | ai_journal | model_training`
   - `source` (string, optional) · Herkunft der Einwilligung (z.B. `contract-test`, `onboarding`)
   - `appVersion` (string, optional) · Client-Build zur Metrik-Korrelation
 - `user_id` wird nie übergeben, sondern aus dem JWT (`auth.getUser()`) gelesen.
@@ -23,13 +25,26 @@ Zweck: Definiert den aktuellen Request/Response-Contract der Supabase Edge Funct
 ## Fehlerfälle
 | Status | Auslöser | Response |
 | --- | --- | --- |
-| 405 | Methode ≠ `POST` | `{ "error": "Method not allowed" }` + `X-Request-Id` |
-| 401 | `Authorization` fehlt oder Token ungültig | `{ "error": "Missing Authorization header" }` bzw. `{ "error": "Unauthorized" }` |
-| 400 | Invalides JSON, `policy_version` fehlt, `scopes` leer oder enthält unbekannte Werte | `{ "error": "Invalid request body" }`, `{ "error": "policy_version is required" }`, `{ "error": "scopes must be a non-empty array" }`, bzw. `{ "error": "Invalid scopes provided", "invalidScopes": [...] }` |
-| 429 | Sliding-Window-Limit verletzt (`CONSENT_RATE_LIMIT_WINDOW_SEC`/`CONSENT_RATE_LIMIT_MAX_REQUESTS`, Default 60s/20 Requests pro Nutzer) | `{ "error": "Rate limit exceeded" }` + `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining=0` |
-| 500 | RPC `log_consent_if_allowed` liefert Fehler | `{ "error": "Failed to log consent" }` |
+| 405 | Methode ≠ `POST` | `{ "error": "Method not allowed", "request_id": "<uuid>" }` + `X-Request-Id` |
+| 401 | `Authorization` fehlt oder Token ungültig | Siehe 401-Responses unten |
+| 400 | Invalides JSON, `policy_version` fehlt, `scopes` leer/invalid | Siehe 400-Responses unten |
+| 429 | Sliding-Window-Limit verletzt (Default 60s/20 Requests) | `{ "error": "Rate limit exceeded", "request_id": "<uuid>" }` + Headers |
+| 500 | RPC `log_consent_if_allowed` liefert Fehler | `{ "error": "Failed to log consent", "request_id": "<uuid>" }` |
 
-Alle Fehler enthalten mindestens ein `error`-Feld, teilen sich die `X-Request-Id`-Header und loggen Metriken/Alarme serverseitig.
+**401-Responses:**
+- `{ "error": "Missing Authorization header", "request_id": "<uuid>" }`
+- `{ "error": "Unauthorized", "request_id": "<uuid>" }`
+
+**400-Responses:**
+- `{ "error": "Invalid request body", "request_id": "<uuid>" }`
+- `{ "error": "policy_version is required", "request_id": "<uuid>" }`
+- `{ "error": "scopes must be provided", "request_id": "<uuid>" }`
+- `{ "error": "scopes must be non-empty", "request_id": "<uuid>" }`
+- `{ "error": "Invalid scopes provided", "invalidScopes": [...], "request_id": "<uuid>" }`
+
+**429-Headers:** `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining=0`
+
+Alle Fehler enthalten mindestens ein `error`-Feld, immer ein `request_id`-Feld und teilen sich den `X-Request-Id`-Header zur Log-Korrelation (Client kann `request_id` aus dem JSON nutzen, falls Header nicht zugreifbar ist).
 
 ## Hinweise
 - Rate-Limiting erfolgt per Postgres-RPC inkl. Advisory-Lock, damit mehrere Einreichungen in derselben Sekunde atomar bewertet werden.

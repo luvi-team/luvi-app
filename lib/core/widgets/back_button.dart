@@ -11,6 +11,7 @@ class BackButtonCircle extends StatelessWidget {
     this.backgroundColor,
     this.iconColor,
     this.isCircular = true,
+    this.showCircle = true,
     this.iconSize = 20,
     this.semanticLabel,
   });
@@ -21,6 +22,9 @@ class BackButtonCircle extends StatelessWidget {
   final Color? backgroundColor;
   final Color? iconColor;
   final bool isCircular;
+  /// Whether to show the circular/rectangular background.
+  /// Set to false for icon-only back button (Figma O2-O8 style).
+  final bool showCircle;
   final double iconSize;
   final String? semanticLabel;
 
@@ -70,32 +74,54 @@ class BackButtonCircle extends StatelessWidget {
               customBorder: shape,
               child: Center(
                 // Visible component equals [renderedSize]; tap target stays >= Sizes.touchTargetMin.
-                child: Container(
-                  width: renderedSize,
-                  height: renderedSize,
-                  decoration: BoxDecoration(
-                    color: resolvedBackground,
-                    shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-                    borderRadius: isCircular ? null : BorderRadius.zero,
-                  ),
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: iconSize,
-                    height: iconSize,
-                    child: SvgPicture.string(
-                      _chevronSvg,
-                      colorFilter: ColorFilter.mode(
-                        resolvedIconColor,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
+                child: _buildIcon(
+                  showCircle: showCircle,
+                  renderedSize: renderedSize,
+                  resolvedBackground: resolvedBackground,
+                  isCircular: isCircular,
+                  iconSize: iconSize,
+                  resolvedIconColor: resolvedIconColor,
                 ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  /// Builds the chevron icon, optionally wrapped in a circular/rectangular container.
+  Widget _buildIcon({
+    required bool showCircle,
+    required double renderedSize,
+    required Color resolvedBackground,
+    required bool isCircular,
+    required double iconSize,
+    required Color resolvedIconColor,
+  }) {
+    final chevronIcon = SizedBox(
+      width: iconSize,
+      height: iconSize,
+      child: SvgPicture.string(
+        _chevronSvg,
+        colorFilter: ColorFilter.mode(
+          resolvedIconColor,
+          BlendMode.srcIn,
+        ),
+      ),
+    );
+
+    if (!showCircle) return chevronIcon;
+
+    return Container(
+      width: renderedSize,
+      height: renderedSize,
+      decoration: BoxDecoration(
+        color: resolvedBackground,
+        shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
+      ),
+      alignment: Alignment.center,
+      child: chevronIcon,
     );
   }
 }

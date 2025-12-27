@@ -40,16 +40,65 @@ void main() {
       () async {
         final prefs = await SharedPreferences.getInstance();
         final service = UserStateService(prefs: prefs);
+        await service.bindUser('test-user');
 
         expect(service.hasSeenWelcome, isFalse);
         expect(service.hasCompletedOnboarding, isFalse);
+        expect(service.hasCompletedOnboardingOrNull, isNull);
         expect(service.fitnessLevel, isNull);
+      },
+    );
+
+    test(
+      'hasCompletedOnboardingOrNull distinguishes unknown from false',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+        await service.bindUser('test-user');
+
+        expect(service.hasCompletedOnboardingOrNull, isNull);
+
+        await service.setHasCompletedOnboarding(false);
+        expect(service.hasCompletedOnboardingOrNull, isFalse);
+        expect(service.hasCompletedOnboarding, isFalse);
+      },
+    );
+
+    test(
+      'setHasCompletedOnboarding(false) clears fitness level key',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+        await service.bindUser('test-user');
+
+        await service.setFitnessLevel(FitnessLevel.fit);
+        expect(service.fitnessLevel, FitnessLevel.fit);
+
+        await service.setHasCompletedOnboarding(false);
+        expect(service.hasCompletedOnboarding, isFalse);
+        expect(service.fitnessLevel, isNull);
+        expect(prefs.containsKey('u:test-user:onboarding_fitness_level'), isFalse);
+      },
+    );
+
+    test(
+      'setHasCompletedOnboarding(true) persists explicit true',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+        await service.bindUser('test-user');
+
+        await service.setHasCompletedOnboarding(true);
+
+        expect(service.hasCompletedOnboarding, isTrue);
+        expect(service.hasCompletedOnboardingOrNull, isTrue);
       },
     );
 
     test('markWelcomeSeen sets flag to true', () async {
       final prefs = await SharedPreferences.getInstance();
       final service = UserStateService(prefs: prefs);
+      await service.bindUser('test-user');
 
       await service.markWelcomeSeen();
 
@@ -60,6 +109,7 @@ void main() {
     test('markOnboardingComplete sets flag and fitness level', () async {
       final prefs = await SharedPreferences.getInstance();
       final service = UserStateService(prefs: prefs);
+      await service.bindUser('test-user');
 
       await service.markOnboardingComplete(
         fitnessLevel: FitnessLevel.occasional,
@@ -73,11 +123,12 @@ void main() {
     test('setFitnessLevel persists selection', () async {
       final prefs = await SharedPreferences.getInstance();
       final service = UserStateService(prefs: prefs);
+      await service.bindUser('test-user');
 
       await service.setFitnessLevel(FitnessLevel.fit);
 
       expect(service.fitnessLevel, FitnessLevel.fit);
-      expect(prefs.getString('onboarding_fitness_level'), 'fit');
+      expect(prefs.getString('u:test-user:onboarding_fitness_level'), 'fit');
     });
 
     test(
@@ -85,6 +136,7 @@ void main() {
       () async {
         final prefs = await SharedPreferences.getInstance();
         final service = UserStateService(prefs: prefs);
+        await service.bindUser('test-user');
 
         await service.markWelcomeSeen();
         await service.markOnboardingComplete(fitnessLevel: FitnessLevel.fit);
@@ -97,12 +149,13 @@ void main() {
 
     test('reset clears all flags and fitness level', () async {
       SharedPreferences.setMockInitialValues({
-        'has_seen_welcome': true,
-        'has_completed_onboarding': true,
-        'onboarding_fitness_level': 'unknown',
+        'u:test-user:has_seen_welcome': true,
+        'u:test-user:has_completed_onboarding': true,
+        'u:test-user:onboarding_fitness_level': 'unknown',
       });
       final prefs = await SharedPreferences.getInstance();
       final service = UserStateService(prefs: prefs);
+      await service.bindUser('test-user');
 
       expect(service.hasSeenWelcome, isTrue);
       expect(service.hasCompletedOnboarding, isTrue);
@@ -112,21 +165,50 @@ void main() {
 
       expect(service.hasSeenWelcome, isFalse);
       expect(service.hasCompletedOnboarding, isFalse);
+      expect(service.hasCompletedOnboardingOrNull, isNull);
       expect(service.fitnessLevel, isNull);
     });
 
     test('flags persist across service instances', () async {
       final prefs = await SharedPreferences.getInstance();
       final first = UserStateService(prefs: prefs);
+      await first.bindUser('test-user');
       await first.markWelcomeSeen();
 
       await first.setFitnessLevel(FitnessLevel.beginner);
 
       final second = UserStateService(prefs: prefs);
+      await second.bindUser('test-user');
       expect(second.hasSeenWelcome, isTrue);
       expect(second.hasCompletedOnboarding, isFalse);
 
       expect(second.fitnessLevel, FitnessLevel.beginner);
+    });
+
+    test('bindUser clears previous user scoped gate keys (no cross-account leak)',
+        () async {
+      SharedPreferences.setMockInitialValues({
+        'u:user-a:accepted_consent_version': 1,
+        'u:user-a:has_seen_welcome': true,
+        'u:user-a:has_completed_onboarding': true,
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final service = UserStateService(prefs: prefs);
+
+      await service.bindUser('user-a');
+      expect(service.acceptedConsentVersionOrNull, 1);
+      expect(service.hasSeenWelcome, isTrue);
+      expect(service.hasCompletedOnboarding, isTrue);
+
+      await service.bindUser('user-b');
+      // New user sees a clean slate (must not inherit A's cache).
+      expect(service.acceptedConsentVersionOrNull, isNull);
+      expect(service.hasSeenWelcomeOrNull, isNull);
+      expect(service.hasCompletedOnboardingOrNull, isNull);
+      // Previous user's keys were cleared for privacy.
+      expect(prefs.containsKey('u:user-a:accepted_consent_version'), isFalse);
+      expect(prefs.containsKey('u:user-a:has_seen_welcome'), isFalse);
+      expect(prefs.containsKey('u:user-a:has_completed_onboarding'), isFalse);
     });
   });
 
@@ -146,10 +228,12 @@ void main() {
       addTearDown(container.dispose);
 
       final first = await container.read(userStateServiceProvider.future);
+      await first.bindUser('test-user');
       await first.markWelcomeSeen();
       await first.setFitnessLevel(FitnessLevel.beginner);
 
       final second = await container.read(userStateServiceProvider.future);
+      await second.bindUser('test-user');
 
       expect(second.hasSeenWelcome, isTrue);
       expect(second.fitnessLevel, FitnessLevel.beginner);

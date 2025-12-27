@@ -13,7 +13,14 @@ Authoritative snapshot of the values we have configured in the Supabase Dashboar
 | Setting | Value | Notes |
 | --- | --- | --- |
 | **Site URL** | `https://luvi-app.vercel.app` | Primary production frontend & redirect target used in transactional emails. |
-| **Additional Redirect URLs** | 1. `https://luvi-app.vercel.app/auth/password/new`<br>2. `https://luvi-app.vercel.app/api/auth/callback`<br>3. `https://cwloioweaqvhibuzdwpi.supabase.co/auth/v1/callback` (Supabase default)<br>4. `luvi://auth-callback` | Keep this list in sync with Flutter deep links (`AppLinks.authCallbackUri`) and any preview URLs. |
+| **Additional Redirect URLs** | See list below | Keep this list in sync with Flutter deep links (`AppLinks.authCallbackUri`) and any preview URLs. |
+
+### Additional Redirect URLs
+
+1. `https://luvi-app.vercel.app/auth/password/new` - Password reset flow
+2. `https://luvi-app.vercel.app/api/auth/callback` - Web auth callback
+3. `https://cwloioweaqvhibuzdwpi.supabase.co/auth/v1/callback` - Supabase default
+4. `luvi://auth-callback` - Flutter deep link (iOS/Android)
 
 `luvi://auth-callback` must always stay on the allow list because both password recovery and OAuth flows rely on it inside the mobile apps.
 

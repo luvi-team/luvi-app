@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
@@ -47,7 +48,11 @@ void main() {
     );
 
     expect(find.text('Ready for LUVI?'), findsOneWidget);
-    expect(find.text('1/5'), findsOneWidget);
+    // New format: "Frage X von Y" instead of "X/Y" - use L10n for locale-independence
+    final context = tester.element(find.byType(OnboardingHeader));
+    final l10n = AppLocalizations.of(context)!;
+    expect(find.text(l10n.onboardingProgressLabel(1, 5)), findsOneWidget);
+    // Back button is hidden on step 1 (correct behavior)
     expect(find.byType(BackButtonCircle), findsNothing);
 
     final headerSemanticsFinder = find.byWidgetPredicate(
@@ -70,10 +75,12 @@ void main() {
 
     expect(find.byType(BackButtonCircle), findsOneWidget);
 
+    // Combined SizedBox: touchTargetMin + Spacing.s on each side
+    final combinedWidth = Sizes.touchTargetMin + Spacing.s;
     final spacingBoxes = find.byWidgetPredicate(
-      (widget) => widget is SizedBox && widget.width == Spacing.s,
+      (widget) => widget is SizedBox && widget.width == combinedWidth,
     );
-    // Two spacing boxes wrap the title on both sides.
+    // Two combined spacing boxes wrap the progress bar on both sides.
     expect(spacingBoxes, findsNWidgets(2));
   });
 

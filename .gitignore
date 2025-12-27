@@ -112,6 +112,7 @@ app.*.symbols
 **/.DS_Store
 # Supabase temp files
 supabase/.temp/
+supabase/supabase/.temp/
 supabase/logs/
 supabase/.branches/
 # macOS junk
@@ -174,3 +175,6 @@ google_oauth_*
 
 # Local tooling (Flutter SDK cache)
 .tooling/
+
+.gemini/
+gha-creds-*.json

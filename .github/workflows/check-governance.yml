@@ -1,0 +1,85 @@
+# Check Governance Documentation
+# Validates CLAUDE.md and AGENTS.md have proper structure
+# Requires: python3 with yaml module for frontmatter validation (ubuntu-latest provides this)
+name: Check Governance Docs
+
+on:
+  pull_request:
+    paths:
+      - 'CLAUDE.md'
+      - 'AGENTS.md'
+      - 'context/agents/**'
+
+jobs:
+  check:
+    name: Validate Governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Check CLAUDE.md frontmatter exists and is valid
+        run: |
+          # Check CLAUDE.md exists
+          if [ ! -f "CLAUDE.md" ]; then
+            echo "::error::CLAUDE.md not found"
+            exit 1
+          fi
+
+          # Check opening delimiter
+          if ! head -1 CLAUDE.md | grep -q "^---$"; then
+            echo "::error::CLAUDE.md must start with YAML frontmatter (---)"
+            exit 1
+          fi
+
+          # Find closing delimiter (within first 100 lines)
+          # Step 1: tail -n +2 skips the opening "---" delimiter (line 1)
+          # Step 2: grep -n finds line numbers of "---" relative to tail output
+          # Step 3: head -1 | cut gets the first match's line number
+          CLOSING_LINE=$(head -100 CLAUDE.md | tail -n +2 | grep -n "^---$" | head -1 | cut -d: -f1)
+          if [ -z "$CLOSING_LINE" ]; then
+            echo "::error::CLAUDE.md frontmatter missing closing delimiter (---)"
+            exit 1
+          fi
+
+          # Extract and validate YAML
+          # Step 4: Add 1 to map back to original file line numbers (since tail shifted by 1)
+          CLOSING_LINE=$((CLOSING_LINE + 1))
+          # Step 5: head -$CLOSING_LINE gets lines 1 through closing delimiter
+          # Step 6: tail -n +2 removes opening "---"
+          # Step 7: head -n -1 removes closing "---"
+          # Result: Pure YAML content between delimiters
+          FRONTMATTER=$(head -$CLOSING_LINE CLAUDE.md | tail -n +2 | head -n -1)
+          if ! echo "$FRONTMATTER" | python3 -c "import sys, yaml; yaml.safe_load(sys.stdin)" 2>/dev/null; then
+            echo "::error::CLAUDE.md frontmatter contains invalid YAML"
+            exit 1
+          fi
+
+          echo "Frontmatter exists and is valid YAML"
+
+      - name: Check acceptance version reference
+        run: |
+          # Extract acceptance_version (handles: "1.1", '1.1', or 1.1)
+          VERSION=$(grep -oP "acceptance_version:\s*['\"]?\K[0-9]+\.[0-9]+" CLAUDE.md | head -1)
+          if [ -z "$VERSION" ]; then
+            echo "::error::No acceptance_version found in CLAUDE.md frontmatter"
+            exit 1
+          fi
+          FILE="context/agents/_acceptance_v${VERSION}.md"
+          if [ ! -f "$FILE" ]; then
+            echo "::error::Referenced file not found: $FILE"
+            exit 1
+          fi
+          echo "Acceptance v${VERSION} exists"
+
+      - name: Check MUST rules present
+        run: |
+          COUNT=$(grep -c 'id: "MUST-' CLAUDE.md || echo "0")
+          if [ "$COUNT" -lt 5 ]; then
+            echo "::error::Less than 5 MUST rules found ($COUNT)"
+            exit 1
+          else
+            echo "Found $COUNT MUST rules"
+          fi

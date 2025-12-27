@@ -30,19 +30,16 @@ void main() {
     final l10n = AppLocalizations.of(screenContext)!;
 
     expect(find.text(l10n.consent02Title), findsOneWidget);
-    final scrollable = find.byType(Scrollable);
     expect(find.text(l10n.consent02CardHealth), findsOneWidget);
 
-    // Verify the terms card (with links) exists before scrolling
-    expect(find.byKey(const Key('consent02_card_required_terms')), findsOneWidget);
-    // Then scroll to reveal the AI journal optional card
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('consent02_card_optional_ai_journal')),
-      200,
-      scrollable: scrollable,
-    );
+    // Verify the terms card (with links) exists (use skipOffstage for ListView items)
     expect(
-      find.text(l10n.consent02CardAiJournal, skipOffstage: false),
+      find.byKey(const Key('consent02_card_required_terms'), skipOffstage: false),
+      findsOneWidget,
+    );
+    // Verify the analytics optional card exists (MVP scope)
+    expect(
+      find.text(l10n.consent02CardAnalytics, skipOffstage: false),
       findsOneWidget,
     );
     expect(

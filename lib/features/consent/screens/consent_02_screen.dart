@@ -3,12 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
+import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
@@ -17,6 +20,7 @@ import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/core/widgets/link_text.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
+import 'package:luvi_services/supabase_service.dart';
 
 import 'consent_welcome_05_screen.dart';
 
@@ -49,9 +53,10 @@ class Consent02Screen extends ConsumerWidget {
     final footer = _ConsentFooter(
       key: const Key('consent02_footer'),
       l10n: l10n,
-      onSelectAll: notifier.selectAllOptional,
+      // DSGVO: Only select VISIBLE optional scopes
+      onSelectAll: notifier.selectAllVisibleOptional,
       onClearAll: notifier.clearAllOptional,
-      allOptionalSelected: state.allOptionalSelected,
+      allOptionalSelected: state.allVisibleOptionalSelected,
       onNext: () async => _handleNext(context, ref, state, l10n),
       nextEnabled: state.requiredAccepted && !isNextBusy,
     );
@@ -87,19 +92,6 @@ class Consent02Screen extends ConsumerWidget {
         body: l10n.consent02CardAnalytics,
         scope: ConsentScope.analytics,
       ),
-      ConsentChoiceListItem(
-        body: l10n.consent02CardMarketing,
-        scope: ConsentScope.marketing,
-      ),
-      ConsentChoiceListItem(
-        body: l10n.consent02CardModelTraining,
-        scope: ConsentScope.model_training,
-      ),
-      ConsentChoiceListItem(
-        key: const Key('consent02_card_optional_ai_journal'),
-        body: l10n.consent02CardAiJournal,
-        scope: ConsentScope.ai_journal,
-      ),
     ];
   }
 
@@ -112,8 +104,8 @@ class Consent02Screen extends ConsumerWidget {
     if (!_acquireBusy(ref)) {
       return;
     }
+    final scopes = _computeScopes(state);
     try {
-      final scopes = _computeScopes(state);
       await _acceptConsent(ref, scopes);
       final welcomeMarked = await _markWelcomeSeen(ref);
 
@@ -128,12 +120,21 @@ class Consent02Screen extends ConsumerWidget {
       }
 
       if (!context.mounted) return;
-      _navigateToOnboarding(context);
+      _navigateAfterConsent(context);
     } on ConsentException catch (error) {
       if (!context.mounted) return;
-      final message = error.code == 'rate_limit'
-          ? l10n.consentSnackbarRateLimited
-          : l10n.consentSnackbarError;
+      if (error.code == 'unauthorized' || error.statusCode == 401) {
+        // Session abgelaufen → User zu Auth redirecten
+        if (!context.mounted) return;
+        context.go(AuthSignInScreen.routeName);
+        return;
+      }
+      final message = switch (error.code) {
+        'rate_limit' => l10n.consentSnackbarRateLimited,
+        'function_unavailable' => l10n.consentSnackbarServiceUnavailable,
+        'server_error' => l10n.consentSnackbarServerError,
+        _ => l10n.consentSnackbarError,
+      };
       _showConsentErrorSnackbar(context, message);
     } catch (error, stackTrace) {
       if (!context.mounted) return;
@@ -226,6 +227,15 @@ class _ConsentTopBar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: ConsentSpacing.topBarButtonToTitle),
+          // Shield Icon (Header)
+          ExcludeSemantics(
+            child: Image.asset(
+              Assets.consentImages.shield1,
+              width: 80,
+              height: 80,
+            ),
+          ),
+          const SizedBox(height: Spacing.l),
           Semantics(
             header: true,
             child: Text(
@@ -264,7 +274,12 @@ class ConsentChoiceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: ConsentSpacing.listPadding,
+      // Extra bottom padding to clear sticky footer overlay.
+      // See ConsentSpacing.footerEstimatedHeight for sync with footer widget.
+      padding: ConsentSpacing.listPadding.copyWith(
+        bottom: ConsentSpacing.listPaddingBottom +
+            ConsentSpacing.footerEstimatedHeight,
+      ),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
@@ -588,12 +603,43 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
   );
 }
 
-Future<bool> _markWelcomeSeen(WidgetRef ref) async {
+/// Server SSOT: upsert consent gate when authenticated.
+/// Returns true on success or if skipped (not ready), false on error.
+Future<bool> _upsertServerConsentGate() async {
+  if (!SupabaseService.isInitialized || SupabaseService.currentUser == null) {
+    return true; // Skip if not ready, not a failure
+  }
+  try {
+    await SupabaseService.upsertConsentGate(
+      acceptedConsentVersion: ConsentConfig.currentVersionInt,
+      markWelcomeSeen: true,
+    );
+    return true;
+  } catch (error, stackTrace) {
+    log.w(
+      'consent_gate_upsert_failed',
+      tag: 'consent02',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    return false;
+  }
+}
+
+/// Local cache: best-effort write for user state.
+/// Returns true on success, false on error.
+Future<bool> _updateLocalConsentCache(WidgetRef ref) async {
   try {
     final userState = await ref.read(userStateServiceProvider.future);
-    await userState.markWelcomeSeen();
-    // Also persist accepted consent version for version-gate checks
-    await userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt);
+    final uid = SupabaseService.currentUser?.id;
+    if (uid != null) {
+      await userState.bindUser(uid);
+      await userState.markWelcomeSeen();
+      await userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt);
+    } else {
+      // Debug: track edge case where uid is null (auth state race or test env).
+      log.d('consent_cache_skip_no_uid', tag: 'consent02');
+    }
     return true;
   } catch (error, stackTrace) {
     log.e(
@@ -606,10 +652,18 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
   }
 }
 
+/// Mark welcome as seen in both server and local cache.
+/// Returns true if at least one operation succeeded.
+Future<bool> _markWelcomeSeen(WidgetRef ref) async {
+  final serverOk = await _upsertServerConsentGate();
+  final localOk = await _updateLocalConsentCache(ref);
+  return serverOk || localOk;
+}
+
 /// Navigate to Onboarding after consent is accepted.
-/// User is already authenticated at this point (logged in before Welcome/Consent flow).
-void _navigateToOnboarding(BuildContext context) {
-  context.go(Onboarding01Screen.routeName);
+void _navigateAfterConsent(BuildContext context) {
+  final isAuth = SupabaseService.isAuthenticated;
+  context.go(isAuth ? Onboarding01Screen.routeName : AuthSignInScreen.routeName);
 }
 
 void _reportUnexpectedConsentError(
@@ -625,3 +679,4 @@ void _reportUnexpectedConsentError(
   );
   _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
 }
+

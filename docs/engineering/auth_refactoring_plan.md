@@ -1,19 +1,23 @@
 # Auth Flow Refactoring Plan
 
 > **Status:** Approved
-> **Datum:** 2025-12-09
+> **Datum / Date:** 2025-12-09
 > **Agent:** Claude Code
 
-## Ziel
-Refactoring des Auth Flows von 8 auf 6 Screens mit neuem Figma-Design.
+## Ziel / Goal
 
-**Strategie:** "Design First, Logic Preserve" - Bestehende Supabase-Logik behalten, nur UI neu.
+Refactoring des Auth Flows von 8 auf 6 Screens mit neuem Figma-Design.
+*Refactoring auth flow from 8 to 6 screens with new Figma design.*
+
+**Strategie / Strategy:** "Design First, Logic Preserve"
+Bestehende Supabase-Logik behalten, nur UI neu.
+*Keep existing Supabase logic, only update UI.*
 
 ---
 
-## Audit-Ergebnisse (Verifiziert)
+## Audit-Ergebnisse / Audit Results (Verified)
 
-### Komponenten die 100% Figma matchen (wiederverwenden!)
+### Komponenten die 100% Figma matchen / Components matching Figma 100% (reuse!)
 | Komponente | Datei |
 |------------|-------|
 | Pink CTA Button | `lib/features/consent/widgets/welcome_button.dart` |
@@ -24,19 +28,19 @@ Refactoring des Auth Flows von 8 auf 6 Screens mit neuem Figma-Design.
 | Beige Farbe | `DsColors.welcomeWaveBg` (#FAEEE0) |
 | Glassmorphism Token | `GlassTokens` in `app_theme.dart` |
 
-### Komponenten die angepasst werden müssen
+### Komponenten die angepasst werden müssen / Components requiring adjustment
 | Komponente | Problem | Lösung |
 |------------|---------|--------|
 | Input Fields | Grauer Hintergrund | Beige/weiß anpassen |
 
-### Komponenten die NEU erstellt werden müssen
+### Komponenten die NEU erstellt werden müssen / Components to create NEW
 | Komponente | Zweck |
 |------------|-------|
 | E-Mail Login Button | Outline-Style Button für "Anmelden mit E-Mail" |
 | Glow Checkmark | Beige Glow statt grünem Circle |
 | Auth Gradient Background | Vollflächiger beige Gradient |
 
-### Supabase-Integration (NICHT anfassen - funktioniert!)
+### Supabase-Integration (DO NOT touch - working!)
 - ✅ signUp, signIn, signOut
 - ✅ Session Management (Stream-basiert)
 - ✅ Password Reset (Magic Link)
@@ -44,7 +48,7 @@ Refactoring des Auth Flows von 8 auf 6 Screens mit neuem Figma-Design.
 
 ---
 
-## Screen-Mapping: Alt → Neu
+## Screen-Mapping: Old → New
 
 | # | Neuer Screen | Ersetzt | Route | Figma |
 |---|--------------|---------|-------|-------|
@@ -68,7 +72,7 @@ Refactoring des Auth Flows von 8 auf 6 Screens mit neuem Figma-Design.
 
 ---
 
-## Taktische Vorgehensweise (5 Phasen)
+## Implementation Approach / Taktische Vorgehensweise (5 Phases)
 
 ### Phase 1: Foundation (4 neue Widgets)
 **Ziel:** Fehlende Komponenten erstellen
@@ -147,16 +151,16 @@ AuthShell
 
 ---
 
-## Kritische Dateien
+## Critical Files / Kritische Dateien
 
-### Zu modifizieren
+### To modify / Zu modifizieren
 | Datei | Änderung |
 |-------|----------|
 | `lib/core/navigation/routes.dart` | Routes anpassen |
 | `lib/l10n/app_de.arb` | Neue L10n Keys |
 | `lib/l10n/app_en.arb` | Neue L10n Keys |
 
-### Zu erstellen (NEU)
+### To create NEW / Zu erstellen (NEU)
 | Datei | Zweck |
 |-------|-------|
 | `lib/features/auth/widgets/auth_gradient_background.dart` | Beige Hintergrund |
@@ -165,7 +169,7 @@ AuthShell
 | `lib/features/auth/widgets/auth_outline_button.dart` | E-Mail Button |
 | `lib/features/auth/screens/auth_signin_screen.dart` | Entry Screen |
 
-### Zu refaktorieren (bestehend → neues Design)
+### To refactor / Zu refaktorieren (existing → new design)
 | Datei | Änderung |
 |-------|----------|
 | `lib/features/auth/screens/login_screen.dart` | Neues UI, Provider behalten |
@@ -174,7 +178,7 @@ AuthShell
 | `lib/features/auth/screens/create_new_password_screen.dart` | Neues UI |
 | `lib/features/auth/screens/success_screen.dart` | GlowCheckmark |
 
-### Zu entfernen
+### To remove / Zu entfernen
 | Datei | Grund |
 |-------|-------|
 | `lib/features/auth/screens/auth_entry_screen.dart` | Ersetzt durch AuthSignInScreen |
@@ -202,15 +206,15 @@ Das Mapping-Dokument enthält:
 
 ---
 
-## Zusammenfassung
+## Summary / Zusammenfassung
 
-**Was wir tun:**
-- 4 neue Widgets erstellen
-- 5 bestehende Screens refaktorieren (UI neu, Logik behalten)
-- 1 neuen Screen erstellen (AuthSignInScreen)
-- 2 Screens/Routes entfernen
+**What we do / Was wir tun:**
+- Create 4 new widgets / 4 neue Widgets erstellen
+- Refactor 5 existing screens (new UI, keep logic) / 5 bestehende Screens refaktorieren
+- Create 1 new screen (AuthSignInScreen) / 1 neuen Screen erstellen
+- Remove 2 screens/routes / 2 Screens/Routes entfernen
 
-**Was wir NICHT tun:**
-- Supabase-Integration ändern
-- Provider-Architektur ändern
-- Backend-Logik umschreiben
+**What we do NOT do / Was wir NICHT tun:**
+- Change Supabase integration / Supabase-Integration ändern
+- Change provider architecture / Provider-Architektur ändern
+- Rewrite backend logic / Backend-Logik umschreiben

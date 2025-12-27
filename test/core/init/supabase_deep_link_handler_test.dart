@@ -75,13 +75,15 @@ void main() {
     });
 
     group('hasPendingUri', () {
-      test('initially returns false', () {
+      test('initially returns false', () async {
         final handler = SupabaseDeepLinkHandler(
           appLinks: mockAppLinks,
           allowedUri: Uri.parse('luvi://auth-callback'),
         );
 
         expect(handler.hasPendingUri, isFalse);
+
+        await handler.dispose();
       });
 
       test('returns true after matching URI received (Supabase not initialized)',
@@ -215,6 +217,110 @@ void main() {
         await Future<void>.delayed(Duration.zero);
 
         expect(handler.hasPendingUri, isTrue);
+
+        await handler.dispose();
+      });
+    });
+
+    group('Path normalization', () {
+      test('matches paths with and without trailing slash', () async {
+        final handler = SupabaseDeepLinkHandler(
+          appLinks: mockAppLinks,
+          allowedUri: Uri.parse('luvi://auth-callback/path'),
+        );
+
+        await handler.start();
+
+        // Path without trailing slash
+        uriStreamController.add(Uri.parse('luvi://auth-callback/path?code=test'));
+        await Future<void>.delayed(Duration.zero);
+        expect(handler.hasPendingUri, isTrue);
+
+        await handler.dispose();
+      });
+
+      test('matches paths with trailing slash against allowed without', () async {
+        final handler = SupabaseDeepLinkHandler(
+          appLinks: mockAppLinks,
+          allowedUri: Uri.parse('luvi://auth-callback/path'),
+        );
+
+        await handler.start();
+
+        // Path WITH trailing slash should match allowed WITHOUT
+        uriStreamController.add(Uri.parse('luvi://auth-callback/path/?code=test'));
+        await Future<void>.delayed(Duration.zero);
+        expect(handler.hasPendingUri, isTrue);
+
+        await handler.dispose();
+      });
+
+      test('matches paths without trailing slash against allowed with', () async {
+        final handler = SupabaseDeepLinkHandler(
+          appLinks: mockAppLinks,
+          allowedUri: Uri.parse('luvi://auth-callback/path/'),
+        );
+
+        await handler.start();
+
+        // Path WITHOUT trailing slash should match allowed WITH
+        uriStreamController.add(Uri.parse('luvi://auth-callback/path?code=test'));
+        await Future<void>.delayed(Duration.zero);
+        expect(handler.hasPendingUri, isTrue);
+
+        await handler.dispose();
+      });
+
+      test('case-insensitive path matching', () async {
+        final handler = SupabaseDeepLinkHandler(
+          appLinks: mockAppLinks,
+          allowedUri: Uri.parse('luvi://auth-callback/PATH'),
+        );
+
+        await handler.start();
+
+        uriStreamController.add(Uri.parse('luvi://auth-callback/path?code=test'));
+        await Future<void>.delayed(Duration.zero);
+        expect(handler.hasPendingUri, isTrue);
+
+        await handler.dispose();
+      });
+    });
+
+    group('overwrittenUriCount', () {
+      test('initially returns zero', () async {
+        final handler = SupabaseDeepLinkHandler(
+          appLinks: mockAppLinks,
+          allowedUri: Uri.parse('luvi://auth-callback'),
+        );
+
+        expect(handler.overwrittenUriCount, equals(0));
+
+        await handler.dispose();
+      });
+
+      test('increments when pending URI is replaced', () async {
+        final handler = SupabaseDeepLinkHandler(
+          appLinks: mockAppLinks,
+          allowedUri: Uri.parse('luvi://auth-callback'),
+        );
+
+        await handler.start();
+
+        // First URI queued
+        uriStreamController.add(Uri.parse('luvi://auth-callback?code=first'));
+        await Future<void>.delayed(Duration.zero);
+        expect(handler.overwrittenUriCount, equals(0));
+
+        // Second URI overwrites first
+        uriStreamController.add(Uri.parse('luvi://auth-callback?code=second'));
+        await Future<void>.delayed(Duration.zero);
+        expect(handler.overwrittenUriCount, equals(1));
+
+        // Third URI overwrites second
+        uriStreamController.add(Uri.parse('luvi://auth-callback?code=third'));
+        await Future<void>.delayed(Duration.zero);
+        expect(handler.overwrittenUriCount, equals(2));
 
         await handler.dispose();
       });

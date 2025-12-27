@@ -9,7 +9,7 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get onboarding01Title => 'Erzähl mir von dir 💜';
+  String get onboarding01Title => 'Willkommen!\nWie dürfen wir dich nennen?';
 
   @override
   String onboardingStepSemantic(int current, int total) {
@@ -23,7 +23,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding01NameInputSemantic => 'Name eingeben';
 
   @override
-  String get onboarding02Title => 'Wann hast du\nGeburtstag?';
+  String get onboarding01NameHint => 'Dein Vorname';
+
+  @override
+  String onboarding02Title(String name) {
+    return 'Hey $name,\nwann hast du Geburtstag?';
+  }
 
   @override
   String get onboarding02CalloutSemantic => 'Hinweis: Dein Alter hilft uns, deine hormonelle Phase besser einzuschätzen.';
@@ -105,6 +110,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get commonStartNow => 'Los geht\'s!';
+
+  @override
+  String get commonToday => 'HEUTE';
 
   @override
   String dashboardGreeting(String name) {
@@ -305,7 +313,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboarding05Callout => 'Wir brauchen diesen Ausgangspunkt, um deine aktuelle Zyklusphase zu berechnen. Ich lerne mit dir mit und passe die Prognosen automatisch an, sobald du deine nächste Periode einträgst.';
 
   @override
-  String get onboarding07Title => 'Wie ist dein Zyklus so?';
+  String get onboarding07Title => 'Wie regelmäßig ist dein Zyklus?';
 
   @override
   String get onboarding07OptionsSemantic => 'Zyklusregelmäßigkeit auswählen';
@@ -500,6 +508,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authLoginCtaLinkAction => 'Hier starten';
 
   @override
+  String get authLoginCtaLinkSemantic => 'Neu bei LUVI? Hier starten';
+
+  @override
   String get authLoginForgot => 'Passwort vergessen?';
 
   @override
@@ -658,6 +669,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
 
   @override
+  String get consentSnackbarServiceUnavailable => 'Der Dienst ist vorübergehend nicht erreichbar. Bitte versuche es später erneut.';
+
+  @override
+  String get consentSnackbarServerError => 'Ein Serverfehler ist aufgetreten. Bitte versuche es später erneut.';
+
+  @override
   String get authSignInHeadline => 'Verpasse es nicht, das Beste aus dir zu machen!';
 
   @override
@@ -710,4 +727,294 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authSignupSuccess => 'Registrierung erfolgreich! Du kannst dich jetzt anmelden.';
+
+  @override
+  String get interestStrengthTraining => 'Krafttraining & Muskelaufbau';
+
+  @override
+  String get interestCardio => 'Cardio & Ausdauer';
+
+  @override
+  String get interestMobility => 'Beweglichkeit & Mobilität';
+
+  @override
+  String get interestNutrition => 'Ernährung & Supplements';
+
+  @override
+  String get interestMindfulness => 'Achtsamkeit & Regeneration';
+
+  @override
+  String get interestHormonesCycle => 'Hormone & Zyklus';
+
+  @override
+  String onboarding02AgeTooYoung(int minAge) {
+    return 'Du musst mindestens $minAge Jahre alt sein.';
+  }
+
+  @override
+  String onboarding02AgeTooOld(int maxAge) {
+    return 'Das maximale Alter beträgt $maxAge Jahre.';
+  }
+
+  @override
+  String get fitnessLevelBeginner => 'Nicht fit';
+
+  @override
+  String get fitnessLevelOccasional => 'Fit';
+
+  @override
+  String get fitnessLevelFit => 'Sehr fit';
+
+  @override
+  String get consentIntroTitle => 'Lass uns LUVI für dich personalisieren';
+
+  @override
+  String get consentIntroBody => 'Um LUVI für dich zu personalisieren, brauchen wir zuerst dein Okay.';
+
+  @override
+  String get consentIntroCtaLabel => 'Weiter';
+
+  @override
+  String get consentIntroIllustrationSemantic => 'Illustration: Hand hält Stift zum Unterschreiben';
+
+  @override
+  String get consentIntroCtaSemantic => 'Weiter zur Datenschutz-Einwilligung';
+
+  @override
+  String get consentOptionsTitle => 'Deine Datenschutz-Einstellungen';
+
+  @override
+  String get consentOptionsSubtitle => 'Sicher gespeichert, streng geschützt. DSGVO, EU-Hosting';
+
+  @override
+  String get consentOptionsSectionRequired => 'ERFORDERLICH';
+
+  @override
+  String get consentOptionsSectionOptional => 'OPTIONAL';
+
+  @override
+  String get consentOptionsHealthText => 'Ich bin damit einverstanden, dass LUVI meine Gesundheits- und Zyklusdaten verarbeitet, um mir zyklusbewusste Empfehlungen zu geben.';
+
+  @override
+  String get consentOptionsTermsPrefix => 'Ich akzeptiere die ';
+
+  @override
+  String get consentOptionsTermsLink => 'Nutzungsbedingungen';
+
+  @override
+  String get consentOptionsTermsConjunction => ' und habe die ';
+
+  @override
+  String get consentOptionsPrivacyLink => 'Datenschutzerklärung';
+
+  @override
+  String get consentOptionsTermsSuffix => ' zur Kenntnis genommen.';
+
+  @override
+  String get consentOptionsAnalyticsText => 'Ich bin damit einverstanden, dass LUVI pseudonymisierte Nutzungs- und Gerätedaten (z.B. Crash-Infos, Performance, genutzte Funktionen) verarbeitet, um Fehler zu beheben und die App zu verbessern.';
+
+  @override
+  String get consentOptionsAnalyticsRevoke => 'Widerruf jederzeit unter Profil → Datenschutz.';
+
+  @override
+  String get consentOptionsCtaContinue => 'Weiter';
+
+  @override
+  String get consentOptionsCtaAcceptAll => 'Alles akzeptieren';
+
+  @override
+  String consentOptionsCheckboxSelectedSemantic(String section, String text) {
+    return '$section: $text. Ausgewählt';
+  }
+
+  @override
+  String consentOptionsCheckboxUnselectedSemantic(String section, String text) {
+    return '$section: $text. Nicht ausgewählt';
+  }
+
+  @override
+  String get consentOptionsShieldSemantic => 'Schild-Symbol für Datenschutz';
+
+  @override
+  String get consentBlockingTitle => 'Deine Zustimmung macht LUVI möglich';
+
+  @override
+  String get consentBlockingBody => 'LUVI braucht deine Zyklus- und Gesundheitsangaben, um dir zyklusbasierte Inhalte und Empfehlungen anzuzeigen. Ohne diese Verarbeitung können wir den Dienst nicht bereitstellen.';
+
+  @override
+  String get consentBlockingCtaBack => 'Zurück & Zustimmen';
+
+  @override
+  String get consentBlockingCtaSemantic => 'Zurück zur Einwilligung';
+
+  @override
+  String get consentBlockingShieldSemantic => 'Schild-Symbol für Datenschutz';
+
+  @override
+  String onboarding03FitnessTitle(String name) {
+    return '$name, wie fit fühlst du dich?';
+  }
+
+  @override
+  String get onboarding03FitnessSubtitle => 'Damit wir die Intensität passend wählen.';
+
+  @override
+  String get onboarding03FitnessSemantic => 'Fitnesslevel auswählen';
+
+  @override
+  String get onboarding04GoalsTitle => 'Was sind deine Ziele?';
+
+  @override
+  String get onboarding04GoalsSubtitle => 'Du kannst mehrere auswählen.';
+
+  @override
+  String get onboarding04GoalsSemantic => 'Ziele auswählen';
+
+  @override
+  String get onboarding05InterestsTitle => 'Was interessiert dich?';
+
+  @override
+  String get onboarding05InterestsSubtitle => 'Wähle 3–5, damit dein Feed direkt passt.';
+
+  @override
+  String get onboarding05InterestsSemantic => 'Interessen auswählen';
+
+  @override
+  String get onboarding06PeriodTitle => 'Tippe auf den Tag, an dem deine letzte Periode begann.';
+
+  @override
+  String get onboarding06PeriodUnknown => 'Ich weiß es nicht mehr';
+
+  @override
+  String get onboarding06PeriodSubheader => 'Du kannst das später ändern.';
+
+  @override
+  String get onboarding07DurationTitle => 'Sieht das richtig aus?';
+
+  @override
+  String get onboarding07DurationSubtitle => 'Wir haben die Dauer geschätzt. Tippe auf den Tag, um anzupassen.';
+
+  @override
+  String get onboarding08SuccessLoading => 'Wir stellen deine Ergebnisse zusammen...';
+
+  @override
+  String onboardingProgressLabel(int current, int total) {
+    return 'Frage $current von $total';
+  }
+
+  @override
+  String get onboardingDefaultName => 'Du';
+
+  @override
+  String get weekdayMondayShort => 'Mo';
+
+  @override
+  String get weekdayTuesdayShort => 'Di';
+
+  @override
+  String get weekdayWednesdayShort => 'Mi';
+
+  @override
+  String get weekdayThursdayShort => 'Do';
+
+  @override
+  String get weekdayFridayShort => 'Fr';
+
+  @override
+  String get weekdaySaturdayShort => 'Sa';
+
+  @override
+  String get weekdaySundayShort => 'So';
+
+  @override
+  String get periodCalendarSemanticToday => 'Heute';
+
+  @override
+  String get periodCalendarSemanticSelected => 'ausgewählt';
+
+  @override
+  String get periodCalendarSemanticPeriodDay => 'Periodentag';
+
+  @override
+  String get onboardingCycleIntroTitle => 'Damit LUVI für dich passt, brauchen wir noch deinen Zyklusstart.';
+
+  @override
+  String get onboardingCycleIntroButton => 'Okay, los';
+
+  @override
+  String get onboardingSuccessLoading => 'Wir stellen deine Pläne zusammen...';
+
+  @override
+  String get onboardingSuccessSaving => 'Wird gespeichert...';
+
+  @override
+  String get onboardingSuccessComplete => 'Fertig!';
+
+  @override
+  String get onboardingSaveError => 'Speichern fehlgeschlagen. Bitte erneut versuchen.';
+
+  @override
+  String get onboardingRetryButton => 'Erneut versuchen';
+
+  @override
+  String get onboardingContentCard1 => 'Brauche ich mehr Eisen während meiner Blutung?';
+
+  @override
+  String get onboardingContentCard2 => 'Wie trainiere ich während meiner Ovulation?';
+
+  @override
+  String get onboardingContentCard3 => 'Wie kann ich meinen Stress reduzieren?';
+
+  @override
+  String get goalFitter => 'Fitter & stärker werden';
+
+  @override
+  String get goalEnergy => 'Mehr Energie im Alltag';
+
+  @override
+  String get goalSleep => 'Besser schlafen und Stress reduzieren';
+
+  @override
+  String get goalCycle => 'Zyklus & Hormone verstehen';
+
+  @override
+  String get goalLongevity => 'Langfristige Gesundheit und Longevity';
+
+  @override
+  String get goalWellbeing => 'Mich einfach wohlfühlen';
+
+  @override
+  String get commonBack => 'Zurück';
+
+  @override
+  String get semanticCalendarPreview => 'Kalendervorschau für Zyklustracking';
+
+  @override
+  String get semanticLoadingProgress => 'Ladefortschritt';
+
+  @override
+  String semanticProgressPercent(int percent) {
+    return '$percent Prozent';
+  }
+
+  @override
+  String get splashGateUnknownTitle => 'Kurze Unterbrechung';
+
+  @override
+  String get splashGateUnknownBody => 'Um weiterzumachen, brauchen wir eine Internetverbindung. Prüfe kurz deine Verbindung.';
+
+  @override
+  String get splashGateRetryCta => 'Nochmal probieren';
+
+  @override
+  String get splashGateSignOutCta => 'Abmelden';
+
+  @override
+  String get signOutErrorRetry => 'Abmeldung fehlgeschlagen. Bitte erneut versuchen.';
+
+  @override
+  String get signOutFailed => 'Abmeldung fehlgeschlagen. Du kannst dich erneut anmelden.';
+
+  @override
+  String get retry => 'Erneut versuchen';
 }

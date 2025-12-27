@@ -37,6 +37,8 @@ if (!Number.isFinite(parsedAlertSampleRate)) {
   throw new Error("CONSENT_ALERT_SAMPLE_RATE must be a finite number between 0 and 1");
 }
 const ALERT_SAMPLE_RATE = Math.max(0, Math.min(1, parsedAlertSampleRate));
+const MAX_LOGGED_INVALID_SCOPES = 10;
+const MAX_INVALID_SCOPE_STRING_LENGTH = 200;
 
 if (!SUPABASE_URL) {
   throw new Error("Missing required environment variable: SUPABASE_URL must be set");
@@ -246,6 +248,23 @@ function validateScopes(raw: unknown[]): { valid: string[]; invalid: unknown[] }
   return { valid, invalid };
 }
 
+function clampInvalidScopes(scopes: unknown[]): string[] {
+  return scopes.slice(0, MAX_LOGGED_INVALID_SCOPES).map((item) => {
+    if (typeof item === "string") {
+      return item.length > MAX_INVALID_SCOPE_STRING_LENGTH
+        ? `${item.substring(0, MAX_INVALID_SCOPE_STRING_LENGTH)}...`
+        : item;
+    }
+    if (item === null) return "[null]";
+    if (Array.isArray(item)) return "[array]";
+    if (typeof item === "object") return "[object]";
+    if (typeof item === "number") return "[number]";
+    if (typeof item === "boolean") return "[boolean]";
+    if (typeof item === "undefined") return "[undefined]";
+    return "[unknown]";
+  });
+}
+
 if (import.meta.main) {
   serve(async (req) => {
   const started = Date.now();
@@ -264,7 +283,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+    return new Response(JSON.stringify({ error: "Method not allowed", request_id: requestId }), {
       status: 405,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -278,10 +297,13 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Missing Authorization header" }), {
+    return new Response(
+      JSON.stringify({ error: "Missing Authorization header", request_id: requestId }),
+      {
       status: 401,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
-    });
+      },
+    );
   }
 
   let body: ConsentRequestPayload = {};
@@ -295,7 +317,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Invalid request body" }), {
+    return new Response(JSON.stringify({ error: "Invalid request body", request_id: requestId }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -312,10 +334,13 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "policy_version is required" }), {
+    return new Response(
+      JSON.stringify({ error: "policy_version is required", request_id: requestId }),
+      {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
-    });
+      },
+    );
   }
 
   const rawScopes = body.scopes;
@@ -326,7 +351,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
+    return new Response(JSON.stringify({ error: "scopes must be provided", request_id: requestId }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -341,9 +366,33 @@ if (import.meta.main) {
     !Array.isArray(rawScopes)
   ) {
     const scopeMap = rawScopes as Record<string, unknown>;
-    normalizedScopes = Object.keys(scopeMap).filter((key) =>
-      Boolean(scopeMap[key])
+    // Use Object.entries() to correctly detect non-boolean values including undefined
+    // (Object.values().find() returns undefined for undefined values, causing false negatives)
+    const invalidEntry = Object.entries(scopeMap).find(
+      ([, v]) => typeof v !== "boolean"
     );
+    if (invalidEntry) {
+      const [invalidKey, invalidValue] = invalidEntry;
+      logMetric(requestId, "invalid", {
+        reason: "invalid_scopes_value_type",
+        invalidKey,
+        providedType: typeof invalidValue,
+        ip_hash: ipHash,
+        ua_hash: uaHash,
+        hash_version: CONSENT_HASH_VERSION,
+      });
+      return new Response(
+        JSON.stringify({ error: "scopes object values must be boolean", request_id: requestId }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "X-Request-Id": requestId,
+          },
+        },
+      );
+    }
+    normalizedScopes = Object.keys(scopeMap).filter((key) => scopeMap[key] === true);
   } else {
     logMetric(requestId, "invalid", {
       reason: "invalid_scopes_type",
@@ -352,8 +401,11 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(
-      JSON.stringify({ error: "scopes must be provided as an array or object of enabled flags" }),
+      return new Response(
+      JSON.stringify({
+        error: "scopes must be provided as an array or object of boolean flags",
+        request_id: requestId,
+      }),
       {
         status: 400,
         headers: {
@@ -371,7 +423,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "scopes must be a non-empty array" }), {
+    return new Response(JSON.stringify({ error: "scopes must be non-empty", request_id: requestId }), {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -382,17 +434,28 @@ if (import.meta.main) {
   );
 
   if (invalidScopes.length > 0) {
+    // Defense: Clamp invalidScopes to prevent log bloat/noise from large payloads
+    const clampedInvalidScopes = clampInvalidScopes(invalidScopes);
     logMetric(requestId, "invalid", {
       reason: "invalid_scopes",
-      invalidScopes,
+      invalidScopes: clampedInvalidScopes,
+      invalidScopesCount: invalidScopes.length,
       ip_hash: ipHash,
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Invalid scopes provided", invalidScopes }), {
+    return new Response(
+      JSON.stringify({
+        error: "Invalid scopes provided",
+        invalidScopes: clampedInvalidScopes,
+        invalidScopesCount: invalidScopes.length,
+        request_id: requestId,
+      }),
+      {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
-    });
+      },
+    );
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -412,7 +475,7 @@ if (import.meta.main) {
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
     });
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    return new Response(JSON.stringify({ error: "Unauthorized", request_id: requestId }), {
       status: 401,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -421,7 +484,8 @@ if (import.meta.main) {
   const payload = {
     user_id: userResult.user.id,
     version: policyVersion,
-    scopes: validatedScopes,
+    scopes: Object.fromEntries(validatedScopes.map((s) => [s, true] as const)),
+    scope_count: validatedScopes.length,
   } as const;
 
   // Compute a deterministic pseudonym for metrics: prefer HMAC(user_id, salt)
@@ -459,7 +523,7 @@ if (import.meta.main) {
     });
     // Fire-and-forget: do not block response path on alert delivery
     maybeAlert(requestId, "error", { where: "consent_rpc" });
-    return new Response(JSON.stringify({ error: "Failed to log consent" }), {
+    return new Response(JSON.stringify({ error: "Failed to log consent", request_id: requestId }), {
       status: 500,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
     });
@@ -482,7 +546,7 @@ if (import.meta.main) {
       consent_id_hash: consentIdHash,
       window_sec: RATE_LIMIT_WINDOW_SEC,
     });
-    return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
+    return new Response(JSON.stringify({ error: "Rate limit exceeded", request_id: requestId }), {
       status: 429,
       headers: {
         "Content-Type": "application/json",
@@ -497,7 +561,7 @@ if (import.meta.main) {
   const elapsed = Date.now() - started;
   logMetric(requestId, "success", {
     consent_id_hash: consentIdHash,
-    scopes_count: payload.scopes.length,
+    scope_count: payload.scope_count,
     duration_ms: elapsed,
     rpc_latency_ms: rpcDuration,
     version: payload.version,
@@ -514,7 +578,7 @@ if (import.meta.main) {
     console.info("consent_recorded", {
       consent_id_hash: consentIdHash,
       version: payload.version,
-      scope_count: payload.scopes.length,
+      scope_count: payload.scope_count,
     });
   } catch (_) {
     // Ignore logging failures to avoid impacting the response path

@@ -2,11 +2,39 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:luvi_core/luvi_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'init_exception.dart';
 import 'init_mode.dart';
 import 'logger.dart';
+
+/// Stable error IDs for analytics (Sentry/PostHog).
+const String kErrProfilesUpsertConsentGateNoRowReturned =
+    'profiles_upsert_consent_gate_no_row_returned';
+
+/// Canonical IDs for fitness levels (matches public.profiles.fitness_level).
+const Set<String> kValidFitnessLevelIds = {'beginner', 'occasional', 'fit'};
+
+/// Canonical IDs for goals (matches public.profiles.goals JSONB array).
+const Set<String> kValidGoalIds = {
+  'fitter',
+  'energy',
+  'sleep',
+  'cycle',
+  'longevity',
+  'wellbeing',
+};
+
+/// Canonical IDs for interests (matches public.profiles.interests JSONB array).
+const Set<String> kValidInterestIds = {
+  'strength_training',
+  'cardio',
+  'mobility',
+  'nutrition',
+  'mindfulness',
+  'hormones_cycle',
+};
 
 class SupabaseService {
   static bool _initialized = false;
@@ -73,17 +101,20 @@ class SupabaseService {
     SupabaseAuthDeepLinkConfig? authConfig,
   }) {
     if (validationConfig != null) {
+      if (_initialized) {
+        throw StateError(
+          'validationConfig cannot be set after SupabaseService is initialized',
+        );
+      }
       _validationConfig = validationConfig;
     }
     if (authConfig != null) {
       if (_initialized) {
-        log.w(
-          'authConfig ignored: SupabaseService already initialized',
-          tag: 'supabase_service',
+        throw StateError(
+          'authConfig cannot be set after SupabaseService is initialized',
         );
-      } else {
-        _authDeepLinkConfig = authConfig;
       }
+      _authDeepLinkConfig = authConfig;
     }
   }
 
@@ -215,11 +246,25 @@ class SupabaseService {
     if (cycleLength <= 0) {
       throw ArgumentError.value(cycleLength, 'cycleLength', 'must be positive');
     }
+    if (cycleLength > 60) {
+      throw ArgumentError.value(
+        cycleLength,
+        'cycleLength',
+        'must be <= 60',
+      );
+    }
     if (periodDuration <= 0) {
       throw ArgumentError.value(
         periodDuration,
         'periodDuration',
         'must be positive',
+      );
+    }
+    if (periodDuration > 15) {
+      throw ArgumentError.value(
+        periodDuration,
+        'periodDuration',
+        'must be <= 15',
       );
     }
     if (periodDuration > cycleLength) {
@@ -284,6 +329,185 @@ class SupabaseService {
         .select()
         .eq('user_id', userId)
         .maybeSingle();
+  }
+
+  /// Upsert user profile data from onboarding
+  ///
+  /// Saves display name, birth date, goals, and interests to profiles table.
+  /// Validates all canonical IDs before persisting to prevent invalid data.
+  static Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    final user = _ensureAuthenticated();
+    if (displayName.trim().isEmpty) {
+      throw ArgumentError.value(displayName, 'displayName', 'cannot be empty');
+    }
+    // Validate age bounds using shared utility from luvi_core
+    final age = calculateAge(birthDate);
+    final ageConfig = _validationConfig;
+    if (age < ageConfig.minAge || age > ageConfig.maxAge) {
+      throw ArgumentError.value(
+        birthDate,
+        'birthDate',
+        'age must be between ${ageConfig.minAge} and ${ageConfig.maxAge}',
+      );
+    }
+
+    // Validate canonical IDs to prevent invalid data persistence
+    final normalizedFitnessLevel = fitnessLevel.toLowerCase();
+    if (!kValidFitnessLevelIds.contains(normalizedFitnessLevel)) {
+      throw ArgumentError.value(
+        fitnessLevel,
+        'fitnessLevel',
+        'invalid fitness level ID',
+      );
+    }
+    // Single-pass validation + normalization + deduplication for goals
+    // Using Set to prevent duplicates (e.g., ['fitter', 'Fitter'] → ['fitter'])
+    final normalizedGoalsSet = <String>{};
+    for (final goal in goals) {
+      final normalized = goal.toLowerCase();
+      if (!kValidGoalIds.contains(normalized)) {
+        throw ArgumentError.value(goal, 'goals', 'invalid goal ID');
+      }
+      normalizedGoalsSet.add(normalized);
+    }
+    final normalizedGoals = normalizedGoalsSet.toList();
+
+    // Single-pass validation + normalization + deduplication for interests
+    // Using Set to prevent duplicates (e.g., ['yoga', 'Yoga'] → ['yoga'])
+    final normalizedInterestsSet = <String>{};
+    for (final interest in interests) {
+      final normalized = interest.toLowerCase();
+      if (!kValidInterestIds.contains(normalized)) {
+        throw ArgumentError.value(interest, 'interests', 'invalid interest ID');
+      }
+      normalizedInterestsSet.add(normalized);
+    }
+    final normalizedInterests = normalizedInterestsSet.toList();
+
+    // Normalize birthDate to UTC date-only
+    final bdLocal = birthDate.toLocal();
+    final birthDateNormalized =
+        DateTime.utc(bdLocal.year, bdLocal.month, bdLocal.day);
+
+    final timestamp = DateTime.now().toUtc().toIso8601String();
+    final payload = <String, dynamic>{
+      'user_id': user.id,
+      'display_name': displayName.trim(),
+      'birth_date': _formatIsoDate(birthDateNormalized),
+      'fitness_level': normalizedFitnessLevel,
+      'goals': normalizedGoals,
+      'interests': normalizedInterests,
+      'updated_at': timestamp,
+    };
+    final row = await client
+        .from('profiles')
+        .upsert(payload, onConflict: 'user_id')
+        .select()
+        .single();
+    return row;
+  }
+
+  /// Upsert consent gate state for the current user in `public.profiles`.
+  ///
+  /// SSOT: This is the server-side source of truth for consent version checks.
+  /// SharedPreferences may cache this value but must not be the primary truth.
+  ///
+  /// This does not touch onboarding completion.
+  static Future<Map<String, dynamic>?> upsertConsentGate({
+    required int acceptedConsentVersion,
+    bool markWelcomeSeen = true,
+  }) async {
+    final user = _ensureAuthenticated();
+    if (acceptedConsentVersion <= 0) {
+      throw ArgumentError.value(
+        acceptedConsentVersion,
+        'acceptedConsentVersion',
+        'must be positive',
+      );
+    }
+
+    // Intentionally do NOT accept a client-provided timestamp for
+    // `accepted_consent_at`. This is set server-side via a trigger/migration to
+    // avoid relying on device clock.
+    final timestamp = DateTime.now().toUtc().toIso8601String();
+
+    final insertPayload = <String, dynamic>{
+      'user_id': user.id,
+      'accepted_consent_version': acceptedConsentVersion,
+      'updated_at': timestamp,
+    };
+
+    if (markWelcomeSeen) {
+      insertPayload['has_seen_welcome'] = true;
+    }
+
+    // Use upsert to handle both insert and update atomically.
+    // This avoids race conditions and PGRST116 errors from empty result sets.
+    // onConflict: 'user_id' ensures we update if the row exists.
+    final result = await client
+        .from('profiles')
+        .upsert(insertPayload, onConflict: 'user_id')
+        .select()
+        .maybeSingle();
+
+    // Prevent "silent success" - if upsert returned no row, treat as failure.
+    // Caller catches all exceptions and shows warning snackbar.
+    if (result == null) {
+      throw StateError(kErrProfilesUpsertConsentGateNoRowReturned);
+    }
+    return result;
+  }
+
+  /// Upsert an account-scoped onboarding gate row for the current user in
+  /// `public.profiles`.
+  ///
+  /// MVP policy: only backfill `true` (local true -> remote true). Passing
+  /// `false` is treated as a no-op to avoid remotely resetting completion.
+  static Future<Map<String, dynamic>?> upsertOnboardingGate({
+    required bool hasCompletedOnboarding,
+  }) async {
+    final user = _ensureAuthenticated();
+
+    if (!hasCompletedOnboarding) {
+      return null;
+    }
+
+    final timestamp = DateTime.now().toUtc().toIso8601String();
+    final insertPayload = <String, dynamic>{
+      'user_id': user.id,
+      'has_completed_onboarding': true,
+      'onboarding_completed_at': timestamp,
+      'updated_at': timestamp,
+    };
+    final updatePayload = Map<String, dynamic>.from(insertPayload)
+      ..remove('user_id');
+
+    final updated = await client
+        .from('profiles')
+        .update(updatePayload)
+        .eq('user_id', user.id)
+        .select()
+        .maybeSingle();
+
+    if (updated == null) {
+      throw StateError(
+        'Cannot mark onboarding complete: profiles row missing for user.',
+      );
+    }
+
+    return updated;
+  }
+
+  /// Get user profile data
+  static Future<Map<String, dynamic>?> getProfile() async {
+    final user = _ensureAuthenticated();
+    return await client.from('profiles').select().eq('user_id', user.id).maybeSingle();
   }
 
   static Future<void> _loadEnvironment(String envFile) async {
@@ -417,9 +641,9 @@ class SupabaseAuthDeepLinkConfig {
 
 @immutable
 class SupabaseValidationConfig {
-  const SupabaseValidationConfig({this.minAge = 13, this.maxAge = 100})
-      : assert(minAge >= 13, 'minAge must be >= 13.'),
-        assert(maxAge <= 150, 'maxAge must be <= 150 (sanity check).'),
+  const SupabaseValidationConfig({this.minAge = 16, this.maxAge = 120})
+      : assert(minAge >= 16, 'minAge must be >= 16.'),
+        assert(maxAge <= 120, 'maxAge must be <= 120.'),
         assert(maxAge >= minAge, 'maxAge must be >= minAge.');
 
   final int minAge;

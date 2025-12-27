@@ -18,8 +18,9 @@ acceptance_version: "1.1"
 # Agent: Archon (MCP)
 
 ## Purpose
-Archon ist der interne Orchestrierungsagent (MCP) für Codex + Claude Code. Er hält Phase (BMAD/PRP-Fortschritt), Consent-Scope und Ranking-/Priorisierungsentscheidungen je Feature nachvollziehbar fest, sodass Reviewer eine auditierbare Quelle haben.
+Archon ist der interne Orchestrierungsagent (MCP) für **Gemini, Codex und Claude Code**. Er hält Phase (BMAD/PRP-Fortschritt), Consent-Scope und Ranking-/Priorisierungsentscheidungen je Feature nachvollziehbar fest, sodass Reviewer eine auditierbare Quelle haben.
 
+- **Gemini** nutzt Archon/MCP als primäres Werkzeug für die **systemweite Planung und Orchestrierung**. Gemini erstellt Epics, definiert Aufgaben und überwacht den Fortschritt über alle Domänen hinweg.
 - **Codex** nutzt Archon/MCP für Backend-/DB-/Privacy-Aufgaben (Supabase, Edge, RLS) und ruft hierüber RAG-Quellen (BMAD, App-Kontext, Roadmap, Dossiers) ab.
 - **Claude Code** nutzt dieselben Archon/RAG-Quellen für UI/Frontend/Dataviz-Work, sodass Screens/Widgets/Charts stets mit Phase-/Consent-Entscheidungen synchron bleiben. MCP-basierte DB/RLS-Operationen verbleiben bei Codex.
 

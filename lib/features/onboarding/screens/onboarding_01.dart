@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/design_tokens/opacity.dart';
+import 'package:luvi_app/core/design_tokens/gradients.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
+import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
@@ -12,23 +19,38 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// First onboarding screen: name input.
 /// Displays title, step counter, instruction, text input, and CTA.
-class Onboarding01Screen extends StatefulWidget {
+class Onboarding01Screen extends ConsumerStatefulWidget {
   const Onboarding01Screen({super.key});
 
   static const routeName = '/onboarding/01';
 
   @override
-  State<Onboarding01Screen> createState() => _Onboarding01ScreenState();
+  ConsumerState<Onboarding01Screen> createState() => _Onboarding01ScreenState();
 }
 
-class _Onboarding01ScreenState extends State<Onboarding01Screen> {
+class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
   final _nameController = TextEditingController();
   bool _hasText = false;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
     _nameController.addListener(_onTextChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Restore state from Notifier (for back navigation)
+    // Moved from initState to ensure widget is fully mounted before accessing Riverpod
+    if (!_initialized) {
+      _initialized = true;
+      final onboardingState = ref.read(onboardingProvider);
+      if (onboardingState.name != null && onboardingState.name!.isNotEmpty) {
+        _nameController.text = onboardingState.name!;
+      }
+    }
   }
 
   @override
@@ -46,8 +68,10 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
   }
 
   void _handleContinue() {
-    // Use push instead of go to preserve back stack (consistent with screens 02-07)
-    context.push(Onboarding02Screen.routeName);
+    // Save name to OnboardingNotifier
+    ref.read(onboardingProvider.notifier).setName(_nameController.text.trim());
+    // Navigate to O2
+    context.pushNamed(Onboarding02Screen.navName);
   }
 
   void _handleBack() {
@@ -68,15 +92,24 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     final spacing = OnboardingSpacing.of(context);
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: DsColors.goldLight,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          // Ensure gradient fills entire screen even with keyboard
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: DsGradients.onboardingStandard,
+          ),
+          child: SafeArea(
+          child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: spacing.horizontalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: Spacing.m),
+                SizedBox(height: spacing.topPadding),
                 OnboardingHeader(
                   title: AppLocalizations.of(context)!.onboarding01Title,
                   semanticsLabel:
@@ -85,8 +118,6 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
                   totalSteps: kOnboardingTotalSteps,
                   onBack: _handleBack,
                 ),
-                SizedBox(height: spacing.headerToInstruction01),
-                _buildInstruction(textTheme, colorScheme),
               SizedBox(height: spacing.instructionToInput01),
               _buildNameInput(textTheme, colorScheme, spacing),
               SizedBox(height: spacing.inputToCta01),
@@ -95,19 +126,8 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
             ],
           ),
         ),
+        ),
       ),
-    );
-  }
-
-  Widget _buildInstruction(TextTheme textTheme, ColorScheme colorScheme) {
-    final l10n = AppLocalizations.of(context)!;
-    final instruction = l10n.onboarding01Instruction;
-    return Semantics(
-      label: instruction,
-      child: Text(
-        instruction,
-        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
-        textAlign: TextAlign.center,
       ),
     );
   }
@@ -118,58 +138,57 @@ class _Onboarding01ScreenState extends State<Onboarding01Screen> {
     OnboardingSpacing spacing,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final dividerThickness = theme.dividerTheme.thickness ?? 1;
 
-    return Column(
-      children: [
-        Semantics(
-          textField: true,
-          label: l10n.onboarding01NameInputSemantic,
-          child: AuthTextField(
-            controller: _nameController,
-            frameless: true,
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            textInputAction: TextInputAction.done,
-            autofocus: true,
-            hintText: '',
-            onSubmitted: (_) {
-              if (_hasText) {
-                _handleContinue();
-              }
-            },
+    // Figma specs: Glass container 340×88px, radius 16, BackdropFilter blur (v3)
+    return OnboardingGlassCard(
+      child: Semantics(
+        textField: true,
+        label: l10n.onboarding01NameInputSemantic,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.m,
+            vertical: Spacing.l,
           ),
-        ),
-        const SizedBox(height: Spacing.l),
-        Align(
-          alignment: Alignment.center,
-          child: SizedBox(
-            width: spacing.underlineWidth,
-            child: Divider(
-              height: 0,
-              thickness: dividerThickness,
-              color: colorScheme.onSurface.withValues(
-                alpha: OpacityTokens.inactive,
-              ),
+          // Figma: Selection bg transparent, Cursor/Handle black
+          child: TextSelectionTheme(
+            data: const TextSelectionThemeData(
+              selectionColor: DsColors.transparent,
+              cursorColor: DsColors.grayscaleBlack,
+              selectionHandleColor: DsColors.grayscaleBlack,
+            ),
+            child: AuthTextField(
+              controller: _nameController,
+              frameless: true,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.name,
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.done,
+              autofocus: true,
+              hintText: l10n.onboarding01NameHint,
+              fontSize: Sizes.onboardingInputFontSize, // 18px (Figma v2)
+              fontFamilyOverride: FontFamilies.playfairDisplay,
+              fontWeightOverride: FontWeight.bold,
+              onSubmitted: (_) {
+                if (_hasText) {
+                  _handleContinue();
+                }
+              },
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildCta(TextTheme textTheme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context)!;
     final ctaLabel = l10n.commonContinue;
-    return Semantics(
-      label: ctaLabel,
-      button: true,
-      child: ElevatedButton(
+    return Center(
+      child: OnboardingButton(
         key: const Key('onb_cta'),
-        onPressed: _hasText ? _handleContinue : null,
-        child: Text(ctaLabel),
+        label: ctaLabel,
+        onPressed: _handleContinue,
+        isEnabled: _hasText,
       ),
     );
   }

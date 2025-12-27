@@ -13,8 +13,8 @@ class AuthLayout {
   static const double titleToInput = 92;
   static const double inputToCta = 40;
 
-  /// Gap between auth input fields (Figma: 20px)
-  static const double inputGap = 20;
+  /// Gap between auth input fields (derived from Spacing tokens)
+  static const double inputGap = Spacing.l - Spacing.xxs; // 24 - 4 = 20
   static const double ctaBottomInset = 92;
   static const double gapSection = 63; // Verification section grid (Figma)
   static const double gapTitleToInputs =

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
@@ -48,10 +49,24 @@ void main() {
   );
 
   /// Finds the inner ElevatedButton inside a WelcomeButton wrapper.
-  Finder innerElevatedButton(Finder parent) => find.descendant(
-    of: parent,
-    matching: find.byType(ElevatedButton),
-  );
+  /// Asserts exactly one ElevatedButton exists to fail fast with a clear message.
+  ///
+  /// Note: The assertion runs on each call, providing immediate feedback if
+  /// the widget structure changes unexpectedly.
+  Finder innerElevatedButton(Finder parent) {
+    final finder = find.descendant(
+      of: parent,
+      matching: find.byType(ElevatedButton),
+    );
+    // Validate single match exists to provide clear failure message
+    expect(
+      finder,
+      findsOneWidget,
+      reason: 'Expected exactly one ElevatedButton inside WelcomeButton. '
+          'Structure may have changed.',
+    );
+    return finder;
+  }
 
   group('AuthSignupScreen submit behaviour', () {
     late GoRouter router;
@@ -91,7 +106,8 @@ void main() {
       );
 
       await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
-      await tester.pumpAndSettle();
+      await tester.pump(); // Process tap
+      await tester.pump(); // Process signup
 
       verify(
         () => mockRepo.signUp(
@@ -100,6 +116,10 @@ void main() {
           data: null,
         ),
       ).called(1);
+
+      // Advance past the Timer delay for navigation
+      await tester.pump(Timing.snackBarBrief);
+      await tester.pumpAndSettle();
 
       // After successful signup, user is navigated to login screen
       expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
@@ -211,15 +231,22 @@ void main() {
       // After API call completes, pump to show SnackBar
       await tester.pump(); // First pump: trigger setState after async completes
       await tester.pump(); // Second pump: build SnackBar overlay
-      // SnackBar should be visible
+      // SnackBar should be visible with correct success message
       expect(find.byType(SnackBar), findsOneWidget);
+      final snackBarContext = tester.element(find.byType(SnackBar));
+      final l10n = AppLocalizations.of(snackBarContext)!;
+      expect(
+        find.text(l10n.authSignupSuccess),
+        findsOneWidget,
+        reason: 'SnackBar should display the signup success message',
+      );
 
       // Still on signup screen (delay hasn't passed)
       expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
       expect(find.byKey(const ValueKey('auth_login_screen')), findsNothing);
 
-      // Advance past 800ms delay
-      await tester.pump(const Duration(milliseconds: 800));
+      // Advance past signup success navigation delay
+      await tester.pump(Timing.snackBarBrief);
       await tester.pumpAndSettle();
 
       // Now on login screen

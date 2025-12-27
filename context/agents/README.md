@@ -8,6 +8,7 @@ SSOT Acceptance: context/agents/_acceptance_v1.1.md (non-blocking Drift-Check vi
 
 | Rolle | Dossier | Haupt-Hand-off | Primary Agent |
 |---|---|---|---|
+| architect-orchestrator | GEMINI.md | → api-backend/ui-frontend (Aufgaben in Archon) | Gemini |
 | ui-frontend | context/agents/01-ui-frontend.md | → api-backend (PR + Tests/Docs) | Claude Code |
 | api-backend | context/agents/02-api-backend.md | → ui-frontend/db-admin (Docs + Functions) | Codex |
 | db-admin | context/agents/03-db-admin.md | → api-backend (Migrations + Docs) | Codex |

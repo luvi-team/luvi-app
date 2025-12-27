@@ -3,6 +3,8 @@
 ## Migration Files
 
 - `20250903235538_create_consents_table.sql` - User consent management with GDPR compliance
+- `20251215123000_harden_consents_scopes_array.sql` - Anti-drift (legacy): enforce `consents.scopes` as JSONB array
+- `20251222173000_consents_scopes_object_bool.sql` - Canonicalize: enforce `consents.scopes` as JSONB object<boolean> (SSOT)
 - `20250903235539_create_cycle_data_table.sql` - Menstrual cycle tracking data
 - `20250903235540_create_email_preferences_table.sql` - User email notification preferences
 
@@ -23,14 +25,14 @@ SELECT auth.uid(); -- Should return your user UUID
 ```sql
 -- Insert consent (should succeed for own user_id)
 INSERT INTO consents (user_id, scopes, version) 
-VALUES (auth.uid(), '{"data_processing": true, "marketing": false}', 'v1.0');
+VALUES (auth.uid(), '{"terms": true, "health_processing": true, "analytics": true}'::jsonb, 'v1.0');
 
 -- View own consents (should succeed)
 SELECT * FROM consents WHERE user_id = auth.uid();
 
 -- Update own consent (should succeed)
 UPDATE consents 
-SET scopes = '{"data_processing": true, "marketing": true}' 
+SET scopes = '{"terms": true, "health_processing": true, "marketing": true}'::jsonb
 WHERE user_id = auth.uid() AND version = 'v1.0';
 
 -- Revoke consent (should succeed)
@@ -100,7 +102,7 @@ SELECT * FROM email_preferences WHERE user_id != auth.uid();
 ```sql
 -- Test policy violations (should all fail or return empty)
 INSERT INTO consents (user_id, scopes, version) 
-VALUES ('00000000-0000-0000-0000-000000000000', '{}', 'v1.0'); -- Wrong user_id
+VALUES ('00000000-0000-0000-0000-000000000000', '{}'::jsonb, 'v1.0'); -- Wrong user_id
 
 INSERT INTO cycle_data (user_id, cycle_length, period_duration, last_period, age) 
 VALUES ('00000000-0000-0000-0000-000000000000', 28, 5, '2025-09-01', 25); -- Wrong user_id
@@ -130,4 +132,31 @@ supabase migration list
 - CHECK constraints validate business rules
 - Indexes optimize common query patterns
 
-Following LUVI principle: "Engine darf nackt laufen  Daten nie" (Data protection is always active).
+Following LUVI principle: "Engine darf nackt laufen – Daten nie" (Data protection is always active).
+
+## Consent Change-Set Rule
+
+**CRITICAL**: Consent-related changes form an atomic change-set.
+
+### What counts as a "Consent Change"?
+
+Changes to **any** of the following components require coordinated deployment:
+
+| Component | Examples |
+|-----------|----------|
+| **DB Table** | `public.consents` (schema, constraints, RLS) |
+| **DB Function** | `public.log_consent_if_allowed` |
+| **Edge Function** | `supabase/functions/log_consent/` |
+| **Scopes Config** | `config/consent_scopes.json` |
+| **Migrations** | `*consent*.sql`, `*consents*.sql`, or RPC changes |
+
+**Why?** Format drift between App, Edge Function, and DB constraint causes silent failures.
+
+### Deployment Checklist for Consent Changes
+
+> **Note:** These steps are performed **after merge** during deployment, not during PR review.
+
+- [ ] Migration applied: `supabase db push`
+- [ ] Edge Function deployed: `supabase functions deploy log_consent`
+- [ ] Contract test passes: `deno test supabase/tests/log_consent.test.ts`
+- [ ] SSOT test passes: `deno test supabase/functions/log_consent/consent_scopes_ssot.test.ts`

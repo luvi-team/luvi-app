@@ -1,499 +1,651 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/assets.dart';
-import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/core/design_tokens/onboarding_success_tokens.dart';
+import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
+import 'package:luvi_services/init_mode.dart';
+import 'package:luvi_app/features/onboarding/data/onboarding_backend_writer.dart';
+import 'package:luvi_app/features/onboarding/model/fitness_level.dart' as app;
+import 'package:luvi_app/features/onboarding/model/goal.dart';
+import 'package:luvi_app/features/onboarding/model/interest.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
-import 'package:luvi_app/core/widgets/back_button.dart';
+import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:lottie/lottie.dart';
+import 'package:luvi_services/user_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../support/test_config.dart';
+import '../../../utils/riverpod_test_helpers.dart';
 
-import 'package:luvi_services/user_state_service.dart';
+// Test screen dimensions (must match setTestScreenSize)
+const _testWidth = 430.0;
+const _testHeight = 932.0;
+
+/// Test notifier with complete OnboardingData for Backend-SSOT validation.
+class _CompleteOnboardingNotifier extends OnboardingNotifier {
+  @override
+  OnboardingData build() => OnboardingData(
+        name: 'Test User',
+        birthDate: DateTime(2000, 1, 15),
+        fitnessLevel: app.FitnessLevel.beginner,
+        selectedGoals: const [Goal.fitter],
+        selectedInterests: const [
+          Interest.strengthTraining,
+          Interest.cardio,
+          Interest.nutrition,
+        ],
+        // Deterministic date: Fixed date (early December 2025) for stable test
+        periodStart: DateTime(2025, 12, 8),
+      );
+}
+
+/// Test notifier with INCOMPLETE OnboardingData (missing name).
+class _IncompleteOnboardingNotifier extends OnboardingNotifier {
+  @override
+  OnboardingData build() => OnboardingData(
+        name: null, // Missing required field
+        birthDate: DateTime(2000, 1, 15),
+        fitnessLevel: app.FitnessLevel.beginner,
+        selectedGoals: const [Goal.fitter],
+        selectedInterests: const [
+          Interest.strengthTraining,
+          Interest.cardio,
+          Interest.nutrition,
+        ],
+        // Deterministic date: Fixed date (early December 2025) for stable test
+        periodStart: DateTime(2025, 12, 8),
+      );
+}
+
+/// Fake backend writer that always fails on first attempt.
+class _FailingBackendWriter implements OnboardingBackendWriter {
+  int _callCount = 0;
+  final bool failOnce;
+  int _markCompleteCallCount = 0;
+
+  _FailingBackendWriter({this.failOnce = true});
+
+  int get callCount => _callCount;
+  int get markCompleteCallCount => _markCompleteCallCount;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    _callCount++;
+    if (failOnce && _callCount == 1) {
+      throw Exception('Simulated backend failure');
+    }
+    // Second attempt succeeds
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    // Always succeed for cycle data
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    _markCompleteCallCount++;
+    return {'user_id': 'test-user', 'has_completed_onboarding': true};
+  }
+}
+
+/// Fake backend writer that always fails.
+class _AlwaysFailingBackendWriter implements OnboardingBackendWriter {
+  int _callCount = 0;
+  int _markCompleteCallCount = 0;
+
+  int get callCount => _callCount;
+  int get markCompleteCallCount => _markCompleteCallCount;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    _callCount++;
+    throw Exception('Simulated permanent backend failure');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    throw Exception('Simulated permanent backend failure');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    _markCompleteCallCount++;
+    throw Exception('Simulated permanent backend failure');
+  }
+}
+
+/// Backend writer where profile succeeds but cycle_data fails.
+class _ProfileOkCycleFailWriter implements OnboardingBackendWriter {
+  int _profileCalls = 0;
+  int _cycleCalls = 0;
+  int _markCompleteCalls = 0;
+
+  int get profileCalls => _profileCalls;
+  int get cycleCalls => _cycleCalls;
+  int get markCompleteCalls => _markCompleteCalls;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    _profileCalls++;
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    _cycleCalls++;
+    throw Exception('Simulated cycle_data failure');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    _markCompleteCalls++;
+    return {'user_id': 'test-user', 'has_completed_onboarding': true};
+  }
+}
+
+/// Backend writer where profile fails (cycle would succeed).
+class _ProfileFailCycleOkWriter implements OnboardingBackendWriter {
+  int _profileCalls = 0;
+  int _cycleCalls = 0;
+  int _markCompleteCalls = 0;
+
+  int get profileCalls => _profileCalls;
+  int get cycleCalls => _cycleCalls;
+  int get markCompleteCalls => _markCompleteCalls;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    _profileCalls++;
+    throw Exception('Simulated profile failure');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    _cycleCalls++;
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    _markCompleteCalls++;
+    return {'user_id': 'test-user', 'has_completed_onboarding': true};
+  }
+}
+
+/// Fake backend writer that is not authenticated.
+class _UnauthenticatedBackendWriter implements OnboardingBackendWriter {
+  @override
+  bool get isAuthenticated => false;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    return null;
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    return null;
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    return null;
+  }
+}
+
+/// Complete onboarding data but without cycle data (periodStart=null),
+/// to keep backend writes deterministic in tests.
+class _CompleteOnboardingNoCycleNotifier extends OnboardingNotifier {
+  @override
+  OnboardingData build() => OnboardingData(
+        name: 'Test User',
+        birthDate: DateTime(2000, 1, 15),
+        fitnessLevel: app.FitnessLevel.beginner,
+        selectedGoals: const [Goal.fitter],
+        selectedInterests: const [
+          Interest.strengthTraining,
+          Interest.cardio,
+          Interest.nutrition,
+        ],
+        periodStart: null,
+      );
+}
+
+/// Backend writer that captures args and fails at markComplete to avoid navigation.
+class _CapturingBackendWriter implements OnboardingBackendWriter {
+  String? lastFitnessLevel;
+  List<String>? lastGoals;
+  List<String>? lastInterests;
+
+  @override
+  bool get isAuthenticated => true;
+
+  @override
+  Future<Map<String, dynamic>?> upsertProfile({
+    required String displayName,
+    required DateTime birthDate,
+    required String fitnessLevel,
+    required List<String> goals,
+    required List<String> interests,
+  }) async {
+    lastFitnessLevel = fitnessLevel;
+    lastGoals = List<String>.from(goals);
+    lastInterests = List<String>.from(interests);
+    return {'user_id': 'test-user'};
+  }
+
+  @override
+  Future<Map<String, dynamic>?> upsertCycleData({
+    required int cycleLength,
+    required int periodDuration,
+    required DateTime lastPeriod,
+    required int age,
+  }) async {
+    throw Exception('Cycle data should be skipped in this test');
+  }
+
+  @override
+  Future<Map<String, dynamic>?> markOnboardingComplete() async {
+    throw Exception('Stop before navigation');
+  }
+}
 
 void main() {
   TestConfig.ensureInitialized();
-  TestWidgetsFlutterBinding.ensureInitialized();
 
-  Future<Widget> buildApp(
-    GoRouter router, {
-    Locale locale = const Locale('de'),
-    Widget Function(BuildContext, Widget?)? builder,
-  }) async {
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    final service = UserStateService(prefs: prefs);
+  });
+
+  // Configure larger screen size for Figma O9 layout (280px cards container)
+  void setTestScreenSize(WidgetTester tester) {
+    tester.view.physicalSize = const Size(_testWidth * 3, _testHeight * 3);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+  }
+
+  // See riverpod_test_helpers.dart for explanation of sealed Override type
+  Widget buildTestApp({
+    RiverpodOverrides overrides = kEmptyOverrides,
+  }) {
     return ProviderScope(
       overrides: [
-        userStateServiceProvider.overrideWith((ref) async => service),
+        initModeProvider.overrideWithValue(InitMode.test),
+        for (final o in overrides) o,
       ],
-      child: MaterialApp.router(
-        theme: AppTheme.buildAppTheme(),
-        routerConfig: router,
-        locale: locale,
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        builder: builder,
+      // Use MediaQuery to set a larger surface for Figma O9 layout (280px cards)
+      child: MediaQuery(
+        data: const MediaQueryData(size: Size(_testWidth, _testHeight)),
+        child: MaterialApp(
+          theme: AppTheme.buildAppTheme(),
+          locale: const Locale('en'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: const OnboardingSuccessScreen(),
+        ),
       ),
     );
   }
 
   group('OnboardingSuccessScreen', () {
-    testWidgets(
-      'displays trophy, title, and button without back/step counter',
-      (tester) async {
-        final router = GoRouter(
-          routes: [
-            GoRoute(
-              path: OnboardingSuccessScreen.routeName,
-              builder: (context, state) => const OnboardingSuccessScreen(
-                fitnessLevel: FitnessLevel.unknown,
-              ),
-            ),
+    testWidgets('renders initially in animating state', (tester) async {
+      setTestScreenSize(tester);
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+            onboardingBackendWriterProvider
+                .overrideWithValue(_UnauthenticatedBackendWriter()),
           ],
-          initialLocation: OnboardingSuccessScreen.routeName,
+        ),
+      );
+      // Only pump once to see initial state, don't wait for animation
+      await tester.pump();
+
+      expect(find.byType(OnboardingSuccessScreen), findsOneWidget);
+      // Should show loading text during animation
+      expect(find.text("We're putting together your plans..."), findsOneWidget);
+    });
+
+    group('K10.1: isComplete validation', () {
+      testWidgets('shows error state when onboarding data is incomplete',
+          (tester) async {
+        setTestScreenSize(tester);
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider
+                  .overrideWith(() => _IncompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider
+                  .overrideWithValue(_UnauthenticatedBackendWriter()),
+            ],
+          ),
         );
 
-        await tester.pumpWidget(await buildApp(router));
-        await tester.pumpAndSettle();
+        // Pump through the animation (3 seconds) and save attempt
+        await tester.pump(const Duration(seconds: 4));
+        // Pump a few more frames for UI to update
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
 
-        expect(find.byType(Image), findsNothing);
-        expect(find.byType(LottieBuilder), findsOneWidget);
-        final screenContext = tester.element(
-          find.byType(OnboardingSuccessScreen),
+        // Should show error state - look for retry button
+        expect(find.text('Try again'), findsOneWidget);
+        // Should show error text
+        expect(find.text('Save failed. Please try again.'), findsOneWidget);
+      });
+    });
+
+    // NOTE: Redirect behavior (context.go to AuthSignInScreen) cannot be
+    // verified in widget tests because GoRouter doesn't actually navigate
+    // in test environments. Verify redirect behavior in integration tests.
+
+    group('K10.2: Backend save failure', () {
+      testWidgets('shows error state when backend save fails', (tester) async {
+        setTestScreenSize(tester);
+        final failingWriter = _AlwaysFailingBackendWriter();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(failingWriter),
+            ],
+          ),
         );
-        final l10n = AppLocalizations.of(screenContext)!;
 
-        expect(find.text(l10n.onboardingSuccessTitle), findsOneWidget);
-        expect(find.byKey(const Key('onboarding_success_cta')), findsOneWidget);
-        expect(find.text(l10n.commonStartNow), findsOneWidget);
-        expect(find.byType(BackButtonCircle), findsNothing);
-        expect(find.textContaining('/8'), findsNothing);
-      },
-    );
+        // Pump through animation and save attempt
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
 
-    testWidgets('button navigates to dashboard', (tester) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
+        // Should show error state
+        expect(find.text('Try again'), findsOneWidget);
+        expect(find.text('Save failed. Please try again.'), findsOneWidget);
+        // Backend should have been called
+        expect(failingWriter.callCount, 1);
+        // Critical: must not mark onboarding complete when backend save fails.
+        expect(failingWriter.markCompleteCallCount, 0);
+      });
+
+      testWidgets('does not show success when save fails', (tester) async {
+        setTestScreenSize(tester);
+        final failingWriter = _AlwaysFailingBackendWriter();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(failingWriter),
+            ],
           ),
-          GoRoute(
-            path: HeuteScreen.routeName,
-            builder: (context, state) =>
-                const Scaffold(body: Text('Dashboard')),
+        );
+
+        // Pump through animation and save attempt
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        // Should be in error state, not success
+        expect(find.text('Done!'), findsNothing);
+        // Critical: must not mark onboarding complete when backend save fails.
+        expect(failingWriter.markCompleteCallCount, 0);
+      });
+
+      testWidgets('Profile OK, Cycle FAIL → does NOT call markOnboardingComplete',
+          (tester) async {
+        setTestScreenSize(tester);
+        final failingWriter = _ProfileOkCycleFailWriter();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(failingWriter),
+            ],
           ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
+        );
 
-      await tester.pumpWidget(await buildApp(router));
-      await tester.pumpAndSettle();
+        // Pump through animation and save attempt
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
 
+        expect(find.text('Try again'), findsOneWidget);
+        expect(failingWriter.profileCalls, 1);
+        expect(failingWriter.cycleCalls, 1);
+        expect(failingWriter.markCompleteCalls, 0);
+      });
 
-      final screenContext = tester.element(
-        find.byType(OnboardingSuccessScreen),
-      );
-      final l10n = AppLocalizations.of(screenContext)!;
+      testWidgets('Profile FAIL, Cycle OK → does NOT call markOnboardingComplete',
+          (tester) async {
+        setTestScreenSize(tester);
+        final failingWriter = _ProfileFailCycleOkWriter();
 
-      expect(find.text(l10n.onboardingSuccessTitle), findsOneWidget);
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(failingWriter),
+            ],
+          ),
+        );
 
-      final cta = find.byKey(const Key('onboarding_success_cta'));
-      expect(cta, findsOneWidget);
-      await tester.tap(cta);
-      await tester.pumpAndSettle();
+        // Pump through animation and save attempt
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.text('Dashboard'), findsOneWidget);
-
-      final currentUri = router.routeInformationProvider.value.uri.toString();
-      expect(currentUri, HeuteScreen.routeName);
+        expect(find.text('Try again'), findsOneWidget);
+        expect(failingWriter.profileCalls, 1);
+        // Cycle should not be called if profile fails first.
+        expect(failingWriter.cycleCalls, 0);
+        expect(failingWriter.markCompleteCalls, 0);
+      });
     });
 
-    testWidgets('displays correct English strings', (tester) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
+    group('K10.3: Retry functionality', () {
+      testWidgets('retry button triggers new save attempt', (tester) async {
+        setTestScreenSize(tester);
+        // SharedPreferences already initialized in setUp()
+        final failingWriter = _FailingBackendWriter(failOnce: true);
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(failingWriter),
+              // Override userStateService to provide a working mock
+              userStateServiceProvider.overrideWith((ref) async {
+                final prefs = await SharedPreferences.getInstance();
+                final service = UserStateService(prefs: prefs);
+                await service.bindUser('test-user');
+                return service;
+              }),
+            ],
           ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
+        );
 
-      await tester.pumpWidget(
-        await buildApp(router, locale: const Locale('en')),
-      );
-      await tester.pumpAndSettle();
+        // Wait for animation to complete and first save attempt to fail
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
 
-      final screenContext = tester.element(
-        find.byType(OnboardingSuccessScreen),
-      );
-      final l10n = AppLocalizations.of(screenContext)!;
+        // Verify error state and first call happened
+        expect(find.text('Try again'), findsOneWidget);
+        expect(failingWriter.callCount, 1);
 
-      expect(find.text(l10n.onboardingSuccessTitle), findsOneWidget);
-      expect(find.text(l10n.commonStartNow), findsOneWidget);
+        // Tap retry button
+        await tester.tap(find.text('Try again'));
+        // Allow setState to rebuild widget
+        await tester.pump();
+        // Note: pumpAndSettle() is unsuitable here because the 3-second animation
+        // triggers async save operations on completion. We need explicit timing
+        // control to ensure the animation completes and fires onAnimationComplete.
+        // Animation duration: 3s + buffer = 35 × 100ms = 3.5s total.
+        for (int i = 0; i < 35; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        // Second attempt should have been made (via animation completion)
+        expect(failingWriter.callCount, 2);
+
+        // Pump through any remaining timers to clean up
+        // (the 500ms delay before navigation)
+        await tester.pump(const Duration(seconds: 1));
+      });
+
+      testWidgets('retry button is not visible during animation',
+          (tester) async {
+        setTestScreenSize(tester);
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider.overrideWith(() => _CompleteOnboardingNotifier()),
+              onboardingBackendWriterProvider
+                  .overrideWithValue(_UnauthenticatedBackendWriter()),
+            ],
+          ),
+        );
+
+        // Initially during animation - no retry button
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('Try again'), findsNothing);
+      });
     });
 
-    testWidgets('celebration animation respects disableAnimations flags', (
-      tester,
-    ) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
+    group('Stable IDs persistence', () {
+      testWidgets('writes canonical IDs (never UI labels)', (tester) async {
+        setTestScreenSize(tester);
+        final writer = _CapturingBackendWriter();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            overrides: [
+              onboardingProvider
+                  .overrideWith(() => _CompleteOnboardingNoCycleNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(writer),
+            ],
           ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
+        );
 
-      await tester.pumpWidget(
-        await buildApp(
-          router,
-          builder: (context, child) {
-            final data = MediaQuery.of(context);
-            return MediaQuery(
-              data: data.copyWith(disableAnimations: true),
-              child: child!,
-            );
-          },
-        ),
-      );
-      await tester.pumpAndSettle();
+        // Pump through animation and backend save attempt.
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.byType(Image), findsOneWidget);
-      expect(find.byType(LottieBuilder), findsNothing);
-    });
+        // markOnboardingComplete fails, so we end in error state.
+        expect(find.text('Try again'), findsOneWidget);
 
-    testWidgets('celebration animation respects accessibleNavigation flag', (
-      tester,
-    ) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
-          ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
+        expect(writer.lastFitnessLevel, 'beginner');
+        expect(writer.lastGoals, ['fitter']);
+        expect(writer.lastInterests, ['strength_training', 'cardio', 'nutrition']);
+      });
 
-      await tester.pumpWidget(
-        await buildApp(
-          router,
-          builder: (context, child) {
-            final data = MediaQuery.of(context);
-            return MediaQuery(
-              data: data.copyWith(accessibleNavigation: true),
-              child: child!,
-            );
-          },
-        ),
-      );
-      await tester.pumpAndSettle();
+      testWidgets('ignores route fitnessLevel=unknown and uses SSOT state',
+          (tester) async {
+        setTestScreenSize(tester);
+        final writer = _CapturingBackendWriter();
 
-      expect(find.byType(Image), findsOneWidget);
-      expect(find.byType(LottieBuilder), findsNothing);
-    });
-
-    testWidgets('uses correct spacing tokens from Figma audit', (tester) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
-          ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
-
-      // Set test size to design viewport (428×926) to avoid scaling
-      tester.view.physicalSize = const Size(428, 926);
-      tester.view.devicePixelRatio = 1.0;
-
-      await tester.pumpWidget(await buildApp(router));
-      await tester.pumpAndSettle();
-
-      final context = tester.element(find.byType(OnboardingSuccessScreen));
-      final spacing = OnboardingSpacing.of(context);
-
-
-      // From updated spec: trophyToTitle = 28px, titleToButton = design token value
-      expect(spacing.trophyToTitle, OnboardingSuccessTokens.gapToTitle);
-      expect(spacing.titleToButton, OnboardingSuccessTokens.titleToButton);
-
-      // Reset view size
-      addTearDown(tester.view.reset);
-    });
-
-    testWidgets('trophy-to-title gap matches responsive spacing', (
-      tester,
-    ) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
-          ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
-
-      tester.view.physicalSize = const Size(428, 926);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-
-      await tester.pumpWidget(await buildApp(router));
-      await tester.pumpAndSettle();
-
-      final trophyFinder = find.byKey(const Key('onboarding_success_trophy'));
-      final titleFinder = find.byKey(const Key('onboarding_success_title'));
-      expect(trophyFinder, findsOneWidget);
-      expect(titleFinder, findsOneWidget);
-
-      final context = tester.element(find.byType(OnboardingSuccessScreen));
-      final spacing = OnboardingSpacing.of(context);
-
-      final trophyBottomDy = tester.getBottomLeft(trophyFinder).dy;
-      final titleTopDy = tester.getTopLeft(titleFinder).dy;
-
-      expect(titleTopDy - trophyBottomDy, closeTo(spacing.trophyToTitle, 0.01));
-    });
-
-    testWidgets('trophy has correct size from Figma audit', (tester) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
-          ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
-
-      await tester.pumpWidget(await buildApp(router));
-      await tester.pumpAndSettle();
-
-      final trophyBoxFinder = find.descendant(
-        of: find.byType(ExcludeSemantics),
-        matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is SizedBox &&
-              widget.width == OnboardingSuccessTokens.trophyWidth &&
-              widget.height == OnboardingSuccessTokens.trophyHeight,
-        ),
-      );
-      // From Figma audit: Trophy bounding box 308×300px
-      expect(trophyBoxFinder, findsOneWidget);
-
-      final sizedBox = tester.widget<SizedBox>(trophyBoxFinder);
-      expect(sizedBox.width, OnboardingSuccessTokens.trophyWidth);
-      expect(sizedBox.height, OnboardingSuccessTokens.trophyHeight);
-    });
-
-    testWidgets('spacing scales with view height and text scale', (
-      tester,
-    ) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
-          ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
-
-      // Test Scenario 1: Taller view (height > 926)
-      tester.view.physicalSize = const Size(428, 1200);
-      tester.view.devicePixelRatio = 1.0;
-
-      await tester.pumpWidget(await buildApp(router));
-      await tester.pumpAndSettle();
-
-      final context1 = tester.element(find.byType(OnboardingSuccessScreen));
-      final spacing1 = OnboardingSpacing.of(context1);
-
-      // Spacing should be scaled UP (taller view)
-      expect(
-        spacing1.trophyToTitle,
-        greaterThan(OnboardingSuccessTokens.gapToTitle),
-      );
-      expect(spacing1.titleToButton, greaterThan(66.0));
-
-      tester.view.reset();
-
-      // Test Scenario 2: Increased text scale factor
-      tester.view.physicalSize = const Size(428, 926);
-      tester.view.devicePixelRatio = 1.0;
-
-      await tester.pumpWidget(
-        await buildApp(
-          router,
-          builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(textScaler: const TextScaler.linear(1.5)),
-            child: child!,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final context2 = tester.element(find.byType(OnboardingSuccessScreen));
-      final spacing2 = OnboardingSpacing.of(context2);
-
-      // Spacing should be scaled UP (text scale > 1.0)
-      expect(
-        spacing2.trophyToTitle,
-        greaterThan(OnboardingSuccessTokens.gapToTitle),
-      );
-      expect(spacing2.titleToButton, greaterThan(66.0));
-
-      addTearDown(tester.view.reset);
-    });
-
-    testWidgets('celebration animation uses expected configuration', (
-      tester,
-    ) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
-          ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
-
-      await tester.pumpWidget(await buildApp(router));
-      await tester.pumpAndSettle();
-
-      final lottieFinder = find.byType(LottieBuilder);
-      expect(lottieFinder, findsOneWidget);
-
-      final lottie = tester.widget<LottieBuilder>(lottieFinder);
-      expect(lottie.repeat, isFalse);
-      expect(lottie.frameRate, FrameRate.composition);
-      expect(lottie.fit, BoxFit.contain);
-      expect(lottie.alignment, Alignment.center);
-      expect(lottie.filterQuality, FilterQuality.medium);
-    });
-
-    testWidgets('celebration animation accounts for safe-area padding', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(428, 1000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
-            ),
-          ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
-
-      await tester.pumpWidget(await buildApp(router));
-      await tester.pumpAndSettle();
-
-      final transformNoPadding = tester.widget<Transform>(
-        find.byKey(const Key('onboarding_success_trophy_transform')),
-      );
-      final noPaddingOffset = transformNoPadding.transform.storage[13];
-
-      await tester.pumpWidget(
-        await buildApp(
-          router,
-          builder: (context, child) {
-            final data = MediaQuery.of(context);
-            return MediaQuery(
-              data: data.copyWith(
-                padding: const EdgeInsets.only(top: 44, bottom: 34),
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              initModeProvider.overrideWithValue(InitMode.test),
+              onboardingProvider
+                  .overrideWith(() => _CompleteOnboardingNoCycleNotifier()),
+              onboardingBackendWriterProvider.overrideWithValue(writer),
+            ],
+            child: MediaQuery(
+              data: const MediaQueryData(size: Size(_testWidth, _testHeight)),
+              child: MaterialApp(
+                theme: AppTheme.buildAppTheme(),
+                locale: const Locale('en'),
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                home: const OnboardingSuccessScreen(),
               ),
-              child: child!,
-            );
-          },
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final transformWithPadding = tester.widget<Transform>(
-        find.byKey(const Key('onboarding_success_trophy_transform')),
-      );
-      final paddingOffset = transformWithPadding.transform.storage[13];
-
-      expect(paddingOffset, lessThan(noPaddingOffset));
-    });
-
-    testWidgets('a11y fallback shows PNG with correct dimensions', (
-      tester,
-    ) async {
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: OnboardingSuccessScreen.routeName,
-            builder: (context, state) => const OnboardingSuccessScreen(
-              fitnessLevel: FitnessLevel.unknown,
             ),
           ),
-        ],
-        initialLocation: OnboardingSuccessScreen.routeName,
-      );
+        );
 
-      await tester.pumpWidget(
-        await buildApp(
-          router,
-          builder: (context, child) {
-            final data = MediaQuery.of(context);
-            return MediaQuery(
-              data: data.copyWith(disableAnimations: true),
-              child: child!,
-            );
-          },
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
 
-      final imageFinder = find.byType(Image);
-      expect(imageFinder, findsOneWidget);
-
-      final image = tester.widget<Image>(imageFinder);
-      expect(image.width, OnboardingSuccessTokens.trophyWidth);
-      expect(image.height, OnboardingSuccessTokens.trophyHeight);
-      expect(image.fit, BoxFit.contain);
-
-      final assetImage = image.image as AssetImage;
-      expect(assetImage.assetName, Assets.images.onboardingSuccessTrophy);
+        expect(find.text('Try again'), findsOneWidget);
+        expect(writer.lastFitnessLevel, 'beginner');
+      });
     });
   });
 }
