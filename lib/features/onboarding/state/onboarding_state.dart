@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
-import 'package:luvi_app/features/onboarding/model/goal.dart';
-import 'package:luvi_app/features/onboarding/model/interest.dart';
+import 'package:luvi_app/features/onboarding/domain/fitness_level.dart';
+import 'package:luvi_app/features/onboarding/domain/goal.dart';
+import 'package:luvi_app/features/onboarding/domain/interest.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
 
 part 'onboarding_state.g.dart';

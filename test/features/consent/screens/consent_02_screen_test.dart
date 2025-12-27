@@ -18,9 +18,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.buildAppTheme(),
-          home: const Consent02Screen(
-            appLinks: TestConfig.defaultAppLinks,
-          ),
+          home: const Consent02Screen(),
         ),
       ),
     );
@@ -59,9 +57,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           locale: const Locale('de'),
           theme: AppTheme.buildAppTheme(),
-          home: const Consent02Screen(
-            appLinks: TestConfig.defaultAppLinks,
-          ),
+          home: const Consent02Screen(),
         ),
       ),
     );
@@ -92,9 +88,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.buildAppTheme(),
-          home: const Consent02Screen(
-            appLinks: TestConfig.defaultAppLinks,
-          ),
+          home: const Consent02Screen(),
         ),
       ),
     );

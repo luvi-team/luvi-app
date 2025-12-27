@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/onboarding/model/fitness_level.dart';
-import 'package:luvi_app/features/onboarding/model/goal.dart';
-import 'package:luvi_app/features/onboarding/model/interest.dart';
-import 'package:luvi_app/features/onboarding/model/onboarding_option_ids.dart';
+import 'package:luvi_app/features/onboarding/domain/fitness_level.dart';
+import 'package:luvi_app/features/onboarding/domain/goal.dart';
+import 'package:luvi_app/features/onboarding/domain/interest.dart';
+import 'package:luvi_app/features/onboarding/domain/onboarding_option_ids.dart';
 
 void main() {
   group('Onboarding option IDs (profiles SSOT)', () {

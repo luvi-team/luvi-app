@@ -15,7 +15,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
 
-            home: const Consent02Screen(appLinks: TestConfig.defaultAppLinks),
+            home: const Consent02Screen(),
             locale: const Locale('de'),
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,

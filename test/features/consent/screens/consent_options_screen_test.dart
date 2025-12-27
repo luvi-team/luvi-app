@@ -38,9 +38,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -57,9 +55,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -89,9 +85,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -113,9 +107,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -141,9 +133,7 @@ void main() {
               supportedLocales: AppLocalizations.supportedLocales,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               theme: AppTheme.buildAppTheme(),
-              home: const ConsentOptionsScreen(
-                appLinks: TestConfig.defaultAppLinks,
-              ),
+              home: const ConsentOptionsScreen(),
             ),
           ),
         );
@@ -167,9 +157,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -187,9 +175,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -213,9 +199,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -253,9 +237,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -284,9 +266,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -313,9 +293,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            home: const ConsentOptionsScreen(),
           ),
         ),
       );
@@ -339,9 +317,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/consent/options',
-            builder: (context, state) => const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            builder: (context, state) => const ConsentOptionsScreen(),
           ),
           GoRoute(
             path: '/consent/blocking',
@@ -394,9 +370,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/consent/options',
-            builder: (context, state) => const ConsentOptionsScreen(
-              appLinks: TestConfig.defaultAppLinks,
-            ),
+            builder: (context, state) => const ConsentOptionsScreen(),
           ),
           GoRoute(
             path: '/consent/blocking',
@@ -491,9 +465,7 @@ void main() {
           routes: [
             GoRoute(
               path: '/consent/options',
-              builder: (context, state) => const ConsentOptionsScreen(
-                appLinks: TestConfig.defaultAppLinks,
-              ),
+              builder: (context, state) => const ConsentOptionsScreen(),
             ),
             GoRoute(
               path: '/consent/blocking',

@@ -9,7 +9,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
-import 'package:luvi_app/core/navigation/routes.dart' as features;
+import 'package:luvi_app/router.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -73,7 +73,7 @@ void main() {
 
     setUp(() {
       router = GoRouter(
-        routes: features.featureRoutes,
+        routes: testAppRoutes,
         initialLocation: AuthSignupScreen.routeName,
       );
     });

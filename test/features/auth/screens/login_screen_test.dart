@@ -9,7 +9,7 @@ import '../../../support/test_view.dart';
 
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
-import 'package:luvi_app/core/navigation/routes.dart' as routes;
+import 'package:luvi_app/router.dart' as app_router;
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -142,7 +142,7 @@ void main() {
     // signInWithPassword stub already defined in setUp
 
     final router = GoRouter(
-      routes: routes.featureRoutes,
+      routes: app_router.testAppRoutes,
       initialLocation: LoginScreen.routeName,
     );
     addTearDown(router.dispose);

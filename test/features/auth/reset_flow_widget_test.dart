@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/core/navigation/routes.dart' as features;
+import 'package:luvi_app/router.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
 
@@ -16,7 +16,7 @@ void main() {
 
     setUp(() {
       router = GoRouter(
-        routes: features.featureRoutes,
+        routes: testAppRoutes,
         initialLocation: '/auth/reset',
       );
     });

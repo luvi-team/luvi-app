@@ -6,7 +6,7 @@ import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
-import 'package:luvi_app/features/onboarding/model/interest.dart';
+import 'package:luvi_app/features/onboarding/domain/interest.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_04_goals.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';

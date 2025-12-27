@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/config/legal_actions.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -37,11 +37,9 @@ final _consentBtnBusyProvider =
 );
 
 class Consent02Screen extends ConsumerWidget {
-  /// Requires explicit [appLinks] to make the dependency visible and testable.
-  const Consent02Screen({super.key, required this.appLinks});
+  const Consent02Screen({super.key});
 
   static const String routeName = '/consent/02';
-  final AppLinksApi appLinks;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,7 +47,7 @@ class Consent02Screen extends ConsumerWidget {
     final notifier = ref.read(consent02Provider.notifier);
     final l10n = AppLocalizations.of(context)!;
     final isNextBusy = ref.watch(_consentBtnBusyProvider);
-    final items = _buildConsentItems(context, l10n);
+    final items = _buildConsentItems(context, ref, l10n);
     final footer = _ConsentFooter(
       key: const Key('consent02_footer'),
       l10n: l10n,
@@ -74,6 +72,7 @@ class Consent02Screen extends ConsumerWidget {
 
   List<ConsentChoiceListItem> _buildConsentItems(
     BuildContext context,
+    WidgetRef ref,
     AppLocalizations l10n,
   ) {
     return [
@@ -86,7 +85,7 @@ class Consent02Screen extends ConsumerWidget {
         key: const Key('consent02_card_required_terms'),
         body: l10n.consent02CardTermsPrefix,
         scope: ConsentScope.terms,
-        trailing: _buildLinkTrailing(context, l10n),
+        trailing: _buildLinkTrailing(context, ref, l10n),
       ),
       ConsentChoiceListItem(
         body: l10n.consent02CardAnalytics,
@@ -144,11 +143,15 @@ class Consent02Screen extends ConsumerWidget {
     }
   }
 
-  InlineSpan _buildLinkTrailing(BuildContext context, AppLocalizations l10n) {
+  InlineSpan _buildLinkTrailing(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final baseStyle = _consentBodyTextStyle(theme);
-    // Use helper functions in app_links.dart to open externally when valid
+    // Use helper functions in legal_actions.dart to open externally when valid
     // and fall back to the in-app Markdown viewer when not available.
 
     return WidgetSpan(
@@ -160,14 +163,14 @@ class Consent02Screen extends ConsumerWidget {
         parts: [
           LinkTextPart(
             l10n.consent02LinkPrivacyLabel,
-            onTap: () => openPrivacy(context, appLinks: appLinks),
+            onTap: () => openPrivacy(context, ref),
             bold: true,
             color: colorScheme.primary,
           ),
           LinkTextPart(l10n.consent02LinkConjunction),
           LinkTextPart(
             l10n.consent02LinkTermsLabel,
-            onTap: () => openTerms(context, appLinks: appLinks),
+            onTap: () => openTerms(context, ref),
             bold: true,
             color: colorScheme.primary,
           ),

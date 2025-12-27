@@ -207,9 +207,7 @@ Future<void> _pumpConsentScreen(
     routes: [
       GoRoute(
         path: Consent02Screen.routeName,
-        builder: (context, state) => const Consent02Screen(
-          appLinks: TestConfig.defaultAppLinks,
-        ),
+        builder: (context, state) => const Consent02Screen(),
       ),
       GoRoute(
         path: Onboarding01Screen.routeName,
