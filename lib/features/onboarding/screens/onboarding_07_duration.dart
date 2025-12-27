@@ -93,14 +93,16 @@ class _Onboarding07DurationScreenState
       // This can happen if user navigates directly to O7 without O6.
       log.w(
         'O7 fallback activated: periodStart is null. '
-        'savedDuration=$savedDuration, '
-        'widgetPeriodStart=${widget.periodStartDate}, '
-        'statePeriodStart=${onboardingState.periodStart}. '
+        'hasSavedDuration=${savedDuration > 0}, '
+        'hasWidgetPeriodStart=${widget.periodStartDate != null}, '
+        'hasStatePeriodStart=${onboardingState.periodStart != null}. '
         'Navigation flow issue suspected - using synthetic date.',
         tag: 'onboarding',
       );
       final now = DateTime.now();
-      _periodStart = now.subtract(const Duration(days: 7));
+      _periodStart = now.subtract(
+        const Duration(days: kFallbackPeriodStartDaysBack),
+      );
       _periodEnd = _periodStart!.add(
         Duration(days: savedDuration - 1),
       );

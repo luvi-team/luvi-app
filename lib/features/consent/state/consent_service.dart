@@ -1,6 +1,24 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Returns shape-only diagnostics for payload (type + keys).
+/// CRITICAL: Never log payload values - only structure for debugging.
+/// Exposed for testing via @visibleForTesting.
+@visibleForTesting
+String payloadDiagnosticsShapeOnly(dynamic payload) {
+  if (payload == null) return 'type=null';
+  if (payload is Map) {
+    final keys = payload.keys.take(20).map((k) => k.toString()).toList()..sort();
+    final keysSuffix = payload.keys.length > 20 ? '...' : '';
+    return 'type=Map, keys=[${keys.join(', ')}$keysSuffix]';
+  }
+  if (payload is List) {
+    return 'type=List, length=${payload.length}';
+  }
+  return 'type=${payload.runtimeType}';
+}
 
 class ConsentException implements Exception {
   ConsentException(this.statusCode, this.message, {this.code});
@@ -84,9 +102,9 @@ class ConsentService {
     // 2xx success - validate response payload
     final responseBody = _asJsonMap(response.data);
     if (responseBody == null || responseBody['ok'] != true) {
-      final payloadDiagnostics = _payloadDiagnostics(response.data);
+      final diagnostics = payloadDiagnosticsShapeOnly(response.data);
       log.w(
-        'log_consent returned unexpected payload (status=${response.status}, ok=${responseBody?['ok']}, payload=$payloadDiagnostics)',
+        'log_consent returned unexpected payload (status=${response.status}, ok=${responseBody?['ok']}, payload=$diagnostics)',
         tag: _logTag,
       );
       throw ConsentException(
@@ -112,13 +130,6 @@ class ConsentService {
     return null;
   }
 
-  String _payloadDiagnostics(dynamic payload) {
-    if (payload == null) return 'type=null, preview=null';
-    final preview = payload.toString();
-    final truncatedPreview =
-        preview.length <= 200 ? preview : '${preview.substring(0, 200)}...';
-    return 'type=${payload.runtimeType}, preview=$truncatedPreview';
-  }
 }
 
 /// Riverpod provider for [ConsentService] to support DI and testability.

@@ -48,6 +48,7 @@ void main() {
       // Deterministic date: Fixed date for stable test (mid-December 2025)
       final startDate = DateTime(2025, 12, 15);
       final router = _createTestRouter(startDate);
+      addTearDown(router.dispose);
 
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
@@ -60,6 +61,7 @@ void main() {
       // Deterministic date: Fixed date for stable test (mid-December 2025)
       final startDate = DateTime(2025, 12, 12);
       final router = _createTestRouter(startDate);
+      addTearDown(router.dispose);
 
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
@@ -73,6 +75,7 @@ void main() {
       // Deterministic date: Fixed date for stable test (mid-December 2025)
       final startDate = DateTime(2025, 12, 12);
       final router = _createTestRouter(startDate);
+      addTearDown(router.dispose);
 
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
@@ -87,6 +90,7 @@ void main() {
       // This test requires period days to be visible and tappable
       final startDate = _baseDate.subtract(const Duration(days: 10));
       final router = _createTestRouter(startDate);
+      addTearDown(router.dispose);
 
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
@@ -130,6 +134,7 @@ void main() {
         // Deterministic date: Fixed date for stable test (mid-December 2025)
         final startDate = DateTime(2025, 12, 5);
         final router = _createTestRouter(startDate);
+        addTearDown(router.dispose);
 
         await tester.pumpWidget(buildTestApp(router: router));
         await tester.pumpAndSettle();

@@ -267,7 +267,7 @@ class _MonthGrid extends StatelessWidget {
       children: [
         // Month header
         Padding(
-          padding: const EdgeInsets.only(bottom: 12, top: 8),
+          padding: const EdgeInsets.only(bottom: Spacing.s, top: Spacing.xs),
           child: Text(
             monthName,
             textAlign: TextAlign.center,
@@ -341,7 +341,7 @@ class _MonthGrid extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: weekdays.map((day) {
         return SizedBox(
-          width: 40,
+          width: Sizes.touchTargetMin,
           child: Text(
             day,
             textAlign: TextAlign.center,
@@ -363,7 +363,7 @@ class _MonthGrid extends StatelessWidget {
     return Column(
       children: List.generate(rows, (rowIndex) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: 4),
+          padding: const EdgeInsets.only(bottom: Spacing.xxs),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(7, (colIndex) {
@@ -373,7 +373,7 @@ class _MonthGrid extends StatelessWidget {
               if (cellIndex < leadingEmptyDays || dayNumber > daysInMonth) {
                 return const SizedBox(
                   width: Sizes.touchTargetMin,
-                  height: 48, // Matches _DayCell height for grid alignment
+                  height: Sizes.calendarDayCellHeight,
                 );
               }
 
@@ -469,8 +469,8 @@ class _DayCell extends StatelessWidget {
         radius: 24,
         highlightShape: BoxShape.circle,
         child: SizedBox(
-          width: 40,
-          height: 48, // Fits HEUTE label (32px circle + 12px text + 4px gap)
+          width: Sizes.touchTargetMin,
+          height: Sizes.calendarDayCellHeight,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,

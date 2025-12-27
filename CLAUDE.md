@@ -125,6 +125,76 @@ If `mcp__archon__health_check()` fails or Archon tools are not available:
 
 ---
 
+# CRITICAL: CUSTOM AGENT AUTO-INVOCATION RULE
+
+**This rule is MANDATORY and overrides default Claude Code behavior.**
+
+## Available Custom Agents (`.claude/agents/`)
+
+| Agent | Type | Keywords (Auto-Invoke) | Model |
+|-------|------|------------------------|-------|
+| `ui-frontend` | Primary | Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter | Opus |
+| `dataviz` | Primary | Chart, Dashboard, Visualization, Metric, Graph, Plot, Analytics | Opus |
+| `reqing-ball` | Soft-Gate | RLS, Migration, Privacy, Schema, Policy, PRD, ADR | Opus |
+| `ui-polisher` | Soft-Gate | polish, review UI, check tokens, A11y, accessibility | Opus |
+| `qa-reviewer` | Soft-Gate | privacy, GDPR, DSGVO, PII, consent, logging, user data | Opus |
+
+## Auto-Invocation Rules (FORCED)
+
+**BEFORE starting ANY task, Claude Code MUST:**
+
+1. **Scan user request for keywords** from the table above
+2. **If keywords match → INVOKE the corresponding agent** via `/agents` or direct call
+3. **If multiple agents match → invoke in this priority:**
+   - `reqing-ball` first (if DB/Privacy involved)
+   - Then primary agent (`ui-frontend` or `dataviz`)
+   - Then soft-gates (`ui-polisher`, `qa-reviewer`) before PR
+
+**This is NOT optional. Skipping agent invocation is a governance violation.**
+
+### Invocation Sequence for Features
+
+```
+1. reqing-ball (if DB/Privacy/Cross-feature)
+       ↓
+2. ui-frontend OR dataviz (implementation)
+       ↓
+3. ui-polisher (token/A11y check)
+       ↓
+4. qa-reviewer (if user data involved)
+       ↓
+5. Submit to Codex review
+```
+
+### Invocation for Micro-Tasks
+
+```
+1. ui-frontend OR dataviz (minimal mode)
+       ↓
+2. Skip soft-gates (unless user data/A11y affected)
+       ↓
+3. CI gates suffice
+```
+
+## Governance Chain (SSOT Architecture)
+
+```
+CLAUDE.md (This file - Root Configuration)
+    ↓ defines
+.claude/agents/*.md (Custom Agents - Orchestration Layer)
+    ↓ wrap
+context/agents/*.md (Full Dossiers - SSOT Detail)
+    ↓ validate against
+context/agents/_acceptance_v1.1.md (DoD Gates)
+```
+
+**Key Principle:** `.claude/agents/` are thin wrappers that reference `context/agents/` dossiers.
+- **Don't duplicate** content between them
+- **Changes to rules** go in `context/agents/` dossiers
+- **Changes to orchestration** go in `.claude/agents/`
+
+---
+
 # LUVI · Claude Code Governance – Frontend Primary
 
 ---

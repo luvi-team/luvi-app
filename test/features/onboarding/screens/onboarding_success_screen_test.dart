@@ -514,6 +514,8 @@ void main() {
     group('K10.3: Retry functionality', () {
       testWidgets('retry button triggers new save attempt', (tester) async {
         setTestScreenSize(tester);
+        // Initialize SharedPreferences mock BEFORE buildTestApp to prevent race condition
+        SharedPreferences.setMockInitialValues({});
         final failingWriter = _FailingBackendWriter(failOnce: true);
 
         await tester.pumpWidget(
@@ -523,7 +525,6 @@ void main() {
               onboardingBackendWriterProvider.overrideWithValue(failingWriter),
               // Override userStateService to provide a working mock
               userStateServiceProvider.overrideWith((ref) async {
-                SharedPreferences.setMockInitialValues({});
                 final prefs = await SharedPreferences.getInstance();
                 final service = UserStateService(prefs: prefs);
                 await service.bindUser('test-user');

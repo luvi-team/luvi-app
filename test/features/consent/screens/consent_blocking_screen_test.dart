@@ -31,9 +31,10 @@ void main() {
 
   group('ConsentBlockingScreen', () {
     testWidgets('renders without errors', (tester) async {
-      await tester.pumpWidget(buildTestApp(
-        router: createTestRouter(),
-      ));
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Verify screen rendered
@@ -41,9 +42,12 @@ void main() {
     });
 
     testWidgets('renders with correct L10n (DE)', (tester) async {
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+
       await tester.pumpWidget(buildTestApp(
         locale: const Locale('de'),
-        router: createTestRouter(),
+        router: router,
       ));
       await tester.pumpAndSettle();
 
@@ -57,9 +61,12 @@ void main() {
     });
 
     testWidgets('renders with correct L10n (EN)', (tester) async {
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+
       await tester.pumpWidget(buildTestApp(
         locale: const Locale('en'),
-        router: createTestRouter(),
+        router: router,
       ));
       await tester.pumpAndSettle();
 
@@ -72,9 +79,10 @@ void main() {
     });
 
     testWidgets('has only ONE button (no "App verlassen" button)', (tester) async {
-      await tester.pumpWidget(buildTestApp(
-        router: createTestRouter(),
-      ));
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Should find exactly one ElevatedButton (the "Zurück & Zustimmen" button)
@@ -85,11 +93,12 @@ void main() {
     });
 
     testWidgets('has correct semantics header', (tester) async {
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+
       final handle = tester.ensureSemantics();
       try {
-        await tester.pumpWidget(buildTestApp(
-          router: createTestRouter(),
-        ));
+        await tester.pumpWidget(buildTestApp(router: router));
         await tester.pumpAndSettle();
 
         // Verify there's a semantics header
@@ -103,9 +112,12 @@ void main() {
     });
 
     testWidgets('back button navigates to ConsentOptionsScreen', (tester) async {
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+
       await tester.pumpWidget(buildTestApp(
         locale: const Locale('de'),
-        router: createTestRouter(),
+        router: router,
       ));
       await tester.pumpAndSettle();
 
@@ -129,9 +141,10 @@ void main() {
     // If widget structure changes, update the tree traversal path.
     // Reference: consent_blocking_screen.dart Fix 5
     testWidgets('Shield image has no BoxShadow decoration (Fix 5)', (tester) async {
-      await tester.pumpWidget(buildTestApp(
-        router: createTestRouter(),
-      ));
+      final router = createTestRouter();
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       final context = tester.element(find.byType(ConsentBlockingScreen));

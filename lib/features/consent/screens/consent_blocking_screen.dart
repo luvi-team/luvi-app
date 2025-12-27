@@ -121,7 +121,8 @@ class ConsentBlockingScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: mediaQuery.padding.bottom + Spacing.l),
+              // SafeArea already handles bottom inset, only add Spacing.l
+              const SizedBox(height: Spacing.l),
             ],
           ),
         ),

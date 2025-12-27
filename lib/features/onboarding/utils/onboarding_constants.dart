@@ -97,6 +97,12 @@ DateTime onboardingPeriodStartMaxDate([DateTime? reference]) {
   return reference ?? DateTime.now();
 }
 
+// ─── Fallback Period Start ───
+
+/// Default days back for synthetic period start fallback.
+/// Used when O7 is accessed without O6 providing periodStart.
+const int kFallbackPeriodStartDaysBack = 7;
+
 // ─── O9 Success Screen Timing ───
 
 /// Navigation delay after success animation completes.

@@ -107,6 +107,12 @@ Codex takes over UI/Dataviz tasks only when Claude Code is unavailable (e.g., mo
 
 - Primary for: `ui-frontend`, `dataviz`.
 - Governance: `AGENTS.md`, `CLAUDE.md` in repo root, and `context/agents/01-ui-frontend.md` and `context/agents/04-dataviz.md`.
+- **Custom Agents:** `.claude/agents/` contains orchestration wrappers:
+  - `ui-frontend.md` - Primary agent for UI tasks
+  - `dataviz.md` - Primary agent for chart/dashboard tasks
+  - `reqing-ball.md` - Soft-gate for requirements validation
+  - `ui-polisher.md` - Soft-gate for token/A11y checks
+  - `qa-reviewer.md` - Soft-gate for privacy quick-checks
 - PRs always go to Codex for technical review + CI/governance checks before merge.
 
 Work-Modes (informal, Dual-Agent)

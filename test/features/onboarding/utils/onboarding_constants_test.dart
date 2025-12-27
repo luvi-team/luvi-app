@@ -32,25 +32,9 @@ void main() {
       expect(result, DateTime(2009, 3, 31));
     });
 
-    test('clamps day 31 to day 30 for months with 30 days', () {
-      // Today is May 31, 2025
-      // 2025-16=2009, April has 30 days
-      // Wait, we're using May not April. May has 31 days.
-      // Let's use: March 31, 2025 - 16 = March 31, 2009 (valid)
-      // But Feb 30 doesn't exist, so:
-      // Jan 31, 2025 - 16 = Jan 31, 2009 (valid, Jan has 31)
-      // To test clamping, use a month that has fewer days:
-      // Aug 31, 2025 - 16 = Aug 31, 2009 (Aug has 31, valid)
-      // The real test: simulate a case where the day needs clamping
-      // Since the function clamps based on target year/month:
-      // If today is Feb 29 and target year has no Feb 29, it clamps to 28
-      // If today is Mar 31 and target month is Feb (wait, month stays same)
-      // The function preserves month, so only day is clamped within that month
-      final result = onboardingBirthdateMaxDate(DateTime(2025, 6, 15));
-      expect(result, DateTime(2009, 6, 15));
-    });
-
-    test('normal date unchanged', () {
+    test('subtracts kMinAge years from date (June)', () {
+      // June 15, 2025 - 16 years = June 15, 2009
+      // Note: Actual day clamping (Feb 29 → Feb 28) is tested in leap year tests above
       final result = onboardingBirthdateMaxDate(DateTime(2025, 6, 15));
       expect(result, DateTime(2009, 6, 15));
     });

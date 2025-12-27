@@ -132,5 +132,9 @@ class Sizes {
   /// across days with and without the "HEUTE" label. (Fix 10: renamed for clarity)
   static const double calendarDayLabelSize = todayLabelFontSize;
 
+  /// Calendar day cell total height (Figma: 48px).
+  /// Fits day circle (32px) + HEUTE label (10px) + gap (4px) + padding.
+  static const double calendarDayCellHeight = 48.0;
+
   Sizes._();
 }

@@ -1,7 +1,7 @@
 // Contract tests for the log_consent Edge Function.
 // These tests assert the current contract (request payload + responses).
 
-import { assertEquals, assertExists } from "https://deno.land/std@0.168.0/testing/asserts.ts";
+import { assert, assertEquals, assertExists } from "https://deno.land/std@0.168.0/testing/asserts.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "http://localhost:54321";
@@ -239,6 +239,82 @@ Deno.test("log_consent: rejects invalid scopes (400)", async () => {
   assertExists(data.request_id);
 });
 
+Deno.test("log_consent: truncates extremely long invalid scopes in response", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const longScope = "x".repeat(1000);
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: [longScope],
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid scopes provided");
+  assertEquals(Array.isArray(data.invalidScopes), true);
+  assertEquals(data.invalidScopes.length, 1);
+
+  const returnedScope = data.invalidScopes[0];
+  const maxExpectedLength = 203; // 200 chars + "..."
+  assert(typeof returnedScope === "string", "Expected scope to be a string");
+  assert(
+    returnedScope.length <= maxExpectedLength,
+    `Expected scope to be truncated to ${maxExpectedLength} chars, got ${returnedScope.length}`,
+  );
+  assert(returnedScope.endsWith("..."), "Expected truncated scope to end with '...'");
+  assertEquals(data.invalidScopesCount, 1);
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: caps invalidScopes array at MAX_LOGGED_INVALID_SCOPES", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+  const manyScopes = Array.from({ length: 20 }, (_, i) => `invalid_scope_${i}`);
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: manyScopes,
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid scopes provided");
+  assertEquals(data.invalidScopes.length, 10);
+  assertEquals(data.invalidScopesCount, 20);
+  assertExists(data.request_id);
+});
+
+Deno.test("log_consent: non-string scopes are converted to type tokens", async () => {
+  const accessToken = await ensureTestUserAccessToken();
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: buildHeaders(accessToken),
+    body: JSON.stringify({
+      policy_version: "v1.0.0",
+      scopes: [{ nested: "object" }, [1, 2, 3], 42, null, true],
+    }),
+  });
+
+  assertEquals(response.status, 400);
+  const data = await response.json();
+  assertEquals(data.error, "Invalid scopes provided");
+  assertEquals(data.invalidScopesCount, 5);
+  assertEquals(data.invalidScopes[0], "[object]");
+  assertEquals(data.invalidScopes[1], "[array]");
+  assertEquals(data.invalidScopes[2], "[number]");
+  assertEquals(data.invalidScopes[3], "[null]");
+  assertEquals(data.invalidScopes[4], "[boolean]");
+  assertExists(data.request_id);
+});
+
 Deno.test("log_consent: rejects missing policy_version (400)", async () => {
   const accessToken = await ensureTestUserAccessToken();
   const response = await fetch(FUNCTION_URL, {
@@ -269,8 +345,10 @@ Deno.test("log_consent: rejects non-boolean values in scopes object (400)", asyn
 
   assertEquals(response.status, 400);
   const data = await response.json();
-  // Should reject or treat non-booleans as invalid
+  assertEquals(data.error, "scopes object values must be boolean");
   assertExists(data.request_id);
+  // invalidScopes are only returned for invalid scope IDs, not for value-type errors
+  assertEquals("invalidScopes" in data, false);
 });
 
 // Note: 429 Rate Limit test is commented out as it requires hitting the rate limit

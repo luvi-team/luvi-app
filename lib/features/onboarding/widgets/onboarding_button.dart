@@ -3,12 +3,12 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 
-/// Onboarding CTA button widget matching Figma specs.
+/// Onboarding CTA button widget matching Figma v3 specs.
 ///
-/// Figma specs:
+/// Figma v3 specs:
 /// - Padding: 16px vertical, 40px horizontal
 /// - Border radius: 40
-/// - Shadow: BoxShadow(0, 25, 50, -12)
+/// - Shadow: None (flat design, matches Welcome screens)
 /// - Disabled state: DsColors.gray300
 class OnboardingButton extends StatelessWidget {
   const OnboardingButton({

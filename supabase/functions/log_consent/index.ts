@@ -37,6 +37,8 @@ if (!Number.isFinite(parsedAlertSampleRate)) {
   throw new Error("CONSENT_ALERT_SAMPLE_RATE must be a finite number between 0 and 1");
 }
 const ALERT_SAMPLE_RATE = Math.max(0, Math.min(1, parsedAlertSampleRate));
+const MAX_LOGGED_INVALID_SCOPES = 10;
+const MAX_INVALID_SCOPE_STRING_LENGTH = 200;
 
 if (!SUPABASE_URL) {
   throw new Error("Missing required environment variable: SUPABASE_URL must be set");
@@ -246,6 +248,23 @@ function validateScopes(raw: unknown[]): { valid: string[]; invalid: unknown[] }
   return { valid, invalid };
 }
 
+function clampInvalidScopes(scopes: unknown[]): string[] {
+  return scopes.slice(0, MAX_LOGGED_INVALID_SCOPES).map((item) => {
+    if (typeof item === "string") {
+      return item.length > MAX_INVALID_SCOPE_STRING_LENGTH
+        ? `${item.substring(0, MAX_INVALID_SCOPE_STRING_LENGTH)}...`
+        : item;
+    }
+    if (item === null) return "[null]";
+    if (Array.isArray(item)) return "[array]";
+    if (typeof item === "object") return "[object]";
+    if (typeof item === "number") return "[number]";
+    if (typeof item === "boolean") return "[boolean]";
+    if (typeof item === "undefined") return "[undefined]";
+    return "[unknown]";
+  });
+}
+
 if (import.meta.main) {
   serve(async (req) => {
   const started = Date.now();
@@ -410,8 +429,7 @@ if (import.meta.main) {
 
   if (invalidScopes.length > 0) {
     // Defense: Clamp invalidScopes to prevent log bloat/noise from large payloads
-    const MAX_LOGGED_INVALID_SCOPES = 10;
-    const clampedInvalidScopes = invalidScopes.slice(0, MAX_LOGGED_INVALID_SCOPES);
+    const clampedInvalidScopes = clampInvalidScopes(invalidScopes);
     logMetric(requestId, "invalid", {
       reason: "invalid_scopes",
       invalidScopes: clampedInvalidScopes,

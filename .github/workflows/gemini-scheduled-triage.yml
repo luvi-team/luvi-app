@@ -93,9 +93,9 @@ jobs:
 
           echo '📝 Setting output for GitHub Actions...'
           {
-            echo 'issues_to_triage<<EOF'
+            echo 'issues_to_triage<<ISSUES_JSON_HEREDOC_END_7f3a9b'
             echo "${ISSUES}"
-            echo 'EOF'
+            echo 'ISSUES_JSON_HEREDOC_END_7f3a9b'
           } >> "${GITHUB_OUTPUT}"
 
           ISSUE_COUNT="$(echo "${ISSUES}" | jq 'length')"
