@@ -38,7 +38,7 @@ Für **jede** Umgebung (dev, staging, prod) rotieren:
 
 ### 2) DB Migration Push + Smoke (staging) (10–20 min)
 
-> **Security Note:** Never source untrusted env files directly. Use key-value parsing instead.
+> **Security Note:** Never source untrusted env files directly. The `.env.*.local` files below are trusted (repo-local, git-ignored, developer-controlled).
 
 1. Dry-run:
    - Load env: `set -a; source .env.staging.local; set +a`

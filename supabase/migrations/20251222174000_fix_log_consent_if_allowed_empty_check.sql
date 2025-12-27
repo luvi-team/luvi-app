@@ -34,15 +34,16 @@ begin
     raise exception 'p_scopes must be provided';
   end if;
 
-  if jsonb_typeof(p_scopes) = 'array' then
-    normalized_scopes := (
-      select coalesce(jsonb_object_agg(v, true), '{}'::jsonb)
-      from jsonb_array_elements_text(p_scopes) v
-    );
-  elsif jsonb_typeof(p_scopes) = 'object' then
-    if not public.consents_scopes_values_boolean(p_scopes) then
-      raise exception 'p_scopes must be an object with boolean values only';
-    end if;
+	  if jsonb_typeof(p_scopes) = 'array' then
+	    normalized_scopes := (
+	      select coalesce(jsonb_object_agg(v, true), '{}'::jsonb)
+	      from jsonb_array_elements_text(p_scopes) v
+	      where public.consents_scopes_keys_valid(jsonb_build_object(v, true))
+	    );
+	  elsif jsonb_typeof(p_scopes) = 'object' then
+	    if not public.consents_scopes_values_boolean(p_scopes) then
+	      raise exception 'p_scopes must be an object with boolean values only';
+	    end if;
     normalized_scopes := (
       select coalesce(jsonb_object_agg(e.key, true), '{}'::jsonb)
       from jsonb_each(p_scopes) as e(key, value)
@@ -86,4 +87,3 @@ begin
   return true;
 end;
 $$;
-

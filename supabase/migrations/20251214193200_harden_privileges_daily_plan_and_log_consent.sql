@@ -2,8 +2,14 @@
 -- - daily_plan contains health data → FORCE RLS + remove anon table privileges.
 -- - log_consent_if_allowed() should not be callable by anon/public.
 
-alter table if exists public.daily_plan force row level security;
-revoke all on table public.daily_plan from anon;
+DO $$
+BEGIN
+  IF to_regclass('public.daily_plan') IS NOT NULL THEN
+    EXECUTE 'ALTER TABLE public.daily_plan FORCE ROW LEVEL SECURITY';
+    EXECUTE 'REVOKE ALL ON TABLE public.daily_plan FROM anon';
+  END IF;
+END
+$$;
 
 -- log_consent_if_allowed: keep authenticated/service_role, remove public/anon.
 -- Wrapped in conditional to prevent errors if function doesn't exist yet.
@@ -23,4 +29,3 @@ BEGIN
   END IF;
 END
 $$;
-

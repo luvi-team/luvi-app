@@ -15,11 +15,15 @@ class ConsentConfig {
   /// Called at app startup to catch drift early.
   /// Throws [StateError] in all builds (debug + release) if versions don't match.
   static void assertVersionsMatch() {
-    if (!currentVersion.startsWith('v$currentVersionInt.')) {
+    // Strict validation: v{major} or v{major}.{minor}
+    // Anchored regex prevents false positives (e.g., v10.0 matching v1)
+    final versionPattern =
+        RegExp(r'^v' + currentVersionInt.toString() + r'(\.\d+)?$');
+    if (!versionPattern.hasMatch(currentVersion)) {
       throw StateError(
         'ConsentConfig version drift: currentVersion="$currentVersion" '
         'does not match currentVersionInt=$currentVersionInt. '
-        'Update both constants together.',
+        'Expected format: v$currentVersionInt or v$currentVersionInt.x',
       );
     }
   }
