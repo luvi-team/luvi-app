@@ -59,26 +59,29 @@ class _Onboarding03FitnessScreenState
   }
 
   Future<void> _handleContinue() async {
-    if (_selectedLevel != null) {
-      // Save to OnboardingNotifier (SSOT)
-      ref.read(onboardingProvider.notifier).setFitnessLevel(_selectedLevel!);
-      try {
-        // Also save to UserStateService for backward compatibility
-        // Note: bindUser is already called in main.dart auth state listener
-        final userState = await ref.read(user_state_svc.userStateServiceProvider.future);
-        final serviceFitness =
-            user_state_svc.FitnessLevel.tryParse(_selectedLevel!.name) ??
-                user_state_svc.FitnessLevel.beginner;
-        await userState.setFitnessLevel(serviceFitness);
-      } catch (e) {
-        // Log error but proceed - data is saved in SSOT provider
-        log.w(
-          'Failed to sync fitness level to UserStateService',
-          tag: 'Onboarding',
-          error: e,
-        );
-      }
+    // Guard: require selection before navigation
+    if (_selectedLevel == null) return;
+
+    // Save to OnboardingNotifier (SSOT)
+    ref.read(onboardingProvider.notifier).setFitnessLevel(_selectedLevel!);
+    try {
+      // Also save to UserStateService for backward compatibility
+      // Note: bindUser is already called in main.dart auth state listener
+      final userState =
+          await ref.read(user_state_svc.userStateServiceProvider.future);
+      final serviceFitness =
+          user_state_svc.FitnessLevel.tryParse(_selectedLevel!.name) ??
+              user_state_svc.FitnessLevel.beginner;
+      await userState.setFitnessLevel(serviceFitness);
+    } catch (e) {
+      // Log error but proceed - data is saved in SSOT provider
+      log.w(
+        'Failed to sync fitness level to UserStateService',
+        tag: 'Onboarding',
+        error: e,
+      );
     }
+
     // Navigate to O4 Goals
     if (mounted) context.pushNamed(Onboarding04GoalsScreen.navName);
   }

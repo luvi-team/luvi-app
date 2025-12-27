@@ -1,6 +1,8 @@
 -- Migration: Replace CHECK constraint with BEFORE trigger for age validation
 -- Reason: CHECK with CURRENT_DATE is time-sensitive and can invalidate rows on unrelated updates
--- The trigger only validates when has_completed_onboarding transitions to true
+-- The trigger validates on transition to completed onboarding AND when an already-completed
+-- profile changes birth_date (prevents post-onboarding invalid edits without blocking
+-- unrelated updates).
 -- CodeRabbit Issue #14
 
 -- Step 1: Drop the existing CHECK constraint
@@ -11,9 +13,12 @@ ALTER TABLE public.profiles
 CREATE OR REPLACE FUNCTION public.validate_birth_date_on_complete()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Only validate when transitioning to completed onboarding
+  -- Validate on transition to completed OR when already completed and birth_date changes.
   IF NEW.has_completed_onboarding = true AND
-     (OLD IS NULL OR OLD.has_completed_onboarding IS DISTINCT FROM true) THEN
+     (
+       (OLD IS NULL OR OLD.has_completed_onboarding IS DISTINCT FROM true)
+       OR (OLD.has_completed_onboarding = true AND NEW.birth_date IS DISTINCT FROM OLD.birth_date)
+     ) THEN
 
     -- Check birth_date is set
     IF NEW.birth_date IS NULL THEN
@@ -45,4 +50,5 @@ CREATE TRIGGER trg_validate_birth_date
   FOR EACH ROW
   EXECUTE FUNCTION public.validate_birth_date_on_complete();
 
--- Note: Trigger validates ONLY on transition to completed, not on every update
+-- Note: Trigger validates on completion transition and on birth_date changes after completion,
+-- but does not re-validate on unrelated profile updates.

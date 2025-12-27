@@ -42,9 +42,8 @@ extension FitnessLevelExtension on FitnessLevel {
   /// Maps UI selection index to [FitnessLevel].
   ///
   /// Valid indices: 0 (beginner), 1 (occasional), 2 (fit).
-  /// Index 3 ("Weiß ich nicht" / unknown) and any out-of-range value
-  /// safely fallback to [FitnessLevel.beginner] in release builds.
-  /// A warning is logged for observability when fallback is triggered.
+  /// Any out-of-range value (negative or >= 3) safely falls back to
+  /// [FitnessLevel.beginner]. A warning is logged for observability.
   static FitnessLevel fromSelectionIndex(int index) {
     assert(
       index >= 0 && index < FitnessLevel.values.length,

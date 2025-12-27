@@ -38,11 +38,11 @@ Für **jede** Umgebung (dev, staging, prod) rotieren:
 
 ### 2) DB Migration Push + Smoke (staging) (10–20 min)
 
-> **Security Note:** The `source` command below assumes `.env.staging.local` is a trusted, local-only file. Never source untrusted env files. For a safer alternative, see `scripts/run_dev.sh` which uses key-value parsing.
+> **Security Note:** Never source untrusted env files directly. Use key-value parsing instead.
 
 1. Dry-run:
-   - `set -a; source .env.staging.local; set +a`
-   - `scripts/db_dry_run.sh`
+   - Load env: `export $(grep -v '^#' .env.staging.local | xargs)`
+   - Run: `scripts/db_dry_run.sh`
 2. Apply + Smoke:
    - `scripts/db_push_and_smoke.sh .env.staging.local`
 

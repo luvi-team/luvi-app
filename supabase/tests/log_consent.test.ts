@@ -1,7 +1,7 @@
 // Contract tests for the log_consent Edge Function.
 // These tests assert the current contract (request payload + responses).
 
-import { assert, assertEquals, assertExists } from "https://deno.land/std@0.168.0/testing/asserts.ts";
+import { assert, assertEquals, assertExists } from "https://deno.land/std@0.224.0/testing/asserts.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "http://localhost:54321";

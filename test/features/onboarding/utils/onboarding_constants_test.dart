@@ -10,25 +10,11 @@ void main() {
       expect(result, DateTime(2008, 2, 29));
     });
 
-    test('clamps Feb 29 to Feb 28 when target year is non-leap year', () {
-      // Simulate scenario where today is Feb 29 of a leap year
-      // but target year is not a leap year.
-      // Example: If kMinAge was 17, then 2024-17=2007 (not leap year)
-      // Since we can't change kMinAge, we test with a reference date
-      // where the subtraction results in a non-leap year.
-      // Feb 29, 2028 - 17 years = 2011 (not leap year)
-      // But since kMinAge=16: Feb 29, 2028 - 16 = 2012 (leap year)
-      // So we need: Feb 29, 2029 - 16 = 2013 (not leap year)
-      // Actually 2029 is not a leap year, so let's use:
-      // Feb 29, 2032 - 16 = 2016 (leap year) - still won't trigger
-      // To properly test, we use: 2027 is not leap, 2031 is not leap
-      // Feb 28, 2027 - 16 = 2011 - this tests normal Feb 28
-      // The edge case is: leap year Feb 29 → non-leap year
-      // 2024 (leap) - 17 = 2007 (not leap) - but kMinAge is 16
-      // Since kMinAge=16 is divisible by 4, leap→leap is typical
-      // We test the clamp logic works for any day/month combo
+    test('computes max birthdate correctly for March 31', () {
+      // March 31 preserved: 2025-16=2009, March has 31 days in both years.
+      // Note: Feb 29 → Feb 28 clamping cannot be tested with kMinAge=16
+      // because 16 is divisible by 4, preserving leap year alignment.
       final result = onboardingBirthdateMaxDate(DateTime(2025, 3, 31));
-      // 2025-16=2009, March has 31 days, so no clamp needed
       expect(result, DateTime(2009, 3, 31));
     });
 

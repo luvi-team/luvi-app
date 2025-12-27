@@ -48,9 +48,13 @@ void main() {
             sizedBox.width != null &&
             sizedBox.width! >= Sizes.touchTargetMin) {
           foundValidHitArea = true;
+          break;
         }
-        if (foundValidHitArea) break;
       }
+
+      // Assert that at least one day cell meets the touch target requirement
+      expect(foundValidHitArea, isTrue,
+          reason: 'At least one day cell must meet 44dp touch target');
 
       // Verify Sizes.touchTargetMin is 44
       expect(Sizes.touchTargetMin, equals(44.0),

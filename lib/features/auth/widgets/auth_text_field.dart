@@ -1,3 +1,5 @@
+import 'dart:math' show max;
+
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -57,13 +59,14 @@ class AuthTextField extends StatelessWidget {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
     final resolvedFontSize = fontSize ?? TypographyTokens.size14;
-    // Design spec: 24px line height for 14px base font, scale proportionally
+    // Design spec: 24px line height for 14px base font, scale proportionally.
+    // Enforce min 1.2 multiplier to prevent text clipping at large font sizes.
     const designLineHeightPx = 24.0;
     final inputStyle = theme.textTheme.bodySmall?.copyWith(
       fontSize: resolvedFontSize,
       fontFamily: fontFamilyOverride,
       fontWeight: fontWeightOverride,
-      height: designLineHeightPx / resolvedFontSize,
+      height: max(1.2, designLineHeightPx / resolvedFontSize),
       color: theme.colorScheme.onSurface,
     );
     final resolvedHintStyle = inputStyle?.copyWith(color: tokens.grayscale500);
