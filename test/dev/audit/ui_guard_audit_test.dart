@@ -4,52 +4,26 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Guardrail audit for LUVI UI code.
 ///
-/// Goal: prevent *new* hardcoded Colors/Strings from entering `lib/features/**`.
+/// Goal: prevent *new* hardcoded Colors/Strings/Spacing from entering `lib/features/**`.
 /// Existing offenders stay allowlisted below until dedicated cleanup tasks fix
 /// them. If you truly need a waiver, update the matching allowlist with a TODO
 /// plus context so we can remove it later.
+///
+/// MUST-01: Design Tokens only - no hardcoded colors
+/// MUST-02: Spacing via tokens - no custom EdgeInsets/BorderRadius/SizedBox with literals
+/// MUST-03: L10n first - all user text via AppLocalizations
 void main() {
-  test('features avoid new hardcoded Colors & German UI strings', () {
+  test('features avoid new hardcoded Colors, Spacing & German UI strings', () {
     final featuresDir = Directory('lib/features');
     expect(featuresDir.existsSync(), isTrue,
         reason: 'Expected lib/features directory for UI audit.');
 
-    const allowedColorFiles = <String>{
-      'lib/features/dashboard/widgets/wearable_connect_card.dart',
-      'lib/features/cycle/widgets/cycle_inline_calendar.dart',
-      'lib/features/dashboard/widgets/hero_sync_preview.dart',
-      'lib/features/dashboard/widgets/weekly_training_card.dart',
-      'lib/features/dashboard/widgets/recommendation_card.dart',
-      'lib/features/dashboard/widgets/top_recommendation_tile.dart',
-      'lib/features/dashboard/widgets/stats_scroller.dart',
-      'lib/features/dashboard/widgets/phase_recommendations_section.dart',
-      'lib/features/dashboard/screens/heute_screen.dart',
-      'lib/features/cycle/screens/cycle_overview_stub.dart',
-      'lib/features/onboarding/widgets/goal_card.dart',
-      'lib/features/dashboard/widgets/cycle_tip_card.dart',
-      'lib/features/consent/screens/consent_02_screen.dart',
-      'lib/features/dashboard/widgets/weekly_training_section.dart',
-      'lib/features/dashboard/widgets/bottom_nav_dock.dart',
-      'lib/features/dashboard/widgets/section_header.dart',
-      'lib/features/dashboard/widgets/floating_sync_button.dart',
-      'lib/features/dashboard/widgets/heute_header.dart',
-      'lib/features/dashboard/widgets/category_chip.dart',
-      'lib/features/dashboard/widgets/painters/bottom_wave_border_painter.dart',
-    };
+    const allowedColorFiles = <String>{};
 
-    const allowedGermanStringFiles = <String>{
-      'lib/features/onboarding/screens/onboarding_07.dart',
-      'lib/features/consent/widgets/localized_builder.dart',
-      'lib/features/consent/widgets/welcome_shell.dart',
-      'lib/features/consent/domain/consent_types.dart',
-      'lib/features/auth/state/login_state.dart',
-      'lib/features/auth/widgets/login_header.dart',
-      'lib/features/cycle/widgets/cycle_inline_calendar.dart',
-      'lib/features/auth/screens/auth_signin_screen.dart', // TODO: Migrate to l10n in Auth v2 cleanup
-      'lib/features/cycle/domain/date_utils.dart',
-      'lib/features/auth/utils/name_validator.dart',
-      'lib/features/dashboard/data/fixtures/heute_fixtures.dart',
-    };
+    const allowedGermanStringFiles = <String>{};
+
+    // MUST-02: Spacing tokens allowlist (should stay empty after cleanup)
+    const allowedSpacingFiles = <String>{};
 
     final colorPattern = RegExp(r'Color\s*\(\s*0x[0-9A-Fa-f]{6,8}');
     // Word-boundary ensures we match Flutter's Colors class, not DsColors tokens
@@ -66,6 +40,26 @@ void main() {
     final labelPattern = RegExp(
       r"""label\s*:\s*['"]([^'"]+)['"]""",
       multiLine: true,
+    );
+
+    // MUST-02: Spacing patterns - detect hardcoded numeric values
+    // Matches EdgeInsets with non-zero hardcoded numeric values:
+    // - Positional: EdgeInsets.all(16), EdgeInsets.fromLTRB(16, ...)
+    // - Named: EdgeInsets.only(top: 4), EdgeInsets.symmetric(horizontal: 8)
+    // Excludes: 0 values (no padding), ternary expressions (isFirst ? 12 : 0),
+    // and token references (Spacing.m)
+    final edgeInsetsPattern = RegExp(
+      r'EdgeInsets\.(all|symmetric|only|fromLTRB)\s*\((\s*[1-9]|[^)]*:\s*[1-9])',
+    );
+    // Matches BorderRadius.circular(8), BorderRadius.circular(0.5), etc.
+    // Excludes only exact zero values (0, 0.0) - intentional no-radius
+    final borderRadiusPattern = RegExp(
+      r'BorderRadius\.circular\s*\(\s*(?:[1-9][0-9]*(?:\.[0-9]+)?|0\.[0-9]*[1-9][0-9]*)\s*\)',
+    );
+    // Matches SizedBox(height: 4), SizedBox(width: 0.5), etc.
+    // Excludes only exact zero values - intentional zero-size
+    final sizedBoxPattern = RegExp(
+      r'SizedBox\s*\(\s*(height|width)\s*:\s*(?:[1-9][0-9]*(?:\.[0-9]+)?|0\.[0-9]*[1-9][0-9]*)',
     );
 
     // Helper functions defined once outside the loop for efficiency
@@ -92,6 +86,7 @@ void main() {
 
     final colorViolations = <String>{};
     final stringViolations = <String>{};
+    final spacingViolations = <String>{};
 
     for (final entity in featuresDir.listSync(recursive: true)) {
       if (entity is! File || !entity.path.endsWith('.dart')) {
@@ -111,6 +106,14 @@ void main() {
           !allowedGermanStringFiles.contains(normalizedPath)) {
         stringViolations.add(normalizedPath);
       }
+
+      // MUST-02: Check for hardcoded spacing values
+      final hasHardcodedSpacing = edgeInsetsPattern.hasMatch(source) ||
+          borderRadiusPattern.hasMatch(source) ||
+          sizedBoxPattern.hasMatch(source);
+      if (hasHardcodedSpacing && !allowedSpacingFiles.contains(normalizedPath)) {
+        spacingViolations.add(normalizedPath);
+      }
     }
 
     expect(
@@ -125,6 +128,14 @@ void main() {
       isEmpty,
       reason:
           'Neue hardcodierte deutsche UI-Strings gefunden. L10n (`AppLocalizations`) nutzen oder Allowlist pflegen (inkl. TODO) – betroffen: ${stringViolations.join(', ')}',
+    );
+
+    // MUST-02: Spacing tokens gate
+    expect(
+      spacingViolations,
+      isEmpty,
+      reason:
+          'Neue hardcodierte Spacing-Werte gefunden. Nutze Spacing.* oder Sizes.* Tokens – betroffen: ${spacingViolations.join(', ')}',
     );
   });
 }

@@ -1392,5 +1392,9 @@
   "retry": "Retry",
   "@retry": {
     "description": "Generic retry button label"
+  },
+  "authLoginHeaderSemantic": "Welcome back",
+  "@authLoginHeaderSemantic": {
+    "description": "Semantics label for the login header."
   }
 }

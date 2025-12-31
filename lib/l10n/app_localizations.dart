@@ -2026,6 +2026,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// Semantics label for the login header.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get authLoginHeaderSemantic;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -42,7 +43,7 @@ class FloatingSyncButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final dsTokens = Theme.of(context).extension<DsTokens>()!;
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    // Kodex: Use colorScheme.surface (not Colors.white) for future dark-mode compatibility
+    // Kodex: Use colorScheme.surface (not hardcoded white) for future dark-mode compatibility
     final Color effectiveBackgroundColor =
         backgroundColor ?? colorScheme.surface;
     final Color iconColor = isActive
@@ -73,7 +74,7 @@ class FloatingSyncButton extends StatelessWidget {
           },
           child: FocusableActionDetector(
             child: Material(
-              color: Colors.transparent,
+              color: DsColors.transparent,
               shape: const CircleBorder(),
               child: InkWell(
                 onTap: onTap,

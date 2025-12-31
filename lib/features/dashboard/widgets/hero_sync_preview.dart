@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -205,13 +206,13 @@ class _InfoCard extends StatelessWidget {
             defaultTargetPlatform == TargetPlatform.iOS);
     // Desktop and other platforms use web-style rendering (Container with BoxDecoration)
 
-    final backgroundColor = surfaceTokens?.white ?? const Color(0xFFFFFFFF);
+    final backgroundColor = surfaceTokens?.white ?? DsColors.white;
     final borderSide = BorderSide(
-      color: dsTokens?.grayscale500 ?? const Color(0xFF696969),
+      color: dsTokens?.grayscale500 ?? DsColors.grayscale500,
       width: 1,
     );
     final shadowColor =
-        shadowTokens?.heroCardDrop.color ?? const Color(0x40000000);
+        shadowTokens?.heroCardDrop.color ?? DsColors.shadowMedium;
     final borderRadius = BorderRadius.circular(containerRadius);
 
     final cardContent = Padding(
@@ -230,7 +231,7 @@ class _InfoCard extends StatelessWidget {
               shadowTokens: shadowTokens,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: Spacing.s),
           // CTA "Mehr" (67×32, r=12, BG gold #D9B18E, label bold 16, color #1C1411)
           _MehrButton(onTap: onMoreTap),
         ],
@@ -242,7 +243,7 @@ class _InfoCard extends StatelessWidget {
             color: backgroundColor,
             elevation: 4, // Matches heroCardDrop blur → Material elevation 4.
             shadowColor: shadowColor,
-            surfaceTintColor: Colors.transparent,
+            surfaceTintColor: DsColors.transparent,
             shape: RoundedRectangleBorder(
               borderRadius: borderRadius,
               side: borderSide,
@@ -260,11 +261,11 @@ class _InfoCard extends StatelessWidget {
               ),
               boxShadow: [
                 shadowTokens?.heroCardDrop ??
-                    const BoxShadow(
-                      offset: Offset(0, 4),
+                    BoxShadow(
+                      offset: const Offset(0, 4),
                       blurRadius: 4,
                       spreadRadius: 0,
-                      color: Color(0x40000000), // 25% black
+                      color: DsColors.shadowMedium,
                     ),
               ],
             ),
@@ -313,15 +314,15 @@ class _InfoTexts extends StatelessWidget {
             color: onSurface,
             shadows: [
               shadowTokens?.heroCalloutTextShadow ??
-                  const Shadow(
-                    offset: Offset(0, 4),
+                  Shadow(
+                    offset: const Offset(0, 4),
                     blurRadius: 4,
-                    color: Color(0x20000000),
+                    color: DsColors.borderSubtle,
                   ),
             ],
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: Spacing.xxs),
         Text(
           subtitle,
           maxLines: 2,
@@ -334,10 +335,10 @@ class _InfoTexts extends StatelessWidget {
             color: onSurface,
             shadows: [
               shadowTokens?.heroCalloutTextShadow ??
-                  const Shadow(
-                    offset: Offset(0, 4),
+                  Shadow(
+                    offset: const Offset(0, 4),
                     blurRadius: 4,
-                    color: Color(0x20000000),
+                    color: DsColors.borderSubtle,
                   ),
             ],
           ),
@@ -356,7 +357,7 @@ class _MehrButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
     return SizedBox(
-      height: 44,
+      height: Sizes.touchTargetMin,
       child: Align(
         alignment: Alignment.topCenter,
         child: Material(
@@ -368,7 +369,7 @@ class _MehrButton extends StatelessWidget {
             child: Container(
               height: 32,
               constraints: const BoxConstraints(minWidth: 67),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: Spacing.m, vertical: Spacing.xxs),
               decoration: BoxDecoration(
                 color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(Sizes.radiusM),

@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -79,10 +81,10 @@ class CategoryChip extends StatelessWidget {
         child: SizedBox(
           width: chipWidth,
           child: Material(
-            color: Colors.transparent,
+            color: DsColors.transparent,
             child: InkWell(
               onTap: onTap,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(Sizes.radiusCard),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -93,10 +95,10 @@ class CategoryChip extends StatelessWidget {
                       width: _iconContainerSize,
                       height: _iconContainerSize,
                       // Visual tuning: padding 16→14 to allow a 32 px glyph within 60 px container
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(Spacing.recommendationCardPadding),
                       decoration: BoxDecoration(
                         color: backgroundColor,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(Sizes.radiusCard),
                       ),
                       child: SvgPicture.asset(
                         iconPath,
@@ -111,8 +113,8 @@ class CategoryChip extends StatelessWidget {
                             stack: stackTrace,
                           );
                           return const SizedBox(
-                            width: 32,
-                            height: 32,
+                            width: Sizes.iconL,
+                            height: Sizes.iconL,
                             child: Center(
                               child: Icon(Icons.broken_image, size: 20),
                             ),
@@ -122,7 +124,7 @@ class CategoryChip extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: Spacing.xs,
                   ), // from DASHBOARD_spec.json $.spacingTokensObserved[4] (gap 8px)
                   // Label
                   // from DASHBOARD_spec.json $.categories.chips[0].labelTypography (Figtree 14/24)

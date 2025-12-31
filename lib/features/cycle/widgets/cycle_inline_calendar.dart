@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/design_tokens/colors.dart';
 import '../../../core/design_tokens/typography.dart';
 import '../../../core/navigation/route_paths.dart';
 import '../../../core/theme/app_theme.dart';
@@ -163,7 +164,7 @@ class _CalendarContent extends StatelessWidget {
       hint: 'Zur Zyklusübersicht wechseln.',
       child: ExcludeSemantics(
         child: Material(
-          color: Colors.transparent,
+          color: DsColors.transparent,
           child: InkWell(
             onTap: () => context.go(RoutePaths.cycleOverview),
             borderRadius: BorderRadius.zero,
@@ -327,7 +328,7 @@ class _DayColumn extends StatelessWidget {
     final weekdayLabel = _formatWeekdayUpper(day.date);
     final dayNumber = day.date.day.toString();
     final isToday = day.isToday;
-    final baseTextColor = isToday ? Colors.white : textTokens.primary;
+    final baseTextColor = isToday ? DsColors.white : textTokens.primary;
     final weekdayTextColor = textTokens.secondary;
     final padding = EdgeInsets.only(
       top: _topPadding,

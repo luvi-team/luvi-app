@@ -1017,4 +1017,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get retry => 'Erneut versuchen';
+
+  @override
+  String get authLoginHeaderSemantic => 'Willkommen zurück';
 }

@@ -111,10 +111,10 @@ class _TrainingStatCard extends StatelessWidget {
     final textTokens = theme.extension<TextColorTokens>();
     final dsTokens = theme.extension<DsTokens>();
     final surfaceTokens = theme.extension<SurfaceColorTokens>();
-    final titleColor = textTokens?.secondary ?? const Color(0xFF6D6D6D);
-    final valueColor = textTokens?.primary ?? const Color(0xFF030401);
+    final titleColor = textTokens?.secondary ?? DsColors.textSecondary;
+    final valueColor = textTokens?.primary ?? DsColors.textPrimary;
     final badgeFill =
-        dsTokens?.color.icon.badge.goldCircle ?? const Color(0xFFD9B18E);
+        dsTokens?.color.icon.badge.goldCircle ?? DsColors.primaryGold;
     final formattedLabel = _formatStatLabel(data.label);
     final labelMaxLines = formattedLabel.contains('\n') ? 2 : 1;
     final cardSurface =
@@ -224,7 +224,7 @@ class _TrainingStatValueGroup extends StatelessWidget {
           ),
           if (unit != null)
             Padding(
-              padding: const EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.only(top: Spacing.xxs),
               child: Text(
                 unit,
                 style: unitStyle,
@@ -264,7 +264,7 @@ class _TrainingStatValueGroup extends StatelessWidget {
     return Align(
       alignment: Alignment(StatsScrollerLayout.stepsValueAlignmentX, -1),
       child: Padding(
-        padding: const EdgeInsets.only(left: 8),
+        padding: const EdgeInsets.only(left: Spacing.xs),
         child: Text(
           formattedValue,
           style: valueStyle,
@@ -311,7 +311,7 @@ class _IconBadge extends StatelessWidget {
         width: StatsScrollerLayout.iconSize,
         height: StatsScrollerLayout.iconSize,
         excludeFromSemantics: true,
-        colorFilter: const ColorFilter.mode(Color(0xFF1C1411), BlendMode.srcIn),
+        colorFilter: ColorFilter.mode(DsColors.secondaryDark, BlendMode.srcIn),
       ),
     );
   }
@@ -336,7 +336,7 @@ class _TrainingCardSurface extends StatelessWidget {
         color: cardSurface,
         borderRadius: BorderRadius.circular(kStatsCardRadius),
         border: Border.all(
-          color: const Color(0x1A000000), // Figma: 1dp @ 10% black
+          color: DsColors.borderSubtle, // Figma: 1dp @ 10% black
           width: 1,
         ),
       ),

@@ -86,25 +86,21 @@ class HeroCardProps {
 class CategoryProps {
   const CategoryProps({
     required this.iconPath,
-    required this.label,
     required this.category,
     this.isSelected = false,
   });
 
   final String iconPath;
-  final String label;
   final Category category;
   final bool isSelected;
 
   CategoryProps copyWith({
     String? iconPath,
-    String? label,
     Category? category,
     bool? isSelected,
   }) {
     return CategoryProps(
       iconPath: iconPath ?? this.iconPath,
-      label: label ?? this.label,
       category: category ?? this.category,
       isSelected: isSelected ?? this.isSelected,
     );
@@ -307,23 +303,19 @@ class HeuteFixtures {
       categories: [
         CategoryProps(
           iconPath: Assets.icons.catTraining,
-          label: 'Training',
           category: Category.training,
           isSelected: true,
         ),
         CategoryProps(
           iconPath: Assets.icons.catNutrition,
-          label: 'Ernährung',
           category: Category.nutrition,
         ),
         CategoryProps(
           iconPath: Assets.icons.catRegeneration,
-          label: 'Regeneration',
           category: Category.regeneration,
         ),
         CategoryProps(
           iconPath: Assets.icons.catMindfulness,
-          label: 'Achtsamkeit',
           category: Category.mindfulness,
         ),
       ],

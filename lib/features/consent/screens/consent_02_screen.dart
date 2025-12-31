@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/config/legal_actions.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -398,7 +399,7 @@ class _ConsentChoiceCard extends StatelessWidget {
       button: true,
       toggled: selected,
       child: Material(
-        color: Colors.transparent,
+        color: DsColors.transparent,
         borderRadius: borderRadius,
         child: InkWell(
           borderRadius: borderRadius,
@@ -455,7 +456,7 @@ class _ConsentChoiceCard extends StatelessWidget {
                               color: colorScheme.outline,
                               width: 2,
                             ),
-                            color: Colors.transparent,
+                            color: DsColors.transparent,
                           ),
                           alignment: Alignment.center,
                           child: selected

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
@@ -52,7 +53,7 @@ class HeuteHeader extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                     ).copyWith(color: primaryColor),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: Spacing.micro),
                   Text(
                     phaseLabel,
                     style: TextStyle(
@@ -66,7 +67,7 @@ class HeuteHeader extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: Spacing.xs),
             Semantics(
               label: hasNotifications
                   ? l10n.notificationsWithBadge
@@ -115,10 +116,10 @@ class HeuteHeader extends StatelessWidget {
       height: 40,
       padding: const EdgeInsets.all(_headerIconPadding),
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        color: DsColors.transparent,
         borderRadius: BorderRadius.circular(_headerIconRadius),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: DsColors.white.withValues(alpha: 0.08),
           width: _headerIconBorderWidth,
         ),
       ),

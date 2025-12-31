@@ -15,7 +15,9 @@ class Spacing {
   static const double heroInfoCardPadding =
       14.0; // medium-small padding for hero info card rail
   static const double xs = 8.0; // extra small (breathing space)
+  static const double xxxs = 6.0; // between xxs(4) and xs(8) - edge case spacing
   static const double xxs = 4.0; // micro spacing (tight gaps)
+  static const double micro = 2.0; // sub-xxs for tight layouts (e.g., heute_header)
 
   /// Standard horizontal screen padding (Figma: 24px)
   static const double screenPadding = l;
@@ -23,6 +25,9 @@ class Spacing {
       20.0; // dedicated padding for goal cards
   static const double goalCardIconGap =
       20.0; // spacing between icon and text in goal cards
+
+  /// Top recommendation tile horizontal padding (Figma: 18px)
+  static const double topRecommendationPadH = 18.0;
 
   /// Welcome content bottom padding (Figma: 52px from bottom edge)
   static const double welcomeBottomPadding = 52.0;
