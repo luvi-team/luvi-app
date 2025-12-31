@@ -16,7 +16,7 @@ jobs:
     env:
       SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
     steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # ratchet:actions/checkout@v5
       - name: Install psql client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
       - name: Run smoke SQL
