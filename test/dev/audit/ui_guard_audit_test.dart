@@ -51,15 +51,15 @@ void main() {
     final edgeInsetsPattern = RegExp(
       r'EdgeInsets\.(all|symmetric|only|fromLTRB)\s*\((\s*[1-9]|[^)]*:\s*[1-9])',
     );
-    // Matches BorderRadius.circular(8), BorderRadius.circular(16.0), etc.
-    // Excludes zero values (0, 0.0) - intentional no-radius is not a violation
+    // Matches BorderRadius.circular(8), BorderRadius.circular(0.5), etc.
+    // Excludes only exact zero values (0, 0.0) - intentional no-radius
     final borderRadiusPattern = RegExp(
-      r'BorderRadius\.circular\s*\(\s*[1-9][0-9]*(?:\.[0-9]+)?\s*\)',
+      r'BorderRadius\.circular\s*\(\s*(?:[1-9][0-9]*(?:\.[0-9]+)?|0\.[0-9]*[1-9][0-9]*)\s*\)',
     );
-    // Matches SizedBox(height: 4), SizedBox(width: 12), etc.
-    // Excludes zero values - intentional zero-size is not a violation
+    // Matches SizedBox(height: 4), SizedBox(width: 0.5), etc.
+    // Excludes only exact zero values - intentional zero-size
     final sizedBoxPattern = RegExp(
-      r'SizedBox\s*\(\s*(height|width)\s*:\s*[1-9][0-9]*(?:\.[0-9]+)?',
+      r'SizedBox\s*\(\s*(height|width)\s*:\s*(?:[1-9][0-9]*(?:\.[0-9]+)?|0\.[0-9]*[1-9][0-9]*)',
     );
 
     // Helper functions defined once outside the loop for efficiency
