@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -68,16 +70,16 @@ class SectionHeader extends StatelessWidget {
           ),
         ),
         if (shouldShowTrailing) ...[
-          const SizedBox(width: 12),
+          const SizedBox(width: Spacing.s),
           if (onTrailingTap != null)
             Semantics(
               button: true,
               label: resolvedTrailingLabel ?? '',
               child: Material(
-                color: Colors.transparent,
+                color: DsColors.transparent,
                 child: InkWell(
                   onTap: onTrailingTap,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(Sizes.radiusXS),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(
                       minWidth: 48,
@@ -85,8 +87,8 @@ class SectionHeader extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
+                        horizontal: Spacing.xxs,
+                        vertical: Spacing.micro,
                       ),
                       child: Align(
                         alignment: Alignment.centerRight,

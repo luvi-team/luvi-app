@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
@@ -41,12 +42,10 @@ class RecommendationCard extends StatelessWidget {
         .extension<RecommendationCardOverlayTokens>();
     final tileShadow =
         shadowTokens?.tileDrop ??
-        const BoxShadow(
-          color: Color(
-            0x20000000,
-          ), // 12.5% alpha (consistent with ShadowTokens.light)
+        BoxShadow(
+          color: DsColors.borderSubtle, // 12.5% alpha (consistent with ShadowTokens.light)
           blurRadius: 4,
-          offset: Offset(0, 4),
+          offset: const Offset(0, 4),
         );
     final gradient =
         recommendationOverlayTokens?.gradient ??
@@ -60,7 +59,7 @@ class RecommendationCard extends StatelessWidget {
                   fontSize: 16,
                   height: 24 / 16,
                 ))
-            .copyWith(color: const Color(0xFFFFFFFF));
+            .copyWith(color: DsColors.white);
 
     return Container(
       decoration: BoxDecoration(
@@ -106,33 +105,33 @@ class RecommendationCard extends StatelessWidget {
                         style: titleStyle,
                       ),
                       if (subtitle != null) ...[
-                        const SizedBox(height: 4),
+                        const SizedBox(height: Spacing.xxs),
                         Text(
                           subtitle!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: FontFamilies.figtree,
                             fontSize: 12,
                             height: 24 / 12,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFFFFFFFF),
+                            color: DsColors.white,
                           ),
                         ),
                       ],
                       if (showTag) ...[
-                        const SizedBox(height: 4),
+                        const SizedBox(height: Spacing.xxs),
                         Text(
                           tag,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: FontFamilies.figtree,
                             fontSize: 12,
                             height: 18 / 12,
                             letterSpacing: 0.12,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF6d6d6d),
+                            color: DsColors.textSecondary,
                           ),
                         ),
                       ],

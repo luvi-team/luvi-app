@@ -4,6 +4,8 @@ import 'package:flutter/services.dart' show AssetBundle, rootBundle;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:luvi_app/core/analytics/telemetry.dart';
 import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 
@@ -231,16 +233,16 @@ class _LegalViewerState extends State<LegalViewer> {
               Semantics(
                 label: l10n.legalViewerFallbackBanner,
                 child: Container(
-                  margin: const EdgeInsets.only(top: 8, left: 16, right: 16),
-                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(top: Spacing.xs, left: Spacing.m, right: Spacing.m),
+                  padding: const EdgeInsets.all(Spacing.s),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(Sizes.radiusS),
                   ),
                   child: Row(
                     children: [
                       Icon(Icons.info_outline, color: theme.colorScheme.onTertiaryContainer),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: Spacing.xs),
                       Expanded(
                         child: Text(
                           l10n.legalViewerFallbackBanner,
@@ -256,7 +258,7 @@ class _LegalViewerState extends State<LegalViewer> {
             );
           }
           final content = Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.m),
             child: Markdown(
               data: doc.content,
               selectable: true,

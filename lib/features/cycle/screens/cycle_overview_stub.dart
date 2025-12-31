@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 
 /// Temporary placeholder for the cycle overview route.
@@ -20,10 +21,10 @@ class CycleOverviewStubScreen extends StatelessWidget {
           ),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF030401),
+        backgroundColor: DsColors.white,
+        foregroundColor: DsColors.textPrimary,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: DsColors.white,
       body: const Center(
         child: Text(
           'Cycle overview (Stub)',
@@ -31,7 +32,7 @@ class CycleOverviewStubScreen extends StatelessWidget {
             fontFamily: FontFamilies.figtree,
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: Color(0xFF6D6D6D),
+            color: DsColors.textSecondary,
           ),
           textAlign: TextAlign.center,
         ),

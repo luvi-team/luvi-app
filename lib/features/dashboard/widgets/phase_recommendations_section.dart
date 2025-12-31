@@ -29,7 +29,7 @@ class PhaseRecommendationsSection extends StatelessWidget {
     final dividerTokens = theme.extension<DividerTokens>();
     final waveColor = _phaseWaveBackgroundColor(context);
     final dividerColor =
-        dividerTokens?.sectionDividerColor ?? const Color(0xFFDCDCDC);
+        dividerTokens?.sectionDividerColor ?? DsColors.divider;
     final dividerThickness = dividerTokens?.sectionDividerThickness ?? 1.0;
     final sectionHeight = _calculatePhaseRecoSectionHeight(dividerThickness);
 
@@ -77,12 +77,12 @@ class PhaseRecommendationsSection extends StatelessWidget {
                         l10n.dashboardRecommendationsTitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: FontFamilies.figtree,
                           fontSize: 20,
                           fontWeight: FontWeight.w400,
                           height: 24 / 20,
-                          color: Color(0xFF030401),
+                          color: DsColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: Spacing.xs),

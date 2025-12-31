@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class LoginHeader extends StatelessWidget {
   const LoginHeader({super.key});
@@ -8,9 +9,10 @@ class LoginHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       header: true,
-      label: 'Willkommen zurück',
+      label: l10n.authLoginHeaderSemantic,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

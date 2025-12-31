@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 
@@ -100,7 +101,7 @@ class LocalizedBuilder extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.language, size: 18),
-            const SizedBox(width: 8),
+            const SizedBox(width: Spacing.xs),
             Text(
               message,
               textAlign: TextAlign.center,

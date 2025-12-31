@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -49,12 +51,10 @@ class WeeklyTrainingCard extends StatelessWidget {
   BoxShadow _resolveShadow(BuildContext context) {
     final shadowTokens = Theme.of(context).extension<ShadowTokens>();
     return shadowTokens?.tileDrop ??
-        const BoxShadow(
-          offset: Offset(0, 4),
+        BoxShadow(
+          offset: const Offset(0, 4),
           blurRadius: 4,
-          color: Color(
-            0x20000000,
-          ), // 12.5% alpha (consistent with ShadowTokens.light)
+          color: DsColors.borderSubtle,
         );
   }
 
@@ -66,7 +66,7 @@ class WeeklyTrainingCard extends StatelessWidget {
       fontSize: 24,
       height: 32 / 24,
     );
-    return (tokens?.titleStyle ?? fallback).copyWith(color: Colors.white);
+    return (tokens?.titleStyle ?? fallback).copyWith(color: DsColors.white);
   }
 
   TextStyle _subtitleStyle(BuildContext context) {
@@ -77,7 +77,7 @@ class WeeklyTrainingCard extends StatelessWidget {
       fontSize: 16,
       height: 24 / 16,
     );
-    return (tokens?.subtitleStyle ?? fallback).copyWith(color: Colors.white);
+    return (tokens?.subtitleStyle ?? fallback).copyWith(color: DsColors.white);
   }
 
   TextStyle _detailStyle(BuildContext context) {
@@ -89,7 +89,7 @@ class WeeklyTrainingCard extends StatelessWidget {
       height: 24 / 12,
     );
     return (tokens?.durationStyle ?? fallback).copyWith(
-      color: const Color(0xCCFFFFFF),
+      color: DsColors.white.withValues(alpha: 0.8),
     );
   }
 
@@ -102,7 +102,8 @@ class WeeklyTrainingCard extends StatelessWidget {
 
   Color _resolveCheckmarkColor(BuildContext context) {
     final dsTokens = Theme.of(context).extension<DsTokens>();
-    return dsTokens?.successColor ?? const Color(0xFF04B155);
+    // successColor is guaranteed by DsTokens theme extension
+    return dsTokens!.successColor;
   }
 
   String _buildSemanticsLabel(AppLocalizations l10n) {
@@ -145,7 +146,7 @@ class WeeklyTrainingCard extends StatelessWidget {
       button: onTap != null,
       label: _buildSemanticsLabel(l10n),
       child: Material(
-        color: Colors.transparent,
+        color: DsColors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: borderRadius,
@@ -178,7 +179,7 @@ class WeeklyTrainingCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(
-                            height: 64,
+                            height: Sizes.trainingCardTitleHeight,
                             child: Align(
                               alignment: Alignment.topCenter,
                               child: Text(
@@ -200,7 +201,7 @@ class WeeklyTrainingCard extends StatelessWidget {
                           ),
                           const SizedBox(height: Spacing.xs),
                           SizedBox(
-                            height: 24,
+                            height: Spacing.l,
                             child: dayLabel != null && dayLabel!.isNotEmpty
                                 ? Center(
                                     child: Text(
@@ -224,9 +225,9 @@ class WeeklyTrainingCard extends StatelessWidget {
                                       size: 14,
                                       color:
                                           detailStyle.color ??
-                                          const Color(0x99FFFFFF),
+                                          DsColors.white.withValues(alpha: 0.6),
                                     ),
-                                    const SizedBox(width: 4),
+                                    const SizedBox(width: Spacing.xxs),
                                     Text(duration!, style: detailStyle),
                                   ],
                                 ),
@@ -248,10 +249,10 @@ class WeeklyTrainingCard extends StatelessWidget {
                           color: checkmarkColor,
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(
+                        child: Icon(
                           Icons.check,
                           size: 16,
-                          color: Colors.white,
+                          color: DsColors.white,
                         ),
                       ),
                     ),

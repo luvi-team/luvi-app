@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -93,19 +94,19 @@ class WeeklyTrainingSection extends StatelessWidget {
                       width: Spacing.l + peekPadding,
                       child: ShaderMask(
                         shaderCallback: (bounds) {
-                          return const LinearGradient(
+                          return LinearGradient(
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
                             colors: [
-                              Colors.white,
-                              Colors.white,
-                              Colors.transparent
+                              DsColors.white,
+                              DsColors.white,
+                              DsColors.transparent
                             ],
-                            stops: [0.0, 0.85, 1.0],
+                            stops: const [0.0, 0.85, 1.0],
                           ).createShader(bounds);
                         },
                         blendMode: BlendMode.dstIn,
-                        child: const ColoredBox(color: Colors.white),
+                        child: ColoredBox(color: DsColors.white),
                       ),
                     ),
                   ),

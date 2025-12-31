@@ -508,7 +508,7 @@ class _DayCell extends StatelessWidget {
                 ),
               ),
               // Figma v3: Gap between day number and HEUTE label
-              const SizedBox(height: 4),
+              const SizedBox(height: Spacing.xxs),
               // Always reserve space for HEUTE label to maintain consistent height
               if (_isToday)
                 Text(

@@ -1,4 +1,5 @@
 class Sizes {
+  static const double radiusXS = 6.0; // extra small radius (edge case elements)
   static const double radiusS = 8.0; // small radius (inner elements)
   static const double radiusM = 12.0; // default medium radius
   static const double radiusL = 20.0; // cards / collage tiles
@@ -37,6 +38,15 @@ class Sizes {
 
   /// Icon size 24 px (Figma: Goal card icon)
   static const double iconM = 24.0;
+
+  /// Icon size 32 px (Figma: Category chip icon fallback, dashboard icons)
+  static const double iconL = 32.0;
+
+  /// Fixed height for training card title container (Figma: 64px)
+  static const double trainingCardTitleHeight = 64.0;
+
+  /// Recommendation list/empty container height (Figma: 180px)
+  static const double recommendationListHeight = 180.0;
 
   /// Figma: 40 px Kreisradius (z. B. Social-Button)
   static const double radiusXL = 40.0;

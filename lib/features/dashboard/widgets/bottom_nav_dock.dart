@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/dashboard/widgets/painters/bottom_wave_border_painter.dart';
 import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
@@ -52,7 +54,7 @@ class BottomNavDock extends StatelessWidget {
         ),
       );
     }
-    // Kodex: Use colorScheme.surface (not Colors.white) for dark-mode compatibility
+    // Kodex: Use colorScheme.surface (not hardcoded white) for dark-mode compatibility
     final effectiveBackgroundColor = backgroundColor ?? colorScheme.surface;
     // Safe fallback if theme extension is not registered (visible in release builds)
     assert(
@@ -65,15 +67,15 @@ class BottomNavDock extends StatelessWidget {
 
     return Container(
       height: height,
-      decoration: const BoxDecoration(
-        color: Colors
+      decoration: BoxDecoration(
+        color: DsColors
             .transparent, // Outer: transparent, inner carries surface color
         // Remove outer box shadow to avoid any top-edge halo/line
-        boxShadow: [],
+        boxShadow: const [],
       ),
       // Important: No ClipPath punch-out → avoids transparent hole (grey disc from content behind)
       child: Container(
-        color: Colors
+        color: DsColors
             .transparent, // Painter handles fill; keep mulde transparent for underlay
         child: CustomPaint(
           painter: BottomWaveBorderPainter(
@@ -171,8 +173,8 @@ class BottomNavDock extends StatelessWidget {
               minTapArea, // Figma spec: min 44×44 for accessibility (from tokens)
           height: minTapArea,
           decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(8.0),
+            color: DsColors.transparent,
+            borderRadius: BorderRadius.circular(Sizes.radiusS),
           ),
           child: Center(
             child: SvgPicture.asset(

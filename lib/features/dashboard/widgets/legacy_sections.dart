@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -203,7 +204,7 @@ class _LegacySectionsState extends State<LegacySections> {
       final emptyTextColor =
           textTokens?.secondary ?? ColorTokens.recommendationTag;
       return SizedBox(
-        height: 180,
+        height: Sizes.recommendationListHeight,
         child: Center(
           child: Text(
             l10n.dashboardRecommendationsEmpty,
@@ -219,7 +220,7 @@ class _LegacySectionsState extends State<LegacySections> {
 
     return SizedBox(
       key: const Key('dashboard_recommendations_list'),
-      height: 180,
+      height: Sizes.recommendationListHeight,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: widget.recommendations.length,

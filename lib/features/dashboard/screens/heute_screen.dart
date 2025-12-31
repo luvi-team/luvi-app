@@ -350,7 +350,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
         surfaceTokens?.waveOverlayBeige ??
         dsTokens?.cardSurface ??
         SurfaceColorTokens.light.waveOverlayBeige;
-    final Color waveSurface = Color.alphaBlend(waveTint, Colors.white);
+    final Color waveSurface = Color.alphaBlend(waveTint, DsColors.white);
     final Widget calendar = Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: _buildCalendar(weekView),
@@ -364,7 +364,7 @@ class _HeuteScreenState extends State<HeuteScreen> {
 
     return Scaffold(
       extendBody: true,
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: DsColors.white,
       bottomNavigationBar: _HeuteBottomDock(
         l10n: l10n,
         activeTabIndex: _activeTabIndex,

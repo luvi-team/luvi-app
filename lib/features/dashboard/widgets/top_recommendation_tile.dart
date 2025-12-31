@@ -5,7 +5,9 @@ import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../../core/design_tokens/assets.dart';
+import '../../../core/design_tokens/colors.dart';
 import '../../../core/design_tokens/sizes.dart';
+import '../../../core/design_tokens/spacing.dart';
 import '../../../core/design_tokens/typography.dart';
 import '../../../core/navigation/route_paths.dart';
 import '../../../core/theme/app_theme.dart';
@@ -16,9 +18,6 @@ const double _badgeOffsetTop = 7.0;
 const double _badgeOffsetRight = 12.0;
 const double _durationIconSize = 14.0; // Figma: 14×14
 const double _durationIconTextGap = 4.0; // Figma: 4px gap
-const Color _duration60White = Color(
-  0x99FFFFFF,
-); // 60% white (0x99 = 153 / 255 ≈ 60%)
 
 /// Prominent recommendation tile that surfaces one featured workout.
 ///
@@ -57,7 +56,7 @@ class TopRecommendationTile extends StatelessWidget {
             fit: BoxFit.cover,
             excludeFromSemantics: true,
             errorBuilder: (context, error, stackTrace) =>
-                const ColoredBox(color: Colors.transparent),
+                ColoredBox(color: DsColors.transparent),
           ),
         ),
       ),
@@ -86,16 +85,16 @@ class TopRecommendationTile extends StatelessWidget {
           title,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: FontFamilies.figtree,
             fontSize: 20,
             height: TypographyTokens.lineHeightRatio24on20,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: DsColors.white,
           ),
         ),
         if (duration != null) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: Spacing.xxs),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -103,20 +102,20 @@ class TopRecommendationTile extends StatelessWidget {
                 Assets.icons.dashboard.time,
                 width: _durationIconSize,
                 height: _durationIconSize,
-                colorFilter: const ColorFilter.mode(
-                  _duration60White,
+                colorFilter: ColorFilter.mode(
+                  DsColors.white.withValues(alpha: 0.6),
                   BlendMode.srcIn,
                 ),
               ),
               const SizedBox(width: _durationIconTextGap),
               Text(
                 duration,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: FontFamilies.figtree,
                   fontSize: 12,
                   height: 24 / 12,
                   fontWeight: FontWeight.w400,
-                  color: _duration60White,
+                  color: DsColors.white.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -169,8 +168,8 @@ class TopRecommendationTile extends StatelessWidget {
               if (fromLuviSync) _buildBadge(context),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 20,
+                  horizontal: Spacing.topRecommendationPadH,
+                  vertical: Spacing.goalCardVertical,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,10 +184,10 @@ class TopRecommendationTile extends StatelessWidget {
                           height: 18 / 12,
                           letterSpacing: 0.12,
                           fontWeight: FontWeight.w500,
-                          color: (textTokens?.muted ?? const Color(0xFFB9BAC1)),
+                          color: (textTokens?.muted ?? DsColors.textSecondary),
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: Spacing.xxxs),
                     ],
                     _buildTitleAndDuration(
                       context,
@@ -211,10 +210,10 @@ class TopRecommendationTile extends StatelessWidget {
     final textTokens = Theme.of(context).extension<TextColorTokens>();
     final tileShadow =
         shadowTokens?.tileDrop ??
-        const BoxShadow(
-          color: Color(0x33000000),
+        BoxShadow(
+          color: DsColors.shadowMedium,
           blurRadius: 4,
-          offset: Offset(0, 4),
+          offset: const Offset(0, 4),
         );
     final l10n = AppLocalizations.of(context)!;
 
@@ -225,7 +224,7 @@ class TopRecommendationTile extends StatelessWidget {
       hint: l10n.tapToOpenWorkout,
       child: ExcludeSemantics(
         child: Material(
-          color: Colors.transparent,
+          color: DsColors.transparent,
           child: _buildInkWell(context, tileShadow, textTokens),
         ),
       ),

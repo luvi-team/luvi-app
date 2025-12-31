@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -22,7 +23,7 @@ class WearableConnectCard extends StatelessWidget {
     final surfaceTokens = Theme.of(context).extension<SurfaceColorTokens>();
     final dsTokens = Theme.of(context).extension<DsTokens>();
 
-    final textColor = textTokens?.secondary ?? const Color(0xFF6D6D6D);
+    final textColor = textTokens?.secondary ?? DsColors.textSecondary;
     final Color cardSurface =
         surfaceTokens?.cardBackgroundNeutral ??
         dsTokens?.cardSurface ??
@@ -40,11 +41,11 @@ class WearableConnectCard extends StatelessWidget {
               color: cardSurface,
               borderRadius: BorderRadius.circular(kStatsCardRadius),
               border: Border.all(
-                color: const Color(0x1A000000), // Figma: 1dp @ 10% black
+                color: DsColors.borderSubtle,
                 width: 1,
               ),
             ),
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Spacing.m),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
