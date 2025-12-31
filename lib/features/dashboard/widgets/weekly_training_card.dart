@@ -102,8 +102,8 @@ class WeeklyTrainingCard extends StatelessWidget {
 
   Color _resolveCheckmarkColor(BuildContext context) {
     final dsTokens = Theme.of(context).extension<DsTokens>();
-    // successColor is guaranteed by DsTokens theme extension
-    return dsTokens!.successColor;
+    // successColor from DsTokens (fallback to light theme token)
+    return dsTokens?.successColor ?? DsTokens.light.successColor;
   }
 
   String _buildSemanticsLabel(AppLocalizations l10n) {
