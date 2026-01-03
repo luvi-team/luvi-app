@@ -61,7 +61,7 @@ DateTime todayDateOnly([DateTime? reference]) {
 /// Uses _daysInMonth + clamp pattern to prevent DateTime constructor overflow
 /// when today is Feb 29 but target year is not a leap year.
 DateTime onboardingBirthdateMaxDate([DateTime? reference]) {
-  final today = reference ?? todayDateOnly();
+  final today = todayDateOnly(reference);
   final targetYear = today.year - kMinAge;
   // Clamp day to valid range for target month (handles Feb 29 → Feb 28)
   final maxDay = _daysInMonth(targetYear, today.month);
@@ -75,7 +75,7 @@ DateTime onboardingBirthdateMaxDate([DateTime? reference]) {
 /// Uses _daysInMonth + clamp pattern to prevent DateTime constructor overflow
 /// when today is Feb 29 but target year is not a leap year.
 DateTime onboardingBirthdateMinDate([DateTime? reference]) {
-  final today = reference ?? todayDateOnly();
+  final today = todayDateOnly(reference);
   final targetYear = today.year - kMaxAge - 1;
   // Clamp day to valid range for target month (handles Feb 29 -> Feb 28)
   final maxDay = _daysInMonth(targetYear, today.month);
@@ -91,7 +91,7 @@ int _daysInMonth(int year, int month) => DateTime(year, month + 1, 0).day;
 
 /// Computes the earliest selectable period start date relative to [reference].
 DateTime onboardingPeriodStartMinDate([DateTime? reference]) {
-  final now = reference ?? DateTime.now();
+  final now = todayDateOnly(reference);
   final targetYear = now.year - kOnboardingPeriodStartMaxYearsBack;
   final dim = _daysInMonth(targetYear, now.month);
   final safeDay = now.day.clamp(1, dim);
@@ -100,7 +100,7 @@ DateTime onboardingPeriodStartMinDate([DateTime? reference]) {
 
 /// Computes the latest selectable period start date relative to [reference].
 DateTime onboardingPeriodStartMaxDate([DateTime? reference]) {
-  return reference ?? DateTime.now();
+  return todayDateOnly(reference);
 }
 
 // ─── Fallback Period Start ───
