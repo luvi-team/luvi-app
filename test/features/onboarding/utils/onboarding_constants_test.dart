@@ -47,7 +47,7 @@ void main() {
 
   group('todayDateOnly', () {
     test('returns date without time component', () {
-      final result = todayDateOnly;
+      final result = todayDateOnly();
       expect(result.hour, 0);
       expect(result.minute, 0);
       expect(result.second, 0);
