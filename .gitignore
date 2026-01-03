@@ -178,3 +178,4 @@ google_oauth_*
 
 .gemini/
 gha-creds-*.json
+.claude/settings.local.json.backup

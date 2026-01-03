@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:luvi_app/core/time/clock.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
@@ -16,7 +17,9 @@ final _baseDate = DateTime(2025, 12, 15);
 
 /// Creates a test router for Onboarding07DurationScreen tests.
 /// Extracted to reduce duplication across test cases.
-GoRouter _createTestRouter(DateTime startDate) {
+///
+/// [clock] allows injecting a FixedClock for deterministic time-based tests.
+GoRouter _createTestRouter(DateTime startDate, {Clock? clock}) {
   return GoRouter(
     routes: [
       GoRoute(
@@ -28,6 +31,7 @@ GoRouter _createTestRouter(DateTime startDate) {
         path: Onboarding07DurationScreen.routeName,
         builder: (context, state) => Onboarding07DurationScreen(
           periodStartDate: startDate,
+          clock: clock,
         ),
       ),
       GoRoute(
@@ -86,10 +90,12 @@ void main() {
 
     testWidgets('tapping earlier day shortens period range (state change)',
         (tester) async {
+      // Use FixedClock to ensure calendar shows December 2025
+      final testClock = FixedClock.at(2025, 12, 15);
       // Deterministic date (10 days before _baseDate) to ensure calendar shows correct month
       // This test requires period days to be visible and tappable
       final startDate = _baseDate.subtract(const Duration(days: 10));
-      final router = _createTestRouter(startDate);
+      final router = _createTestRouter(startDate, clock: testClock);
       addTearDown(router.dispose);
 
       await tester.pumpWidget(buildTestApp(router: router));

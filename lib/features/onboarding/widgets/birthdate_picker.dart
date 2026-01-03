@@ -18,6 +18,7 @@ class BirthdatePicker extends StatefulWidget {
     super.key,
     required this.initialDate,
     required this.onDateChanged,
+    this.referenceDate,
   });
 
   /// Initial date to display
@@ -25,6 +26,9 @@ class BirthdatePicker extends StatefulWidget {
 
   /// Callback when date changes
   final ValueChanged<DateTime> onDateChanged;
+
+  /// Reference date for calculating age bounds (defaults to now)
+  final DateTime? referenceDate;
 
   @override
   State<BirthdatePicker> createState() => _BirthdatePickerState();
@@ -74,7 +78,7 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
     super.initState();
 
     // Cache year bounds once to ensure consistent values during widget lifecycle
-    final now = DateTime.now();
+    final now = widget.referenceDate ?? DateTime.now();
     _minimumYear = now.year - kMaxAge;
     _maximumYear = now.year - kMinAge;
 

@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/time/clock.dart';
 import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
 /// Configuration record for _DayCell to reduce parameter bloat.
@@ -39,6 +40,7 @@ class PeriodCalendar extends StatefulWidget {
     this.periodEndDate,
     this.allowPeriodEndAdjustment = false,
     this.onPeriodEndChanged,
+    this.clock,
   });
 
   /// The currently selected date (period start)
@@ -59,6 +61,9 @@ class PeriodCalendar extends StatefulWidget {
   /// Callback when period end is adjusted
   final ValueChanged<DateTime>? onPeriodEndChanged;
 
+  /// Clock for testable time (defaults to SystemClock)
+  final Clock? clock;
+
   @override
   State<PeriodCalendar> createState() => _PeriodCalendarState();
 }
@@ -71,6 +76,9 @@ class _PeriodCalendarState extends State<PeriodCalendar>
 
   // O(1) lookup set for period days (Fix 1)
   late Set<DateTime> _periodDaysSet;
+
+  /// Clock for testable time (defaults to SystemClock)
+  Clock get _clock => widget.clock ?? const SystemClock();
 
   // B1: GlobalKey for scroll-to-current-month via ensureVisible
   final GlobalKey _currentMonthKey = GlobalKey();
@@ -87,7 +95,7 @@ class _PeriodCalendarState extends State<PeriodCalendar>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _scrollController = ScrollController();
-    _today = DateTime.now();
+    _today = _clock.now();
     _periodDaysSet = _normalizePeriodDays(widget.periodDays);
 
     // Generate months for the past 6 months and current month
@@ -121,7 +129,7 @@ class _PeriodCalendarState extends State<PeriodCalendar>
 
   /// Refreshes _today and regenerates months if date changed (Fix 3).
   void _refreshTodayIfNeeded() {
-    final now = DateTime.now();
+    final now = _clock.now();
     final newToday = DateTime(now.year, now.month, now.day);
     final oldToday = DateTime(_today.year, _today.month, _today.day);
     if (newToday != oldToday) {
@@ -134,7 +142,7 @@ class _PeriodCalendarState extends State<PeriodCalendar>
 
   List<DateTime> _generateMonths() {
     final months = <DateTime>[];
-    final now = DateTime.now();
+    final now = _clock.now();
 
     // Show 6 months back, current month, and next month (8 total)
     // O8 End-Adjust mode needs next month for period-end selection across month boundaries

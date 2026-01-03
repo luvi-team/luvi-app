@@ -8,6 +8,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/time/clock.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
@@ -26,10 +27,14 @@ class Onboarding07DurationScreen extends ConsumerStatefulWidget {
   const Onboarding07DurationScreen({
     super.key,
     this.periodStartDate,
+    this.clock,
   });
 
   /// Period start date from O6 (can be passed via extra)
   final DateTime? periodStartDate;
+
+  /// Clock for testable time (defaults to SystemClock)
+  final Clock? clock;
 
   static const routeName = '/onboarding/period-duration';
   static const navName = 'onboarding_07_duration';
@@ -101,7 +106,7 @@ class _Onboarding07DurationScreenState
         'Navigation flow issue suspected - using synthetic date.',
         tag: 'onboarding',
       );
-      final now = DateTime.now();
+      final now = (widget.clock ?? const SystemClock()).now();
       _periodStart = now.subtract(
         const Duration(days: kFallbackPeriodStartDaysBack),
       );
@@ -247,6 +252,7 @@ class _Onboarding07DurationScreenState
           periodEndDate: _periodEnd,
           allowPeriodEndAdjustment: true,
           onPeriodEndChanged: _handlePeriodEndChanged,
+          clock: widget.clock,
         ),
       ),
     );
