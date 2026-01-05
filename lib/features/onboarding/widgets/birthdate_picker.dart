@@ -104,8 +104,8 @@ class _BirthdatePickerState extends State<BirthdatePicker> {
   }
 
   DateTime _clampDate(DateTime date) {
-    final minDate = onboardingBirthdateMinDate();
-    final maxDate = onboardingBirthdateMaxDate();
+    final minDate = onboardingBirthdateMinDate(widget.referenceDate);
+    final maxDate = onboardingBirthdateMaxDate(widget.referenceDate);
 
     if (date.isBefore(minDate)) return minDate;
     if (date.isAfter(maxDate)) return maxDate;
