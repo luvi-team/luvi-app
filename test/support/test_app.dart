@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
+import 'package:luvi_app/core/time/clock.dart';
+import 'package:luvi_app/core/time/clock_provider.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
@@ -40,14 +42,21 @@ Widget buildLocalizedApp({
 
 /// Convenience helper to wrap a test app with a Provider override.
 /// Forces `InitMode.test` to disable network/timers in tests.
+///
+/// Optional [clock] parameter allows injecting a FixedClock for deterministic
+/// time-based tests.
 Widget buildTestApp({
   Widget? home,
   GoRouter? router,
   ThemeData? theme,
   Locale? locale,
+  Clock? clock,
 }) {
   return ProviderScope(
-    overrides: [initModeProvider.overrideWithValue(InitMode.test)],
+    overrides: [
+      initModeProvider.overrideWithValue(InitMode.test),
+      if (clock != null) clockProvider.overrideWithValue(clock),
+    ],
     child: buildLocalizedApp(
       home: home,
       router: router,
