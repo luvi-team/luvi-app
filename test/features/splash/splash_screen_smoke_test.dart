@@ -17,6 +17,32 @@ import 'package:luvi_services/init_mode.dart';
 import '../../support/test_config.dart';
 import '../../support/video_player_mock.dart';
 
+/// Builds a test harness with ProviderScope and MaterialApp.router.
+///
+/// Encapsulates common test setup:
+/// - InitMode.test provider override
+/// - AppTheme
+/// - Localization delegates (DE locale)
+Widget buildTestHarness(GoRouter router) {
+  return ProviderScope(
+    overrides: [
+      initModeProvider.overrideWithValue(InitMode.test),
+    ],
+    child: MaterialApp.router(
+      routerConfig: router,
+      theme: AppTheme.buildAppTheme(),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('de')],
+      locale: const Locale('de'),
+    ),
+  );
+}
+
 /// Smoke Widget-Tests for SplashScreen.
 ///
 /// These tests verify the critical UI flows:
@@ -55,25 +81,7 @@ void main() {
         );
         addTearDown(router.dispose);
 
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              initModeProvider.overrideWithValue(InitMode.test),
-            ],
-            child: MaterialApp.router(
-              routerConfig: router,
-              theme: AppTheme.buildAppTheme(),
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [Locale('de')],
-              locale: const Locale('de'),
-            ),
-          ),
-        );
+        await tester.pumpWidget(buildTestHarness(router));
 
         // Initial frame: Splash is shown (briefly)
         await tester.pump();
@@ -116,25 +124,7 @@ void main() {
         );
         addTearDown(router.dispose);
 
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              initModeProvider.overrideWithValue(InitMode.test),
-            ],
-            child: MaterialApp.router(
-              routerConfig: router,
-              theme: AppTheme.buildAppTheme(),
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [Locale('de')],
-              locale: const Locale('de'),
-            ),
-          ),
-        );
+        await tester.pumpWidget(buildTestHarness(router));
 
         // Initial pump to build the widget tree
         await tester.pump();
