@@ -22,8 +22,10 @@ import '../../support/video_player_mock.dart';
 /// Encapsulates common test setup:
 /// - InitMode.test provider override
 /// - AppTheme
-/// - Localization delegates (DE locale)
-Widget buildTestHarness(GoRouter router) {
+/// - Localization delegates
+///
+/// [locale] defaults to German ('de') but can be overridden for i18n tests.
+Widget buildTestHarness(GoRouter router, {Locale locale = const Locale('de')}) {
   return ProviderScope(
     overrides: [
       initModeProvider.overrideWithValue(InitMode.test),
@@ -37,8 +39,8 @@ Widget buildTestHarness(GoRouter router) {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('de')],
-      locale: const Locale('de'),
+      supportedLocales: [locale],
+      locale: locale,
     ),
   );
 }
