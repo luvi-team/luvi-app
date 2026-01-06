@@ -12,6 +12,8 @@ const String _kWelcomeVideo01 = 'assets/videos/welcome/welcome_01.mp4';
 const String _kWelcomeVideo05 = 'assets/videos/welcome/welcome_05.mp4';
 const String _kWelcomeFallback01 = 'assets/images/welcome/welcome_01_fallback.png';
 const String _kWelcomeFallback05 = 'assets/images/welcome/welcome_05_fallback.png';
+const String _kSplashVideo = 'assets/videos/splash/splash_screen.mp4';
+const String _kSplashFallback = 'assets/images/splash/splash_fallback.png';
 
 class Assets {
   static const icons = _Icons();
@@ -119,6 +121,9 @@ class _Images {
   // Consent Screen Assets
   final String consentIntroHero = 'assets/images/consent/consent_intro_hero.png';
   // Note: Use Assets.consentImages.shield2 for shield assets (canonical path)
+
+  /// Fallback poster for Splash Screen video (A11y + error state + reduce-motion)
+  final String splashFallback = _kSplashFallback;
 }
 
 class _Videos {
@@ -129,6 +134,9 @@ class _Videos {
 
   /// Welcome Screen 5 – autoplay loop video
   final String welcomeVideo05 = _kWelcomeVideo05;
+
+  /// Splash screen video – autoplay once, no loop
+  final String splashScreen = _kSplashVideo;
 }
 
 class _Animations {
@@ -139,6 +147,11 @@ class _Animations {
       'assets/animations/onboarding_success_celebration.json';
 
   /// Splash screen animation for app launch (Lottie JSON, 250f @100fps, 2.5s).
+  ///
+  /// @deprecated Use [Assets.videos.splashScreen] instead.
+  /// This Lottie animation is replaced by MP4 video for rebrand.
+  /// Will be removed in a future release.
+  @Deprecated('Use Assets.videos.splashScreen instead')
   final String splashScreen = 'assets/animations/splash_screen.json';
 }
 
