@@ -39,7 +39,7 @@ Widget buildTestHarness(GoRouter router, {Locale locale = const Locale('de')}) {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [locale],
+      supportedLocales: AppLocalizations.supportedLocales,
       locale: locale,
     ),
   );
