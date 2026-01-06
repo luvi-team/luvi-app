@@ -1,140 +1,118 @@
-# luvi_app
+# LUVI
 
-A new Flutter project.
+**Women-first Daily Health Companion**
 
-## App-Kontext (SSOT)
+Health · Lifestyle · Longevity — know what's good for you in 30 seconds, every day.
 
-Primäre Quelle im Repo:
-Hinweis: ":1" kennzeichnet die Startzeile (Zeile 1) des Dokuments.
-- docs/product/app-context.md:1
+Built with Flutter + Supabase · EU-hosted · GDPR-compliant
 
-Roadmap (SSOT):
-- docs/product/roadmap.md:1
+---
 
-Archiv (älter):
-- context/refs/app_context_v3.2.md:1
-- context/refs/archive/app_context_napkin_v3.1.txt:1
+## What is LUVI?
+
+LUVI helps women (primarily in their 20s–50s, open to all adults) better understand their body, hormones, and future self — with curated, evidence-based content and programs aligned to their cycle and daily life.
+
+**The problems we solve:**
+
+- Too much contradictory health content online
+- No training plans aligned with the menstrual cycle
+- No single place to both act AND understand
+
+**LUVI is:**
+
+- 🌙 **Lifestyle-first, cycle-aware** — Recommendations tailored to your phase, but not a medical product
+- 📚 **Curated & evidence-based** — Human + AI curation, no hype-hacks or crash diets
+- 🏋️ **Act + Understand** — Workouts, programs, and explanations in one place
+- 🇪🇺 **EU-hosted, Consent-first** — All infrastructure in EU, explicit consent for everything
+
+---
+
+## Content Pillars
+
+| Pillar | Focus |
+|--------|-------|
+| **Training & Movement** | Workouts (bodyweight, yoga, mobility, cardio) |
+| **Nutrition & Biohacking** | Everyday tips, evidence-based, no extreme diets |
+| **Sleep & Recovery + Mind** | Sleep hygiene, breathing exercises, stress coping |
+| **Beauty, Skin & Bodycare** | Skincare basics, realistic context |
+| **Longevity & Future Self** | Blood sugar, muscle mass, "What actually works?" |
+| **Cycle & Hormones** | Across all pillars — phase tags, no diagnoses |
+
+---
+
+## Free vs Premium
+
+**Free (Stream & Daily Companion):**
+
+- Daily feed with "Today with LUVI" suggestions
+- Endless stream with filters (pillar, duration, language)
+- Save, playlists, share
+
+**Premium (Coach & Deep Dives):** *(some features in development)*
+
+- Structured 4–8 week programs (e.g., "Cycle-Smart Strength")
+- AI search & AI playlists *(planned)*
+- Exclusive deep-dive series
+
+---
+
+## Status
+
+🚧 **In development** — iOS-first MVP in progress.
+
+See [Roadmap](docs/product/roadmap.md) for current status.
+
+---
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter 3.35+ (see `.flutter-version`)
+- Supabase account (EU region required)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Quick Start
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+    git clone https://github.com/luvi-team/luvi-app.git
+    cd luvi-app
+    flutter pub get
+    cp .env.example .env.development
+    # Add your Supabase URL and anon key to .env.development
+    ./scripts/run_dev.sh
 
-## Local Development (Supabase Credentials)
+See [docs/engineering/](docs/engineering/) for detailed setup and workflows.
 
-Supabase-Credentials werden via `--dart-define` übergeben (Security Best Practice - nicht im Asset-Bundle).
+---
 
-### Setup
+## Project Structure
 
-1. **Erstelle `.env.development`** (falls nicht vorhanden):
-   ```bash
-   cp .env.example .env.development
-   # Dann SUPABASE_URL und SUPABASE_ANON_KEY eintragen
-   ```
+    lib/
+    ├── core/          # Design tokens, theme, navigation, analytics
+    ├── features/      # Feature modules (auth, consent, cycle, dashboard)
+    └── l10n/          # Localization (DE/EN)
+    services/          # Shared Dart package
+    test/              # Mirrors lib/ structure
+    docs/              # Engineering, product, privacy docs
 
-2. **App starten** (wähle eine Option):
+---
 
-   **Option A: Helper-Script (empfohlen)**
-   ```bash
-   ./scripts/run_dev.sh -d "iPhone 16 Pro"   # iOS Simulator
-   ./scripts/run_dev.sh -d chrome            # Chrome
-   ./scripts/run_dev.sh                      # Default device
-   ```
+## Contributing
 
-   **Option B: VSCode**
-   - F5 drücken → "LUVI (Dev)" oder "LUVI (Dev) - iPhone Simulator" wählen
-   - Voraussetzung: VS Code muss Zugriff auf die Environment-Variablen haben:
-     - Entweder: VS Code aus Terminal starten nach `export $(cat .env.development | xargs)`
-     - Oder: Helper-Script (Option A) bevorzugen, das die Variablen automatisch lädt
+Before submitting a PR, please review:
 
-   **Option C: Manuell**
-   ```bash
-   export $(cat .env.development | xargs)
-   flutter run --dart-define=SUPABASE_URL=$SUPABASE_URL \
-               --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
-   ```
+- [Engineering Docs](docs/engineering/) — Setup, workflows, quality gates
+- [Product Context](docs/product/) — Roadmap and app context
 
-### Warum --dart-define statt Asset-Bundling?
+---
 
-- Credentials sind **nicht** im APK/IPA extrahierbar
-- Konsistent mit Production-Builds
-- Flutter Security Best Practice
+## Security
 
-### Fallback (Legacy)
+Report vulnerabilities via [GitHub Security Advisories](../../security/advisories/new).
 
-Falls `--dart-define` nicht gesetzt ist, versucht die App `.env.development` via `flutter_dotenv` zu laden (funktioniert nur auf Web/Desktop, nicht auf iOS/Android Simulatoren). Dieser Fallback existiert für Rückwärtskompatibilität und spezifische Web/Desktop-Testszenarien. Für reguläre Entwicklung nutze die --dart-define-Methode oben.
+**Hard rules:** No secrets in repo. No `service_role` in client code.
 
-## Flutter Tooling (Codex CLI)
+---
 
-- Standardisierte Aufrufe über Wrapper: `scripts/flutter_codex.sh`
-  - Analyze: `scripts/flutter_codex.sh analyze`
-  - Tests: `scripts/flutter_codex.sh test -j 1` (Loopback-Socket kann eine Sandbox-Genehmigung erfordern)
-  - Version: `scripts/flutter_codex.sh --version`
-- Optional für Builds/Signing/Performance:
-  - WARNUNG: `CODEX_USE_REAL_HOME=1` ist ausschließlich für lokale Entwicklung gedacht und darf NIEMALS in CI verwendet werden.
-    - Risiken: Sicherheitsprobleme (Zugriff/Leak auf echte Credentials & Schlüssel in `~/.gradle`, `~/.cocoapods`, `~/.pub-cache`) und fehlende Reproduzierbarkeit.
-    - Lokales Beispiel (sicherer): `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh build` nur auf deinem Dev‑Rechner; im Zweifel vorher temporäre Test-Accounts/Creds nutzen.
-    - Empfehlung (Guard): In `scripts/flutter_codex.sh` einen Runtime‑Check ergänzen, der bei gesetztem `CODEX_USE_REAL_HOME` in CI abbricht oder laut warnt (erkenne gängige CI‑Variablen wie `CI`, `GITHUB_ACTIONS`, `BUILD_NUMBER`, `VERCEL`, `CODESPACES`).
-  - `CODEX_USE_REAL_HOME=1 scripts/flutter_codex.sh <cmd>` nutzt das echte `$HOME`/Standard‑Caches (z. B. `~/.gradle`, `~/.cocoapods`).
-- Make‑Shortcuts:
-  - `make analyze`
-  - `make test`
-  - `make flutter-version`
-  - `make format` (Check only)
-  - `make format-apply`
-  - `make fix`
+## License
 
-## Vercel Backend (Hybrid)
-
-- App‑Kontext: `docs/product/app-context.md:1`
-- Tech‑Stack: `docs/engineering/tech-stack.md:1`
-- Roadmap: `docs/product/roadmap.md:1`
-- Gold‑Standard Workflow (inkl. „Praktische Anleitung · Ultra‑Slim"): `docs/engineering/gold-standard-workflow.md:62`
-
-## Database Security (RLS)
-
-### Row Level Security (RLS) Implementation
-
-All tables in this project use Supabase Row Level Security (RLS) with owner-based policies:
-
-#### daily_plan Table
-- **RLS Status**: ✅ Enabled
-- **Policies**: Owner-based (user_id = auth.uid())
-  - SELECT: Users can only view their own daily plans
-  - INSERT: Users can only create their own daily plans
-  - UPDATE: Users can only update their own daily plans
-  - DELETE: Users can only delete their own daily plans
-- **Auto-Population**: Trigger `set_user_id_from_auth()` automatically sets user_id from auth context
-- **Validation**: Ensures user_id always matches authenticated user
-
-#### Running Migrations
-```bash
-# Apply new migrations
-supabase migration up
-
-# Check migration status
-supabase migration list
-
-# Reset database (development only)
-supabase db reset
-```
-
-#### Testing RLS
-Widget tests verify RLS enforcement:
-```bash
-flutter test test/widgets/daily_plan_rls_test.dart
-```
-
-## Init Mode (Tests vs Prod)
-
-- The app uses an InitMode to control initialization behavior (prod/test). The default is `prod` via `initModeProvider`.
-- Services access the mode via a small bridge bound in `main.dart`. In widget tests, override with `ProviderScope(overrides: [initModeProvider.overrideWithValue(InitMode.test)])` to run offline without retries/overlays.
-- Tests that require a logically initialized client should inject fakes via Provider overrides instead of hitting real network.
+Proprietary — All rights reserved until further notice.
