@@ -1,5 +1,0 @@
-# Privacy & Compliance (LUVI)
-- RoPA (Record of Processing Activities)
-- Consent Map (Scopes: Base Data, AI-Optional, Newsletter)
-- DSFA Plan (Draft)
-- Terms & Privacy (Full texts)

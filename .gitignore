@@ -179,3 +179,46 @@ google_oauth_*
 .gemini/
 gha-creds-*.json
 .claude/settings.local.json.backup
+
+# ============================================
+# INTERNAL DOCS - Not for public GitHub
+# ============================================
+
+# Supabase/Infrastructure (sensitive files ignored, doc-guard files kept)
+docs/dev/*
+!docs/dev/supabase_auth_settings.md
+!docs/dev/supabase_email_templates_password_recovery.md
+
+# Security/Crypto details
+docs/security/
+
+# Business Strategy
+docs/product/
+docs/bmad/
+
+# Legal Drafts & Privacy (privacy.md + terms.md bleiben für CI)
+docs/privacy/*
+!docs/privacy/privacy.md
+!docs/privacy/terms.md
+
+# Operational Runbooks
+docs/runbooks/
+
+# API Contracts
+docs/contracts/
+
+# Audits (contains schema exports)
+docs/audits/
+
+# Algorithms
+docs/phase_definitions.md
+docs/ranking_heuristic.md
+docs/LUVI_Dossiers_v1.0.md
+
+# Agent Governance
+context/*
+!context/agents/
+context/agents/*
+!context/agents/_acceptance_v*.md
+# AGENTS.md bleibt im Repo (Agent Governance Index)
+# CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
