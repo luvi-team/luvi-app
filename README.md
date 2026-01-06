@@ -60,8 +60,6 @@ LUVI helps women (primarily in their 20s–50s, open to all adults) better under
 
 🚧 **In development** — iOS-first MVP in progress.
 
-See [Roadmap](docs/product/roadmap.md) for current status.
-
 ---
 
 ## Getting Started
