@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 
 /// A video player for the Splash screen with completion callback.
@@ -42,8 +41,8 @@ class SplashVideoPlayer extends StatefulWidget {
   /// Guaranteed to fire even if video never loads (fail-safe for navigation).
   final VoidCallback onComplete;
 
-  /// Optional fallback image shown on error or when reduce-motion is enabled.
-  /// If null, a neutral colored box is shown.
+  /// Optional fallback image shown during loading, on error, or when
+  /// reduce-motion is enabled. If null, a neutral colored box is shown.
   final String? fallbackAsset;
 
   /// When true, respects the system's reduce-motion accessibility setting
@@ -65,10 +64,6 @@ class SplashVideoPlayer extends StatefulWidget {
 
 class _SplashVideoPlayerState extends State<SplashVideoPlayer>
     with WidgetsBindingObserver {
-  /// Tolerance for video completion detection.
-  /// Video players may report position slightly before actual end.
-  static const _completionTolerance = Duration(milliseconds: 100);
-
   VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _hasError = false;
@@ -122,53 +117,55 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
   }
 
   Future<void> _initializeVideo() async {
-    _controller = VideoPlayerController.asset(widget.assetPath);
+    // Start initialization timeout timer
     _initTimeoutTimer = Timer(widget.initializationTimeout, _handleInitTimeout);
+
+    _controller = VideoPlayerController.asset(widget.assetPath);
 
     try {
       await _controller!.initialize();
-      _cancelInitTimeout();
+
+      // Cancel init timeout on success
+      _initTimeoutTimer?.cancel();
+      _initTimeoutTimer = null;
+
+      // Defensive: check mounted AND controller after async gap
       if (!mounted || _controller == null || _hasCompleted) return;
 
-      await _configureController();
-      if (!mounted || _hasCompleted) return;
+      // Configure: no loop, muted
+      await _controller!.setLooping(false);
+      if (!mounted || _controller == null || _hasCompleted) return;
 
-      _startPlaybackWithGuard();
+      await _controller!.setVolume(0);
+      if (!mounted || _controller == null || _hasCompleted) return;
+
+      setState(() {
+        _isInitialized = true;
+      });
+
+      // Setup completion listener
+      _controller!.addListener(_checkVideoCompletion);
+
+      // Start max duration timer (fail-safe)
+      _maxDurationTimer = Timer(widget.maxPlaybackDuration, _handleMaxDuration);
+
+      // Start playback
+      _controller!.play().catchError((Object e, StackTrace stack) {
+        log.w('video_play_failed', tag: 'splash_video', error: e, stack: stack);
+        _fireOnComplete();
+      });
     } catch (e, stack) {
-      _cancelInitTimeout();
+      _initTimeoutTimer?.cancel();
+      _initTimeoutTimer = null;
+
       log.w('video_init_failed', tag: 'splash_video', error: e, stack: stack);
       if (mounted) {
-        setState(() => _hasError = true);
+        setState(() {
+          _hasError = true;
+        });
         _fireOnComplete();
       }
     }
-  }
-
-  /// Cancels initialization timeout timer.
-  void _cancelInitTimeout() {
-    _initTimeoutTimer?.cancel();
-    _initTimeoutTimer = null;
-  }
-
-  /// Configures controller after successful initialization (no loop, muted).
-  Future<void> _configureController() async {
-    await _controller!.setLooping(false);
-    if (!mounted || _controller == null || _hasCompleted) return;
-
-    await _controller!.setVolume(0);
-    if (!mounted || _controller == null || _hasCompleted) return;
-
-    setState(() => _isInitialized = true);
-    _controller!.addListener(_checkVideoCompletion);
-  }
-
-  /// Starts playback with max-duration fail-safe timer.
-  void _startPlaybackWithGuard() {
-    _maxDurationTimer = Timer(widget.maxPlaybackDuration, _handleMaxDuration);
-    _controller!.play().catchError((Object e, StackTrace stack) {
-      log.w('video_play_failed', tag: 'splash_video', error: e, stack: stack);
-      _fireOnComplete();
-    });
   }
 
   void _handleInitTimeout() {
@@ -189,9 +186,9 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
     final position = _controller!.value.position;
     final duration = _controller!.value.duration;
 
-    // Video is complete when position >= duration (with tolerance)
+    // Video is complete when position >= duration (with 100ms tolerance)
     if (duration > Duration.zero &&
-        position >= duration - _completionTolerance) {
+        position >= duration - const Duration(milliseconds: 100)) {
       _controller!.removeListener(_checkVideoCompletion);
       _fireOnComplete();
     }
@@ -263,13 +260,12 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
       return _buildFallbackImage();
     }
 
-    // Loading state: show background color for seamless transition from launch screen.
-    // Fallback image is only shown on error or reduce-motion.
+    // Loading state: show fallback image if available
     if (!_isInitialized) {
-      return SizedBox.expand(
-        key: const Key('splash_video_loading'),
-        child: ColoredBox(color: DsColors.splashBg),
-      );
+      if (widget.fallbackAsset != null) {
+        return _buildFallbackImage();
+      }
+      return const SizedBox.expand(key: Key('splash_video_loading'));
     }
 
     // Video is ready – use FittedBox to fill the available space
