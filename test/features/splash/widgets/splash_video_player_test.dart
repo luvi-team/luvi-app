@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/features/splash/widgets/splash_video_player.dart';
 import '../../../support/test_config.dart';
 import '../../../support/video_player_mock.dart';
@@ -253,6 +254,13 @@ void main() {
         // Background color should be shown (not fallback image)
         final loadingFinder = find.byKey(const Key('splash_video_loading'));
         expect(loadingFinder, findsOneWidget);
+        final backgroundFinder = find.descendant(
+          of: loadingFinder,
+          matching: find.byType(ColoredBox),
+        );
+        expect(backgroundFinder, findsOneWidget);
+        final backgroundBox = tester.widget<ColoredBox>(backgroundFinder);
+        expect(backgroundBox.color, DsColors.splashBg);
         expect(
           find.descendant(
             of: find.byType(SplashVideoPlayer),

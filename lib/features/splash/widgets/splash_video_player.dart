@@ -42,8 +42,8 @@ class SplashVideoPlayer extends StatefulWidget {
   /// Guaranteed to fire even if video never loads (fail-safe for navigation).
   final VoidCallback onComplete;
 
-  /// Optional fallback image shown during loading, on error, or when
-  /// reduce-motion is enabled. If null, a neutral colored box is shown.
+  /// Optional fallback image shown on error or when reduce-motion is enabled.
+  /// If null, a neutral colored box is shown.
   final String? fallbackAsset;
 
   /// When true, respects the system's reduce-motion accessibility setting
