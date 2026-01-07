@@ -64,6 +64,10 @@ class SplashVideoPlayer extends StatefulWidget {
 
 class _SplashVideoPlayerState extends State<SplashVideoPlayer>
     with WidgetsBindingObserver {
+  /// Tolerance for video completion detection.
+  /// Video players may report position slightly before actual end.
+  static const _completionTolerance = Duration(milliseconds: 100);
+
   VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _hasError = false;
@@ -117,55 +121,53 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
   }
 
   Future<void> _initializeVideo() async {
-    // Start initialization timeout timer
     _initTimeoutTimer = Timer(widget.initializationTimeout, _handleInitTimeout);
-
     _controller = VideoPlayerController.asset(widget.assetPath);
 
     try {
       await _controller!.initialize();
-
-      // Cancel init timeout on success
-      _initTimeoutTimer?.cancel();
-      _initTimeoutTimer = null;
-
-      // Defensive: check mounted AND controller after async gap
+      _cancelInitTimeout();
       if (!mounted || _controller == null || _hasCompleted) return;
 
-      // Configure: no loop, muted
-      await _controller!.setLooping(false);
-      if (!mounted || _controller == null || _hasCompleted) return;
+      await _configureController();
+      if (!mounted || _hasCompleted) return;
 
-      await _controller!.setVolume(0);
-      if (!mounted || _controller == null || _hasCompleted) return;
-
-      setState(() {
-        _isInitialized = true;
-      });
-
-      // Setup completion listener
-      _controller!.addListener(_checkVideoCompletion);
-
-      // Start max duration timer (fail-safe)
-      _maxDurationTimer = Timer(widget.maxPlaybackDuration, _handleMaxDuration);
-
-      // Start playback
-      _controller!.play().catchError((Object e, StackTrace stack) {
-        log.w('video_play_failed', tag: 'splash_video', error: e, stack: stack);
-        _fireOnComplete();
-      });
+      _startPlaybackWithGuard();
     } catch (e, stack) {
-      _initTimeoutTimer?.cancel();
-      _initTimeoutTimer = null;
-
+      _cancelInitTimeout();
       log.w('video_init_failed', tag: 'splash_video', error: e, stack: stack);
       if (mounted) {
-        setState(() {
-          _hasError = true;
-        });
+        setState(() => _hasError = true);
         _fireOnComplete();
       }
     }
+  }
+
+  /// Cancels initialization timeout timer.
+  void _cancelInitTimeout() {
+    _initTimeoutTimer?.cancel();
+    _initTimeoutTimer = null;
+  }
+
+  /// Configures controller after successful initialization (no loop, muted).
+  Future<void> _configureController() async {
+    await _controller!.setLooping(false);
+    if (!mounted || _controller == null || _hasCompleted) return;
+
+    await _controller!.setVolume(0);
+    if (!mounted || _controller == null || _hasCompleted) return;
+
+    setState(() => _isInitialized = true);
+    _controller!.addListener(_checkVideoCompletion);
+  }
+
+  /// Starts playback with max-duration fail-safe timer.
+  void _startPlaybackWithGuard() {
+    _maxDurationTimer = Timer(widget.maxPlaybackDuration, _handleMaxDuration);
+    _controller!.play().catchError((Object e, StackTrace stack) {
+      log.w('video_play_failed', tag: 'splash_video', error: e, stack: stack);
+      _fireOnComplete();
+    });
   }
 
   void _handleInitTimeout() {
@@ -186,9 +188,9 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
     final position = _controller!.value.position;
     final duration = _controller!.value.duration;
 
-    // Video is complete when position >= duration (with 100ms tolerance)
+    // Video is complete when position >= duration (with tolerance)
     if (duration > Duration.zero &&
-        position >= duration - const Duration(milliseconds: 100)) {
+        position >= duration - _completionTolerance) {
       _controller!.removeListener(_checkVideoCompletion);
       _fireOnComplete();
     }
