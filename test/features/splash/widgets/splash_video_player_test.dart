@@ -237,8 +237,8 @@ void main() {
       });
     });
 
-    group('fallback rendering', () {
-      testWidgets('shows fallback during loading', (tester) async {
+    group('loading state', () {
+      testWidgets('shows background color during loading', (tester) async {
         await tester.pumpWidget(
           MaterialApp(
             home: SplashVideoPlayer(
@@ -250,8 +250,16 @@ void main() {
         );
 
         // During first pump, video is still initializing
-        // Fallback should be shown
-        expect(find.byType(Image), findsOneWidget);
+        // Background color should be shown (not fallback image)
+        final loadingFinder = find.byKey(const Key('splash_video_loading'));
+        expect(loadingFinder, findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(SplashVideoPlayer),
+            matching: find.byType(Image),
+          ),
+          findsNothing,
+        );
       });
     });
   });
