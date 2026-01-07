@@ -146,16 +146,59 @@ class Sizes {
   /// Fits day circle (32px) + HEUTE label (10px) + gap (4px) + padding.
   static const double calendarDayCellHeight = 48.0;
 
-  // ─── Page Indicator Sizes (Welcome Flow) ───
+  // ─── Page Indicator Sizes (Welcome Flow - Figma Rebrand) ───
 
-  /// Page indicator inactive width/height (Figma: 8px dot)
-  static const double pageIndicatorDot = 8.0;
+  /// Page indicator height (Figma Rebrand: 4px)
+  static const double pageIndicatorHeight = 4.0;
 
-  /// Page indicator active width (Figma: 24px pill)
-  static const double pageIndicatorActive = 24.0;
+  /// Page indicator inactive width (Figma Rebrand: 24px)
+  static const double pageIndicatorInactiveWidth = 24.0;
 
-  /// Page indicator border radius (Figma: 4px)
-  static const double pageIndicatorRadius = 4.0;
+  /// Page indicator active width (Figma Rebrand: 32px)
+  static const double pageIndicatorActiveWidth = 32.0;
+
+  /// Page indicator gap (Figma Rebrand: 8px)
+  static const double pageIndicatorGap = 8.0;
+
+  /// Page indicator border radius (Figma: pill shape)
+  static const double pageIndicatorRadius = 999.0;
+
+  // ─── Legacy aliases (deprecated, will be removed) ───
+  @Deprecated('Use pageIndicatorHeight instead')
+  static const double pageIndicatorDot = pageIndicatorHeight;
+  @Deprecated('Use pageIndicatorActiveWidth instead')
+  static const double pageIndicatorActive = pageIndicatorActiveWidth;
+
+  // ─── Welcome Hero Frame (Figma Rebrand) ───
+
+  /// Welcome Hero frame width (Figma: 354px)
+  static const double welcomeHeroWidth = 354.0;
+
+  /// Welcome Hero frame height (Figma: 475px)
+  static const double welcomeHeroHeight = 475.0;
+
+  /// Welcome Hero aspect ratio (354/475 ≈ 0.745)
+  static const double welcomeHeroAspect = welcomeHeroWidth / welcomeHeroHeight;
+
+  /// Welcome Hero border radius (Figma: 24px)
+  static const double welcomeHeroRadius = 24.0;
+
+  /// Welcome Hero border width (Figma: 1px solid black)
+  static const double welcomeHeroBorderWidth = 1.0;
+
+  // ─── Welcome CTA Button (Figma Rebrand) ───
+
+  /// Welcome CTA button width (Figma: 300px)
+  static const double welcomeCtaWidth = 300.0;
+
+  /// Welcome CTA button height (Figma: 56px)
+  static const double welcomeCtaHeight = 56.0;
+
+  /// Welcome CTA button border radius (Figma: 12px)
+  static const double welcomeCtaRadius = 12.0;
+
+  /// Welcome Screen 3 subheader max width (Figma Rebrand: 308px)
+  static const double welcomeSubheaderWidth = 308.0;
 
   Sizes._();
 }

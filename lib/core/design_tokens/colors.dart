@@ -90,8 +90,8 @@ class DsColors {
 
   // ─── Welcome Screen Specific (Figma Polish v2) ───
 
-  /// Welcome CTA Button Background (Figma: #A8406F)
-  static const Color welcomeButtonBg = Color(0xFFA8406F);
+  /// Welcome CTA Button Background (Figma Rebrand: #E91E63)
+  static const Color welcomeButtonBg = Color(0xFFE91E63);
 
   /// Welcome Wave/Panel Background (Figma: #FAEEE0 warm cream)
   static const Color welcomeWaveBg = Color(0xFFFAEEE0);
