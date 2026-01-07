@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 
 /// A video player for the Splash screen with completion callback.
@@ -262,12 +263,13 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
       return _buildFallbackImage();
     }
 
-    // Loading state: show fallback image if available
+    // Loading state: show background color for seamless transition from launch screen.
+    // Fallback image is only shown on error or reduce-motion.
     if (!_isInitialized) {
-      if (widget.fallbackAsset != null) {
-        return _buildFallbackImage();
-      }
-      return const SizedBox.expand(key: Key('splash_video_loading'));
+      return SizedBox.expand(
+        key: const Key('splash_video_loading'),
+        child: ColoredBox(color: DsColors.splashBg),
+      );
     }
 
     // Video is ready – use FittedBox to fill the available space

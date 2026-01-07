@@ -96,6 +96,9 @@ class DsColors {
   /// Welcome Wave/Panel Background (Figma: #FAEEE0 warm cream)
   static const Color welcomeWaveBg = Color(0xFFFAEEE0);
 
+  /// Splash screen background color (matches native launch screen).
+  static const Color splashBg = Color(0xFFF9F1E6);
+
   /// Welcome Button Text (white)
   static const Color welcomeButtonText = Color(0xFFFFFFFF);
 
