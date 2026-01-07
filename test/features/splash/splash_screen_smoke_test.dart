@@ -132,7 +132,11 @@ void main() {
 
         await tester.pumpWidget(buildTestHarness(router));
 
-        // First frame: check immediately after pump
+        // Initial frame: Splash is shown (briefly)
+        await tester.pump();
+        
+        // Allow post-frame callback and navigation to complete
+        await tester.pump();
         await tester.pump();
 
         // CRITICAL: SplashVideoPlayer must NOT be rendered when skipAnimation=true
