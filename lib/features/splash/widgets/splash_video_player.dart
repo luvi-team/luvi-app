@@ -122,8 +122,8 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
   }
 
   Future<void> _initializeVideo() async {
-    _initTimeoutTimer = Timer(widget.initializationTimeout, _handleInitTimeout);
     _controller = VideoPlayerController.asset(widget.assetPath);
+    _initTimeoutTimer = Timer(widget.initializationTimeout, _handleInitTimeout);
 
     try {
       await _controller!.initialize();
