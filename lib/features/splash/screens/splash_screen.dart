@@ -194,7 +194,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: DsColors.welcomeWaveBg,
+      backgroundColor: DsColors.splashBg,
       body: _showUnknownUI
           ? _buildUnknownUI(context, l10n)
           : _skipAnimation
