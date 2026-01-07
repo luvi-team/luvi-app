@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
@@ -26,11 +28,26 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 /// });
 /// // No tearDown needed - each registerWith() creates fresh instance
 /// ```
+///
+/// For timeout tests where initialization should never complete:
+/// ```dart
+/// setUp(() {
+///   VideoPlayerMock.registerWith(neverEmits: true);
+/// });
+/// ```
 class VideoPlayerMock extends VideoPlayerPlatform {
   /// Creates a VideoPlayerMock with optional custom events.
   ///
-  /// If [events] is null, default initialized event is emitted.
-  VideoPlayerMock({List<VideoEvent>? events}) : _events = events;
+  /// If [events] is null and [neverEmits] is false, default initialized event
+  /// is emitted.
+  ///
+  /// If [neverEmits] is true, the event stream never emits any events and
+  /// never completes. This is useful for testing initialization timeouts.
+  VideoPlayerMock({
+    List<VideoEvent>? events,
+    bool neverEmits = false,
+  })  : _events = events,
+        _neverEmits = neverEmits;
 
   /// Register a new VideoPlayerMock instance.
   ///
@@ -48,13 +65,32 @@ class VideoPlayerMock extends VideoPlayerPlatform {
   ///     VideoEvent(eventType: VideoEventType.completed),
   ///   ]);
   /// });
+  ///
+  /// // Or for timeout tests (stream never emits):
+  /// setUp(() {
+  ///   VideoPlayerMock.registerWith(neverEmits: true);
+  /// });
   /// ```
-  static void registerWith({List<VideoEvent>? events}) {
-    VideoPlayerPlatform.instance = VideoPlayerMock(events: events);
+  static void registerWith({
+    List<VideoEvent>? events,
+    bool neverEmits = false,
+  }) {
+    VideoPlayerPlatform.instance = VideoPlayerMock(
+      events: events,
+      neverEmits: neverEmits,
+    );
   }
 
   /// Custom events for this mock instance (null = default initialized event).
   final List<VideoEvent>? _events;
+
+  /// When true, videoEventsFor() returns a stream that never emits and never
+  /// closes. Used for deterministic timeout testing.
+  final bool _neverEmits;
+
+  /// Controllers for neverEmits mode, keyed by textureId.
+  /// Cleaned up in dispose().
+  final Map<int, StreamController<VideoEvent>> _pendingControllers = {};
 
   int _nextTextureId = 0;
   final Map<int, String> _dataSources = {};
@@ -67,6 +103,9 @@ class VideoPlayerMock extends VideoPlayerPlatform {
   @override
   Future<void> dispose(int textureId) async {
     _dataSources.remove(textureId);
+    // Clean up neverEmits controller for this textureId
+    final controller = _pendingControllers.remove(textureId);
+    await controller?.close();
   }
 
   @override
@@ -122,11 +161,15 @@ class VideoPlayerMock extends VideoPlayerPlatform {
 
   /// Returns a stream of video events for the given texture ID.
   ///
-  /// **Important:** This mock uses `Stream.fromIterable()` which emits all
+  /// **Default behavior:** Uses `Stream.fromIterable()` which emits all
   /// events synchronously when subscribed and then completes immediately.
   /// This is suitable for testing initialization and simple lifecycle events.
   ///
-  /// **Limitations:**
+  /// **neverEmits mode:** When [neverEmits] is true, returns a stream that
+  /// never emits any events and never closes. This is deterministic and
+  /// suitable for testing initialization timeout behavior.
+  ///
+  /// **Limitations (default mode):**
   /// - Events emit synchronously, not over time
   /// - Stream completes after emitting all events
   /// - Not suitable for testing ongoing playback position updates
@@ -137,13 +180,27 @@ class VideoPlayerMock extends VideoPlayerPlatform {
   ///
   /// Example usage:
   /// ```dart
+  /// // Normal initialization
   /// VideoPlayerMock.registerWith(events: [
   ///   VideoEvent(eventType: VideoEventType.initialized, ...),
   ///   VideoEvent(eventType: VideoEventType.completed),
   /// ]);
+  ///
+  /// // Timeout testing (initialization never completes)
+  /// VideoPlayerMock.registerWith(neverEmits: true);
   /// ```
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
+    // neverEmits mode: Return stream that never emits and never closes
+    // Use putIfAbsent to reuse existing controller for same textureId
+    // (prevents orphaned controllers if called multiple times)
+    if (_neverEmits) {
+      return _pendingControllers
+          .putIfAbsent(textureId, () => StreamController<VideoEvent>.broadcast())
+          .stream;
+    }
+
+    // Default mode: Emit events synchronously
     final events = _events ??
         [
           VideoEvent(

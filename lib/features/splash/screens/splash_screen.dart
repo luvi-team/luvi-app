@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart' show kReleaseMode, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/features/splash/widgets/splash_video_player.dart';
 import 'package:luvi_app/features/splash/widgets/unknown_state_ui.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
@@ -152,8 +152,7 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen>
-    with SingleTickerProviderStateMixin {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   // Timeout constants for retry logic (Point 3: DRY extraction)
   static const _primaryTimeout = Duration(seconds: 3);
   static const _retryTimeout = Duration(seconds: 2);
@@ -161,22 +160,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   /// Maximum number of manual retries before disabling the button.
   static const int _maxManualRetries = 3;
 
-  late final AnimationController _controller;
   bool _hasNavigated = false;
   bool _skipAnimation = false;
   bool _showUnknownUI = false;
   int _manualRetryCount = 0;
   bool _isRetrying = false;
+  bool _skipAnimationHandled = false;
 
   /// Whether the user can retry (not exhausted attempts).
   bool get _canRetry => _manualRetryCount < _maxManualRetries;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this)
-      ..addStatusListener(_handleAnimationStatus);
-  }
 
   @override
   void didChangeDependencies() {
@@ -184,13 +176,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Read skipAnimation query param once (post-login redirect uses this)
     final routerState = GoRouterState.of(context);
     _skipAnimation = routerState.uri.queryParameters['skipAnimation'] == 'true';
-  }
 
-  @override
-  void dispose() {
-    _controller.removeStatusListener(_handleAnimationStatus);
-    _controller.dispose();
-    super.dispose();
+    // skipAnimation=true: Navigate immediately without waiting for video
+    // Must be handled independently of video loading (Plan Phase 3 fix)
+    if (_skipAnimation && !_hasNavigated && !_skipAnimationHandled) {
+      _skipAnimationHandled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_hasNavigated) {
+          _navigateAfterAnimation();
+        }
+      });
+    }
   }
 
   @override
@@ -198,28 +194,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: DsColors.welcomeWaveBg,
+      backgroundColor: DsColors.splashBg,
       body: _showUnknownUI
           ? _buildUnknownUI(context, l10n)
-          : Center(
-              child: Lottie.asset(
-                Assets.animations.splashScreen,
-                controller: _controller,
-                repeat: false,
-                frameRate: FrameRate.composition,
-                fit: BoxFit.contain,
-                onLoaded: (composition) {
-                  if (!mounted) return;
-                  // UX-Fix: Skip animation if coming from post-login redirect
-                  if (_skipAnimation) {
-                    _navigateAfterAnimation();
-                    return;
-                  }
-                  _controller.duration = composition.duration;
-                  _controller.forward(from: 0);
-                },
-              ),
-            ),
+          : _skipAnimation
+              // skipAnimation: Show solid background (no 1-frame flash)
+              ? Container(color: DsColors.welcomeWaveBg)
+              : SplashVideoPlayer(
+                  assetPath: Assets.videos.splashScreen,
+                  fallbackAsset: Assets.images.splashFallback,
+                  onComplete: _navigateAfterAnimation,
+                ),
     );
   }
 
@@ -265,11 +250,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         );
       }
     }
-  }
-
-  void _handleAnimationStatus(AnimationStatus status) {
-    if (status != AnimationStatus.completed || !mounted) return;
-    _navigateAfterAnimation();
   }
 
   Future<void> _navigateAfterAnimation() async {

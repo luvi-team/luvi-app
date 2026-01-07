@@ -276,7 +276,8 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
         final container = ProviderScope.containerOf(context, listen: false);
         final asyncValue = container.read(userStateServiceProvider);
         // While loading, redirect to splash to prevent flicker
-        if (asyncValue.isLoading) return RoutePaths.splash;
+        // skipAnimation=true prevents video replay on re-redirects
+        if (asyncValue.isLoading) return '${RoutePaths.splash}?skipAnimation=true';
         final service = asyncValue.whenOrNull(data: (s) => s);
         final hasCompletedOnboarding = service?.hasCompletedOnboardingOrNull;
         final acceptedConsentVersion = service?.acceptedConsentVersionOrNull;
