@@ -567,6 +567,34 @@
   "@welcome05PrimaryCta": {
     "description": "Primary CTA for Welcome Screen 5 (last screen)."
   },
+  "welcomeNewTitle1": "Your Cycle.\nYour Power.\nEvery Day.",
+  "@welcomeNewTitle1": {
+    "description": "Title for new Welcome Screen 1 (Video, Rebrand 2026)."
+  },
+  "welcomeNewCta1": "Let's go",
+  "@welcomeNewCta1": {
+    "description": "CTA Button for Welcome Screen 1."
+  },
+  "welcomeNewTitle2": "Your rhythm leads.\nLUVI follows.",
+  "@welcomeNewTitle2": {
+    "description": "Title for new Welcome Screen 2 (Image, Rebrand 2026)."
+  },
+  "welcomeNewCta2": "Next",
+  "@welcomeNewCta2": {
+    "description": "CTA Button for Welcome Screen 2."
+  },
+  "welcomeNewTitle3": "All set.",
+  "@welcomeNewTitle3": {
+    "description": "Title for new Welcome Screen 3 (Video, Rebrand 2026)."
+  },
+  "welcomeNewSubtitle3": "Training · Nutrition · Recovery",
+  "@welcomeNewSubtitle3": {
+    "description": "Subtitle for Welcome Screen 3."
+  },
+  "welcomeNewCta3": "Start",
+  "@welcomeNewCta3": {
+    "description": "CTA Button for Welcome Screen 3 (last screen)."
+  },
   "consent01IntroTitle": "Let's tailor LUVI\nto you",
   "@consent01IntroTitle": {
     "description": "Headline copy shown on the consent 01 screen intro hero. Preserve the explicit newline escape '\\n'."

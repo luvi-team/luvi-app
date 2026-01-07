@@ -22,9 +22,12 @@ import 'package:luvi_services/supabase_service.dart';
 /// Root onboarding path without trailing slash to allow exact match checks.
 const String _onboardingRootPath = '/onboarding';
 
-/// Short "/onboarding/w" prefix covers welcome screens (w1–w5) and keeps URLs
-/// aligned with existing deep links and analytics dashboards.
-const String _welcomeRootPath = '/onboarding/w';
+/// Short "/onboarding/w" prefix covers legacy welcome screens (w1–w5).
+/// New welcome flow uses /welcome (single route with PageView).
+const String _legacyWelcomeRootPath = '/onboarding/w';
+
+/// New welcome route path (single screen with PageView).
+const String _welcomePath = '/welcome';
 
 const String _consentRootPath = '/consent';
 const String _consentPathPrefix = '$_consentRootPath/';
@@ -35,18 +38,22 @@ const String _consentPathPrefix = '$_consentRootPath/';
 
 /// Returns true if [location] is an onboarding route (O1-O8, success, done).
 ///
-/// Excludes welcome screens (/onboarding/w*) to avoid overlap with [isWelcomeRoute].
+/// Excludes welcome screens (/onboarding/w* legacy and /welcome new).
 bool isOnboardingRoute(String location) {
   final isOnboardingRoot =
       location == _onboardingRootPath ||
       location.startsWith('$_onboardingRootPath/');
   if (!isOnboardingRoot) return false;
-  return !location.startsWith(_welcomeRootPath);
+  return !location.startsWith(_legacyWelcomeRootPath);
 }
 
-/// Returns true if [location] is a welcome screen route (/onboarding/w*).
+/// Returns true if [location] is a welcome screen route.
+///
+/// Matches both new /welcome route and legacy /onboarding/w* routes.
 bool isWelcomeRoute(String location) {
-  return location.startsWith(_welcomeRootPath);
+  return location == _welcomePath ||
+      location.startsWith('$_welcomePath/') ||
+      location.startsWith(_legacyWelcomeRootPath);
 }
 
 /// Returns true if [location] is a consent flow route (/consent/*).
@@ -110,7 +117,7 @@ String? homeGuardRedirectWithConsent({
   final needsConsent = acceptedConsentVersion == null ||
       acceptedConsentVersion < currentConsentVersion;
   if (needsConsent) {
-    return RoutePaths.consentWelcome01;
+    return RoutePaths.consentIntro;
   }
 
   // Then check onboarding
@@ -162,6 +169,7 @@ String? supabaseRedirectWithSession(
   final isOnboarding = isOnboardingRoute(location);
   final isDashboard = location.startsWith(RoutePaths.heute);
   final isSplash = location == RoutePaths.splash;
+  final isWelcome = isWelcomeRoute(location);
   final isPasswordRecoveryRoute = location.startsWith(RoutePaths.createNewPassword);
   final isPasswordSuccessRoute = location.startsWith(RoutePaths.passwordSaved);
 
@@ -200,6 +208,11 @@ String? supabaseRedirectWithSession(
 
   // Always allow splash
   if (isSplash) {
+    return null;
+  }
+
+  // Allow welcome without session (device-local gate, shown before auth)
+  if (isWelcome) {
     return null;
   }
 

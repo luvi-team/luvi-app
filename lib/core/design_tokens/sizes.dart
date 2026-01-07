@@ -146,5 +146,16 @@ class Sizes {
   /// Fits day circle (32px) + HEUTE label (10px) + gap (4px) + padding.
   static const double calendarDayCellHeight = 48.0;
 
+  // ─── Page Indicator Sizes (Welcome Flow) ───
+
+  /// Page indicator inactive width/height (Figma: 8px dot)
+  static const double pageIndicatorDot = 8.0;
+
+  /// Page indicator active width (Figma: 24px pill)
+  static const double pageIndicatorActive = 24.0;
+
+  /// Page indicator border radius (Figma: 4px)
+  static const double pageIndicatorRadius = 4.0;
+
   Sizes._();
 }

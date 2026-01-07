@@ -30,11 +30,6 @@ import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_02_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_03_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_04_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_05_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';
@@ -51,6 +46,7 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
 import 'package:luvi_app/features/profile/screens/profile_stub_screen.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
+import 'package:luvi_app/features/welcome/screens/welcome_screen.dart';
 
 /// Creates a GoRouter instance with all app routes.
 ///
@@ -76,6 +72,29 @@ GoRouter createRouter(
   );
 }
 
+/// Consent guard for onboarding routes - prevents deep-link bypass.
+///
+/// Returns:
+/// - `/consent/intro` if user needs consent (null or outdated version)
+/// - `/splash?skipAnimation=true` if state is loading/error (fail-safe)
+/// - `null` if consent is valid (allow access)
+String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
+  final container = ProviderScope.containerOf(context, listen: false);
+  final userStateAsync = container.read(userStateServiceProvider);
+
+  return userStateAsync.when(
+    data: (userState) {
+      final acceptedVersion = userState.acceptedConsentVersionOrNull;
+      final needsConsent = acceptedVersion == null ||
+          acceptedVersion < ConsentConfig.currentVersionInt;
+
+      return needsConsent ? RoutePaths.consentIntro : null;
+    },
+    loading: () => '${RoutePaths.splash}?skipAnimation=true',
+    error: (_, st) => '${RoutePaths.splash}?skipAnimation=true',
+  );
+}
+
 /// Builds all application routes.
 ///
 /// Kept as a separate function for testability and clarity.
@@ -93,32 +112,12 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
     ),
 
     // ─────────────────────────────────────────────────────────────────────
-    // Consent Welcome (W1-W5)
+    // Welcome (New: single route with PageView)
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
-      path: RoutePaths.consentWelcome01,
-      name: 'welcome1',
-      builder: (context, state) => const ConsentWelcome01Screen(),
-    ),
-    GoRoute(
-      path: RoutePaths.consentWelcome02,
-      name: 'welcome2',
-      builder: (context, state) => const ConsentWelcome02Screen(),
-    ),
-    GoRoute(
-      path: RoutePaths.consentWelcome03,
-      name: 'welcome3',
-      builder: (context, state) => const ConsentWelcome03Screen(),
-    ),
-    GoRoute(
-      path: RoutePaths.consentWelcome04,
-      name: 'welcome4',
-      builder: (context, state) => const ConsentWelcome04Screen(),
-    ),
-    GoRoute(
-      path: RoutePaths.consentWelcome05,
-      name: 'welcome5',
-      builder: (context, state) => const ConsentWelcome05Screen(),
+      path: RoutePaths.welcome,
+      name: RouteNames.welcome,
+      builder: (context, state) => const WelcomeScreen(),
     ),
 
     // ─────────────────────────────────────────────────────────────────────
@@ -126,8 +125,13 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
       path: RoutePaths.consentIntro,
-      name: 'consent_intro',
+      name: RouteNames.consentIntro,
       builder: (context, state) => const ConsentIntroScreen(),
+    ),
+    // Legacy redirect: /consent/02 → /consent/intro (backward compatibility)
+    GoRoute(
+      path: RoutePaths.consentIntroLegacy,
+      redirect: (context, state) => RoutePaths.consentIntro,
     ),
     GoRoute(
       path: RoutePaths.consentOptions,
@@ -141,46 +145,54 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
     ),
 
     // ─────────────────────────────────────────────────────────────────────
-    // Onboarding (O1-O8)
+    // Onboarding (O1-O8) - All routes guarded by consent check
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
       path: RoutePaths.onboarding01,
       name: 'onboarding_01',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) => const Onboarding01Screen(),
     ),
     GoRoute(
       path: RoutePaths.onboarding02,
       name: 'onboarding_02',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) => const Onboarding02Screen(),
     ),
     GoRoute(
       path: RoutePaths.onboarding03Fitness,
       name: 'onboarding_03_fitness',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) => const Onboarding03FitnessScreen(),
     ),
     GoRoute(
       path: RoutePaths.onboarding04Goals,
       name: 'onboarding_04_goals',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) => const Onboarding04GoalsScreen(),
     ),
     GoRoute(
       path: RoutePaths.onboarding05Interests,
       name: 'onboarding_05_interests',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) => const Onboarding05InterestsScreen(),
     ),
     GoRoute(
       path: RoutePaths.onboarding06CycleIntro,
       name: 'onboarding_06_cycle_intro',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) => const Onboarding06CycleIntroScreen(),
     ),
     GoRoute(
       path: RoutePaths.onboarding06Period,
       name: Onboarding06PeriodScreen.navName,
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) => const Onboarding06PeriodScreen(),
     ),
     GoRoute(
       path: RoutePaths.onboarding07Duration,
       name: 'onboarding_07_duration',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) {
         final periodStart = st.extra is DateTime ? st.extra as DateTime : null;
         return Onboarding07DurationScreen(periodStartDate: periodStart);
@@ -189,11 +201,13 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
     GoRoute(
       path: RoutePaths.onboardingSuccess,
       name: 'onboarding_success',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) => const OnboardingSuccessScreen(),
     ),
     GoRoute(
       path: RoutePaths.onboardingDone,
       name: 'onboarding_done',
+      redirect: _onboardingConsentGuard,
       builder: (ctx, st) =>
           Center(child: Text(AppLocalizations.of(ctx)!.onboardingComplete)),
     ),

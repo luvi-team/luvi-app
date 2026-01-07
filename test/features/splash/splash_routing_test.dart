@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 
 /// Unit tests for determineTargetRoute helper function.
@@ -62,7 +62,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'First-time users (null consent) should go to Consent flow',
         );
       });
@@ -77,7 +77,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'Outdated consent version should trigger Consent flow',
         );
       });
@@ -191,7 +191,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'Consent Gate should take priority over Onboarding completion status',
         );
       });
@@ -212,7 +212,7 @@ void main() {
       final result = determineFallbackRoute(isAuth: true);
       expect(
         result,
-        equals(ConsentWelcome01Screen.routeName),
+        equals(ConsentIntroScreen.routeName),
         reason:
             'Authenticated users should go to ConsentWelcome01 on error, never directly to Home',
       );

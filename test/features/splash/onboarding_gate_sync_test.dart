@@ -3,7 +3,7 @@ import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
 
 // Point 11: Module-level test constants for route assertions
 const _testHomeRoute = HeuteScreen.routeName;
@@ -230,7 +230,7 @@ void main() {
         hasCompletedOnboarding: true,
         defaultTarget: _testDefaultTarget,
       );
-      expect(result, equals(ConsentWelcome01Screen.routeName));
+      expect(result, equals(ConsentIntroScreen.routeName));
     });
 
     test('auth user with valid consent but no onboarding goes to Onboarding', () {
@@ -264,7 +264,7 @@ void main() {
 
     test('auth user goes to ConsentWelcome01 (safe fallback)', () {
       final result = determineFallbackRoute(isAuth: true);
-      expect(result, equals(ConsentWelcome01Screen.routeName));
+      expect(result, equals(ConsentIntroScreen.routeName));
     });
   });
 }

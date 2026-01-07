@@ -143,15 +143,30 @@ void main() {
         );
       });
 
-      test('redirects Welcome routes to AuthSignIn without session', () {
+      test('allows Welcome routes without session (device-local flow)', () {
+        // Per Welcome Rebrand Plan: Welcome is shown before auth,
+        // so it must be accessible without a session.
         when(() => mockState.matchedLocation).thenReturn('/onboarding/w1');
 
         final result = supabaseRedirectWithSession(mockContext, mockState);
 
         expect(
           result,
-          equals(AuthSignInScreen.routeName),
-          reason: 'Welcome routes without session should redirect to AuthSignIn',
+          isNull,
+          reason: 'Welcome routes should be allowed without session (shown before auth)',
+        );
+      });
+
+      test('allows new /welcome route without session', () {
+        // New canonical welcome route from Welcome Rebrand Plan
+        when(() => mockState.matchedLocation).thenReturn('/welcome');
+
+        final result = supabaseRedirectWithSession(mockContext, mockState);
+
+        expect(
+          result,
+          isNull,
+          reason: '/welcome route should be allowed without session',
         );
       });
 

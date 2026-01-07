@@ -333,6 +333,34 @@
   "@welcome05PrimaryCta": {
     "description": "Primärer CTA für Welcome Screen 5 (letzter Screen)."
   },
+  "welcomeNewTitle1": "Dein Zyklus.\nDeine Kraft.\nJeden Tag.",
+  "@welcomeNewTitle1": {
+    "description": "Titel für neuen Welcome Screen 1 (Video, Rebrand 2026)."
+  },
+  "welcomeNewCta1": "Los geht's",
+  "@welcomeNewCta1": {
+    "description": "CTA Button für Welcome Screen 1."
+  },
+  "welcomeNewTitle2": "Dein Rhythmus führt.\nLUVI folgt.",
+  "@welcomeNewTitle2": {
+    "description": "Titel für neuen Welcome Screen 2 (Image, Rebrand 2026)."
+  },
+  "welcomeNewCta2": "Weiter",
+  "@welcomeNewCta2": {
+    "description": "CTA Button für Welcome Screen 2."
+  },
+  "welcomeNewTitle3": "Alles bereit.",
+  "@welcomeNewTitle3": {
+    "description": "Titel für neuen Welcome Screen 3 (Video, Rebrand 2026)."
+  },
+  "welcomeNewSubtitle3": "Training · Ernährung · Recovery",
+  "@welcomeNewSubtitle3": {
+    "description": "Untertitel für Welcome Screen 3."
+  },
+  "welcomeNewCta3": "Starten",
+  "@welcomeNewCta3": {
+    "description": "CTA Button für Welcome Screen 3 (letzter Screen)."
+  },
   "trainingsOverviewStubPlaceholder": "Trainingsübersicht folgt bald",
   "@trainingsOverviewStubPlaceholder": {
     "description": "Platzhaltertext solange die Trainingsübersicht noch nicht umgesetzt ist."

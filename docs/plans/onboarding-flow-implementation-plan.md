@@ -23,14 +23,17 @@
 ## Navigation Flow
 
 ```
-First Time User:
-  Splash → Auth → Welcome (W1-W5) → Consent (C1-C3) → Onboarding (O1-O9) → Home
+First Time User (NEW - Welcome Rebrand):
+  Splash → Welcome (3 Pages) → Auth → Consent (C1-C3) → Onboarding (O1-O9) → Home
 
 Wiederkehrender User:
   Splash → Home
 
-Ausgeloggter User:
+Ausgeloggter User (welcome completed):
   Splash → Auth → Home
+
+Note: Welcome is device-local (DeviceStateService), shown BEFORE auth.
+      Consent and Onboarding are user-scoped, shown AFTER auth.
 ```
 
 **Back-Navigation im Onboarding:**

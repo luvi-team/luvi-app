@@ -61,8 +61,12 @@ void main() {
   TestConfig.ensureInitialized();
 
   setUp(() {
-    // Fresh SharedPreferences mock for each test (no persisted state)
-    SharedPreferences.setMockInitialValues({});
+    // Mock SharedPreferences with welcome completed flag (returning user scenario)
+    // Per Welcome Rebrand Plan: Splash checks welcome gate first, so for auth tests
+    // we need to simulate a user who has already seen welcome.
+    SharedPreferences.setMockInitialValues({
+      'device:welcome_completed_v1': true,
+    });
     // Fresh VideoPlayerMock for each test
     VideoPlayerMock.registerWith();
   });

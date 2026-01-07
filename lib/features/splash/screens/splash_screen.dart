@@ -5,16 +5,18 @@ import 'package:go_router/go_router.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/features/splash/widgets/splash_video_player.dart';
 import 'package:luvi_app/features/splash/widgets/unknown_state_ui.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/device_state_service.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_app/core/logging/logger.dart';
@@ -45,7 +47,7 @@ String determineTargetRoute({
   final needsConsent = acceptedConsentVersion == null ||
       acceptedConsentVersion < currentConsentVersion;
   if (needsConsent) {
-    return ConsentWelcome01Screen.routeName;
+    return ConsentIntroScreen.routeName;
   }
   // Onboarding Gate: User has completed consent but not onboarding
   if (!hasCompletedOnboarding) {
@@ -58,7 +60,7 @@ String determineTargetRoute({
 ///
 /// Fail-safe approach: Never route directly to Home when state is unknown.
 /// - Not authenticated → AuthSignInScreen (login required anyway)
-/// - Authenticated → ConsentWelcome01Screen (safe entry point for gate flow)
+/// - Authenticated → ConsentIntroScreen (safe entry point for gate flow)
 ///
 /// This ensures consent/onboarding gates are never bypassed due to errors.
 @visibleForTesting
@@ -68,7 +70,7 @@ String determineFallbackRoute({required bool isAuth}) {
   }
   // Safe fallback: Consent flow will re-check all gates properly.
   // Never go directly to Home when state is unknown.
-  return ConsentWelcome01Screen.routeName;
+  return ConsentIntroScreen.routeName;
 }
 
 /// Result type for [determineOnboardingGateRoute].
@@ -259,6 +261,33 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final isTestMode = ref.read(initModeProvider) == InitMode.test;
     final useTimeout = kReleaseMode && !isTestMode;
 
+    // ── Gate 1: Welcome (device-local, shown before auth) ──────────────────
+    // This flag is device-scoped and survives logout/account switch.
+    DeviceStateService? deviceState;
+    try {
+      deviceState = await ref.read(deviceStateServiceProvider.future);
+    } catch (e, st) {
+      log.w('device state load failed',
+          tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+    }
+
+    if (!mounted || _hasNavigated) return;
+
+    // If device-local welcome not completed, show welcome screens
+    if (deviceState != null && !deviceState.hasCompletedWelcome) {
+      _hasNavigated = true;
+      context.go(RoutePaths.welcome);
+      return;
+    }
+
+    // ── Gate 2: Auth ───────────────────────────────────────────────────────
+    if (!isAuth) {
+      _hasNavigated = true;
+      context.go(AuthSignInScreen.routeName);
+      return;
+    }
+
+    // ── Gate 3+: Consent, Onboarding (user-scoped) ─────────────────────────
     // Attempt to load user state with retry on failure
     UserStateService? service;
     try {
@@ -275,13 +304,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       _hasNavigated = true;
       final fallbackTarget = determineFallbackRoute(isAuth: isAuth);
       context.go(fallbackTarget);
-      return;
-    }
-
-    // Pre-onboarding gates: auth and consent
-    if (!isAuth) {
-      _hasNavigated = true;
-      context.go(AuthSignInScreen.routeName);
       return;
     }
 
@@ -351,7 +373,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (needsConsent) {
       if (!mounted || _hasNavigated) return;
       _hasNavigated = true;
-      context.go(ConsentWelcome01Screen.routeName);
+      context.go(ConsentIntroScreen.routeName);
       return;
     }
 

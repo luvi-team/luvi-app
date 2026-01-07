@@ -4,12 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
 import 'package:luvi_app/features/consent/widgets/welcome_shell.dart';
 import 'package:luvi_app/core/widgets/welcome_button.dart';
 
-import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
 import '../../../support/test_config.dart';
 
 void main() {
@@ -19,17 +17,23 @@ void main() {
     await tester.pumpWidget(
       buildLocalizedApp(
         theme: AppTheme.buildAppTheme(),
-        home: const ConsentWelcome01Screen(),
+        home: Scaffold(
+          body: WelcomeShell(
+            hero: const SizedBox(height: 200),
+            heroAspect: 1.0,
+            waveHeightPx: 300,
+            title: const Text('Test Title'),
+            subtitle: 'Test Subtitle',
+            onNext: () {},
+          ),
+        ),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    final shellContext = tester.element(find.byType(WelcomeShell));
-    final l10n = AppLocalizations.of(shellContext)!;
-
-    // Title is now a simple Text widget with simplified title
-    expect(find.text(l10n.welcome01Title), findsOneWidget);
+    // Title is now a simple Text widget
+    expect(find.text('Test Title'), findsOneWidget);
 
     // Wave SVG present and asset path verified
     final svgFinder = find.byType(SvgPicture);
