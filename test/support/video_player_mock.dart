@@ -192,10 +192,12 @@ class VideoPlayerMock extends VideoPlayerPlatform {
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     // neverEmits mode: Return stream that never emits and never closes
+    // Use putIfAbsent to reuse existing controller for same textureId
+    // (prevents orphaned controllers if called multiple times)
     if (_neverEmits) {
-      final controller = StreamController<VideoEvent>.broadcast();
-      _pendingControllers[textureId] = controller;
-      return controller.stream;
+      return _pendingControllers
+          .putIfAbsent(textureId, () => StreamController<VideoEvent>.broadcast())
+          .stream;
     }
 
     // Default mode: Emit events synchronously
