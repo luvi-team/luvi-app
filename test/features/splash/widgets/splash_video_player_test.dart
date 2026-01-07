@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/features/splash/widgets/splash_video_player.dart';
 import '../../../support/video_player_mock.dart';
 
@@ -15,15 +16,15 @@ void main() {
       testWidgets('fires onComplete when initialization times out', (
         tester,
       ) async {
-        // Mock that never emits initialization event
-        VideoPlayerMock.registerWith(events: []);
+        // Mock that never emits initialization event (stream stays open forever)
+        VideoPlayerMock.registerWith(neverEmits: true);
 
         bool completeCalled = false;
 
         await tester.pumpWidget(
           MaterialApp(
             home: SplashVideoPlayer(
-              assetPath: 'assets/videos/splash/splash_screen.mp4',
+              assetPath: Assets.videos.splashScreen,
               onComplete: () => completeCalled = true,
               // Short timeout for test (100ms instead of 3s)
               initializationTimeout: const Duration(milliseconds: 100),
@@ -42,15 +43,15 @@ void main() {
       });
 
       testWidgets('fires onComplete exactly once on timeout', (tester) async {
-        // Mock that never emits initialization event
-        VideoPlayerMock.registerWith(events: []);
+        // Mock that never emits initialization event (stream stays open forever)
+        VideoPlayerMock.registerWith(neverEmits: true);
 
         int callCount = 0;
 
         await tester.pumpWidget(
           MaterialApp(
             home: SplashVideoPlayer(
-              assetPath: 'assets/videos/splash/splash_screen.mp4',
+              assetPath: Assets.videos.splashScreen,
               onComplete: () => callCount++,
               initializationTimeout: const Duration(milliseconds: 50),
             ),
@@ -78,8 +79,8 @@ void main() {
             data: const MediaQueryData(disableAnimations: true),
             child: MaterialApp(
               home: SplashVideoPlayer(
-                assetPath: 'assets/videos/splash/splash_screen.mp4',
-                fallbackAsset: 'assets/images/splash/splash_fallback.png',
+                assetPath: Assets.videos.splashScreen,
+                fallbackAsset: Assets.images.splashFallback,
                 onComplete: () => completeCalled = true,
                 honorReduceMotion: true,
               ),
@@ -105,8 +106,8 @@ void main() {
             data: const MediaQueryData(disableAnimations: false),
             child: MaterialApp(
               home: SplashVideoPlayer(
-                assetPath: 'assets/videos/splash/splash_screen.mp4',
-                fallbackAsset: 'assets/images/splash/splash_fallback.png',
+                assetPath: Assets.videos.splashScreen,
+                fallbackAsset: Assets.images.splashFallback,
                 onComplete: () {},
                 honorReduceMotion: true,
                 // Long timeout so we can verify video initializes
@@ -134,8 +135,9 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: SplashVideoPlayer(
+              // Intentionally invalid path to trigger error handling
               assetPath: 'assets/videos/invalid_video.mp4',
-              fallbackAsset: 'assets/images/splash/splash_fallback.png',
+              fallbackAsset: Assets.images.splashFallback,
               onComplete: () => completeCalled = true,
             ),
           ),
@@ -161,7 +163,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: SplashVideoPlayer(
-              assetPath: 'assets/videos/splash/splash_screen.mp4',
+              assetPath: Assets.videos.splashScreen,
               onComplete: () => completeCalled = true,
               initializationTimeout: const Duration(seconds: 10),
               // Short max duration for test
@@ -187,7 +189,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: SplashVideoPlayer(
-              assetPath: 'assets/videos/splash/splash_screen.mp4',
+              assetPath: Assets.videos.splashScreen,
               onComplete: () {},
             ),
           ),
@@ -218,8 +220,8 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: SplashVideoPlayer(
-              assetPath: 'assets/videos/splash/splash_screen.mp4',
-              fallbackAsset: 'assets/images/splash/splash_fallback.png',
+              assetPath: Assets.videos.splashScreen,
+              fallbackAsset: Assets.images.splashFallback,
               onComplete: () {},
             ),
           ),
@@ -233,13 +235,13 @@ void main() {
       testWidgets('shows neutral colored box when no fallback provided', (
         tester,
       ) async {
-        // Mock that never initializes
-        VideoPlayerMock.registerWith(events: []);
+        // Mock that never initializes (stream stays open forever)
+        VideoPlayerMock.registerWith(neverEmits: true);
 
         await tester.pumpWidget(
           MaterialApp(
             home: SplashVideoPlayer(
-              assetPath: 'assets/videos/splash/splash_screen.mp4',
+              assetPath: Assets.videos.splashScreen,
               fallbackAsset: null,
               onComplete: () {},
               initializationTimeout: const Duration(seconds: 10),
