@@ -3,22 +3,24 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/features/splash/widgets/splash_video_player.dart';
+import '../../../support/test_config.dart';
 import '../../../support/video_player_mock.dart';
 
 void main() {
-  group('SplashVideoPlayer', () {
-    setUp(() {
-      // Register fresh mock for each test
-      VideoPlayerMock.registerWith();
-    });
+  TestConfig.ensureInitialized();
 
-    group('initialization timeout', () {
+  group('SplashVideoPlayer', () {
+    // Default: Register standard mock before each test
+    setUp(() => VideoPlayerMock.registerWith());
+
+    // Tests requiring neverEmits mock (initialization never completes)
+    group('with neverEmits mock', () {
+      // Override: neverEmits mock for this group (runs after outer setUp)
+      setUp(() => VideoPlayerMock.registerWith(neverEmits: true));
+
       testWidgets('fires onComplete when initialization times out', (
         tester,
       ) async {
-        // Mock that never emits initialization event (stream stays open forever)
-        VideoPlayerMock.registerWith(neverEmits: true);
-
         bool completeCalled = false;
 
         await tester.pumpWidget(
@@ -43,9 +45,6 @@ void main() {
       });
 
       testWidgets('fires onComplete exactly once on timeout', (tester) async {
-        // Mock that never emits initialization event (stream stays open forever)
-        VideoPlayerMock.registerWith(neverEmits: true);
-
         int callCount = 0;
 
         await tester.pumpWidget(
@@ -66,10 +65,33 @@ void main() {
         await tester.pump(const Duration(milliseconds: 100));
         expect(callCount, equals(1));
       });
+
+      testWidgets('shows neutral colored box when no fallback provided', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: SplashVideoPlayer(
+              assetPath: Assets.videos.splashScreen,
+              fallbackAsset: null,
+              onComplete: () {},
+              initializationTimeout: const Duration(seconds: 10),
+            ),
+          ),
+        );
+
+        await tester.pump();
+
+        // Should show SizedBox.expand with loading key (no fallback image)
+        expect(find.byKey(const Key('splash_video_loading')), findsOneWidget);
+      });
     });
 
+    // All following groups use standard mock from outer setUp()
+
     group('reduce motion', () {
-      testWidgets('shows fallback and fires onComplete when reduce motion enabled', (
+      testWidgets(
+          'shows fallback and fires onComplete when reduce motion enabled', (
         tester,
       ) async {
         bool completeCalled = false;
@@ -230,29 +252,6 @@ void main() {
         // During first pump, video is still initializing
         // Fallback should be shown
         expect(find.byType(Image), findsOneWidget);
-      });
-
-      testWidgets('shows neutral colored box when no fallback provided', (
-        tester,
-      ) async {
-        // Mock that never initializes (stream stays open forever)
-        VideoPlayerMock.registerWith(neverEmits: true);
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: SplashVideoPlayer(
-              assetPath: Assets.videos.splashScreen,
-              fallbackAsset: null,
-              onComplete: () {},
-              initializationTimeout: const Duration(seconds: 10),
-            ),
-          ),
-        );
-
-        await tester.pump();
-
-        // Should show SizedBox.expand with loading key (no fallback image)
-        expect(find.byKey(const Key('splash_video_loading')), findsOneWidget);
       });
     });
   });
