@@ -49,6 +49,10 @@ class Spacing {
   static const double welcomeTextBlockHeightW1W2 = 108.0;
   static const double welcomeTextBlockHeightW3 = 75.0;
 
+  /// Welcome constrained buffer for hero scaling on small viewports/high TextScale
+  /// Value: xl * 4 + 1.0 = 129.0 (generous buffer to prevent overflow)
+  static const double welcomeConstrainedBuffer = 129.0;
+
   /// Auth SignIn glass card vertical padding (Figma: 32px = l + xs)
   static const double authGlassCardVertical = l + xs;
 

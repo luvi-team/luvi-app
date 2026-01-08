@@ -147,7 +147,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 ///
 /// Figma reference device: iPhone 14 Pro (393×852)
 /// - AC-1: Dots→Hero = 24px (bottom-to-top)
-/// - AC-2: Hero = 354×475px, left offset 24px (scales proportionally)
+/// - AC-2: Hero = 354×475px, centered horizontally (scales proportionally)
 /// - AC-6: W3 Headline↔Subline = 8px
 class _WelcomePage extends StatelessWidget {
   const _WelcomePage({
@@ -192,10 +192,11 @@ class _WelcomePage extends StatelessWidget {
     // Buffer depends on viewport constraints:
     // - Reference device (≥393×800 @ TextScale 1.0): minimal buffer (32px)
     // - Constrained scenarios: generous buffer (129px) to prevent overflow
-    final isConstrained =
-        screenWidth < 393 || screenHeight < 800 || textScale > 1.0;
+    final isConstrained = screenWidth < Sizes.welcomeReferenceWidth ||
+        screenHeight < Sizes.welcomeReferenceHeight ||
+        textScale > 1.0;
     final textAreaBuffer =
-        isConstrained ? Spacing.xl * 4 + 1.0 : Spacing.xl;
+        isConstrained ? Spacing.welcomeConstrainedBuffer : Spacing.xl;
     final minContentSpace = scaledTextBlockHeight +
         textAreaBuffer +
         Sizes.welcomeCtaHeight +

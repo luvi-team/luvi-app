@@ -200,5 +200,15 @@ class Sizes {
   /// Welcome Screen 3 subheader max width (Figma Rebrand: 308px)
   static const double welcomeSubheaderWidth = 308.0;
 
+  // ─── Welcome Reference Device Thresholds (Figma: iPhone 14 Pro) ───
+
+  /// Welcome reference device minimum width (Figma: 393px)
+  /// Used to determine if hero needs scaling on constrained viewports.
+  static const double welcomeReferenceWidth = 393.0;
+
+  /// Welcome reference device minimum height (Figma: 800px)
+  /// Below this height, hero scales down to prevent overflow.
+  static const double welcomeReferenceHeight = 800.0;
+
   Sizes._();
 }
