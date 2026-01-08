@@ -38,6 +38,17 @@ class Spacing {
   /// Welcome CTA bottom spacing to home indicator (Figma Rebrand: 38px)
   static const double welcomeCtaBottomPadding = 38.0;
 
+  /// Welcome Hero top offset from safeTop (Figma: 44px for 24px gap after dots)
+  /// Calculation: dotsTop(16) + dotsHeight(4) + gap(24) = 44
+  static const double welcomeHeroTopOffset = 44.0;
+
+  /// Welcome Textblock heights per page (Figma SSOT)
+  /// W1: 3 lines × 36px line-height = 108px
+  /// W2: 2 lines × 38px + padding = 108px (same as W1 for consistency)
+  /// W3: Headline 41px + gap 8px + Subline 26px = 75px
+  static const double welcomeTextBlockHeightW1W2 = 108.0;
+  static const double welcomeTextBlockHeightW3 = 75.0;
+
   /// Auth SignIn glass card vertical padding (Figma: 32px = l + xs)
   static const double authGlassCardVertical = l + xs;
 

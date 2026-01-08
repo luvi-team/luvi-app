@@ -58,6 +58,11 @@ void main() {
         bottom: 34, // iPhone SafeBottom
       );
 
+      // Cleanup nach Test (wie in window_verify_test.dart)
+      addTearDown(() {
+        tester.binding.window.clearAllTestValues();
+      });
+
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 

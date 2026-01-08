@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -128,6 +126,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
               left: 0,
               right: 0,
               child: _PageIndicators(
+                key: const Key('welcome_page_indicators'),
                 currentPage: _currentPage,
                 totalPages: 3,
               ),
@@ -141,11 +140,12 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
 /// Individual welcome page within the PageView.
 ///
-/// Responsive layout strategy:
-/// - Hero scales based on screen width (max 354px, maintains 354:475 aspect)
-/// - Uses SafeArea for proper inset handling
-/// - Top section (Hero + Headline) is scrollable if needed
-/// - CTA is fixed at bottom with consistent 38px spacing to home indicator
+/// Responsive column layout with fixed hero and flexible content area:
+/// - Hero fixed at 354×475px on ≥393px viewport, scales down proportionally
+/// - AC-1: Dots→Hero = 24px (bottom-to-top)
+/// - Content area (text block) uses Expanded for responsive spacing
+/// - Text block has fixed height (108px W1/W2, 75px W3) for visual consistency
+/// - Flexible gaps between hero↔text and text↔CTA prevent overflow on all devices
 class _WelcomePage extends StatelessWidget {
   const _WelcomePage({
     required this.pageIndex,
@@ -167,67 +167,76 @@ class _WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final availableWidth = constraints.maxWidth;
+    final safeTop = MediaQuery.of(context).padding.top;
+    final safeBottom = MediaQuery.of(context).padding.bottom;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-          // Calculate responsive hero size
-          // Figma: 354×475 on 393px wide screen = ~90% width
-          // Max hero width is 354px, scales down on smaller screens
-          final heroWidth = math.min(
-            Sizes.welcomeHeroWidth,
-            availableWidth - (Spacing.screenPadding * 2),
-          );
-          final heroHeight = heroWidth / Sizes.welcomeHeroAspect;
+    // Hero top offset (AC-1: 24px gap from dots-bottom to hero-top)
+    // Dots at safeTop + 16, height 4px → bottom at safeTop + 20
+    // Hero at safeTop + 44 → gap = 44 - 20 = 24px ✓
+    final heroTopOffset = safeTop + Spacing.welcomeHeroTopOffset;
 
-          return Column(
+    // Hero dimensions (AC-2: 354×475 on ≥393px, scales down proportionally)
+    // Available width = screen - left padding (asymmetric layout)
+    final availableWidth = screenWidth - Spacing.screenPadding;
+    final heroWidth = availableWidth >= Sizes.welcomeHeroWidth
+        ? Sizes.welcomeHeroWidth
+        : availableWidth;
+    final heroHeight = heroWidth / Sizes.welcomeHeroAspect;
+
+    return Column(
+      children: [
+        // Spacer to position hero (accounts for safe area + offset)
+        SizedBox(height: heroTopOffset),
+
+        // Hero Frame (354×475 on ≥393px, scales down on smaller screens)
+        Padding(
+          padding: const EdgeInsets.only(left: Spacing.screenPadding),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: _HeroFrame(
+              key: const Key('welcome_hero_frame'),
+              hero: hero,
+              width: heroWidth,
+              height: heroHeight,
+            ),
+          ),
+        ),
+
+        // Flexible content area: distributes space between hero and CTA
+        // Uses Expanded to prevent overflow on smaller screens while
+        // maintaining visual consistency across all 3 welcome pages
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Scrollable top section (Hero + Headline)
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Top spacing (below page indicators)
-                      const SizedBox(height: Spacing.l),
-
-                      // Hero frame with border
-                      _HeroFrame(
-                        hero: hero,
-                        width: heroWidth,
-                        height: heroHeight,
-                      ),
-
-                      // Gap between hero and headline
-                      const SizedBox(height: Spacing.xl),
-
-                      // Headline block (typography varies by page)
-                      _HeadlineBlock(
-                        pageIndex: pageIndex,
-                        title: title,
-                        subtitle: subtitle,
-                      ),
-
-                      // Minimum gap before CTA (scrollable area ends here)
-                      const SizedBox(height: Spacing.xl),
-                    ],
-                  ),
+              // Headline Block grows naturally with content
+              // Expanded distributes remaining space evenly above/below
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: Spacing.screenPadding),
+                child: _HeadlineBlock(
+                  key: const Key('welcome_headline_block'),
+                  pageIndex: pageIndex,
+                  title: title,
+                  subtitle: subtitle,
                 ),
               ),
-
-              // Fixed bottom section (CTA always visible, consistent position)
-              WelcomeCtaButton(
-                label: ctaLabel,
-                onPressed: onCta,
-                isLoading: isLoading,
-              ),
-              const SizedBox(height: Spacing.welcomeCtaBottomPadding),
             ],
-          );
-        },
-      ),
+          ),
+        ),
+
+        // CTA Button (centered)
+        WelcomeCtaButton(
+          key: const Key('welcome_cta_button'),
+          label: ctaLabel,
+          onPressed: onCta,
+          isLoading: isLoading,
+        ),
+
+        // Bottom padding (38px + safe area)
+        SizedBox(height: Spacing.welcomeCtaBottomPadding + safeBottom),
+      ],
     );
   }
 }
@@ -235,11 +244,15 @@ class _WelcomePage extends StatelessWidget {
 /// Hero frame with border, radius, and clipped content.
 ///
 /// Figma specs:
-/// - Max Width: 354px, Height maintains 354:475 aspect ratio
-/// - Border radius: 24px (fixed, not scaled)
+/// - Width: 354px, Height: 475px (fixed on ≥393px viewport)
+/// - Border radius: 24px
 /// - Border: 1px solid #000000
+///
+/// Uses Single-Clip + Border Overlay pattern to avoid anti-aliasing
+/// artifacts ("thick spots") from double-clipping (AC-3).
 class _HeroFrame extends StatelessWidget {
   const _HeroFrame({
+    super.key,
     required this.hero,
     required this.width,
     required this.height,
@@ -251,37 +264,40 @@ class _HeroFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Fix radius at 24px, but cap at half the smaller dimension
-    // to prevent radius larger than frame on very small screens
-    final maxRadius = math.min(width, height) / 2;
-    final radius = math.min(Sizes.welcomeHeroRadius, maxRadius);
-
-    return Container(
+    return SizedBox(
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(
-          color: const Color(0xFF000000), // Figma: #000000 (pure black)
-          width: Sizes.welcomeHeroBorderWidth,
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          math.max(0, radius - Sizes.welcomeHeroBorderWidth),
-        ),
-        child: SizedBox.expand(
-          child: FittedBox(
-            fit: BoxFit.cover,
-            clipBehavior: Clip.antiAlias,
-            child: SizedBox(
-              width: Sizes.welcomeHeroWidth,
-              height: Sizes.welcomeHeroHeight,
-              child: hero,
+      child: Stack(
+        children: [
+          // Content with SINGLE clip (no double-clipping!)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(Sizes.welcomeHeroRadius),
+            child: SizedBox.expand(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: Sizes.welcomeHeroWidth,
+                  height: Sizes.welcomeHeroHeight,
+                  child: hero,
+                ),
+              ),
             ),
           ),
-        ),
+          // Border as overlay (AC-3: DsColors.grayscaleBlack, no thick spots)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(Sizes.welcomeHeroRadius),
+                  border: Border.all(
+                    color: DsColors.grayscaleBlack,
+                    width: Sizes.welcomeHeroBorderWidth,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -293,9 +309,10 @@ class _HeroFrame extends StatelessWidget {
 /// - W1: Playfair Display 28px Bold 700, line-height 36px
 /// - W2: Playfair Display 30px Bold 700, line-height 38px
 /// - W3: Playfair Display 32px SemiBold 600, line-height 38px
-///       + Subheader: Playfair Display 20px Bold 700, line-height 38px
+///       + Subheader: Figtree 20px Regular 400, line-height 26px
 class _HeadlineBlock extends StatelessWidget {
   const _HeadlineBlock({
+    super.key,
     required this.pageIndex,
     required this.title,
     this.subtitle,
@@ -318,40 +335,41 @@ class _HeadlineBlock extends StatelessWidget {
       color: DsColors.grayscaleBlack,
     );
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.screenPadding),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Semantics(
-            header: true,
+    // Note: Horizontal padding handled by parent SizedBox in _WelcomePage
+    // mainAxisAlignment.center ensures text is vertically centered within
+    // the fixed-height container for visual consistency across all pages
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Semantics(
+          header: true,
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: titleStyle,
+          ),
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: Spacing.xs), // Figma: 8px (AC-6)
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: Sizes.welcomeSubheaderWidth,
+            ),
             child: Text(
-              title,
+              subtitle!,
               textAlign: TextAlign.center,
-              style: titleStyle,
+              style: TextStyle(
+                fontFamily: FontFamilies.figtree, // Figma: Figtree
+                fontSize: TypographyTokens.size20,
+                fontWeight: FontWeight.w400, // Figma: Regular
+                height: TypographyTokens.lineHeightRatio26on20, // 26/20
+                color: DsColors.grayscaleBlack,
+              ),
             ),
           ),
-          if (subtitle != null) ...[
-            const SizedBox(height: Spacing.xs), // Figma: 8px
-            ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: Sizes.welcomeSubheaderWidth,
-              ),
-              child: Text(
-                subtitle!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: FontFamilies.playfairDisplay,
-                  fontSize: TypographyTokens.size20,
-                  fontWeight: FontWeight.w700,
-                  height: 38 / 20, // Figma: line-height 38px
-                  color: DsColors.grayscaleBlack,
-                ),
-              ),
-            ),
-          ],
         ],
-      ),
+      ],
     );
   }
 
@@ -395,6 +413,7 @@ class _HeadlineBlock extends StatelessWidget {
 /// - Border radius: pill (999px)
 class _PageIndicators extends StatelessWidget {
   const _PageIndicators({
+    super.key,
     required this.currentPage,
     required this.totalPages,
   });

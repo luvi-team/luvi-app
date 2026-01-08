@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -249,6 +250,106 @@ void main() {
           prefs.getBool('device:welcome_completed_v1'),
           isTrue,
           reason: 'DeviceStateService should persist welcome_completed flag',
+        );
+      },
+    );
+
+    // ─── Pixel-Perfect Layout Tests (AC-1, AC-2, AC-4, AC-5) ───
+
+    testWidgets(
+      'AC-2: hero frame has correct size (354×475) on 393×852 viewport',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(393, 852));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(buildTestApp());
+        await tester.pumpAndSettle();
+
+        final heroFinder = find.byKey(const Key('welcome_hero_frame'));
+        expect(heroFinder, findsOneWidget);
+
+        final heroSize = tester.getSize(heroFinder);
+        expect(heroSize.width, Sizes.welcomeHeroWidth); // 354
+        expect(heroSize.height, Sizes.welcomeHeroHeight); // 475
+      },
+    );
+
+    testWidgets(
+      'AC-1: dots to hero gap is 24px (bottom-to-top)',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(393, 852));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(buildTestApp());
+        await tester.pumpAndSettle();
+
+        final dotsFinder = find.byKey(const Key('welcome_page_indicators'));
+        final heroFinder = find.byKey(const Key('welcome_hero_frame'));
+
+        expect(dotsFinder, findsOneWidget, reason: 'Page indicators should be present');
+        expect(heroFinder, findsOneWidget, reason: 'Hero frame should be present');
+
+        final dotsBottom = tester.getBottomLeft(dotsFinder).dy;
+        final heroTop = tester.getTopLeft(heroFinder).dy;
+
+        expect(
+          heroTop - dotsBottom,
+          closeTo(24.0, 1.0),
+          reason: 'Gap from dots bottom to hero top should be 24px',
+        );
+      },
+    );
+
+    testWidgets(
+      'AC-4: hero to text gap is positive (responsive layout)',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(393, 852));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(buildTestApp());
+        await tester.pumpAndSettle();
+
+        final heroFinder = find.byKey(const Key('welcome_hero_frame'));
+        final textFinder = find.byKey(const Key('welcome_headline_block'));
+
+        expect(heroFinder, findsOneWidget, reason: 'Hero frame should be present');
+        expect(textFinder, findsOneWidget, reason: 'Headline block should be present');
+
+        final heroBottom = tester.getBottomLeft(heroFinder).dy;
+        final textTop = tester.getTopLeft(textFinder).dy;
+
+        // Flexible layout: gap varies by viewport, must be positive (no overlap)
+        expect(
+          textTop - heroBottom,
+          greaterThan(0),
+          reason: 'Gap from hero to text must be positive (no overlap)',
+        );
+      },
+    );
+
+    testWidgets(
+      'AC-5: text to CTA gap is positive (responsive layout)',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(393, 852));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(buildTestApp());
+        await tester.pumpAndSettle();
+
+        final textFinder = find.byKey(const Key('welcome_headline_block'));
+        final ctaFinder = find.byKey(const Key('welcome_cta_button'));
+
+        expect(textFinder, findsOneWidget, reason: 'Headline block should be present');
+        expect(ctaFinder, findsOneWidget, reason: 'CTA button should be present');
+
+        final textBottom = tester.getBottomLeft(textFinder).dy;
+        final ctaTop = tester.getTopLeft(ctaFinder).dy;
+
+        // Flexible layout: gap varies by viewport, must be positive (no overlap)
+        expect(
+          ctaTop - textBottom,
+          greaterThan(0),
+          reason: 'Gap from text to CTA must be positive (no overlap)',
         );
       },
     );
