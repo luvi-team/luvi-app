@@ -58,7 +58,7 @@ void main() {
     addTearDown(router.dispose);
   });
 
-  Widget buildTestApp() {
+  Widget buildTestApp({Size? screenSize, TextScaler? textScaler}) {
     return ProviderScope(
       child: MaterialApp.router(
         routerConfig: router,
@@ -71,6 +71,18 @@ void main() {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
+        builder: (screenSize != null || textScaler != null)
+            ? (context, child) {
+                var data = MediaQuery.of(context);
+                if (screenSize != null) {
+                  data = data.copyWith(size: screenSize);
+                }
+                if (textScaler != null) {
+                  data = data.copyWith(textScaler: textScaler);
+                }
+                return MediaQuery(data: data, child: child!);
+              }
+            : null,
       ),
     );
   }
@@ -259,10 +271,12 @@ void main() {
     testWidgets(
       'AC-2: hero frame has correct size (354×475) on 393×852 viewport',
       (tester) async {
-        await tester.binding.setSurfaceSize(const Size(393, 852));
+        const testSize = Size(393, 852);
+        await tester.binding.setSurfaceSize(testSize);
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        await tester.pumpWidget(buildTestApp());
+        // Explicitly set MediaQuery size to ensure PixelPerfectMode
+        await tester.pumpWidget(buildTestApp(screenSize: testSize));
         await tester.pumpAndSettle();
 
         final heroFinder = find.byKey(const Key('welcome_hero_frame'));
@@ -277,10 +291,11 @@ void main() {
     testWidgets(
       'AC-1: dots to hero gap is 24px (bottom-to-top)',
       (tester) async {
-        await tester.binding.setSurfaceSize(const Size(393, 852));
+        const testSize = Size(393, 852);
+        await tester.binding.setSurfaceSize(testSize);
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(buildTestApp(screenSize: testSize));
         await tester.pumpAndSettle();
 
         final dotsFinder = find.byKey(const Key('welcome_page_indicators'));
@@ -301,12 +316,13 @@ void main() {
     );
 
     testWidgets(
-      'AC-4: hero to text gap is positive (responsive layout)',
+      'AC-4: hero to text gap is 32px on pixel-perfect viewport',
       (tester) async {
-        await tester.binding.setSurfaceSize(const Size(393, 852));
+        const testSize = Size(393, 852);
+        await tester.binding.setSurfaceSize(testSize);
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(buildTestApp(screenSize: testSize));
         await tester.pumpAndSettle();
 
         final heroFinder = find.byKey(const Key('welcome_hero_frame'));
@@ -318,22 +334,23 @@ void main() {
         final heroBottom = tester.getBottomLeft(heroFinder).dy;
         final textTop = tester.getTopLeft(textFinder).dy;
 
-        // Flexible layout: gap varies by viewport, must be positive (no overlap)
+        // PixelPerfectMode: AC-4 requires exactly 32px gap
         expect(
           textTop - heroBottom,
-          greaterThan(0),
-          reason: 'Gap from hero to text must be positive (no overlap)',
+          closeTo(32.0, 1.0),
+          reason: 'AC-4: Gap from hero to text should be 32px on reference device',
         );
       },
     );
 
     testWidgets(
-      'AC-5: text to CTA gap is positive (responsive layout)',
+      'AC-5: text to CTA gap is 32px on pixel-perfect viewport',
       (tester) async {
-        await tester.binding.setSurfaceSize(const Size(393, 852));
+        const testSize = Size(393, 852);
+        await tester.binding.setSurfaceSize(testSize);
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        await tester.pumpWidget(buildTestApp());
+        await tester.pumpWidget(buildTestApp(screenSize: testSize));
         await tester.pumpAndSettle();
 
         final textFinder = find.byKey(const Key('welcome_headline_block'));
@@ -345,11 +362,129 @@ void main() {
         final textBottom = tester.getBottomLeft(textFinder).dy;
         final ctaTop = tester.getTopLeft(ctaFinder).dy;
 
-        // Flexible layout: gap varies by viewport, must be positive (no overlap)
+        // PixelPerfectMode: AC-5 requires exactly 32px gap
         expect(
           ctaTop - textBottom,
-          greaterThan(0),
-          reason: 'Gap from text to CTA must be positive (no overlap)',
+          closeTo(32.0, 1.0),
+          reason: 'AC-5: Gap from text to CTA should be 32px on reference device',
+        );
+      },
+    );
+
+    // ─── Pixel-Perfect Tests for W2 and W3 ───
+
+    testWidgets(
+      'AC-4/AC-5: page 2 has 32px gaps on pixel-perfect viewport',
+      (tester) async {
+        const testSize = Size(393, 852);
+        await tester.binding.setSurfaceSize(testSize);
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(buildTestApp(screenSize: testSize));
+        await tester.pumpAndSettle();
+
+        final l10n = AppLocalizations.of(
+          tester.element(find.byType(WelcomeScreen)),
+        )!;
+
+        // Navigate to page 2
+        await tester.tap(find.text(l10n.welcomeNewCta1));
+        await tester.pumpAndSettle();
+
+        final heroFinder = find.byKey(const Key('welcome_hero_frame'));
+        final textFinder = find.byKey(const Key('welcome_headline_block'));
+        final ctaFinder = find.byKey(const Key('welcome_cta_button'));
+
+        final heroBottom = tester.getBottomLeft(heroFinder).dy;
+        final textTop = tester.getTopLeft(textFinder).dy;
+        final textBottom = tester.getBottomLeft(textFinder).dy;
+        final ctaTop = tester.getTopLeft(ctaFinder).dy;
+
+        expect(
+          textTop - heroBottom,
+          closeTo(32.0, 1.0),
+          reason: 'AC-4: Page 2 hero→text gap should be 32px',
+        );
+        expect(
+          ctaTop - textBottom,
+          closeTo(32.0, 1.0),
+          reason: 'AC-5: Page 2 text→CTA gap should be 32px',
+        );
+      },
+    );
+
+    testWidgets(
+      'AC-4/AC-5/AC-6: page 3 has correct gaps on pixel-perfect viewport',
+      (tester) async {
+        const testSize = Size(393, 852);
+        await tester.binding.setSurfaceSize(testSize);
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(buildTestApp(screenSize: testSize));
+        await tester.pumpAndSettle();
+
+        final l10n = AppLocalizations.of(
+          tester.element(find.byType(WelcomeScreen)),
+        )!;
+
+        // Navigate to page 3
+        await tester.tap(find.text(l10n.welcomeNewCta1));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.welcomeNewCta2));
+        await tester.pumpAndSettle();
+
+        final heroFinder = find.byKey(const Key('welcome_hero_frame'));
+        final textFinder = find.byKey(const Key('welcome_headline_block'));
+        final ctaFinder = find.byKey(const Key('welcome_cta_button'));
+
+        final heroBottom = tester.getBottomLeft(heroFinder).dy;
+        final textTop = tester.getTopLeft(textFinder).dy;
+        final textBottom = tester.getBottomLeft(textFinder).dy;
+        final ctaTop = tester.getTopLeft(ctaFinder).dy;
+
+        expect(
+          textTop - heroBottom,
+          closeTo(32.0, 1.0),
+          reason: 'AC-4: Page 3 hero→text gap should be 32px',
+        );
+        expect(
+          ctaTop - textBottom,
+          closeTo(32.0, 1.0),
+          reason: 'AC-5: Page 3 text→CTA gap should be 32px',
+        );
+      },
+    );
+
+    // ─── Fallback Mode Test ───
+
+    testWidgets(
+      'Fallback: no overflow on smaller viewport (360×740)',
+      (tester) async {
+        // Smaller viewport triggers FallbackMode
+        await tester.binding.setSurfaceSize(const Size(360, 740));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(buildTestApp());
+        await tester.pumpAndSettle();
+
+        // No exception = no overflow
+        expect(tester.takeException(), isNull);
+
+        // Verify UI elements are present
+        expect(
+          find.byKey(const Key('welcome_hero_frame')),
+          findsOneWidget,
+          reason: 'Hero frame should be present in fallback mode',
+        );
+        expect(
+          find.byKey(const Key('welcome_headline_block')),
+          findsOneWidget,
+          reason: 'Headline block should be present in fallback mode',
+        );
+        expect(
+          find.byKey(const Key('welcome_cta_button')),
+          findsOneWidget,
+          reason: 'CTA button should be present in fallback mode',
         );
       },
     );

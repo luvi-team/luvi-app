@@ -140,12 +140,18 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
 /// Individual welcome page within the PageView.
 ///
-/// Responsive column layout with fixed hero and flexible content area:
-/// - Hero fixed at 354×475px on ≥393px viewport, scales down proportionally
+/// Implements DUAL LAYOUT MODES for responsive design:
+///
+/// **PixelPerfectMode** (iPhone 14 Pro / 393×852 @ TextScale 1.0):
 /// - AC-1: Dots→Hero = 24px (bottom-to-top)
-/// - Content area (text block) uses Expanded for responsive spacing
-/// - Text block has fixed height (108px W1/W2, 75px W3) for visual consistency
-/// - Flexible gaps between hero↔text and text↔CTA prevent overflow on all devices
+/// - AC-2: Hero = 354×475px, left offset 24px
+/// - AC-4: Hero→Text = 32px
+/// - AC-5: Text→CTA = 32px
+/// - AC-6: W3 Headline↔Subline = 8px
+///
+/// **FallbackMode** (smaller viewports or TextScale > 1.0):
+/// - Uses flexible gaps to prevent overflow
+/// - Maintains usable UI on all devices
 class _WelcomePage extends StatelessWidget {
   const _WelcomePage({
     required this.pageIndex,
@@ -165,31 +171,77 @@ class _WelcomePage extends StatelessWidget {
   final VoidCallback onCta;
   final bool isLoading;
 
+  /// Minimum width for pixel-perfect mode (iPhone 14 Pro reference: 393px)
+  static const double _referenceWidth = 393.0;
+
   @override
   Widget build(BuildContext context) {
-    final safeTop = MediaQuery.of(context).padding.top;
-    final safeBottom = MediaQuery.of(context).padding.bottom;
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    // Hero top offset (AC-1: 24px gap from dots-bottom to hero-top)
-    // Dots at safeTop + 16, height 4px → bottom at safeTop + 20
-    // Hero at safeTop + 44 → gap = 44 - 20 = 24px ✓
-    final heroTopOffset = safeTop + Spacing.welcomeHeroTopOffset;
+    final mediaQuery = MediaQuery.of(context);
+    final safeTop = mediaQuery.padding.top;
+    final safeBottom = mediaQuery.padding.bottom;
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
 
     // Hero dimensions (AC-2: 354×475 on ≥393px, scales down proportionally)
-    // Available width = screen - left padding (asymmetric layout)
     final availableWidth = screenWidth - Spacing.screenPadding;
     final heroWidth = availableWidth >= Sizes.welcomeHeroWidth
         ? Sizes.welcomeHeroWidth
         : availableWidth;
     final heroHeight = heroWidth / Sizes.welcomeHeroAspect;
 
+    // Text block height depends on page (W1/W2 = 108px, W3 = 75px)
+    final textBlockHeight = subtitle != null
+        ? Spacing.welcomeTextBlockHeightW3
+        : Spacing.welcomeTextBlockHeightW1W2;
+
+    // Calculate required height for pixel-perfect layout
+    // Layout: heroTopOffset + hero + gap1 + text + gap2 + cta + ctaBottom
+    final heroTopOffset = safeTop + Spacing.welcomeHeroTopOffset;
+    final requiredHeight = heroTopOffset +
+        heroHeight +
+        Spacing.xl + // AC-4: 32px
+        textBlockHeight +
+        Spacing.xl + // AC-5: 32px
+        Sizes.welcomeCtaHeight +
+        Spacing.welcomeCtaBottomPadding +
+        safeBottom;
+
+    // Determine layout mode: pixel-perfect if enough space for fixed layout
+    final isPixelPerfect = screenWidth >= _referenceWidth &&
+        screenHeight >= requiredHeight;
+
+    if (isPixelPerfect) {
+      return _buildPixelPerfectLayout(
+        heroTopOffset: heroTopOffset,
+        heroWidth: heroWidth,
+        heroHeight: heroHeight,
+        safeBottom: safeBottom,
+      );
+    } else {
+      return _buildFallbackLayout(
+        heroTopOffset: heroTopOffset,
+        heroWidth: heroWidth,
+        heroHeight: heroHeight,
+        safeBottom: safeBottom,
+        screenHeight: screenHeight,
+      );
+    }
+  }
+
+  /// Pixel-perfect layout for reference device (393×852 @ TextScale 1.0).
+  /// Uses fixed gaps for AC-4 (32px) and AC-5 (32px).
+  Widget _buildPixelPerfectLayout({
+    required double heroTopOffset,
+    required double heroWidth,
+    required double heroHeight,
+    required double safeBottom,
+  }) {
     return Column(
       children: [
-        // Spacer to position hero (accounts for safe area + offset)
+        // Top spacing: safeTop + 44px = dots + gap to hero (AC-1)
         SizedBox(height: heroTopOffset),
 
-        // Hero Frame (354×475 on ≥393px, scales down on smaller screens)
+        // Hero Frame (AC-2: 354×475, left 24px)
         Padding(
           padding: const EdgeInsets.only(left: Spacing.screenPadding),
           child: Align(
@@ -203,30 +255,26 @@ class _WelcomePage extends StatelessWidget {
           ),
         ),
 
-        // Flexible content area: distributes space between hero and CTA
-        // Uses Expanded to prevent overflow on smaller screens while
-        // maintaining visual consistency across all 3 welcome pages
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Headline Block grows naturally with content
-              // Expanded distributes remaining space evenly above/below
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: Spacing.screenPadding),
-                child: _HeadlineBlock(
-                  key: const Key('welcome_headline_block'),
-                  pageIndex: pageIndex,
-                  title: title,
-                  subtitle: subtitle,
-                ),
-              ),
-            ],
+        // AC-4: Hero→Text gap = 32px
+        const SizedBox(height: Spacing.xl),
+
+        // Headline Block - Key on wrapper for correct position measurement
+        // The SizedBox provides fixed height, text is top-aligned for AC-4/AC-5
+        Padding(
+          key: const Key('welcome_headline_block'),
+          padding:
+              const EdgeInsets.symmetric(horizontal: Spacing.screenPadding),
+          child: _HeadlineBlock(
+            pageIndex: pageIndex,
+            title: title,
+            subtitle: subtitle,
           ),
         ),
 
-        // CTA Button (centered)
+        // AC-5: Text→CTA gap = 32px
+        const SizedBox(height: Spacing.xl),
+
+        // CTA Button
         WelcomeCtaButton(
           key: const Key('welcome_cta_button'),
           label: ctaLabel,
@@ -236,6 +284,78 @@ class _WelcomePage extends StatelessWidget {
 
         // Bottom padding (38px + safe area)
         SizedBox(height: Spacing.welcomeCtaBottomPadding + safeBottom),
+      ],
+    );
+  }
+
+  /// Fallback layout for smaller viewports or scaled text.
+  /// Uses flexible spacing and scaled hero to prevent overflow.
+  Widget _buildFallbackLayout({
+    required double heroTopOffset,
+    required double heroWidth,
+    required double heroHeight,
+    required double safeBottom,
+    required double screenHeight,
+  }) {
+    // Calculate available space for hero to prevent overflow
+    // Reserve space for: text block (max), CTA height, and minimum padding/gaps
+    // Using W1/W2 text height (108px) as it's larger than W3 (75px)
+    final minContentSpace = Spacing.welcomeTextBlockHeightW1W2 +
+        Sizes.welcomeCtaHeight +
+        Spacing.m + // CTA bottom padding in fallback
+        Spacing.xl; // minimum gap buffer
+    final maxHeroHeight = screenHeight - heroTopOffset - minContentSpace;
+    final scaledHeroHeight = heroHeight.clamp(0.0, maxHeroHeight);
+    final scaledHeroWidth = scaledHeroHeight * Sizes.welcomeHeroAspect;
+
+    return Column(
+      children: [
+        // Top spacing
+        SizedBox(height: heroTopOffset),
+
+        // Hero Frame (scaled for smaller viewports)
+        Padding(
+          padding: const EdgeInsets.only(left: Spacing.screenPadding),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: _HeroFrame(
+              key: const Key('welcome_hero_frame'),
+              hero: hero,
+              width: scaledHeroWidth,
+              height: scaledHeroHeight,
+            ),
+          ),
+        ),
+
+        // Flexible content area: distributes space evenly
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                key: const Key('welcome_headline_block'),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: Spacing.screenPadding),
+                child: _HeadlineBlock(
+                  pageIndex: pageIndex,
+                  title: title,
+                  subtitle: subtitle,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // CTA Button
+        WelcomeCtaButton(
+          key: const Key('welcome_cta_button'),
+          label: ctaLabel,
+          onPressed: onCta,
+          isLoading: isLoading,
+        ),
+
+        // Bottom padding (minimum 16px + safe area)
+        SizedBox(height: Spacing.m + safeBottom),
       ],
     );
   }
@@ -312,7 +432,6 @@ class _HeroFrame extends StatelessWidget {
 ///       + Subheader: Figtree 20px Regular 400, line-height 26px
 class _HeadlineBlock extends StatelessWidget {
   const _HeadlineBlock({
-    super.key,
     required this.pageIndex,
     required this.title,
     this.subtitle,
@@ -335,7 +454,7 @@ class _HeadlineBlock extends StatelessWidget {
       color: DsColors.grayscaleBlack,
     );
 
-    // Note: Horizontal padding handled by parent SizedBox in _WelcomePage
+    // Note: Horizontal padding handled by parent Padding in _WelcomePage
     // mainAxisAlignment.center ensures text is vertically centered within
     // the fixed-height container for visual consistency across all pages
     return Column(
