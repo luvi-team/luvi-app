@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +17,10 @@ class DeviceStateService {
   final SharedPreferences prefs;
 
   static const _keyWelcomeCompleted = 'device:welcome_completed_v1';
+
+  /// Exposed for test assertions. Do not use in production code.
+  @visibleForTesting
+  static const keyWelcomeCompleted = _keyWelcomeCompleted;
 
   /// Whether the user has completed the welcome flow on this device.
   ///

@@ -11,6 +11,7 @@ import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/welcome/screens/welcome_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/device_state_service.dart';
 
 import '../../../support/test_config.dart';
 import '../../../support/video_player_mock.dart';
@@ -259,7 +260,7 @@ void main() {
         // Verify flag was persisted
         final prefs = await SharedPreferences.getInstance();
         expect(
-          prefs.getBool('device:welcome_completed_v1'),
+          prefs.getBool(DeviceStateService.keyWelcomeCompleted),
           isTrue,
           reason: 'DeviceStateService should persist welcome_completed flag',
         );

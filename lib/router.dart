@@ -119,6 +119,12 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
       name: RouteNames.welcome,
       builder: (context, state) => const WelcomeScreen(),
     ),
+    // Legacy welcome screen redirects (w1-w5 → unified /welcome)
+    GoRoute(path: '/onboarding/w1', redirect: (_, _) => RoutePaths.welcome),
+    GoRoute(path: '/onboarding/w2', redirect: (_, _) => RoutePaths.welcome),
+    GoRoute(path: '/onboarding/w3', redirect: (_, _) => RoutePaths.welcome),
+    GoRoute(path: '/onboarding/w4', redirect: (_, _) => RoutePaths.welcome),
+    GoRoute(path: '/onboarding/w5', redirect: (_, _) => RoutePaths.welcome),
 
     // ─────────────────────────────────────────────────────────────────────
     // Consent Flow (C1-C3)

@@ -7,7 +7,9 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/consent/widgets/welcome_video_player.dart';
 import 'package:luvi_app/features/welcome/widgets/welcome_cta_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -59,7 +61,13 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
       if (mounted) {
         context.go(RoutePaths.authSignIn);
       }
-    } catch (e) {
+    } catch (e, st) {
+      log.w(
+        'welcome_completion_failed',
+        tag: 'welcome',
+        error: sanitizeError(e) ?? e.runtimeType,
+        stack: st,
+      );
       // Best-effort: navigate anyway (flag can be set on next launch)
       if (mounted) {
         context.go(RoutePaths.authSignIn);
@@ -97,9 +105,11 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                 // Page 2: Static Image + "Dein Rhythmus führt. LUVI folgt."
                 _WelcomePage(
                   pageIndex: 1,
-                  hero: Image.asset(
-                    Assets.images.welcomeHero02,
-                    fit: BoxFit.cover,
+                  hero: ExcludeSemantics(
+                    child: Image.asset(
+                      Assets.images.welcomeHero02,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   title: l10n.welcomeNewTitle2,
                   ctaLabel: l10n.welcomeNewCta2,

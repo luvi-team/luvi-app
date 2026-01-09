@@ -12,6 +12,7 @@ import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 import 'package:luvi_app/features/splash/widgets/splash_video_player.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/device_state_service.dart';
 import 'package:luvi_services/init_mode.dart';
 
 import '../../support/test_config.dart';
@@ -65,7 +66,7 @@ void main() {
     // Per Welcome Rebrand Plan: Splash checks welcome gate first, so for auth tests
     // we need to simulate a user who has already seen welcome.
     SharedPreferences.setMockInitialValues({
-      'device:welcome_completed_v1': true,
+      DeviceStateService.keyWelcomeCompleted: true,
     });
     // Fresh VideoPlayerMock for each test
     VideoPlayerMock.registerWith();

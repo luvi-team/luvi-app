@@ -99,7 +99,7 @@ String? homeGuardRedirect({
 ///
 /// Gate priority (matches Splash logic):
 /// 1. State unknown → Splash (fail-safe)
-/// 2. Consent outdated/missing → ConsentWelcome01
+/// 2. Consent outdated/missing → ConsentIntroScreen
 /// 3. Onboarding incomplete → Onboarding01
 /// 4. All gates passed → null (allow)
 String? homeGuardRedirectWithConsent({

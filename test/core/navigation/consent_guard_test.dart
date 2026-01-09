@@ -254,6 +254,17 @@ void main() {
       expect(isWelcomeRoute('/onboarding/w5'), isTrue);
     });
 
+    test('returns true for ALL legacy /onboarding/w* routes (w1-w5)', () {
+      // Explicit test for each route to catch router config omissions
+      for (final screen in ['w1', 'w2', 'w3', 'w4', 'w5']) {
+        expect(
+          isWelcomeRoute('/onboarding/$screen'),
+          isTrue,
+          reason: '/onboarding/$screen should be recognized as welcome route',
+        );
+      }
+    });
+
     test('returns false for onboarding routes', () {
       expect(isWelcomeRoute('/onboarding/01'), isFalse);
       expect(isWelcomeRoute('/onboarding/success'), isFalse);

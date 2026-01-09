@@ -49,7 +49,7 @@ void main() {
         await service.markWelcomeCompleted();
 
         // Verify raw SharedPreferences value
-        expect(prefs.getBool('device:welcome_completed_v1'), isTrue);
+        expect(prefs.getBool(DeviceStateService.keyWelcomeCompleted), isTrue);
       });
 
       test('flag survives service recreation (simulates app restart)', () async {
@@ -83,11 +83,11 @@ void main() {
     group('reset', () {
       test('removes flag from SharedPreferences', () async {
         await service.markWelcomeCompleted();
-        expect(prefs.getBool('device:welcome_completed_v1'), isTrue);
+        expect(prefs.getBool(DeviceStateService.keyWelcomeCompleted), isTrue);
 
         await service.reset();
 
-        expect(prefs.getBool('device:welcome_completed_v1'), isNull);
+        expect(prefs.getBool(DeviceStateService.keyWelcomeCompleted), isNull);
       });
 
       test('is idempotent (calling reset twice does not throw)', () async {
@@ -102,7 +102,7 @@ void main() {
       test('pre-existing flag is respected on service creation', () async {
         // Simulate device that already completed welcome
         SharedPreferences.setMockInitialValues({
-          'device:welcome_completed_v1': true,
+          DeviceStateService.keyWelcomeCompleted: true,
         });
         final existingPrefs = await SharedPreferences.getInstance();
         final existingService = DeviceStateService(prefs: existingPrefs);
