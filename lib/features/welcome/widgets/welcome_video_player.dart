@@ -124,7 +124,7 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!_isInitialized || _hasError || _controller == null) return;
+    if (!mounted || !_isInitialized || _hasError || _controller == null) return;
 
     switch (state) {
       case AppLifecycleState.paused:

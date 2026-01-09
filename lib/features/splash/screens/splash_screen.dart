@@ -354,7 +354,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     return null;
   }
 
-  // State passed from _loadAndBindUserState to _evaluateOnboardingGateWithRetry
+  // ── Gate 4 State (Implicit Coupling) ──────────────────────────────────────
+  // These fields are set in _resolveConsentGate (Gate 3) and consumed by
+  // _evaluateOnboardingGateWithRetry (Gate 4). The coupling is intentional:
+  // navigation gates execute strictly sequentially, so these instance-level
+  // fields safely pass state between gate phases without explicit parameters.
   bool? _lastRemoteGate;
   bool? _lastLocalGate;
 

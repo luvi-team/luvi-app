@@ -26,6 +26,10 @@ void main() {
       expect(RoutePaths.consentBlocking, startsWith('/consent/'));
     });
 
+    test('consentIntroLegacy maintains backward-compatible path', () {
+      expect(RoutePaths.consentIntroLegacy, equals('/consent/02'));
+    });
+
     test('onboarding paths all start with /onboarding/', () {
       expect(RoutePaths.onboarding01, startsWith('/onboarding/'));
       expect(RoutePaths.onboarding02, startsWith('/onboarding/'));

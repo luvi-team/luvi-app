@@ -194,7 +194,7 @@ class DsColors {
   /// Alias: Same as headlineMagenta for consistency
   static const Color signature = headlineMagenta;
 
-  /// Primary Button Background (Figma: #A8406F)
+  /// Primary Button Background (Figma: #E91E63)
   /// Alias: Same as welcomeButtonBg for consistency
   static const Color buttonPrimary = welcomeButtonBg;
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -69,7 +70,7 @@ void main() {
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      // Label text should be hidden during loading (ExcludeSemantics wraps it)
+      // Label Text widget is not rendered during loading (swapped for CircularProgressIndicator)
       expect(find.text('Loading Test'), findsNothing);
     });
 
@@ -161,22 +162,12 @@ void main() {
         ),
       );
 
-      // Find Semantics widgets and filter for the one with our label
-      final allSemantics = tester.widgetList<Semantics>(
-        find.descendant(
-          of: find.byType(WelcomeCtaButton),
-          matching: find.byType(Semantics),
-        ),
-      );
-
-      final labeledSemantics = allSemantics
-          .where((s) => s.properties.label == 'Semantic Button')
-          .toList();
-      expect(labeledSemantics, hasLength(1));
-
-      final semantics = labeledSemantics.first;
-      expect(semantics.properties.button, isTrue);
-      expect(semantics.properties.enabled, isTrue);
+      final semantics = tester.getSemantics(find.byType(WelcomeCtaButton));
+      expect(semantics.label, equals('Semantic Button'));
+      // ignore: deprecated_member_use - hasFlag replacement API not yet stabilized
+      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      // ignore: deprecated_member_use
+      expect(semantics.hasFlag(SemanticsFlag.isEnabled), isTrue);
     });
 
     testWidgets('Semantics shows enabled=false when isLoading=true',
@@ -196,21 +187,10 @@ void main() {
         ),
       );
 
-      // Find Semantics widgets and filter for the one with our label
-      final allSemantics = tester.widgetList<Semantics>(
-        find.descendant(
-          of: find.byType(WelcomeCtaButton),
-          matching: find.byType(Semantics),
-        ),
-      );
-
-      final labeledSemantics = allSemantics
-          .where((s) => s.properties.label == 'Loading Semantics')
-          .toList();
-      expect(labeledSemantics, hasLength(1));
-
-      final semantics = labeledSemantics.first;
-      expect(semantics.properties.enabled, isFalse);
+      final semantics = tester.getSemantics(find.byType(WelcomeCtaButton));
+      expect(semantics.label, equals('Loading Semantics'));
+      // ignore: deprecated_member_use
+      expect(semantics.hasFlag(SemanticsFlag.isEnabled), isFalse);
     });
   });
 }

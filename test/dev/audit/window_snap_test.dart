@@ -52,16 +52,17 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(390, 844));
 
       final testWindow = tester.binding.window;
+
+      // Register teardown BEFORE mutations to guarantee cleanup on any failure
+      addTearDown(() {
+        tester.binding.window.clearAllTestValues();
+      });
+
       testWindow.viewInsetsTestValue = FakeViewPadding(bottom: keyboardHeight);
       testWindow.paddingTestValue = const FakeViewPadding(
         top: 47, // iPhone SafeTop
         bottom: 34, // iPhone SafeBottom
       );
-
-      // Cleanup nach Test (wie in window_verify_test.dart)
-      addTearDown(() {
-        tester.binding.window.clearAllTestValues();
-      });
 
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
