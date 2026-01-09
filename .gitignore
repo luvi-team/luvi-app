@@ -220,8 +220,11 @@ context/*
 !context/agents/
 context/agents/*
 !context/agents/_acceptance_v*.md
-# AGENTS.md - local only (Agent Governance Index)
-AGENTS.md
+!context/agents/_drift_check.sh
+!context/agents/0[1-5]-*.md
+!context/agents/README.md
+!context/agents/reqing-ball.md
+!context/agents/ui-polisher.md
 # CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
 
 # Engineering Docs (local only)
