@@ -25,7 +25,13 @@ validate_doc() {
     pass "$f: keine 1.0-Blöcke mehr"
   fi
 
-  if rg -n "^---$" "$path" >/dev/null 2>&1 && rg -n "^role:\s*" "$path" >/dev/null 2>&1; then
+  # Prüft: 1) Zeile 1 = '---', 2) 'role:' existiert vor dem schließenden '---'
+  if awk '
+    NR==1 { if ($0 != "---") exit 1; next }
+    /^---$/ { exit (found ? 0 : 1) }
+    /^role:/ { found=1 }
+    END { exit (found ? 0 : 1) }
+  ' "$path" 2>/dev/null; then
     pass "$f: YAML Front-Matter vorhanden"
   else
     fail "$f: YAML Front-Matter fehlt"

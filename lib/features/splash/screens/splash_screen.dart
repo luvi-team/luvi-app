@@ -17,6 +17,7 @@ import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
+import 'package:luvi_app/core/analytics/analytics_recorder.dart';
 
 /// Determines the target route based on auth state, consent version, and
 /// onboarding completion.
@@ -475,6 +476,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } catch (e, st) {
         log.w('local state sync failed',
             tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+        ref.read(analyticsRecorderProvider).recordEvent(
+          'splash_sync_failure',
+          properties: {'operation': 'onboarding_sync'},
+        );
       }
     }
 
@@ -532,6 +537,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   /// Best-effort backfill of local onboarding completion to server.
   void _performBackfill() {
+    // Capture recorder before async to avoid ref access after dispose
+    final recorder = ref.read(analyticsRecorderProvider);
+
     // Fire-and-forget, errors are logged but not propagated
     SupabaseService.upsertOnboardingGate(hasCompletedOnboarding: true)
         .then((_) {
@@ -540,6 +548,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         .catchError((Object e, StackTrace st) {
           log.w('backfill to server failed',
               tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+          recorder.recordEvent(
+            'splash_sync_failure',
+            properties: {'operation': 'backfill'},
+          );
           // No return value - proper void handling
         });
   }
@@ -564,6 +576,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } catch (e, st) {
         log.w('local consent version sync failed',
             tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+        ref.read(analyticsRecorderProvider).recordEvent(
+          'splash_sync_failure',
+          properties: {'operation': 'consent_version'},
+        );
       }
     }
 
@@ -574,6 +590,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } catch (e, st) {
         log.w('local welcome sync failed',
             tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+        ref.read(analyticsRecorderProvider).recordEvent(
+          'splash_sync_failure',
+          properties: {'operation': 'welcome_sync'},
+        );
       }
     }
   }
