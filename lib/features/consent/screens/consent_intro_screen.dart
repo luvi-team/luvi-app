@@ -4,6 +4,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
 import 'package:luvi_app/core/widgets/welcome_button.dart';
@@ -21,7 +22,7 @@ class ConsentIntroScreen extends StatelessWidget {
 
   /// Canonical route path for consent intro screen.
   /// Legacy /consent/02 redirects here via router.dart.
-  static const routeName = '/consent/intro';
+  static const routeName = RoutePaths.consentIntro;
 
   @override
   Widget build(BuildContext context) {

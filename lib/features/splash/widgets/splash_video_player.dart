@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
 
 /// A video player for the Splash screen with completion callback.
 ///
@@ -134,9 +135,14 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
       if (!mounted || _hasCompleted) return;
 
       _startPlaybackWithGuard();
-    } catch (e, stack) {
+    } on Object catch (e, stack) {
       _cancelInitTimeout();
-      log.w('video_init_failed', tag: 'splash_video', error: e, stack: stack);
+      log.w(
+        'video_init_failed',
+        tag: 'splash_video',
+        error: sanitizeError(e) ?? e.runtimeType,
+        stack: stack,
+      );
       if (mounted) {
         setState(() => _hasError = true);
         _fireOnComplete();
@@ -166,7 +172,12 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
   void _startPlaybackWithGuard() {
     _maxDurationTimer = Timer(widget.maxPlaybackDuration, _handleMaxDuration);
     _controller!.play().catchError((Object e, StackTrace stack) {
-      log.w('video_play_failed', tag: 'splash_video', error: e, stack: stack);
+      log.w(
+        'video_play_failed',
+        tag: 'splash_video',
+        error: sanitizeError(e) ?? e.runtimeType,
+        stack: stack,
+      );
       _fireOnComplete();
     });
   }
@@ -228,7 +239,7 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
           log.w(
             'video_play_failed',
             tag: 'splash_video',
-            error: e,
+            error: sanitizeError(e) ?? e.runtimeType,
             stack: stack,
           );
         });
