@@ -424,6 +424,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome05PrimaryCta => 'Start now';
 
   @override
+  String get welcomeNewTitle1 => 'Your Cycle.\nYour Power.\nEvery Day.';
+
+  @override
+  String get welcomeNewCta1 => 'Let\'s go';
+
+  @override
+  String get welcomeNewTitle2 => 'Your rhythm leads.\nLUVI follows.';
+
+  @override
+  String get welcomeNewCta2 => 'Next';
+
+  @override
+  String get welcomeNewTitle3 => 'All set.';
+
+  @override
+  String get welcomeNewSubtitle3 => 'Training · Nutrition · Recovery';
+
+  @override
+  String get welcomeNewCta3 => 'Start';
+
+  @override
   String get consent01IntroTitle => 'Let\'s tailor LUVI\nto you';
 
   @override

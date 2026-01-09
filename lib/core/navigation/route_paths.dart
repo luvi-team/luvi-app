@@ -22,20 +22,19 @@ abstract final class RoutePaths {
   static const passwordSaved = '/auth/password/success';
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Consent Welcome (W1-W5)
+  // Welcome (single route with PageView)
   // ─────────────────────────────────────────────────────────────────────────
-  static const consentWelcome01 = '/onboarding/w1';
-  static const consentWelcome02 = '/onboarding/w2';
-  static const consentWelcome03 = '/onboarding/w3';
-  static const consentWelcome04 = '/onboarding/w4';
-  static const consentWelcome05 = '/onboarding/w5';
+  static const welcome = '/welcome';
 
   // ─────────────────────────────────────────────────────────────────────────
   // Consent Flow (C1-C3)
   // ─────────────────────────────────────────────────────────────────────────
-  static const consentIntro = '/consent/02'; // C1 - backwards compat path
+  static const consentIntro = '/consent/intro'; // C1 - new canonical path
   static const consentOptions = '/consent/options'; // C2
   static const consentBlocking = '/consent/blocking'; // C3
+
+  /// Legacy alias - redirects to [consentIntro] for backwards compatibility.
+  static const consentIntroLegacy = '/consent/02';
 
   // ─────────────────────────────────────────────────────────────────────────
   // Onboarding (O1-O8)

@@ -424,6 +424,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get welcome05PrimaryCta => 'Jetzt loslegen';
 
   @override
+  String get welcomeNewTitle1 => 'Dein Zyklus.\nDeine Kraft.\nJeden Tag.';
+
+  @override
+  String get welcomeNewCta1 => 'Los geht\'s';
+
+  @override
+  String get welcomeNewTitle2 => 'Dein Rhythmus führt.\nLUVI folgt.';
+
+  @override
+  String get welcomeNewCta2 => 'Weiter';
+
+  @override
+  String get welcomeNewTitle3 => 'Alles bereit.';
+
+  @override
+  String get welcomeNewSubtitle3 => 'Training · Ernährung · Recovery';
+
+  @override
+  String get welcomeNewCta3 => 'Starten';
+
+  @override
   String get consent01IntroTitle => 'Lass uns LUVI\nauf dich abstimmen';
 
   @override

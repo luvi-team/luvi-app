@@ -80,10 +80,11 @@ Refactoring der Consent- und Onboarding-Screens, um exakt dem Figma-Design zu en
 - Responsive Layout (skalierbar für verschiedene Mobile Devices)
 - Pixel-perfect zu Figma
 
-**WICHTIG - Was NICHT geändert wird:**
-- Welcome Screens (W1-W5) bleiben **komplett unverändert**
-- Navigation zwischen Welcome → Consent bleibt bestehen
-- Bestehende Welcome-Logik wird nicht angefasst
+**WICHTIG - Welcome Rebrand (bereits umgesetzt):**
+- Welcome Screens wurden von W1-W5 auf **3 Seiten** reduziert
+- Welcome ist jetzt **device-local** (DeviceStateService statt UserStateService)
+- Navigation: Welcome → Auth → Consent (nicht mehr Welcome → Consent direkt)
+- Siehe `docs/plans/onboarding-flow-implementation-plan.md` für Details
 
 ---
 
@@ -91,7 +92,7 @@ Refactoring der Consent- und Onboarding-Screens, um exakt dem Figma-Design zu en
 
 | Thema | Entscheidung |
 |-------|--------------|
-| Welcome Screens (W1-W5) | **Bleiben unverändert** |
+| Welcome Screens | **Rebrand: 3 Seiten** (siehe onboarding-flow-implementation-plan.md) |
 | Consent Scopes | **Neuer Figma-Inhalt** - 2 Required + 1 Optional im MVP (siehe Consent Scope IDs + MVP-Hinweis unten) |
 | "App verlassen" Button | **→ Sign-out + Zurück zum Login** |
 | Zyklus-Dauer (O8) | **7 Tage Standard**, User kann anpassen |
@@ -383,23 +384,29 @@ class OnboardingState extends _$OnboardingState {
 
 ## Back-Navigation Flow (KORRIGIERTE ROUTES!)
 
+> **HINWEIS:** Welcome Rebrand hat den Flow geändert.
+> Welcome (3 Seiten) navigiert jetzt zu `/auth/signin`, nicht zu Consent.
+> Consent wird nach Auth gezeigt.
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  CONSENT FLOW (Routes korrigiert - Codex-Review Runde 3)    │
+│  NEUER FLOW (Welcome Rebrand)                               │
 ├─────────────────────────────────────────────────────────────┤
-│  W5 → /consent/02 (C1) → /consent/options (C2) → O1         │
-│        ↑                      ↑                             │
-│      Back                   Back                            │
-│                               ↓                             │
-│                       /consent/blocking (C3)                │
-│                           ↓              ↓                  │
-│                     "Zurück"        "App verlassen"         │
-│                        ↓                  ↓                 │
-│               /consent/options    Sign-out + AuthSignInScreen.routeName │
+│  Welcome (3 Pages) → /auth/signin → /consent/intro (C1)     │
+│                                            ↓                │
+│                                  /consent/options (C2) → O1 │
+│                                            ↓                │
+│                                  /consent/blocking (C3)     │
+│                                     ↓              ↓        │
+│                               "Zurück"    "App verlassen"   │
+│                                  ↓              ↓           │
+│                         /consent/options   Sign-out + Auth  │
 └─────────────────────────────────────────────────────────────┘
 
-Route Mapping (W5 bleibt unverändert!):
-- /consent/02      → C1 (ConsentIntroScreen)      ← W5 navigiert hierhin
+Route Mapping:
+- /welcome         → WelcomeScreen (3 Seiten, device-local)
+- /auth/signin     → AuthSignInScreen (nach Welcome)
+- /consent/intro   → C1 (ConsentIntroScreen) ← Auth navigiert hierhin
 - /consent/options → C2 (ConsentOptionsScreen)
 - /consent/blocking → C3 (ConsentBlockingScreen)
 
@@ -509,8 +516,8 @@ LinearGradient(
 - `lib/features/onboarding/screens/onboarding_01.dart` bis `08.dart`
 - `lib/l10n/app_de.arb` + `app_en.arb`
 
-### NICHT modifizieren:
-- `lib/features/consent/screens/consent_welcome_*` (W1-W5)
+### Bereits durch Welcome Rebrand ersetzt:
+- ~~`lib/features/consent/screens/consent_welcome_*` (W1-W5)~~ → Jetzt `lib/features/welcome/screens/welcome_screen.dart` (3 Seiten)
 
 ### Neu zu erstellen:
 - `lib/core/design_tokens/gradients.dart`

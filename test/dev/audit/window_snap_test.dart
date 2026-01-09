@@ -52,6 +52,12 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(390, 844));
 
       final testWindow = tester.binding.window;
+
+      // Register teardown BEFORE mutations to guarantee cleanup on any failure
+      addTearDown(() {
+        tester.binding.window.clearAllTestValues();
+      });
+
       testWindow.viewInsetsTestValue = FakeViewPadding(bottom: keyboardHeight);
       testWindow.paddingTestValue = const FakeViewPadding(
         top: 47, // iPhone SafeTop

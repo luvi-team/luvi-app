@@ -10,6 +10,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/core/widgets/link_text.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
@@ -57,7 +58,7 @@ final _scrolledToEndProvider =
 class ConsentOptionsScreen extends ConsumerStatefulWidget {
   const ConsentOptionsScreen({super.key});
 
-  static const String routeName = '/consent/options';
+  static const String routeName = RoutePaths.consentOptions;
 
   @override
   ConsumerState<ConsentOptionsScreen> createState() =>

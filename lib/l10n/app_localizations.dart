@@ -881,6 +881,48 @@ abstract class AppLocalizations {
   /// **'Start now'**
   String get welcome05PrimaryCta;
 
+  /// Title for new Welcome Screen 1 (Video, Rebrand 2026).
+  ///
+  /// In en, this message translates to:
+  /// **'Your Cycle.\nYour Power.\nEvery Day.'**
+  String get welcomeNewTitle1;
+
+  /// CTA Button for Welcome Screen 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go'**
+  String get welcomeNewCta1;
+
+  /// Title for new Welcome Screen 2 (Image, Rebrand 2026).
+  ///
+  /// In en, this message translates to:
+  /// **'Your rhythm leads.\nLUVI follows.'**
+  String get welcomeNewTitle2;
+
+  /// CTA Button for Welcome Screen 2.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get welcomeNewCta2;
+
+  /// Title for new Welcome Screen 3 (Video, Rebrand 2026).
+  ///
+  /// In en, this message translates to:
+  /// **'All set.'**
+  String get welcomeNewTitle3;
+
+  /// Subtitle for Welcome Screen 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Training · Nutrition · Recovery'**
+  String get welcomeNewSubtitle3;
+
+  /// CTA Button for Welcome Screen 3 (last screen).
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get welcomeNewCta3;
+
   /// Headline copy shown on the consent 01 screen intro hero. Preserve the explicit newline escape '\n'.
   ///
   /// In en, this message translates to:

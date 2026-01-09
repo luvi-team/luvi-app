@@ -5,13 +5,11 @@ import 'package:flutter/material.dart';
 /// Centralized asset paths for the app (typo-safe, single source of truth).
 // Note: welcome_01.png removed – Screen 1 now uses video
 const String _kWelcomeHero02 = 'assets/images/welcome/welcome_02.png';
-const String _kWelcomeHero03 = 'assets/images/welcome/welcome_03.png';
-const String _kWelcomeHero04 = 'assets/images/welcome/welcome_04.png';
 const String _kWelcomeWave = 'assets/images/welcome/welcome_wave.svg';
 const String _kWelcomeVideo01 = 'assets/videos/welcome/welcome_01.mp4';
-const String _kWelcomeVideo05 = 'assets/videos/welcome/welcome_05.mp4';
+const String _kWelcomeVideo03 = 'assets/videos/welcome/welcome_03.mp4';
 const String _kWelcomeFallback01 = 'assets/images/welcome/welcome_01_fallback.png';
-const String _kWelcomeFallback05 = 'assets/images/welcome/welcome_05_fallback.png';
+const String _kWelcomeFallback03 = 'assets/images/welcome/welcome_03_fallback.png';
 const String _kSplashVideo = 'assets/videos/splash/splash_screen.mp4';
 const String _kSplashFallback = 'assets/images/splash/splash_fallback.png';
 
@@ -105,18 +103,16 @@ class _Images {
   final String onboardingContentCard3 =
       'assets/images/onboarding/content_card_3.png';
 
-  // Welcome/Consent hero assets (images only; videos in _Videos)
-  // Note: welcomeHero01 removed – Screen 1 now uses video
+  // Welcome hero assets (images only; videos in _Videos)
+  // Note: W1 + W3 use video; W2 uses static image
   final String welcomeHero02 = _kWelcomeHero02;
-  final String welcomeHero03 = _kWelcomeHero03;
-  final String welcomeHero04 = _kWelcomeHero04;
   final String welcomeWave = _kWelcomeWave;
 
   /// Fallback poster for Welcome Screen 1 video (A11y + error state)
   final String welcomeFallback01 = _kWelcomeFallback01;
 
-  /// Fallback poster for Welcome Screen 5 video (A11y + error state)
-  final String welcomeFallback05 = _kWelcomeFallback05;
+  /// Fallback poster for Welcome Screen 3 video (A11y + error state)
+  final String welcomeFallback03 = _kWelcomeFallback03;
 
   // Consent Screen Assets
   final String consentIntroHero = 'assets/images/consent/consent_intro_hero.png';
@@ -132,8 +128,8 @@ class _Videos {
   /// Welcome Screen 1 – autoplay loop video
   final String welcomeVideo01 = _kWelcomeVideo01;
 
-  /// Welcome Screen 5 – autoplay loop video
-  final String welcomeVideo05 = _kWelcomeVideo05;
+  /// Welcome Screen 3 – autoplay loop video
+  final String welcomeVideo03 = _kWelcomeVideo03;
 
   /// Splash screen video – autoplay once, no loop
   final String splashScreen = _kSplashVideo;

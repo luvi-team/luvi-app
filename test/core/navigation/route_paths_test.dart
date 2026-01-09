@@ -16,18 +16,18 @@ void main() {
       expect(RoutePaths.passwordSaved, startsWith('/auth/'));
     });
 
-    test('consent welcome paths follow pattern /onboarding/wN', () {
-      expect(RoutePaths.consentWelcome01, equals('/onboarding/w1'));
-      expect(RoutePaths.consentWelcome02, equals('/onboarding/w2'));
-      expect(RoutePaths.consentWelcome03, equals('/onboarding/w3'));
-      expect(RoutePaths.consentWelcome04, equals('/onboarding/w4'));
-      expect(RoutePaths.consentWelcome05, equals('/onboarding/w5'));
+    test('welcome path is /welcome', () {
+      expect(RoutePaths.welcome, equals('/welcome'));
     });
 
     test('consent flow paths all start with /consent/', () {
       expect(RoutePaths.consentIntro, startsWith('/consent/'));
       expect(RoutePaths.consentOptions, startsWith('/consent/'));
       expect(RoutePaths.consentBlocking, startsWith('/consent/'));
+    });
+
+    test('consentIntroLegacy maintains backward-compatible path', () {
+      expect(RoutePaths.consentIntroLegacy, equals('/consent/02'));
     });
 
     test('onboarding paths all start with /onboarding/', () {
@@ -67,12 +67,9 @@ void main() {
         RoutePaths.authForgot,
         RoutePaths.createNewPassword,
         RoutePaths.passwordSaved,
-        RoutePaths.consentWelcome01,
-        RoutePaths.consentWelcome02,
-        RoutePaths.consentWelcome03,
-        RoutePaths.consentWelcome04,
-        RoutePaths.consentWelcome05,
+        RoutePaths.welcome,
         RoutePaths.consentIntro,
+        RoutePaths.consentIntroLegacy,
         RoutePaths.consentOptions,
         RoutePaths.consentBlocking,
         RoutePaths.onboarding01,

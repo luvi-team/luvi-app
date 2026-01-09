@@ -23,8 +23,17 @@ class TypographyTokens {
   /// Welcome Title: Figma 38px line-height on 32px font (ratio: 1.1875)
   static const double lineHeightRatio38on32 = 38 / 32;
 
+  /// Welcome Screen 2 Title: Figma 38px line-height on 30px font (ratio: 1.267)
+  static const double lineHeightRatio38on30 = 38 / 30;
+
   /// Welcome Subtitle: Figma 26px line-height on 20px font (ratio: 1.3)
   static const double lineHeightRatio26on20 = 26 / 20;
+
+  /// Welcome Button Label: Figma 24px line-height on 17px font (ratio: 1.412)
+  static const double lineHeightRatio24on17 = 24 / 17;
+
+  /// Button font size 17px (Figma Welcome CTA)
+  static const double size17 = 17.0;
 
   /// Onboarding header: 28px line-height on 20px font (ratio: 1.4)
   static const double lineHeightRatio28on20 = 28 / 20;

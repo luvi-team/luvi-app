@@ -5,20 +5,19 @@ import 'package:go_router/go_router.dart';
 
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/features/splash/widgets/splash_video_player.dart';
 import 'package:luvi_app/features/splash/widgets/unknown_state_ui.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
-import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
-import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/device_state_service.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
+import 'package:luvi_app/core/analytics/analytics_recorder.dart';
 
 /// Determines the target route based on auth state, consent version, and
 /// onboarding completion.
@@ -27,7 +26,7 @@ import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 ///
 /// Logic:
 /// - Not authenticated → AuthSignInScreen
-/// - Authenticated + needs consent (null or outdated version) → ConsentWelcome01Screen
+/// - Authenticated + needs consent (null or outdated version) → ConsentIntroScreen
 /// - Authenticated + consent OK + hasCompletedOnboarding != true → Onboarding01
 /// - Authenticated + consent OK + hasCompletedOnboarding == true → defaultTarget
 @visibleForTesting
@@ -39,17 +38,17 @@ String determineTargetRoute({
   required String defaultTarget,
 }) {
   if (!isAuth) {
-    return AuthSignInScreen.routeName;
+    return RoutePaths.authSignIn;
   }
   // Consent-Version-Gate: Show consent if not accepted or version is outdated
   final needsConsent = acceptedConsentVersion == null ||
       acceptedConsentVersion < currentConsentVersion;
   if (needsConsent) {
-    return ConsentWelcome01Screen.routeName;
+    return RoutePaths.consentIntro;
   }
   // Onboarding Gate: User has completed consent but not onboarding
   if (!hasCompletedOnboarding) {
-    return Onboarding01Screen.routeName;
+    return RoutePaths.onboarding01;
   }
   return defaultTarget;
 }
@@ -58,17 +57,17 @@ String determineTargetRoute({
 ///
 /// Fail-safe approach: Never route directly to Home when state is unknown.
 /// - Not authenticated → AuthSignInScreen (login required anyway)
-/// - Authenticated → ConsentWelcome01Screen (safe entry point for gate flow)
+/// - Authenticated → ConsentIntroScreen (safe entry point for gate flow)
 ///
 /// This ensures consent/onboarding gates are never bypassed due to errors.
 @visibleForTesting
 String determineFallbackRoute({required bool isAuth}) {
   if (!isAuth) {
-    return AuthSignInScreen.routeName;
+    return RoutePaths.authSignIn;
   }
   // Safe fallback: Consent flow will re-check all gates properly.
   // Never go directly to Home when state is unknown.
-  return ConsentWelcome01Screen.routeName;
+  return RoutePaths.consentIntro;
 }
 
 /// Result type for [determineOnboardingGateRoute].
@@ -99,6 +98,14 @@ final class StateUnknown extends OnboardingGateResult {
   const StateUnknown();
 }
 
+/// Result record from consent gate resolution.
+/// Contains consent route (if needed) plus gate values for onboarding check.
+typedef ConsentGateResult = ({
+  String? consentRoute,
+  bool? remoteGate,
+  bool? localGate,
+});
+
 /// Determines the onboarding gate outcome based on remote and local state.
 ///
 /// Returns:
@@ -120,12 +127,12 @@ OnboardingGateResult determineOnboardingGateRoute({
   if (remoteGate == false && localGate == true) return const RaceRetryNeeded();
 
   // Remote false + local not true → Onboarding (first-time user)
-  if (remoteGate == false) return RouteResolved(Onboarding01Screen.routeName);
+  if (remoteGate == false) return RouteResolved(RoutePaths.onboarding01);
 
   // Remote null (network unavailable) - use local as fallback
   // Fail-safe: never route to Home when server SSOT is unavailable.
   // Local cache may be stale or cross-account; only allow the safe direction.
-  if (localGate == false) return RouteResolved(Onboarding01Screen.routeName);
+  if (localGate == false) return RouteResolved(RoutePaths.onboarding01);
 
   // Both null → truly unknown
   return const StateUnknown();
@@ -199,7 +206,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           ? _buildUnknownUI(context, l10n)
           : _skipAnimation
               // skipAnimation: Show solid background (no 1-frame flash)
-              ? Container(color: DsColors.welcomeWaveBg)
+              ? Container(color: DsColors.splashBg)
               : SplashVideoPlayer(
                   assetPath: Assets.videos.splashScreen,
                   fallbackAsset: Assets.images.splashFallback,
@@ -233,7 +240,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     try {
       await SupabaseService.client.auth.signOut();
       if (mounted) {
-        context.go(AuthSignInScreen.routeName);
+        context.go(RoutePaths.authSignIn);
       }
     } catch (e, st) {
       log.w('sign out failed', tag: 'splash', error: sanitizeError(e), stack: st);
@@ -244,7 +251,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             content: Text(l10n.signOutErrorRetry),
             action: SnackBarAction(
               label: l10n.retry,
-              onPressed: () { _handleSignOut(); },
+              onPressed: _handleSignOut,
             ),
           ),
         );
@@ -254,12 +261,119 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _navigateAfterAnimation() async {
     if (_hasNavigated) return;
-    // Avoid any async auth calls here; rely on immediate client state.
     final isAuth = SupabaseService.isAuthenticated;
     final isTestMode = ref.read(initModeProvider) == InitMode.test;
     final useTimeout = kReleaseMode && !isTestMode;
 
-    // Attempt to load user state with retry on failure
+    // ── Gate 1: Welcome ────────────────────────────────────────────────────
+    final welcomeRoute = await _resolveWelcomeGate();
+    if (!mounted || _hasNavigated) return;
+    if (welcomeRoute != null) {
+      _hasNavigated = true;
+      context.go(welcomeRoute);
+      return;
+    }
+
+    // ── Gate 2: Auth ───────────────────────────────────────────────────────
+    final authRoute = _resolveAuthGate(isAuth);
+    if (authRoute != null) {
+      _hasNavigated = true;
+      context.go(authRoute);
+      return;
+    }
+
+    // ── Gate 3: User State + Consent ───────────────────────────────────────
+    final service = await _loadAndBindUserState(
+      useTimeout: useTimeout,
+      isAuth: isAuth,
+    );
+    if (!mounted || _hasNavigated) return;
+    if (service == null) return; // Abort (fallback navigated or unknownUI shown)
+
+    final consentResult = await _resolveConsentGate(
+      service: service,
+      useTimeout: useTimeout,
+    );
+    if (!mounted || _hasNavigated) return;
+    if (consentResult == null) return; // Error case (unknownUI shown)
+
+    if (consentResult.consentRoute != null) {
+      _hasNavigated = true;
+      context.go(consentResult.consentRoute!);
+      return;
+    }
+
+    // ── Gate 4: Onboarding ─────────────────────────────────────────────────
+    final gateResult = await _evaluateOnboardingGateWithRetry(
+      initialRemoteGate: consentResult.remoteGate,
+      localGate: consentResult.localGate,
+      useTimeout: useTimeout,
+    );
+
+    if (!mounted || _hasNavigated) return;
+
+    switch (gateResult) {
+      case RouteResolved(:final route):
+        _hasNavigated = true;
+        context.go(route);
+      case StateUnknown():
+        if (mounted) {
+          setState(() {
+            _isRetrying = false;
+            _showUnknownUI = true;
+          });
+        }
+      case RaceRetryNeeded():
+        // Unreachable: _evaluateOnboardingGateWithRetry handles race-retry internally
+        // Defensive fallback: treat as unknown state
+        log.w('unexpected RaceRetryNeeded after retry', tag: 'splash');
+        if (mounted) {
+          setState(() {
+            _isRetrying = false;
+            _showUnknownUI = true;
+          });
+        }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Gate Helpers (extracted for readability, DR-1)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// Gate 1: Check if device-local welcome has been completed.
+  /// Returns route to welcome screen, or null to continue.
+  /// Fail-closed: If device state cannot be loaded, show welcome (safe default).
+  Future<String?> _resolveWelcomeGate() async {
+    DeviceStateService deviceState;
+    try {
+      deviceState = await ref.read(deviceStateServiceProvider.future);
+    } catch (e, st) {
+      log.w('device state load failed, defaulting to welcome',
+          tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+      // Fail-closed: Cannot verify welcome completion → show welcome
+      return RoutePaths.welcome;
+    }
+    if (!deviceState.hasCompletedWelcome) {
+      return RoutePaths.welcome;
+    }
+    return null;
+  }
+
+  /// Gate 2: Check authentication state.
+  /// Returns route to sign-in screen, or null to continue.
+  String? _resolveAuthGate(bool isAuth) {
+    if (!isAuth) {
+      return RoutePaths.authSignIn;
+    }
+    return null;
+  }
+
+  /// Gate 3a: Load and bind user state service.
+  /// Returns service if successful, null on failure (navigates or shows unknownUI).
+  Future<UserStateService?> _loadAndBindUserState({
+    required bool useTimeout,
+    required bool isAuth,
+  }) async {
     UserStateService? service;
     try {
       service = await _loadUserStateWithRetry(useTimeout: useTimeout);
@@ -268,25 +382,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
     }
 
-    if (!mounted || _hasNavigated) return;
+    if (!mounted || _hasNavigated) return null;
 
-    // If state failed to load completely, use fallback routing
     if (service == null) {
       _hasNavigated = true;
       final fallbackTarget = determineFallbackRoute(isAuth: isAuth);
       context.go(fallbackTarget);
-      return;
+      return null;
     }
 
-    // Pre-onboarding gates: auth and consent
-    if (!isAuth) {
-      _hasNavigated = true;
-      context.go(AuthSignInScreen.routeName);
-      return;
-    }
-
-    // Ensure local cache is account-scoped to the currently authenticated user.
-    // This prevents gate leakage between accounts on the same device.
     final uid = SupabaseService.currentUser?.id;
     if (uid != null) {
       try {
@@ -294,19 +398,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } catch (e, st) {
         log.e('bindUser failed',
             tag: 'splash', error: sanitizeError(e), stack: st);
-        // Abort navigation - user binding is critical for data isolation
         if (mounted) {
           setState(() => _showUnknownUI = true);
         }
-        return;
+        return null;
       }
     }
 
+    return service;
+  }
+
+  /// Gate 3b: Resolve consent gate and sync caches.
+  /// Returns record with consent route (if needed) and gate values for onboarding.
+  /// Returns null if remote profile could not be loaded (shows unknownUI).
+  Future<ConsentGateResult?> _resolveConsentGate({
+    required UserStateService service,
+    required bool useTimeout,
+  }) async {
     final localAcceptedVersion = service.acceptedConsentVersionOrNull;
     final localHasSeenWelcome = service.hasSeenWelcomeOrNull;
 
-    // Server SSOT: Try to fetch profiles row once and derive consent + onboarding
-    // gates from it. Local SharedPreferences are treated as read-through cache.
     Map<String, dynamic>? remoteProfile;
     bool remoteProfileLoaded = false;
     try {
@@ -317,8 +428,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
     }
 
-    // Fail-safe: if we can't fetch server SSOT, do not route based on local
-    // cache (prevents bypass in unknown/offline states). Let the user retry.
     if (!remoteProfileLoaded) {
       if (mounted) {
         setState(() {
@@ -326,7 +435,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           _showUnknownUI = true;
         });
       }
-      return;
+      return null;
     }
 
     final int? remoteAcceptedVersion = remoteProfileLoaded
@@ -336,7 +445,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         ? (remoteProfile?['has_seen_welcome'] as bool?)
         : null;
 
-    // Cache refresh: sync remote gates to local cache (P2.3 extracted)
     await _syncRemoteCacheToLocal(
       service: service,
       remoteAcceptedVersion: remoteAcceptedVersion,
@@ -345,24 +453,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       localHasSeenWelcome: localHasSeenWelcome,
     );
 
-    // Server is SSOT for consent: local cache must not bypass consent gating.
     final needsConsent = remoteAcceptedVersion == null ||
         remoteAcceptedVersion < ConsentConfig.currentVersionInt;
-    if (needsConsent) {
-      if (!mounted || _hasNavigated) return;
-      _hasNavigated = true;
-      context.go(ConsentWelcome01Screen.routeName);
-      return;
-    }
 
+    // Extract gate values for onboarding check
     final localGate = service.hasCompletedOnboardingOrNull;
-    // Consent OK - now sync onboarding gate with server SSOT
-    // Point 2: Preserve null semantics - no profile row = genuinely unknown
-    var remoteGate = remoteProfile == null
+    final remoteGate = remoteProfile == null
         ? null
         : remoteProfile['has_completed_onboarding'] as bool?;
 
-    if (!mounted || _hasNavigated) return;
+    if (!mounted || _hasNavigated) return null;
 
     // Backfill: if local true && remote != true, push to server
     if (localGate == true && remoteGate != true) {
@@ -376,37 +476,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } catch (e, st) {
         log.w('local state sync failed',
             tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+        ref.read(analyticsRecorderProvider).recordEvent(
+          'splash_sync_failure',
+          properties: {'operation': 'onboarding_sync'},
+        );
       }
     }
 
-    if (!mounted || _hasNavigated) return;
-
-    // Evaluate onboarding gate with race-retry support (P2.3 extracted)
-    final gateResult = await _evaluateOnboardingGateWithRetry(
-      initialRemoteGate: remoteGate,
+    return (
+      consentRoute: needsConsent ? RoutePaths.consentIntro : null,
+      remoteGate: remoteGate,
       localGate: localGate,
-      useTimeout: useTimeout,
     );
-
-    if (!mounted || _hasNavigated) return;
-
-    // Handle sealed class result with pattern matching
-    switch (gateResult) {
-      case RouteResolved(:final route):
-        _hasNavigated = true;
-        context.go(route);
-      case StateUnknown():
-        // Both remote and local are null → show Unknown UI
-        if (mounted) {
-          setState(() {
-            _isRetrying = false;
-            _showUnknownUI = true;
-          });
-        }
-      case RaceRetryNeeded():
-        // Already handled in _evaluateOnboardingGateWithRetry, but for exhaustiveness
-        break;
-    }
   }
 
   /// Loads UserStateService with one retry on failure.
@@ -456,6 +537,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   /// Best-effort backfill of local onboarding completion to server.
   void _performBackfill() {
+    // Capture recorder before async to avoid ref access after dispose
+    final recorder = ref.read(analyticsRecorderProvider);
+
     // Fire-and-forget, errors are logged but not propagated
     SupabaseService.upsertOnboardingGate(hasCompletedOnboarding: true)
         .then((_) {
@@ -464,6 +548,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         .catchError((Object e, StackTrace st) {
           log.w('backfill to server failed',
               tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+          recorder.recordEvent(
+            'splash_sync_failure',
+            properties: {'operation': 'backfill'},
+          );
           // No return value - proper void handling
         });
   }
@@ -488,6 +576,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } catch (e, st) {
         log.w('local consent version sync failed',
             tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+        ref.read(analyticsRecorderProvider).recordEvent(
+          'splash_sync_failure',
+          properties: {'operation': 'consent_version'},
+        );
       }
     }
 
@@ -498,6 +590,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } catch (e, st) {
         log.w('local welcome sync failed',
             tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+        ref.read(analyticsRecorderProvider).recordEvent(
+          'splash_sync_failure',
+          properties: {'operation': 'welcome_sync'},
+        );
       }
     }
   }
@@ -516,7 +612,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     var gateResult = determineOnboardingGateRoute(
       remoteGate: remoteGate,
       localGate: localGate,
-      homeRoute: HeuteScreen.routeName,
+      homeRoute: RoutePaths.heute,
     );
 
     // Race-retry: local true + remote false → wait briefly and re-fetch
@@ -539,12 +635,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       gateResult = determineOnboardingGateRoute(
         remoteGate: remoteGate,
         localGate: localGate,
-        homeRoute: HeuteScreen.routeName,
+        homeRoute: RoutePaths.heute,
       );
 
       // If still RaceRetryNeeded after retry → go to Onboarding
       if (gateResult is RaceRetryNeeded) {
-        return RouteResolved(Onboarding01Screen.routeName);
+        return RouteResolved(RoutePaths.onboarding01);
       }
     }
 

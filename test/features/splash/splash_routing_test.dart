@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 
 /// Unit tests for determineTargetRoute helper function.
@@ -11,7 +11,7 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 ///
 /// Gate Logic (Priority Order):
 /// 1. Not authenticated → AuthSignInScreen
-/// 2. Authenticated + needs consent (null or outdated version) → ConsentWelcome01Screen
+/// 2. Authenticated + needs consent (null or outdated version) → ConsentIntroScreen
 /// 3. Authenticated + consent OK + hasCompletedOnboarding == false → Onboarding01
 /// 4. Authenticated + consent OK + hasCompletedOnboarding == true → defaultTarget
 void main() {
@@ -62,7 +62,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'First-time users (null consent) should go to Consent flow',
         );
       });
@@ -77,7 +77,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'Outdated consent version should trigger Consent flow',
         );
       });
@@ -191,7 +191,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'Consent Gate should take priority over Onboarding completion status',
         );
       });
@@ -208,13 +208,13 @@ void main() {
       );
     });
 
-    test('redirects to ConsentWelcome01 when authenticated (NOT Home)', () {
+    test('redirects to ConsentIntro when authenticated (NOT Home)', () {
       final result = determineFallbackRoute(isAuth: true);
       expect(
         result,
-        equals(ConsentWelcome01Screen.routeName),
+        equals(ConsentIntroScreen.routeName),
         reason:
-            'Authenticated users should go to ConsentWelcome01 on error, never directly to Home',
+            'Authenticated users should go to ConsentIntro on error, never directly to Home',
       );
     });
 

@@ -34,16 +34,6 @@ Siehe `docs/engineering/assistant-answer-format.md`.
 - Kurznotiz: Erwartung `{ "ok": true, "timestamp": "…" }` (HTTP 200). Bei Gateway‑Touch kurz Latenz/Größe notieren.
  - Hinweis: Nach Merge Production erneut prüfen (`/api/health → 200`) und Link im PR/Merge-Kommentar ablegen.
 
-## Traycer Trial (non-blocking)
-- Traycer-Plan (Link/Text):
-- Traycer-Self-Check (✅/❌):
-- Risiken (Stichworte):
-  Hinweis: Nur ausfüllen, wenn das PR-Label `trial-traycer` gesetzt ist. Siehe auch:
-  - docs/adr/ADR-00xx-traycer-integration.md
-  - docs/traycer/README.md
-- [ ] Traycer Privacy Mode ON
-- [ ] Keine PII/Secrets in Plan/PR
-
 ## ADR-Referenzen
 - 0001 RAG-First
 - 0002 RLS

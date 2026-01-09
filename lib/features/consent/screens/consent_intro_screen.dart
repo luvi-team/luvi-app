@@ -4,6 +4,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
 import 'package:luvi_app/core/widgets/welcome_button.dart';
@@ -14,12 +15,14 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 /// First screen in the consent flow. Introduces the user to the data consent
 /// process with a friendly illustration and message.
 ///
-/// Route: /consent/02 (maps from W5 navigation)
+/// Route: /consent/intro (canonical path per Welcome Rebrand Plan)
+/// Legacy /consent/02 redirects here via router.dart alias.
 class ConsentIntroScreen extends StatelessWidget {
   const ConsentIntroScreen({super.key});
 
-  /// Route: /consent/02 (mapped from W5 for backwards compatibility)
-  static const routeName = '/consent/02';
+  /// Canonical route path for consent intro screen.
+  /// Legacy /consent/02 redirects here via router.dart.
+  static const routeName = RoutePaths.consentIntro;
 
   @override
   Widget build(BuildContext context) {

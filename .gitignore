@@ -220,5 +220,20 @@ context/*
 !context/agents/
 context/agents/*
 !context/agents/_acceptance_v*.md
-# AGENTS.md bleibt im Repo (Agent Governance Index)
+!context/agents/_drift_check.sh
+!context/agents/0[1-5]-*.md
+!context/agents/README.md
+!context/agents/reqing-ball.md
+!context/agents/ui-polisher.md
 # CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
+
+# Engineering Docs (local only)
+docs/engineering/gold-standard-workflow.md
+docs/engineering/tech-stack.md
+docs/engineering/traycer/
+
+# ADRs (local only)
+docs/adr/
+
+# Traycer docs (local only)
+docs/traycer/

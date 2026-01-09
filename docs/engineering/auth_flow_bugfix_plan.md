@@ -1,9 +1,13 @@
 # Auth Flow Bug Fixes - Finaler Plan
 
 > **Erstellt:** 2025-12-11
-> **Aktualisiert:** 2025-12-11 (GPT-Review Feedback eingearbeitet)
-> **Status:** Geplant
+> **Aktualisiert:** 2026-01-07 (Welcome Rebrand Hinweise hinzugefügt)
+> **Status:** Teilweise veraltet (siehe Hinweise)
 > **Bewertung:** 10/10 (nach Vereinheitlichung E-Mail + OAuth Flow)
+
+> ⚠️ **WELCOME REBRAND (2026-01):** Einige Terminologie in diesem Dokument ist veraltet.
+> Der neue Flow ist: `Splash → Welcome (3 Seiten) → Auth → Consent → Onboarding → Home`
+> Siehe `docs/plans/onboarding-flow-implementation-plan.md` für aktuelle Referenz.
 
 ## Priorisierte Issues
 
@@ -76,10 +80,16 @@ if (isLoggingIn) {
 }
 ```
 
-**Lösung:** BEIDE Flows (E-Mail + OAuth) über `/splash` redirecten! Der `SplashScreen` macht bereits die korrekte async-Logik (Lines 72-103):
-- Prüft `hasSeenWelcomeOrNull` via async `UserStateService`
-- First-Time (hasSeenWelcome=false) → `ConsentWelcome01Screen`
-- Returning (hasSeenWelcome=true) → `HeuteScreen`
+**Lösung:** BEIDE Flows (E-Mail + OAuth) über `/splash` redirecten! Der `SplashScreen` macht bereits die korrekte async-Logik:
+
+> **⚠️ HINWEIS (Welcome Rebrand):** Die Terminologie wurde aktualisiert:
+> - `hasSeenWelcomeOrNull` → `DeviceStateService.hasCompletedWelcome` (device-local)
+> - `ConsentWelcome01Screen` → `WelcomeScreen` (3 Seiten unter `/welcome`)
+> - Welcome wird jetzt VOR Auth gezeigt, nicht nach
+
+- Prüft `hasCompletedWelcome` via `DeviceStateService` (device-local)
+- First-Time (welcome not completed) → `/welcome` → `/auth/signin`
+- Returning (welcome completed) → `/auth/signin` oder direkt `HeuteScreen`
 
 ```dart
 // ERSETZEN: Lines 303-305 komplett durch:

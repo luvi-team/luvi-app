@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
-import 'package:luvi_app/features/consent/screens/consent_welcome_01_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 
@@ -175,7 +175,7 @@ void main() {
     });
 
     group('consent gate (checked FIRST when state is known)', () {
-      test('redirects to ConsentWelcome01 when acceptedConsentVersion is null', () {
+      test('redirects to ConsentIntro when acceptedConsentVersion is null', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: true, // Even if onboarding complete
@@ -184,12 +184,12 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'Null consent should redirect to consent flow',
         );
       });
 
-      test('redirects to ConsentWelcome01 when consent version is outdated', () {
+      test('redirects to ConsentIntro when consent version is outdated', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: true, // Even if onboarding complete
@@ -198,7 +198,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'Outdated consent should redirect to consent flow',
         );
       });
@@ -274,7 +274,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentWelcome01Screen.routeName),
+          equals(ConsentIntroScreen.routeName),
           reason: 'Consent gate should be checked before onboarding gate',
         );
       });
