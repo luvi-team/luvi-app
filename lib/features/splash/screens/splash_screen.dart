@@ -317,7 +317,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           });
         }
       case RaceRetryNeeded():
-        break;
+        // Unreachable: _evaluateOnboardingGateWithRetry handles race-retry internally
+        // Defensive fallback: treat as unknown state
+        log.w('unexpected RaceRetryNeeded after retry', tag: 'splash');
+        if (mounted) {
+          setState(() {
+            _isRetrying = false;
+            _showUnknownUI = true;
+          });
+        }
     }
   }
 
