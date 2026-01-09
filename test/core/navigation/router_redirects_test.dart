@@ -1,13 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:luvi_app/core/navigation/route_paths.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/router.dart';
 
+import '../../support/test_app.dart';
 import '../../support/test_config.dart';
 import '../../support/video_player_mock.dart';
 
@@ -24,22 +21,6 @@ void main() {
     // Fresh VideoPlayer mock for each test (WelcomeScreen contains videos)
     VideoPlayerMock.registerWith();
   });
-
-  Widget buildTestApp(GoRouter testRouter) {
-    return ProviderScope(
-      child: MaterialApp.router(
-        routerConfig: testRouter,
-        locale: const Locale('de'),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-      ),
-    );
-  }
 
   group('Legacy Welcome Redirects', () {
     for (final legacyPath in [
@@ -58,7 +39,7 @@ void main() {
         );
         addTearDown(router.dispose);
 
-        await tester.pumpWidget(buildTestApp(router));
+        await tester.pumpWidget(buildTestApp(router: router));
         await tester.pumpAndSettle();
 
         // Verify redirect occurred
@@ -82,7 +63,7 @@ void main() {
       );
       addTearDown(router.dispose);
 
-      await tester.pumpWidget(buildTestApp(router));
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       final currentLocation =

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/logging/logger.dart';
-import 'package:luvi_app/core/utils/run_catching.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 
 /// A video player for the Splash screen with completion callback.
 ///
