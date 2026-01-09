@@ -10,7 +10,7 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
-import 'package:luvi_app/features/consent/widgets/welcome_video_player.dart';
+import 'package:luvi_app/features/welcome/widgets/welcome_video_player.dart';
 import 'package:luvi_app/features/welcome/widgets/welcome_cta_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/device_state_service.dart';

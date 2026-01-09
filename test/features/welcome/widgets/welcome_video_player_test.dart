@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/consent/widgets/welcome_video_player.dart';
+import 'package:luvi_app/features/welcome/widgets/welcome_video_player.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_app.dart';
 

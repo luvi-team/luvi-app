@@ -11,7 +11,7 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 ///
 /// Gate Logic (Priority Order):
 /// 1. Not authenticated → AuthSignInScreen
-/// 2. Authenticated + needs consent (null or outdated version) → ConsentWelcome01Screen
+/// 2. Authenticated + needs consent (null or outdated version) → ConsentIntroScreen
 /// 3. Authenticated + consent OK + hasCompletedOnboarding == false → Onboarding01
 /// 4. Authenticated + consent OK + hasCompletedOnboarding == true → defaultTarget
 void main() {
@@ -208,13 +208,13 @@ void main() {
       );
     });
 
-    test('redirects to ConsentWelcome01 when authenticated (NOT Home)', () {
+    test('redirects to ConsentIntro when authenticated (NOT Home)', () {
       final result = determineFallbackRoute(isAuth: true);
       expect(
         result,
         equals(ConsentIntroScreen.routeName),
         reason:
-            'Authenticated users should go to ConsentWelcome01 on error, never directly to Home',
+            'Authenticated users should go to ConsentIntro on error, never directly to Home',
       );
     });
 

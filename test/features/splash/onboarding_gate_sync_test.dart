@@ -222,7 +222,7 @@ void main() {
       expect(result, equals(AuthSignInScreen.routeName));
     });
 
-    test('auth user with outdated consent goes to ConsentWelcome01', () {
+    test('auth user with outdated consent goes to ConsentIntro', () {
       final result = determineTargetRoute(
         isAuth: true,
         acceptedConsentVersion: null,
@@ -262,7 +262,7 @@ void main() {
       expect(result, equals(AuthSignInScreen.routeName));
     });
 
-    test('auth user goes to ConsentWelcome01 (safe fallback)', () {
+    test('auth user goes to ConsentIntro (safe fallback)', () {
       final result = determineFallbackRoute(isAuth: true);
       expect(result, equals(ConsentIntroScreen.routeName));
     });

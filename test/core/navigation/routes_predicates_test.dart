@@ -175,7 +175,7 @@ void main() {
     });
 
     group('consent gate (checked FIRST when state is known)', () {
-      test('redirects to ConsentWelcome01 when acceptedConsentVersion is null', () {
+      test('redirects to ConsentIntro when acceptedConsentVersion is null', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: true, // Even if onboarding complete
@@ -189,7 +189,7 @@ void main() {
         );
       });
 
-      test('redirects to ConsentWelcome01 when consent version is outdated', () {
+      test('redirects to ConsentIntro when consent version is outdated', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: true, // Even if onboarding complete
