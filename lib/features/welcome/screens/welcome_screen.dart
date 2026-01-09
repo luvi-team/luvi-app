@@ -80,7 +80,15 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return PopScope(
-      canPop: false,
+      canPop: _currentPage == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _currentPage > 0) {
+          _pageController.previousPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      },
       child: Scaffold(
         // Figma: Background #F9F1E6
         backgroundColor: DsColors.splashBg,

@@ -42,9 +42,9 @@ Claude Code implementiert Charts/Widgets/Tests gemäß BMAD-slim, Codex reviewed
 
 ## Checklisten & Runbooks
 - Claude-Code UI-Checklist (Navigation/Tokens/L10n Regeln): `docs/engineering/checklists/ui_claude_code.md`
-- DataViz‑Checklist: `docs/engineering/checklists/dataviz.md`
-- Analytics‑Taxonomie: `docs/analytics/taxonomy.md`
-- Chart‑A11y‑Checklist: `docs/analytics/chart-a11y-checklist.md`
+- DataViz-Checklist: `docs/engineering/checklists/dataviz.md`
+- Analytics-Taxonomie: `docs/analytics/taxonomy.md`
+- Chart-A11y-Checklist: `docs/analytics/chart-a11y-checklist.md`
 - Backfill Runbook: `docs/runbooks/analytics-backfill.md`
 
 ## Micro-Tasks (minimaler Modus)

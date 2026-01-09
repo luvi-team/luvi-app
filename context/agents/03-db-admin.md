@@ -27,7 +27,7 @@ acceptance_version: "1.1"
 Sichert Datenmodell, RLS (Least-Privilege) und Migrationsqualität.
 
 ## Inputs
-PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
+PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
 SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.

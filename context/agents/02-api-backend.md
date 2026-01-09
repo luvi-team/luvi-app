@@ -29,7 +29,7 @@ acceptance_version: "1.1"
 Sichert zuverlässige Backend-Logik (Edge Functions, Services) mit Consent-Logs.
 
 ## Inputs
-PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
+PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
 Edge Functions/Services, Contract-Tests, Doku (docs/), Rate-Limits (nur bei extern erreichbaren Endpunkten).

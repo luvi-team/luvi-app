@@ -9,21 +9,26 @@ fi
 pass() { printf -- "- [OK] %s\n" "$1" >>"$REPORT"; }
 fail() { printf -- "- [DRIFT] %s\n" "$1" >>"$REPORT"; EXIT=1; }
 
-check_optional_file_contains() {
-  local file="$1"
-  local literal="$2"
-  local success_msg="$3"
-  local failure_msg="$4"
-  local missing_msg="$5"
+validate_doc() {
+  local path="$1"
+  local f="$(basename "$path")"
 
-  if [ -f "$file" ]; then
-    if rg -F "$literal" "$file" >/dev/null 2>&1; then
-      pass "$success_msg"
-    else
-      fail "$failure_msg"
-    fi
+  if rg -n "^acceptance_version:\s*\"?1\.1\"?\s*$" "$path" >/dev/null 2>&1; then
+    pass "$f: acceptance_version 1.1"
   else
-    pass "$missing_msg"
+    fail "$f: acceptance_version 1.1 fehlt"
+  fi
+
+  if rg -n "^acceptance_version:\s*\"?1\.0\"?\s*$" "$path" >/dev/null 2>&1; then
+    fail "$f: enthält noch acceptance_version 1.0"
+  else
+    pass "$f: keine 1.0-Blöcke mehr"
+  fi
+
+  if rg -n "^---$" "$path" >/dev/null 2>&1 && rg -n "^role:\s*" "$path" >/dev/null 2>&1; then
+    pass "$f: YAML Front-Matter vorhanden"
+  else
+    fail "$f: YAML Front-Matter fehlt"
   fi
 }
 
@@ -43,43 +48,14 @@ FOUND=0
 for path in "$DIR"/0*-*.md; do
   [ -f "$path" ] || continue
   FOUND=1
-  f="$(basename "$path")"
-  if rg -n "^acceptance_version:\s*\"?1\.1\"?\s*$" "$path" >/dev/null 2>&1; then
-    pass "$f: acceptance_version 1.1"
-  else
-    fail "$f: acceptance_version 1.1 fehlt"
-  fi
-  if rg -n "^acceptance_version:\s*\"?1\.0\"?\s*$" "$path" >/dev/null 2>&1; then
-    fail "$f: enthält noch acceptance_version 1.0"
-  else
-    pass "$f: keine 1.0-Blöcke mehr"
-  fi
-  if rg -n "^---$" "$path" >/dev/null 2>&1 && rg -n "^role:\s*" "$path" >/dev/null 2>&1; then
-    pass "$f: YAML Front-Matter vorhanden"
-  else
-    fail "$f: YAML Front-Matter fehlt"
-  fi
+  validate_doc "$path"
 done
 if [ "$FOUND" -eq 0 ]; then
   # Fallback (historische Liste)
   for f in 01-ui-frontend.md 02-api-backend.md 03-db-admin.md 04-dataviz.md 05-qa-dsgvo.md; do
     path="$DIR/$f"
     [ -f "$path" ] || { fail "$f: Datei nicht gefunden"; continue; }
-    if rg -n "^acceptance_version:\s*\"?1\.1\"?\s*$" "$path" >/dev/null 2>&1; then
-      pass "$f: acceptance_version 1.1"
-    else
-      fail "$f: acceptance_version 1.1 fehlt"
-    fi
-    if rg -n "^acceptance_version:\s*\"?1\.0\"?\s*$" "$path" >/dev/null 2>&1; then
-      fail "$f: enthält noch acceptance_version 1.0"
-    else
-      pass "$f: keine 1.0-Blöcke mehr"
-    fi
-    if rg -n "^---$" "$path" >/dev/null 2>&1 && rg -n "^role:\s*" "$path" >/dev/null 2>&1; then
-      pass "$f: YAML Front-Matter vorhanden"
-    else
-      fail "$f: YAML Front-Matter fehlt"
-    fi
+    validate_doc "$path"
   done
 fi
 

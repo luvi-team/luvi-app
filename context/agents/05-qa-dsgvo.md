@@ -27,7 +27,7 @@ acceptance_version: "1.1"
 Sichert DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates.
 
 ## Inputs
-PRD, ERD, ADRs 0001-0003, Branch/PR-Link.
+PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
 Privacy-Review unter docs/privacy/reviews/{id}.md, Kommentare im PR.
