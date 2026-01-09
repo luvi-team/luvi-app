@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -164,10 +163,8 @@ void main() {
 
       final semantics = tester.getSemantics(find.byType(WelcomeCtaButton));
       expect(semantics.label, equals('Semantic Button'));
-      // ignore: deprecated_member_use - hasFlag replacement API not yet stabilized
-      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
-      // ignore: deprecated_member_use
-      expect(semantics.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(semantics.flagsCollection.isButton, isTrue);
+      expect(semantics.flagsCollection.isEnabled, isTrue);
     });
 
     testWidgets('Semantics shows enabled=false when isLoading=true',
@@ -189,8 +186,7 @@ void main() {
 
       final semantics = tester.getSemantics(find.byType(WelcomeCtaButton));
       expect(semantics.label, equals('Loading Semantics'));
-      // ignore: deprecated_member_use
-      expect(semantics.hasFlag(SemanticsFlag.isEnabled), isFalse);
+      expect(semantics.flagsCollection.isEnabled, isFalse);
     });
   });
 }

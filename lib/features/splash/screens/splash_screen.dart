@@ -97,6 +97,14 @@ final class StateUnknown extends OnboardingGateResult {
   const StateUnknown();
 }
 
+/// Result record from consent gate resolution.
+/// Contains consent route (if needed) plus gate values for onboarding check.
+typedef ConsentGateResult = ({
+  String? consentRoute,
+  bool? remoteGate,
+  bool? localGate,
+});
+
 /// Determines the onboarding gate outcome based on remote and local state.
 ///
 /// Returns:
@@ -281,21 +289,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (!mounted || _hasNavigated) return;
     if (service == null) return; // Abort (fallback navigated or unknownUI shown)
 
-    final consentRoute = await _resolveConsentGate(
+    final consentResult = await _resolveConsentGate(
       service: service,
       useTimeout: useTimeout,
     );
     if (!mounted || _hasNavigated) return;
-    if (consentRoute != null) {
+    if (consentResult == null) return; // Error case (unknownUI shown)
+
+    if (consentResult.consentRoute != null) {
       _hasNavigated = true;
-      context.go(consentRoute);
+      context.go(consentResult.consentRoute!);
       return;
     }
 
     // ── Gate 4: Onboarding ─────────────────────────────────────────────────
     final gateResult = await _evaluateOnboardingGateWithRetry(
-      initialRemoteGate: _lastRemoteGate,
-      localGate: _lastLocalGate,
+      initialRemoteGate: consentResult.remoteGate,
+      localGate: consentResult.localGate,
       useTimeout: useTimeout,
     );
 
@@ -331,15 +341,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   /// Gate 1: Check if device-local welcome has been completed.
   /// Returns route to welcome screen, or null to continue.
+  /// Fail-closed: If device state cannot be loaded, show welcome (safe default).
   Future<String?> _resolveWelcomeGate() async {
-    DeviceStateService? deviceState;
+    DeviceStateService deviceState;
     try {
       deviceState = await ref.read(deviceStateServiceProvider.future);
     } catch (e, st) {
-      log.w('device state load failed',
+      log.w('device state load failed, defaulting to welcome',
           tag: 'splash', error: sanitizeError(e) ?? e.runtimeType, stack: st);
+      // Fail-closed: Cannot verify welcome completion → show welcome
+      return RoutePaths.welcome;
     }
-    if (deviceState != null && !deviceState.hasCompletedWelcome) {
+    if (!deviceState.hasCompletedWelcome) {
       return RoutePaths.welcome;
     }
     return null;
@@ -353,14 +366,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
     return null;
   }
-
-  // ── Gate 4 State (Implicit Coupling) ──────────────────────────────────────
-  // These fields are set in _resolveConsentGate (Gate 3) and consumed by
-  // _evaluateOnboardingGateWithRetry (Gate 4). The coupling is intentional:
-  // navigation gates execute strictly sequentially, so these instance-level
-  // fields safely pass state between gate phases without explicit parameters.
-  bool? _lastRemoteGate;
-  bool? _lastLocalGate;
 
   /// Gate 3a: Load and bind user state service.
   /// Returns service if successful, null on failure (navigates or shows unknownUI).
@@ -403,8 +408,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   /// Gate 3b: Resolve consent gate and sync caches.
-  /// Returns consent route if needed, null to continue to onboarding gate.
-  Future<String?> _resolveConsentGate({
+  /// Returns record with consent route (if needed) and gate values for onboarding.
+  /// Returns null if remote profile could not be loaded (shows unknownUI).
+  Future<ConsentGateResult?> _resolveConsentGate({
     required UserStateService service,
     required bool useTimeout,
   }) async {
@@ -448,25 +454,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     final needsConsent = remoteAcceptedVersion == null ||
         remoteAcceptedVersion < ConsentConfig.currentVersionInt;
-    if (needsConsent) {
-      return RoutePaths.consentIntro;
-    }
 
-    // Prepare state for onboarding gate (Gate 4)
-    _lastLocalGate = service.hasCompletedOnboardingOrNull;
-    _lastRemoteGate = remoteProfile == null
+    // Extract gate values for onboarding check
+    final localGate = service.hasCompletedOnboardingOrNull;
+    final remoteGate = remoteProfile == null
         ? null
         : remoteProfile['has_completed_onboarding'] as bool?;
 
     if (!mounted || _hasNavigated) return null;
 
     // Backfill: if local true && remote != true, push to server
-    if (_lastLocalGate == true && _lastRemoteGate != true) {
+    if (localGate == true && remoteGate != true) {
       _performBackfill();
     }
 
     // Sync local state if remote says true
-    if (_lastRemoteGate == true && _lastLocalGate != true) {
+    if (remoteGate == true && localGate != true) {
       try {
         await service.setHasCompletedOnboarding(true);
       } catch (e, st) {
@@ -475,7 +478,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       }
     }
 
-    return null;
+    return (
+      consentRoute: needsConsent ? RoutePaths.consentIntro : null,
+      remoteGate: remoteGate,
+      localGate: localGate,
+    );
   }
 
   /// Loads UserStateService with one retry on failure.
