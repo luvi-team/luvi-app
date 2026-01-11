@@ -37,10 +37,17 @@ class SplashController extends _$SplashController {
 
   int _runToken = 0;
   bool _inFlight = false;
+  bool _disposed = false;
   int _manualRetryCount = 0;
 
   @override
-  SplashState build() => const SplashInitial();
+  SplashState build() {
+    ref.onDispose(() {
+      _disposed = true;
+      _runToken++;
+    });
+    return const SplashInitial();
+  }
 
   /// Sets the race-retry delay. Call before [checkGates] for test isolation.
   void setRaceRetryDelay(Duration delay) {
@@ -151,9 +158,9 @@ class SplashController extends _$SplashController {
 
   /// Checks if current run is still valid (mounted + token match).
   bool _isValidRun(int token) {
-    // ref.mounted is only available in Notifier subclasses
-    // For autoDispose, we rely on token invalidation
-    return token == _runToken;
+    // For autoDispose, async work may outlive the provider instance.
+    // We mark the run invalid on dispose by toggling [_disposed] + bumping [_runToken].
+    return !_disposed && token == _runToken;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -225,6 +232,7 @@ class SplashController extends _$SplashController {
         await service.bindUser(uid);
       } catch (e, st) {
         log.e('bindUser failed', tag: 'splash', error: sanitizeError(e), stack: st);
+        if (!_isValidRun(token)) return null;
         state = SplashUnknown(
           canRetry: _manualRetryCount < SplashUnknown.maxRetries,
           retryCount: _manualRetryCount,
@@ -262,10 +270,12 @@ class SplashController extends _$SplashController {
     }
 
     if (!remoteProfileLoaded) {
-      state = SplashUnknown(
-        canRetry: _manualRetryCount < SplashUnknown.maxRetries,
-        retryCount: _manualRetryCount,
-      );
+      if (_isValidRun(token)) {
+        state = SplashUnknown(
+          canRetry: _manualRetryCount < SplashUnknown.maxRetries,
+          retryCount: _manualRetryCount,
+        );
+      }
       return null;
     }
 
@@ -312,10 +322,12 @@ class SplashController extends _$SplashController {
           error: sanitizeError(e) ?? e.runtimeType,
           stack: st,
         );
-        ref.read(analyticsRecorderProvider).recordEvent(
-          'splash_sync_failure',
-          properties: {'operation': 'onboarding_sync'},
-        );
+        if (_isValidRun(token)) {
+          ref.read(analyticsRecorderProvider).recordEvent(
+            'splash_sync_failure',
+            properties: {'operation': 'onboarding_sync'},
+          );
+        }
       }
     }
 
@@ -342,6 +354,9 @@ class SplashController extends _$SplashController {
         error: sanitizeError(e) ?? e.runtimeType,
         stack: st,
       );
+      if (_disposed) {
+        Error.throwWithStackTrace(e, st);
+      }
       // Invalidate provider to clear cached error before retry
       ref.invalidate(userStateServiceProvider);
       // One retry with shorter timeout
@@ -421,10 +436,12 @@ class SplashController extends _$SplashController {
           error: sanitizeError(e) ?? e.runtimeType,
           stack: st,
         );
-        ref.read(analyticsRecorderProvider).recordEvent(
-          'splash_sync_failure',
-          properties: {'operation': 'consent_version'},
-        );
+        if (!_disposed) {
+          ref.read(analyticsRecorderProvider).recordEvent(
+            'splash_sync_failure',
+            properties: {'operation': 'consent_version'},
+          );
+        }
       }
     }
 
@@ -439,10 +456,12 @@ class SplashController extends _$SplashController {
           error: sanitizeError(e) ?? e.runtimeType,
           stack: st,
         );
-        ref.read(analyticsRecorderProvider).recordEvent(
-          'splash_sync_failure',
-          properties: {'operation': 'welcome_sync'},
-        );
+        if (!_disposed) {
+          ref.read(analyticsRecorderProvider).recordEvent(
+            'splash_sync_failure',
+            properties: {'operation': 'welcome_sync'},
+          );
+        }
       }
     }
   }
