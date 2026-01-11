@@ -33,6 +33,23 @@ const String _consentRootPath = '/consent';
 const String _consentPathPrefix = '$_consentRootPath/';
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Post-Auth Protected Routes
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// All routes that require post-auth guards (consent + onboarding).
+///
+/// When adding new post-auth routes in router.dart:
+/// 1. Add `redirect: _postAuthGuard` to the GoRoute
+/// 2. Add the path here to ensure wiring test coverage
+const List<String> kPostAuthPaths = [
+  RoutePaths.heute,
+  RoutePaths.workoutDetail,
+  RoutePaths.trainingsOverview,
+  RoutePaths.cycleOverview,
+  RoutePaths.profile,
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Route Predicates (Pure Functions - Testable)
 // ─────────────────────────────────────────────────────────────────────────────
 

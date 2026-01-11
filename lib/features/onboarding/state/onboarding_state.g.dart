@@ -51,7 +51,7 @@ final class OnboardingNotifierProvider
 }
 
 String _$onboardingNotifierHash() =>
-    r'ed036cb7b3edfd766ff473e3a9dfb6d18db86624';
+    r'd884d14302b1ed31df2c55cbedddf6c37f296110';
 
 /// Riverpod notifier for onboarding state management.
 /// keepAlive: true ensures state persists across all onboarding screens
