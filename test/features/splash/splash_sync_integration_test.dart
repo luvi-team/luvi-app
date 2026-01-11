@@ -108,60 +108,8 @@ class PersistentFalseGateReader implements OnboardingGateProfileReader {
 void main() {
   TestConfig.ensureInitialized();
 
-  group('OnboardingGateProfileReader Mocks', () {
-    test('AlwaysTrueGateReader returns true', () async {
-      final reader = AlwaysTrueGateReader();
-      final result = await reader.fetchRemoteOnboardingGate();
-      expect(result, isTrue);
-    });
-
-    test('AlwaysFalseGateReader returns false', () async {
-      final reader = AlwaysFalseGateReader();
-      final result = await reader.fetchRemoteOnboardingGate();
-      expect(result, isFalse);
-    });
-
-    test('AlwaysNullGateReader returns null', () async {
-      final reader = AlwaysNullGateReader();
-      final result = await reader.fetchRemoteOnboardingGate();
-      expect(result, isNull);
-    });
-
-    test('AlwaysFailingGateReader throws', () async {
-      final reader = AlwaysFailingGateReader();
-      await expectLater(
-        reader.fetchRemoteOnboardingGate(),
-        throwsException,
-      );
-    });
-
-    test('MockOnboardingGateProfileReader tracks call count', () async {
-      final reader = MockOnboardingGateProfileReader(remoteGateValue: true);
-      expect(reader.callCount, 0);
-
-      await reader.fetchRemoteOnboardingGate();
-      expect(reader.callCount, 1);
-
-      await reader.fetchRemoteOnboardingGate();
-      expect(reader.callCount, 2);
-    });
-
-    test('MockOnboardingGateProfileReader throwOnFirstCall behavior', () async {
-      final reader = MockOnboardingGateProfileReader(
-        remoteGateValue: true,
-        throwOnFirstCall: true,
-      );
-
-      // First call throws
-      await expectLater(reader.fetchRemoteOnboardingGate(), throwsException);
-      expect(reader.callCount, 1);
-
-      // Second call succeeds
-      final result = await reader.fetchRemoteOnboardingGate();
-      expect(result, isTrue);
-      expect(reader.callCount, 2);
-    });
-  });
+  // Note: Mock self-tests removed per cleanup - mocks are trusted when used
+  // in production tests below. See splash_sync_integration_test.dart history.
 
   group('determineOnboardingGateRoute Integration', () {
     const homeRoute = HeuteScreen.routeName;

@@ -370,5 +370,116 @@ void main() {
             'max 2 calls from initial + internal retry',
       );
     });
+
+    test('checkGates() nach SplashResolved ist no-op', () async {
+      int callCount = 0;
+
+      final container = createTestContainer(
+        prefs: prefs,
+        profileFetcher: () async {
+          callCount++;
+          return <String, dynamic>{
+            'accepted_consent_version': ConsentConfig.currentVersionInt,
+            'has_completed_onboarding': true,
+          };
+        },
+      );
+      addTearDown(container.dispose);
+
+      final controller = container.read(splashControllerProvider.notifier);
+
+      // First call resolves
+      await controller.checkGates();
+      expect(container.read(splashControllerProvider), isA<SplashResolved>());
+      final callCountAfterFirst = callCount;
+
+      // Second call should be no-op
+      await controller.checkGates();
+
+      // State unchanged, no new fetches
+      expect(container.read(splashControllerProvider), isA<SplashResolved>());
+      expect(callCount, equals(callCountAfterFirst));
+    });
+  });
+
+  group('SplashController Race-Retry', () {
+    test('race-retry success: remote false→true → SplashResolved(heute)',
+        () async {
+      int fetchCount = 0;
+
+      final container = createTestContainer(
+        prefs: prefs,
+        userHasCompletedOnboarding: true, // local = true
+        profileFetcher: () async {
+          fetchCount++;
+          return <String, dynamic>{
+            'accepted_consent_version': ConsentConfig.currentVersionInt,
+            // First fetch (consent gate): remote false (race condition)
+            // Second fetch (race-retry): remote true (server synced)
+            'has_completed_onboarding': fetchCount > 1,
+          };
+        },
+      );
+
+      // Keep provider alive during async operations (required for autoDispose)
+      final subscription = container.listen(
+        splashControllerProvider,
+        (prev, next) {},
+      );
+      addTearDown(() {
+        subscription.close();
+        container.dispose();
+      });
+
+      final controller = container.read(splashControllerProvider.notifier);
+      controller.setRaceRetryDelay(const Duration(milliseconds: 1));
+
+      await controller.checkGates();
+
+      final state = container.read(splashControllerProvider);
+      expect(state, isA<SplashResolved>());
+      expect(
+        (state as SplashResolved).targetRoute,
+        equals(RoutePaths.heute),
+      );
+
+      // Verify: consent fetch (1-2) + race-retry fetch (1-2) = 2-4 calls
+      expect(fetchCount, greaterThanOrEqualTo(2));
+    });
+
+    test('race-retry failure: remote stays false → SplashResolved(onboarding01)',
+        () async {
+      final container = createTestContainer(
+        prefs: prefs,
+        userHasCompletedOnboarding: true, // local = true
+        profileFetcher: () async => <String, dynamic>{
+          'accepted_consent_version': ConsentConfig.currentVersionInt,
+          'has_completed_onboarding': false, // Always false
+        },
+      );
+
+      // Keep provider alive during async operations (required for autoDispose)
+      final subscription = container.listen(
+        splashControllerProvider,
+        (prev, next) {},
+      );
+      addTearDown(() {
+        subscription.close();
+        container.dispose();
+      });
+
+      final controller = container.read(splashControllerProvider.notifier);
+      controller.setRaceRetryDelay(const Duration(milliseconds: 1));
+
+      await controller.checkGates();
+
+      final state = container.read(splashControllerProvider);
+      expect(state, isA<SplashResolved>());
+      expect(
+        (state as SplashResolved).targetRoute,
+        equals(RoutePaths.onboarding01),
+        reason: 'After race-retry still false → fallback to onboarding',
+      );
+    });
   });
 }

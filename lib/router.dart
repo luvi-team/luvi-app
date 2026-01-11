@@ -334,7 +334,8 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
     ),
 
     // ─────────────────────────────────────────────────────────────────────
-    // Dashboard (All routes guarded by _postAuthGuard)
+    // Dashboard (post-auth protected routes)
+    // WICHTIG: Neue Routes → redirect: _postAuthGuard + kPostAuthPaths in routes.dart
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
       path: RoutePaths.heute,

@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/router.dart';
 
 import '../../support/test_app.dart';
@@ -25,13 +26,8 @@ void main() {
     });
 
     group('post-auth routes must have redirect guard', () {
-      final postAuthPaths = [
-        RoutePaths.heute,
-        RoutePaths.workoutDetail,
-        RoutePaths.trainingsOverview,
-        RoutePaths.cycleOverview,
-        RoutePaths.profile,
-      ];
+      // Use shared constant from routes.dart to ensure single source of truth
+      final postAuthPaths = kPostAuthPaths;
 
       for (final path in postAuthPaths) {
         test('$path has redirect guard', () {
@@ -79,13 +75,8 @@ void main() {
 
     test('all post-auth routes use consistent guard (same redirect function)',
         () {
-      final postAuthPaths = [
-        RoutePaths.heute,
-        RoutePaths.workoutDetail,
-        RoutePaths.trainingsOverview,
-        RoutePaths.cycleOverview,
-        RoutePaths.profile,
-      ];
+      // Use shared constant from routes.dart to ensure single source of truth
+      final postAuthPaths = kPostAuthPaths;
 
       final redirectFunctions = postAuthPaths
           .map((path) => _findRouteByPath(routes, path)?.redirect)

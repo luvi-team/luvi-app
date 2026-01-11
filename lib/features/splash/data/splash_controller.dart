@@ -148,6 +148,7 @@ class SplashController extends _$SplashController {
         );
       case RaceRetryNeeded():
         // Unreachable: _evaluateOnboardingGateWithRetry handles internally
+        assert(false, 'RaceRetryNeeded should never reach _runGateSequence switch');
         log.w('unexpected RaceRetryNeeded after retry', tag: 'splash');
         state = SplashUnknown(
           canRetry: _manualRetryCount < SplashUnknown.maxRetries,

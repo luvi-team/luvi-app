@@ -1,15 +1,19 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
+
 import 'package:luvi_app/core/navigation/route_paths.dart';
 
 /// Determines the target route based on auth state, consent version, and
 /// onboarding completion.
 ///
 /// Extracted for testability and reusability.
+/// This function is only used in tests; production code uses [SplashController].
 ///
 /// Logic:
 /// - Not authenticated → AuthSignInScreen
 /// - Authenticated + needs consent (null or outdated version) → ConsentIntroScreen
 /// - Authenticated + consent OK + hasCompletedOnboarding != true → Onboarding01
 /// - Authenticated + consent OK + hasCompletedOnboarding == true → defaultTarget
+@visibleForTesting
 String determineTargetRoute({
   required bool isAuth,
   required int? acceptedConsentVersion,
