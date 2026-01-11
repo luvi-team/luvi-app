@@ -39,6 +39,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _skipAnimation = false;
   bool _skipAnimationHandled = false;
   bool _hasNavigated = false;
+  bool _hasConfiguredDelay = false;
 
   late final ProviderSubscription<SplashState> _subscription;
 
@@ -63,6 +64,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    // Configure race-retry delay once (immutable after construction)
+    if (!_hasConfiguredDelay) {
+      _hasConfiguredDelay = true;
+      ref.read(splashControllerProvider.notifier).setRaceRetryDelay(
+        widget.raceRetryDelay,
+      );
+    }
+
     // Read skipAnimation query param once (post-login redirect uses this)
     final routerState = GoRouterState.of(context);
     _skipAnimation = routerState.uri.queryParameters['skipAnimation'] == 'true';
@@ -85,10 +95,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   void _triggerGateCheck() {
-    // Configure race-retry delay if needed (for tests)
-    ref.read(splashControllerProvider.notifier).setRaceRetryDelay(
-      widget.raceRetryDelay,
-    );
     ref.read(splashControllerProvider.notifier).checkGates();
   }
 

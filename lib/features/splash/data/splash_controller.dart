@@ -6,6 +6,7 @@ import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
+import 'package:luvi_app/core/utils/type_parsers.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/splash/data/splash_dependencies.dart';
 import 'package:luvi_app/features/splash/data/splash_gate_functions.dart';
@@ -268,12 +269,13 @@ class SplashController extends _$SplashController {
       return null;
     }
 
-    final int? remoteAcceptedVersion = remoteProfileLoaded
-        ? (remoteProfile?['accepted_consent_version'] as int?)
-        : null;
-    final bool? remoteHasSeenWelcome = remoteProfileLoaded
-        ? (remoteProfile?['has_seen_welcome'] as bool?)
-        : null;
+    // remoteProfileLoaded is always true here (earlier return on false)
+    final remoteAcceptedVersion = parseNullableInt(
+      remoteProfile?['accepted_consent_version'],
+    );
+    final remoteHasSeenWelcome = parseNullableBool(
+      remoteProfile?['has_seen_welcome'],
+    );
 
     await _syncRemoteCacheToLocal(
       service: service,
@@ -288,9 +290,9 @@ class SplashController extends _$SplashController {
 
     // Extract gate values for onboarding check
     final localGate = service.hasCompletedOnboardingOrNull;
-    final remoteGate = remoteProfile == null
-        ? null
-        : remoteProfile['has_completed_onboarding'] as bool?;
+    final remoteGate = parseNullableBool(
+      remoteProfile?['has_completed_onboarding'],
+    );
 
     if (!_isValidRun(token)) return null;
 
@@ -468,9 +470,9 @@ class SplashController extends _$SplashController {
       try {
         final remoteProfile =
             await _fetchRemoteProfileWithRetry(useTimeout: useTimeout);
-        remoteGate = remoteProfile == null
-            ? null
-            : remoteProfile['has_completed_onboarding'] as bool?;
+        remoteGate = parseNullableBool(
+          remoteProfile?['has_completed_onboarding'],
+        );
       } catch (e, st) {
         log.w(
           'race-retry fetch failed',

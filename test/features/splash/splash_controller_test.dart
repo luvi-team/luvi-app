@@ -357,12 +357,17 @@ void main() {
         equals(RoutePaths.heute),
       );
 
-      // profileFetcher should only be called once (+ retry = max 2)
-      // due to _inFlight guard preventing parallel execution
+      // The _inFlight guard prevents parallel execution of checkGates().
+      // Expected call count breakdown:
+      // - _fetchRemoteProfileWithRetry: up to 2 calls (initial + 1 internal retry on failure)
+      // - No RaceRetryNeeded path in this test (all gates pass → remote=true, local=true)
+      // - Second concurrent checkGates() call is blocked by _inFlight guard
+      // Therefore, callCount should be ≤ 2.
       expect(
         callCount,
         lessThanOrEqualTo(2),
-        reason: '_inFlight guard should prevent parallel execution',
+        reason: '_inFlight guard should prevent parallel execution; '
+            'max 2 calls from initial + internal retry',
       );
     });
   });
