@@ -23,7 +23,7 @@ validate_doc() {
   local mime_type
   mime_type="$(file -b --mime-type "$path" 2>/dev/null)"
   if [[ "$mime_type" != text/* ]]; then
-    fail "$f: Datei ist kein Textdatei (MIME: $mime_type)"
+    fail "$f: Datei ist keine Textdatei (MIME: $mime_type)"
     return
   fi
 
@@ -57,6 +57,12 @@ EXIT=0
 # Dependency check (ripgrep)
 if ! command -v rg >/dev/null 2>&1; then
   printf 'error: Dependency ripgrep (rg) is not installed.\n' >&2
+  exit 1
+fi
+
+# Dependency check (file command)
+if ! command -v file >/dev/null 2>&1; then
+  printf 'error: Dependency file is not installed.\n' >&2
   exit 1
 fi
 
