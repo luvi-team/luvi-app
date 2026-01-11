@@ -7,6 +7,7 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/theme/app_theme.dart' show ShadowTokens;
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
@@ -275,15 +276,17 @@ class _WelcomePage extends StatelessWidget {
   }
 }
 
-/// Hero frame with border, radius, and clipped content.
+/// Hero frame with border, radius, drop shadow, and clipped content.
 ///
 /// Figma specs:
 /// - Width: 354px, Height: 475px (fixed on ≥393px viewport)
 /// - Border radius: 24px
-/// - Border: 1px solid #000000
+/// - Border: 2px solid #FFFFFF (white)
+/// - Shadow: 0px 4px 4px rgba(0,0,0,0.25)
 ///
 /// Uses Single-Clip + Border Overlay pattern to avoid anti-aliasing
 /// artifacts ("thick spots") from double-clipping (AC-3).
+/// Shadow is applied to outer Container to prevent clipping by Positioned.fill.
 class _HeroFrame extends StatelessWidget {
   const _HeroFrame({
     super.key,
@@ -298,9 +301,25 @@ class _HeroFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    // Theme-based shadow token (CLAUDE.md: use design tokens)
+    final shadowTokens = Theme.of(context).extension<ShadowTokens>();
+
+    return Container(
       width: width,
       height: height,
+      decoration: BoxDecoration(
+        // Fix: Background matches screen to prevent gray shadow bleed-through
+        color: DsColors.splashBg,
+        borderRadius: BorderRadius.circular(Sizes.welcomeHeroRadius),
+        boxShadow: [
+          shadowTokens?.heroCardDrop ??
+              const BoxShadow(
+                color: Color(0x40000000), // rgba(0,0,0,0.25) fallback
+                offset: Offset(0, 4),
+                blurRadius: 4,
+              ),
+        ],
+      ),
       child: Stack(
         children: [
           // Content with SINGLE clip (no double-clipping!)
@@ -317,14 +336,14 @@ class _HeroFrame extends StatelessWidget {
               ),
             ),
           ),
-          // Border as overlay (AC-3: DsColors.grayscaleBlack, no thick spots)
+          // Border as overlay (AC-3: white border, no thick spots)
           Positioned.fill(
             child: IgnorePointer(
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Sizes.welcomeHeroRadius),
                   border: Border.all(
-                    color: DsColors.grayscaleBlack,
+                    color: DsColors.white,
                     width: Sizes.welcomeHeroBorderWidth,
                   ),
                 ),
