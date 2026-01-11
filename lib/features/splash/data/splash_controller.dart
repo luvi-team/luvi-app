@@ -256,21 +256,8 @@ class SplashController extends _$SplashController {
     final localAcceptedVersion = service.acceptedConsentVersionOrNull;
     final localHasSeenWelcome = service.hasSeenWelcomeOrNull;
 
-    Map<String, dynamic>? remoteProfile;
-    bool remoteProfileLoaded = false;
-    try {
-      remoteProfile = await _fetchRemoteProfileWithRetry(useTimeout: useTimeout);
-      remoteProfileLoaded = true;
-    } catch (e, st) {
-      log.w(
-        'remote profile fetch failed',
-        tag: 'splash',
-        error: sanitizeError(e) ?? e.runtimeType,
-        stack: st,
-      );
-    }
-
-    if (!remoteProfileLoaded) {
+    final profileResult = await _loadRemoteProfile(useTimeout: useTimeout);
+    if (!profileResult.loaded) {
       if (_isValidRun(token)) {
         state = SplashUnknown(
           canRetry: _manualRetryCount < SplashUnknown.maxRetries,
@@ -280,39 +267,84 @@ class SplashController extends _$SplashController {
       return null;
     }
 
-    // remoteProfileLoaded is always true here (earlier return on false)
-    final remoteAcceptedVersion = parseNullableInt(
-      remoteProfile?['accepted_consent_version'],
-    );
-    final remoteHasSeenWelcome = parseNullableBool(
-      remoteProfile?['has_seen_welcome'],
-    );
+    final remoteValues = _parseRemoteProfile(profileResult.profile);
 
     await _syncRemoteCacheToLocal(
       service: service,
-      remoteAcceptedVersion: remoteAcceptedVersion,
-      remoteHasSeenWelcome: remoteHasSeenWelcome,
+      remoteAcceptedVersion: remoteValues.acceptedVersion,
+      remoteHasSeenWelcome: remoteValues.hasSeenWelcome,
       localAcceptedVersion: localAcceptedVersion,
       localHasSeenWelcome: localHasSeenWelcome,
     );
 
-    final needsConsent = remoteAcceptedVersion == null ||
-        remoteAcceptedVersion < ConsentConfig.currentVersionInt;
-
-    // Extract gate values for onboarding check
+    final consentRoute = _evaluateConsentRoute(remoteValues.acceptedVersion);
     final localGate = service.hasCompletedOnboardingOrNull;
-    final remoteGate = parseNullableBool(
-      remoteProfile?['has_completed_onboarding'],
-    );
+    final remoteGate = remoteValues.remoteGate;
 
     if (!_isValidRun(token)) return null;
 
-    // Backfill: if local true && remote != true, push to server
+    _maybeBackfillOnboarding(localGate: localGate, remoteGate: remoteGate);
+    await _syncLocalOnboardingIfNeeded(
+      service: service,
+      remoteGate: remoteGate,
+      localGate: localGate,
+      token: token,
+    );
+
+    return (
+      consentRoute: consentRoute,
+      remoteGate: remoteGate,
+      localGate: localGate,
+    );
+  }
+
+  Future<({Map<String, dynamic>? profile, bool loaded})> _loadRemoteProfile({
+    required bool useTimeout,
+  }) async {
+    try {
+      final profile = await _fetchRemoteProfileWithRetry(useTimeout: useTimeout);
+      return (profile: profile, loaded: true);
+    } catch (e, st) {
+      log.w(
+        'remote profile fetch failed',
+        tag: 'splash',
+        error: sanitizeError(e) ?? e.runtimeType,
+        stack: st,
+      );
+      return (profile: null, loaded: false);
+    }
+  }
+
+  ({int? acceptedVersion, bool? hasSeenWelcome, bool? remoteGate})
+      _parseRemoteProfile(Map<String, dynamic>? profile) {
+    return (
+      acceptedVersion: parseNullableInt(profile?['accepted_consent_version']),
+      hasSeenWelcome: parseNullableBool(profile?['has_seen_welcome']),
+      remoteGate: parseNullableBool(profile?['has_completed_onboarding']),
+    );
+  }
+
+  String? _evaluateConsentRoute(int? remoteAcceptedVersion) {
+    final needsConsent = remoteAcceptedVersion == null ||
+        remoteAcceptedVersion < ConsentConfig.currentVersionInt;
+    return needsConsent ? RoutePaths.consentIntro : null;
+  }
+
+  void _maybeBackfillOnboarding({
+    required bool? localGate,
+    required bool? remoteGate,
+  }) {
     if (localGate == true && remoteGate != true) {
       _performBackfill();
     }
+  }
 
-    // Sync local state if remote says true
+  Future<void> _syncLocalOnboardingIfNeeded({
+    required UserStateService service,
+    required bool? remoteGate,
+    required bool? localGate,
+    required int token,
+  }) async {
     if (remoteGate == true && localGate != true) {
       try {
         await service.setHasCompletedOnboarding(true);
@@ -331,12 +363,6 @@ class SplashController extends _$SplashController {
         }
       }
     }
-
-    return (
-      consentRoute: needsConsent ? RoutePaths.consentIntro : null,
-      remoteGate: remoteGate,
-      localGate: localGate,
-    );
   }
 
   /// Loads UserStateService with one retry on failure.

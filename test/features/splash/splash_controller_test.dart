@@ -443,8 +443,8 @@ void main() {
         equals(RoutePaths.heute),
       );
 
-      // Verify: consent fetch (1-2) + race-retry fetch (1-2) = 2-4 calls
-      expect(fetchCount, greaterThanOrEqualTo(2));
+      // Verify: consent fetch + race-retry fetch = exactly 2 calls
+      expect(fetchCount, equals(2));
     });
 
     test('race-retry failure: remote stays false → SplashResolved(onboarding01)',
