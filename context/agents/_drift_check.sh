@@ -20,11 +20,13 @@ validate_doc() {
   fi
 
   # Pre-check 2: Datei muss Text sein (via file command MIME type)
-  local mime_type
-  mime_type="$(file -b --mime-type "$path" 2>/dev/null)"
-  if [[ "$mime_type" != text/* ]]; then
-    fail "$f: Datei ist keine Textdatei (MIME: $mime_type)"
-    return
+  if [[ "$FILE_CMD_AVAILABLE" == "true" ]]; then
+    local mime_type
+    mime_type="$(file -b --mime-type "$path" 2>/dev/null)"
+    if [[ "$mime_type" != text/* ]]; then
+      fail "$f: Datei ist keine Textdatei (MIME: $mime_type)"
+      return
+    fi
   fi
 
   if rg -n "^acceptance_version:\s*\"?1\.1\"?\s*$" "$path" >/dev/null 2>&1; then
@@ -54,16 +56,18 @@ validate_doc() {
 
 EXIT=0
 
-# Dependency check (ripgrep)
+# Dependency check (ripgrep) - required
 if ! command -v rg >/dev/null 2>&1; then
-  printf 'error: Dependency ripgrep (rg) is not installed.\n' >&2
+  printf 'error: Abhängigkeit ripgrep (rg) ist nicht installiert.\n' >&2
   exit 1
 fi
 
-# Dependency check (file command)
-if ! command -v file >/dev/null 2>&1; then
-  printf 'error: Dependency file is not installed.\n' >&2
-  exit 1
+# Dependency check (file command) - optional, with warning
+FILE_CMD_AVAILABLE=false
+if command -v file >/dev/null 2>&1; then
+  FILE_CMD_AVAILABLE=true
+else
+  printf 'warning: file Befehl nicht verfügbar, MIME-Typ-Checks werden übersprungen.\n' >&2
 fi
 
 printf "# Agents Drift Report\n\nGenerated: %s\n\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >"$REPORT"

@@ -117,20 +117,29 @@ String? _postAuthGuard(BuildContext context, GoRouterState state) {
   final container = ProviderScope.containerOf(context, listen: false);
   final asyncValue = container.read(userStateServiceProvider);
 
-  if (asyncValue.isLoading) {
-    return '${RoutePaths.splash}?skipAnimation=true';
-  }
+  return asyncValue.when(
+    data: (service) {
+      final hasCompletedOnboarding = service.hasCompletedOnboardingOrNull;
+      final acceptedConsentVersion = service.acceptedConsentVersionOrNull;
+      final isStateKnown = hasCompletedOnboarding != null;
 
-  final service = asyncValue.whenOrNull(data: (s) => s);
-  final hasCompletedOnboarding = service?.hasCompletedOnboardingOrNull;
-  final acceptedConsentVersion = service?.acceptedConsentVersionOrNull;
-  final isStateKnown = service != null && hasCompletedOnboarding != null;
-
-  return routes.homeGuardRedirectWithConsent(
-    isStateKnown: isStateKnown,
-    hasCompletedOnboarding: hasCompletedOnboarding,
-    acceptedConsentVersion: acceptedConsentVersion,
-    currentConsentVersion: ConsentConfig.currentVersionInt,
+      return routes.homeGuardRedirectWithConsent(
+        isStateKnown: isStateKnown,
+        hasCompletedOnboarding: hasCompletedOnboarding,
+        acceptedConsentVersion: acceptedConsentVersion,
+        currentConsentVersion: ConsentConfig.currentVersionInt,
+      );
+    },
+    loading: () => '${RoutePaths.splash}?skipAnimation=true',
+    error: (error, st) {
+      log.w(
+        'post_auth_guard_state_error',
+        tag: 'router',
+        error: error,
+        stack: st,
+      );
+      return '${RoutePaths.splash}?skipAnimation=true';
+    },
   );
 }
 

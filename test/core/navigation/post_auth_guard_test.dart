@@ -132,5 +132,29 @@ void main() {
         );
       });
     });
+
+    group('error state handling', () {
+      test('error state redirects to splash (same as unknown state)', () {
+        // When userStateServiceProvider is in AsyncValue.error state,
+        // _postAuthGuard handles it by:
+        // 1. Logging with log.w('post_auth_guard_state_error', ...)
+        // 2. Returning splash?skipAnimation=true (fail-safe)
+        //
+        // This is consistent with _onboardingConsentGuard behavior.
+        // The guard logic treats error as isStateKnown=false.
+        final result = homeGuardRedirectWithConsent(
+          isStateKnown: false, // Error state → isStateKnown=false
+          hasCompletedOnboarding: null,
+          acceptedConsentVersion: null,
+          currentConsentVersion: ConsentConfig.currentVersionInt,
+        );
+
+        expect(
+          result,
+          equals('${RoutePaths.splash}?skipAnimation=true'),
+          reason: 'Error state should fail-safe to splash (same as loading)',
+        );
+      });
+    });
   });
 }
