@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kReleaseMode;
+import 'package:flutter/foundation.dart' show kDebugMode, kReleaseMode;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:luvi_app/core/analytics/analytics_recorder.dart';
@@ -147,9 +147,19 @@ class SplashController extends _$SplashController {
           retryCount: _manualRetryCount,
         );
       case RaceRetryNeeded():
-        // Unreachable: _evaluateOnboardingGateWithRetry handles internally
-        assert(false, 'RaceRetryNeeded should never reach _runGateSequence switch');
-        log.w('unexpected RaceRetryNeeded after retry', tag: 'splash');
+        // Unreachable: _evaluateOnboardingGateWithRetry handles internally.
+        // If reached, it indicates a logic error in gate evaluation.
+        log.e(
+          'unexpected RaceRetryNeeded after retry - logic error',
+          tag: 'splash',
+        );
+        // Debug/Test: Crash to surface issue immediately
+        if (kDebugMode) {
+          throw StateError(
+            'RaceRetryNeeded should never reach _runGateSequence switch',
+          );
+        }
+        // Release: Graceful fallback to unknown state
         state = SplashUnknown(
           canRetry: _manualRetryCount < SplashUnknown.maxRetries,
           retryCount: _manualRetryCount,
@@ -411,6 +421,9 @@ class SplashController extends _$SplashController {
         error: sanitizeError(e) ?? e.runtimeType,
         stack: st,
       );
+      if (_disposed) {
+        return null;
+      }
       final fetchFuture = fetcher();
       return useTimeout
           ? await fetchFuture.timeout(_retryTimeout)
