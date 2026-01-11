@@ -242,6 +242,12 @@ void main() {
       expect(isOnboardingRoute('/auth/signin'), isFalse);
       expect(isOnboardingRoute('/heute'), isFalse);
     });
+
+    test('returns false for edge cases (empty, root paths)', () {
+      expect(isOnboardingRoute(''), isFalse);
+      expect(isOnboardingRoute('/'), isFalse);
+      // Note: '/onboarding' correctly returns true (base onboarding path matches)
+    });
   });
 
   group('isWelcomeRoute predicate', () {

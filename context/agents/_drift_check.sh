@@ -13,6 +13,20 @@ validate_doc() {
   local path="$1"
   local f="$(basename "$path")"
 
+  # Pre-check 1: Datei muss existieren und nicht leer sein
+  if [ ! -s "$path" ]; then
+    fail "$f: Datei ist leer oder nicht vorhanden"
+    return
+  fi
+
+  # Pre-check 2: Datei muss Text sein (via file command MIME type)
+  local mime_type
+  mime_type="$(file -b --mime-type "$path" 2>/dev/null)"
+  if [[ "$mime_type" != text/* ]]; then
+    fail "$f: Datei ist kein Textdatei (MIME: $mime_type)"
+    return
+  fi
+
   if rg -n "^acceptance_version:\s*\"?1\.1\"?\s*$" "$path" >/dev/null 2>&1; then
     pass "$f: acceptance_version 1.1"
   else

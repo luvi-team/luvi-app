@@ -314,7 +314,7 @@ class _HeroFrame extends StatelessWidget {
         boxShadow: [
           shadowTokens?.heroCardDrop ??
               const BoxShadow(
-                color: Color(0x40000000), // rgba(0,0,0,0.25) fallback
+                color: DsColors.shadowHeroCard, // rgba(0,0,0,0.25) fallback
                 offset: Offset(0, 4),
                 blurRadius: 4,
               ),
@@ -431,24 +431,24 @@ class _HeadlineBlock extends StatelessWidget {
       case 0:
         // W1: 28px Bold, line-height 36/28
         return (
-          TypographyTokens.size28,
+          WelcomeTypography.w1FontSize,
           FontWeight.w700,
-          TypographyTokens.lineHeightRatio36on28,
+          WelcomeTypography.w1LineHeight,
         );
       case 1:
         // W2: 30px Bold, line-height 38/30
         return (
-          TypographyTokens.size30,
+          WelcomeTypography.w2FontSize,
           FontWeight.w700,
-          TypographyTokens.lineHeightRatio38on30,
+          WelcomeTypography.w2LineHeight,
         );
       case 2:
       default:
         // W3: 32px SemiBold, line-height 38/32
         return (
-          TypographyTokens.size32,
+          WelcomeTypography.w3FontSize,
           FontWeight.w600,
-          TypographyTokens.lineHeightRatio38on32,
+          WelcomeTypography.w3LineHeight,
         );
     }
   }

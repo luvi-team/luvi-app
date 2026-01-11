@@ -114,3 +114,41 @@ class ConsentTypography {
   /// Consent intro body lineHeight ratio (Figma: 29.25/18 = 1.625)
   static const double introBodyLineHeight = TypographyTokens.lineHeightRatio29_25on18;
 }
+
+/// Welcome screen typography constants (Figma Welcome Rebrand).
+///
+/// These constants define reusable text style parameters for welcome screens.
+/// Values delegate to [TypographyTokens] to avoid maintenance drift.
+class WelcomeTypography {
+  const WelcomeTypography._();
+
+  // ─── W1 Headline (Playfair Display Bold 28px) ───
+  /// W1 headline fontSize (Figma: 28px)
+  static const double w1FontSize = TypographyTokens.size28;
+
+  /// W1 headline lineHeight ratio (Figma: 36/28)
+  static const double w1LineHeight = TypographyTokens.lineHeightRatio36on28;
+
+  /// W1 headline fontWeight (Figma: Bold 700)
+  static const int w1FontWeight = 700;
+
+  // ─── W2 Headline (Playfair Display Bold 30px) ───
+  /// W2 headline fontSize (Figma: 30px)
+  static const double w2FontSize = TypographyTokens.size30;
+
+  /// W2 headline lineHeight ratio (Figma: 38/30)
+  static const double w2LineHeight = TypographyTokens.lineHeightRatio38on30;
+
+  /// W2 headline fontWeight (Figma: Bold 700)
+  static const int w2FontWeight = 700;
+
+  // ─── W3 Headline (Playfair Display SemiBold 32px) ───
+  /// W3 headline fontSize (Figma: 32px)
+  static const double w3FontSize = TypographyTokens.size32;
+
+  /// W3 headline lineHeight ratio (Figma: 38/32)
+  static const double w3LineHeight = TypographyTokens.lineHeightRatio38on32;
+
+  /// W3 headline fontWeight (Figma: SemiBold 600)
+  static const int w3FontWeight = 600;
+}

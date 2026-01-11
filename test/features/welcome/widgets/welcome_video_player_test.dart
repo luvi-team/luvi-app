@@ -49,7 +49,7 @@ void main() {
       expect(find.byKey(const Key('welcome_video_loading')), findsOneWidget);
     });
 
-    testWidgets('handles invalid asset gracefully with error fallback', (
+    testWidgets('handles invalid asset gracefully without crashing', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -67,22 +67,6 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Widget should still be in the tree (not crash)
-      expect(find.byType(WelcomeVideoPlayer), findsOneWidget);
-    });
-
-    testWidgets('widget type is correctly identified', (tester) async {
-      await tester.pumpWidget(
-        buildLocalizedApp(
-          theme: AppTheme.buildAppTheme(),
-          home: const Scaffold(
-            body: WelcomeVideoPlayer(
-              assetPath: 'assets/videos/welcome/welcome_01.mp4',
-            ),
-          ),
-        ),
-      );
-
-      // Should build without errors and be findable by type
       expect(find.byType(WelcomeVideoPlayer), findsOneWidget);
     });
 

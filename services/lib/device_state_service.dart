@@ -30,10 +30,18 @@ class DeviceStateService {
   /// Mark the welcome flow as completed on this device.
   ///
   /// This flag persists across logout and account switches.
+  /// Throws [StateError] if persistence fails.
   Future<void> markWelcomeCompleted() async {
-    final success = await prefs.setBool(_keyWelcomeCompleted, true);
-    if (!success) {
-      throw StateError('Failed to persist welcome completion flag');
+    try {
+      final success = await prefs.setBool(_keyWelcomeCompleted, true);
+      if (!success) {
+        throw StateError('Failed to persist welcome completion flag');
+      }
+    } catch (e) {
+      if (e is StateError) rethrow;
+      throw StateError(
+        'SharedPreferences error while persisting welcome flag: $e',
+      );
     }
   }
 

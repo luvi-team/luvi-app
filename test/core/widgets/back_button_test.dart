@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -23,14 +24,20 @@ void main() {
       );
 
       expect(find.byType(BackButtonCircle), findsOneWidget);
-      // Should have a Container with circular decoration
+      // Should have a Container with circular BoxDecoration
       final container = tester.widget<Container>(
         find.descendant(
           of: find.byType(BackButtonCircle),
           matching: find.byType(Container),
         ),
       );
-      expect(container.decoration, isNotNull);
+      expect(container.decoration, isA<BoxDecoration>());
+      final boxDecoration = container.decoration! as BoxDecoration;
+      expect(
+        boxDecoration.shape,
+        equals(BoxShape.circle),
+        reason: 'BackButtonCircle should render circular background',
+      );
     });
 
     testWidgets('triggers onPressed callback when tapped', (tester) async {
@@ -107,15 +114,14 @@ void main() {
         ),
       );
 
-      final touchTargetBox = constrainedBoxes.firstWhere(
+      // If firstWhere succeeds without throwing, the constraint is satisfied
+      constrainedBoxes.firstWhere(
         (box) =>
             box.constraints.minWidth == Sizes.touchTargetMin &&
             box.constraints.minHeight == Sizes.touchTargetMin,
         orElse: () => throw StateError('No ConstrainedBox with touch target constraints found'),
       );
-
-      expect(touchTargetBox.constraints.minWidth, equals(Sizes.touchTargetMin));
-      expect(touchTargetBox.constraints.minHeight, equals(Sizes.touchTargetMin));
+      // Test passes if no StateError is thrown
     });
 
     testWidgets('hides circle when showCircle=false', (tester) async {
@@ -132,20 +138,32 @@ void main() {
         ),
       );
 
-      // Should not have a decorated Container
+      // Behavior check: SVG chevron icon should still be present
+      expect(
+        find.descendant(
+          of: find.byType(BackButtonCircle),
+          matching: find.byType(SvgPicture),
+        ),
+        findsOneWidget,
+        reason: 'Chevron SVG icon should be visible regardless of showCircle',
+      );
+
+      // Behavior check: No circular background container with BoxDecoration.circle
       final containers = tester.widgetList<Container>(
         find.descendant(
           of: find.byType(BackButtonCircle),
           matching: find.byType(Container),
         ),
       );
-
-      // When showCircle=false, _buildIcon returns just the chevronIcon without Container
-      // So we should have fewer Containers with decoration
-      final decoratedContainers = containers
-          .where((c) => c.decoration is BoxDecoration)
-          .toList();
-      expect(decoratedContainers, isEmpty);
+      final hasCircularDecoration = containers.any((c) {
+        final decoration = c.decoration;
+        return decoration is BoxDecoration && decoration.shape == BoxShape.circle;
+      });
+      expect(
+        hasCircularDecoration,
+        isFalse,
+        reason: 'showCircle=false should not render circular BoxDecoration',
+      );
     });
   });
 }
