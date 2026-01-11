@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'package:luvi_app/features/splash/data/onboarding_gate_profile_reader.dart';
-import 'package:luvi_app/features/splash/screens/splash_screen.dart';
+import 'package:luvi_app/features/splash/data/splash_gate_functions.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';

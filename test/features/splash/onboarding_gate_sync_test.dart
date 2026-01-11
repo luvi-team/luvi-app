@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/splash/screens/splash_screen.dart';
+import 'package:luvi_app/features/splash/data/splash_gate_functions.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
