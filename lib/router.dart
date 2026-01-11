@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 
 // Core imports (always allowed)
 import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as routes;
@@ -91,7 +92,54 @@ String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
       return needsConsent ? RoutePaths.consentIntro : null;
     },
     loading: () => '${RoutePaths.splash}?skipAnimation=true',
-    error: (_, st) => '${RoutePaths.splash}?skipAnimation=true',
+    error: (error, st) {
+      // Log error for debugging (fail-safe still returns splash)
+      log.w(
+        'consent_guard_state_error',
+        tag: 'router',
+        error: error,
+        stack: st,
+      );
+      return '${RoutePaths.splash}?skipAnimation=true';
+    },
+  );
+}
+
+/// Post-Auth guard for main app routes - prevents deep-link bypass.
+///
+/// Checks both consent AND onboarding gates (Defense-in-Depth).
+/// Returns:
+/// - `/splash?skipAnimation=true` if state is loading/error (fail-safe)
+/// - `/consent/intro` if consent missing/outdated
+/// - `/onboarding/01` if onboarding incomplete
+/// - `null` if all gates passed (allow access)
+String? _postAuthGuard(BuildContext context, GoRouterState state) {
+  final container = ProviderScope.containerOf(context, listen: false);
+  final asyncValue = container.read(userStateServiceProvider);
+
+  return asyncValue.when(
+    data: (service) {
+      final hasCompletedOnboarding = service.hasCompletedOnboardingOrNull;
+      final acceptedConsentVersion = service.acceptedConsentVersionOrNull;
+      final isStateKnown = hasCompletedOnboarding != null;
+
+      return routes.homeGuardRedirectWithConsent(
+        isStateKnown: isStateKnown,
+        hasCompletedOnboarding: hasCompletedOnboarding,
+        acceptedConsentVersion: acceptedConsentVersion,
+        currentConsentVersion: ConsentConfig.currentVersionInt,
+      );
+    },
+    loading: () => '${RoutePaths.splash}?skipAnimation=true',
+    error: (error, st) {
+      log.w(
+        'post_auth_guard_state_error',
+        tag: 'router',
+        error: error,
+        stack: st,
+      );
+      return '${RoutePaths.splash}?skipAnimation=true';
+    },
   );
 }
 
@@ -286,34 +334,18 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
     ),
 
     // ─────────────────────────────────────────────────────────────────────
-    // Dashboard
+    // Dashboard (All routes guarded by _postAuthGuard)
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
       path: RoutePaths.heute,
       name: 'heute',
-      redirect: (context, state) {
-        // Defense-in-Depth: Ensure consent AND onboarding are complete.
-        final container = ProviderScope.containerOf(context, listen: false);
-        final asyncValue = container.read(userStateServiceProvider);
-        // While loading, redirect to splash to prevent flicker
-        // skipAnimation=true prevents video replay on re-redirects
-        if (asyncValue.isLoading) return '${RoutePaths.splash}?skipAnimation=true';
-        final service = asyncValue.whenOrNull(data: (s) => s);
-        final hasCompletedOnboarding = service?.hasCompletedOnboardingOrNull;
-        final acceptedConsentVersion = service?.acceptedConsentVersionOrNull;
-        final isStateKnown = service != null && hasCompletedOnboarding != null;
-        return routes.homeGuardRedirectWithConsent(
-          isStateKnown: isStateKnown,
-          hasCompletedOnboarding: hasCompletedOnboarding,
-          acceptedConsentVersion: acceptedConsentVersion,
-          currentConsentVersion: ConsentConfig.currentVersionInt,
-        );
-      },
+      redirect: _postAuthGuard,
       builder: (context, state) => const HeuteScreen(),
     ),
     GoRoute(
       path: RoutePaths.workoutDetail,
       name: 'workout_detail_stub',
+      redirect: _postAuthGuard,
       builder: (context, state) {
         final id = state.pathParameters['id'] ?? 'unknown';
         if (id == 'unknown') {
@@ -329,29 +361,33 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
     GoRoute(
       path: RoutePaths.trainingsOverview,
       name: 'trainings_overview_stub',
+      redirect: _postAuthGuard,
       builder: (context, state) => const TrainingsOverviewStubScreen(),
     ),
 
     // ─────────────────────────────────────────────────────────────────────
-    // Cycle
+    // Cycle (Guarded by _postAuthGuard)
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
       path: RoutePaths.cycleOverview,
       name: 'cycle_overview_stub',
+      redirect: _postAuthGuard,
       builder: (context, state) => const CycleOverviewStubScreen(),
     ),
 
     // ─────────────────────────────────────────────────────────────────────
-    // Profile
+    // Profile (Guarded by _postAuthGuard)
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
       path: RoutePaths.profile,
       name: RouteNames.profile,
+      redirect: _postAuthGuard,
       builder: (context, state) => const ProfileStubScreen(),
     ),
 
     // ─────────────────────────────────────────────────────────────────────
-    // Legal (In-App Fallback)
+    // Legal (Intentionally NO Consent/Onboarding guard)
+    // Users must be able to read legal docs BEFORE accepting consent.
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
       path: RoutePaths.legalPrivacy,

@@ -175,6 +175,10 @@ class DsColors {
   /// Used for: OnboardingButton drop shadow
   static const Color shadowMedium = Color(0x33000000);
 
+  /// Shadow color for hero cards (25% black opacity).
+  /// Used for: Welcome hero card drop shadow fallback (Figma: rgba(0,0,0,0.25))
+  static const Color shadowHeroCard = Color(0x40000000);
+
   // ─── Consent & Onboarding Specific (Figma Refactor 2024-12) ───
 
   /// Consent Background Cream (Figma: #FAEEE0)

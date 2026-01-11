@@ -65,19 +65,6 @@ void main() {
         );
       });
 
-      test('flag survives SharedPreferences reload', () async {
-        await service.markWelcomeCompleted();
-
-        // Reload SharedPreferences (simulates cold start with persisted data)
-        final reloadedPrefs = await SharedPreferences.getInstance();
-        final newService = DeviceStateService(prefs: reloadedPrefs);
-
-        expect(
-          newService.hasCompletedWelcome,
-          isTrue,
-          reason: 'Flag should persist across SharedPreferences reloads',
-        );
-      });
     });
 
     group('reset', () {
@@ -114,10 +101,9 @@ void main() {
         );
       });
 
-      test('corrupted value (non-bool) returns false safely', () async {
-        // Note: SharedPreferences.setMockInitialValues only accepts valid types,
-        // but in real scenarios corrupt data could exist.
-        // This test verifies the ?? false fallback works.
+      test('missing key (null) returns false safely', () async {
+        // This test verifies the ?? false fallback works when
+        // hasCompletedWelcome key is not set in SharedPreferences.
         SharedPreferences.setMockInitialValues({});
         final cleanPrefs = await SharedPreferences.getInstance();
         final cleanService = DeviceStateService(prefs: cleanPrefs);

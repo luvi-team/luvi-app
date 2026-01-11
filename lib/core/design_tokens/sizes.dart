@@ -183,8 +183,8 @@ class Sizes {
   /// Welcome Hero border radius (Figma: 24px)
   static const double welcomeHeroRadius = 24.0;
 
-  /// Welcome Hero border width (Figma: 1px solid black)
-  static const double welcomeHeroBorderWidth = 1.0;
+  /// Welcome Hero border width (Figma: 2px solid white + drop shadow)
+  static const double welcomeHeroBorderWidth = 2.0;
 
   // ─── Welcome CTA Button (Figma Rebrand) ───
 

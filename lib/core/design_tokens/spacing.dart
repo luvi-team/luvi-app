@@ -44,7 +44,7 @@ class Spacing {
 
   /// Welcome Textblock height for W1/W2 (Figma SSOT)
   /// W1: 3 lines × 36px line-height = 108px
-  /// W2: 2 lines × 38px + padding = 108px (same as W1 for consistency)
+  /// W2: 2 lines × 38px (76px) + 32px padding = 108px (same as W1 for consistency)
   static const double welcomeTextBlockHeightW1W2 = 108.0;
 
   /// Welcome constrained buffer for hero scaling on small viewports/high TextScale
