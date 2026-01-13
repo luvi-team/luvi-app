@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -73,8 +75,15 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
       );
       state = const AsyncData(null);
     } catch (error, stackTrace) {
-      state = AsyncError(error, stackTrace);
-      rethrow;
+      // Log sanitized error, set global error - no crash
+      log.e(
+        'login_submit_unexpected_error',
+        tag: 'login_submit',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
+      loginNotifier.setGlobalError(AuthStrings.errLoginUnavailable);
+      state = const AsyncData(null);
     }
   }
 

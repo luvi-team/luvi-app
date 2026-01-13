@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -44,10 +43,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Finder textFieldByHint(String hint) => find.byWidgetPredicate(
-    (widget) => widget is TextField && widget.decoration?.hintText == hint,
-  );
-
   /// Finds the inner ElevatedButton inside a WelcomeButton wrapper.
   Finder innerElevatedButton(Finder parent) {
     return find.descendant(
@@ -85,11 +80,11 @@ void main() {
       await pumpSignupScreen(tester, mockRepo, router);
 
       await tester.enterText(
-        textFieldByHint(AuthStrings.emailHint),
+        find.byKey(const ValueKey('signup_email_field')),
         'user@example.com',
       );
       await tester.enterText(
-        textFieldByHint(AuthStrings.passwordHint),
+        find.byKey(const ValueKey('signup_password_field')),
         'strongpass',
       );
 
@@ -128,11 +123,11 @@ void main() {
       await pumpSignupScreen(tester, mockRepo, router);
 
       await tester.enterText(
-        textFieldByHint(AuthStrings.emailHint),
+        find.byKey(const ValueKey('signup_email_field')),
         'user@example.com',
       );
       await tester.enterText(
-        textFieldByHint(AuthStrings.passwordHint),
+        find.byKey(const ValueKey('signup_password_field')),
         'strongpass',
       );
 
@@ -140,7 +135,11 @@ void main() {
       await tester.tap(buttonFinder);
       await tester.pumpAndSettle();
 
-      expect(find.text('Email already registered'), findsOneWidget);
+      // AuthSignupScreen maps 'already registered' errors to L10n message
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authErrConfirmEmail), findsOneWidget);
 
       // WelcomeButton wraps ElevatedButton - find the inner ElevatedButton
       final innerButtonFinder = innerElevatedButton(buttonFinder);
@@ -170,11 +169,11 @@ void main() {
       await pumpSignupScreen(tester, mockRepo, router);
 
       await tester.enterText(
-        textFieldByHint(AuthStrings.emailHint),
+        find.byKey(const ValueKey('signup_email_field')),
         'user@example.com',
       );
       await tester.enterText(
-        textFieldByHint(AuthStrings.passwordHint),
+        find.byKey(const ValueKey('signup_password_field')),
         'strongpass',
       );
 
@@ -219,11 +218,11 @@ void main() {
 
       // Fill form
       await tester.enterText(
-        textFieldByHint(AuthStrings.emailHint),
+        find.byKey(const ValueKey('signup_email_field')),
         'user@example.com',
       );
       await tester.enterText(
-        textFieldByHint(AuthStrings.passwordHint),
+        find.byKey(const ValueKey('signup_password_field')),
         'strongpass',
       );
 

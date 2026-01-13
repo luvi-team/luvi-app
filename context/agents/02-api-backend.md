@@ -10,7 +10,7 @@ inputs:
   - Branch/PR-Link
   - docs/product/app-context.md
   - docs/engineering/tech-stack.md
-  - docs/engineering/gold-standard-workflow.md
+  - docs/engineering/field-guides/gold-standard-workflow.md
   - docs/engineering/safety-guards.md
 outputs:
   - Edge Functions/Services

@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 /// Base gap (px) between the success trophy and the title.
-/// Per ADR-0006 we standardize on 24px (8px grid), superseding the 28px
+/// Per ADR-0007 we standardize on 24px (8px grid), superseding the 28px
 /// measurement in docs/audits/ONB_SUCCESS_measures.json.
 const double _kOnboardingSuccessTrophyToTitleGap = 24.0;
 
@@ -360,7 +360,7 @@ class OnboardingSpacing {
   // Success Screen specific spacing (from Figma audit ONB_SUCCESS_measures.json)
   // Custom values (not aligned mit bestehenden Rhythmus-Tokens)
   static const double _trophyToTitle =
-      _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px per ADR-0006)
+      _kOnboardingSuccessTrophyToTitleGap; // Trophy end → Title start (24px per ADR-0007)
   static const double _titleToButton = 66.0; // Title end → Button start
 
   // Generic scaled spacing (mirrors Spacing.xl for responsive use)

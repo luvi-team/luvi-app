@@ -1041,4 +1041,61 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authLoginHeaderSemantic => 'Willkommen zurück';
+
+  @override
+  String get authEntryCta => 'Los geht\'s';
+
+  @override
+  String get authEntryExistingAccount => 'Ich habe bereits einen Account.';
+
+  @override
+  String get authRegisterHeadline => 'Registrieren, um zu starten';
+
+  @override
+  String get authLoginSheetHeadline => 'Anmelden, um zu starten';
+
+  @override
+  String get authContinueApple => 'Weiter mit Apple';
+
+  @override
+  String get authContinueGoogle => 'Weiter mit Google';
+
+  @override
+  String get authContinueEmail => 'Weiter mit E-Mail';
+
+  @override
+  String get authOr => 'Oder';
+
+  @override
+  String get authEmailPlaceholderLong => 'Deine E-Mail Adresse';
+
+  @override
+  String get authPasswordPlaceholder => 'Dein Passwort';
+
+  @override
+  String get authErrorEmailCheck => 'Bitte E-Mail Adresse überprüfen';
+
+  @override
+  String get authErrorPasswordCheck => 'Bitte Passwort überprüfen';
+
+  @override
+  String get authRegisterEmailTitle => 'Registrieren mit E-Mail';
+
+  @override
+  String get authResetPasswordSubtitle => 'E-Mail Adresse eingeben und erhalte einen Link zum Zurücksetzen.';
+
+  @override
+  String get authResetCtaShort => 'Zurücksetzen';
+
+  @override
+  String get authNewPasswordConfirmHint => 'Passwort bestätigen';
+
+  @override
+  String get authSavePasswordCta => 'Speichern';
+
+  @override
+  String get authSuccessSubtitle => 'Neues Passwort gespeichert.';
+
+  @override
+  String get authResetErrorGeneric => 'Zurücksetzen fehlgeschlagen. Bitte versuche es erneut.';
 }

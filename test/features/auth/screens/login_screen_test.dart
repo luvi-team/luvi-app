@@ -7,8 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_view.dart';
 
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
 import 'package:luvi_app/router.dart' as app_router;
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
@@ -53,10 +53,11 @@ void main() {
     expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
     final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
     expect(find.text(l10n.authLoginTitle), findsOneWidget);
-    expect(find.text(AuthStrings.loginCta), findsOneWidget);
+    // AuthPrimaryButton uses l10n.authEntryCta for button label
+    expect(find.byType(AuthPrimaryButton), findsOneWidget);
   });
 
-  testWidgets('CTA enabled before submit; disables on field errors', (
+  testWidgets('CTA shows validation errors on empty submit', (
     tester,
   ) async {
     addTearDown(configureTestView(tester));
@@ -74,17 +75,26 @@ void main() {
       ),
     );
 
-    final button = find.widgetWithText(ElevatedButton, AuthStrings.loginCta);
+    // AuthPrimaryButton wraps ElevatedButton
+    final buttonFinder = find.byKey(const ValueKey('login_cta_button'));
+    final innerButton = find.descendant(
+      of: buttonFinder,
+      matching: find.byType(ElevatedButton),
+    );
 
-    // Always enabled
-    expect(tester.widget<ElevatedButton>(button).onPressed, isNotNull);
+    // Always enabled initially
+    expect(innerButton, findsOneWidget);
+    expect(tester.widget<ElevatedButton>(innerButton).onPressed, isNotNull);
 
-    await tester.tap(button);
+    await tester.tap(buttonFinder);
     await tester.pump();
 
-    expect(find.text(AuthStrings.errEmailEmpty), findsOneWidget);
-    expect(find.text(AuthStrings.errPasswordEmpty), findsOneWidget);
-    expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
+    // LoginScreen shows generic L10n error messages
+    final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
+    expect(find.text(l10n.authErrorEmailCheck), findsOneWidget);
+    expect(find.text(l10n.authErrorPasswordCheck), findsOneWidget);
+    // Auth Rebrand v3: Button stays enabled even with errors (allows retry)
+    expect(tester.widget<ElevatedButton>(innerButton).onPressed, isNotNull);
   });
 
   testWidgets('shows signup link with correct text', (tester) async {

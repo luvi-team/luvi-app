@@ -55,6 +55,10 @@ context/ADR/0001-rag-first.md
 context/ADR/0002-least-privilege-rls.md
 context/ADR/0003-dev-tactics-miwf.md
 context/ADR/0004-vercel-edge-gateway.md
+context/ADR/0005-push-privacy.md
+context/ADR/0006-offline-resume-sync.md
+context/ADR/0007-onboarding-success-spacing.md
+context/ADR/0008-splash-gate-orchestration.md
 ```
 
 ## Output Format
@@ -79,10 +83,14 @@ context/ADR/0004-vercel-edge-gateway.md
 ## ADRs to Check
 
 Always validate against:
-1. `context/ADR/0002-least-privilege-rls.md` - RLS requirements
-2. `context/ADR/0001-rag-first.md` - Knowledge hierarchy
+1. `context/ADR/0001-rag-first.md` - Knowledge hierarchy
+2. `context/ADR/0002-least-privilege-rls.md` - RLS requirements
 3. `context/ADR/0003-dev-tactics-miwf.md` - MIWF workflow
 4. `context/ADR/0004-vercel-edge-gateway.md` - API patterns
+5. `context/ADR/0005-push-privacy.md` - Push: keine Gesundheitsdaten
+6. `context/ADR/0006-offline-resume-sync.md` - Offline Resume
+7. `context/ADR/0007-onboarding-success-spacing.md` - Spacing 24px
+8. `context/ADR/0008-splash-gate-orchestration.md` - Splash Gate Flow
 
 ## Handoff
 

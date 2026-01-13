@@ -228,7 +228,7 @@ context/agents/*
 # CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
 
 # Engineering Docs (local only)
-docs/engineering/gold-standard-workflow.md
+docs/engineering/field-guides/gold-standard-workflow.md
 docs/engineering/tech-stack.md
 docs/engineering/traycer/
 

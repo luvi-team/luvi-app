@@ -94,7 +94,7 @@ flutter:
   assets:
     # Note: .env.development is NOT bundled as asset (security best practice).
     # Use --dart-define for credentials. See .vscode/launch.json
-    - assets/images/auth/hero_login_default_00.png
+    - assets/images/auth/
     - assets/images/consent/
     - assets/images/welcome/
     - assets/images/onboarding/

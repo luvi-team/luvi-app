@@ -9,7 +9,7 @@ inputs:
   - ADRs 0001–0004
   - Branch/PR-Link
   - docs/product/app-context.md
-  - docs/engineering/gold-standard-workflow.md
+  - docs/engineering/field-guides/gold-standard-workflow.md
   - docs/engineering/safety-guards.md
   - docs/product/roadmap.md
 outputs:

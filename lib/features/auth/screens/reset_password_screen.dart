@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/state/reset_password_state.dart';
 import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
-import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
-import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
-import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
-import 'package:luvi_app/core/widgets/welcome_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// ResetPasswordScreen with Figma Auth UI v2 design.
-///
-/// Figma Node: 68919:8822
-/// Route: /auth/reset
+/// Reset password screen with Auth Rebrand v3 design.
 ///
 /// Features:
-/// - Linear gradient background
-/// - Back button navigation
-/// - Title + Subtitle explaining the process
-/// - Email field only
-/// - Pink CTA button (56px height)
+/// - Rainbow background with arcs and stripes
+/// - Content card with headline and email field
+/// - Pink CTA button "Zurücksetzen"
+///
+/// Route: /auth/reset
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   static const String routeName = '/auth/reset';
 
@@ -43,14 +41,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize controller with current state value
     final state = ref.read(resetPasswordProvider);
     if (state.email.isNotEmpty) {
       _emailController.text = state.email;
     }
 
-    // Listen for external state changes and sync controller
-    // This avoids controller mutation inside build()
     _stateSubscription = ref.listenManual(resetPasswordProvider, (prev, next) {
       if (!mounted) return;
       if (_emailController.text != next.email) {
@@ -72,127 +67,150 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     final state = ref.watch(resetPasswordProvider);
     final submitState = ref.watch(resetSubmitProvider);
-
-    // Map specific error types to localized messages for extensibility
     final errorText = _errorTextFor(state.error, l10n);
+    final hasError = errorText != null;
 
-    // Figma: Title style - Playfair Display Bold, 24px
-    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: AuthTypography.titleFontSize,
-      height: AuthTypography.titleLineHeight,
-      fontWeight: FontWeight.bold,
-      color: theme.colorScheme.onSurface,
-    );
-
-    // Figma: Subtitle style - Figtree Regular, 16px, line-height 24px
-    final subtitleStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: Sizes.authSubtitleFontSize,
-      height: Sizes.authSubtitleLineHeight,
-      color: theme.colorScheme.onSurface,
-    );
+    // Listen for submit errors and show snackbar (must be in build)
+    ref.listen<AsyncValue<void>>(resetSubmitProvider, (prev, next) {
+      if (!mounted) return;
+      if (next.hasError && !next.isLoading) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.authResetErrorGeneric),
+            backgroundColor: DsColors.authRebrandError,
+            duration: Timing.snackBarBrief,
+          ),
+        );
+      }
+    });
 
     return Scaffold(
       key: const ValueKey('auth_reset_screen'),
+      backgroundColor: DsColors.authRebrandBackground,
       resizeToAvoidBottomInset: true,
-      body: AuthShell(
-        background: const AuthLinearGradientBackground(),
-        showBackButton: true,
-        onBackPressed: () {
-          final router = GoRouter.of(context);
-          if (router.canPop()) {
-            router.pop();
-          } else {
-            router.go(AuthSignInScreen.routeName);
-          }
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Gap after back button
-            const SizedBox(height: AuthLayout.backButtonToTitle),
-
-            // Title: "Passwort vergessen?"
-            Text(
-              l10n.authResetTitle,
-              key: const ValueKey('reset_title'),
-              style: titleStyle,
+      body: Stack(
+        children: [
+          // Rainbow background
+          const Positioned.fill(
+            child: AuthRainbowBackground(
+              showTopArcs: true,
+              showBottomStripes: true,
+              topArcsHeight: 200,
+              bottomStripesHeight: 180,
             ),
+          ),
 
-            // Figma: Gap = 8px between title and subtitle
-            const SizedBox(height: Spacing.xs),
+          // Content
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                children: [
+                  // Back button
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: AuthRebrandMetrics.backButtonLeft,
+                        top: AuthRebrandMetrics.backButtonTop,
+                      ),
+                      child: AuthBackButton(
+                        onPressed: () {
+                          final router = GoRouter.of(context);
+                          if (router.canPop()) {
+                            router.pop();
+                          } else {
+                            router.go(AuthSignInScreen.routeName);
+                          }
+                        },
+                        semanticsLabel: l10n.authBackSemantic,
+                      ),
+                    ),
+                  ),
 
-            // Subtitle explaining the process
-            Text(
-              l10n.authResetSubtitle,
-              style: subtitleStyle,
-            ),
+                  const SizedBox(height: AuthRebrandMetrics.contentTopGap),
 
-            // Gap between subtitle and input (32px)
-            const SizedBox(height: AuthLayout.ctaTopAfterCopy),
+                  // Content card
+                  AuthContentCard(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Headline
+                        Text(
+                          l10n.authResetTitle,
+                          style: const TextStyle(
+                            fontFamily: FontFamilies.playfairDisplay,
+                            fontSize: AuthRebrandMetrics.headlineFontSize,
+                            fontWeight: FontWeight.w600,
+                            height: AuthRebrandMetrics.headlineLineHeight,
+                            color: DsColors.authRebrandTextPrimary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
 
-            // Email field
-            LoginEmailField(
-              key: const ValueKey('reset_email_field'),
-              controller: _emailController,
-              errorText: errorText,
-              autofocus: false,
-              onChanged: (value) =>
-                  ref.read(resetPasswordProvider.notifier).setEmail(value),
-              onSubmitted: (_) => FocusScope.of(context).unfocus(),
-              textInputAction: TextInputAction.done,
-            ),
+                        const SizedBox(height: Spacing.l),
 
-            // Gap before CTA (40px)
-            const SizedBox(height: AuthLayout.inputToCta),
+                        // Email field - IMPORTANT: Placeholder is "Deine E-Mail Adresse"
+                        AuthRebrandTextField(
+                          key: const ValueKey('reset_email_field'),
+                          controller: _emailController,
+                          hintText: l10n.authEmailPlaceholderLong,
+                          errorText: errorText,
+                          hasError: hasError,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.done,
+                          onChanged: (value) =>
+                              ref.read(resetPasswordProvider.notifier).setEmail(value),
+                          onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                        ),
 
-            // CTA Button - Figma: h=56px
-            SizedBox(
-              width: double.infinity,
-              height: Sizes.buttonHeightL,
-              child: WelcomeButton(
-                key: const ValueKey('reset_cta'),
-                onPressed: state.isValid && !submitState.isLoading
-                    ? () async {
-                        await ref.read(resetSubmitProvider.notifier).submit(
-                              state.email,
-                              onSuccess: () async {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(l10n.authResetEmailSent),
-                                    duration: Timing.snackBarBrief,
-                                  ),
-                                );
-                                // Delay matches SnackBar duration so navigation occurs after message completes
-                                await Future<void>.delayed(Timing.snackBarBrief);
-                                if (!context.mounted) return;
-                                context.go(AuthSignInScreen.routeName);
-                              },
-                            );
-                      }
-                    : null,
-                isLoading: submitState.isLoading,
-                label: l10n.authResetCta,
+                        const SizedBox(height: Spacing.l),
+
+                        // CTA button
+                        AuthPrimaryButton(
+                          key: const ValueKey('reset_cta'),
+                          label: l10n.authResetCtaShort,
+                          onPressed: state.isValid && !submitState.isLoading
+                              ? () async {
+                                  await ref.read(resetSubmitProvider.notifier).submit(
+                                        state.email,
+                                        onSuccess: () async {
+                                          if (!context.mounted) return;
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(l10n.authResetEmailSent),
+                                              duration: Timing.snackBarBrief,
+                                            ),
+                                          );
+                                          await Future<void>.delayed(Timing.snackBarBrief);
+                                          if (!context.mounted) return;
+                                          context.go(AuthSignInScreen.routeName);
+                                        },
+                                      );
+                                }
+                              : null,
+                          isLoading: submitState.isLoading,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: AuthRebrandMetrics.contentBottomGap),
+                ],
               ),
             ),
-
-            // Bottom padding
-            const SizedBox(height: Spacing.l),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Maps [ResetPasswordError] to localized user-facing messages.
-///
-/// Explicit switch ensures compile-time exhaustiveness check when new
-/// error types are added to [ResetPasswordError].
 String? _errorTextFor(ResetPasswordError? error, AppLocalizations l10n) {
   if (error == null) return null;
 

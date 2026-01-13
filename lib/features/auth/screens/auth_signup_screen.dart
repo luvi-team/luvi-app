@@ -3,36 +3,35 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
-import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
-import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
-import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
-import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
-import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/core/widgets/welcome_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// SignupScreen with Figma Auth UI v2 design.
-///
-/// Note: No Figma spec exists - design based on LoginScreen layout.
-/// Route: /auth/signup
+/// Signup screen with Auth Rebrand v3 design.
 ///
 /// Features:
-/// - Linear gradient background (same as Login)
-/// - Back button navigation
-/// - Email + Password form (simplified from 5 fields to 2)
-/// - Pink CTA button (56px height)
+/// - Rainbow background with arcs and stripes
+/// - Content card with headline and form
+/// - Email + Password fields
+/// - Pink CTA button
 /// - "Schon dabei? Anmelden" link
+///
+/// Route: /auth/signup
 class AuthSignupScreen extends ConsumerStatefulWidget {
   const AuthSignupScreen({super.key});
 
@@ -49,6 +48,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   bool _obscurePassword = true;
   bool _isSubmitting = false;
+  bool _emailError = false;
+  bool _passwordError = false;
   String? _errorMessage;
 
   @override
@@ -64,10 +65,14 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    final l10n = AppLocalizations.of(context)!;
 
+    // Validate fields
     if (email.isEmpty || password.isEmpty) {
       setState(() {
-        _errorMessage = AppLocalizations.of(context)!.authSignupMissingFields;
+        _emailError = email.isEmpty;
+        _passwordError = password.isEmpty;
+        _errorMessage = l10n.authSignupMissingFields;
       });
       return;
     }
@@ -77,6 +82,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     setState(() {
       _isSubmitting = true;
       _errorMessage = null;
+      _emailError = false;
+      _passwordError = false;
     });
 
     final authRepository = ref.read(authRepositoryProvider);
@@ -88,16 +95,13 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       );
 
       if (!mounted) return;
-      // Show success message and navigate to login
-      // Note: VerificationScreen was removed per Auth v2 refactoring plan
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.authSignupSuccess),
+          content: Text(l10n.authSignupSuccess),
           duration: Timing.snackBarBrief,
         ),
       );
-      // Short delay for user to see success message, then navigate
-      // Using cancellable Timer for safe disposal (avoids navigation after unmount)
+
       _signupNavTimer?.cancel();
       _signupNavTimer = Timer(Timing.snackBarBrief, () {
         if (!mounted) return;
@@ -110,11 +114,12 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         stack: stackTrace,
       );
       if (!mounted) return;
-      final message = error.message;
+
+      // Map error codes to user-friendly messages
+      final message = _mapAuthError(error, l10n);
       setState(() {
-        _errorMessage = message.isNotEmpty
-            ? message
-            : AppLocalizations.of(context)!.authSignupGenericError;
+        _errorMessage = message;
+        _emailError = true;
       });
     } catch (error, stackTrace) {
       log.e(
@@ -124,7 +129,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _errorMessage = AppLocalizations.of(context)!.authSignupGenericError;
+        _errorMessage = l10n.authSignupGenericError;
       });
     } finally {
       if (mounted) {
@@ -135,174 +140,237 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     }
   }
 
+  String _mapAuthError(AuthException error, AppLocalizations l10n) {
+    // Map common Supabase auth errors to user-friendly messages
+    final message = error.message.toLowerCase();
+    if (message.contains('email') && message.contains('invalid')) {
+      return l10n.authErrEmailInvalid;
+    }
+    if (message.contains('password') && message.contains('short')) {
+      return l10n.authErrPasswordTooShort;
+    }
+    if (message.contains('already') || message.contains('exists')) {
+      return l10n.authErrConfirmEmail;
+    }
+    return l10n.authSignupGenericError;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Explicit null check with clear failure message for debugging
-    final localizations = AppLocalizations.of(context);
-    assert(
-      localizations != null,
-      'AppLocalizations not configured. Ensure localizationsDelegates '
-      'include AppLocalizations.delegate in MaterialApp.',
-    );
-    final l10n = localizations!;
-    final theme = Theme.of(context);
-    final tokensNullable = theme.extension<DsTokens>();
-    assert(
-      tokensNullable != null,
-      'DsTokens not configured. Ensure AppTheme includes DsTokens extension.',
-    );
-    final tokens = tokensNullable!;
-
-    final hasError = _errorMessage != null;
-    final canSubmit = !_isSubmitting;
-
-    // Figma: Title style - Playfair Display Bold, 24px (same as Login)
-    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: Sizes.authTitleFontSize,
-      height: Sizes.authTitleLineHeight,
-      fontWeight: FontWeight.bold,
-      color: theme.colorScheme.onSurface,
-    );
-
-    // Link style for "Already have account?"
-    final linkStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: 16,
-      height: 24 / 16,
-      color: theme.colorScheme.onSurface,
-    );
-
-    final linkActionStyle = linkStyle?.copyWith(
-      fontWeight: FontWeight.bold,
-      color: tokens.cardBorderSelected,
-      decoration: TextDecoration.underline,
-    );
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       key: const ValueKey('auth_signup_screen'),
+      backgroundColor: DsColors.authRebrandBackground,
       resizeToAvoidBottomInset: true,
-      body: AuthShell(
-        background: const AuthLinearGradientBackground(),
-        showBackButton: true,
-        onBackPressed: () {
-          final router = GoRouter.of(context);
-          if (router.canPop()) {
-            router.pop();
-          } else {
-            // Fallback to SignIn entry screen (consistent with auth flow)
-            context.go(AuthSignInScreen.routeName);
-          }
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Gap after back button
-            const SizedBox(height: AuthLayout.backButtonToTitle),
-
-            // Title: "Konto erstellen"
-            Text(
-              l10n.authSignupTitle,
-              style: titleStyle,
+      body: Stack(
+        children: [
+          // Rainbow background
+          const Positioned.fill(
+            child: AuthRainbowBackground(
+              showTopArcs: true,
+              showBottomStripes: true,
+              topArcsHeight: 200,
+              bottomStripesHeight: 180,
             ),
+          ),
 
-            // Gap between title and inputs
-            const SizedBox(height: Spacing.l + Spacing.xs), // 32px
+          // Content
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                children: [
+                  // Back button
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: AuthRebrandMetrics.backButtonLeft,
+                        top: AuthRebrandMetrics.backButtonTop,
+                      ),
+                      child: AuthBackButton(
+                        onPressed: () {
+                          final router = GoRouter.of(context);
+                          if (router.canPop()) {
+                            router.pop();
+                          } else {
+                            context.go(AuthSignInScreen.routeName);
+                          }
+                        },
+                        semanticsLabel: l10n.authBackSemantic,
+                      ),
+                    ),
+                  ),
 
-            // Email field
-            // Auth-Flow Bugfix: Keyboard öffnet nicht automatisch
-            LoginEmailField(
-              key: const ValueKey('signup_email_field'),
-              controller: _emailController,
-              errorText: null,
-              autofocus: false,
-              onChanged: (_) {
-                if (_errorMessage != null) {
-                  setState(() => _errorMessage = null);
-                }
-              },
-            ),
+                  const SizedBox(height: AuthRebrandMetrics.contentTopGap),
 
-            // Gap between inputs = 20px
-            const SizedBox(height: Spacing.goalCardVertical),
+                  // Global error banner (consistent with LoginScreen)
+                  if (_errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
+                      child: Container(
+                        padding: const EdgeInsets.all(Spacing.s),
+                        margin: const EdgeInsets.only(bottom: Spacing.m),
+                        decoration: BoxDecoration(
+                          color: DsColors.authRebrandError.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(Sizes.radiusS),
+                          border: Border.all(
+                            color: DsColors.authRebrandError,
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(
+                            fontFamily: FontFamilies.figtree,
+                            fontSize: 14,
+                            color: DsColors.authRebrandError,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
 
-            // Password field
-            LoginPasswordField(
-              key: const ValueKey('signup_password_field'),
-              controller: _passwordController,
-              errorText: null,
-              obscure: _obscurePassword,
-              onToggleObscure: () {
-                setState(() => _obscurePassword = !_obscurePassword);
-              },
-              onChanged: (_) {
-                if (_errorMessage != null) {
-                  setState(() => _errorMessage = null);
-                }
-              },
-              onSubmitted: (_) {
-                if (canSubmit) _handleSignup();
-              },
-            ),
+                  // Content card
+                  AuthContentCard(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Headline
+                        Text(
+                          l10n.authRegisterEmailTitle,
+                          style: const TextStyle(
+                            fontFamily: FontFamilies.playfairDisplay,
+                            fontSize: AuthRebrandMetrics.headlineFontSize,
+                            fontWeight: FontWeight.w600,
+                            height: AuthRebrandMetrics.headlineLineHeight,
+                            color: DsColors.authRebrandTextPrimary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
 
-            // Error message
-            if (hasError) ...[
-              const SizedBox(height: Spacing.xs),
-              FieldErrorText(_errorMessage!),
-            ],
+                        const SizedBox(height: Spacing.l),
 
-            // Gap before CTA
-            const SizedBox(height: Spacing.l + Spacing.m), // 40px
+                        // Email field
+                        AuthRebrandTextField(
+                          key: const ValueKey('signup_email_field'),
+                          controller: _emailController,
+                          hintText: l10n.authEmailPlaceholderLong,
+                          errorText: _emailError ? l10n.authErrorEmailCheck : null,
+                          hasError: _emailError,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          onChanged: (_) {
+                            if (_errorMessage != null || _emailError) {
+                              setState(() {
+                                _errorMessage = null;
+                                _emailError = false;
+                              });
+                            }
+                          },
+                        ),
 
-            // CTA Button - Figma: h=56px
-            SizedBox(
-              width: double.infinity,
-              height: Sizes.buttonHeightL,
-              child: WelcomeButton(
-                key: const ValueKey('signup_cta_button'),
-                onPressed: canSubmit ? _handleSignup : null,
-                isLoading: _isSubmitting,
-                label: l10n.authSignupCta,
-                loadingKey: const ValueKey('signup_cta_loading'),
-                labelKey: const ValueKey('signup_cta_label'),
+                        const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+
+                        // Password field
+                        AuthRebrandTextField(
+                          key: const ValueKey('signup_password_field'),
+                          controller: _passwordController,
+                          hintText: l10n.authPasswordPlaceholder,
+                          errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
+                          hasError: _passwordError,
+                          obscureText: _obscurePassword,
+                          textInputAction: TextInputAction.done,
+                          onChanged: (_) {
+                            if (_errorMessage != null || _passwordError) {
+                              setState(() {
+                                _errorMessage = null;
+                                _passwordError = false;
+                              });
+                            }
+                          },
+                          onSubmitted: (_) {
+                            if (!_isSubmitting) _handleSignup();
+                          },
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: DsColors.grayscale500,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              setState(() => _obscurePassword = !_obscurePassword);
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(height: Spacing.l),
+
+                        // CTA button
+                        AuthPrimaryButton(
+                          key: const ValueKey('signup_cta_button'),
+                          loadingKey: const ValueKey('signup_cta_loading'),
+                          label: l10n.authEntryCta,
+                          onPressed: _isSubmitting ? null : _handleSignup,
+                          isLoading: _isSubmitting,
+                        ),
+
+                        const SizedBox(height: Spacing.m),
+
+                        // Login link
+                        _buildLoginLink(l10n),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: AuthRebrandMetrics.contentBottomGap),
+                ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // Gap before login link
-            const SizedBox(height: Spacing.l),
-
-            // "Schon dabei? Anmelden" link - centered
-            Center(
-              child: TextButton(
-                key: const ValueKey('signup_login_link'),
-                // Use context.go to replace stack consistently (clears auth screens)
-                onPressed: () => context.go(LoginScreen.routeName),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(
-                    Sizes.touchTargetMin,
-                    Sizes.touchTargetMin,
-                  ),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: l10n.authSignupAlreadyMember,
-                        style: linkStyle,
-                      ),
-                      TextSpan(
-                        text: l10n.authSignupLoginLink,
-                        style: linkActionStyle,
-                      ),
-                    ],
+  Widget _buildLoginLink(AppLocalizations l10n) {
+    return Semantics(
+      button: true,
+      label: '${l10n.authSignupAlreadyMember}${l10n.authSignupLoginLink}',
+      child: GestureDetector(
+        key: const ValueKey('signup_login_link'),
+        onTap: () => context.go(LoginScreen.routeName),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
+          child: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: l10n.authSignupAlreadyMember,
+                  style: const TextStyle(
+                    fontFamily: FontFamilies.figtree,
+                    fontSize: 14,
+                    color: DsColors.authRebrandTextPrimary,
                   ),
                 ),
-              ),
+                TextSpan(
+                  text: l10n.authSignupLoginLink,
+                  style: const TextStyle(
+                    fontFamily: FontFamilies.figtree,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: DsColors.authRebrandCtaPrimary,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
             ),
-
-            // Bottom padding
-            const SizedBox(height: Spacing.l),
-          ],
+          ),
         ),
       ),
     );

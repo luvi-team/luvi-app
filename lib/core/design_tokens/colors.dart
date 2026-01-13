@@ -278,6 +278,60 @@ class DsColors {
   /// 0x1A = 26/255 = 10.2% (closest integer to true 10%)
   /// Prefer this over deprecated periodGlowPinkLight.
   static const Color periodGlow10 = Color(0x1AFF6482);
+
+  // ─── Auth Rebrand v3 (Figma Auth Screens 2026-01) ───
+
+  /// Auth Rebrand Background - Same as splash background
+  /// Hex: #F9F1E6
+  static const Color authRebrandBackground = splashBg;
+
+  /// Auth Rebrand Card Surface (white)
+  /// Hex: #FFFFFF
+  static const Color authRebrandCardSurface = grayscaleWhite;
+
+  /// Auth Rebrand Primary CTA (pink)
+  /// Hex: #E91E63
+  static const Color authRebrandCtaPrimary = welcomeButtonBg;
+
+  /// Auth Rebrand Secondary CTA (black)
+  /// Hex: #030401
+  static const Color authRebrandCtaSecondary = grayscaleBlack;
+
+  /// Auth Rebrand Input Background
+  /// Hex: #F7F7F8
+  static const Color authRebrandInputBackground = cardBackgroundNeutral;
+
+  /// Auth Rebrand Input Border
+  /// Hex: #DCDCDC
+  static const Color authRebrandInputBorder = gray300;
+
+  /// Auth Rebrand Text Primary (near-black)
+  /// Hex: #010100
+  static const Color authRebrandTextPrimary = Color(0xFF010100);
+
+  /// Auth Rebrand Error Color (Message/Red)
+  /// Hex: #C93838
+  static const Color authRebrandError = Color(0xFFC93838);
+
+  /// Auth Rebrand Rainbow Teal
+  /// Hex: #1B9BA4
+  static const Color authRebrandRainbowTeal = Color(0xFF1B9BA4);
+
+  /// Auth Rebrand Rainbow Pink
+  /// Hex: #D42C82
+  static const Color authRebrandRainbowPink = Color(0xFFD42C82);
+
+  /// Auth Rebrand Rainbow Orange
+  /// Hex: #F57A25
+  static const Color authRebrandRainbowOrange = Color(0xFFF57A25);
+
+  /// Auth Rebrand Teal Dot (LGA) - Same as rainbow teal
+  /// Hex: #1B9BA4
+  static const Color authRebrandTealDot = authRebrandRainbowTeal;
+
+  /// Auth Rebrand Bottom Sheet Barrier Color
+  /// rgba(249,241,230,0.5)
+  static const Color authRebrandBarrier = Color(0x80F9F1E6);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.

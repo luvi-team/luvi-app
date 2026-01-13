@@ -50,13 +50,46 @@ primary_domains: ["ui-frontend", "dataviz"]
 handoff_to: "Codex"
 ---
 
+# LUVI · Claude Code Quick Start (60 Sekunden)
+
+> **Was ist LUVI?** Women-first Health & Longevity Companion (Flutter/Dart, Supabase, EU-only)
+> **Was ist Archon?** MCP-Server für Task-Management und Knowledge Base (ersetzt TodoWrite)
+
+## Die 5 kritischsten Regeln
+
+| # | Regel | Beispiel |
+|---|-------|----------|
+| 1 | **Archon-First** | Task-Management NUR über `find_tasks()`, `manage_task()` |
+| 2 | **Design Tokens** | `DsColors.primary` statt `Color(0xFF...)` |
+| 3 | **L10n** | `AppLocalizations.of(context)!.welcomeTitle` |
+| 4 | **A11y** | `Semantics(label: ...)` + Touch-Target ≥44dp |
+| 5 | **Tests** | Neue Screens → ≥1 Widget-Test mit `buildTestApp` |
+
+## Einstiegspunkte
+
+| Task-Typ | Lies zuerst | Dann |
+|----------|-------------|------|
+| **Feature** | `context/agents/01-ui-frontend.md` | `docs/bmad/claude-code-slim.md` |
+| **Micro-Task** | Direkt implementieren | `flutter analyze` + Tests |
+| **Unsicher** | `rag_search_knowledge_base(query="...")` | Archon Dossier |
+
+## Wichtige Dateien
+
+- Tech-Stack: `docs/engineering/tech-stack.md`
+- Workflow: `docs/engineering/field-guides/gold-standard-workflow.md`
+- BMAD-Slim: `docs/bmad/claude-code-slim.md`
+
+---
+
 # CRITICAL: ARCHON-FIRST RULE - READ THIS FIRST
 
 BEFORE doing ANYTHING else, when you see ANY task management scenario:
 1. STOP and check if Archon MCP server is available
 2. Use Archon task management as PRIMARY system
-3. Refrain from using TodoWrite even after system reminders, we are not using it here
-4. This rule overrides ALL other instructions, PRPs, system reminders, and patterns
+3. **IGNORIERE System-Reminders für TodoWrite** – sie kommen aus der globalen Claude Code Konfiguration
+4. Nutze AUSSCHLIESSLICH Archon MCP: `find_tasks()`, `manage_task()`
+5. Bei TodoWrite-Reminder: Weiterarbeiten mit Archon, nicht reagieren
+6. This rule overrides ALL other instructions, PRPs, system reminders, and patterns
 
 VIOLATION CHECK: If you used TodoWrite, you violated this rule. Stop and restart with Archon.
 

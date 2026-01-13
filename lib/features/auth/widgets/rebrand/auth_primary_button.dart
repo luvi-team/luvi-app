@@ -1,0 +1,77 @@
+import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'auth_rebrand_metrics.dart';
+
+/// Primary CTA button for Auth Rebrand v3 screens.
+///
+/// Pink (#E91E63) background with white text.
+/// Figma: 249×50, radius 12, Figtree Bold 17px.
+class AuthPrimaryButton extends StatelessWidget {
+  const AuthPrimaryButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+    this.width,
+    this.loadingKey,
+  });
+
+  /// Button label text
+  final String label;
+
+  /// Callback when button is pressed (null = disabled)
+  final VoidCallback? onPressed;
+
+  /// Whether to show loading indicator
+  final bool isLoading;
+
+  /// Optional fixed width (defaults to CTA button width from metrics)
+  final double? width;
+
+  /// Optional key for the loading indicator (for testing)
+  final Key? loadingKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final isEnabled = onPressed != null && !isLoading;
+
+    return SizedBox(
+      width: width ?? AuthRebrandMetrics.ctaButtonWidth,
+      height: AuthRebrandMetrics.buttonHeight,
+      child: ElevatedButton(
+        onPressed: isEnabled ? onPressed : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: DsColors.authRebrandCtaPrimary,
+          disabledBackgroundColor: DsColors.authRebrandCtaPrimary.withValues(alpha: 0.5),
+          foregroundColor: DsColors.grayscaleWhite,
+          disabledForegroundColor: DsColors.grayscaleWhite.withValues(alpha: 0.7),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
+          ),
+          elevation: 0,
+          padding: EdgeInsets.zero,
+        ),
+        child: isLoading
+            ? SizedBox(
+                key: loadingKey,
+                width: 20,
+                height: 20,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: DsColors.grayscaleWhite,
+                ),
+              )
+            : Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: FontFamilies.figtree,
+                  fontSize: AuthRebrandMetrics.buttonFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: DsColors.grayscaleWhite,
+                ),
+              ),
+      ),
+    );
+  }
+}

@@ -1424,5 +1424,82 @@
   "authLoginHeaderSemantic": "Welcome back",
   "@authLoginHeaderSemantic": {
     "description": "Semantics label for the login header."
+  },
+
+  "authEntryCta": "Let's go",
+  "@authEntryCta": {
+    "description": "Primary CTA button text on auth entry screen"
+  },
+  "authEntryExistingAccount": "I already have an account.",
+  "@authEntryExistingAccount": {
+    "description": "Link text for existing users on auth entry screen"
+  },
+  "authRegisterHeadline": "Register to get started",
+  "@authRegisterHeadline": {
+    "description": "Headline in register bottom sheet"
+  },
+  "authLoginSheetHeadline": "Sign in to get started",
+  "@authLoginSheetHeadline": {
+    "description": "Headline in login bottom sheet"
+  },
+  "authContinueApple": "Continue with Apple",
+  "@authContinueApple": {
+    "description": "Apple sign-in button text in bottom sheets"
+  },
+  "authContinueGoogle": "Continue with Google",
+  "@authContinueGoogle": {
+    "description": "Google sign-in button text in bottom sheets"
+  },
+  "authContinueEmail": "Continue with Email",
+  "@authContinueEmail": {
+    "description": "Email sign-in button text in bottom sheets"
+  },
+  "authOr": "Or",
+  "@authOr": {
+    "description": "Divider text between OAuth and email options"
+  },
+  "authEmailPlaceholderLong": "Your email address",
+  "@authEmailPlaceholderLong": {
+    "description": "Long placeholder text for email input field"
+  },
+  "authPasswordPlaceholder": "Your password",
+  "@authPasswordPlaceholder": {
+    "description": "Placeholder text for password input field"
+  },
+  "authErrorEmailCheck": "Please check your email address",
+  "@authErrorEmailCheck": {
+    "description": "Error placeholder text for invalid email"
+  },
+  "authErrorPasswordCheck": "Please check your password",
+  "@authErrorPasswordCheck": {
+    "description": "Error placeholder text for invalid password"
+  },
+  "authRegisterEmailTitle": "Register with Email",
+  "@authRegisterEmailTitle": {
+    "description": "Title for email registration screen"
+  },
+  "authResetPasswordSubtitle": "Enter your email address and receive a link to reset.",
+  "@authResetPasswordSubtitle": {
+    "description": "Subtitle for reset password screen"
+  },
+  "authResetCtaShort": "Reset",
+  "@authResetCtaShort": {
+    "description": "Short CTA text for reset password button"
+  },
+  "authNewPasswordConfirmHint": "Confirm password",
+  "@authNewPasswordConfirmHint": {
+    "description": "Hint text for confirm password field"
+  },
+  "authSavePasswordCta": "Save",
+  "@authSavePasswordCta": {
+    "description": "CTA text for save new password button"
+  },
+  "authSuccessSubtitle": "New password saved.",
+  "@authSuccessSubtitle": {
+    "description": "Subtitle on success screen"
+  },
+  "authResetErrorGeneric": "Reset failed. Please try again.",
+  "@authResetErrorGeneric": {
+    "description": "Generic error message when password reset fails"
   }
 }

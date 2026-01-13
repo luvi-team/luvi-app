@@ -1,116 +1,151 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/core/navigation/route_names.dart';
-import 'package:luvi_app/features/auth/widgets/auth_radial_gradient_background.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/features/auth/widgets/glow_checkmark.dart';
-import 'package:luvi_app/core/widgets/welcome_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_services/supabase_service.dart';
 
-/// SuccessScreen with Figma Auth UI v2 design.
+/// SuccessScreen with Auth Rebrand v3 design.
 ///
-/// Figma Node: 68919:8802
 /// Route: /auth/password/success
 ///
 /// Features:
-/// - Radial gradient background with beige glow
-/// - GlowCheckmark icon (beige radial gradient + white checkmark)
-/// - Title: "Geschafft!" (Playfair Regular 32px)
-/// - Subtitle: "Neues Passwort gespeichert." (Playfair Regular 24px)
-/// - CTA: "Zurück zur Anmeldung" → navigates to /auth/signin
-class SuccessScreen extends StatelessWidget {
+/// - Rainbow background (arcs + stripes)
+/// - GlowCheckmark icon
+/// - Title: "Geschafft!" (Playfair SemiBold 24px)
+/// - Subtitle: "Neues Passwort gespeichert."
+/// - NO CTA button (removed per design spec)
+/// - Auto-redirect after 1.5 seconds:
+///   - If authenticated → splash (Guards handle Onboarding vs Home)
+///   - If not authenticated → auth entry
+class SuccessScreen extends StatefulWidget {
   static const String passwordSavedRoutePath = '/auth/password/success';
   static const String passwordSavedRouteName = 'password_saved';
 
-  const SuccessScreen({super.key});
+  /// Auto-redirect delay in milliseconds.
+  /// Configurable for testing.
+  final int autoRedirectDelayMs;
+
+  const SuccessScreen({
+    super.key,
+    this.autoRedirectDelayMs = 1500,
+  });
+
+  @override
+  State<SuccessScreen> createState() => _SuccessScreenState();
+}
+
+class _SuccessScreenState extends State<SuccessScreen> {
+  Timer? _redirectTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoRedirect();
+  }
+
+  @override
+  void dispose() {
+    _redirectTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startAutoRedirect() {
+    _redirectTimer = Timer(
+      Duration(milliseconds: widget.autoRedirectDelayMs),
+      _performRedirect,
+    );
+  }
+
+  void _performRedirect() {
+    if (!mounted) return;
+
+    final isAuthenticated = SupabaseService.isAuthenticated;
+    if (isAuthenticated) {
+      // User is logged in → go to splash with skipAnimation
+      // PostAuth guards will determine Onboarding vs Home
+      context.go('${RoutePaths.splash}?skipAnimation=true');
+    } else {
+      // User is not logged in → back to auth entry
+      context.go(RoutePaths.authSignIn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
-    // Figma: Title style - Playfair Display Regular, 32px
-    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
+    // Title style: Playfair SemiBold 24px
+    final titleStyle = TextStyle(
       fontFamily: FontFamilies.playfairDisplay,
-      fontSize: AuthTypography.successTitleFontSize,
-      height: AuthTypography.successTitleLineHeight,
-      fontWeight: FontWeight.w400,
-      color: theme.colorScheme.onSurface,
+      fontSize: 24,
+      fontWeight: FontWeight.w600,
+      height: 1.2,
+      color: DsColors.authRebrandTextPrimary,
     );
 
-    // Figma: Subtitle style - Playfair Display Regular, 24px
-    final subtitleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontFamily: FontFamilies.playfairDisplay,
-      fontSize: AuthTypography.successSubtitleFontSize,
-      height: AuthTypography.successSubtitleLineHeight,
+    // Subtitle style: Figtree Regular 16px
+    final subtitleStyle = TextStyle(
+      fontFamily: FontFamilies.figtree,
+      fontSize: 16,
       fontWeight: FontWeight.w400,
-      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+      height: 1.5,
+      color: DsColors.authRebrandTextPrimary.withValues(alpha: 0.7),
     );
 
     return Scaffold(
       key: const ValueKey('auth_success_screen'),
       body: Stack(
         children: [
-          // Full-screen radial gradient background
+          // Rainbow background with arcs and stripes
           const Positioned.fill(
-            child: AuthRadialGradientBackground(),
+            child: AuthRainbowBackground(
+              showTopArcs: true,
+              showBottomStripes: true,
+              topArcsHeight: 280,
+              bottomStripesHeight: 180,
+            ),
           ),
 
           // Content
           SafeArea(
-            child: Column(
-              children: [
-                // Flexible top space (reduced to position content higher)
-                const Spacer(flex: 1),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // GlowCheckmark centered
+                  const GlowCheckmark(),
 
-                // GlowCheckmark centered
-                const GlowCheckmark(),
+                  const SizedBox(height: Spacing.xl),
 
-                // Space between icon and text
-                const SizedBox(height: Spacing.l + Spacing.m), // ~40px
-
-                // Title - using canonical authSuccessPwdTitle getter
-                Text(
-                  l10n.authSuccessPwdTitle,
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-
-                // Figma: Gap = 8px between title and subtitle
-                const SizedBox(height: Spacing.xs),
-
-                // Subtitle - using canonical authSuccessPwdSubtitle getter
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-                  child: Text(
-                    l10n.authSuccessPwdSubtitle,
-                    style: subtitleStyle,
+                  // Title
+                  Text(
+                    l10n.authSuccessPwdTitle,
+                    style: titleStyle,
                     textAlign: TextAlign.center,
                   ),
-                ),
 
-                // Fixed gap between text and CTA (Figma: ~40px)
-                const SizedBox(height: Spacing.welcomeCtaGap),
+                  const SizedBox(height: Spacing.s),
 
-                // CTA Button - navigates to /auth/signin per plan
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: Sizes.buttonHeightL,
-                    child: WelcomeButton(
-                      key: const ValueKey('success_cta_button'),
-                      onPressed: () => context.goNamed(RouteNames.authSignIn),
-                      label: l10n.authSuccessBackToLogin,
+                  // Subtitle
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+                    child: Text(
+                      l10n.authSuccessPwdSubtitle,
+                      style: subtitleStyle,
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
 
-                // Flexible bottom space (pushes content group upward)
-                const Spacer(flex: 2),
-              ],
+                  // No CTA button - auto-redirect handles navigation
+                ],
+              ),
             ),
           ),
         ],

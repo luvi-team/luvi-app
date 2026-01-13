@@ -36,6 +36,12 @@ class PasswordRecoveryNavigationDriver {
       if (_hasNavigated) return;
       _hasNavigated = true;
       _onNavigateToCreatePassword();
+
+      // Reset flag after debounce to allow subsequent recovery events
+      // (e.g., user requests a new reset link within the same session).
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _hasNavigated = false;
+      });
     }
   }
 

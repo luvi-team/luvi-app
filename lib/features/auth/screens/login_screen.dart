@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/auth/layout/auth_layout.dart';
+import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
-import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
-import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
-import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
-import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/core/widgets/welcome_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// LoginScreen with Figma Auth UI v2 design.
-///
-/// Figma Node: 68919:8853
-/// Route: /auth/login
+/// Login screen with Auth Rebrand v3 design.
 ///
 /// Features:
-/// - Linear gradient background
-/// - Back button navigation
-/// - Email + Password form
-/// - Pink CTA button (56px height)
+/// - Rainbow background with arcs and stripes
+/// - Content card with headline and form
+/// - Email + Password fields with error states
+/// - Pink CTA button
 /// - "Passwort vergessen?" link
+/// - "Neu bei LUVI? Hier starten" link
+///
+/// Route: /auth/login
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -72,189 +73,240 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    assert(
-      localizations != null,
-      'AppLocalizations not configured. Ensure localizationsDelegates '
-      'include AppLocalizations.delegate in MaterialApp.',
-    );
-    final l10n = localizations!;
-
-    final theme = Theme.of(context);
-    final tokensNullable = theme.extension<DsTokens>();
-    assert(
-      tokensNullable != null,
-      'DsTokens not configured. Ensure AppTheme includes DsTokens extension.',
-    );
-    final tokens = tokensNullable!;
+    final l10n = AppLocalizations.of(context)!;
 
     final loginAsync = ref.watch(loginProvider);
     final loginState = loginAsync.value ?? LoginState.initial();
     final emailError = loginState.emailError;
     final passwordError = loginState.passwordError;
+    final globalError = loginState.globalError;
     final submitState = ref.watch(loginSubmitProvider);
     final isLoading = submitState.isLoading;
-    final hasValidationError = emailError != null || passwordError != null;
-
-    // Figma: Title style - Playfair Display Bold, 24px
-    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: Sizes.authTitleFontSize,
-      height: Sizes.authTitleLineHeight,
-      fontWeight: FontWeight.bold,
-      color: theme.colorScheme.onSurface,
-    );
-
-    // Figma: Forgot link style - Figtree Bold, 20px, #696969
-    final forgotLinkStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: Sizes.authLinkFontSize,
-      height: Sizes.authLinkLineHeight,
-      fontWeight: FontWeight.bold,
-      color: tokens.grayscale500,
-    );
-
-    // Signup link style - uses authSubtitle tokens for consistency
-    final signupLinkStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: Sizes.authSubtitleFontSize,
-      height: Sizes.authSubtitleLineHeight,
-      color: theme.colorScheme.onSurface,
-    );
-
-    final signupLinkActionStyle = signupLinkStyle?.copyWith(
-      fontWeight: FontWeight.bold,
-      color: tokens.cardBorderSelected,
-      decoration: TextDecoration.underline,
-    );
+    final hasEmailError = emailError != null;
+    final hasPasswordError = passwordError != null;
 
     return Scaffold(
       key: const ValueKey('auth_login_screen'),
+      backgroundColor: DsColors.authRebrandBackground,
       resizeToAvoidBottomInset: true,
-      body: AuthShell(
-        background: const AuthLinearGradientBackground(),
-        showBackButton: true,
-        onBackPressed: () {
-          final router = GoRouter.of(context);
-          if (router.canPop()) {
-            router.pop();
-          } else {
-            // Navigate to sign-in using SSOT route constant
-            context.go(AuthSignInScreen.routeName);
-          }
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Figma: Gap after back button
-            const SizedBox(height: AuthLayout.backButtonToTitle),
-
-            // Title: "Anmelden mit E-Mail"
-            Text(
-              l10n.authLoginTitle,
-              style: titleStyle,
+      body: Stack(
+        children: [
+          // Rainbow background
+          const Positioned.fill(
+            child: AuthRainbowBackground(
+              showTopArcs: true,
+              showBottomStripes: true,
+              topArcsHeight: 200,
+              bottomStripesHeight: 180,
             ),
+          ),
 
-            // Figma: Gap between title and inputs (32px)
-            const SizedBox(height: AuthLayout.ctaTopAfterCopy),
-
-            // Email field
-            // Auth-Flow Bugfix: Keyboard öffnet nicht automatisch
-            LoginEmailField(
-              key: const ValueKey('login_email_field'),
-              controller: _emailController,
-              errorText: emailError,
-              autofocus: false,
-              onChanged: _onEmailChanged,
-            ),
-
-            // Figma: Gap between inputs = 20px
-            const SizedBox(height: AuthLayout.inputGap),
-
-            // Password field
-            LoginPasswordField(
-              key: const ValueKey('login_password_field'),
-              controller: _passwordController,
-              errorText: passwordError,
-              obscure: _obscurePassword,
-              onToggleObscure: _toggleObscurePassword,
-              onChanged: _onPasswordChanged,
-              onSubmitted: (_) => _submit(),
-            ),
-
-            // Figma: Gap before CTA (40px)
-            const SizedBox(height: AuthLayout.inputToCta),
-
-            // CTA Button - Figma: h=56px
-            SizedBox(
-              width: double.infinity,
-              height: Sizes.buttonHeightL, // 56px
-              child: WelcomeButton(
-                key: const ValueKey('login_cta_button'),
-                onPressed: (isLoading || hasValidationError) ? null : _submit,
-                isLoading: isLoading,
-                label: l10n.authLoginCta,
-                loadingKey: const ValueKey('login_cta_loading'),
-                labelKey: const ValueKey('login_cta_label'),
+          // Content
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-            ),
-
-            // Figma: Gap before forgot link
-            const SizedBox(height: Spacing.l), // 24px
-
-            // "Passwort vergessen?" link - centered
-            Center(
-              child: TextButton(
-                key: const ValueKey('login_forgot_link'),
-                onPressed: () => context.push(ResetPasswordScreen.routeName),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(Sizes.touchTargetMin, Sizes.touchTargetMin),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  l10n.authLoginForgot,
-                  style: forgotLinkStyle,
-                ),
-              ),
-            ),
-
-            // Spacing zwischen Forgot und Signup Link
-            const SizedBox(height: Spacing.m), // 16px
-
-            // "Neu bei LUVI? Hier starten" link - centered
-            // Pattern aus auth_signup_screen.dart:256-284
-            Center(
-              child: Semantics(
-                button: true,
-                label: l10n.authLoginCtaLinkSemantic,
-                child: TextButton(
-                  key: const ValueKey('login_signup_link'),
-                  onPressed: () => context.push(AuthSignupScreen.routeName),
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize:
-                        const Size(Sizes.touchTargetMin, Sizes.touchTargetMin),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              child: Column(
+                children: [
+                  // Back button
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: AuthRebrandMetrics.backButtonLeft,
+                        top: AuthRebrandMetrics.backButtonTop,
+                      ),
+                      child: AuthBackButton(
+                        onPressed: () {
+                          final router = GoRouter.of(context);
+                          if (router.canPop()) {
+                            router.pop();
+                          } else {
+                            context.go(AuthSignInScreen.routeName);
+                          }
+                        },
+                        semanticsLabel: l10n.authBackSemantic,
+                      ),
+                    ),
                   ),
-                  child: RichText(
-                    text: TextSpan(
+
+                  const SizedBox(height: AuthRebrandMetrics.contentTopGap),
+
+                  // Global error banner
+                  if (globalError != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
+                      child: Container(
+                        padding: const EdgeInsets.all(Spacing.s),
+                        margin: const EdgeInsets.only(bottom: Spacing.m),
+                        decoration: BoxDecoration(
+                          color: DsColors.authRebrandError.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(Sizes.radiusS),
+                          border: Border.all(
+                            color: DsColors.authRebrandError,
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          globalError,
+                          style: const TextStyle(
+                            fontFamily: FontFamilies.figtree,
+                            fontSize: 14,
+                            color: DsColors.authRebrandError,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+
+                  // Content card
+                  AuthContentCard(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextSpan(
-                          text: l10n.authLoginCtaLinkPrefix,
-                          style: signupLinkStyle,
+                        // Headline
+                        Text(
+                          l10n.authLoginTitle,
+                          style: const TextStyle(
+                            fontFamily: FontFamilies.playfairDisplay,
+                            fontSize: AuthRebrandMetrics.headlineFontSize,
+                            fontWeight: FontWeight.w600,
+                            height: AuthRebrandMetrics.headlineLineHeight,
+                            color: DsColors.authRebrandTextPrimary,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        TextSpan(
-                          text: l10n.authLoginCtaLinkAction,
-                          style: signupLinkActionStyle,
+
+                        const SizedBox(height: Spacing.l),
+
+                        // Email field
+                        AuthRebrandTextField(
+                          key: const ValueKey('login_email_field'),
+                          controller: _emailController,
+                          hintText: l10n.authEmailPlaceholderLong,
+                          errorText: hasEmailError ? l10n.authErrorEmailCheck : null,
+                          hasError: hasEmailError,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          onChanged: _onEmailChanged,
                         ),
+
+                        const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+
+                        // Password field
+                        AuthRebrandTextField(
+                          key: const ValueKey('login_password_field'),
+                          controller: _passwordController,
+                          hintText: l10n.authPasswordPlaceholder,
+                          errorText: hasPasswordError ? l10n.authErrorPasswordCheck : null,
+                          hasError: hasPasswordError,
+                          obscureText: _obscurePassword,
+                          textInputAction: TextInputAction.done,
+                          onChanged: _onPasswordChanged,
+                          onSubmitted: (_) => _submit(),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: DsColors.grayscale500,
+                              size: 20,
+                            ),
+                            onPressed: _toggleObscurePassword,
+                          ),
+                        ),
+
+                        const SizedBox(height: Spacing.l),
+
+                        // CTA button
+                        AuthPrimaryButton(
+                          key: const ValueKey('login_cta_button'),
+                          loadingKey: const ValueKey('login_cta_loading'),
+                          label: l10n.authEntryCta,
+                          onPressed: isLoading ? null : _submit,
+                          isLoading: isLoading,
+                        ),
+
+                        const SizedBox(height: Spacing.m),
+
+                        // Forgot password link
+                        _buildForgotLink(l10n),
+
+                        const SizedBox(height: Spacing.s),
+
+                        // Signup link
+                        _buildSignupLink(l10n),
                       ],
                     ),
                   ),
-                ),
+
+                  const SizedBox(height: AuthRebrandMetrics.contentBottomGap),
+                ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // Bottom padding for keyboard
-            const SizedBox(height: Spacing.l),
-          ],
+  Widget _buildForgotLink(AppLocalizations l10n) {
+    return Semantics(
+      button: true,
+      label: l10n.authLoginForgot,
+      child: GestureDetector(
+        key: const ValueKey('login_forgot_link'),
+        onTap: () => context.push(ResetPasswordScreen.routeName),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
+          child: Text(
+            l10n.authLoginForgot,
+            style: TextStyle(
+              fontFamily: FontFamilies.figtree,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: DsColors.grayscale500,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignupLink(AppLocalizations l10n) {
+    return Semantics(
+      button: true,
+      label: l10n.authLoginCtaLinkSemantic,
+      child: GestureDetector(
+        key: const ValueKey('login_signup_link'),
+        onTap: () => context.push(AuthSignupScreen.routeName),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
+          child: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: l10n.authLoginCtaLinkPrefix,
+                  style: const TextStyle(
+                    fontFamily: FontFamilies.figtree,
+                    fontSize: 14,
+                    color: DsColors.authRebrandTextPrimary,
+                  ),
+                ),
+                TextSpan(
+                  text: l10n.authLoginCtaLinkAction,
+                  style: const TextStyle(
+                    fontFamily: FontFamilies.figtree,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: DsColors.authRebrandCtaPrimary,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

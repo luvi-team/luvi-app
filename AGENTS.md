@@ -77,12 +77,11 @@ Tooling (Flutter, Sandbox)
   - Optional escalation: `CODEX_USE_REAL_HOME=1` is not required for tests and should not be used.
 
 Quickstart (SSOT)
-- Entry/links see `README.md:1` → App Context, Tech Stack, Roadmap, Gold Standard (including "Practical Guide · Ultra-Slim")
+- Entry/links see `README.md:1` → App Context, Tech Stack, Roadmap, [Gold Standard Workflow](docs/engineering/field-guides/gold-standard-workflow.md) (including "Practical Guide · Ultra-Slim")
 
 Role Selection
 - Default: Auto-Role (announce). Mixed tasks: `role: …` (primary role first).
 - Auto-Role Map (SSOT): `context/agents/_auto_role_map.md`
-- Traycer (optional, features): `docs/engineering/traycer/prompt-mini.md`
 
 ## Agent-Binding (Roles → Agents)
 
@@ -119,7 +118,7 @@ Work-Modes (informal, Dual-Agent)
 - **High Impact** (DB/PII/AI/Security): Codex leads, full BMAD/PRP ceremony, appropriate tests, Privacy-Review/GDPR check; Claude Code provides UI support only after coordination.
 - **Normal Features**: UI/Dataviz → Claude Code implements & documents BMAD-slim per `CLAUDE.md`, Codex reviews; Backend/DB → Codex implements, Required Checks (Greptile/CI) as gate.
 - **Micro-Tasks**: Pure UI/copy fixes without state → Claude Code (Analyze + affected tests); Backend-only/infra fixes → Codex (Analyze/Test scope as appropriate).
-  - Quick-Ref: High Impact → Codex Ownership, ≥Unit+Widget Tests; Normal Features → Agent by domain, Traycer optional; Micro-Tasks → lean Analyze/Test per domain.
+  - Quick-Ref: High Impact → Codex Ownership, ≥Unit+Widget Tests; Normal Features → Agent by domain; Micro-Tasks → lean Analyze/Test per domain.
 - Soft-Gates: `reqing-ball` before High-Impact Backend/DB/Privacy features for requirements clarification; `ui-polisher` after new screens/complex UI diffs before Codex review for Token/A11y checks.
 
 RAG Usage & Fallback (for Codex)

@@ -2074,6 +2074,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome back'**
   String get authLoginHeaderSemantic;
+
+  /// Primary CTA button text on auth entry screen
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go'**
+  String get authEntryCta;
+
+  /// Link text for existing users on auth entry screen
+  ///
+  /// In en, this message translates to:
+  /// **'I already have an account.'**
+  String get authEntryExistingAccount;
+
+  /// Headline in register bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Register to get started'**
+  String get authRegisterHeadline;
+
+  /// Headline in login bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to get started'**
+  String get authLoginSheetHeadline;
+
+  /// Apple sign-in button text in bottom sheets
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get authContinueApple;
+
+  /// Google sign-in button text in bottom sheets
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get authContinueGoogle;
+
+  /// Email sign-in button text in bottom sheets
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Email'**
+  String get authContinueEmail;
+
+  /// Divider text between OAuth and email options
+  ///
+  /// In en, this message translates to:
+  /// **'Or'**
+  String get authOr;
+
+  /// Long placeholder text for email input field
+  ///
+  /// In en, this message translates to:
+  /// **'Your email address'**
+  String get authEmailPlaceholderLong;
+
+  /// Placeholder text for password input field
+  ///
+  /// In en, this message translates to:
+  /// **'Your password'**
+  String get authPasswordPlaceholder;
+
+  /// Error placeholder text for invalid email
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your email address'**
+  String get authErrorEmailCheck;
+
+  /// Error placeholder text for invalid password
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your password'**
+  String get authErrorPasswordCheck;
+
+  /// Title for email registration screen
+  ///
+  /// In en, this message translates to:
+  /// **'Register with Email'**
+  String get authRegisterEmailTitle;
+
+  /// Subtitle for reset password screen
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address and receive a link to reset.'**
+  String get authResetPasswordSubtitle;
+
+  /// Short CTA text for reset password button
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get authResetCtaShort;
+
+  /// Hint text for confirm password field
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get authNewPasswordConfirmHint;
+
+  /// CTA text for save new password button
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get authSavePasswordCta;
+
+  /// Subtitle on success screen
+  ///
+  /// In en, this message translates to:
+  /// **'New password saved.'**
+  String get authSuccessSubtitle;
+
+  /// Generic error message when password reset fails
+  ///
+  /// In en, this message translates to:
+  /// **'Reset failed. Please try again.'**
+  String get authResetErrorGeneric;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
