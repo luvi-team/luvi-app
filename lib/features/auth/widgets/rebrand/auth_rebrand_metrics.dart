@@ -1,6 +1,6 @@
 /// Design metrics for Auth Rebrand v3 (Figma Auth Screens 2026-01).
 ///
-/// Baseline: 393×873 (Figma export dimensions)
+/// Baseline: 402×874 (PNG export SSOT from context/design/Auth Screens/)
 /// All values are pixel-exact from Figma audit YAML.
 class AuthRebrandMetrics {
   const AuthRebrandMetrics._();
