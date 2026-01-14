@@ -1,18 +1,18 @@
 # Flutter Test
 
-Führe Tests aus.
+Run tests.
 
-## Alle Tests:
+## All Tests:
 ```bash
 scripts/flutter_codex.sh test -j 1
 ```
 
-## Spezifischer Test:
+## Specific Test:
 ```bash
 scripts/flutter_codex.sh test $ARGUMENTS
 ```
 
-## Bei Fehlern:
-1. Prüfe die Fehlermeldung
-2. Vergleiche expected vs actual
-3. Korrigiere Test oder Implementation
+## On Errors:
+1. Check the error message
+2. Compare expected vs actual
+3. Fix test or implementation

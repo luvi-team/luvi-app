@@ -1,12 +1,17 @@
 /// Responsive breakpoints for LUVI (Figma reference devices).
 ///
+/// ## Relationship to Sizes
+/// - [Sizes.welcomeReferenceHeight] (800) = SCALING THRESHOLD (scale if height < 800)
+/// - [Breakpoints.welcomeDesignHeight] (852) = FIGMA DESIGN HEIGHT (reference for layouts)
+///
+/// These are NOT duplicates - they serve different purposes:
+/// - Sizes: Runtime scaling decisions
+/// - Breakpoints: Design-time reference values
+///
 /// Validated against Figma exports:
 /// - Auth: 393×873 (AuthRebrandMetrics)
 /// - Welcome: 393×852 (iPhone 14 Pro reference)
 /// - Onboarding: 393×926 (OnboardingSpacing._designHeight)
-///
-/// Note: Design heights differ from [Sizes.welcomeReferenceHeight] (800),
-/// which is the SCALING THRESHOLD, not the design height.
 class Breakpoints {
   const Breakpoints._();
 
@@ -28,10 +33,11 @@ class Breakpoints {
   /// iPad Pro 11"
   static const double tabletStandard = 834.0;
 
-  // ─── Design Heights (Screen-specific) ───
+  // ─── Design Heights (Figma Reference, NOT scaling thresholds) ───
+  // For scaling thresholds, see [Sizes.welcomeReferenceHeight]
 
   /// Welcome screen design height (Figma: iPhone 14 Pro)
-  /// Note: Different from Sizes.welcomeReferenceHeight (800) which is scaling threshold
+  /// NOT a scaling threshold - use [Sizes.welcomeReferenceHeight] for that
   static const double welcomeDesignHeight = 852.0;
 
   /// Auth screens design height (Figma: Auth Rebrand v3)
@@ -46,5 +52,6 @@ class Breakpoints {
   static bool isTablet(double width) => width >= tabletSmall;
 
   /// Check if height is constrained (needs scaling)
+  /// Delegates to the canonical threshold in Sizes
   static bool isHeightConstrained(double height) => height < 800.0;
 }

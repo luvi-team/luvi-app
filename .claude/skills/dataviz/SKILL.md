@@ -1,26 +1,41 @@
 ---
 name: dataviz
-description: Erstellt Charts und Dashboards. Auto-invoke bei: Chart, Dashboard, Visualization, Metric, Graph, Plot.
-allowed-tools: Read, Grep, Glob, Edit, Write
+description: Use when you need to create charts, graphs, or data visualizations in Flutter
 ---
 
 # DataViz Skill
 
-## Chart-Library: fl_chart
+## Overview
+Creates data visualizations using fl_chart with LUVI's design tokens.
 
-### Verfügbare Chart-Typen:
-- `LineChart` - Trends über Zeit
-- `BarChart` - Kategorien vergleichen
-- `PieChart` - Anteile visualisieren
-- `RadarChart` - Multi-Dimensionen
+## When to Use
+- You need to display data as a chart
+- Keywords: "Chart", "Graph", "Dashboard", "Visualization", "Metric", "Plot"
+- Cycle data visualization (Menstruation, Ovulation, etc.)
 
-### Workflow:
-1. **Daten analysieren** - Welcher Chart-Typ passt?
-2. **Farben aus Tokens** - `DsColors.*` verwenden
-3. **A11y sicherstellen** - `Semantics(label: ...)` für Achsen/Legenden
-4. **Empty State** - Graceful UI wenn keine Daten
+## When NOT to Use
+- Simple lists or tables (use ListView/DataTable)
+- Static infographics (use Image/SVG)
+- Real-time streaming data (needs different architecture)
 
-### Beispiel LineChart:
+## Chart Library: fl_chart
+
+### Available Chart Types
+- `LineChart` - Trends over time
+- `BarChart` - Compare categories
+- `PieChart` - Show proportions
+- `RadarChart` - Multi-dimensional
+
+## Workflow
+
+1. **Analyze data** - Which chart type fits?
+2. **Use design tokens** - `DsColors.*` for colors
+3. **Ensure A11y** - `Semantics(label: ...)` for axes/legends
+4. **Handle empty state** - Graceful UI when no data
+
+## Quick Reference
+
+### LineChart Example
 ```dart
 import 'package:fl_chart/fl_chart.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
@@ -34,16 +49,11 @@ LineChart(
         barWidth: 2,
       ),
     ],
-    titlesData: FlTitlesData(
-      bottomTitles: AxisTitles(
-        sideTitles: SideTitles(showTitles: true),
-      ),
-    ),
   ),
 )
 ```
 
-### A11y für Charts:
+### A11y Wrapper
 ```dart
 Semantics(
   label: AppLocalizations.of(context)!.chartDescription,
@@ -51,5 +61,13 @@ Semantics(
 )
 ```
 
-### Token-Referenz:
-Siehe `.claude/skills/dataviz/CHART_TOKENS.md` für Chart-spezifische Farben.
+See `CHART_TOKENS.md` for cycle-phase colors.
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Hardcoded chart colors | Use `DsColors.*` tokens |
+| Missing Semantics | Wrap chart in `Semantics(label: ...)` |
+| No empty state | Show placeholder when `data.isEmpty` |
+| Wrong phase color | Check CHART_TOKENS.md for cycle phases |

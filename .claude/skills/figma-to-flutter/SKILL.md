@@ -1,47 +1,71 @@
 ---
 name: figma-to-flutter
-description: Baut Figma-Designs in Flutter nach. Auto-invoke bei: Screenshot, Figma, "bau nach", "implementiere Screen", UI-Design, Mockup.
-allowed-tools: Read, Grep, Glob, Edit, Write
+description: Use when you need to convert a Figma design or screenshot into Flutter code with design tokens
 ---
 
 # Figma → Flutter Skill
 
-## Workflow bei Figma-Screenshot/Design:
+## Overview
+Converts Figma designs into Flutter code using LUVI's design token system (DsColors, Spacing, Sizes).
 
-### 1. Farben extrahieren
+## When to Use
+- You have a Figma screenshot or design to implement
+- You're building a new screen or component from a visual reference
+- Keywords in request: "Figma", "Screenshot", "bau nach", "implementiere Screen", "UI-Design", "Mockup"
+
+## When NOT to Use
+- Pure logic/backend changes without UI
+- Refactoring existing screens (no new design)
+- Bug fixes in existing UI
+
+## Workflow
+
+### 1. Extract Colors
 ```bash
-# Suche existierendes Token
 grep -n "Figma: #HEXCODE" lib/core/design_tokens/colors.dart
 ```
-- Gefunden → Token verwenden
-- Nicht gefunden → Neues Token erstellen mit `/// Figma: #HEXCODE`
+- Found → Use existing token
+- Not found → Create new token with `/// Figma: #HEXCODE`
 
-### 2. Spacing extrahieren
+### 2. Extract Spacing
 ```bash
 grep -n "Figma: XXpx" lib/core/design_tokens/spacing.dart
 ```
 
-### 3. Sizes extrahieren
+### 3. Extract Sizes
 ```bash
 grep -n "Figma: XXpx" lib/core/design_tokens/sizes.dart
 ```
 
-### 4. Referenz-Screen finden
+### 4. Find Reference Screen
 - Glob: `lib/features/*/screens/*.dart`
-- Besonders: `lib/features/auth/screens/` für Auth-Flows
-- Besonders: `lib/features/onboarding/screens/` für Onboarding
+- Auth: `lib/features/auth/screens/`
+- Onboarding: `lib/features/onboarding/screens/`
 
-### 5. Implementieren mit:
-- `DsColors.*` für Farben
-- `Spacing.*` für Abstände
-- `Sizes.*` für Dimensionen
-- `Semantics(label: AppLocalizations.of(context)!.xxx)` für A11y
+### 5. Implement with:
+- `DsColors.*` for colors
+- `Spacing.*` for spacing
+- `Sizes.*` for dimensions
+- `Semantics(label: AppLocalizations.of(context)!.xxx)` for A11y
 
-### 6. Widget-Test erstellen
-- Unter `test/features/{feature}/`
-- Mit `buildTestApp` aus `test/support/test_app.dart`
+### 6. Create Widget Test
+- Under `test/features/{feature}/`
+- Use `buildTestApp` from `test/support/test_app.dart`
 
-### 7. Verifizieren
+### 7. Verify
 ```bash
 scripts/flutter_codex.sh analyze
 ```
+
+## Quick Reference
+
+See `TOKEN_MAPPING.md` for Figma Hex → Flutter Token mappings.
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Hardcoded colors `Color(0xFF...)` | Use `DsColors.*` token |
+| Hardcoded spacing `EdgeInsets.all(16)` | Use `Spacing.m` |
+| Missing Semantics | Add `Semantics(label: l10n.xxx)` |
+| Forgot Widget Test | Always create test under `test/features/` |

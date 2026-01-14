@@ -1,18 +1,18 @@
 # Flutter Analyze
 
-Führe Flutter-Analyse aus und behebe alle Fehler.
+Run Flutter analysis and fix all errors.
 
 ```bash
 scripts/flutter_codex.sh analyze
 ```
 
-## Bei Fehlern:
-1. Lies die Fehlermeldung
-2. Navigiere zur betroffenen Datei
-3. Behebe den Fehler
-4. Wiederhole bis keine Fehler mehr
+## On Errors:
+1. Read the error message
+2. Navigate to the affected file
+3. Fix the error
+4. Repeat until no errors remain
 
-## Häufige Fixes:
-- `unused_import` → Import entfernen
-- `prefer_const_constructors` → `const` hinzufügen
-- `missing_required_param` → Parameter hinzufügen
+## Common Fixes:
+- `unused_import` → Remove import
+- `prefer_const_constructors` → Add `const`
+- `missing_required_param` → Add parameter
