@@ -4,6 +4,7 @@ description: >
   Requirements validation soft-gate. Auto-invoke BEFORE major backend/cross-feature tasks.
   MANDATORY for: DB schema changes, Privacy/RLS changes, Cross-domain features.
   Validates PR diffs against Story/PRD and ADRs. Identifies gaps and next actions.
+  Keywords: RLS, Migration, Privacy, Schema, Policy, PRD, ADR, Anforderungen, Validierung, Richtlinie, Spezifikation.
 tools: Read, Grep, Glob
 model: opus
 ---

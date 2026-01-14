@@ -2,8 +2,9 @@
 name: ui-polisher
 description: >
   UI quality soft-gate for design tokens and accessibility. Auto-invoke AFTER completing
-  new screens or major UI components, BEFORE Codex review. Checks: tokens, typography,
-  spacing, A11y (contrast, touch targets). Keywords: polish, review UI, check tokens, A11y audit.
+  new screens or major UI components, BEFORE Codex review.
+  Checks: tokens, typography, spacing, A11y (contrast, touch targets).
+  Keywords: polish, review UI, check tokens, A11y, accessibility, Barrierefreiheit, Kontrast, Abstände, Typografie.
 tools: Read, Grep, Glob
 model: opus
 ---

@@ -3,8 +3,8 @@ name: qa-reviewer
 description: >
   Privacy and GDPR quick-check soft-gate. Auto-invoke when touching: user data, logs,
   consent flows, forms with personal data, health/cycle information.
-  Keywords: privacy, GDPR, DSGVO, PII, consent, logging, user data.
   Lightweight pre-check before full Codex qa-dsgvo review.
+  Keywords: privacy, GDPR, DSGVO, PII, consent, logging, user data, Datenschutz, Einwilligung, Protokollierung, Gesundheitsdaten.
 tools: Read, Grep, Glob
 model: opus
 ---
