@@ -855,6 +855,14 @@
   "@authBackSemantic": {
     "description": "Semantische Bezeichnung für die Zurück-Navigation."
   },
+  "authShowPassword": "Passwort anzeigen",
+  "@authShowPassword": {
+    "description": "Accessibility label for showing password."
+  },
+  "authHidePassword": "Passwort verbergen",
+  "@authHidePassword": {
+    "description": "Accessibility label for hiding password."
+  },
   "authSuccessCta": "Fertig",
   "@authSuccessCta": {
     "description": "CTA nach erfolgreichem Vorgang."

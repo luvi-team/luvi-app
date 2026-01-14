@@ -221,7 +221,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                           _errorMessage!,
                           style: const TextStyle(
                             fontFamily: FontFamilies.figtree,
-                            fontSize: 14,
+                            fontSize: AuthRebrandMetrics.errorTextFontSize,
                             color: DsColors.authRebrandError,
                           ),
                           textAlign: TextAlign.center,
@@ -291,17 +291,23 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                           onSubmitted: (_) {
                             if (!_isSubmitting) _handleSignup();
                           },
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: DsColors.grayscale500,
-                              size: 20,
+                          suffixIcon: Semantics(
+                            button: true,
+                            label: _obscurePassword
+                                ? l10n.authShowPassword
+                                : l10n.authHidePassword,
+                            child: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: DsColors.grayscale500,
+                                size: AuthRebrandMetrics.passwordToggleIconSize,
+                              ),
+                              onPressed: () {
+                                setState(() => _obscurePassword = !_obscurePassword);
+                              },
                             ),
-                            onPressed: () {
-                              setState(() => _obscurePassword = !_obscurePassword);
-                            },
                           ),
                         ),
 

@@ -848,6 +848,14 @@
   "@authBackSemantic": {
     "description": "Semantic label for back buttons used in auth flows."
   },
+  "authShowPassword": "Show password",
+  "@authShowPassword": {
+    "description": "Accessibility label for showing password."
+  },
+  "authHidePassword": "Hide password",
+  "@authHidePassword": {
+    "description": "Accessibility label for hiding password."
+  },
   "authSuccessPwdTitle": "All done!",
   "@authSuccessPwdTitle": {
     "description": "Title shown when the new password was created successfully."

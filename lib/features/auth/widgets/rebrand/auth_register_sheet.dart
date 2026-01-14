@@ -94,7 +94,7 @@ class AuthRegisterSheet extends StatelessWidget {
                     l10n.authOr,
                     style: TextStyle(
                       fontFamily: FontFamilies.figtree,
-                      fontSize: 14,
+                      fontSize: AuthRebrandMetrics.dividerTextFontSize,
                       color: DsColors.grayscale500,
                     ),
                   ),

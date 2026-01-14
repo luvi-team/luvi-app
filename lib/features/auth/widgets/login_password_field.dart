@@ -3,6 +3,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 class LoginPasswordField extends StatelessWidget {
   const LoginPasswordField({
@@ -41,6 +42,7 @@ class LoginPasswordField extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tokens = theme.extension<DsTokens>()!;
+    final l10n = AppLocalizations.of(context)!;
     final resolvedTextStyle =
         textStyle ??
         theme.textTheme.bodyMedium?.copyWith(
@@ -84,8 +86,8 @@ class LoginPasswordField extends StatelessWidget {
                 bottom: Spacing.s,
               ),
               suffixIcon: Semantics(
-                label: obscure ? 'Passwort anzeigen' : 'Passwort ausblenden',
                 button: true,
+                label: obscure ? l10n.authShowPassword : l10n.authHidePassword,
                 child: IconButton(
                   icon: Icon(
                     obscure

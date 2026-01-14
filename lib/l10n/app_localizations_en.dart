@@ -639,6 +639,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authBackSemantic => 'Back';
 
   @override
+  String get authShowPassword => 'Show password';
+
+  @override
+  String get authHidePassword => 'Hide password';
+
+  @override
   String get authSuccessPwdTitle => 'All done!';
 
   @override

@@ -332,17 +332,23 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                           obscureText: _obscureNewPassword,
                           textInputAction: TextInputAction.next,
                           onChanged: _onNewPasswordChanged,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureNewPassword
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: DsColors.grayscale500,
-                              size: 20,
+                          suffixIcon: Semantics(
+                            button: true,
+                            label: _obscureNewPassword
+                                ? l10n.authShowPassword
+                                : l10n.authHidePassword,
+                            child: IconButton(
+                              icon: Icon(
+                                _obscureNewPassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: DsColors.grayscale500,
+                                size: AuthRebrandMetrics.passwordToggleIconSize,
+                              ),
+                              onPressed: () {
+                                setState(() => _obscureNewPassword = !_obscureNewPassword);
+                              },
                             ),
-                            onPressed: () {
-                              setState(() => _obscureNewPassword = !_obscureNewPassword);
-                            },
                           ),
                         ),
 
@@ -361,17 +367,23 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                           onSubmitted: (_) {
                             if (canSubmit) _onCreatePasswordPressed();
                           },
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureConfirmPassword
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: DsColors.grayscale500,
-                              size: 20,
+                          suffixIcon: Semantics(
+                            button: true,
+                            label: _obscureConfirmPassword
+                                ? l10n.authShowPassword
+                                : l10n.authHidePassword,
+                            child: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: DsColors.grayscale500,
+                                size: AuthRebrandMetrics.passwordToggleIconSize,
+                              ),
+                              onPressed: () {
+                                setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+                              },
                             ),
-                            onPressed: () {
-                              setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                            },
                           ),
                         ),
 

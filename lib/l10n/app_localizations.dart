@@ -1295,6 +1295,18 @@ abstract class AppLocalizations {
   /// **'Back'**
   String get authBackSemantic;
 
+  /// Accessibility label for showing password.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get authShowPassword;
+
+  /// Accessibility label for hiding password.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get authHidePassword;
+
   /// Title shown when the new password was created successfully.
   ///
   /// In en, this message translates to:

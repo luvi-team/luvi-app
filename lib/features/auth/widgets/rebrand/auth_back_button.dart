@@ -32,7 +32,7 @@ class AuthBackButton extends StatelessWidget {
           onPressed: onPressed,
           icon: const Icon(
             Icons.chevron_left,
-            size: 28,
+            size: AuthRebrandMetrics.backButtonIconSize,
             color: DsColors.authRebrandTextPrimary,
           ),
           padding: EdgeInsets.zero,

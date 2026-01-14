@@ -146,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           globalError,
                           style: const TextStyle(
                             fontFamily: FontFamilies.figtree,
-                            fontSize: 14,
+                            fontSize: AuthRebrandMetrics.errorTextFontSize,
                             color: DsColors.authRebrandError,
                           ),
                           textAlign: TextAlign.center,
@@ -200,15 +200,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           textInputAction: TextInputAction.done,
                           onChanged: _onPasswordChanged,
                           onSubmitted: (_) => _submit(),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: DsColors.grayscale500,
-                              size: 20,
+                          suffixIcon: Semantics(
+                            button: true,
+                            label: _obscurePassword
+                                ? l10n.authShowPassword
+                                : l10n.authHidePassword,
+                            child: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: DsColors.grayscale500,
+                                size: AuthRebrandMetrics.passwordToggleIconSize,
+                              ),
+                              onPressed: _toggleObscurePassword,
                             ),
-                            onPressed: _toggleObscurePassword,
                           ),
                         ),
 
@@ -254,7 +260,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             l10n.authLoginForgot,
             style: TextStyle(
               fontFamily: FontFamilies.figtree,
-              fontSize: 14,
+              fontSize: AuthRebrandMetrics.dividerTextFontSize,
               fontWeight: FontWeight.w600,
               color: DsColors.grayscale500,
             ),
