@@ -51,5 +51,48 @@
 static const Color newTokenName = Color(0xFFHEXCODE);
 ```
 
+## Typography (Variable Fonts)
+
+LUVI verwendet **Variable Fonts**. Für korrekte Darstellung ist `fontVariations` PFLICHT!
+
+### Fonts
+| Font | Type | FontFamily Token |
+|------|------|------------------|
+| Figtree | Variable | `FontFamilies.figtree` |
+| Playfair Display | Variable | `FontFamilies.playfairDisplay` |
+
+### Font Weights (wght)
+| Figma Weight | wght Value | Flutter Code |
+|--------------|------------|--------------|
+| Regular (400) | 400 | `fontVariations: [FontVariation('wght', 400)]` |
+| Medium (500) | 500 | `fontVariations: [FontVariation('wght', 500)]` |
+| SemiBold (600) | 600 | `fontVariations: [FontVariation('wght', 600)]` |
+| Bold (700) | 700 | `fontVariations: [FontVariation('wght', 700)]` |
+| ExtraBold (800) | 800 | `fontVariations: [FontVariation('wght', 800)]` |
+
+### Beispiel (korrekt)
+```dart
+Text(
+  'Beispiel',
+  style: const TextStyle(
+    fontFamily: FontFamilies.figtree,
+    fontSize: 17,
+    fontVariations: [FontVariation('wght', 400)], // Regular
+    color: DsColors.grayscaleBlack,
+  ),
+)
+```
+
+### ⚠️ WARNUNG
+```dart
+// ❌ FALSCH - fontWeight funktioniert NICHT bei Variable Fonts!
+fontWeight: FontWeight.w400,
+
+// ✅ RICHTIG - fontVariations für Variable Fonts
+fontVariations: [FontVariation('wght', 400)],
+```
+
+---
+
 ## Vollständige Suche
 Für alle Tokens: `grep -n "Figma:" lib/core/design_tokens/*.dart`

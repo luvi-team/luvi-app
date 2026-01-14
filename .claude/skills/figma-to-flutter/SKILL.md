@@ -69,3 +69,5 @@ See `TOKEN_MAPPING.md` for Figma Hex → Flutter Token mappings.
 | Hardcoded spacing `EdgeInsets.all(16)` | Use `Spacing.m` |
 | Missing Semantics | Add `Semantics(label: l10n.xxx)` |
 | Forgot Widget Test | Always create test under `test/features/` |
+| `fontWeight: FontWeight.w400` für Variable Fonts | Use `fontVariations: [FontVariation('wght', 400)]` |
+| Variable Font ohne `fontVariations` | Figtree/Playfair brauchen IMMER `fontVariations` |

@@ -89,13 +89,14 @@ class AuthRegisterSheet extends StatelessWidget {
                     const SizedBox(height: Spacing.m),
                   ],
 
-                  // Divider
+                  // Divider (SSOT: Figma #030401, 17px, Regular)
                   Text(
                     l10n.authOr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: FontFamilies.figtree,
-                      fontSize: AuthRebrandMetrics.dividerTextFontSize,
-                      color: DsColors.grayscale500,
+                      fontSize: AuthRebrandMetrics.bodyFontSize,
+                      fontVariations: [FontVariation('wght', 400)], // Regular for variable font
+                      color: DsColors.grayscaleBlack,
                     ),
                   ),
 

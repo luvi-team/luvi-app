@@ -28,7 +28,7 @@ class AuthRainbowBackground extends StatelessWidget {
   /// Height of the rainbow container. Defaults to full available height.
   final double? containerHeight;
 
-  /// If true, uses overlay ring heights (shorter). Otherwise full-screen heights.
+  /// If true, shifts Y-offsets down by rainbowContainerTop for overlay positioning.
   final bool isOverlay;
 
   @override
@@ -72,20 +72,12 @@ class _RainbowPillPainter extends CustomPainter {
     AuthRebrandMetrics.ringBeigeX, // 139
   ];
 
-  // Ring Y offsets relative to container (SSOT: auth_email_form.ring_offsets)
+  // Ring Y offsets relative to rainbow container (SSOT: auth_email_form.ring_offsets)
   static const List<double> _ringYOffsets = [
     AuthRebrandMetrics.ringTealY, // 7
     AuthRebrandMetrics.ringPinkY, // 56
     AuthRebrandMetrics.ringOrangeY, // 112
     AuthRebrandMetrics.ringBeigeY, // 168
-  ];
-
-  // Overlay ring heights (SSOT: auth_registrieren_overlay.rainbow_container.rings)
-  static const List<double> _overlayRingHeights = [
-    AuthRebrandMetrics.overlayRingTealHeight, // 561
-    AuthRebrandMetrics.overlayRingPinkHeight, // 512
-    AuthRebrandMetrics.overlayRingOrangeHeight, // 456
-    AuthRebrandMetrics.overlayRingBeigeHeight, // 400
   ];
 
   @override
@@ -98,12 +90,16 @@ class _RainbowPillPainter extends CustomPainter {
       final width = _ringWidths[i];
       final radius = width / 2; // Pill radius = half width for perfect round top
       final xOffset = _ringXOffsets[i];
-      final yOffset = _ringYOffsets[i];
 
-      // Calculate ring height: overlay uses fixed heights, full-screen extends to bottom
-      final height = isOverlay
-          ? _overlayRingHeights[i]
-          : size.height - yOffset + radius; // Extend beyond bottom
+      // Overlay: Y-Offsets um rainbowContainerTop verschieben (SSOT: 53px)
+      // Non-overlay (Entry): Y-Offsets unverändert
+      final yOffset = isOverlay
+          ? _ringYOffsets[i] + AuthRebrandMetrics.overlayRainbowContainerTop
+          : _ringYOffsets[i];
+
+      // Dynamische Höhe bis zum Canvas-Bottom
+      // Mathematisch äquivalent zu SSOT-Höhen, aber geräteunabhängig
+      final height = size.height - yOffset + radius;
 
       // Ring X position relative to canvas center
       // xOffset is relative to container left edge, containerCenterX is half of container
