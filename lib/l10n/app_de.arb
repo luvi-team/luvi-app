@@ -839,7 +839,7 @@
   "@authSuccessPwdTitle": {
     "description": "Titel nach erfolgreicher Passwortänderung."
   },
-  "authSuccessPwdSubtitle": "Dein neues Passwort wurde gespeichert.",
+  "authSuccessPwdSubtitle": "Neues Passwort gespeichert.",
   "@authSuccessPwdSubtitle": {
     "description": "Untertitel nach erfolgreicher Passwortänderung."
   },

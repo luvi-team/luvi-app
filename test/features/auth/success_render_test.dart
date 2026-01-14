@@ -66,7 +66,7 @@ void main() {
 
       // Title and subtitle must be visible
       expect(find.text('Geschafft!'), findsOneWidget);
-      expect(find.text('Dein neues Passwort wurde gespeichert.'), findsOneWidget);
+      expect(find.text('Neues Passwort gespeichert.'), findsOneWidget);
     });
   });
 }

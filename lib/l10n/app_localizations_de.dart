@@ -648,7 +648,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSuccessPwdTitle => 'Geschafft!';
 
   @override
-  String get authSuccessPwdSubtitle => 'Dein neues Passwort wurde gespeichert.';
+  String get authSuccessPwdSubtitle => 'Neues Passwort gespeichert.';
 
   @override
   String get authSuccessForgotTitle => 'E-Mail gesendet!';

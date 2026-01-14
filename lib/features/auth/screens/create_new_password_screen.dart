@@ -1,4 +1,4 @@
-import 'dart:async' show TimeoutException, Timer;
+import 'dart:async' show TimeoutException;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
@@ -25,7 +25,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 /// - Content card with headline
 /// - TWO password fields: new password + confirm password
 /// - Pink CTA button
-/// - Password validation with backoff protection
+/// - Password validation (length + blocklist check)
 ///
 /// Route: /auth/password/new
 class CreateNewPasswordScreen extends StatefulWidget {
@@ -49,51 +49,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   String? _newPasswordError;
   String? _confirmPasswordError;
 
-  // Rate limiting with exponential backoff
-  int _consecutiveFailures = 0;
-  DateTime? _lastFailureAt;
-  Timer? _backoffTicker;
-
-  int get _backoffRemainingSeconds {
-    if (_consecutiveFailures <= 0 || _lastFailureAt == null) return 0;
-    final delay = computePasswordBackoffDelay(_consecutiveFailures);
-    final end = _lastFailureAt!.add(delay);
-    final now = DateTime.now();
-    final remaining = end.difference(now).inSeconds;
-    return remaining > 0 ? remaining : 0;
-  }
-
-  bool get _isBackoffActive => _backoffRemainingSeconds > 0;
-
-  void _startBackoffTicker() {
-    _backoffTicker?.cancel();
-    if (!_isBackoffActive) return;
-    // Tick every second to update countdown UI, auto-cancel when done
-    _backoffTicker = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (!mounted || !_isBackoffActive) {
-        t.cancel();
-        return;
-      }
-      setState(() {}); // Trigger rebuild to update countdown
-    });
-  }
-
-  void _handlePasswordUpdateFailure(
-    BuildContext context,
-    AppLocalizations l10n,
-  ) {
-    setState(() {
-      _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, 16);
-      _lastFailureAt = DateTime.now();
-    });
-    _startBackoffTicker();
-    final wait = _backoffRemainingSeconds;
+  void _showPasswordUpdateError(BuildContext context, AppLocalizations l10n) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${l10n.authPasswordUpdateError} ${l10n.authErrWaitBeforeRetry(wait)}',
-        ),
-      ),
+      SnackBar(content: Text(l10n.authPasswordUpdateError)),
     );
   }
 
@@ -202,12 +160,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
       if (!mounted) return;
       setState(() {
-        _consecutiveFailures = 0;
-        _lastFailureAt = null;
         _newPasswordError = null;
         _confirmPasswordError = null;
       });
-      _backoffTicker?.cancel();
       context.goNamed(SuccessScreen.passwordSavedRouteName);
     } on supa.AuthException catch (error, stackTrace) {
       log.w(
@@ -217,7 +172,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         stack: stackTrace,
       );
       if (!mounted) return;
-      _handlePasswordUpdateFailure(context, l10n);
+      _showPasswordUpdateError(context, l10n);
     } on TimeoutException catch (error, stackTrace) {
       log.w(
         'auth_update_password_timeout',
@@ -226,7 +181,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         stack: stackTrace,
       );
       if (!mounted) return;
-      _handlePasswordUpdateFailure(context, l10n);
+      _showPasswordUpdateError(context, l10n);
     } catch (error, stackTrace) {
       log.e(
         'auth_update_password_unexpected',
@@ -235,7 +190,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         stack: stackTrace,
       );
       if (!mounted) return;
-      _handlePasswordUpdateFailure(context, l10n);
+      _showPasswordUpdateError(context, l10n);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -247,14 +202,13 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   void dispose() {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
-    _backoffTicker?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final canSubmit = !_isLoading && !_isBackoffActive;
+    final canSubmit = !_isLoading;
 
     return Scaffold(
       key: const ValueKey('auth_create_password_screen'),
