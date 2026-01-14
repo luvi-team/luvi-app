@@ -6,7 +6,7 @@ import 'auth_rebrand_metrics.dart';
 /// Primary CTA button for Auth Rebrand v3 screens.
 ///
 /// Pink (#E91E63) background with white text.
-/// Figma: 249×50, radius 12, Figtree Bold 17px.
+/// Figma: 249×50, radius 12, Figtree Bold 17px, line-height 24px.
 class AuthPrimaryButton extends StatelessWidget {
   const AuthPrimaryButton({
     super.key,
@@ -71,7 +71,8 @@ class AuthPrimaryButton extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: FontFamilies.figtree,
                   fontSize: AuthRebrandMetrics.buttonFontSize,
-                  fontWeight: FontWeight.bold,
+                  fontVariations: [FontVariation('wght', 700)], // Bold for variable font
+                  height: AuthRebrandMetrics.bodyLineHeight, // 24/17
                   color: DsColors.grayscaleWhite,
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
@@ -59,6 +60,37 @@ void main() {
 
     // LUVI logo SVG should be present
     expect(find.byType(SvgPicture), findsAtLeastNWidgets(1));
+  });
+
+  testWidgets('Teal dot is rendered within logo stack', (tester) async {
+    final router = _createRouter();
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(_buildRouterHarness(router));
+    await tester.pumpAndSettle();
+
+    // Find teal dot container by its decoration color
+    final tealDotFinder = find.byWidgetPredicate((widget) {
+      if (widget is Container && widget.decoration is BoxDecoration) {
+        final decoration = widget.decoration as BoxDecoration;
+        return decoration.color == DsColors.authRebrandTealDot &&
+            decoration.shape == BoxShape.circle;
+      }
+      return false;
+    });
+    expect(tealDotFinder, findsOneWidget);
+
+    // Find logo SVG
+    final logoFinder = find.byType(SvgPicture);
+    expect(logoFinder, findsAtLeastNWidgets(1));
+
+    // Both should be descendants of a Stack with clipBehavior.none
+    final stackFinder = find.ancestor(
+      of: tealDotFinder,
+      matching: find.byWidgetPredicate((widget) =>
+          widget is Stack && widget.clipBehavior == Clip.none),
+    );
+    expect(stackFinder, findsOneWidget);
   });
 
   testWidgets('AuthSignInScreen shows CTA button "Los geht\'s"', (tester) async {

@@ -45,9 +45,8 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     final l10n = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
 
-    // Calculate scale factor for responsive pixel-perfect positioning
+    // Calculate scale factor for responsive positioning
     // Design baseline: 402×874 (AuthRebrandMetrics SSOT from PNG exports)
-    final scaleX = size.width / AuthRebrandMetrics.designWidth;
     final scaleY = size.height / AuthRebrandMetrics.designHeight;
 
     return Scaffold(
@@ -68,8 +67,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             ),
           ),
 
-          // LUVI Logo - centered horizontally, offset from center vertically
-          // SSOT: logo_center_y_offset = -268 (50% - 268px)
+          // LUVI Logo with Teal Dot - fixed size, responsive position
           Positioned(
             left: 0,
             right: 0,
@@ -77,35 +75,45 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
                 (AuthRebrandMetrics.entryLogoCenterYOffset * scaleY) -
                 (AuthRebrandMetrics.entryLogoHeight / 2),
             child: Center(
-              child: SvgPicture.asset(
-                'assets/images/auth/logo_luvi.svg',
-                height: AuthRebrandMetrics.entryLogoHeight,
-                semanticsLabel: 'LUVI Logo',
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Logo - fixed size for brand consistency
+                  SvgPicture.asset(
+                    'assets/images/auth/logo_luvi.svg',
+                    height: AuthRebrandMetrics.entryLogoHeight,
+                    semanticsLabel: 'LUVI Logo',
+                  ),
+                  // Teal Dot - fixed size, positioned relative to logo
+                  Positioned(
+                    right: AuthRebrandMetrics.entryTealDotRightOffset,
+                    top: AuthRebrandMetrics.entryTealDotTopOffset,
+                    child: ExcludeSemantics(
+                      child: Container(
+                        width: AuthRebrandMetrics.entryTealDotSize,
+                        height: AuthRebrandMetrics.entryTealDotSize,
+                        decoration: const BoxDecoration(
+                          color: DsColors.authRebrandTealDot,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
 
-          // Teal Dot - absolute position (SSOT: x=306, y=95)
+          // CTA Container - horizontally centered for symmetric margins
           Positioned(
-            left: AuthRebrandMetrics.entryTealDotX * scaleX,
-            top: AuthRebrandMetrics.entryTealDotY * scaleY,
-            child: Container(
-              width: AuthRebrandMetrics.entryTealDotSize,
-              height: AuthRebrandMetrics.entryTealDotSize,
-              decoration: const BoxDecoration(
-                color: DsColors.authRebrandTealDot,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-
-          // CTA Container - absolute position (SSOT: x=52, y=692)
-          Positioned(
-            left: AuthRebrandMetrics.entryCtaX * scaleX,
+            left: 0,
+            right: 0,
             top: AuthRebrandMetrics.entryCtaY * scaleY,
-            child: SizedBox(
-              width: AuthRebrandMetrics.entryCtaWidth,
-              child: _buildCtaSection(l10n),
+            child: Center(
+              child: SizedBox(
+                width: AuthRebrandMetrics.entryCtaWidth,
+                child: _buildCtaSection(l10n),
+              ),
             ),
           ),
 
@@ -140,6 +148,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
         const SizedBox(height: AuthRebrandMetrics.entryCtaGap),
 
         // Login link - "Ich habe bereits einen Account."
+        // SSOT: Figma 69690:2191 - Figtree SemiBold 17px, line-height 24px, #000000
         Semantics(
           button: true,
           label: l10n.authEntryExistingAccount,
@@ -155,8 +164,9 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
                 style: const TextStyle(
                   fontFamily: FontFamilies.figtree,
                   fontSize: AuthRebrandMetrics.linkFontSize,
-                  fontWeight: FontWeight.w600,
-                  color: DsColors.authRebrandTextPrimary,
+                  fontVariations: [FontVariation('wght', 600)], // SemiBold for variable font
+                  height: AuthRebrandMetrics.bodyLineHeight, // 24/17
+                  color: DsColors.black, // Figma: #000000
                   decoration: TextDecoration.underline,
                 ),
               ),

@@ -16,13 +16,17 @@ class AuthRebrandMetrics {
   static const double entryCtaX = 52.0;
   static const double entryCtaWidth = 300.0;
   static const double entryPrimaryButtonHeight = 56.0;
-  static const double entryLogoWidth = 489.0;
   static const double entryLogoHeight = 87.0;
-  static const double entryLogoCenterYOffset = -268.0;
-  static const double entryTealDotX = 306.0;
-  static const double entryTealDotY = 95.0;
-  static const double entryTealDotSize = 44.0;
+  static const double entryLogoCenterYOffset = -240.0; // Adjusted: logo closer to center
   static const double entryCtaGap = 16.0; // Gap Button→Link
+
+  // ─── Teal Dot (relative to Logo, SSOT: Figma node 69650:2686) ───
+  static const double entryTealDotSize = 44.0;
+  static const double entryTealDotGap = 15.0; // Gap between dot bottom and logo top (halved)
+  /// Dot right offset from logo right edge (negative = extends beyond logo)
+  static const double entryTealDotRightOffset = -2.0;
+  /// Dot top offset relative to logo top: -(dotSize + gap)
+  static const double entryTealDotTopOffset = -(entryTealDotSize + entryTealDotGap);
 
   // ─── Bottom Sheet Overlay (SSOT: auth_overlay) ───
   static const double sheetTopY = 253.0;
