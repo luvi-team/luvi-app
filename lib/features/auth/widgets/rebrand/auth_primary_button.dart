@@ -14,6 +14,7 @@ class AuthPrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.width,
+    this.height,
     this.loadingKey,
   });
 
@@ -29,6 +30,9 @@ class AuthPrimaryButton extends StatelessWidget {
   /// Optional fixed width (defaults to CTA button width from metrics)
   final double? width;
 
+  /// Optional fixed height (defaults to button height from metrics)
+  final double? height;
+
   /// Optional key for the loading indicator (for testing)
   final Key? loadingKey;
 
@@ -38,7 +42,7 @@ class AuthPrimaryButton extends StatelessWidget {
 
     return SizedBox(
       width: width ?? AuthRebrandMetrics.ctaButtonWidth,
-      height: AuthRebrandMetrics.buttonHeight,
+      height: height ?? AuthRebrandMetrics.buttonHeight,
       child: ElevatedButton(
         onPressed: isEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(

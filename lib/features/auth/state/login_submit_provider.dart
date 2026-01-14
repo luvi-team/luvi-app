@@ -96,11 +96,12 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     final message = error.message.toLowerCase();
 
     if (message.contains('invalid') || message.contains('credentials')) {
+      // SSOT P0.7: Both fields show error on invalid credentials
       loginNotifier.updateState(
         email: email,
         password: password,
         emailError: AuthStrings.invalidCredentials,
-        passwordError: null,
+        passwordError: AuthStrings.invalidCredentials,
         globalError: null,
       );
     } else if (message.contains('confirm')) {

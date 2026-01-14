@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'auth_rebrand_metrics.dart';
 
@@ -69,59 +68,71 @@ class AuthRebrandOutlineButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasIcon = icon != null || svgIconPath != null;
+    final disabledOpacity = onPressed == null ? 0.5 : 1.0;
+
     return SizedBox(
       width: width ?? AuthRebrandMetrics.buttonWidth,
       height: AuthRebrandMetrics.buttonHeight,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: DsColors.authRebrandCardSurface,
-          foregroundColor: DsColors.authRebrandTextPrimary,
-          disabledForegroundColor: DsColors.authRebrandTextPrimary.withValues(alpha: 0.5),
+      child: Material(
+        color: DsColors.authRebrandCardSurface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
           side: BorderSide(
-            color: onPressed != null
-                ? DsColors.authRebrandInputBorder
-                : DsColors.authRebrandInputBorder.withValues(alpha: 0.5),
+            color: DsColors.authRebrandInputBorder.withValues(alpha: disabledOpacity),
             width: AuthRebrandMetrics.inputBorderWidth,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
-          ),
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                size: 20,
-                color: DsColors.authRebrandTextPrimary,
-              ),
-              const SizedBox(width: Spacing.s),
-            ] else if (svgIconPath != null) ...[
-              SvgPicture.asset(
-                svgIconPath!,
-                width: 20,
-                height: 20,
-              ),
-              const SizedBox(width: Spacing.s),
-            ],
-            Flexible(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontFamily: FontFamilies.figtree,
-                  fontSize: AuthRebrandMetrics.buttonFontSize,
-                  fontWeight: FontWeight.w600,
-                  color: DsColors.authRebrandTextPrimary,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
+          child: Padding(
+            // SSOT: Icon at left=53, icon=20, gap=26 → text starts at 99
+            // Use zero padding and let Row handle positioning
+            padding: EdgeInsets.zero,
+            child: Row(
+              children: [
+                // Left padding before icon (SSOT: 53px)
+                if (hasIcon)
+                  const SizedBox(width: AuthRebrandMetrics.outlineButtonIconLeftPadding),
+                // Icon
+                if (icon != null)
+                  Icon(
+                    icon,
+                    size: AuthRebrandMetrics.outlineButtonIconSize,
+                    color: DsColors.authRebrandTextPrimary.withValues(alpha: disabledOpacity),
+                  )
+                else if (svgIconPath != null)
+                  SvgPicture.asset(
+                    svgIconPath!,
+                    width: AuthRebrandMetrics.outlineButtonIconSize,
+                    height: AuthRebrandMetrics.outlineButtonIconSize,
+                    colorFilter: disabledOpacity < 1.0
+                        ? ColorFilter.mode(
+                            DsColors.authRebrandTextPrimary.withValues(alpha: disabledOpacity),
+                            BlendMode.srcIn,
+                          )
+                        : null,
+                  ),
+                // Gap between icon and text (SSOT: 26px)
+                if (hasIcon)
+                  const SizedBox(width: AuthRebrandMetrics.outlineButtonIconToTextGap),
+                // Text (will expand to fill remaining space, left-aligned after icon)
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontFamily: FontFamilies.figtree,
+                      fontSize: AuthRebrandMetrics.buttonFontSize,
+                      fontWeight: FontWeight.w600,
+                      color: DsColors.authRebrandTextPrimary.withValues(alpha: disabledOpacity),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                overflow: TextOverflow.ellipsis,
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

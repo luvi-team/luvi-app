@@ -45,6 +45,11 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     final l10n = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
 
+    // Calculate scale factor for responsive pixel-perfect positioning
+    // Design baseline: 393×873
+    final scaleX = size.width / AuthRebrandMetrics.designWidth;
+    final scaleY = size.height / AuthRebrandMetrics.designHeight;
+
     return Scaffold(
       key: const ValueKey('auth_signin_screen'),
       backgroundColor: DsColors.authRebrandBackground,
@@ -63,22 +68,44 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             ),
           ),
 
-          // Content
-          SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: AuthRebrandMetrics.entryLogoGap),
+          // LUVI Logo - centered horizontally, offset from center vertically
+          // SSOT: logo_center_y_offset = -268 (50% - 268px)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: (size.height / 2) +
+                (AuthRebrandMetrics.entryLogoCenterYOffset * scaleY) -
+                (AuthRebrandMetrics.entryLogoHeight / 2),
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/images/auth/logo_luvi.svg',
+                height: AuthRebrandMetrics.entryLogoHeight,
+                semanticsLabel: 'LUVI Logo',
+              ),
+            ),
+          ),
 
-                // Logo with teal dot
-                _buildLogo(),
+          // Teal Dot - absolute position (SSOT: x=306, y=95)
+          Positioned(
+            left: AuthRebrandMetrics.entryTealDotX * scaleX,
+            top: AuthRebrandMetrics.entryTealDotY * scaleY,
+            child: Container(
+              width: AuthRebrandMetrics.entryTealDotSize,
+              height: AuthRebrandMetrics.entryTealDotSize,
+              decoration: const BoxDecoration(
+                color: DsColors.authRebrandTealDot,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
 
-                const Spacer(),
-
-                // CTA Section
-                _buildCtaSection(l10n),
-
-                const SizedBox(height: AuthRebrandMetrics.contentBottomGap),
-              ],
+          // CTA Container - absolute position (SSOT: x=52, y=692)
+          Positioned(
+            left: AuthRebrandMetrics.entryCtaX * scaleX,
+            top: AuthRebrandMetrics.entryCtaY * scaleY,
+            child: SizedBox(
+              width: AuthRebrandMetrics.entryCtaWidth,
+              child: _buildCtaSection(l10n),
             ),
           ),
 
@@ -97,38 +124,6 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     );
   }
 
-  Widget _buildLogo() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Logo row with SVG and teal dot
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // LUVI logo SVG
-            SvgPicture.asset(
-              'assets/images/auth/logo_luvi.svg',
-              height: 80,
-              semanticsLabel: 'LUVI Logo',
-            ),
-
-            // Teal dot
-            const SizedBox(width: Spacing.xxs),
-            Container(
-              width: AuthRebrandMetrics.entryTealDotSize,
-              height: AuthRebrandMetrics.entryTealDotSize,
-              decoration: const BoxDecoration(
-                color: DsColors.authRebrandTealDot,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Widget _buildCtaSection(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -138,10 +133,11 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
           key: const ValueKey('auth_entry_cta'),
           label: l10n.authEntryCta,
           width: AuthRebrandMetrics.entryCtaWidth,
+          height: AuthRebrandMetrics.entryPrimaryButtonHeight,
           onPressed: _oauthLoading ? null : _showRegisterSheet,
         ),
 
-        const SizedBox(height: Spacing.m),
+        const SizedBox(height: AuthRebrandMetrics.entryCtaGap),
 
         // Login link - "Ich habe bereits einen Account."
         Semantics(

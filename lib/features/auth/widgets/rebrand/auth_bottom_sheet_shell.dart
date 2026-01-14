@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'auth_rainbow_background.dart';
 import 'auth_rebrand_metrics.dart';
 
@@ -79,26 +78,23 @@ class AuthBottomSheetShell extends StatelessWidget {
             child: SizedBox(
               height: sheetHeight,
               width: double.infinity,
-              child: const AuthRainbowBackground(
-                showTopArcs: true,
-                showBottomStripes: true,
-                topArcsHeight: 180,
-                bottomStripesHeight: 150,
-              ),
+              child: const AuthRainbowBackground(isOverlay: true),
             ),
           ),
 
           // Content with drag indicator
           Column(
             children: [
-              // Drag indicator
-              const SizedBox(height: Spacing.s),
+              // Drag indicator (SSOT: 134×5, top=17, color=#030401, radius=100)
+              const SizedBox(height: AuthRebrandMetrics.sheetDragIndicatorTop),
               Container(
                 width: AuthRebrandMetrics.sheetDragIndicatorWidth,
                 height: AuthRebrandMetrics.sheetDragIndicatorHeight,
                 decoration: BoxDecoration(
-                  color: DsColors.grayscale500.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(Spacing.micro),
+                  color: DsColors.grayscaleBlack,
+                  borderRadius: BorderRadius.circular(
+                    AuthRebrandMetrics.sheetDragIndicatorRadius,
+                  ),
                 ),
               ),
 

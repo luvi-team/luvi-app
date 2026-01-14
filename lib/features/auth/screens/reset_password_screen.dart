@@ -95,12 +95,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         children: [
           // Rainbow background
           const Positioned.fill(
-            child: AuthRainbowBackground(
-              showTopArcs: true,
-              showBottomStripes: true,
-              topArcsHeight: 200,
-              bottomStripesHeight: 180,
-            ),
+            child: AuthRainbowBackground(),
           ),
 
           // Content
@@ -135,8 +130,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
                   const SizedBox(height: AuthRebrandMetrics.contentTopGap),
 
-                  // Content card
+                  // Content card (SSOT: form screens use 364px width)
                   AuthContentCard(
+                    width: AuthRebrandMetrics.cardWidthForm,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [

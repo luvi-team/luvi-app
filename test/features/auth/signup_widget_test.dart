@@ -61,8 +61,8 @@ void main() {
     final button = tester.widget<ElevatedButton>(elevatedButton);
     expect(button.onPressed, isNotNull, reason: 'CTA button should be enabled');
 
-    // Login link is present
-    expect(find.byKey(const ValueKey('signup_login_link')), findsOneWidget);
+    // Note: Login link was removed from SignupScreen per SSOT P0.6
+    // Only CTA button is visible now
   });
 
   testWidgets('AuthSignupScreen renders correctly in English', (tester) async {

@@ -6,7 +6,6 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
-import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
@@ -93,12 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         children: [
           // Rainbow background
           const Positioned.fill(
-            child: AuthRainbowBackground(
-              showTopArcs: true,
-              showBottomStripes: true,
-              topArcsHeight: 200,
-              bottomStripesHeight: 180,
-            ),
+            child: AuthRainbowBackground(),
           ),
 
           // Content
@@ -160,8 +154,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
 
-                  // Content card
+                  // Content card (SSOT: form screens use 364px width)
                   AuthContentCard(
+                    width: AuthRebrandMetrics.cardWidthForm,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -230,13 +225,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         const SizedBox(height: Spacing.m),
 
-                        // Forgot password link
+                        // Forgot password link (only link per SSOT)
                         _buildForgotLink(l10n),
-
-                        const SizedBox(height: Spacing.s),
-
-                        // Signup link
-                        _buildSignupLink(l10n),
                       ],
                     ),
                   ),
@@ -267,44 +257,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: DsColors.grayscale500,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSignupLink(AppLocalizations l10n) {
-    return Semantics(
-      button: true,
-      label: l10n.authLoginCtaLinkSemantic,
-      child: GestureDetector(
-        key: const ValueKey('login_signup_link'),
-        onTap: () => context.push(AuthSignupScreen.routeName),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: l10n.authLoginCtaLinkPrefix,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontSize: 14,
-                    color: DsColors.authRebrandTextPrimary,
-                  ),
-                ),
-                TextSpan(
-                  text: l10n.authLoginCtaLinkAction,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: DsColors.authRebrandCtaPrimary,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ],
             ),
           ),
         ),

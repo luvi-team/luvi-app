@@ -69,12 +69,9 @@ class AuthLoginSheet extends StatelessWidget {
                   if (appleSignInSupported) ...[
                     AuthRebrandOutlineButton.apple(
                       label: l10n.authContinueApple,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Future.delayed(
-                          const Duration(milliseconds: 50),
-                          onApplePressed,
-                        );
+                      onPressed: () async {
+                        await Navigator.of(context).maybePop();
+                        onApplePressed();
                       },
                     ),
                     const SizedBox(height: Spacing.s),
@@ -84,12 +81,9 @@ class AuthLoginSheet extends StatelessWidget {
                   if (FeatureFlags.enableGoogleSignIn) ...[
                     AuthRebrandOutlineButton.google(
                       label: l10n.authContinueGoogle,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Future.delayed(
-                          const Duration(milliseconds: 50),
-                          onGooglePressed,
-                        );
+                      onPressed: () async {
+                        await Navigator.of(context).maybePop();
+                        onGooglePressed();
                       },
                     ),
                     const SizedBox(height: Spacing.m),
@@ -110,12 +104,9 @@ class AuthLoginSheet extends StatelessWidget {
                   // Email button
                   AuthSecondaryButton(
                     label: l10n.authContinueEmail,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Future.delayed(
-                        const Duration(milliseconds: 50),
-                        onEmailPressed,
-                      );
+                    onPressed: () async {
+                      await Navigator.of(context).maybePop();
+                      onEmailPressed();
                     },
                   ),
                 ],

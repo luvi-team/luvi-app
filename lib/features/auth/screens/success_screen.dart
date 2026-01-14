@@ -105,12 +105,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
         children: [
           // Rainbow background with arcs and stripes
           const Positioned.fill(
-            child: AuthRainbowBackground(
-              showTopArcs: true,
-              showBottomStripes: true,
-              topArcsHeight: 280,
-              bottomStripesHeight: 180,
-            ),
+            child: AuthRainbowBackground(),
           ),
 
           // Content

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../support/test_config.dart';
@@ -9,7 +8,6 @@ import '../../../support/test_view.dart';
 
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
-import 'package:luvi_app/router.dart' as app_router;
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -97,97 +95,6 @@ void main() {
     expect(tester.widget<ElevatedButton>(innerButton).onPressed, isNotNull);
   });
 
-  testWidgets('shows signup link with correct text', (tester) async {
-    addTearDown(configureTestView(tester));
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-        child: MaterialApp(
-          theme: AppTheme.buildAppTheme(),
-          home: const LoginScreen(),
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      ),
-    );
-
-    // Scroll down to ensure the signup link is visible
-    await tester.drag(
-      find.byType(SingleChildScrollView),
-      const Offset(0, -200),
-    );
-    await tester.pumpAndSettle();
-
-    // Verify signup link exists with correct key
-    final signupLink = find.byKey(const ValueKey('login_signup_link'));
-    expect(signupLink, findsOneWidget);
-
-    // Verify the link contains expected l10n text
-    // Note: LoginScreen uses RichText with TextSpan, so find.text() won't work
-    final l10n = AppLocalizations.of(
-      tester.element(find.byType(LoginScreen)),
-    )!;
-
-    // Find RichText inside the signup link and verify its content
-    final richTextFinder = find.descendant(
-      of: signupLink,
-      matching: find.byType(RichText),
-    );
-    expect(richTextFinder, findsOneWidget);
-
-    // Extract the plain text from RichText and verify both parts are present
-    final richText = tester.widget<RichText>(richTextFinder);
-    final plainText = richText.text.toPlainText();
-    expect(plainText, contains(l10n.authLoginCtaLinkPrefix));
-    expect(plainText, contains(l10n.authLoginCtaLinkAction));
-  });
-
-  testWidgets('tapping signup link navigates to AuthSignupScreen', (
-    tester,
-  ) async {
-    addTearDown(configureTestView(tester));
-
-    // signInWithPassword stub already defined in setUp
-
-    final router = GoRouter(
-      routes: app_router.testAppRoutes,
-      initialLocation: LoginScreen.routeName,
-    );
-    addTearDown(router.dispose);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-        child: MaterialApp.router(
-          routerConfig: router,
-          theme: AppTheme.buildAppTheme(),
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    // Verify we start on LoginScreen
-    expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
-
-    // Scroll down to ensure the signup link is visible
-    await tester.drag(
-      find.byType(SingleChildScrollView),
-      const Offset(0, -200),
-    );
-    await tester.pumpAndSettle();
-
-    // Tap the signup link
-    final signupLink = find.byKey(const ValueKey('login_signup_link'));
-    expect(signupLink, findsOneWidget);
-    await tester.tap(signupLink);
-    await tester.pumpAndSettle();
-
-    // Verify navigation to AuthSignupScreen
-    expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
-  });
+  // Note: Signup link was removed from LoginScreen per SSOT P0.6
+  // Only "Passwort vergessen?" link is visible now
 }

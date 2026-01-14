@@ -83,44 +83,9 @@ void main() {
   });
 
   group('Auth route whitelist (navigation without session)', () {
-    testWidgets('LoginScreen → SignupScreen navigation works', (tester) async {
-      addTearDown(configureTestView(tester));
-
-      final router = GoRouter(
-        routes: testAppRoutes,
-        initialLocation: LoginScreen.routeName,
-      );
-      addTearDown(router.dispose);
-
-      await tester.pumpWidget(_buildAuthRouterTestWidget(
-        router: router,
-        mockAuthRepo: mockRepo,
-      ));
-      await tester.pumpAndSettle();
-
-      // Verify we start on LoginScreen
-      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
-
-      // Scroll down to make signup link visible
-      await tester.drag(
-        find.byType(SingleChildScrollView),
-        const Offset(0, -200),
-      );
-      await tester.pumpAndSettle();
-
-      // Tap "Neu bei LUVI? Hier starten" link
-      final signupLink = find.byKey(const ValueKey('login_signup_link'));
-      expect(signupLink, findsOneWidget);
-      await tester.tap(signupLink);
-      await tester.pumpAndSettle();
-
-      // Auth-Flow Bugfix: Verify navigation to SignupScreen (not redirect to sign-in)
-      expect(
-        find.byKey(const ValueKey('auth_signup_screen')),
-        findsOneWidget,
-        reason: 'Should navigate to SignupScreen, not redirect to AuthSignInScreen',
-      );
-    });
+    // Note: LoginScreen → SignupScreen navigation test removed per P0.6
+    // The signup link (login_signup_link) was intentionally removed from LoginScreen
+    // during Auth Rebrand v3. Users now access signup via AuthSignInScreen entry.
 
     testWidgets('LoginScreen → ResetPasswordScreen navigation works', (tester) async {
       addTearDown(configureTestView(tester));

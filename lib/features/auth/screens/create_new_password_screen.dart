@@ -68,15 +68,13 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   void _startBackoffTicker() {
     _backoffTicker?.cancel();
     if (!_isBackoffActive) return;
+    // Tick every second to update countdown UI, auto-cancel when done
     _backoffTicker = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (!mounted) {
+      if (!mounted || !_isBackoffActive) {
         t.cancel();
         return;
       }
-      if (!_isBackoffActive) {
-        t.cancel();
-      }
-      setState(() {});
+      setState(() {}); // Trigger rebuild to update countdown
     });
   }
 
@@ -266,12 +264,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
         children: [
           // Rainbow background
           const Positioned.fill(
-            child: AuthRainbowBackground(
-              showTopArcs: true,
-              showBottomStripes: true,
-              topArcsHeight: 200,
-              bottomStripesHeight: 180,
-            ),
+            child: AuthRainbowBackground(),
           ),
 
           // Content
@@ -307,8 +300,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
                   const SizedBox(height: AuthRebrandMetrics.contentTopGap),
 
-                  // Content card
+                  // Content card (SSOT: form screens use 364px width)
                   AuthContentCard(
+                    width: AuthRebrandMetrics.cardWidthForm,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -383,10 +377,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
                         const SizedBox(height: Spacing.l),
 
-                        // CTA button
+                        // CTA button (SSOT: "Speichern")
                         AuthPrimaryButton(
                           key: const ValueKey('create_new_cta_button'),
-                          label: l10n.authEntryCta,
+                          label: l10n.authSavePasswordCta,
                           onPressed: canSubmit ? _onCreatePasswordPressed : null,
                           isLoading: _isLoading,
                         ),

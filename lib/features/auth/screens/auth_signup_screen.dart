@@ -167,12 +167,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         children: [
           // Rainbow background
           const Positioned.fill(
-            child: AuthRainbowBackground(
-              showTopArcs: true,
-              showBottomStripes: true,
-              topArcsHeight: 200,
-              bottomStripesHeight: 180,
-            ),
+            child: AuthRainbowBackground(),
           ),
 
           // Content
@@ -234,8 +229,9 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                       ),
                     ),
 
-                  // Content card
+                  // Content card (SSOT: form screens use 364px width)
                   AuthContentCard(
+                    width: AuthRebrandMetrics.cardWidthForm,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -311,7 +307,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
                         const SizedBox(height: Spacing.l),
 
-                        // CTA button
+                        // CTA button (no login link per SSOT)
                         AuthPrimaryButton(
                           key: const ValueKey('signup_cta_button'),
                           loadingKey: const ValueKey('signup_cta_loading'),
@@ -319,11 +315,6 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                           onPressed: _isSubmitting ? null : _handleSignup,
                           isLoading: _isSubmitting,
                         ),
-
-                        const SizedBox(height: Spacing.m),
-
-                        // Login link
-                        _buildLoginLink(l10n),
                       ],
                     ),
                   ),
@@ -338,41 +329,4 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     );
   }
 
-  Widget _buildLoginLink(AppLocalizations l10n) {
-    return Semantics(
-      button: true,
-      label: '${l10n.authSignupAlreadyMember}${l10n.authSignupLoginLink}',
-      child: GestureDetector(
-        key: const ValueKey('signup_login_link'),
-        onTap: () => context.go(LoginScreen.routeName),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: l10n.authSignupAlreadyMember,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontSize: 14,
-                    color: DsColors.authRebrandTextPrimary,
-                  ),
-                ),
-                TextSpan(
-                  text: l10n.authSignupLoginLink,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: DsColors.authRebrandCtaPrimary,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
