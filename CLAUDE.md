@@ -65,6 +65,39 @@ handoff_to: "Codex"
 | 4 | **A11y** | `Semantics(label: ...)` + Touch-Target ≥44dp |
 | 5 | **Tests** | Neue Screens → ≥1 Widget-Test mit `buildTestApp` |
 
+## Quick Reference (Copy-Paste)
+
+### Farben
+```dart
+DsColors.welcomeButtonBg    // #E91E63 - Primary CTA
+DsColors.headlineMagenta    // #9F2B68 - Headlines
+DsColors.splashBg           // #F9F1E6 - Backgrounds
+DsColors.grayscaleBlack     // #030401 - Text
+DsColors.grayscaleWhite     // #FFFFFF - White
+```
+
+### Spacing
+```dart
+Spacing.xxs   // 4dp
+Spacing.xs    // 8dp
+Spacing.s     // 12dp
+Spacing.m     // 16dp
+Spacing.l     // 24dp (screenPadding)
+Spacing.xl    // 32dp
+```
+
+### Navigation
+```dart
+context.goNamed(RouteNames.home);
+context.pushNamed(RouteNames.settings);
+```
+
+### Neues Token erstellen
+```dart
+/// Figma: #HEXCODE (Name)
+static const Color tokenName = Color(0xFFHEXCODE);
+```
+
 ## Einstiegspunkte
 
 | Task-Typ | Lies zuerst | Dann |
