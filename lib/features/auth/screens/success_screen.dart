@@ -6,21 +6,22 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
-import 'package:luvi_app/features/auth/widgets/glow_checkmark.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
 
-/// SuccessScreen with Auth Rebrand v3 design.
+/// SuccessScreen with Auth Rebrand v3 design (export-parity).
 ///
 /// Route: /auth/password/success
 ///
 /// Features:
 /// - Rainbow background (arcs + stripes)
-/// - GlowCheckmark icon
-/// - Title: "Geschafft!" (Playfair SemiBold 24px)
-/// - Subtitle: "Neues Passwort gespeichert."
-/// - NO CTA button (removed per design spec)
+/// - AuthContentCard with Title + Subtitle (SSOT: auth_success)
+/// - Title: "Geschafft!" (Playfair SemiBold 20px)
+/// - Subtitle: "Neues Passwort gespeichert." (Figtree Regular 17px)
+/// - NO CTA button and NO back button (Requirement)
 /// - Auto-redirect after 1.5 seconds:
 ///   - If authenticated → splash (Guards handle Onboarding vs Home)
 ///   - If not authenticated → auth entry
@@ -81,26 +82,27 @@ class _SuccessScreenState extends State<SuccessScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    // Title style: Playfair SemiBold 24px
-    final titleStyle = TextStyle(
+    // Title style: Playfair SemiBold 20px (SSOT: auth_success.headline)
+    const titleStyle = TextStyle(
       fontFamily: FontFamilies.playfairDisplay,
-      fontSize: 24,
+      fontSize: AuthRebrandMetrics.headlineFontSize,
       fontWeight: FontWeight.w600,
-      height: 1.2,
+      height: AuthRebrandMetrics.headlineLineHeight,
       color: DsColors.authRebrandTextPrimary,
     );
 
-    // Subtitle style: Figtree Regular 16px
-    final subtitleStyle = TextStyle(
+    // Subtitle style: Figtree Regular 17px (SSOT: auth_success.subtitle)
+    const subtitleStyle = TextStyle(
       fontFamily: FontFamilies.figtree,
-      fontSize: 16,
+      fontSize: AuthRebrandMetrics.bodyFontSize,
       fontWeight: FontWeight.w400,
-      height: 1.5,
-      color: DsColors.authRebrandTextPrimary.withValues(alpha: 0.7),
+      height: AuthRebrandMetrics.bodyLineHeight,
+      color: DsColors.authRebrandTextPrimary,
     );
 
     return Scaffold(
       key: const ValueKey('auth_success_screen'),
+      backgroundColor: DsColors.authRebrandBackground,
       body: Stack(
         children: [
           // Rainbow background with arcs and stripes
@@ -108,38 +110,33 @@ class _SuccessScreenState extends State<SuccessScreen> {
             child: AuthRainbowBackground(),
           ),
 
-          // Content
+          // Content - centered AuthContentCard (export-parity layout)
           SafeArea(
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // GlowCheckmark centered
-                  const GlowCheckmark(),
+              child: AuthContentCard(
+                width: AuthRebrandMetrics.cardWidthForm,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Title: "Geschafft!"
+                    Text(
+                      l10n.authSuccessPwdTitle,
+                      style: titleStyle,
+                      textAlign: TextAlign.center,
+                    ),
 
-                  const SizedBox(height: Spacing.xl),
+                    const SizedBox(height: Spacing.xs),
 
-                  // Title
-                  Text(
-                    l10n.authSuccessPwdTitle,
-                    style: titleStyle,
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: Spacing.s),
-
-                  // Subtitle
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-                    child: Text(
+                    // Subtitle: "Neues Passwort gespeichert."
+                    Text(
                       l10n.authSuccessPwdSubtitle,
                       style: subtitleStyle,
                       textAlign: TextAlign.center,
                     ),
-                  ),
 
-                  // No CTA button - auto-redirect handles navigation
-                ],
+                    // No CTA button - auto-redirect handles navigation
+                  ],
+                ),
               ),
             ),
           ),

@@ -16,11 +16,12 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// Reset password screen with Auth Rebrand v3 design.
+/// Reset password screen with Auth Rebrand v3 design (export-parity).
 ///
 /// Features:
 /// - Rainbow background with arcs and stripes
-/// - Content card with headline and email field
+/// - Content card with headline, subtitle, and email field
+/// - Subtitle: "E-Mail Adresse eingeben und erhalte einen Link zum Zurücksetzen."
 /// - Pink CTA button "Zurücksetzen"
 ///
 /// Route: /auth/reset
@@ -149,7 +150,22 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                           textAlign: TextAlign.center,
                         ),
 
-                        const SizedBox(height: Spacing.l),
+                        const SizedBox(height: Spacing.xs),
+
+                        // Subtitle (SSOT: auth_password_reset.subtitle)
+                        Text(
+                          l10n.authResetPasswordSubtitle,
+                          style: const TextStyle(
+                            fontFamily: FontFamilies.figtree,
+                            fontSize: AuthRebrandMetrics.bodyFontSize,
+                            fontWeight: FontWeight.w400,
+                            height: AuthRebrandMetrics.bodyLineHeight,
+                            color: DsColors.authRebrandTextPrimary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+
+                        const SizedBox(height: Spacing.m),
 
                         // Email field - IMPORTANT: Placeholder is "Deine E-Mail Adresse"
                         AuthRebrandTextField(

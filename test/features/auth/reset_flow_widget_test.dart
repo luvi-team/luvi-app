@@ -25,6 +25,28 @@ void main() {
       router.dispose();
     });
 
+    testWidgets('displays subtitle text (export-parity)', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            routerConfig: router,
+            theme: AppTheme.buildAppTheme(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Export-parity: Subtitle must be visible
+      expect(
+        find.text('E-Mail Adresse eingeben und erhalte einen Link zum Zurücksetzen.'),
+        findsOneWidget,
+        reason: 'Reset screen must show subtitle for export-parity',
+      );
+    });
+
     testWidgets('button enables only for valid email', (tester) async {
       await tester.pumpWidget(
         ProviderScope(

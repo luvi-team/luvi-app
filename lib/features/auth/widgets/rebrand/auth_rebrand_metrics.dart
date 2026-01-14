@@ -6,8 +6,9 @@ class AuthRebrandMetrics {
   const AuthRebrandMetrics._();
 
   // ─── Design Baseline ───
-  static const double designWidth = 393.0;
-  static const double designHeight = 873.0;
+  // PNG-Exports are 402×874 (visual SSOT from context/design/Auth Screens/)
+  static const double designWidth = 402.0;
+  static const double designHeight = 874.0;
   static const double statusBarHeight = 47.0;
 
   // ─── Entry Screen (SSOT: auth_entry) ───

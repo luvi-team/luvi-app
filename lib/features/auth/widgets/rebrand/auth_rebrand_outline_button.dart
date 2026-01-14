@@ -103,16 +103,16 @@ class AuthRebrandOutlineButton extends StatelessWidget {
                     color: DsColors.authRebrandTextPrimary.withValues(alpha: disabledOpacity),
                   )
                 else if (svgIconPath != null)
-                  SvgPicture.asset(
-                    svgIconPath!,
-                    width: AuthRebrandMetrics.outlineButtonIconSize,
-                    height: AuthRebrandMetrics.outlineButtonIconSize,
-                    colorFilter: disabledOpacity < 1.0
-                        ? ColorFilter.mode(
-                            DsColors.authRebrandTextPrimary.withValues(alpha: disabledOpacity),
-                            BlendMode.srcIn,
-                          )
-                        : null,
+                  // SVG icons (e.g., Google) preserve their original colors.
+                  // Disabled state is indicated via opacity instead of colorFilter
+                  // to avoid breaking multicolor brand icons.
+                  Opacity(
+                    opacity: disabledOpacity,
+                    child: SvgPicture.asset(
+                      svgIconPath!,
+                      width: AuthRebrandMetrics.outlineButtonIconSize,
+                      height: AuthRebrandMetrics.outlineButtonIconSize,
+                    ),
                   ),
                 // Gap between icon and text (SSOT: 26px)
                 if (hasIcon)
