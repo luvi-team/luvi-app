@@ -46,7 +46,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     final size = MediaQuery.of(context).size;
 
     // Calculate scale factor for responsive pixel-perfect positioning
-    // Design baseline: 393×873
+    // Design baseline: 402×874 (AuthRebrandMetrics SSOT from PNG exports)
     final scaleX = size.width / AuthRebrandMetrics.designWidth;
     final scaleY = size.height / AuthRebrandMetrics.designHeight;
 
