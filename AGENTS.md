@@ -100,7 +100,6 @@ Codex takes over UI/Dataviz tasks only when Claude Code is unavailable (e.g., mo
 - Review agent for PRs from Claude Code (`ui-frontend`/`dataviz`); merge only after Codex approval.
 - Works strictly according to BMAD → PRP and uses `scripts/flutter_codex.sh` for Analyze/Test (sandboxed), Supabase-MCP for DB/RLS/Policies, and Archon/MCP for tasks & knowledge work.
 - Governance sources: `AGENTS.md`, `context/agents/*` (Dossiers, DoD, ADRs, SSOT v1.1) + BMAD + Product SSOTs.
-- Legacy note: Former Claude assets are archived under `context/archive/claude-code-legacy/`.
 
 ### Claude Code (Frontend / Dataviz)
 
