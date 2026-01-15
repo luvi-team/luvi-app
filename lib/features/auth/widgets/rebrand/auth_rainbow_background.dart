@@ -19,6 +19,7 @@ class AuthRainbowBackground extends StatelessWidget {
     super.key,
     this.containerWidth,
     this.containerHeight,
+    this.containerTop,
     this.isOverlay = false,
   });
 
@@ -28,7 +29,13 @@ class AuthRainbowBackground extends StatelessWidget {
   /// Height of the rainbow container. Defaults to full available height.
   final double? containerHeight;
 
-  /// If true, shifts Y-offsets down by rainbowContainerTop for overlay positioning.
+  /// Top offset for rainbow container from screen top.
+  /// If null, uses default from AuthRebrandMetrics.overlayRainbowContainerTop.
+  /// For dynamic alignment with back button chevron, calculate as:
+  /// MediaQuery.of(context).padding.top + 26
+  final double? containerTop;
+
+  /// Legacy parameter for overlay vs full-screen distinction.
   final bool isOverlay;
 
   @override
@@ -36,6 +43,7 @@ class AuthRainbowBackground extends StatelessWidget {
     return CustomPaint(
       painter: _RainbowPillPainter(
         containerWidth: containerWidth ?? AuthRebrandMetrics.overlayRainbowContainerWidth,
+        containerTop: containerTop,
         isOverlay: isOverlay,
       ),
       size: Size.infinite,
@@ -48,10 +56,12 @@ class _RainbowPillPainter extends CustomPainter {
   _RainbowPillPainter({
     required this.containerWidth,
     required this.isOverlay,
+    this.containerTop,
   });
 
   final double containerWidth;
   final bool isOverlay;
+  final double? containerTop;
 
   // Rainbow colors from outer to inner (SSOT)
   static const List<Color> _ringColors = [
@@ -91,11 +101,9 @@ class _RainbowPillPainter extends CustomPainter {
       final radius = width / 2; // Pill radius = half width for perfect round top
       final xOffset = _ringXOffsets[i];
 
-      // Overlay: Y-Offsets um rainbowContainerTop verschieben (SSOT: 53px)
-      // Non-overlay (Entry): Y-Offsets unverändert
-      final yOffset = isOverlay
-          ? _ringYOffsets[i] + AuthRebrandMetrics.overlayRainbowContainerTop
-          : _ringYOffsets[i];
+      // Apply containerTop offset (dynamic or default from metrics)
+      final effectiveContainerTop = containerTop ?? AuthRebrandMetrics.overlayRainbowContainerTop;
+      final yOffset = _ringYOffsets[i] + effectiveContainerTop;
 
       // Dynamische Höhe bis zum Canvas-Bottom
       // Mathematisch äquivalent zu SSOT-Höhen, aber geräteunabhängig
@@ -124,6 +132,7 @@ class _RainbowPillPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _RainbowPillPainter oldDelegate) {
     return containerWidth != oldDelegate.containerWidth ||
+        containerTop != oldDelegate.containerTop ||
         isOverlay != oldDelegate.isOverlay;
   }
 }

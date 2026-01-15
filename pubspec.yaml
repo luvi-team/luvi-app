@@ -106,6 +106,7 @@ flutter:
       # requires: assets/icons/google_g.svg (official multicolor Google 'G')
     - assets/icons/dashboard/
     - assets/icons/onboarding/
+    - assets/icons/Auth/
     - assets/animations/
     - assets/legal/
     - assets/videos/welcome/

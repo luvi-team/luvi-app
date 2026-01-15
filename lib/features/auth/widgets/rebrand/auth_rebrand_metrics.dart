@@ -40,7 +40,10 @@ class AuthRebrandMetrics {
   static const double sheetDragIndicatorRadius = 100.0; // SSOT: fully rounded
 
   // ─── Rainbow Container (SSOT: auth_overlay.rainbow_container) ───
-  static const double overlayRainbowContainerTop = 53.0;
+  /// Rainbow container top offset - applies to ALL auth screens (Figma Node 69692:2569)
+  /// Calculated: SafeArea.top(47) + backButtonTop(20) + chevronOffset(13) - ringTealY(7) = 73
+  /// This aligns the teal arc top with the back button chevron top.
+  static const double overlayRainbowContainerTop = 73.0;
   static const double overlayRainbowContainerWidth = 371.0;
   static const double overlayRainbowContainerHeight = 568.0;
 
@@ -112,7 +115,8 @@ class AuthRebrandMetrics {
 
   // ─── Icon Sizes ───
   static const double passwordToggleIconSize = 20.0;
-  static const double backButtonIconSize = 28.0;
+  /// Back button icon size - reduced for Figma SVG alignment (stroke 1.5dp)
+  static const double backButtonIconSize = 24.0;
 
   // ─── Content Spacing ───
   static const double contentTopGap = 100.0; // Gap nach Back-Button zu Content
