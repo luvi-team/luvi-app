@@ -248,7 +248,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                           textAlign: TextAlign.center,
                         ),
 
-                        const SizedBox(height: Spacing.l),
+                        const SizedBox(height: Spacing.m),
 
                         // Email field
                         AuthRebrandTextField(
@@ -311,7 +311,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: Spacing.l),
+                        const SizedBox(height: Spacing.m),
 
                         // CTA button (no login link per SSOT)
                         AuthPrimaryButton(

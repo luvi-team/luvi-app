@@ -173,7 +173,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           textAlign: TextAlign.center,
                         ),
 
-                        const SizedBox(height: Spacing.l),
+                        const SizedBox(height: Spacing.m),
 
                         // Email field
                         AuthRebrandTextField(
@@ -218,7 +218,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: Spacing.l),
+                        const SizedBox(height: Spacing.m),
 
                         // CTA button
                         AuthPrimaryButton(

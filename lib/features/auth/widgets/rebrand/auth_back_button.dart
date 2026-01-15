@@ -6,7 +6,7 @@ import 'auth_rebrand_metrics.dart';
 /// Back button for Auth Rebrand v3 screens.
 ///
 /// Positioned at top-left with 44dp touch target.
-/// Uses chevron-left icon.
+/// Uses arrow_back_ios_new icon (thinner iOS-style chevron).
 class AuthBackButton extends StatelessWidget {
   const AuthBackButton({
     super.key,
@@ -31,7 +31,7 @@ class AuthBackButton extends StatelessWidget {
         child: IconButton(
           onPressed: onPressed,
           icon: const Icon(
-            Icons.chevron_left,
+            Icons.arrow_back_ios_new,
             size: AuthRebrandMetrics.backButtonIconSize,
             color: DsColors.authRebrandTextPrimary,
           ),

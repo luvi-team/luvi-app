@@ -95,7 +95,7 @@ class AuthRebrandMetrics {
 
   // ─── Back Button ───
   static const double backButtonLeft = 10.0;
-  static const double backButtonTop = 53.0;
+  static const double backButtonTop = 20.0; // Näher an Status Bar (Figma-Alignment)
   static const double backButtonTouchTarget = 44.0;
 
   // ─── Typography ───
