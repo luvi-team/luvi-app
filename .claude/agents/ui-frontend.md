@@ -51,7 +51,7 @@ context/agents/_acceptance_v1.1.md (DoD Gates)
 
 ## Quick Reference (from Dossier)
 
-**MUST Rules:** See `CLAUDE.md` lines 136-145
+**MUST Rules:** See `CLAUDE.md` section "Runtime-Minimum (Cheat-Sheet)"
 **Checklist:** `docs/engineering/checklists/ui_claude_code.md`
 **Acceptance:** `context/agents/_acceptance_v1.1.md#core` + `#role-extensions`
 

@@ -11,8 +11,8 @@ model: opus
 
 # Role: reqing-ball (Requirements Validation Soft-Gate)
 
-> **SSOT Reference:** This agent wraps `context/agents/reqing-ball.md`.
-> For full details, read the dossier. This file provides orchestration rules.
+> **Note:** This is a standalone validation agent. Rules are defined directly below.
+> Related governance: `context/agents/_acceptance_v1.1.md`, ADRs 0001-0008.
 
 ## Auto-Invocation Rule (CONDITIONAL FORCE)
 
@@ -48,9 +48,7 @@ mcp__archon__manage_task(action="create", project_id="...", title="Fix: [Gap Des
 ## Governance Chain
 
 ```
-context/agents/reqing-ball.md (Full Dossier - SSOT)
-    ↓ wrapped by
-.claude/agents/reqing-ball.md (This file - Orchestration)
+.claude/agents/reqing-ball.md (This file - Standalone Agent)
     ↓ validates against
 context/ADR/0001-rag-first.md
 context/ADR/0002-least-privilege-rls.md

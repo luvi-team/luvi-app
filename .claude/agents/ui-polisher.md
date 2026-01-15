@@ -11,8 +11,8 @@ model: opus
 
 # Role: ui-polisher (UI Quality Soft-Gate)
 
-> **SSOT Reference:** This agent wraps `context/agents/ui-polisher.md`.
-> For full details, read the dossier. This file provides orchestration rules.
+> **Note:** This is a standalone quality gate. Token rules: `lib/core/design_tokens/`.
+> Checklist: `docs/engineering/checklists/ui_claude_code.md`
 
 ## Auto-Invocation Rule (CONDITIONAL FORCE)
 
@@ -48,9 +48,7 @@ mcp__archon__manage_task(action="create", project_id="...", title="A11y Fix: [Is
 ## Governance Chain
 
 ```
-context/agents/ui-polisher.md (Full Dossier - SSOT)
-    ↓ wrapped by
-.claude/agents/ui-polisher.md (This file - Orchestration)
+.claude/agents/ui-polisher.md (This file - Standalone Quality Gate)
     ↓ validates against
 lib/core/design_tokens/** (Token definitions)
 docs/engineering/checklists/ui_claude_code.md (MUST rules)

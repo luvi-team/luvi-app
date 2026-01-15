@@ -103,6 +103,20 @@ Text(maskEmail(user.email))
 Text('Account: ${user.displayName}')
 ```
 
+### 5. Push-Privacy Check (ADR-0005)
+
+```dart
+// CRITICAL VIOLATION - Health data in push
+NotificationPayload(body: 'Tag 22 · Lutealphase')  // NO!
+NotificationPayload(body: 'Dein Zyklus heute...')  // NO!
+
+// GOOD - Content-first strategy
+NotificationPayload(body: '💡 5 Lebensmittel für mehr Energie')
+NotificationPayload(body: '🏋️ Neues Workout verfügbar')
+```
+
+**Never in push payload:** cycle phase, period dates, symptoms, health metrics
+
 ## Output Format
 
 ```markdown

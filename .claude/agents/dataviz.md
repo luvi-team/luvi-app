@@ -56,7 +56,7 @@ context/agents/_acceptance_v1.1.md (DoD Gates)
 **Checklists:**
 - `docs/engineering/checklists/ui_claude_code.md`
 - `docs/engineering/checklists/dataviz.md`
-- `docs/analytics/chart-a11y-checklist.md`
+- A11y: Ensure color contrast ≥4.5:1, Semantics labels on axes/legends
 
 **Paths:**
 - Allow: `lib/features/statistics/**`, `lib/features/dashboard/**`, `test/features/dashboard/**`
@@ -68,6 +68,7 @@ context/agents/_acceptance_v1.1.md (DoD Gates)
 2. **Empty/Null States:** Graceful placeholder UI
 3. **No UI Jank:** Use `const` widgets, `RepaintBoundary`
 4. **Privacy:** Never display raw PII - aggregate data only
+5. **Library:** Use `fl_chart` for charts (see tech-stack.md)
 
 ## Workflow Summary
 
