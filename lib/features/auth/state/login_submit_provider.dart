@@ -8,6 +8,12 @@ import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+/// Patterns to detect invalid credentials error from Supabase.
+const _kInvalidCredentialsPatterns = ['invalid', 'credentials'];
+
+/// Patterns to detect email confirmation required error from Supabase.
+const _kEmailConfirmationPatterns = ['confirm'];
+
 class LoginSubmitNotifier extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
@@ -94,7 +100,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
   }) {
     final message = error.message.toLowerCase();
 
-    if (message.contains('invalid') || message.contains('credentials')) {
+    if (_kInvalidCredentialsPatterns.any(message.contains)) {
       // SSOT P0.7: Both fields show error on invalid credentials
       // SECURITY: Don't write password back into provider state
       loginNotifier.updateState(
@@ -103,7 +109,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         passwordError: AuthStrings.invalidCredentials,
         globalError: null,
       );
-    } else if (message.contains('confirm')) {
+    } else if (_kEmailConfirmationPatterns.any(message.contains)) {
       loginNotifier.updateState(
         email: email,
         emailError: null,

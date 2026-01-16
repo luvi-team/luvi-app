@@ -18,16 +18,11 @@ class AuthRainbowBackground extends StatelessWidget {
   const AuthRainbowBackground({
     super.key,
     this.containerWidth,
-    this.containerHeight,
     this.containerTop,
-    this.isOverlay = false,
   });
 
   /// Width of the rainbow container. Defaults to SSOT value (371).
   final double? containerWidth;
-
-  /// Height of the rainbow container. Defaults to full available height.
-  final double? containerHeight;
 
   /// Top offset for rainbow container from screen top.
   /// If null, uses default from AuthRebrandMetrics.overlayRainbowContainerTop.
@@ -35,16 +30,12 @@ class AuthRainbowBackground extends StatelessWidget {
   /// MediaQuery.of(context).padding.top + AuthRebrandMetrics.rainbowContainerTopOffset
   final double? containerTop;
 
-  /// Legacy parameter for overlay vs full-screen distinction.
-  final bool isOverlay;
-
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: _RainbowPillPainter(
         containerWidth: containerWidth ?? AuthRebrandMetrics.overlayRainbowContainerWidth,
         containerTop: containerTop,
-        isOverlay: isOverlay,
       ),
       size: Size.infinite,
     );
@@ -55,12 +46,10 @@ class AuthRainbowBackground extends StatelessWidget {
 class _RainbowPillPainter extends CustomPainter {
   _RainbowPillPainter({
     required this.containerWidth,
-    required this.isOverlay,
     this.containerTop,
   });
 
   final double containerWidth;
-  final bool isOverlay;
   final double? containerTop;
 
   // Rainbow colors from outer to inner (SSOT)
@@ -132,7 +121,6 @@ class _RainbowPillPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _RainbowPillPainter oldDelegate) {
     return containerWidth != oldDelegate.containerWidth ||
-        containerTop != oldDelegate.containerTop ||
-        isOverlay != oldDelegate.isOverlay;
+        containerTop != oldDelegate.containerTop;
   }
 }

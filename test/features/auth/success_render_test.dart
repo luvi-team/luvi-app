@@ -65,9 +65,14 @@ void main() {
       // Export-parity: Must use AuthContentCard (not GlowCheckmark)
       expect(find.byType(AuthContentCard), findsOneWidget);
 
+      // Get L10n from a descendant context (not MaterialApp root)
+      final l10n = AppLocalizations.of(
+        tester.element(find.byKey(const ValueKey('auth_success_screen'))),
+      )!;
+
       // Title and subtitle must be visible
-      expect(find.text('Geschafft!'), findsOneWidget);
-      expect(find.text('Neues Passwort gespeichert.'), findsOneWidget);
+      expect(find.text(l10n.authSuccessPwdTitle), findsOneWidget);
+      expect(find.text(l10n.authSuccessPwdSubtitle), findsOneWidget);
     });
 
     testWidgets('passes dynamic containerTop to AuthRainbowBackground', (

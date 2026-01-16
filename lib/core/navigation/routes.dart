@@ -220,26 +220,25 @@ Session? _getSessionSafely({
   }
 }
 
-/// Handles bypass routes that don't need session validation.
+/// Checks if a route should bypass session validation.
 ///
-/// Returns null to allow access, or a redirect path if not a bypass route.
-String? _handleBypassRoutes({
+/// Returns true if the route is allowed without further auth checks.
+bool _isBypassRoute({
   required _RouteFlags flags,
   required bool allowDashboardDev,
   required bool allowOnboardingDev,
 }) {
   // Password recovery routes always bypass (token-gated by email link)
-  if (flags.isPasswordRecovery) return null;
+  if (flags.isPasswordRecovery) return true;
 
   // Dev-only bypasses (only in debug mode)
-  if (allowOnboardingDev && !kReleaseMode && flags.isOnboarding) return null;
-  if (allowDashboardDev && !kReleaseMode && flags.isDashboard) return null;
+  if (allowOnboardingDev && !kReleaseMode && flags.isOnboarding) return true;
+  if (allowDashboardDev && !kReleaseMode && flags.isDashboard) return true;
 
   // Splash and welcome always allowed (pre-auth gates)
-  if (flags.isSplash || flags.isWelcome) return null;
+  if (flags.isSplash || flags.isWelcome) return true;
 
-  // Not a bypass route - return empty string to signal "continue processing"
-  return '';
+  return false;
 }
 
 /// Testbare Version des Redirect-Guards mit optionalen Overrides.
@@ -268,12 +267,13 @@ String? supabaseRedirectWithSession(
   final flags = _classifyRoute(state.matchedLocation);
 
   // Check bypass routes first
-  final bypassResult = _handleBypassRoutes(
+  if (_isBypassRoute(
     flags: flags,
     allowDashboardDev: allowDashboardDev,
     allowOnboardingDev: allowOnboardingDev,
-  );
-  if (bypassResult == null) return null; // Allowed - no redirect
+  )) {
+    return null; // Allowed - no redirect
+  }
 
   // Get session for auth-dependent decisions
   final session = _getSessionSafely(

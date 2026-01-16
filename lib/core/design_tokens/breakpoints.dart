@@ -1,3 +1,5 @@
+import 'package:luvi_app/core/design_tokens/sizes.dart';
+
 /// Responsive breakpoints for LUVI (Figma reference devices).
 ///
 /// ## Relationship to Sizes
@@ -53,5 +55,6 @@ class Breakpoints {
 
   /// Check if height is constrained (needs scaling)
   /// Delegates to the canonical threshold in Sizes
-  static bool isHeightConstrained(double height) => height < 800.0;
+  static bool isHeightConstrained(double height) =>
+      height < Sizes.welcomeReferenceHeight;
 }

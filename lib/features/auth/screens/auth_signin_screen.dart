@@ -55,7 +55,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
       backgroundColor: DsColors.authRebrandBackground,
       body: Stack(
         children: [
-          // Hero image at bottom
+          // Hero image at bottom (decorative, excluded from semantics)
           Positioned(
             key: const ValueKey('auth_entry_hero'),
             left: 0,
@@ -65,6 +65,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
               'assets/images/auth/hero_auth_entry.png',
               fit: BoxFit.fitWidth,
               width: size.width,
+              excludeFromSemantics: true,
             ),
           ),
 

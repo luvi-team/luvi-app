@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
@@ -14,6 +13,7 @@ import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_error_banner.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
@@ -29,7 +29,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// - Content card with headline and form
 /// - Email + Password + Confirm Password fields
 /// - Pink CTA button
-/// - "Schon dabei? Anmelden" link
+/// - CTA button only (no login link per SSOT P0.6)
 ///
 /// Route: /auth/signup
 class AuthSignupScreen extends ConsumerStatefulWidget {
@@ -183,6 +183,33 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     return l10n.authSignupGenericError;
   }
 
+  void _onEmailChanged(String _) {
+    if (_errorMessage != null || _emailError) {
+      setState(() {
+        _errorMessage = null;
+        _emailError = false;
+      });
+    }
+  }
+
+  void _onPasswordChanged(String _) {
+    if (_errorMessage != null || _passwordError) {
+      setState(() {
+        _errorMessage = null;
+        _passwordError = false;
+      });
+    }
+  }
+
+  void _onConfirmPasswordChanged(String _) {
+    if (_errorMessage != null || _confirmPasswordError) {
+      setState(() {
+        _errorMessage = null;
+        _confirmPasswordError = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -200,32 +227,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Global error banner (consistent with LoginScreen)
-          if (_errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
-              child: Container(
-                padding: const EdgeInsets.all(Spacing.s),
-                margin: const EdgeInsets.only(bottom: Spacing.m),
-                decoration: BoxDecoration(
-                  color: DsColors.authRebrandError.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(Sizes.radiusS),
-                  border: Border.all(
-                    color: DsColors.authRebrandError,
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontSize: AuthRebrandMetrics.errorTextFontSize,
-                    color: DsColors.authRebrandError,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
+          // Global error banner
+          if (_errorMessage != null) AuthErrorBanner(message: _errorMessage!),
 
           // Content card (SSOT: form screens use 364px width)
           AuthContentCard(
@@ -257,14 +260,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                   hasError: _emailError,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  onChanged: (_) {
-                    if (_errorMessage != null || _emailError) {
-                      setState(() {
-                        _errorMessage = null;
-                        _emailError = false;
-                      });
-                    }
-                  },
+                  onChanged: _onEmailChanged,
                 ),
 
                 const SizedBox(height: AuthRebrandMetrics.cardInputGap),
@@ -278,14 +274,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                   hasError: _passwordError,
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.next,
-                  onChanged: (_) {
-                    if (_errorMessage != null || _passwordError) {
-                      setState(() {
-                        _errorMessage = null;
-                        _passwordError = false;
-                      });
-                    }
-                  },
+                  onChanged: _onPasswordChanged,
                   suffixIcon: PasswordVisibilityToggleButton(
                     obscured: _obscurePassword,
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -307,14 +296,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                   hasError: _confirmPasswordError,
                   obscureText: _obscureConfirmPassword,
                   textInputAction: TextInputAction.done,
-                  onChanged: (_) {
-                    if (_errorMessage != null || _confirmPasswordError) {
-                      setState(() {
-                        _errorMessage = null;
-                        _confirmPasswordError = false;
-                      });
-                    }
-                  },
+                  onChanged: _onConfirmPasswordChanged,
                   onSubmitted: (_) {
                     if (!_isSubmitting) _handleSignup();
                   },

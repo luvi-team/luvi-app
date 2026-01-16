@@ -10,6 +10,7 @@ import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_error_banner.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
@@ -92,32 +93,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Global error banner (consistent with AuthSignupScreen)
-          if (globalError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
-              child: Container(
-                padding: const EdgeInsets.all(Spacing.s),
-                margin: const EdgeInsets.only(bottom: Spacing.m),
-                decoration: BoxDecoration(
-                  color: DsColors.authRebrandError.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(Sizes.radiusS),
-                  border: Border.all(
-                    color: DsColors.authRebrandError,
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  globalError,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontSize: AuthRebrandMetrics.errorTextFontSize,
-                    color: DsColors.authRebrandError,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
+          // Global error banner
+          if (globalError != null) AuthErrorBanner(message: globalError),
 
           // Content card (SSOT: form screens use 364px width)
           AuthContentCard(

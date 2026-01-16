@@ -8,6 +8,7 @@ library;
 
 export 'auth_bottom_sheet_shell.dart';
 export 'auth_content_card.dart';
+export 'auth_error_banner.dart';
 export 'auth_primary_button.dart';
 export 'auth_rainbow_background.dart';
 export 'auth_rebrand_metrics.dart';

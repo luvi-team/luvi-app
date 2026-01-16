@@ -39,9 +39,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // Get L10n from a descendant context (not MaterialApp root)
+      final l10n = AppLocalizations.of(
+        tester.element(find.byKey(const ValueKey('auth_reset_screen'))),
+      )!;
+
       // Export-parity: Subtitle must be visible
       expect(
-        find.text('E-Mail Adresse eingeben und erhalte einen Link zum Zurücksetzen.'),
+        find.text(l10n.authResetPasswordSubtitle),
         findsOneWidget,
         reason: 'Reset screen must show subtitle for export-parity',
       );

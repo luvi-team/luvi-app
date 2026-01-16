@@ -78,7 +78,7 @@ class AuthBottomSheetShell extends StatelessWidget {
             child: SizedBox(
               height: sheetHeight,
               width: double.infinity,
-              child: const AuthRainbowBackground(isOverlay: true),
+              child: const AuthRainbowBackground(),
             ),
           ),
 
