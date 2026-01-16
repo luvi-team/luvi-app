@@ -87,6 +87,10 @@ void main() {
         find.byKey(const ValueKey('signup_password_field')),
         'strongpass',
       );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'strongpass',
+      );
 
       await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
       await tester.pump(); // Process tap
@@ -128,6 +132,10 @@ void main() {
       );
       await tester.enterText(
         find.byKey(const ValueKey('signup_password_field')),
+        'strongpass',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
         'strongpass',
       );
 
@@ -174,6 +182,10 @@ void main() {
       );
       await tester.enterText(
         find.byKey(const ValueKey('signup_password_field')),
+        'strongpass',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
         'strongpass',
       );
 
@@ -225,6 +237,10 @@ void main() {
         find.byKey(const ValueKey('signup_password_field')),
         'strongpass',
       );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'strongpass',
+      );
 
       // Submit
       await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
@@ -252,6 +268,46 @@ void main() {
 
       // Now on login screen
       expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+    });
+
+    testWidgets('shows error when passwords do not match', (tester) async {
+      final mockRepo = _MockAuthRepository();
+      // No mock setup needed - validation fails before API call
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      // Fill email and mismatched passwords
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'Password123!',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'Different456!',
+      );
+
+      // Submit
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      // Verify error message is shown (appears in both global banner and field error)
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authPasswordMismatchError), findsAtLeastNWidgets(1));
+
+      // Verify API was NOT called (validation failed before)
+      verifyNever(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      );
     });
   });
 }

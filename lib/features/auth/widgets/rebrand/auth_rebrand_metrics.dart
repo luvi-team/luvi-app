@@ -123,4 +123,11 @@ class AuthRebrandMetrics {
   static const double contentBottomGap = 60.0; // Gap vor CTA-Button
   static const double sheetBottomGap = 40.0; // Gap für Bottom Stripes in Sheets
   static const double entryLogoGap = 80.0; // Gap zwischen Logo und CTA auf Entry
+
+  // ─── Keyboard Handling ───
+  /// Factor applied to keyboard height for padding calculation.
+  /// Calculated as targetMax / typicalKeyboardHeight (200 / 320 ≈ 0.625)
+  static const double keyboardPaddingFactor = 0.625;
+  /// Maximum padding when keyboard is open
+  static const double keyboardPaddingMax = 200.0;
 }

@@ -1,77 +1,42 @@
 ---
 name: ui-frontend
 description: >
-  MANDATORY agent for Flutter UI tasks. Auto-invoke for keywords: Widget, Screen, UI, UX, Flutter,
-  Navigation, Theme, Layout, GoRouter, Bildschirm, Ansicht, Oberfläche, Design.
-  Handles screens, widgets, navigation, design tokens, L10n, A11y (44dp touch targets, Semantics).
-tools: Read, Edit, Grep, Glob, Bash
+  Use proactively for Flutter UI tasks including: screens, widgets, navigation,
+  design tokens, L10n, and A11y (44dp touch targets, Semantics).
+  Triggers: Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter.
+tools: Read, Edit, Grep, Glob
 model: opus
 ---
 
-# Role: ui-frontend (Claude Code Primary)
+# ui-frontend Agent
 
-> **SSOT Reference:** This agent wraps `context/agents/01-ui-frontend.md`.
-> For full details, read the dossier. This file provides Claude Code-specific orchestration.
+> **SSOT:** `context/agents/01-ui-frontend.md`
 
-## Auto-Invocation Rule (FORCED)
+## Scope
 
-**BEFORE any UI task, Claude Code MUST:**
-1. Invoke this agent when detecting keywords: Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter
-2. Check Archon for active tasks: `mcp__archon__find_tasks(filter_by="status", filter_value="doing")`
-3. If no task exists, create one or ask user
+**Allowed Paths:**
+- `lib/features/**`
+- `lib/core/**`
+- `test/features/**`
+- `lib/l10n/**`
 
-**This is NOT optional. Skipping agent invocation for UI tasks is a governance violation.**
+**Denied Paths:**
+- `supabase/**`
+- `android/**`
+- `ios/**`
 
-## Archon Integration (MANDATORY)
-
-```
-# Before starting work
-mcp__archon__find_tasks(filter_by="status", filter_value="todo")
-mcp__archon__manage_task(action="update", task_id="...", status="doing")
-
-# During work - RAG search for patterns
-mcp__archon__rag_search_code_examples(query="flutter widget pattern")
-mcp__archon__rag_search_knowledge_base(query="design tokens")
-
-# After completion
-mcp__archon__manage_task(action="update", task_id="...", status="review")
-```
-
-## Governance Chain
-
-```
-CLAUDE.md (Root)
-    ↓ references
-context/agents/01-ui-frontend.md (Full Dossier - SSOT)
-    ↓ wrapped by
-.claude/agents/ui-frontend.md (This file - Orchestration)
-    ↓ checks
-context/agents/_acceptance_v1.1.md (DoD Gates)
-```
-
-## Quick Reference (from Dossier)
-
-**MUST Rules:** See `CLAUDE.md` section "Runtime-Minimum (Cheat-Sheet)"
-**Checklist:** `docs/engineering/checklists/ui_claude_code.md`
-**Acceptance:** `context/agents/_acceptance_v1.1.md#core` + `#role-extensions`
-
-**Paths:**
-- Allow: `lib/features/**`, `lib/core/**`, `test/features/**`, `lib/l10n/**`
-- Deny: `supabase/**`, `android/**`, `ios/**`
-
-## Workflow Summary
+## Workflow
 
 | Mode | Trigger | DoD |
 |------|---------|-----|
 | Feature | New screen/widget | BMAD-slim + analyze + widget test |
 | Micro-Task | Copy/spacing fix | analyze + affected tests |
 
-## Soft-Gate Sequence
+## After Implementation
 
-After implementation, BEFORE PR:
-1. `ui-polisher` agent → Token/A11y check
-2. `qa-reviewer` agent → Privacy quick-check (if user data involved)
-3. Then submit to Codex review
+1. Run `ui-polisher` for token/A11y check
+2. Run `qa-reviewer` if user data involved
+3. Submit to Codex review
 
 ## Commands
 

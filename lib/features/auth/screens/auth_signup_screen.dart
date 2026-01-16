@@ -27,7 +27,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Features:
 /// - Rainbow background with arcs and stripes
 /// - Content card with headline and form
-/// - Email + Password fields
+/// - Email + Password + Confirm Password fields
 /// - Pink CTA button
 /// - "Schon dabei? Anmelden" link
 ///
@@ -44,18 +44,22 @@ class AuthSignupScreen extends ConsumerStatefulWidget {
 class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   Timer? _signupNavTimer;
 
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   bool _isSubmitting = false;
   bool _emailError = false;
   bool _passwordError = false;
+  bool _confirmPasswordError = false;
   String? _errorMessage;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _signupNavTimer?.cancel();
     super.dispose();
   }
@@ -65,14 +69,25 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
     final l10n = AppLocalizations.of(context)!;
 
     // Validate fields
-    if (email.isEmpty || password.isEmpty) {
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       setState(() {
         _emailError = email.isEmpty;
         _passwordError = password.isEmpty;
+        _confirmPasswordError = confirmPassword.isEmpty;
         _errorMessage = l10n.authSignupMissingFields;
+      });
+      return;
+    }
+
+    // Validate password match
+    if (password != confirmPassword) {
+      setState(() {
+        _confirmPasswordError = true;
+        _errorMessage = l10n.authPasswordMismatchError;
       });
       return;
     }
@@ -84,6 +99,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       _errorMessage = null;
       _emailError = false;
       _passwordError = false;
+      _confirmPasswordError = false;
     });
 
     final authRepository = ref.read(authRepositoryProvider);
@@ -203,7 +219,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeOutCubic,
                 padding: EdgeInsets.only(
-                  bottom: (MediaQuery.of(context).viewInsets.bottom * 0.5).clamp(0, 140),
+                  bottom: (MediaQuery.of(context).viewInsets.bottom * AuthRebrandMetrics.keyboardPaddingFactor).clamp(0, AuthRebrandMetrics.keyboardPaddingMax),
                 ),
                 child: SingleChildScrollView(
                   child: Column(
@@ -286,7 +302,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                             errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
                             hasError: _passwordError,
                             obscureText: _obscurePassword,
-                            textInputAction: TextInputAction.done,
+                            textInputAction: TextInputAction.next,
                             onChanged: (_) {
                               if (_errorMessage != null || _passwordError) {
                                 setState(() {
@@ -294,9 +310,6 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                                   _passwordError = false;
                                 });
                               }
-                            },
-                            onSubmitted: (_) {
-                              if (!_isSubmitting) _handleSignup();
                             },
                             suffixIcon: Semantics(
                               button: true,
@@ -313,6 +326,51 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                                 ),
                                 onPressed: () {
                                   setState(() => _obscurePassword = !_obscurePassword);
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+
+                          // Confirm password field
+                          AuthRebrandTextField(
+                            key: const ValueKey('signup_password_confirm_field'),
+                            controller: _confirmPasswordController,
+                            hintText: l10n.authNewPasswordConfirmHint,
+                            errorText: _confirmPasswordError
+                                ? l10n.authPasswordMismatchError
+                                : null,
+                            hasError: _confirmPasswordError,
+                            obscureText: _obscureConfirmPassword,
+                            textInputAction: TextInputAction.done,
+                            onChanged: (_) {
+                              if (_errorMessage != null || _confirmPasswordError) {
+                                setState(() {
+                                  _errorMessage = null;
+                                  _confirmPasswordError = false;
+                                });
+                              }
+                            },
+                            onSubmitted: (_) {
+                              if (!_isSubmitting) _handleSignup();
+                            },
+                            suffixIcon: Semantics(
+                              button: true,
+                              label: _obscureConfirmPassword
+                                  ? l10n.authShowPassword
+                                  : l10n.authHidePassword,
+                              child: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: DsColors.grayscale500,
+                                  size: AuthRebrandMetrics.passwordToggleIconSize,
+                                ),
+                                onPressed: () {
+                                  setState(() =>
+                                      _obscureConfirmPassword = !_obscureConfirmPassword);
                                 },
                               ),
                             ),
