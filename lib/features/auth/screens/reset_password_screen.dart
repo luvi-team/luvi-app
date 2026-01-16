@@ -38,6 +38,7 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _emailController = TextEditingController();
   ProviderSubscription<ResetPasswordState>? _stateSubscription;
+  ProviderSubscription<AsyncValue<void>>? _submitSubscription;
 
   @override
   void initState() {
@@ -56,10 +57,28 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         );
       }
     });
+
+    // Listen for submit errors and show snackbar (moved from build to initState)
+    _submitSubscription = ref.listenManual<AsyncValue<void>>(
+      resetSubmitProvider,
+      (prev, next) {
+        if (!mounted) return;
+        if (next.hasError && !next.isLoading) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.authResetErrorGeneric),
+              backgroundColor: DsColors.authRebrandError,
+              duration: Timing.snackBarBrief,
+            ),
+          );
+        }
+      },
+    );
   }
 
   @override
   void dispose() {
+    _submitSubscription?.close();
     _stateSubscription?.close();
     _emailController.dispose();
     super.dispose();
@@ -74,19 +93,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final errorText = _errorTextFor(state.error, l10n);
     final hasError = errorText != null;
 
-    // Listen for submit errors and show snackbar (must be in build)
-    ref.listen<AsyncValue<void>>(resetSubmitProvider, (prev, next) {
-      if (!mounted) return;
-      if (next.hasError && !next.isLoading) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.authResetErrorGeneric),
-            backgroundColor: DsColors.authRebrandError,
-            duration: Timing.snackBarBrief,
-          ),
-        );
-      }
-    });
+    // NOTE: Submit error listener moved to initState for proper lifecycle management
 
     return Scaffold(
       key: const ValueKey('auth_reset_screen'),
