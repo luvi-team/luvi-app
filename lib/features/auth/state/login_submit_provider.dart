@@ -21,7 +21,8 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     // validateAndSubmit performs local (synchronous) validation only and does not
     // perform any network calls. However, the provider may still be in a loading
     // or error state due to concurrent updates (e.g. other auth flows) — handle safely.
-    await loginNotifier.validateAndSubmit();
+    // SECURITY: Pass password as parameter, not stored in provider state.
+    await loginNotifier.validateAndSubmit(password: password);
 
     final loginAsync = ref.read(loginProvider);
     if (loginAsync.isLoading) {
@@ -71,7 +72,6 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         error: error,
         loginNotifier: loginNotifier,
         email: sanitizedEmail,
-        password: password,
       );
       state = const AsyncData(null);
     } catch (error, stackTrace) {
@@ -91,15 +91,14 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     required AuthException error,
     required LoginNotifier loginNotifier,
     required String email,
-    required String password,
   }) {
     final message = error.message.toLowerCase();
 
     if (message.contains('invalid') || message.contains('credentials')) {
       // SSOT P0.7: Both fields show error on invalid credentials
+      // SECURITY: Don't write password back into provider state
       loginNotifier.updateState(
         email: email,
-        password: password,
         emailError: AuthStrings.invalidCredentials,
         passwordError: AuthStrings.invalidCredentials,
         globalError: null,
@@ -107,7 +106,6 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     } else if (message.contains('confirm')) {
       loginNotifier.updateState(
         email: email,
-        password: password,
         emailError: null,
         passwordError: null,
         globalError: AuthStrings.errConfirmEmail,
@@ -115,7 +113,6 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     } else {
       loginNotifier.updateState(
         email: email,
-        password: password,
         emailError: null,
         passwordError: null,
         globalError: AuthStrings.errLoginUnavailable,

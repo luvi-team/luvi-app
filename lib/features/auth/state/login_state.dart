@@ -99,11 +99,17 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   /// Performs client-side validation only.
   ///
   /// Server-side submission is handled separately by login_submit_provider.
-  void validate() {
+  /// [password] is validated but NOT persisted in state (SECURITY: password
+  /// should only live in TextEditingController, not in provider state).
+  /// If [password] is not provided, falls back to state.password for backward
+  /// compatibility with tests - but new code should always pass the password.
+  void validate({String? password}) {
     try {
       final current = _current();
       final trimmedEmail = current.email.trim();
-      final trimmedPassword = current.password.trim();
+      // SECURITY: Don't trim passwords - they may contain intentional spaces.
+      // Prefer parameter; fallback to state for backward compatibility only.
+      final rawPassword = password ?? current.password;
 
       String? eErr;
       String? pErr;
@@ -114,16 +120,16 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
         eErr = AuthStrings.errEmailInvalid;
       }
 
-      if (trimmedPassword.isEmpty) {
+      if (rawPassword.isEmpty) {
         pErr = AuthStrings.errPasswordEmpty;
-      } else if (trimmedPassword.length < _kMinPasswordLength) {
+      } else if (rawPassword.length < _kMinPasswordLength) {
         pErr = AuthStrings.errPasswordInvalid;
       }
 
       state = AsyncData(
         current.copyWith(
           email: trimmedEmail,
-          password: trimmedPassword,
+          // SECURITY: Don't store password in state - keep it only in UI controller
           emailError: eErr,
           passwordError: pErr,
           globalError:
@@ -139,8 +145,10 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   /// Performs client-side validation only and completes synchronously.
   /// Any network submission or remote auth flow is handled by
   /// `login_submit_provider` to avoid mixing concerns.
-  Future<void> validateAndSubmit() async {
-    validate();
+  ///
+  /// [password] is validated but NOT persisted in state for security.
+  Future<void> validateAndSubmit({String? password}) async {
+    validate(password: password);
   }
 
   @visibleForTesting

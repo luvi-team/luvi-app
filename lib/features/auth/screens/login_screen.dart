@@ -47,20 +47,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
     final loginNotifier = ref.read(loginProvider.notifier);
     final initialState = loginNotifier.currentState;
+    // Prefill email from state (allowed - not sensitive)
     if (_emailController.text != initialState.email) {
       _emailController.value = _emailController.value.copyWith(
         text: initialState.email,
         selection: TextSelection.collapsed(offset: initialState.email.length),
       );
     }
-    if (_passwordController.text != initialState.password) {
-      _passwordController.value = _passwordController.value.copyWith(
-        text: initialState.password,
-        selection: TextSelection.collapsed(
-          offset: initialState.password.length,
-        ),
-      );
-    }
+    // SECURITY: Don't prefill password from state - password should only
+    // live in TextEditingController, not be persisted in provider state.
   }
 
   @override
@@ -287,11 +282,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _onPasswordChanged(String value) {
+    // SECURITY: Don't store password in provider state.
+    // Password is read directly from controller at submit time.
     final notifier = ref.read(loginProvider.notifier);
-    notifier.setPassword(value);
     final state = ref.read(loginProvider).value;
     if (state?.globalError != null) {
       notifier.clearGlobalError();
+    }
+    // Clear password error when user starts typing
+    if (state?.passwordError != null) {
+      notifier.updateState(passwordError: null);
     }
   }
 
