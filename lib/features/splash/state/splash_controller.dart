@@ -85,50 +85,93 @@ class SplashController extends _$SplashController {
     await checkGates();
   }
 
-  /// The main gate sequence. Extracted for clarity.
+  /// The main gate sequence. Orchestrates gate checks in order.
+  ///
+  /// Each gate check returns true if it handled the state (navigation resolved
+  /// or error shown), or false to continue to the next gate.
   Future<void> _runGateSequence(int token) async {
     final isAuth = ref.read(isAuthenticatedFnProvider)();
     final isTestMode = ref.read(initModeProvider) == InitMode.test;
     final useTimeout = kReleaseMode && !isTestMode;
 
-    // ── Gate 1: Welcome ────────────────────────────────────────────────────
+    // Gate 1: Welcome (device-local)
+    if (await _checkWelcomeGate(token)) return;
+
+    // Gate 2: Auth (Supabase)
+    if (_checkAuthGate(isAuth)) return;
+
+    // Gate 3: User State + Consent
+    final consentResult = await _checkConsentGate(
+      token: token,
+      isAuth: isAuth,
+      useTimeout: useTimeout,
+    );
+    if (consentResult == null) return;
+
+    // Gate 4: Onboarding
+    await _checkOnboardingGate(
+      token: token,
+      consentResult: consentResult,
+      useTimeout: useTimeout,
+    );
+  }
+
+  /// Gate 1: Check welcome completion. Returns true if handled.
+  Future<bool> _checkWelcomeGate(int token) async {
     final welcomeRoute = await _resolveWelcomeGate();
-    if (!_isValidRun(token)) return;
+    if (!_isValidRun(token)) return true;
     if (welcomeRoute != null) {
       state = SplashResolved(welcomeRoute);
-      return;
+      return true;
     }
+    return false;
+  }
 
-    // ── Gate 2: Auth ───────────────────────────────────────────────────────
+  /// Gate 2: Check authentication. Returns true if handled.
+  bool _checkAuthGate(bool isAuth) {
     final authRoute = _resolveAuthGate(isAuth);
     if (authRoute != null) {
       state = SplashResolved(authRoute);
-      return;
+      return true;
     }
+    return false;
+  }
 
-    // ── Gate 3: User State + Consent ───────────────────────────────────────
+  /// Gate 3: Check consent. Returns ConsentGateResult or null if handled.
+  Future<ConsentGateResult?> _checkConsentGate({
+    required int token,
+    required bool isAuth,
+    required bool useTimeout,
+  }) async {
     final service = await _loadAndBindUserState(
       useTimeout: useTimeout,
       isAuth: isAuth,
       token: token,
     );
-    if (!_isValidRun(token)) return;
-    if (service == null) return; // Already navigated to fallback or unknownUI
+    if (!_isValidRun(token)) return null;
+    if (service == null) return null;
 
     final consentResult = await _resolveConsentGate(
       service: service,
       useTimeout: useTimeout,
       token: token,
     );
-    if (!_isValidRun(token)) return;
-    if (consentResult == null) return; // Error case (unknownUI set)
+    if (!_isValidRun(token)) return null;
+    if (consentResult == null) return null;
 
     if (consentResult.consentRoute != null) {
       state = SplashResolved(consentResult.consentRoute!);
-      return;
+      return null;
     }
+    return consentResult;
+  }
 
-    // ── Gate 4: Onboarding ─────────────────────────────────────────────────
+  /// Gate 4: Check onboarding. Handles state based on result.
+  Future<void> _checkOnboardingGate({
+    required int token,
+    required ConsentGateResult consentResult,
+    required bool useTimeout,
+  }) async {
     final gateResult = await _evaluateOnboardingGateWithRetry(
       initialRemoteGate: consentResult.remoteGate,
       localGate: consentResult.localGate,
@@ -138,6 +181,11 @@ class SplashController extends _$SplashController {
 
     if (!_isValidRun(token)) return;
 
+    _handleOnboardingGateResult(gateResult);
+  }
+
+  /// Handles the onboarding gate result, setting appropriate state.
+  void _handleOnboardingGateResult(OnboardingGateResult gateResult) {
     switch (gateResult) {
       case RouteResolved(:final route):
         state = SplashResolved(route);
@@ -148,18 +196,15 @@ class SplashController extends _$SplashController {
         );
       case RaceRetryNeeded():
         // Unreachable: _evaluateOnboardingGateWithRetry handles internally.
-        // If reached, it indicates a logic error in gate evaluation.
         log.e(
           'unexpected RaceRetryNeeded after retry - logic error',
           tag: 'splash',
         );
-        // Debug/Test: Crash to surface issue immediately
         if (kDebugMode) {
           throw StateError(
             'RaceRetryNeeded should never reach _runGateSequence switch',
           );
         }
-        // Release: Graceful fallback to unknown state
         state = SplashUnknown(
           canRetry: _manualRetryCount < SplashUnknown.maxRetries,
           retryCount: _manualRetryCount,
