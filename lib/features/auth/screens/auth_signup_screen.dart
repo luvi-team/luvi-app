@@ -64,51 +64,41 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     super.dispose();
   }
 
-  Future<void> _handleSignup() async {
-    if (_isSubmitting) return;
-
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
-    final l10n = AppLocalizations.of(context)!;
-
-    // Validate fields
+  /// Validates signup form inputs.
+  /// Returns error message if validation fails, null if valid.
+  String? _validateInputs({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required AppLocalizations l10n,
+  }) {
     if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       setState(() {
         _emailError = email.isEmpty;
         _passwordError = password.isEmpty;
         _confirmPasswordError = confirmPassword.isEmpty;
-        _errorMessage = l10n.authSignupMissingFields;
       });
-      return;
+      return l10n.authSignupMissingFields;
     }
 
-    // Validate password match
     if (password != confirmPassword) {
-      setState(() {
-        _confirmPasswordError = true;
-        _errorMessage = l10n.authPasswordMismatchError;
-      });
-      return;
+      setState(() => _confirmPasswordError = true);
+      return l10n.authPasswordMismatchError;
     }
 
-    FocusScope.of(context).unfocus();
+    return null;
+  }
 
-    setState(() {
-      _isSubmitting = true;
-      _errorMessage = null;
-      _emailError = false;
-      _passwordError = false;
-      _confirmPasswordError = false;
-    });
-
+  /// Performs the actual signup API call and handles success/error states.
+  Future<void> _submitSignup({
+    required String email,
+    required String password,
+    required AppLocalizations l10n,
+  }) async {
     final authRepository = ref.read(authRepositoryProvider);
 
     try {
-      await authRepository.signUp(
-        email: email,
-        password: password,
-      );
+      await authRepository.signUp(email: email, password: password);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -130,11 +120,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         stack: stackTrace,
       );
       if (!mounted) return;
-
-      // Map error codes to user-friendly messages
-      final message = _mapAuthError(error, l10n);
       setState(() {
-        _errorMessage = message;
+        _errorMessage = _mapAuthError(error, l10n);
         _emailError = true;
       });
     } catch (error, stackTrace) {
@@ -144,16 +131,41 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         stack: stackTrace,
       );
       if (!mounted) return;
-      setState(() {
-        _errorMessage = l10n.authSignupGenericError;
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
-      }
+      setState(() => _errorMessage = l10n.authSignupGenericError);
     }
+  }
+
+  Future<void> _handleSignup() async {
+    if (_isSubmitting) return;
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+    final l10n = AppLocalizations.of(context)!;
+
+    final validationError = _validateInputs(
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      l10n: l10n,
+    );
+    if (validationError != null) {
+      setState(() => _errorMessage = validationError);
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _isSubmitting = true;
+      _errorMessage = null;
+      _emailError = false;
+      _passwordError = false;
+      _confirmPasswordError = false;
+    });
+
+    await _submitSignup(email: email, password: password, l10n: l10n);
+
+    if (mounted) setState(() => _isSubmitting = false);
   }
 
   String _mapAuthError(AuthException error, AppLocalizations l10n) {
