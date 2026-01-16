@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class FakeViewPadding implements ViewPadding {
@@ -71,8 +72,7 @@ void main() {
       }
 
       // Find widgets
-
-      final backButtonFinder = find.byKey(const Key('backButtonCircle'));
+      final backButtonFinder = find.byType(AuthBackButton);
       final confirmFieldFinder = find.byKey(
         const Key('AuthConfirmPasswordField'),
       );
