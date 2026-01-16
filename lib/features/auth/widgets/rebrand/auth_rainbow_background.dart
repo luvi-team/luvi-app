@@ -71,8 +71,8 @@ class _RainbowPillPainter extends CustomPainter {
     DsColors.authRebrandBackground, // Beige center
   ];
 
-  // Ring widths from SSOT: teal=329, pink=249, orange=167, beige=87
-  static const List<double> _ringWidths = [329.0, 249.0, 167.0, 87.0];
+  // Ring widths from SSOT
+  static const List<double> _ringWidths = AuthRebrandMetrics.rainbowRingWidths;
 
   // Ring X offsets relative to container (SSOT: auth_email_form.ring_offsets)
   static const List<double> _ringXOffsets = [
