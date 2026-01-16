@@ -3,7 +3,10 @@ name: ui-frontend
 description: >
   Use proactively for Flutter UI tasks including: screens, widgets, navigation,
   design tokens, L10n, and A11y (44dp touch targets, Semantics).
-  Triggers: Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter.
+  Triggers: Widget, Screen, UI, UX, Flutter, Navigation, Theme, Layout, GoRouter,
+  Riverpod, ConsumerWidget, Card, Button, TextField, Sheet, Scaffold,
+  Welcome, Auth, Login, Signup, Onboarding, Profile, Consent, Splash,
+  Form, Input, Validation, DsColors, DsTokens, Spacing, SafeArea.
 tools: Read, Edit, Grep, Glob
 model: opus
 ---

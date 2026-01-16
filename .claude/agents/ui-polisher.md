@@ -3,8 +3,11 @@ name: ui-polisher
 description: >
   Use proactively AFTER completing UI work, BEFORE PR submission. Quality gate
   for design tokens, spacing, and A11y compliance.
-  Triggers: polish, review UI, check tokens, accessibility, A11y audit.
+  Triggers: polish, review UI, check tokens, accessibility, A11y audit,
+  finalize, Semantics check, TouchTarget, WCAG, contrast ratio,
+  before PR, quality gate, UI audit, spacing check.
 tools: Read, Grep, Glob
+permissionMode: plan
 model: opus
 ---
 

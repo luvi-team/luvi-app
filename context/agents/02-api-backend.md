@@ -1,6 +1,6 @@
 ---
 role: api-backend
-goal: Zuverlässige Backend-Logik (Edge Functions/Services) mit Consent-Logs.
+goal: Reliable backend logic (Edge Functions/Services) with consent logs.
 primary_agent: Codex
 review_by: Codex
 inputs:
@@ -25,31 +25,31 @@ acceptance_version: "1.1"
 
 # Agent: api-backend
 
-## Ziel
-Sichert zuverlässige Backend-Logik (Edge Functions, Services) mit Consent-Logs.
+## Goal
+Ensures reliable backend logic (Edge Functions, Services) with consent logs.
 
 ## Inputs
 PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
-Edge Functions/Services, Contract-Tests, Doku (docs/), Rate-Limits (nur bei extern erreichbaren Endpunkten).
+Edge Functions/Services, contract tests, docs (docs/), rate limits (only for externally accessible endpoints).
 
 ## Handoffs
-An ui-frontend/db-admin; Format: PR-Beschreibung + `docs/` + `supabase/functions/`. UI-Anpassungen konsumieren die dokumentierten Contracts und werden von Claude Code umgesetzt.
+To ui-frontend/db-admin; format: PR description + `docs/` + `supabase/functions/`. UI adjustments consume documented contracts and are implemented by Claude Code.
 
-## Operativer Modus
-Codex implementiert Edge Functions/Services, Policies und Tests gemäß BMAD → PRP (Plan → Run → Prove; siehe [Governance](../../docs/bmad/global.md)); Claude Code adaptiert das UI nur nach erfolgreichem Backend-Handoff.
+## Operative Mode
+Codex implements Edge Functions/Services, policies and tests per BMAD → PRP (Plan → Run → Prove; see [Governance](../../docs/bmad/global.md)); Claude Code adapts UI only after successful backend handoff.
 
-## Checklisten & Runbooks
-- API‑Checklist: `docs/engineering/checklists/api.md`
-- Health‑Check Runbook: `docs/runbooks/vercel-health-check.md`
+## Checklists & Runbooks
+- API Checklist: `docs/engineering/checklists/api.md`
+- Health Check Runbook: `docs/runbooks/vercel-health-check.md`
 
-## Micro-Tasks (minimaler Modus)
-- Beispiele:
-  - Kleine Query-/Filter-Anpassung ohne Schema-Änderung
-  - Einzelnes Log-Level/PII-Redact fixen
-  - Bestehende Edge-Function um einen Guard erweitern
-  - Einzelnes Contract-Testcase ergänzen
-  - Privacy-Hinweis in Docs nachziehen
-- Mindest-Checks: `scripts/flutter_codex.sh analyze-test` gegen die betroffenen Module/Tests, Vermerk im PR welche Acceptance-Punkte aus `_acceptance_v1.1.md` berührt sind (z. B. Logging/Consent) und kurzes Ergebnis der gezielten Tests.
-- Sobald neue Endpunkte, Migrations oder Policies betroffen sind, gilt wieder BMAD → PRP (siehe [Governance](../../docs/bmad/global.md)) inkl. vollständigen Checks.
+## Micro-Tasks (minimal mode)
+- Examples:
+  - Small query/filter adjustment without schema change
+  - Fix single log level/PII redaction
+  - Extend existing Edge Function with a guard
+  - Add single contract test case
+  - Update privacy note in docs
+- Minimum checks: `scripts/flutter_codex.sh analyze-test` against affected modules/tests, note in PR which acceptance points from `_acceptance_v1.1.md` are touched (e.g., Logging/Consent) and brief result of targeted tests.
+- Once new endpoints, migrations or policies are affected, BMAD → PRP applies again (see [Governance](../../docs/bmad/global.md)) incl. full checks.

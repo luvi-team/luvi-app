@@ -32,7 +32,7 @@ class AuthRainbowBackground extends StatelessWidget {
   /// Top offset for rainbow container from screen top.
   /// If null, uses default from AuthRebrandMetrics.overlayRainbowContainerTop.
   /// For dynamic alignment with back button chevron, calculate as:
-  /// MediaQuery.of(context).padding.top + 26
+  /// MediaQuery.of(context).padding.top + AuthRebrandMetrics.rainbowContainerTopOffset
   final double? containerTop;
 
   /// Legacy parameter for overlay vs full-screen distinction.

@@ -1,15 +1,15 @@
-# Agenten-Dossiers
+# Agent Dossiers
 
-Kurzpreamble: 5 Rollen (ui-frontend · api-backend · db-admin · dataviz · qa-dsgvo). Operativ: BMAD → PRP, DoD/Gates.
-Steuerung: Auto-Role (Default) oder explicit role: … bei Misch-Tasks.
+Preamble: 5 roles (ui-frontend · api-backend · db-admin · dataviz · qa-dsgvo). Workflow: BMAD → PRP, DoD/Gates.
+Control: Auto-Role (default) or explicit `role: ...` for mixed tasks.
 Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check) · Vercel Preview Health (200 OK).
 AI review setup (Greptile merge gate, local CodeRabbit preflight) is defined in docs/engineering/ai-reviewer.md. If anything else contradicts it, ai-reviewer.md wins.
 SSOT Acceptance: context/agents/_acceptance_v1.1.md (non-blocking Drift-Check via acceptance_version).
-Dossier-Konvention: YAML-Frontmatter (inputs/outputs) ist maschinenlesbar; der "Inputs"-Textabschnitt ist eine menschenlesbare Kurzform. Beides intentional.
+Dossier Convention: YAML frontmatter (inputs/outputs) is machine-readable; the "Inputs" text section is human-readable shortform. Both intentional.
 
-| Rolle | Dossier | Haupt-Hand-off | Primary Agent |
+| Role | Dossier | Main Handoff | Primary Agent |
 |---|---|---|---|
-| architect-orchestrator | GEMINI.md | → api-backend/ui-frontend (Aufgaben in Archon) | Gemini |
+| architect-orchestrator | GEMINI.md | → api-backend/ui-frontend (tasks in Archon) | Gemini |
 | ui-frontend | context/agents/01-ui-frontend.md | → api-backend (PR + Tests/Docs) | Claude Code |
 | api-backend | context/agents/02-api-backend.md | → ui-frontend/db-admin (Docs + Functions) | Codex |
 | db-admin | context/agents/03-db-admin.md | → api-backend (Migrations + Docs) | Codex |

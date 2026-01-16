@@ -101,6 +101,11 @@ class AuthRebrandMetrics {
   static const double backButtonTop = 20.0; // Näher an Status Bar (Figma-Alignment)
   static const double backButtonTouchTarget = 44.0;
 
+  // ─── Rainbow Container Alignment ───
+  /// Offset from SafeArea.top for rainbow container positioning.
+  /// Aligns rainbow arcs visually with back button position (Figma SSOT).
+  static const double rainbowContainerTopOffset = 26.0;
+
   // ─── Typography ───
   static const double headlineFontSize = 20.0;
   static const double headlineLineHeight = 24.0 / 20.0; // 1.2
@@ -130,4 +135,12 @@ class AuthRebrandMetrics {
   static const double keyboardPaddingFactor = 0.625;
   /// Maximum padding when keyboard is open
   static const double keyboardPaddingMax = 200.0;
+
+  // ─── Keyboard Handling (Compact Cards) ───
+  /// Factor for screens with fewer fields (e.g., ResetPasswordScreen, CreateNewPasswordScreen).
+  /// Lower factor = less upward shift = smaller gap to keyboard.
+  /// Tuned iteratively to match visual gap of larger cards (Login/Signup).
+  static const double keyboardPaddingFactorCompact = 0.50;
+  /// Maximum padding for compact cards (fewer fields than Login/Signup).
+  static const double keyboardPaddingMaxCompact = 157.0;
 }

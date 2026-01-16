@@ -305,9 +305,9 @@ class DsColors {
   /// Hex: #DCDCDC
   static const Color authRebrandInputBorder = gray300;
 
-  /// Auth Rebrand Text Primary (near-black)
-  /// Hex: #010100
-  static const Color authRebrandTextPrimary = Color(0xFF010100);
+  /// Auth Rebrand Text Primary (Figma: Grayscale-Black)
+  /// Hex: #030401
+  static const Color authRebrandTextPrimary = Color(0xFF030401);
 
   /// Auth Rebrand Error Color (Message/Red)
   /// Hex: #C93838

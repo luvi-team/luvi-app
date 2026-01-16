@@ -50,24 +50,24 @@ primary_domains: ["ui-frontend", "dataviz"]
 handoff_to: "Codex"
 ---
 
-# LUVI · Claude Code Quick Start (60 Sekunden)
+# LUVI · Claude Code Quick Start (60 Seconds)
 
-> **Was ist LUVI?** Women-first Health & Longevity Companion (Flutter/Dart, Supabase, EU-only)
-> **Was ist Archon?** MCP-Server für Task-Management und Knowledge Base
+> **LUVI:** Women-first Health & Longevity Companion (Flutter/Dart, Supabase, EU-only)
+> **Archon:** MCP server for task management and knowledge base
 
-## Die 5 kritischsten Regeln
+## The 5 Critical Rules
 
-| # | Regel | Beispiel |
+| # | Rule | Example |
 |---|-------|----------|
-| 1 | **Archon-First** | Task-Management NUR über `find_tasks()`, `manage_task()` |
-| 2 | **Design Tokens** | `DsColors.primary` statt `Color(0xFF...)` |
+| 1 | **Archon-First** | Task management ONLY via `find_tasks()`, `manage_task()` |
+| 2 | **Design Tokens** | `DsColors.primary` not `Color(0xFF...)` |
 | 3 | **L10n** | `AppLocalizations.of(context)!.welcomeTitle` |
 | 4 | **A11y** | `Semantics(label: ...)` + Touch-Target ≥44dp |
-| 5 | **Tests** | Neue Screens → ≥1 Widget-Test mit `buildTestApp` |
+| 5 | **Tests** | New screens → ≥1 widget test with `buildTestApp` |
 
 ## Quick Reference (Copy-Paste)
 
-### Farben
+### Colors
 ```dart
 DsColors.welcomeButtonBg    // #E91E63 - Primary CTA
 DsColors.headlineMagenta    // #9F2B68 - Headlines
@@ -134,45 +134,45 @@ If `health_check()` fails:
 
 # Custom Agents
 
-Agents werden automatisch basierend auf ihrer `description` delegiert.
-Explizit anfordern: "Benutze [agent-name] für diese Aufgabe"
+Agents auto-delegate based on their `description` field.
+Request explicitly: "Use [agent-name] for this task"
 
-| Agent | Wann verwenden |
+| Agent | When to Use |
 |-------|----------------|
-| `ui-frontend` | Flutter Screens, Widgets, Navigation |
-| `dataviz` | Charts, Dashboards, Metriken |
-| `reqing-ball` | VOR DB/RLS/Privacy-Änderungen |
-| `ui-polisher` | NACH UI-Arbeit, VOR PR |
-| `qa-reviewer` | Bei User-Daten, Logging, Consent |
+| `ui-frontend` | Flutter screens, widgets, navigation |
+| `dataviz` | Charts, dashboards, metrics |
+| `reqing-ball` | BEFORE DB/RLS/privacy changes |
+| `ui-polisher` | AFTER UI work, BEFORE PR |
+| `qa-reviewer` | User data, logging, consent flows |
 
 Details: `.claude/agents/*.md`
 
 ---
 
-# MUST Rules (Runtime-Minimum)
+# MUST Rules (Runtime Minimum)
 
-1. **Design Tokens:** `DsColors`, `DsTokens` – keine `Color(0xFF...)`
-2. **Spacing:** `Spacing`, `Sizes` – keine `EdgeInsets.all(16)`
-3. **L10n:** `AppLocalizations.of(context)` – keine hardcodierten Strings
-4. **Navigation:** `context.goNamed(RouteNames.x)` – kein `Navigator.push`
-5. **A11y:** `Semantics` + Touch ≥44dp (`Sizes.touchTargetMin`)
-6. **Tests:** Neue Screens → Widget-Test mit `buildTestApp`
-7. **Logging:** Nur `log` Facade mit `sanitizeForLog`
-8. **Security:** Kein `service_role` im Client
+1. **Design Tokens:** `DsColors`, `DsTokens` – no `Color(0xFF...)`
+2. **Spacing:** `Spacing`, `Sizes` – no `EdgeInsets.all(16)`
+3. **L10n:** `AppLocalizations.of(context)` – no hardcoded strings
+4. **Navigation:** `context.goNamed(RouteNames.x)` – no `Navigator.push`
+5. **A11y:** `Semantics` + touch ≥44dp (`Sizes.touchTargetMin`)
+6. **Tests:** New screens → widget test with `buildTestApp`
+7. **Logging:** Only `log` facade with `sanitizeForLog`
+8. **Security:** No `service_role` in client code
 
 ---
 
-# Einstiegspunkte
+# Entry Points
 
-| Task-Typ | Lies zuerst |
-|----------|-------------|
+| Task Type | Read First |
+|-----------|------------|
 | Feature | `context/agents/01-ui-frontend.md` |
-| Micro-Task | Direkt implementieren |
-| Unsicher | `rag_search_knowledge_base(query="...")` |
+| Micro-Task | Implement directly |
+| Uncertain | `rag_search_knowledge_base(query="...")` |
 
-## SSOT-Referenzen
+## SSOT References
 
-| Thema | Location |
+| Topic | Location |
 |-------|----------|
 | UI-Dossier | `context/agents/01-ui-frontend.md` |
 | DataViz-Dossier | `context/agents/04-dataviz.md` |

@@ -1,6 +1,6 @@
 ---
 role: qa-dsgvo
-goal: DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates sicherstellen.
+goal: Ensure GDPR compliance through reviews/checklists and DoD gates.
 primary_agent: Codex
 review_by: Codex
 inputs:
@@ -23,26 +23,26 @@ acceptance_version: "1.1"
 
 # Agent: qa-dsgvo
 
-## Ziel
-Sichert DSGVO-Compliance durch Reviews/Checklisten und DoD-Gates.
+## Goal
+Ensures GDPR compliance through reviews/checklists and DoD gates.
 
 ## Inputs
 PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
-Privacy-Review unter docs/privacy/reviews/{id}.md, Kommentare im PR.
+Privacy review under docs/privacy/reviews/{id}.md, comments in PR.
 
 ## Handoffs
-An db-admin/ui-frontend; Format: Review-Report (`docs/privacy/reviews/`). Codex implementiert erforderliche Backend/DB-Fixes, Claude Code setzt UI-Änderungen nach dokumentierten Findings um.
+To db-admin/ui-frontend; format: review report (`docs/privacy/reviews/`). Codex implements required backend/DB fixes, Claude Code implements UI changes based on documented findings.
 
-## Operativer Modus
-Codex führt Privacy-Reviews, bewertet Logs/Telemetry und setzt Remediations in Backend/DB um; UI-bezogene Empfehlungen werden von Claude Code übernommen.
+## Operative Mode
+Codex conducts privacy reviews, evaluates logs/telemetry and implements remediations in backend/DB; UI-related recommendations are handled by Claude Code.
 
-## Checklisten & Runbooks
-- Privacy‑Checklist: `docs/engineering/checklists/privacy.md`
-- Incident‑Response Runbook: `docs/runbooks/incident-response.md`
+## Checklists & Runbooks
+- Privacy Checklist: `docs/engineering/checklists/privacy.md`
+- Incident Response Runbook: `docs/runbooks/incident-response.md`
 
-## Micro-Tasks (minimaler Modus)
-- Beispiele: einzelne Privacy-Note in `docs/privacy/**` aktualisieren, Log/Telemetry-Checkliste um eine Zeile ergänzen, bestehenden Consent-Text in App/Docs angleichen, isolierten Testfall zur Privacy-Gate-Suite hinzufügen, Hinweis auf PII-Redaction in einer Edge Function kommentieren.
-- Mindest-Checks: `scripts/flutter_codex.sh analyze-test` für betroffene Tests/Module, knapper PR-Hinweis welche `_acceptance_v1.1.md`-Abschnitte (Core/Privacy) berührt werden und Ergebnis der gezielten Review/Tests; kein vollständiger BMAD-Report nötig.
-- Sobald neue Datenflüsse, Policies oder Incident-Betrachtungen erforderlich sind, gilt wieder der volle BMAD → PRP-Ablauf mit sämtlichen Gates.
+## Micro-Tasks (minimal mode)
+- Examples: update single privacy note in `docs/privacy/**`, add one line to log/telemetry checklist, align existing consent text in app/docs, add isolated test case to privacy gate suite, comment PII redaction hint in an Edge Function.
+- Minimum checks: `scripts/flutter_codex.sh analyze-test` for affected tests/modules, brief PR note on which `_acceptance_v1.1.md` sections (Core/Privacy) are touched and result of targeted review/tests; no full BMAD report needed.
+- Once new data flows, policies or incident considerations are required, full BMAD → PRP workflow applies with all gates.

@@ -1,24 +1,24 @@
 # Agent: reqing-ball
 
-## Ziel
-Validierung von PR-Diffs gegen Story/PRD sowie relevante ADRs; Lücken und nächste Aktionen aufzeigen.
+## Goal
+Validate PR diffs against story/PRD and relevant ADRs; identify gaps and next actions.
 
 ## Inputs
-PR-Diff (nur Diff, keine Voll-Codebase), Story/PRD-Kriterien, ADR-Snippets.
+PR diff (only diff, no full codebase), story/PRD criteria, ADR snippets.
 
 ## Output
-Tabelle (Kriterium | Finding | File:Line | Severity | Action) als PR-Kommentar.
+Table (Criterion | Finding | File:Line | Severity | Action) as PR comment.
 
-## Regeln
-Keine Vollscans, DSGVO-safe, kurz und prägnant.
+## Rules
+No full scans, GDPR-safe, short and concise.
 
-## Akzeptanzkriterium
-≤ N Zeilen; ≤1 False Positive pro PR in Kalibrierphase.
+## Acceptance Criterion
+≤ N lines; ≤1 false positive per PR in calibration phase.
 
-## Operativer Modus
+## Operative Mode
 Codex CLI-first (BMAD → PRP).
 
-## Wann einsetzen (LUVI-spezifisch)
-- Vor größeren Backend- oder Cross-Feature-Aufgaben einsetzen, um Anforderungen/PRD/ADRs zu verfeinern (z. B. neues Dashboard-Modul, zusätzlicher Consent-Step).
-- Pflicht bei High-Impact-Topics (DB-Schema, Privacy/RLS) bevor mit der Implementierung begonnen wird.
-- Für Micro-Tasks wie Copy/Spacing-Fixes nicht nötig; dort reicht direkter BMAD-Slim-Flow mit `_acceptance_v1.1.md`.
+## When to Use (LUVI-specific)
+- Use before larger backend or cross-feature tasks to refine requirements/PRD/ADRs (e.g., new dashboard module, additional consent step).
+- Required for high-impact topics (DB schema, privacy/RLS) before starting implementation.
+- Not needed for micro-tasks like copy/spacing fixes; direct BMAD-Slim flow with `_acceptance_v1.1.md` is sufficient.

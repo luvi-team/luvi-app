@@ -105,9 +105,12 @@ class _SuccessScreenState extends State<SuccessScreen> {
       backgroundColor: DsColors.authRebrandBackground,
       body: Stack(
         children: [
-          // Rainbow background with arcs and stripes
-          const Positioned.fill(
-            child: AuthRainbowBackground(),
+          // Rainbow background (containerTop aligned for device consistency)
+          Positioned.fill(
+            child: AuthRainbowBackground(
+              containerTop: MediaQuery.of(context).padding.top +
+                  AuthRebrandMetrics.rainbowContainerTopOffset,
+            ),
           ),
 
           // Content - centered AuthContentCard (export-parity layout)

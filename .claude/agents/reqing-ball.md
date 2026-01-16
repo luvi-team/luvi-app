@@ -3,8 +3,11 @@ name: reqing-ball
 description: >
   Use proactively BEFORE major backend or cross-feature tasks. Required for:
   DB schema changes, RLS/Privacy changes, migrations. Validates against PRD and ADRs.
-  Triggers: RLS, Migration, Privacy, Schema, Policy, PRD, ADR.
+  Triggers: RLS, Migration, Privacy, Schema, Policy, PRD, ADR,
+  Database, Supabase, Architecture, Authentication, Authorization,
+  Table, Column, Index, Foreign key, SQL, Edge function.
 tools: Read, Grep, Glob
+permissionMode: plan
 model: opus
 ---
 

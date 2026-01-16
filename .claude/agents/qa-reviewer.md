@@ -3,8 +3,11 @@ name: qa-reviewer
 description: >
   Use proactively when touching user data, logs, consent flows, or health information.
   Lightweight privacy pre-check before full Codex qa-dsgvo review.
-  Triggers: privacy, GDPR, DSGVO, PII, consent, logging, user data, health, cycle.
+  Triggers: privacy, GDPR, DSGVO, PII, consent, logging, user data, health,
+  cycle data, sanitizeForLog, service_role, menstrual, period, Zyklus data,
+  push notification, payload, personal info, email, telemetry.
 tools: Read, Grep, Glob
+permissionMode: plan
 model: opus
 ---
 

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/router.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../support/test_config.dart';
@@ -67,6 +68,36 @@ void main() {
       // Title and subtitle must be visible
       expect(find.text('Geschafft!'), findsOneWidget);
       expect(find.text('Neues Passwort gespeichert.'), findsOneWidget);
+    });
+
+    testWidgets('passes dynamic containerTop to AuthRainbowBackground', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            routerConfig: router,
+            theme: AppTheme.buildAppTheme(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Find AuthRainbowBackground and verify containerTop is set
+      final rainbowFinder = find.byType(AuthRainbowBackground);
+      expect(rainbowFinder, findsOneWidget);
+
+      final rainbow = tester.widget<AuthRainbowBackground>(rainbowFinder);
+      // containerTop should be dynamically calculated, not null (default)
+      expect(
+        rainbow.containerTop,
+        isNotNull,
+        reason: 'containerTop must be set for device consistency',
+      );
+      expect(rainbow.containerTop, greaterThan(0));
     });
   });
 }

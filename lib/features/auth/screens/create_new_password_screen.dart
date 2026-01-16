@@ -213,149 +213,158 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     return Scaffold(
       key: const ValueKey('auth_create_password_screen'),
       backgroundColor: DsColors.authRebrandBackground,
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // Rainbow background
-          const Positioned.fill(
-            child: AuthRainbowBackground(),
+          // Rainbow background (containerTop aligned with back button chevron)
+          Positioned.fill(
+            child: AuthRainbowBackground(
+              containerTop: MediaQuery.of(context).padding.top + AuthRebrandMetrics.rainbowContainerTopOffset,
+            ),
           ),
 
-          // Content
+          // Back button (top-left, independent positioning)
           SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: AuthRebrandMetrics.backButtonLeft,
+                  top: AuthRebrandMetrics.backButtonTop,
+                ),
+                child: AuthBackButton(
+                  key: const ValueKey('backButtonCircle'),
+                  onPressed: () {
+                    final router = GoRouter.of(context);
+                    if (router.canPop()) {
+                      router.pop();
+                    } else {
+                      router.go(AuthSignInScreen.routeName);
+                    }
+                  },
+                  semanticsLabel: l10n.authBackSemantic,
+                ),
               ),
-              child: Column(
-                children: [
-                  // Back button
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: AuthRebrandMetrics.backButtonLeft,
-                        top: AuthRebrandMetrics.backButtonTop,
-                      ),
-                      child: AuthBackButton(
-                        key: const ValueKey('backButtonCircle'),
-                        onPressed: () {
-                          final router = GoRouter.of(context);
-                          if (router.canPop()) {
-                            router.pop();
-                          } else {
-                            router.go(AuthSignInScreen.routeName);
-                          }
-                        },
-                        semanticsLabel: l10n.authBackSemantic,
-                      ),
-                    ),
-                  ),
+            ),
+          ),
 
-                  const SizedBox(height: AuthRebrandMetrics.contentTopGap),
-
-                  // Content card (SSOT: form screens use 364px width)
-                  AuthContentCard(
-                    width: AuthRebrandMetrics.cardWidthForm,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Headline
-                        Text(
-                          l10n.authNewPasswordTitle,
-                          key: const ValueKey('create_new_title'),
-                          style: const TextStyle(
-                            fontFamily: FontFamilies.playfairDisplay,
-                            fontSize: AuthRebrandMetrics.headlineFontSize,
-                            fontWeight: FontWeight.w600,
-                            height: AuthRebrandMetrics.headlineLineHeight,
-                            color: DsColors.authRebrandTextPrimary,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: Spacing.l),
-
-                        // New password field
-                        AuthRebrandTextField(
-                          key: const ValueKey('AuthPasswordField'),
-                          controller: _newPasswordController,
-                          hintText: l10n.authNewPasswordHint,
-                          errorText: _newPasswordError,
-                          hasError: _newPasswordError != null,
-                          obscureText: _obscureNewPassword,
-                          textInputAction: TextInputAction.next,
-                          onChanged: _onNewPasswordChanged,
-                          suffixIcon: Semantics(
-                            button: true,
-                            label: _obscureNewPassword
-                                ? l10n.authShowPassword
-                                : l10n.authHidePassword,
-                            child: IconButton(
-                              icon: Icon(
-                                _obscureNewPassword
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
-                                color: DsColors.grayscale500,
-                                size: AuthRebrandMetrics.passwordToggleIconSize,
+          // Content card (vertically centered, keyboard-aware)
+          SafeArea(
+            child: Center(
+              child: AnimatedPadding(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                padding: EdgeInsets.only(
+                  bottom: (MediaQuery.of(context).viewInsets.bottom *
+                          AuthRebrandMetrics.keyboardPaddingFactorCompact)
+                      .clamp(0, AuthRebrandMetrics.keyboardPaddingMaxCompact),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Content card (SSOT: form screens use 364px width)
+                      AuthContentCard(
+                        width: AuthRebrandMetrics.cardWidthForm,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Headline
+                            Text(
+                              l10n.authNewPasswordTitle,
+                              key: const ValueKey('create_new_title'),
+                              style: const TextStyle(
+                                fontFamily: FontFamilies.playfairDisplay,
+                                fontSize: AuthRebrandMetrics.headlineFontSize,
+                                fontWeight: FontWeight.w600,
+                                height: AuthRebrandMetrics.headlineLineHeight,
+                                color: DsColors.authRebrandTextPrimary,
                               ),
-                              onPressed: () {
-                                setState(() => _obscureNewPassword = !_obscureNewPassword);
-                              },
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                        ),
 
-                        const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+                            const SizedBox(height: Spacing.l),
 
-                        // Confirm password field
-                        AuthRebrandTextField(
-                          key: const ValueKey('AuthConfirmPasswordField'),
-                          controller: _confirmPasswordController,
-                          hintText: l10n.authNewPasswordConfirmHint,
-                          errorText: _confirmPasswordError,
-                          hasError: _confirmPasswordError != null,
-                          obscureText: _obscureConfirmPassword,
-                          textInputAction: TextInputAction.done,
-                          onChanged: _onConfirmPasswordChanged,
-                          onSubmitted: (_) {
-                            if (canSubmit) _onCreatePasswordPressed();
-                          },
-                          suffixIcon: Semantics(
-                            button: true,
-                            label: _obscureConfirmPassword
-                                ? l10n.authShowPassword
-                                : l10n.authHidePassword,
-                            child: IconButton(
-                              icon: Icon(
-                                _obscureConfirmPassword
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
-                                color: DsColors.grayscale500,
-                                size: AuthRebrandMetrics.passwordToggleIconSize,
+                            // New password field
+                            AuthRebrandTextField(
+                              key: const ValueKey('AuthPasswordField'),
+                              controller: _newPasswordController,
+                              hintText: l10n.authNewPasswordHint,
+                              errorText: _newPasswordError,
+                              hasError: _newPasswordError != null,
+                              obscureText: _obscureNewPassword,
+                              textInputAction: TextInputAction.next,
+                              onChanged: _onNewPasswordChanged,
+                              suffixIcon: Semantics(
+                                button: true,
+                                label: _obscureNewPassword
+                                    ? l10n.authShowPassword
+                                    : l10n.authHidePassword,
+                                child: IconButton(
+                                  icon: Icon(
+                                    _obscureNewPassword
+                                        ? Icons.visibility_off_outlined
+                                        : Icons.visibility_outlined,
+                                    color: DsColors.grayscale500,
+                                    size: AuthRebrandMetrics.passwordToggleIconSize,
+                                  ),
+                                  onPressed: () {
+                                    setState(() => _obscureNewPassword = !_obscureNewPassword);
+                                  },
+                                ),
                               ),
-                              onPressed: () {
-                                setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                              },
                             ),
-                          ),
-                        ),
 
-                        const SizedBox(height: Spacing.l),
+                            const SizedBox(height: AuthRebrandMetrics.cardInputGap),
 
-                        // CTA button (SSOT: "Speichern")
-                        AuthPrimaryButton(
-                          key: const ValueKey('create_new_cta_button'),
-                          label: l10n.authSavePasswordCta,
-                          onPressed: canSubmit ? _onCreatePasswordPressed : null,
-                          isLoading: _isLoading,
+                            // Confirm password field
+                            AuthRebrandTextField(
+                              key: const ValueKey('AuthConfirmPasswordField'),
+                              controller: _confirmPasswordController,
+                              hintText: l10n.authNewPasswordConfirmHint,
+                              errorText: _confirmPasswordError,
+                              hasError: _confirmPasswordError != null,
+                              obscureText: _obscureConfirmPassword,
+                              textInputAction: TextInputAction.done,
+                              onChanged: _onConfirmPasswordChanged,
+                              onSubmitted: (_) {
+                                if (canSubmit) _onCreatePasswordPressed();
+                              },
+                              suffixIcon: Semantics(
+                                button: true,
+                                label: _obscureConfirmPassword
+                                    ? l10n.authShowPassword
+                                    : l10n.authHidePassword,
+                                child: IconButton(
+                                  icon: Icon(
+                                    _obscureConfirmPassword
+                                        ? Icons.visibility_off_outlined
+                                        : Icons.visibility_outlined,
+                                    color: DsColors.grayscale500,
+                                    size: AuthRebrandMetrics.passwordToggleIconSize,
+                                  ),
+                                  onPressed: () {
+                                    setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+                                  },
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: Spacing.l),
+
+                            // CTA button (SSOT: "Speichern")
+                            AuthPrimaryButton(
+                              key: const ValueKey('create_new_cta_button'),
+                              label: l10n.authSavePasswordCta,
+                              onPressed: canSubmit ? _onCreatePasswordPressed : null,
+                              isLoading: _isLoading,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-
-                  const SizedBox(height: AuthRebrandMetrics.contentBottomGap),
-                ],
+                ),
               ),
             ),
           ),

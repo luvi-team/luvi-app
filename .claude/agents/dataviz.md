@@ -3,7 +3,9 @@ name: dataviz
 description: >
   Use proactively for data visualization: charts, dashboards, graphs, metrics
   displays. Uses fl_chart library. For chart/graph components, not general UI.
-  Triggers: Chart, Dashboard, Visualization, Graph, Plot, Analytics, Metric.
+  Triggers: Chart, Dashboard, Visualization, Graph, Plot, Analytics, Metric,
+  fl_chart, LineChart, BarChart, PieChart, Cycle chart, Phase visualization,
+  Heute, Training stats, Statistics, Progress, WavePainter, CalendarWidget.
 tools: Read, Edit, Grep, Glob
 model: opus
 ---

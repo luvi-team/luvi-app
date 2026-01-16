@@ -1,6 +1,6 @@
 ---
 role: db-admin
-goal: Datenmodell & Migrationsqualität; RLS (Least-Privilege) strikt sicherstellen.
+goal: Data model & migration quality; strictly ensure RLS (Least-Privilege).
 primary_agent: Codex
 review_by: Codex
 inputs:
@@ -23,26 +23,26 @@ acceptance_version: "1.1"
 
 # Agent: db-admin
 
-## Ziel
-Sichert Datenmodell, RLS (Least-Privilege) und Migrationsqualität.
+## Goal
+Ensures data model, RLS (Least-Privilege) and migration quality.
 
 ## Inputs
 PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
-SQL-Migrationen mit RLS-Policies/Triggern, Tests/Notes unter docs/.
+SQL migrations with RLS policies/triggers, tests/notes under docs/.
 
 ## Handoffs
-An api-backend/qa-dsgvo; Format: `supabase/migrations/**` + Notes. Backend-Services (Codex) konsumieren neue Schemas, UI-Anpassungen erfolgen durch Claude Code.
+To api-backend/qa-dsgvo; format: `supabase/migrations/**` + notes. Backend services (Codex) consume new schemas, UI adjustments are done by Claude Code.
 
-## Operativer Modus
-Codex verantwortet Schema/Migration/RLS (Supabase MCP, BMAD → PRP). Claude Code greift nur auf dokumentierte Views/APIs zu und passt UI nach Backend-Signal an.
+## Operative Mode
+Codex owns schema/migration/RLS (Supabase MCP, BMAD → PRP). Claude Code only accesses documented views/APIs and adapts UI after backend signal.
 
-## Checklisten & Runbooks
-- DB‑Checklist: `docs/engineering/checklists/db.md`
-- RLS‑Debug Runbook: `docs/runbooks/debug-rls-policy.md`
+## Checklists & Runbooks
+- DB Checklist: `docs/engineering/checklists/db.md`
+- RLS Debug Runbook: `docs/runbooks/debug-rls-policy.md`
 
-## Micro-Tasks (minimaler Modus)
-- Beispiele: bestehende View/Query leicht anpassen (keine neuen Tabellen), eine RLS-Predicate-Zeile korrigieren, bestehenden Trigger-Kommentar ergänzen, einzelne Migration um Default/Check erweitern, Test-Case in `supabase/tests` ergänzen.
-- Mindest-Checks: gezielt `scripts/flutter_codex.sh analyze-test` für betroffene Datenpfade und Supabase-MCP-Checks, kurzer PR-Hinweis auf die relevanten `_acceptance_v1.1.md`-Abschnitte (RLS/Least-Privilege) und welche Migration/Test-Dateien liefen.
-- Sobald Struktur- oder Policy-Neuentwicklungen nötig sind, zurück in den vollen BMAD → PRP-Prozess mit allen Gates.
+## Micro-Tasks (minimal mode)
+- Examples: lightly adjust existing view/query (no new tables), correct one RLS predicate line, add existing trigger comment, extend single migration with default/check, add test case in `supabase/tests`.
+- Minimum checks: targeted `scripts/flutter_codex.sh analyze-test` for affected data paths and Supabase MCP checks, brief PR note on relevant `_acceptance_v1.1.md` sections (RLS/Least-Privilege) and which migration/test files ran.
+- Once structure or policy development is needed, back to full BMAD → PRP process with all gates.

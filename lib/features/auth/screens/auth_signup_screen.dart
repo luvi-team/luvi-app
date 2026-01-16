@@ -184,7 +184,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
           // Rainbow background (containerTop aligned with back button chevron)
           Positioned.fill(
             child: AuthRainbowBackground(
-              containerTop: MediaQuery.of(context).padding.top + 26,
+              containerTop: MediaQuery.of(context).padding.top + AuthRebrandMetrics.rainbowContainerTopOffset,
             ),
           ),
 
