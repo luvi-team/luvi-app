@@ -13,11 +13,10 @@ import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
-import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
-import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -175,229 +174,186 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      key: const ValueKey('auth_signup_screen'),
-      backgroundColor: DsColors.authRebrandBackground,
-      resizeToAvoidBottomInset: false,
-      body: Stack(
+    return AuthRebrandScaffold(
+      scaffoldKey: const ValueKey('auth_signup_screen'),
+      onBack: () {
+        final router = GoRouter.of(context);
+        if (router.canPop()) {
+          router.pop();
+        } else {
+          context.go(AuthSignInScreen.routeName);
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Rainbow background (containerTop aligned with back button chevron)
-          Positioned.fill(
-            child: AuthRainbowBackground(
-              containerTop: MediaQuery.of(context).padding.top + AuthRebrandMetrics.rainbowContainerTopOffset,
-            ),
-          ),
-
-          // Back button (top-left, independent positioning)
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: AuthRebrandMetrics.backButtonLeft,
-                  top: AuthRebrandMetrics.backButtonTop,
+          // Global error banner (consistent with LoginScreen)
+          if (_errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
+              child: Container(
+                padding: const EdgeInsets.all(Spacing.s),
+                margin: const EdgeInsets.only(bottom: Spacing.m),
+                decoration: BoxDecoration(
+                  color: DsColors.authRebrandError.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(Sizes.radiusS),
+                  border: Border.all(
+                    color: DsColors.authRebrandError,
+                    width: 1,
+                  ),
                 ),
-                child: AuthBackButton(
-                  onPressed: () {
-                    final router = GoRouter.of(context);
-                    if (router.canPop()) {
-                      router.pop();
-                    } else {
-                      context.go(AuthSignInScreen.routeName);
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(
+                    fontFamily: FontFamilies.figtree,
+                    fontSize: AuthRebrandMetrics.errorTextFontSize,
+                    color: DsColors.authRebrandError,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+          // Content card (SSOT: form screens use 364px width)
+          AuthContentCard(
+            width: AuthRebrandMetrics.cardWidthForm,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Headline
+                Text(
+                  l10n.authRegisterEmailTitle,
+                  style: const TextStyle(
+                    fontFamily: FontFamilies.playfairDisplay,
+                    fontSize: AuthRebrandMetrics.headlineFontSize,
+                    fontWeight: FontWeight.w600,
+                    height: AuthRebrandMetrics.headlineLineHeight,
+                    color: DsColors.authRebrandTextPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: Spacing.m),
+
+                // Email field
+                AuthRebrandTextField(
+                  key: const ValueKey('signup_email_field'),
+                  controller: _emailController,
+                  hintText: l10n.authEmailPlaceholderLong,
+                  errorText: _emailError ? l10n.authErrorEmailCheck : null,
+                  hasError: _emailError,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  onChanged: (_) {
+                    if (_errorMessage != null || _emailError) {
+                      setState(() {
+                        _errorMessage = null;
+                        _emailError = false;
+                      });
                     }
                   },
-                  semanticsLabel: l10n.authBackSemantic,
                 ),
-              ),
-            ),
-          ),
 
-          // Content card (vertically centered, keyboard-aware)
-          SafeArea(
-            child: Center(
-              child: AnimatedPadding(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOutCubic,
-                padding: EdgeInsets.only(
-                  bottom: (MediaQuery.of(context).viewInsets.bottom * AuthRebrandMetrics.keyboardPaddingFactor).clamp(0, AuthRebrandMetrics.keyboardPaddingMax),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Global error banner (consistent with LoginScreen)
-                    if (_errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
-                        child: Container(
-                          padding: const EdgeInsets.all(Spacing.s),
-                          margin: const EdgeInsets.only(bottom: Spacing.m),
-                          decoration: BoxDecoration(
-                            color: DsColors.authRebrandError.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(Sizes.radiusS),
-                            border: Border.all(
-                              color: DsColors.authRebrandError,
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            _errorMessage!,
-                            style: const TextStyle(
-                              fontFamily: FontFamilies.figtree,
-                              fontSize: AuthRebrandMetrics.errorTextFontSize,
-                              color: DsColors.authRebrandError,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+
+                // Password field
+                AuthRebrandTextField(
+                  key: const ValueKey('signup_password_field'),
+                  controller: _passwordController,
+                  hintText: l10n.authPasswordPlaceholder,
+                  errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
+                  hasError: _passwordError,
+                  obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.next,
+                  onChanged: (_) {
+                    if (_errorMessage != null || _passwordError) {
+                      setState(() {
+                        _errorMessage = null;
+                        _passwordError = false;
+                      });
+                    }
+                  },
+                  suffixIcon: Semantics(
+                    button: true,
+                    label: _obscurePassword
+                        ? l10n.authShowPassword
+                        : l10n.authHidePassword,
+                    child: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: DsColors.grayscale500,
+                        size: AuthRebrandMetrics.passwordToggleIconSize,
                       ),
-
-                    // Content card (SSOT: form screens use 364px width)
-                    AuthContentCard(
-                      width: AuthRebrandMetrics.cardWidthForm,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Headline
-                          Text(
-                            l10n.authRegisterEmailTitle,
-                            style: const TextStyle(
-                              fontFamily: FontFamilies.playfairDisplay,
-                              fontSize: AuthRebrandMetrics.headlineFontSize,
-                              fontWeight: FontWeight.w600,
-                              height: AuthRebrandMetrics.headlineLineHeight,
-                              color: DsColors.authRebrandTextPrimary,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-
-                          const SizedBox(height: Spacing.m),
-
-                          // Email field
-                          AuthRebrandTextField(
-                            key: const ValueKey('signup_email_field'),
-                            controller: _emailController,
-                            hintText: l10n.authEmailPlaceholderLong,
-                            errorText: _emailError ? l10n.authErrorEmailCheck : null,
-                            hasError: _emailError,
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (_) {
-                              if (_errorMessage != null || _emailError) {
-                                setState(() {
-                                  _errorMessage = null;
-                                  _emailError = false;
-                                });
-                              }
-                            },
-                          ),
-
-                          const SizedBox(height: AuthRebrandMetrics.cardInputGap),
-
-                          // Password field
-                          AuthRebrandTextField(
-                            key: const ValueKey('signup_password_field'),
-                            controller: _passwordController,
-                            hintText: l10n.authPasswordPlaceholder,
-                            errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
-                            hasError: _passwordError,
-                            obscureText: _obscurePassword,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (_) {
-                              if (_errorMessage != null || _passwordError) {
-                                setState(() {
-                                  _errorMessage = null;
-                                  _passwordError = false;
-                                });
-                              }
-                            },
-                            suffixIcon: Semantics(
-                              button: true,
-                              label: _obscurePassword
-                                  ? l10n.authShowPassword
-                                  : l10n.authHidePassword,
-                              child: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: DsColors.grayscale500,
-                                  size: AuthRebrandMetrics.passwordToggleIconSize,
-                                ),
-                                onPressed: () {
-                                  setState(() => _obscurePassword = !_obscurePassword);
-                                },
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: AuthRebrandMetrics.cardInputGap),
-
-                          // Confirm password field
-                          AuthRebrandTextField(
-                            key: const ValueKey('signup_password_confirm_field'),
-                            controller: _confirmPasswordController,
-                            hintText: l10n.authNewPasswordConfirmHint,
-                            errorText: _confirmPasswordError
-                                ? l10n.authPasswordMismatchError
-                                : null,
-                            hasError: _confirmPasswordError,
-                            obscureText: _obscureConfirmPassword,
-                            textInputAction: TextInputAction.done,
-                            onChanged: (_) {
-                              if (_errorMessage != null || _confirmPasswordError) {
-                                setState(() {
-                                  _errorMessage = null;
-                                  _confirmPasswordError = false;
-                                });
-                              }
-                            },
-                            onSubmitted: (_) {
-                              if (!_isSubmitting) _handleSignup();
-                            },
-                            suffixIcon: Semantics(
-                              button: true,
-                              label: _obscureConfirmPassword
-                                  ? l10n.authShowPassword
-                                  : l10n.authHidePassword,
-                              child: IconButton(
-                                icon: Icon(
-                                  _obscureConfirmPassword
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: DsColors.grayscale500,
-                                  size: AuthRebrandMetrics.passwordToggleIconSize,
-                                ),
-                                onPressed: () {
-                                  setState(() =>
-                                      _obscureConfirmPassword = !_obscureConfirmPassword);
-                                },
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: Spacing.m),
-
-                          // CTA button (no login link per SSOT)
-                          AuthPrimaryButton(
-                            key: const ValueKey('signup_cta_button'),
-                            loadingKey: const ValueKey('signup_cta_loading'),
-                            label: l10n.authEntryCta,
-                            onPressed: _isSubmitting ? null : _handleSignup,
-                            isLoading: _isSubmitting,
-                          ),
-                        ],
-                      ),
+                      onPressed: () {
+                        setState(() => _obscurePassword = !_obscurePassword);
+                      },
                     ),
-                  ],
+                  ),
                 ),
-              ),
+
+                const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+
+                // Confirm password field
+                AuthRebrandTextField(
+                  key: const ValueKey('signup_password_confirm_field'),
+                  controller: _confirmPasswordController,
+                  hintText: l10n.authNewPasswordConfirmHint,
+                  errorText: _confirmPasswordError
+                      ? l10n.authPasswordMismatchError
+                      : null,
+                  hasError: _confirmPasswordError,
+                  obscureText: _obscureConfirmPassword,
+                  textInputAction: TextInputAction.done,
+                  onChanged: (_) {
+                    if (_errorMessage != null || _confirmPasswordError) {
+                      setState(() {
+                        _errorMessage = null;
+                        _confirmPasswordError = false;
+                      });
+                    }
+                  },
+                  onSubmitted: (_) {
+                    if (!_isSubmitting) _handleSignup();
+                  },
+                  suffixIcon: Semantics(
+                    button: true,
+                    label: _obscureConfirmPassword
+                        ? l10n.authShowPassword
+                        : l10n.authHidePassword,
+                    child: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: DsColors.grayscale500,
+                        size: AuthRebrandMetrics.passwordToggleIconSize,
+                      ),
+                      onPressed: () {
+                        setState(() =>
+                            _obscureConfirmPassword = !_obscureConfirmPassword);
+                      },
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: Spacing.m),
+
+                // CTA button (no login link per SSOT)
+                AuthPrimaryButton(
+                  key: const ValueKey('signup_cta_button'),
+                  loadingKey: const ValueKey('signup_cta_loading'),
+                  label: l10n.authEntryCta,
+                  onPressed: _isSubmitting ? null : _handleSignup,
+                  isLoading: _isSubmitting,
+                ),
+              ],
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
 }

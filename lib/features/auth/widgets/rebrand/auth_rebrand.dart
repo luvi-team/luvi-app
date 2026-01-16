@@ -15,5 +15,7 @@ export 'auth_rebrand_outline_button.dart';
 export 'auth_rebrand_text_field.dart';
 export 'auth_secondary_button.dart';
 export 'auth_back_button.dart';
+export 'auth_keyboard_aware_padding.dart';
+export 'auth_rebrand_scaffold.dart';
 export 'auth_register_sheet.dart';
 export 'auth_login_sheet.dart';

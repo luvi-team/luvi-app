@@ -8,11 +8,10 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/state/reset_password_state.dart';
 import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
-import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
-import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -95,142 +94,98 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
     // NOTE: Submit error listener moved to initState for proper lifecycle management
 
-    return Scaffold(
-      key: const ValueKey('auth_reset_screen'),
-      backgroundColor: DsColors.authRebrandBackground,
-      resizeToAvoidBottomInset: false,
-      body: Stack(
+    return AuthRebrandScaffold(
+      scaffoldKey: const ValueKey('auth_reset_screen'),
+      compactKeyboard: true, // Fewer fields = compact padding
+      onBack: () {
+        final router = GoRouter.of(context);
+        if (router.canPop()) {
+          router.pop();
+        } else {
+          router.go(AuthSignInScreen.routeName);
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Rainbow background (containerTop aligned with back button chevron)
-          Positioned.fill(
-            child: AuthRainbowBackground(
-              containerTop: MediaQuery.of(context).padding.top + AuthRebrandMetrics.rainbowContainerTopOffset,
-            ),
-          ),
-
-          // Back button (top-left, independent positioning)
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: AuthRebrandMetrics.backButtonLeft,
-                  top: AuthRebrandMetrics.backButtonTop,
-                ),
-                child: AuthBackButton(
-                  onPressed: () {
-                    final router = GoRouter.of(context);
-                    if (router.canPop()) {
-                      router.pop();
-                    } else {
-                      router.go(AuthSignInScreen.routeName);
-                    }
-                  },
-                  semanticsLabel: l10n.authBackSemantic,
-                ),
-              ),
-            ),
-          ),
-
-          // Content card (vertically centered, keyboard-aware)
-          SafeArea(
-            child: Center(
-              child: AnimatedPadding(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOutCubic,
-                padding: EdgeInsets.only(
-                  bottom: (MediaQuery.of(context).viewInsets.bottom *
-                          AuthRebrandMetrics.keyboardPaddingFactorCompact)
-                      .clamp(0, AuthRebrandMetrics.keyboardPaddingMaxCompact),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Content card (SSOT: form screens use 364px width)
-                      AuthContentCard(
-                        width: AuthRebrandMetrics.cardWidthForm,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Headline
-                            Text(
-                              l10n.authResetTitle,
-                              style: const TextStyle(
-                                fontFamily: FontFamilies.playfairDisplay,
-                                fontSize: AuthRebrandMetrics.headlineFontSize,
-                                fontWeight: FontWeight.w600,
-                                height: AuthRebrandMetrics.headlineLineHeight,
-                                color: DsColors.authRebrandTextPrimary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-
-                            const SizedBox(height: Spacing.xs),
-
-                            // Subtitle (SSOT: auth_password_reset.subtitle)
-                            Text(
-                              l10n.authResetPasswordSubtitle,
-                              style: const TextStyle(
-                                fontFamily: FontFamilies.figtree,
-                                fontSize: AuthRebrandMetrics.bodyFontSize,
-                                fontWeight: FontWeight.w400,
-                                height: AuthRebrandMetrics.bodyLineHeight,
-                                color: DsColors.authRebrandTextPrimary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-
-                            const SizedBox(height: Spacing.m),
-
-                            // Email field - IMPORTANT: Placeholder is "Deine E-Mail Adresse"
-                            AuthRebrandTextField(
-                              key: const ValueKey('reset_email_field'),
-                              controller: _emailController,
-                              hintText: l10n.authEmailPlaceholderLong,
-                              errorText: errorText,
-                              hasError: hasError,
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.done,
-                              onChanged: (value) =>
-                                  ref.read(resetPasswordProvider.notifier).setEmail(value),
-                              onSubmitted: (_) => FocusScope.of(context).unfocus(),
-                            ),
-
-                            const SizedBox(height: Spacing.l),
-
-                            // CTA button
-                            AuthPrimaryButton(
-                              key: const ValueKey('reset_cta'),
-                              label: l10n.authResetCtaShort,
-                              onPressed: state.isValid && !submitState.isLoading
-                                  ? () async {
-                                      await ref.read(resetSubmitProvider.notifier).submit(
-                                            state.email,
-                                            onSuccess: () async {
-                                              if (!context.mounted) return;
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(l10n.authResetEmailSent),
-                                                  duration: Timing.snackBarBrief,
-                                                ),
-                                              );
-                                              await Future<void>.delayed(Timing.snackBarBrief);
-                                              if (!context.mounted) return;
-                                              context.go(AuthSignInScreen.routeName);
-                                            },
-                                          );
-                                    }
-                                  : null,
-                              isLoading: submitState.isLoading,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+          // Content card (SSOT: form screens use 364px width)
+          AuthContentCard(
+            width: AuthRebrandMetrics.cardWidthForm,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Headline
+                Text(
+                  l10n.authResetTitle,
+                  style: const TextStyle(
+                    fontFamily: FontFamilies.playfairDisplay,
+                    fontSize: AuthRebrandMetrics.headlineFontSize,
+                    fontWeight: FontWeight.w600,
+                    height: AuthRebrandMetrics.headlineLineHeight,
+                    color: DsColors.authRebrandTextPrimary,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
+
+                const SizedBox(height: Spacing.xs),
+
+                // Subtitle (SSOT: auth_password_reset.subtitle)
+                Text(
+                  l10n.authResetPasswordSubtitle,
+                  style: const TextStyle(
+                    fontFamily: FontFamilies.figtree,
+                    fontSize: AuthRebrandMetrics.bodyFontSize,
+                    fontWeight: FontWeight.w400,
+                    height: AuthRebrandMetrics.bodyLineHeight,
+                    color: DsColors.authRebrandTextPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: Spacing.m),
+
+                // Email field - IMPORTANT: Placeholder is "Deine E-Mail Adresse"
+                AuthRebrandTextField(
+                  key: const ValueKey('reset_email_field'),
+                  controller: _emailController,
+                  hintText: l10n.authEmailPlaceholderLong,
+                  errorText: errorText,
+                  hasError: hasError,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
+                  onChanged: (value) =>
+                      ref.read(resetPasswordProvider.notifier).setEmail(value),
+                  onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                ),
+
+                const SizedBox(height: Spacing.l),
+
+                // CTA button
+                AuthPrimaryButton(
+                  key: const ValueKey('reset_cta'),
+                  label: l10n.authResetCtaShort,
+                  onPressed: state.isValid && !submitState.isLoading
+                      ? () async {
+                          await ref.read(resetSubmitProvider.notifier).submit(
+                                state.email,
+                                onSuccess: () async {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(l10n.authResetEmailSent),
+                                      duration: Timing.snackBarBrief,
+                                    ),
+                                  );
+                                  await Future<void>.delayed(Timing.snackBarBrief);
+                                  if (!context.mounted) return;
+                                  context.go(AuthSignInScreen.routeName);
+                                },
+                              );
+                        }
+                      : null,
+                  isLoading: submitState.isLoading,
+                ),
+              ],
             ),
           ),
         ],
