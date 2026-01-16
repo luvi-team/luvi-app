@@ -8,9 +8,9 @@ class _FakeServerErrorLoginNotifier extends LoginNotifier {
 
   // Simulates server error after successful client-side validation
   @override
-  Future<void> validateAndSubmit() async {
+  Future<void> validateAndSubmit({String? password}) async {
     try {
-      await super.validateAndSubmit();
+      await super.validateAndSubmit(password: password);
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       return;
