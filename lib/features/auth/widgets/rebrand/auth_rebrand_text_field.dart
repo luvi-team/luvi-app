@@ -76,71 +76,76 @@ class AuthRebrandTextField extends StatelessWidget {
         ? DsColors.authRebrandError
         : DsColors.authRebrandInputBorder;
 
+    final field = SizedBox(
+      width: width ?? AuthRebrandMetrics.buttonWidth,
+      height: AuthRebrandMetrics.inputHeight,
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        keyboardType: keyboardType,
+        textInputAction: textInputAction,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
+        autofocus: autofocus,
+        style: TextStyle(
+          fontFamily: FontFamilies.figtree,
+          fontSize: AuthRebrandMetrics.errorTextFontSize,
+          fontWeight: FontWeight.normal,
+          color: showError
+              ? DsColors.authRebrandError
+              : DsColors.authRebrandTextPrimary,
+        ),
+        decoration: InputDecoration(
+          hintText: errorText ?? hintText,
+          hintStyle: TextStyle(
+            fontFamily: FontFamilies.figtree,
+            fontSize: AuthRebrandMetrics.placeholderFontSize,
+            fontWeight: FontWeight.normal,
+            color: showError
+                ? DsColors.authRebrandError
+                : DsColors.grayscale500,
+            height: AuthRebrandMetrics.placeholderLineHeight,
+          ),
+          filled: true,
+          fillColor: DsColors.authRebrandInputBackground,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AuthRebrandMetrics.inputPaddingHorizontal,
+            vertical: 0,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AuthRebrandMetrics.inputRadius),
+            borderSide: BorderSide(
+              color: borderColor,
+              width: AuthRebrandMetrics.inputBorderWidth,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AuthRebrandMetrics.inputRadius),
+            borderSide: BorderSide(
+              color: borderColor,
+              width: AuthRebrandMetrics.inputBorderWidth,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AuthRebrandMetrics.inputRadius),
+            borderSide: BorderSide(
+              color: showError ? DsColors.authRebrandError : DsColors.authRebrandCtaPrimary,
+              width: AuthRebrandMetrics.inputBorderWidth,
+            ),
+          ),
+          suffixIcon: suffixIcon,
+        ),
+      ),
+    );
+
+    final needsSemantics = semanticLabel != null || (showError && errorText != null);
+    if (!needsSemantics) return field;
+
     return Semantics(
       label: semanticLabel ?? hintText,
       hint: showError && errorText != null ? errorText : null,
       textField: true,
-      child: SizedBox(
-        width: width ?? AuthRebrandMetrics.buttonWidth,
-        height: AuthRebrandMetrics.inputHeight,
-        child: TextField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          onChanged: onChanged,
-          onSubmitted: onSubmitted,
-          autofocus: autofocus,
-          style: TextStyle(
-            fontFamily: FontFamilies.figtree,
-            fontSize: AuthRebrandMetrics.errorTextFontSize,
-            fontWeight: FontWeight.normal,
-            color: showError
-                ? DsColors.authRebrandError
-                : DsColors.authRebrandTextPrimary,
-          ),
-          decoration: InputDecoration(
-            hintText: errorText ?? hintText,
-            hintStyle: TextStyle(
-              fontFamily: FontFamilies.figtree,
-              fontSize: AuthRebrandMetrics.placeholderFontSize,
-              fontWeight: FontWeight.normal,
-              color: showError
-                  ? DsColors.authRebrandError
-                  : DsColors.grayscale500,
-              height: AuthRebrandMetrics.placeholderLineHeight,
-            ),
-            filled: true,
-            fillColor: DsColors.authRebrandInputBackground,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: AuthRebrandMetrics.inputPaddingHorizontal,
-              vertical: 0,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AuthRebrandMetrics.inputRadius),
-              borderSide: BorderSide(
-                color: borderColor,
-                width: AuthRebrandMetrics.inputBorderWidth,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AuthRebrandMetrics.inputRadius),
-              borderSide: BorderSide(
-                color: borderColor,
-                width: AuthRebrandMetrics.inputBorderWidth,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AuthRebrandMetrics.inputRadius),
-              borderSide: BorderSide(
-                color: showError ? DsColors.authRebrandError : DsColors.authRebrandCtaPrimary,
-                width: AuthRebrandMetrics.inputBorderWidth,
-              ),
-            ),
-            suffixIcon: suffixIcon,
-          ),
-        ),
-      ),
+      child: field,
     );
   }
 }
