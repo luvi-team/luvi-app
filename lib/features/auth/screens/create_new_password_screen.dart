@@ -13,6 +13,7 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
+import 'package:luvi_app/features/auth/widgets/password_visibility_toggle_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
@@ -255,23 +256,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   obscureText: _obscureNewPassword,
                   textInputAction: TextInputAction.next,
                   onChanged: _onNewPasswordChanged,
-                  suffixIcon: Semantics(
-                    button: true,
-                    label: _obscureNewPassword
-                        ? l10n.authShowPassword
-                        : l10n.authHidePassword,
-                    child: IconButton(
-                      icon: Icon(
-                        _obscureNewPassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: DsColors.grayscale500,
-                        size: AuthRebrandMetrics.passwordToggleIconSize,
-                      ),
-                      onPressed: () {
-                        setState(() => _obscureNewPassword = !_obscureNewPassword);
-                      },
-                    ),
+                  suffixIcon: PasswordVisibilityToggleButton(
+                    obscured: _obscureNewPassword,
+                    onPressed: () => setState(() => _obscureNewPassword = !_obscureNewPassword),
+                    color: DsColors.grayscale500,
+                    size: AuthRebrandMetrics.passwordToggleIconSize,
                   ),
                 ),
 
@@ -290,23 +279,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                   onSubmitted: (_) {
                     if (canSubmit) _onCreatePasswordPressed();
                   },
-                  suffixIcon: Semantics(
-                    button: true,
-                    label: _obscureConfirmPassword
-                        ? l10n.authShowPassword
-                        : l10n.authHidePassword,
-                    child: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: DsColors.grayscale500,
-                        size: AuthRebrandMetrics.passwordToggleIconSize,
-                      ),
-                      onPressed: () {
-                        setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                      },
-                    ),
+                  suffixIcon: PasswordVisibilityToggleButton(
+                    obscured: _obscureConfirmPassword,
+                    onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                    color: DsColors.grayscale500,
+                    size: AuthRebrandMetrics.passwordToggleIconSize,
                   ),
                 ),
 

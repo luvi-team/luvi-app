@@ -13,6 +13,7 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
+import 'package:luvi_app/features/auth/widgets/password_visibility_toggle_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -164,21 +165,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   textInputAction: TextInputAction.done,
                   onChanged: _onPasswordChanged,
                   onSubmitted: (_) => _submit(),
-                  suffixIcon: Semantics(
-                    button: true,
-                    label: _obscurePassword
-                        ? l10n.authShowPassword
-                        : l10n.authHidePassword,
-                    child: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: DsColors.grayscale500,
-                        size: AuthRebrandMetrics.passwordToggleIconSize,
-                      ),
-                      onPressed: _toggleObscurePassword,
-                    ),
+                  suffixIcon: PasswordVisibilityToggleButton(
+                    obscured: _obscurePassword,
+                    onPressed: _toggleObscurePassword,
+                    color: DsColors.grayscale500,
+                    size: AuthRebrandMetrics.passwordToggleIconSize,
                   ),
                 ),
 
