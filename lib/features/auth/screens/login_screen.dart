@@ -250,23 +250,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildForgotLink(AppLocalizations l10n) {
-    return Semantics(
-      button: true,
-      label: l10n.authLoginForgot,
-      child: GestureDetector(
-        key: const ValueKey('login_forgot_link'),
-        onTap: () => context.push(ResetPasswordScreen.routeName),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
-          child: Text(
-            l10n.authLoginForgot,
-            style: TextStyle(
-              fontFamily: FontFamilies.figtree,
-              fontSize: AuthRebrandMetrics.dividerTextFontSize,
-              fontWeight: FontWeight.w600,
-              color: DsColors.grayscale500,
-            ),
-          ),
+    // A11y: TextButton for proper focus/ripple and 44dp touch target
+    return TextButton(
+      key: const ValueKey('login_forgot_link'),
+      onPressed: () => context.push(ResetPasswordScreen.routeName),
+      style: TextButton.styleFrom(
+        minimumSize: const Size(0, Sizes.touchTargetMin), // ✅ 44dp
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Pixel-parity
+        padding: EdgeInsets.zero,
+        foregroundColor: DsColors.grayscale500,
+      ),
+      child: Text(
+        l10n.authLoginForgot,
+        style: TextStyle(
+          fontFamily: FontFamilies.figtree,
+          fontSize: AuthRebrandMetrics.dividerTextFontSize,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
@@ -149,27 +150,23 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
 
         // Login link - "Ich habe bereits einen Account."
         // SSOT: Figma 69690:2191 - Figtree SemiBold 17px, line-height 24px, #000000
-        Semantics(
-          button: true,
-          label: l10n.authEntryExistingAccount,
-          child: GestureDetector(
-            onTap: _oauthLoading ? null : _showLoginSheet,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Spacing.m,
-                vertical: Spacing.xs,
-              ),
-              child: Text(
-                l10n.authEntryExistingAccount,
-                style: const TextStyle(
-                  fontFamily: FontFamilies.figtree,
-                  fontSize: AuthRebrandMetrics.linkFontSize,
-                  fontVariations: [FontVariation('wght', 600)], // SemiBold for variable font
-                  height: AuthRebrandMetrics.bodyLineHeight, // 24/17
-                  color: DsColors.black, // Figma: #000000
-                  decoration: TextDecoration.underline,
-                ),
-              ),
+        // A11y: TextButton for proper focus/ripple and 44dp touch target
+        TextButton(
+          onPressed: _oauthLoading ? null : _showLoginSheet,
+          style: TextButton.styleFrom(
+            minimumSize: const Size(0, Sizes.touchTargetMin), // ✅ 44dp
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Pixel-parity
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
+            foregroundColor: DsColors.black,
+          ),
+          child: Text(
+            l10n.authEntryExistingAccount,
+            style: const TextStyle(
+              fontFamily: FontFamilies.figtree,
+              fontSize: AuthRebrandMetrics.linkFontSize,
+              fontVariations: [FontVariation('wght', 600)], // SemiBold for variable font
+              height: AuthRebrandMetrics.bodyLineHeight, // 24/17
+              decoration: TextDecoration.underline,
             ),
           ),
         ),
