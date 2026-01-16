@@ -21,10 +21,10 @@ void main() {
     ]);
     addTearDown(container.dispose);
 
-    // Seed form state with valid-looking email and locally invalid password.
+    // Seed form state with valid-looking email.
     final loginNotifier = container.read(loginProvider.notifier);
     loginNotifier.setEmail('user@example.com');
-    loginNotifier.setPassword('short'); // too short to pass local validation
+    // Password is passed directly to submit, not stored in state (security).
 
     // Submit should short-circuit and not hit the repository.
     await container
@@ -50,10 +50,9 @@ void main() {
     ]);
     addTearDown(container.dispose);
 
-    // Seed invalid email and invalid password (short)
+    // Seed invalid email (password is passed directly to submit, not stored in state).
     final loginNotifier = container.read(loginProvider.notifier);
     loginNotifier.setEmail('bad');
-    loginNotifier.setPassword('short');
 
     // Listen for loading transitions on the submit provider
     var sawLoading = false;

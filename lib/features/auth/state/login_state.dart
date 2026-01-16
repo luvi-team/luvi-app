@@ -5,16 +5,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/validation/email_validator.dart';
 
+/// Login form state.
+///
+/// SECURITY: Password is intentionally NOT stored in this state class.
+/// Passwords should only live in UI TextEditingController and be passed
+/// directly to validation/submit methods as parameters.
 class LoginState {
   final String email;
-  final String password;
   final String? emailError;
   final String? passwordError;
   final String? globalError;
 
   const LoginState({
     this.email = '',
-    this.password = '',
     this.emailError,
     this.passwordError,
     this.globalError,
@@ -22,22 +25,21 @@ class LoginState {
 
   factory LoginState.initial() => const LoginState();
 
+  /// Returns true if form is ready for submission.
+  ///
+  /// Note: Password validation happens via validate(password: ...) which sets
+  /// passwordError if invalid. After successful validation, passwordError is null.
   bool get isValid =>
-      email.isNotEmpty &&
-      password.isNotEmpty &&
-      emailError == null &&
-      passwordError == null;
+      email.isNotEmpty && emailError == null && passwordError == null;
 
   LoginState copyWith({
     String? email,
-    String? password,
     String? emailError,
     String? passwordError,
     String? globalError,
   }) {
     return LoginState(
       email: email ?? this.email,
-      password: password ?? this.password,
       // Fehlerfelder bewusst direkt übernehmen (auch null zum Leeren)
       emailError: emailError,
       passwordError: passwordError,
@@ -60,16 +62,16 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
 
   void setEmail(String value) => updateState(email: value);
 
-  void setPassword(String value) => updateState(password: value);
-
   void clearGlobalError() => updateState(globalError: null);
 
   void setGlobalError(String message) => updateState(globalError: message);
 
-  /// Eine (1) kanonische Variante inkl. globalError – kompatibel zu Provider/Tests.
+  /// Canonical state update method.
+  ///
+  /// SECURITY: Password is intentionally NOT a parameter here.
+  /// Passwords should only be passed to validate/validateAndSubmit.
   void updateState({
     String? email,
-    String? password,
     Object? emailError = _noChange,
     Object? passwordError = _noChange,
     Object? globalError = _noChange,
@@ -82,7 +84,6 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
     state = AsyncData(
       preserved.copyWith(
         email: email ?? preserved.email,
-        password: password ?? preserved.password,
         emailError: identical(emailError, _noChange)
             ? preserved.emailError
             : emailError as String?,
@@ -99,17 +100,14 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   /// Performs client-side validation only.
   ///
   /// Server-side submission is handled separately by login_submit_provider.
-  /// [password] is validated but NOT persisted in state (SECURITY: password
-  /// should only live in TextEditingController, not in provider state).
-  /// If [password] is not provided, falls back to state.password for backward
-  /// compatibility with tests - but new code should always pass the password.
-  void validate({String? password}) {
+  ///
+  /// SECURITY: [password] is validated but NOT persisted in state.
+  /// Password should only live in TextEditingController, not in provider state.
+  void validate({required String password}) {
     try {
       final current = _current();
       final trimmedEmail = current.email.trim();
       // SECURITY: Don't trim passwords - they may contain intentional spaces.
-      // Prefer parameter; fallback to state for backward compatibility only.
-      final rawPassword = password ?? current.password;
 
       String? eErr;
       String? pErr;
@@ -120,16 +118,15 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
         eErr = AuthStrings.errEmailInvalid;
       }
 
-      if (rawPassword.isEmpty) {
+      if (password.isEmpty) {
         pErr = AuthStrings.errPasswordEmpty;
-      } else if (rawPassword.length < _kMinPasswordLength) {
+      } else if (password.length < _kMinPasswordLength) {
         pErr = AuthStrings.errPasswordInvalid;
       }
 
       state = AsyncData(
         current.copyWith(
           email: trimmedEmail,
-          // SECURITY: Don't store password in state - keep it only in UI controller
           emailError: eErr,
           passwordError: pErr,
           globalError:
@@ -141,13 +138,12 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
     }
   }
 
-  /// Backward-compatible shim used by existing call sites and tests.
   /// Performs client-side validation only and completes synchronously.
   /// Any network submission or remote auth flow is handled by
   /// `login_submit_provider` to avoid mixing concerns.
   ///
-  /// [password] is validated but NOT persisted in state for security.
-  Future<void> validateAndSubmit({String? password}) async {
+  /// SECURITY: [password] is validated but NOT persisted in state.
+  Future<void> validateAndSubmit({required String password}) async {
     validate(password: password);
   }
 
