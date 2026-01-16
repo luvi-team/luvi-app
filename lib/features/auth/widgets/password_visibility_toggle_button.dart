@@ -41,11 +41,14 @@ class PasswordVisibilityToggleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final label = obscured ? l10n.authShowPassword : l10n.authHidePassword;
 
     return Semantics(
+      excludeSemantics: true,
       button: true,
-      label: obscured ? l10n.authShowPassword : l10n.authHidePassword,
+      label: label,
       child: IconButton(
+        tooltip: label,
         icon: Icon(
           obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
           color: color,
