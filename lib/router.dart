@@ -15,6 +15,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as routes;
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -93,11 +94,11 @@ String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
     },
     loading: () => '${RoutePaths.splash}?skipAnimation=true',
     error: (error, st) {
-      // Log error for debugging (fail-safe still returns splash)
+      // Log sanitized error for debugging (fail-safe still returns splash)
       log.w(
         'consent_guard_state_error',
         tag: 'router',
-        error: error,
+        error: sanitizeError(error) ?? error.runtimeType,
         stack: st,
       );
       return '${RoutePaths.splash}?skipAnimation=true';
@@ -132,10 +133,11 @@ String? _postAuthGuard(BuildContext context, GoRouterState state) {
     },
     loading: () => '${RoutePaths.splash}?skipAnimation=true',
     error: (error, st) {
+      // Log sanitized error to prevent PII leakage
       log.w(
         'post_auth_guard_state_error',
         tag: 'router',
-        error: error,
+        error: sanitizeError(error) ?? error.runtimeType,
         stack: st,
       );
       return '${RoutePaths.splash}?skipAnimation=true';
