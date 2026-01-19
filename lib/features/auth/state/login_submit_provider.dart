@@ -126,7 +126,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     // Fallback: Message matching (for cases where code is null)
     final message = error.message.toLowerCase();
 
-    if (_kInvalidCredentialsPatterns.any(message.contains)) {
+    if (_kInvalidCredentialsPatterns.every(message.contains)) {
       // SSOT P0.7: Both fields show error on invalid credentials
       // SECURITY: Don't write password back into provider state
       loginNotifier.updateState(
@@ -135,7 +135,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         passwordError: AuthStrings.invalidCredentials,
         globalError: null,
       );
-    } else if (_kEmailConfirmationPatterns.any(message.contains)) {
+    } else if (_kEmailConfirmationPatterns.every(message.contains)) {
       loginNotifier.updateState(
         email: email,
         emailError: null,

@@ -65,7 +65,7 @@ class AuthSecondaryButton extends StatelessWidget {
                   fontFamily: FontFamilies.figtree,
                   fontSize: AuthRebrandMetrics.buttonFontSize,
                   fontWeight: FontWeight.bold,
-                  color: DsColors.grayscaleWhite,
+                  // color handled by ElevatedButton.styleFrom foregroundColor
                 ),
               ),
       ),

@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
-import 'auth_rebrand_metrics.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Back button for Auth Rebrand v3 screens.
 ///
@@ -26,7 +26,9 @@ class AuthBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: semanticsLabel ?? 'Zurück',
+      label: semanticsLabel ??
+          AppLocalizations.of(context)?.authBackSemantic ??
+          'Back',
       child: SizedBox(
         width: Sizes.touchTargetMin,
         height: Sizes.touchTargetMin,
@@ -44,8 +46,8 @@ class AuthBackButton extends StatelessWidget {
           ),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(
-            minWidth: AuthRebrandMetrics.backButtonTouchTarget,
-            minHeight: AuthRebrandMetrics.backButtonTouchTarget,
+            minWidth: Sizes.touchTargetMin,
+            minHeight: Sizes.touchTargetMin,
           ),
         ),
       ),

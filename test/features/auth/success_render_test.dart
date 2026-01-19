@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/router.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import '../../support/test_app.dart';
 import '../../support/test_config.dart';
 
 void main() {
@@ -30,17 +29,7 @@ void main() {
     testWidgets('navigating to /auth/password/success renders SuccessScreen', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-          ),
-        ),
-      );
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey('auth_success_screen')), findsOneWidget);
@@ -49,17 +38,7 @@ void main() {
     testWidgets('displays AuthContentCard with title and subtitle (export-parity)', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-          ),
-        ),
-      );
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Export-parity: Must use AuthContentCard (not GlowCheckmark)
@@ -78,17 +57,7 @@ void main() {
     testWidgets('passes dynamic containerTop to AuthRainbowBackground', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-          ),
-        ),
-      );
+      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
       // Find AuthRainbowBackground and verify containerTop is set

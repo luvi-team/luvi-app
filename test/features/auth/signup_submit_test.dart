@@ -65,6 +65,29 @@ void main() {
       router.dispose();
     });
 
+    testWidgets('empty submit shows missing fields and field errors', (tester) async {
+      final mockRepo = _MockAuthRepository();
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authSignupMissingFields), findsOneWidget);
+      expect(find.text(l10n.authErrorEmailCheck), findsOneWidget);
+      expect(find.text(l10n.authErrorPasswordCheck), findsOneWidget);
+      expect(find.text(l10n.authErrPasswordInvalid), findsOneWidget);
+
+      verifyNever(() => mockRepo.signUp(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+            data: any(named: 'data'),
+          ));
+    });
+
     testWidgets('successful signup navigates to login screen', (tester) async {
       // Per Auth v2 refactoring: VerificationScreen was removed,
       // signup now navigates to login screen with success snackbar

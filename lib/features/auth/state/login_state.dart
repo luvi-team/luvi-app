@@ -40,7 +40,7 @@ class LoginState {
   }) {
     return LoginState(
       email: email ?? this.email,
-      // Fehlerfelder bewusst direkt übernehmen (auch null zum Leeren)
+      // Deliberately pass error fields directly (including null to clear them)
       emailError: emailError,
       passwordError: passwordError,
       globalError: globalError,

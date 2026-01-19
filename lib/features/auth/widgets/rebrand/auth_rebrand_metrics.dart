@@ -74,10 +74,12 @@ class AuthRebrandMetrics {
   static const double outlineButtonIconToTextGap = 26.0;
 
   // ─── Rainbow Background (SSOT: rainbow_footer_stripes.ring_widths) ───
-  /// Ring widths from outer to inner: teal, pink, orange, beige
+  /// Ring widths from outer to inner.
+  /// Index mapping: [0]=teal, [1]=pink, [2]=orange, [3]=beige
   static const List<double> rainbowRingWidths = [329.0, 249.0, 167.0, 87.0];
 
-  /// Calculated stripe widths: teal=40, pink=41, orange=40, beige=87
+  /// Calculated stripe widths.
+  /// Index mapping: [0]=teal(40), [1]=pink(41), [2]=orange(40), [3]=beige(87)
   static const List<double> rainbowStripeWidths = [40.0, 41.0, 40.0, 87.0];
 
   // ─── Rainbow Ring Offsets (SSOT: auth_email_form.ring_offsets) ───
@@ -99,7 +101,7 @@ class AuthRebrandMetrics {
   // ─── Back Button ───
   static const double backButtonLeft = 10.0;
   static const double backButtonTop = 20.0; // Näher an Status Bar (Figma-Alignment)
-  static const double backButtonTouchTarget = 44.0;
+  // Note: backButtonTouchTarget removed - use Sizes.touchTargetMin (SSOT)
 
   // ─── Rainbow Container Alignment ───
   /// Offset from SafeArea.top for rainbow container positioning.

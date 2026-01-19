@@ -28,6 +28,7 @@ class PasswordRecoveryNavigationDriver {
 
   final PasswordRecoveryNavigateCallback _onNavigateToCreatePassword;
   StreamSubscription<supa.AuthChangeEvent>? _subscription;
+  Timer? _resetTimer;
 
   bool _hasNavigated = false;
 
@@ -39,13 +40,17 @@ class PasswordRecoveryNavigationDriver {
 
       // Reset flag after debounce to allow subsequent recovery events
       // (e.g., user requests a new reset link within the same session).
-      Future.delayed(const Duration(milliseconds: 500), () {
+      // Using Timer instead of Future.delayed to support cancellation on dispose.
+      _resetTimer?.cancel();
+      _resetTimer = Timer(const Duration(milliseconds: 500), () {
         _hasNavigated = false;
       });
     }
   }
 
   Future<void> dispose() async {
+    _resetTimer?.cancel();
+    _resetTimer = null;
     await _subscription?.cancel();
     _subscription = null;
   }

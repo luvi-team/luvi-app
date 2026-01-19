@@ -40,9 +40,5 @@ final profileFetcherProvider = Provider<ProfileFetcher>(
 /// Returns a function that upserts the onboarding completion state to server.
 /// Default delegates 1:1 to SupabaseService.upsertOnboardingGate.
 final onboardingBackfillProvider = Provider<OnboardingBackfill>(
-  (_) => ({required bool hasCompletedOnboarding}) async {
-    await SupabaseService.upsertOnboardingGate(
-      hasCompletedOnboarding: hasCompletedOnboarding,
-    );
-  },
+  (_) => SupabaseService.upsertOnboardingGate,
 );

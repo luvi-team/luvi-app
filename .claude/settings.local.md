@@ -36,7 +36,7 @@
 | `dart --version:*` | 🟢 | Version prüfen | "Welche Dart Version?" |
 | `dart run build_runner build:*` | 🟢 | Code-Generierung | "Generier die Freezed Klassen" |
 
-### 2. Git (17 Permissions)
+### 2. Git (16 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
@@ -49,7 +49,6 @@
 | `git checkout:*` | 🟡 | Branch wechseln | "Wechsel zu main" |
 | `git fetch:*` | 🟢 | Remote holen | "Hol die neuesten Änderungen" |
 | `git merge:*` | 🟡 | Branches mergen | "Merge main rein" |
-| `git rebase:*` | 🔴 | History umschreiben | ⚠️ Vorsicht: Kann History kaputt machen |
 | `git stash:*` | 🟢 | Änderungen zwischenspeichern | "Stash das mal" |
 | `git rm:*` | 🟡 | Dateien entfernen | "Entfern die Datei aus Git" |
 | `git mv:*` | 🟢 | Dateien umbenennen | "Benenn die Datei um" |
@@ -128,7 +127,7 @@
 | `scripts/flutter_codex.sh:*` | 🟢 | Sandboxed Flutter | /analyze, /test Commands |
 | `./scripts/run_dev.sh:*` | 🟡 | Dev-Server starten | "Starte den Dev-Server" |
 
-### 8. Tools (6 Permissions)
+### 8. Tools (5 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
@@ -137,7 +136,6 @@
 | `ruby -ryaml -e:*` | 🟢 | YAML-Verarbeitung | Internes Tooling |
 | `python3:*` | 🟡 | Python-Scripts | Internes Tooling |
 | `ffprobe:*` | 🟢 | Media-Analyse | Video/Audio-Metadaten |
-| `pkill:*` | 🔴 | Prozesse beenden | ⚠️ Kann Apps killen! |
 
 ---
 
@@ -160,6 +158,20 @@
 | `chmod` | Berechtigungen ändern ist riskant |
 | `git push --force` | History-Zerstörung |
 | `git reset --hard` | Änderungen unwiderruflich verlieren |
+| `git rebase` | History umschreiben ist gefährlich |
+| `pkill` | Prozesse beenden ist destruktiv |
+
+---
+
+## Wildcard-Semantik
+
+> **Wichtig:** Wildcards wie `git push:*` erlauben Subkommandos und Argumente, aber Claude Code blockiert bekannte destruktive Flags automatisch.
+>
+> **Beispiele:**
+> - `git push:*` → erlaubt `git push origin main`, blockiert `git push --force`
+> - `git reset:*` → erlaubt `git reset HEAD~1`, blockiert `git reset --hard`
+>
+> **Fazit:** Destruktive Flags (`--force`, `--hard`) erfordern IMMER manuelle Bestätigung, unabhängig von Wildcards.
 
 ---
 
@@ -186,18 +198,18 @@
 | Kategorie | Anzahl |
 |-----------|--------|
 | Flutter/Dart | 9 |
-| Git | 17 |
+| Git | 16 |
 | GitHub CLI | 9 |
 | MCP Archon | 8 |
 | MCP Figma | 3 |
 | Shell Utilities | 18 |
 | Scripts | 3 |
-| Tools | 6 |
-| **Basis-Gesamt** | **73** |
+| Tools | 5 |
+| **Basis-Gesamt** | **71** |
 
 > **Hinweis:** Claude Code fügt automatisch neue Permissions hinzu, wenn du sie während einer Session genehmigst (z.B. WebFetch, WebSearch). Diese werden hier nicht dokumentiert, da sie session-spezifisch sind.
 
 ---
 
-*Letzte Aktualisierung: 2025-01-14*
+*Letzte Aktualisierung: 2026-01-19*
 *Bereinigt von: Claude Code*

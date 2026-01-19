@@ -1,5 +1,5 @@
-// Template für Widget-Tests
-// Ersetze: {feature}, {ScreenName}, {screen_file}
+// Template for widget tests
+// Replace: {feature}, {ScreenName}, {screen_file}
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

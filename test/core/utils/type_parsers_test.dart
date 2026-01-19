@@ -55,8 +55,16 @@ void main() {
       expect(parseNullableInt('42'), isNull);
     });
 
-    test('returns null when value is double', () {
-      expect(parseNullableInt(42.0), isNull);
+    test('returns int when value is whole-number double', () {
+      // JSON parsers often decode integers as doubles (e.g., 42.0)
+      expect(parseNullableInt(42.0), equals(42));
+      expect(parseNullableInt(0.0), equals(0));
+      expect(parseNullableInt(-5.0), equals(-5));
+    });
+
+    test('returns null when value is non-whole double', () {
+      expect(parseNullableInt(42.5), isNull);
+      expect(parseNullableInt(0.1), isNull);
     });
 
     test('returns null when value is bool', () {

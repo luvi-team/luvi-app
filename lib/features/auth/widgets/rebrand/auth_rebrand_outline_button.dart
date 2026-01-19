@@ -72,74 +72,89 @@ class AuthRebrandOutlineButton extends StatelessWidget {
     final hasIcon = icon != null || svgIconPath != null;
     final disabledOpacity = onPressed == null ? 0.5 : 1.0;
 
-    return Semantics(
-      button: true,
-      label: label,
-      enabled: onPressed != null,
-      child: SizedBox(
+    return SizedBox(
       width: width ?? AuthRebrandMetrics.buttonWidth,
       height: AuthRebrandMetrics.buttonHeight,
       child: Material(
         color: DsColors.authRebrandCardSurface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
+          borderRadius: BorderRadius.circular(
+            AuthRebrandMetrics.buttonRadius,
+          ),
           side: BorderSide(
-            color: DsColors.authRebrandInputBorder.withValues(alpha: disabledOpacity),
+            color: DsColors.authRebrandInputBorder.withValues(
+              alpha: disabledOpacity,
+            ),
             width: AuthRebrandMetrics.inputBorderWidth,
           ),
         ),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
-          child: Padding(
-            // SSOT: Icon at left=53, icon=20, gap=26 → text starts at 99
-            // Use zero padding and let Row handle positioning
-            padding: EdgeInsets.zero,
-            child: Row(
-              children: [
-                // Left padding before icon (SSOT: 53px)
-                if (hasIcon)
-                  const SizedBox(width: AuthRebrandMetrics.outlineButtonIconLeftPadding),
-                // Icon
-                if (icon != null)
-                  Icon(
-                    icon,
-                    size: AuthRebrandMetrics.outlineButtonIconSize,
-                    color: DsColors.authRebrandTextPrimary.withValues(alpha: disabledOpacity),
-                  )
-                else if (svgIconPath != null)
-                  // SVG icons (e.g., Google) preserve their original colors.
-                  // Disabled state is indicated via opacity instead of colorFilter
-                  // to avoid breaking multicolor brand icons.
-                  Opacity(
-                    opacity: disabledOpacity,
-                    child: SvgPicture.asset(
-                      svgIconPath!,
-                      width: AuthRebrandMetrics.outlineButtonIconSize,
-                      height: AuthRebrandMetrics.outlineButtonIconSize,
+        child: Semantics(
+          button: true,
+          label: label,
+          enabled: onPressed != null,
+          excludeSemantics: true,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(
+              AuthRebrandMetrics.buttonRadius,
+            ),
+            child: Padding(
+              // SSOT: Icon at left=53, icon=20, gap=26 → text starts at 99
+              // Use zero padding and let Row handle positioning
+              padding: EdgeInsets.zero,
+              child: Row(
+                children: [
+                  // Left padding before icon (SSOT: 53px)
+                  if (hasIcon)
+                    const SizedBox(
+                      width: AuthRebrandMetrics.outlineButtonIconLeftPadding,
+                    ),
+                  // Icon
+                  if (icon != null)
+                    Icon(
+                      icon,
+                      size: AuthRebrandMetrics.outlineButtonIconSize,
+                      color: DsColors.authRebrandTextPrimary.withValues(
+                        alpha: disabledOpacity,
+                      ),
+                    )
+                  else if (svgIconPath != null)
+                    // SVG icons (e.g., Google) preserve their original colors.
+                    // Disabled state is indicated via opacity instead of colorFilter
+                    // to avoid breaking multicolor brand icons.
+                    Opacity(
+                      opacity: disabledOpacity,
+                      child: SvgPicture.asset(
+                        svgIconPath!,
+                        width: AuthRebrandMetrics.outlineButtonIconSize,
+                        height: AuthRebrandMetrics.outlineButtonIconSize,
+                      ),
+                    ),
+                  // Gap between icon and text (SSOT: 26px)
+                  if (hasIcon)
+                    const SizedBox(
+                      width: AuthRebrandMetrics.outlineButtonIconToTextGap,
+                    ),
+                  // Text (will expand to fill remaining space, left-aligned after icon)
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontFamily: FontFamilies.figtree,
+                        fontSize: AuthRebrandMetrics.buttonFontSize,
+                        fontWeight: FontWeight.w600,
+                        color: DsColors.authRebrandTextPrimary.withValues(
+                          alpha: disabledOpacity,
+                        ),
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                // Gap between icon and text (SSOT: 26px)
-                if (hasIcon)
-                  const SizedBox(width: AuthRebrandMetrics.outlineButtonIconToTextGap),
-                // Text (will expand to fill remaining space, left-aligned after icon)
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontFamily: FontFamilies.figtree,
-                      fontSize: AuthRebrandMetrics.buttonFontSize,
-                      fontWeight: FontWeight.w600,
-                      color: DsColors.authRebrandTextPrimary.withValues(alpha: disabledOpacity),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
       ),
     );
   }

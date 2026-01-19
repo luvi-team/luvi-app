@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/supabase_service.dart';
 
@@ -83,24 +83,6 @@ class _SuccessScreenState extends State<SuccessScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    // Title style: Playfair SemiBold 20px (SSOT: auth_success.headline)
-    const titleStyle = TextStyle(
-      fontFamily: FontFamilies.playfairDisplay,
-      fontSize: AuthRebrandMetrics.headlineFontSize,
-      fontWeight: FontWeight.w600,
-      height: AuthRebrandMetrics.headlineLineHeight,
-      color: DsColors.authRebrandTextPrimary,
-    );
-
-    // Subtitle style: Figtree Regular 17px (SSOT: auth_success.subtitle)
-    const subtitleStyle = TextStyle(
-      fontFamily: FontFamilies.figtree,
-      fontSize: AuthRebrandMetrics.bodyFontSize,
-      fontWeight: FontWeight.w400,
-      height: AuthRebrandMetrics.bodyLineHeight,
-      color: DsColors.authRebrandTextPrimary,
-    );
-
     return Scaffold(
       key: const ValueKey('auth_success_screen'),
       backgroundColor: DsColors.authRebrandBackground,
@@ -125,7 +107,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
                     // Title: "Geschafft!"
                     Text(
                       l10n.authSuccessPwdTitle,
-                      style: titleStyle,
+                      style: AuthRebrandTextStyles.headline,
                       textAlign: TextAlign.center,
                     ),
 
@@ -134,7 +116,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
                     // Subtitle: "Neues Passwort gespeichert."
                     Text(
                       l10n.authSuccessPwdSubtitle,
-                      style: subtitleStyle,
+                      style: AuthRebrandTextStyles.subtitle,
                       textAlign: TextAlign.center,
                     ),
 

@@ -222,5 +222,33 @@ void main() {
       expect(state.passwordError, isNull);
       expect(state.globalError, AuthStrings.errLoginUnavailable);
     });
+
+    test('does not false-positive on partial pattern match', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Invalid request format', // Contains 'invalid' but NOT 'credentials'
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      // Should NOT match invalidCredentials pattern (only 'invalid', not 'credentials')
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errLoginUnavailable); // Generic fallback
+    });
   });
 }

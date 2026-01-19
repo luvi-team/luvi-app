@@ -24,6 +24,11 @@
 - Axis Label: `Spacing.xxs` (4dp)
 
 ## A11y Requirements
-- Jeder Chart braucht `Semantics(label: ...)` mit Beschreibung
-- Legenden müssen für Screenreader zugänglich sein
-- Kontrast-Ratio für Linien/Balken beachten
+- **Contrast Ratio:** Minimum 3:1 for UI components (lines, bars), 4.5:1 for text/labels
+- **Semantics:** Every chart requires `Semantics(label: '...')` with descriptive text
+  - Use `excludeSemantics: true` on decorative children
+  - Use `sortKey` for logical reading order in complex charts
+  - Example: `Semantics(label: 'Line chart showing cycle length over 6 months')`
+- **Legends:** Must be keyboard-focusable and screen-reader accessible
+  - Wrap legend items in `Semantics` with color + value description
+  - Example: `Semantics(label: 'Menstruation phase: 5 days')`

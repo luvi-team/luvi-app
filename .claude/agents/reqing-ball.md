@@ -31,14 +31,14 @@ model: opus
 - ADR-0002: Least-privilege RLS
 - ADR-0003: MIWF workflow
 - ADR-0004: Vercel Edge Gateway
-- ADR-0005: Push privacy (keine Gesundheitsdaten)
+- ADR-0005: Push privacy (no health data)
 - ADR-0006: Offline Resume
 - ADR-0007: Spacing 24px
 - ADR-0008: Splash Gate
 
 ## Output Format
 
-| Kriterium | Finding | File:Line | Severity | Action |
+| Criterion | Finding | File:Line | Severity | Action |
 |-----------|---------|-----------|----------|--------|
 | PRD: ... | ... | lib/...:45 | Critical/High/Medium/Low | ... |
 

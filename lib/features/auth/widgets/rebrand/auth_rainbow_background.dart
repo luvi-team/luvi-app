@@ -94,8 +94,8 @@ class _RainbowPillPainter extends CustomPainter {
       final effectiveContainerTop = containerTop ?? AuthRebrandMetrics.overlayRainbowContainerTop;
       final yOffset = _ringYOffsets[i] + effectiveContainerTop;
 
-      // Dynamische Höhe bis zum Canvas-Bottom
-      // Mathematisch äquivalent zu SSOT-Höhen, aber geräteunabhängig
+      // Dynamic height extending to canvas bottom
+      // Mathematically equivalent to SSOT heights, but device-independent
       final height = size.height - yOffset + radius;
 
       // Ring X position relative to canvas center

@@ -28,27 +28,34 @@ class AuthErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
-      child: Container(
-        padding: const EdgeInsets.all(Spacing.s),
-        margin: const EdgeInsets.only(bottom: Spacing.m),
-        decoration: BoxDecoration(
-          color: DsColors.authRebrandError.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(Sizes.radiusS),
-          border: Border.all(
-            color: DsColors.authRebrandError,
-            width: 1,
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      label: message,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
+        child: ExcludeSemantics(
+          child: Container(
+            padding: const EdgeInsets.all(Spacing.s),
+            margin: const EdgeInsets.only(bottom: Spacing.m),
+            decoration: BoxDecoration(
+              color: DsColors.authRebrandError.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(Sizes.radiusS),
+              border: Border.all(
+                color: DsColors.authRebrandError,
+                width: 1,
+              ),
+            ),
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontFamily: FontFamilies.figtree,
+                fontSize: AuthRebrandMetrics.errorTextFontSize,
+                color: DsColors.authRebrandError,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-        child: Text(
-          message,
-          style: const TextStyle(
-            fontFamily: FontFamilies.figtree,
-            fontSize: AuthRebrandMetrics.errorTextFontSize,
-            color: DsColors.authRebrandError,
-          ),
-          textAlign: TextAlign.center,
         ),
       ),
     );

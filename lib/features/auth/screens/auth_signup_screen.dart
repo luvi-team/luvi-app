@@ -73,9 +73,16 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     required String confirmPassword,
     required AppLocalizations l10n,
   }) {
-    // Check for empty email first (password validation handles empty password)
-    if (email.isEmpty) {
-      setState(() => _emailError = true);
+    final isEmailEmpty = email.isEmpty;
+    final isPasswordEmpty = password.isEmpty;
+    final isConfirmEmpty = confirmPassword.isEmpty;
+
+    if (isEmailEmpty || isPasswordEmpty || isConfirmEmpty) {
+      setState(() {
+        _emailError = isEmailEmpty;
+        _passwordError = isPasswordEmpty;
+        _confirmPasswordError = isConfirmEmpty;
+      });
       return l10n.authSignupMissingFields;
     }
 
@@ -86,18 +93,31 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       switch (passwordValidation.error!) {
         case AuthPasswordValidationError.emptyFields:
           setState(() {
-            _passwordError = password.isEmpty;
-            _confirmPasswordError = confirmPassword.isEmpty;
+            _emailError = isEmailEmpty;
+            _passwordError = isPasswordEmpty;
+            _confirmPasswordError = isConfirmEmpty;
           });
           return l10n.authSignupMissingFields;
         case AuthPasswordValidationError.mismatch:
-          setState(() => _confirmPasswordError = true);
+          setState(() {
+            _emailError = false;
+            _passwordError = false;
+            _confirmPasswordError = true;
+          });
           return l10n.authPasswordMismatchError;
         case AuthPasswordValidationError.tooShort:
-          setState(() => _passwordError = true);
+          setState(() {
+            _emailError = false;
+            _passwordError = true;
+            _confirmPasswordError = false;
+          });
           return l10n.authErrPasswordTooShort;
         case AuthPasswordValidationError.commonWeak:
-          setState(() => _passwordError = true);
+          setState(() {
+            _emailError = false;
+            _passwordError = true;
+            _confirmPasswordError = false;
+          });
           return l10n.authErrPasswordCommonWeak;
       }
     }
@@ -138,7 +158,21 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       if (!mounted) return;
       setState(() {
         _errorMessage = _mapAuthError(error, l10n);
-        _emailError = true;
+
+        // Determine which field caused the error based on Supabase error message
+        final message = error.message.toLowerCase();
+        final isPasswordRelated = message.contains('password');
+
+        // Clear both flags first, then set the appropriate one
+        _emailError = false;
+        _passwordError = false;
+
+        if (isPasswordRelated) {
+          _passwordError = true;
+        } else {
+          // Default to email for: invalid email, duplicate account, unknown errors
+          _emailError = true;
+        }
       });
     } catch (error, stackTrace) {
       log.e(
@@ -233,106 +267,123 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_signup_screen'),
       onBack: () => handleAuthBackNavigation(context),
+      child: _buildContent(l10n),
+    );
+  }
+
+  Widget _buildContent(AppLocalizations l10n) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (_errorMessage != null) AuthErrorBanner(message: _errorMessage!),
+        _buildFormCard(l10n),
+      ],
+    );
+  }
+
+  Widget _buildFormCard(AppLocalizations l10n) {
+    return AuthContentCard(
+      width: AuthRebrandMetrics.cardWidthForm,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Global error banner
-          if (_errorMessage != null) AuthErrorBanner(message: _errorMessage!),
-
-          // Content card (SSOT: form screens use 364px width)
-          AuthContentCard(
-            width: AuthRebrandMetrics.cardWidthForm,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Headline
-                Text(
-                  l10n.authRegisterEmailTitle,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.playfairDisplay,
-                    fontSize: AuthRebrandMetrics.headlineFontSize,
-                    fontWeight: FontWeight.w600,
-                    height: AuthRebrandMetrics.headlineLineHeight,
-                    color: DsColors.authRebrandTextPrimary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: Spacing.m),
-
-                // Email field
-                AuthRebrandTextField(
-                  key: const ValueKey('signup_email_field'),
-                  controller: _emailController,
-                  hintText: l10n.authEmailPlaceholderLong,
-                  errorText: _emailError ? l10n.authErrorEmailCheck : null,
-                  hasError: _emailError,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  onChanged: _onEmailChanged,
-                ),
-
-                const SizedBox(height: AuthRebrandMetrics.cardInputGap),
-
-                // Password field
-                AuthRebrandTextField(
-                  key: const ValueKey('signup_password_field'),
-                  controller: _passwordController,
-                  hintText: l10n.authPasswordPlaceholder,
-                  errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
-                  hasError: _passwordError,
-                  obscureText: _obscurePassword,
-                  textInputAction: TextInputAction.next,
-                  onChanged: _onPasswordChanged,
-                  suffixIcon: PasswordVisibilityToggleButton(
-                    obscured: _obscurePassword,
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    color: DsColors.grayscale500,
-                    size: AuthRebrandMetrics.passwordToggleIconSize,
-                  ),
-                ),
-
-                const SizedBox(height: AuthRebrandMetrics.cardInputGap),
-
-                // Confirm password field
-                AuthRebrandTextField(
-                  key: const ValueKey('signup_password_confirm_field'),
-                  controller: _confirmPasswordController,
-                  hintText: l10n.authNewPasswordConfirmHint,
-                  errorText: _confirmPasswordError
-                      ? l10n.authPasswordMismatchError
-                      : null,
-                  hasError: _confirmPasswordError,
-                  obscureText: _obscureConfirmPassword,
-                  textInputAction: TextInputAction.done,
-                  onChanged: _onConfirmPasswordChanged,
-                  onSubmitted: (_) {
-                    if (!_isSubmitting) _handleSignup();
-                  },
-                  suffixIcon: PasswordVisibilityToggleButton(
-                    obscured: _obscureConfirmPassword,
-                    onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                    color: DsColors.grayscale500,
-                    size: AuthRebrandMetrics.passwordToggleIconSize,
-                  ),
-                ),
-
-                const SizedBox(height: Spacing.m),
-
-                // CTA button (no login link per SSOT)
-                AuthPrimaryButton(
-                  key: const ValueKey('signup_cta_button'),
-                  loadingKey: const ValueKey('signup_cta_loading'),
-                  label: l10n.authEntryCta,
-                  onPressed: _isSubmitting ? null : _handleSignup,
-                  isLoading: _isSubmitting,
-                ),
-              ],
-            ),
-          ),
+          _buildHeadline(l10n),
+          const SizedBox(height: Spacing.m),
+          _buildEmailField(l10n),
+          const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+          _buildPasswordField(l10n),
+          const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+          _buildConfirmPasswordField(l10n),
+          const SizedBox(height: Spacing.m),
+          _buildCtaButton(l10n),
         ],
       ),
     );
   }
 
+  Widget _buildHeadline(AppLocalizations l10n) {
+    return Text(
+      l10n.authRegisterEmailTitle,
+      style: const TextStyle(
+        fontFamily: FontFamilies.playfairDisplay,
+        fontSize: AuthRebrandMetrics.headlineFontSize,
+        fontWeight: FontWeight.w600,
+        height: AuthRebrandMetrics.headlineLineHeight,
+        color: DsColors.authRebrandTextPrimary,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildEmailField(AppLocalizations l10n) {
+    return AuthRebrandTextField(
+      key: const ValueKey('signup_email_field'),
+      controller: _emailController,
+      hintText: l10n.authEmailPlaceholderLong,
+      errorText: _emailError ? l10n.authErrorEmailCheck : null,
+      hasError: _emailError,
+      keyboardType: TextInputType.emailAddress,
+      textInputAction: TextInputAction.next,
+      onChanged: _onEmailChanged,
+    );
+  }
+
+  Widget _buildPasswordField(AppLocalizations l10n) {
+    return AuthRebrandTextField(
+      key: const ValueKey('signup_password_field'),
+      controller: _passwordController,
+      hintText: l10n.authPasswordPlaceholder,
+      errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
+      hasError: _passwordError,
+      obscureText: _obscurePassword,
+      textInputAction: TextInputAction.next,
+      onChanged: _onPasswordChanged,
+      suffixIcon: PasswordVisibilityToggleButton(
+        obscured: _obscurePassword,
+        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+        color: DsColors.grayscale500,
+        size: AuthRebrandMetrics.passwordToggleIconSize,
+      ),
+    );
+  }
+
+  Widget _buildConfirmPasswordField(AppLocalizations l10n) {
+    final confirmErrorText = _confirmPasswordError
+        ? (_confirmPasswordController.text.isEmpty
+            ? l10n.authErrPasswordInvalid
+            : l10n.authPasswordMismatchError)
+        : null;
+
+    return AuthRebrandTextField(
+      key: const ValueKey('signup_password_confirm_field'),
+      controller: _confirmPasswordController,
+      hintText: l10n.authNewPasswordConfirmHint,
+      errorText: confirmErrorText,
+      hasError: _confirmPasswordError,
+      obscureText: _obscureConfirmPassword,
+      textInputAction: TextInputAction.done,
+      onChanged: _onConfirmPasswordChanged,
+      onSubmitted: (_) {
+        if (!_isSubmitting) _handleSignup();
+      },
+      suffixIcon: PasswordVisibilityToggleButton(
+        obscured: _obscureConfirmPassword,
+        onPressed: () => setState(
+          () => _obscureConfirmPassword = !_obscureConfirmPassword,
+        ),
+        color: DsColors.grayscale500,
+        size: AuthRebrandMetrics.passwordToggleIconSize,
+      ),
+    );
+  }
+
+  Widget _buildCtaButton(AppLocalizations l10n) {
+    return AuthPrimaryButton(
+      key: const ValueKey('signup_cta_button'),
+      loadingKey: const ValueKey('signup_cta_loading'),
+      label: l10n.authEntryCta,
+      onPressed: _isSubmitting ? null : _handleSignup,
+      isLoading: _isSubmitting,
+    );
+  }
 }

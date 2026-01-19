@@ -15,6 +15,6 @@ void handleAuthBackNavigation(BuildContext context) {
   if (router.canPop()) {
     router.pop();
   } else {
-    context.go(RoutePaths.authSignIn);
+    router.go(RoutePaths.authSignIn);
   }
 }

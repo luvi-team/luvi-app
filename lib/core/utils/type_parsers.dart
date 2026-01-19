@@ -18,6 +18,7 @@ bool? parseNullableBool(dynamic value) {
 /// Safe nullable int extraction from dynamic value.
 ///
 /// Returns the value if it is an int, otherwise returns null.
+/// Also handles double values that represent whole numbers (e.g., 42.0 from JSON).
 /// Use this instead of unsafe `as int?` casts on dynamic map values.
 ///
 /// Example:
@@ -25,5 +26,10 @@ bool? parseNullableBool(dynamic value) {
 /// final version = parseNullableInt(profile?['accepted_consent_version']);
 /// ```
 int? parseNullableInt(dynamic value) {
-  return value is int ? value : null;
+  if (value is int) return value;
+  // Handle JSON-decoded numbers like 42.0 that should be treated as ints
+  if (value is double && value == value.toInt()) {
+    return value.toInt();
+  }
+  return null;
 }

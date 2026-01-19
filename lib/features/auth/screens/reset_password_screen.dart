@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/features/auth/state/reset_password_state.dart';
 import 'package:luvi_app/features/auth/utils/auth_navigation_helpers.dart';
@@ -14,6 +13,7 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart'
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Reset password screen with Auth Rebrand v3 design (export-parity).
@@ -92,6 +92,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final submitState = ref.watch(resetSubmitProvider);
     final errorText = _errorTextFor(state.error, l10n);
     final hasError = errorText != null;
+    final canSubmit = state.isValid && !submitState.isLoading;
 
     // NOTE: Submit error listener moved to initState for proper lifecycle management
 
@@ -99,92 +100,92 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       scaffoldKey: const ValueKey('auth_reset_screen'),
       compactKeyboard: true, // Fewer fields = compact padding
       onBack: () => handleAuthBackNavigation(context),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Content card (SSOT: form screens use 364px width)
-          AuthContentCard(
-            width: AuthRebrandMetrics.cardWidthForm,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Headline
-                Text(
-                  l10n.authResetTitle,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.playfairDisplay,
-                    fontSize: AuthRebrandMetrics.headlineFontSize,
-                    fontWeight: FontWeight.w600,
-                    height: AuthRebrandMetrics.headlineLineHeight,
-                    color: DsColors.authRebrandTextPrimary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: Spacing.xs),
-
-                // Subtitle (SSOT: auth_password_reset.subtitle)
-                Text(
-                  l10n.authResetPasswordSubtitle,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.figtree,
-                    fontSize: AuthRebrandMetrics.bodyFontSize,
-                    fontWeight: FontWeight.w400,
-                    height: AuthRebrandMetrics.bodyLineHeight,
-                    color: DsColors.authRebrandTextPrimary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: Spacing.m),
-
-                // Email field - IMPORTANT: Placeholder is "Deine E-Mail Adresse"
-                AuthRebrandTextField(
-                  key: const ValueKey('reset_email_field'),
-                  controller: _emailController,
-                  hintText: l10n.authEmailPlaceholderLong,
-                  errorText: errorText,
-                  hasError: hasError,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.done,
-                  onChanged: (value) =>
-                      ref.read(resetPasswordProvider.notifier).setEmail(value),
-                  onSubmitted: (_) => FocusScope.of(context).unfocus(),
-                ),
-
-                const SizedBox(height: Spacing.l),
-
-                // CTA button
-                AuthPrimaryButton(
-                  key: const ValueKey('reset_cta'),
-                  label: l10n.authResetCtaShort,
-                  onPressed: state.isValid && !submitState.isLoading
-                      ? () async {
-                          await ref.read(resetSubmitProvider.notifier).submit(
-                                state.email,
-                                onSuccess: () async {
-                                  if (!context.mounted) return;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(l10n.authResetEmailSent),
-                                      duration: Timing.snackBarBrief,
-                                    ),
-                                  );
-                                  await Future<void>.delayed(Timing.snackBarBrief);
-                                  if (!context.mounted) return;
-                                  context.go(RoutePaths.authSignIn);
-                                },
-                              );
-                        }
-                      : null,
-                  isLoading: submitState.isLoading,
-                ),
-              ],
-            ),
-          ),
-        ],
+      child: _buildFormCard(
+        l10n: l10n,
+        state: state,
+        errorText: errorText,
+        hasError: hasError,
+        canSubmit: canSubmit,
+        isLoading: submitState.isLoading,
       ),
     );
+  }
+
+  Widget _buildFormCard({
+    required AppLocalizations l10n,
+    required ResetPasswordState state,
+    required String? errorText,
+    required bool hasError,
+    required bool canSubmit,
+    required bool isLoading,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AuthContentCard(
+          width: AuthRebrandMetrics.cardWidthForm,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.authResetTitle,
+                style: AuthRebrandTextStyles.headline,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Spacing.xs),
+              Text(
+                l10n.authResetPasswordSubtitle,
+                style: AuthRebrandTextStyles.subtitle,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Spacing.m),
+              AuthRebrandTextField(
+                key: const ValueKey('reset_email_field'),
+                controller: _emailController,
+                hintText: l10n.authEmailPlaceholderLong,
+                errorText: errorText,
+                hasError: hasError,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.done,
+                onChanged: (value) =>
+                    ref.read(resetPasswordProvider.notifier).setEmail(value),
+                onSubmitted: (_) => FocusScope.of(context).unfocus(),
+              ),
+              const SizedBox(height: Spacing.l),
+              AuthPrimaryButton(
+                key: const ValueKey('reset_cta'),
+                label: l10n.authResetCtaShort,
+                onPressed: canSubmit ? () => _submitReset(state.email, l10n) : null,
+                isLoading: isLoading,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _submitReset(String email, AppLocalizations l10n) async {
+    try {
+      await ref.read(resetSubmitProvider.notifier).submit(
+            email,
+            onSuccess: () async {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(l10n.authResetEmailSent),
+                  duration: Timing.snackBarBrief,
+                ),
+              );
+              await Future<void>.delayed(Timing.snackBarBrief);
+              if (!mounted) return;
+              context.go(RoutePaths.authSignIn);
+            },
+          );
+    } catch (_) {
+      // Errors surfaced via submitState listener in initState.
+      // Catch prevents unhandled exception in async callback.
+    }
   }
 }
 

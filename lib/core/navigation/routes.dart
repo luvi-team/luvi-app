@@ -158,6 +158,7 @@ String? supabaseRedirect(BuildContext context, GoRouterState state) =>
 class _RouteFlags {
   const _RouteFlags({
     required this.isAuthRoute,
+    required this.isLoginOrSignIn,
     required this.isSplash,
     required this.isWelcome,
     required this.isOnboarding,
@@ -167,6 +168,9 @@ class _RouteFlags {
 
   /// True if route is an auth flow route (login, signup, reset password).
   final bool isAuthRoute;
+
+  /// True if route is specifically login or signIn (not signup/reset).
+  final bool isLoginOrSignIn;
 
   /// True if route is the splash screen.
   final bool isSplash;
@@ -186,11 +190,15 @@ class _RouteFlags {
 
 /// Classifies a route location into logical groups.
 _RouteFlags _classifyRoute(String location) {
+  final isLogin = location.startsWith(RoutePaths.login);
+  final isSignIn = location.startsWith(RoutePaths.authSignIn);
+
   return _RouteFlags(
-    isAuthRoute: location.startsWith(RoutePaths.login) ||
-        location.startsWith(RoutePaths.authSignIn) ||
+    isAuthRoute: isLogin ||
+        isSignIn ||
         location.startsWith(RoutePaths.signup) ||
         location.startsWith(RoutePaths.resetPassword),
+    isLoginOrSignIn: isLogin || isSignIn,
     isSplash: location == RoutePaths.splash,
     isWelcome: isWelcomeRoute(location),
     isOnboarding: isOnboardingRoute(location),
@@ -288,9 +296,7 @@ String? supabaseRedirectWithSession(
   }
 
   // Has session: redirect from login/signIn to splash (skip animation)
-  final isLoginOrSignIn = state.matchedLocation.startsWith(RoutePaths.login) ||
-      state.matchedLocation.startsWith(RoutePaths.authSignIn);
-  if (isLoginOrSignIn) {
+  if (flags.isLoginOrSignIn) {
     return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
   }
 

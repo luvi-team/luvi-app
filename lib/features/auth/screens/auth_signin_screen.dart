@@ -45,7 +45,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery.sizeOf(context);
 
     // Calculate scale factor for responsive positioning
     // Design baseline: 402×874 (AuthRebrandMetrics SSOT from PNG exports)
@@ -56,81 +56,102 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
       backgroundColor: DsColors.authRebrandBackground,
       body: Stack(
         children: [
-          // Hero image at bottom (decorative, excluded from semantics)
-          Positioned(
-            key: const ValueKey('auth_entry_hero'),
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Image.asset(
-              Assets.images.auth.heroAuthEntry,
-              fit: BoxFit.fitWidth,
-              width: size.width,
-              excludeFromSemantics: true,
-            ),
-          ),
-
-          // LUVI Logo with Teal Dot - fixed size, responsive position
-          Positioned(
-            left: 0,
-            right: 0,
-            top: (size.height / 2) +
-                (AuthRebrandMetrics.entryLogoCenterYOffset * scaleY) -
-                (AuthRebrandMetrics.entryLogoHeight / 2),
-            child: Center(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // Logo - fixed size for brand consistency
-                  SvgPicture.asset(
-                    Assets.images.auth.logoLuvi,
-                    height: AuthRebrandMetrics.entryLogoHeight,
-                    semanticsLabel: 'LUVI Logo',
-                  ),
-                  // Teal Dot - fixed size, positioned relative to logo
-                  Positioned(
-                    right: AuthRebrandMetrics.entryTealDotRightOffset,
-                    top: AuthRebrandMetrics.entryTealDotTopOffset,
-                    child: ExcludeSemantics(
-                      child: Container(
-                        width: AuthRebrandMetrics.entryTealDotSize,
-                        height: AuthRebrandMetrics.entryTealDotSize,
-                        decoration: const BoxDecoration(
-                          color: DsColors.authRebrandTealDot,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // CTA Container - horizontally centered for symmetric margins
-          Positioned(
-            left: 0,
-            right: 0,
-            top: AuthRebrandMetrics.entryCtaY * scaleY,
-            child: Center(
-              child: SizedBox(
-                width: AuthRebrandMetrics.entryCtaWidth,
-                child: _buildCtaSection(l10n),
-              ),
-            ),
-          ),
+          _buildHeroImage(size),
+          _buildLogoWithTealDot(size: size, scaleY: scaleY),
+          _buildCtaContainer(l10n: l10n, scaleY: scaleY),
 
           // Loading overlay
-          if (_oauthLoading)
-            Container(
-              color: DsColors.authRebrandBackground.withValues(alpha: 0.7),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  color: DsColors.authRebrandCtaPrimary,
+          if (_oauthLoading) _buildLoadingOverlay(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroImage(Size size) {
+    // Hero image at bottom (decorative, excluded from semantics)
+    return Positioned(
+      key: const ValueKey('auth_entry_hero'),
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Image.asset(
+        Assets.images.auth.heroAuthEntry,
+        fit: BoxFit.fitWidth,
+        width: size.width,
+        excludeFromSemantics: true,
+      ),
+    );
+  }
+
+  Widget _buildLogoWithTealDot({
+    required Size size,
+    required double scaleY,
+  }) {
+    // LUVI Logo with Teal Dot - fixed size, responsive position
+    final topOffset = (size.height / 2) +
+        (AuthRebrandMetrics.entryLogoCenterYOffset * scaleY) -
+        (AuthRebrandMetrics.entryLogoHeight / 2);
+
+    return Positioned(
+      left: 0,
+      right: 0,
+      top: topOffset,
+      child: Center(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Logo - fixed size for brand consistency
+            SvgPicture.asset(
+              Assets.images.auth.logoLuvi,
+              height: AuthRebrandMetrics.entryLogoHeight,
+              semanticsLabel: 'LUVI Logo',
+            ),
+            // Teal Dot - fixed size, positioned relative to logo
+            Positioned(
+              right: AuthRebrandMetrics.entryTealDotRightOffset,
+              top: AuthRebrandMetrics.entryTealDotTopOffset,
+              child: ExcludeSemantics(
+                child: Container(
+                  width: AuthRebrandMetrics.entryTealDotSize,
+                  height: AuthRebrandMetrics.entryTealDotSize,
+                  decoration: const BoxDecoration(
+                    color: DsColors.authRebrandTealDot,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
             ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCtaContainer({
+    required AppLocalizations l10n,
+    required double scaleY,
+  }) {
+    // CTA Container - horizontally centered for symmetric margins
+    return Positioned(
+      left: 0,
+      right: 0,
+      top: AuthRebrandMetrics.entryCtaY * scaleY,
+      child: Center(
+        child: SizedBox(
+          width: AuthRebrandMetrics.entryCtaWidth,
+          child: _buildCtaSection(l10n),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Container(
+      color: DsColors.authRebrandBackground.withValues(alpha: 0.7),
+      child: const Center(
+        child: CircularProgressIndicator(
+          color: DsColors.authRebrandCtaPrimary,
+        ),
       ),
     );
   }

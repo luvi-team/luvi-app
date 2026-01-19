@@ -16,6 +16,7 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
 import 'package:luvi_app/features/auth/widgets/password_visibility_toggle_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Login screen with Auth Rebrand v3 design.
@@ -72,95 +73,89 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final loginAsync = ref.watch(loginProvider);
     final loginState = loginAsync.value ?? LoginState.initial();
-    final emailError = loginState.emailError;
-    final passwordError = loginState.passwordError;
-    final globalError = loginState.globalError;
     final submitState = ref.watch(loginSubmitProvider);
     final isLoading = submitState.isLoading;
-    final hasEmailError = emailError != null;
-    final hasPasswordError = passwordError != null;
 
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_login_screen'),
       onBack: () => handleAuthBackNavigation(context),
+      child: _buildContent(l10n: l10n, loginState: loginState, isLoading: isLoading),
+    );
+  }
+
+  Widget _buildContent({
+    required AppLocalizations l10n,
+    required LoginState loginState,
+    required bool isLoading,
+  }) {
+    final globalError = loginState.globalError;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (globalError != null) AuthErrorBanner(message: globalError),
+        _buildFormCard(l10n: l10n, loginState: loginState, isLoading: isLoading),
+      ],
+    );
+  }
+
+  Widget _buildFormCard({
+    required AppLocalizations l10n,
+    required LoginState loginState,
+    required bool isLoading,
+  }) {
+    final hasEmailError = loginState.emailError != null;
+    final hasPasswordError = loginState.passwordError != null;
+
+    return AuthContentCard(
+      width: AuthRebrandMetrics.cardWidthForm,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Global error banner
-          if (globalError != null) AuthErrorBanner(message: globalError),
-
-          // Content card (SSOT: form screens use 364px width)
-          AuthContentCard(
-            width: AuthRebrandMetrics.cardWidthForm,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Headline
-                Text(
-                  l10n.authLoginTitle,
-                  style: const TextStyle(
-                    fontFamily: FontFamilies.playfairDisplay,
-                    fontSize: AuthRebrandMetrics.headlineFontSize,
-                    fontWeight: FontWeight.w600,
-                    height: AuthRebrandMetrics.headlineLineHeight,
-                    color: DsColors.authRebrandTextPrimary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: Spacing.m),
-
-                // Email field
-                AuthRebrandTextField(
-                  key: const ValueKey('login_email_field'),
-                  controller: _emailController,
-                  hintText: l10n.authEmailPlaceholderLong,
-                  errorText: hasEmailError ? l10n.authErrorEmailCheck : null,
-                  hasError: hasEmailError,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  onChanged: _onEmailChanged,
-                ),
-
-                const SizedBox(height: AuthRebrandMetrics.cardInputGap),
-
-                // Password field
-                AuthRebrandTextField(
-                  key: const ValueKey('login_password_field'),
-                  controller: _passwordController,
-                  hintText: l10n.authPasswordPlaceholder,
-                  errorText: hasPasswordError ? l10n.authErrorPasswordCheck : null,
-                  hasError: hasPasswordError,
-                  obscureText: _obscurePassword,
-                  textInputAction: TextInputAction.done,
-                  onChanged: _onPasswordChanged,
-                  onSubmitted: (_) => _submit(),
-                  suffixIcon: PasswordVisibilityToggleButton(
-                    obscured: _obscurePassword,
-                    onPressed: _toggleObscurePassword,
-                    color: DsColors.grayscale500,
-                    size: AuthRebrandMetrics.passwordToggleIconSize,
-                  ),
-                ),
-
-                const SizedBox(height: Spacing.m),
-
-                // CTA button
-                AuthPrimaryButton(
-                  key: const ValueKey('login_cta_button'),
-                  loadingKey: const ValueKey('login_cta_loading'),
-                  label: l10n.authEntryCta,
-                  onPressed: isLoading ? null : _submit,
-                  isLoading: isLoading,
-                ),
-
-                const SizedBox(height: Spacing.m),
-
-                // Forgot password link (only link per SSOT)
-                _buildForgotLink(l10n),
-              ],
+          Text(
+            l10n.authLoginTitle,
+            style: AuthRebrandTextStyles.headline,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: Spacing.m),
+          AuthRebrandTextField(
+            key: const ValueKey('login_email_field'),
+            controller: _emailController,
+            hintText: l10n.authEmailPlaceholderLong,
+            errorText: hasEmailError ? l10n.authErrorEmailCheck : null,
+            hasError: hasEmailError,
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+            onChanged: _onEmailChanged,
+          ),
+          const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+          AuthRebrandTextField(
+            key: const ValueKey('login_password_field'),
+            controller: _passwordController,
+            hintText: l10n.authPasswordPlaceholder,
+            errorText: hasPasswordError ? l10n.authErrorPasswordCheck : null,
+            hasError: hasPasswordError,
+            obscureText: _obscurePassword,
+            textInputAction: TextInputAction.done,
+            onChanged: _onPasswordChanged,
+            onSubmitted: (_) => _submit(),
+            suffixIcon: PasswordVisibilityToggleButton(
+              obscured: _obscurePassword,
+              onPressed: _toggleObscurePassword,
+              color: DsColors.grayscale500,
+              size: AuthRebrandMetrics.passwordToggleIconSize,
             ),
           ),
+          const SizedBox(height: Spacing.m),
+          AuthPrimaryButton(
+            key: const ValueKey('login_cta_button'),
+            loadingKey: const ValueKey('login_cta_loading'),
+            label: l10n.authEntryCta,
+            onPressed: isLoading ? null : _submit,
+            isLoading: isLoading,
+          ),
+          const SizedBox(height: Spacing.m),
+          _buildForgotLink(l10n),
         ],
       ),
     );
