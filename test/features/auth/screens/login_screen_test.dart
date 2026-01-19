@@ -87,10 +87,10 @@ void main() {
     await tester.tap(buttonFinder);
     await tester.pumpAndSettle();
 
-    // LoginScreen shows generic L10n error messages
+    // LoginScreen now shows specific L10n error messages
     final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
-    expect(find.text(l10n.authErrorEmailCheck), findsOneWidget);
-    expect(find.text(l10n.authErrorPasswordCheck), findsOneWidget);
+    expect(find.text(l10n.authErrEmailEmpty), findsOneWidget);
+    expect(find.text(l10n.authErrPasswordEmpty), findsOneWidget);
     // Auth Rebrand v3: Button stays enabled even with errors (allows retry)
     expect(tester.widget<ElevatedButton>(innerButton).onPressed, isNotNull);
   });

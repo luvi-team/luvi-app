@@ -1,6 +1,6 @@
 # Agent Dossiers
 
-Preamble: 6 roles (architect-orchestrator · ui-frontend · api-backend · db-admin · dataviz · qa-dsgvo). Workflow: BMAD → PRP, DoD/Gates.
+Preamble: 6 roles (architect-orchestrator · ui-frontend · api-backend · db-admin · dataviz · qa-dsgvo). Workflow: BMAD (Business Model & Arch Doc) → PRP (Project Roadmap & Plan), DoD/Gates. Task System: Archon.
 Control: Auto-Role (default) or explicit `role: ...` for mixed tasks.
 Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check) · Vercel Preview Health (200 OK).
 AI review setup (Greptile merge gate, local CodeRabbit preflight) is defined in docs/engineering/ai-reviewer.md. If anything else contradicts it, ai-reviewer.md wins.

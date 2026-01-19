@@ -71,5 +71,17 @@ void main() {
       expect(parseNullableInt(true), isNull);
       expect(parseNullableInt(false), isNull);
     });
+
+    test('returns null for NaN', () {
+      expect(parseNullableInt(double.nan), isNull);
+    });
+
+    test('returns null for infinity', () {
+      expect(parseNullableInt(double.infinity), isNull);
+    });
+
+    test('returns null for negative infinity', () {
+      expect(parseNullableInt(double.negativeInfinity), isNull);
+    });
   });
 }

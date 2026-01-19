@@ -67,14 +67,14 @@ class MockUserStateService extends UserStateService {
 /// 2. recordedEvents list enables simple verification of recorded events
 /// 3. Keeps test setup minimal and self-contained
 class MockAnalyticsRecorder implements AnalyticsRecorder {
-  final List<String> recordedEvents = [];
+  final List<({String name, Map<String, Object?> properties})> recordedEvents = [];
 
   @override
   void recordEvent(
     String name, {
     Map<String, Object?> properties = const <String, Object?>{},
   }) {
-    recordedEvents.add(name);
+    recordedEvents.add((name: name, properties: properties));
   }
 }
 
@@ -139,7 +139,7 @@ void main() {
   });
 
   group('SplashController Gate-Outcomes', () {
-    test('welcome nicht gesehen → SplashResolved(welcome)', () async {
+    test('welcome not seen → SplashResolved(welcome)', () async {
       final container = createTestContainer(
         prefs: prefs,
         deviceHasCompletedWelcome: false,
@@ -163,7 +163,7 @@ void main() {
       );
     });
 
-    test('nicht authentifiziert → SplashResolved(authSignIn)', () async {
+    test('not authenticated → SplashResolved(authSignIn)', () async {
       final container = createTestContainer(
         prefs: prefs,
         isAuthenticated: false,
@@ -220,7 +220,7 @@ void main() {
       );
     });
 
-    test('alle gates bestanden → SplashResolved(heute)', () async {
+    test('all gates passed → SplashResolved(heute)', () async {
       final container = createTestContainer(
         prefs: prefs,
         deviceHasCompletedWelcome: true,

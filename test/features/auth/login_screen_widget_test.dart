@@ -73,9 +73,10 @@ void main() {
     await tester.pumpAndSettle();
 
     // Expect error message from invalid credentials handling
-    // LoginScreen shows l10n.authErrorEmailCheck when emailError is set
+    // LoginScreen shows l10n.authInvalidCredentials when emailError is set
     final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
-    expect(find.text(l10n.authErrorEmailCheck), findsOneWidget);
+    // SSOT P0.7: Both fields show error on invalid credentials -> findsNWidgets(2)
+    expect(find.text(l10n.authInvalidCredentials), findsNWidgets(2));
 
     // Auth Rebrand v3: Button stays enabled after errors (allows retry)
     final innerButton = find.descendant(
@@ -185,10 +186,10 @@ void main() {
     await tester.pump();
 
     // Validation errors should appear for empty fields
-    // LoginScreen shows generic L10n error messages
+    // LoginScreen now shows specific L10n error messages (empty email/password)
     final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
-    expect(find.text(l10n.authErrorEmailCheck), findsOneWidget);
-    expect(find.text(l10n.authErrorPasswordCheck), findsOneWidget);
+    expect(find.text(l10n.authErrEmailEmpty), findsOneWidget);
+    expect(find.text(l10n.authErrPasswordEmpty), findsOneWidget);
 
     // Auth Rebrand v3: Button stays enabled even with errors (allows retry)
     final innerButton = find.descendant(

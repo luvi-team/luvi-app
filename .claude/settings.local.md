@@ -112,11 +112,9 @@
 | `echo:*` | 🟢 | Text ausgeben | Internes Tooling |
 | `curl:*` | 🟡 | HTTP Requests | "Hol die URL" |
 | `xargs:*` | 🟢 | Pipe-Verarbeitung | Internes Tooling |
-| `bash -c:*` | 🔴 | Shell-Ausführung | ⚠️ Erlaubt beliebige Befehle! |
 | `tee:*` | 🟢 | Output splitten | Internes Tooling |
 | `unzip:*` | 🟢 | Archive entpacken | "Entpack das ZIP" |
 | `test:*` | 🟢 | Bedingungen prüfen | Internes Tooling |
-| `source:*` | 🔴 | Scripts laden | ⚠️ Erlaubt beliebige Ausführung! |
 | `sips:*` | 🟢 | Bild-Verarbeitung | Screenshot-Konvertierung |
 
 ### 7. Scripts (3 Permissions)
@@ -134,7 +132,6 @@
 | `xcrun simctl:*` | 🟢 | iOS Simulator | "Starte den Simulator" |
 | `actionlint:*` | 🟢 | GitHub Actions Lint | "Check die Actions" |
 | `ruby -ryaml -e:*` | 🟢 | YAML-Verarbeitung | Internes Tooling |
-| `python3:*` | 🔴 | Python-Scripts | ⚠️ Erlaubt beliebige Ausführung! |
 | `ffprobe:*` | 🟢 | Media-Analyse | Video/Audio-Metadaten |
 
 ---
@@ -174,9 +171,7 @@
 > 2. Manuell konfigurierte Safety-Hooks
 >
 > **Nicht abgedeckt durch Wildcard-Blocking:**
-> - `bash -c:*` → Kann beliebige Befehle ausführen
-> - `python3:*` → Kann beliebigen Code ausführen
-> - `source:*` → Kann beliebige Scripts laden
+> - (Entfernt: `bash -c:*`, `python3:*`, `source:*` sind aus Sicherheitsgründen deaktiviert)
 >
 > **Empfehlung:** Destruktive Befehle explizit blocken oder gefährliche
 > Wildcards entfernen.

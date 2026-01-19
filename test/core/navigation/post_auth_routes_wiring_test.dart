@@ -155,19 +155,17 @@ GoRoute? _findRouteByPath(List<RouteBase> routes, String path) {
     if (route is GoRoute && route.path == path) {
       return route;
     }
-    // Check nested routes (ShellRoute, etc.)
-    if (route is ShellRoute) {
-      final nested = _findRouteByPath(route.routes, path);
-      if (nested != null) return nested;
-    }
-    // StatefulShellRoute for future tab-navigation support
-    if (route is StatefulShellRoute) {
-      final nested = _findRouteByPath(route.routes, path);
-      if (nested != null) return nested;
-    }
-    if (route is GoRoute && route.routes.isNotEmpty) {
-      final nested = _findRouteByPath(route.routes, path);
-      if (nested != null) return nested;
+    // Generic recursion: Check any route that has sub-routes (ShellRoute, StatefulShellRoute, etc.)
+    // We use dynamic because RouteBase doesn't enforce a 'routes' property, but all containers have it.
+    try {
+      final dynamic dynamicRoute = route;
+      final subRoutes = dynamicRoute.routes;
+      if (subRoutes is List<RouteBase> && subRoutes.isNotEmpty) {
+        final nested = _findRouteByPath(subRoutes, path);
+        if (nested != null) return nested;
+      }
+    } catch (_) {
+      // Route type does not have 'routes' property or access failed
     }
   }
   return null;

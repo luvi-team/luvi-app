@@ -24,8 +24,8 @@ class AuthOAuthSheetContent extends StatelessWidget {
   const AuthOAuthSheetContent({
     super.key,
     required this.headline,
-    required this.onApplePressed,
-    required this.onGooglePressed,
+    this.onApplePressed,
+    this.onGooglePressed,
     required this.onEmailPressed,
   });
 
@@ -33,10 +33,10 @@ class AuthOAuthSheetContent extends StatelessWidget {
   final String headline;
 
   /// Callback when Apple sign-in is pressed.
-  final VoidCallback onApplePressed;
+  final VoidCallback? onApplePressed;
 
   /// Callback when Google sign-in is pressed.
-  final VoidCallback onGooglePressed;
+  final VoidCallback? onGooglePressed;
 
   /// Callback when Email sign-in is pressed.
   final VoidCallback onEmailPressed;
@@ -82,7 +82,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
                       onPressed: () async {
                         await Navigator.of(context).maybePop();
                         if (!context.mounted) return;
-                        onApplePressed();
+                        onApplePressed?.call();
                       },
                     ),
                     const SizedBox(height: Spacing.s),
@@ -95,7 +95,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
                       onPressed: () async {
                         await Navigator.of(context).maybePop();
                         if (!context.mounted) return;
-                        onGooglePressed();
+                        onGooglePressed?.call();
                       },
                     ),
                     const SizedBox(height: Spacing.m),

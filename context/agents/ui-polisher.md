@@ -12,7 +12,7 @@ Flutter UI diff, design heuristics, Figma tokens (if available).
 ## Rules
 No novels; focus on tokens/colors, typography, spacing, A11y (contrast/touch).
 
-## Acceptance Criterion
+## Acceptance Criteria
 Short & concrete line references in every suggestion.
 
 ## Operative Mode

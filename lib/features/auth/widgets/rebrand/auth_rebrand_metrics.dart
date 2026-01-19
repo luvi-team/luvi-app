@@ -117,11 +117,13 @@ class AuthRebrandMetrics {
   static const double placeholderLineHeight = 15.0 / 12.0; // 1.25
   static const double buttonFontSize = 17.0;
   static const double linkFontSize = 17.0;
+  static const double inputTextFontSize = 14.0;
   static const double errorTextFontSize = 14.0; // Error messages & field hints
   static const double dividerTextFontSize = 14.0; // "oder" divider text
 
   // ─── Icon Sizes ───
   static const double passwordToggleIconSize = 20.0;
+  static const double loadingIndicatorSize = 20.0;
   /// Back button icon size - reduced for Figma SVG alignment (stroke 1.5dp)
   static const double backButtonIconSize = 24.0;
 

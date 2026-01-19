@@ -135,12 +135,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     // Show unknown UI when in SplashUnknown state
     final showUnknownUI = splashState is SplashUnknown;
-    final canRetry = splashState is SplashUnknown && splashState.canRetry;
 
     return Scaffold(
       backgroundColor: DsColors.splashBg,
       body: showUnknownUI
-          ? _buildUnknownUI(context, l10n, canRetry)
+          ? _buildUnknownUI(context, l10n, splashState)
           : _skipAnimation
               // skipAnimation: Show solid background (no 1-frame flash)
               ? Container(color: DsColors.splashBg)
@@ -152,8 +151,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     );
   }
 
-  Widget _buildUnknownUI(BuildContext context, AppLocalizations l10n, bool canRetry) {
-    final splashState = ref.read(splashControllerProvider);
+  Widget _buildUnknownUI(BuildContext context, AppLocalizations l10n, SplashState splashState) {
+    final canRetry = splashState is SplashUnknown && splashState.canRetry;
     final isRetrying = splashState is SplashUnknown && splashState.isRetrying;
 
     return UnknownStateUi(

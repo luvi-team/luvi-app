@@ -88,18 +88,13 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     // Use NIST-compliant validation from shared rules
     final passwordValidation = validateNewPassword(password, confirmPassword);
+    assert(
+      passwordValidation.error != AuthPasswordValidationError.emptyFields,
+      'Empty fields should be handled before validation',
+    );
 
     if (!passwordValidation.isValid) {
       switch (passwordValidation.error!) {
-        case AuthPasswordValidationError.emptyFields:
-          // Unreachable: empty fields checked at lines 80-87 before validateNewPassword
-          // Kept for Dart switch exhaustiveness
-          setState(() {
-            _emailError = isEmailEmpty;
-            _passwordError = isPasswordEmpty;
-            _confirmPasswordError = isConfirmEmpty;
-          });
-          return l10n.authSignupMissingFields;
         case AuthPasswordValidationError.mismatch:
           setState(() {
             _emailError = false;
@@ -121,6 +116,13 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
             _confirmPasswordError = false;
           });
           return l10n.authErrPasswordCommonWeak;
+        case AuthPasswordValidationError.emptyFields:
+          setState(() {
+            _emailError = true; // Or appropriate error flagging
+            _passwordError = true;
+            _confirmPasswordError = true;
+          });
+          return l10n.authSignupMissingFields;
       }
     }
 

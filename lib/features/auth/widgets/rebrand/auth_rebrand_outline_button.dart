@@ -148,6 +148,7 @@ class AuthRebrandOutlineButton extends StatelessWidget {
                         ),
                       ),
                       overflow: TextOverflow.ellipsis,
+                      textAlign: hasIcon ? TextAlign.start : TextAlign.center,
                     ),
                   ),
                 ],

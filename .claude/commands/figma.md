@@ -12,6 +12,7 @@ Implement a screen based on Figma design.
    - `lib/core/design_tokens/colors.dart`
    - `lib/core/design_tokens/spacing.dart`
    - `lib/core/design_tokens/sizes.dart`
+   - `lib/core/design_tokens/typography.dart`
 3. **Create missing tokens** with `/// Figma: xxx` comment
 4. **Implement** the screen
 5. **Create Widget Test**

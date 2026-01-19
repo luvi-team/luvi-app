@@ -190,21 +190,30 @@ class _RouteFlags {
 
 /// Classifies a route location into logical groups.
 _RouteFlags _classifyRoute(String location) {
-  final isLogin = location.startsWith(RoutePaths.login);
-  final isSignIn = location.startsWith(RoutePaths.authSignIn);
+  final uri = Uri.parse(location);
+  final path = uri.path;
+
+  // Helper for safe prefix check (prevent /heute matching /heute-old)
+  bool matchesPrefix(String prefix) {
+    if (path == prefix) return true;
+    return path.startsWith('$prefix/');
+  }
+
+  final isLogin = matchesPrefix(RoutePaths.login);
+  final isSignIn = matchesPrefix(RoutePaths.authSignIn);
 
   return _RouteFlags(
     isAuthRoute: isLogin ||
         isSignIn ||
-        location.startsWith(RoutePaths.signup) ||
-        location.startsWith(RoutePaths.resetPassword),
+        matchesPrefix(RoutePaths.signup) ||
+        matchesPrefix(RoutePaths.resetPassword),
     isLoginOrSignIn: isLogin || isSignIn,
-    isSplash: location == RoutePaths.splash,
-    isWelcome: isWelcomeRoute(location),
-    isOnboarding: isOnboardingRoute(location),
-    isDashboard: location.startsWith(RoutePaths.heute),
-    isPasswordRecovery: location.startsWith(RoutePaths.createNewPassword) ||
-        location.startsWith(RoutePaths.passwordSaved),
+    isSplash: path == RoutePaths.splash,
+    isWelcome: isWelcomeRoute(path),
+    isOnboarding: isOnboardingRoute(path),
+    isDashboard: matchesPrefix(RoutePaths.heute),
+    isPasswordRecovery: matchesPrefix(RoutePaths.createNewPassword) ||
+        matchesPrefix(RoutePaths.passwordSaved),
   );
 }
 

@@ -1,5 +1,5 @@
 // Template for new screens
-// Replace: {FeatureName}, {ScreenName}, {route_name}
+// Replace: {ScreenName}, {route_name}
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

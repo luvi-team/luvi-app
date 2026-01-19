@@ -89,7 +89,7 @@ class AuthRebrandTextField extends StatelessWidget {
         autofocus: autofocus,
         style: TextStyle(
           fontFamily: FontFamilies.figtree,
-          fontSize: AuthRebrandMetrics.errorTextFontSize,
+          fontSize: AuthRebrandMetrics.inputTextFontSize,
           fontWeight: FontWeight.normal,
           color: showError
               ? DsColors.authRebrandError

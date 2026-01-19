@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/features/auth/state/reset_password_state.dart';
 import 'package:luvi_app/features/auth/utils/auth_navigation_helpers.dart';
@@ -15,6 +16,7 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dar
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Reset password screen with Auth Rebrand v3 design (export-parity).
 ///
@@ -180,9 +182,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               context.go(RoutePaths.authSignIn);
             },
           );
-    } catch (_) {
+    } catch (e, st) {
       // Errors surfaced via submitState listener in initState.
       // Catch prevents unhandled exception in async callback.
+      if (e is! AuthException) {
+        log.w('reset_password_unexpected', error: e, stack: st);
+      }
     }
   }
 }

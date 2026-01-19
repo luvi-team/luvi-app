@@ -14,7 +14,7 @@
 | Phase | Token | Hex |
 |-------|-------|-----|
 | Menstruation | `DsColors.phaseMenstruation` | #FFB9B9 |
-| Follikulär | `DsColors.phaseFollicularDark` | #4169E1 |
+| Follicular | `DsColors.phaseFollicularDark` | #4169E1 |
 | Ovulation | `DsColors.phaseOvulation` | #E1B941 |
 | Luteal | `DsColors.phaseLuteal` | #A755C2 |
 
