@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
@@ -29,7 +30,7 @@ void main() {
           hasCompletedOnboarding: null,
         );
 
-        expect(redirect, '${SplashScreen.routeName}?skipAnimation=true');
+        expect(redirect, '${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}');
       },
     );
 
@@ -88,7 +89,7 @@ void main() {
           currentConsentVersion: ConsentConfig.currentVersionInt,
         );
 
-        expect(redirect, '${SplashScreen.routeName}?skipAnimation=true');
+        expect(redirect, '${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}');
       },
     );
 

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 
@@ -77,7 +78,7 @@ void main() {
 
         expect(
           result,
-          equals('${RoutePaths.splash}?skipAnimation=true'),
+          equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'Unknown state should fail-safe to splash',
         );
       });
@@ -127,7 +128,7 @@ void main() {
 
         expect(
           result,
-          equals('${RoutePaths.splash}?skipAnimation=true'),
+          equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'Fail-safe should take priority over other gates',
         );
       });
@@ -151,7 +152,7 @@ void main() {
 
         expect(
           result,
-          equals('${RoutePaths.splash}?skipAnimation=true'),
+          equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'Error state should fail-safe to splash (same as loading)',
         );
       });

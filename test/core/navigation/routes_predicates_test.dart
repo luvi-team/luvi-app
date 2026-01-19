@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
@@ -97,7 +98,7 @@ void main() {
         );
         expect(
           result,
-          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          equals('${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'Unknown state should fail-safe to Splash for gate re-check',
         );
       });
@@ -110,7 +111,7 @@ void main() {
         );
         expect(
           result,
-          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          equals('${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'Unknown state takes precedence over hasCompletedOnboarding',
         );
       });
@@ -123,7 +124,7 @@ void main() {
         );
         expect(
           result,
-          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          equals('${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'Unknown state takes precedence over hasCompletedOnboarding',
         );
       });
@@ -168,7 +169,7 @@ void main() {
         );
         expect(
           result,
-          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          equals('${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'Unknown state should fail-safe to Splash',
         );
       });

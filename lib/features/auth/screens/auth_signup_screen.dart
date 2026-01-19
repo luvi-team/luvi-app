@@ -9,8 +9,9 @@ import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
-import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/features/auth/utils/auth_navigation_helpers.dart';
+import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_error_banner.dart';
@@ -64,7 +65,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     super.dispose();
   }
 
-  /// Validates signup form inputs.
+  /// Validates signup form inputs using NIST SP 800-63B compliant rules.
   /// Returns error message if validation fails, null if valid.
   String? _validateInputs({
     required String email,
@@ -72,18 +73,33 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     required String confirmPassword,
     required AppLocalizations l10n,
   }) {
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      setState(() {
-        _emailError = email.isEmpty;
-        _passwordError = password.isEmpty;
-        _confirmPasswordError = confirmPassword.isEmpty;
-      });
+    // Check for empty email first (password validation handles empty password)
+    if (email.isEmpty) {
+      setState(() => _emailError = true);
       return l10n.authSignupMissingFields;
     }
 
-    if (password != confirmPassword) {
-      setState(() => _confirmPasswordError = true);
-      return l10n.authPasswordMismatchError;
+    // Use NIST-compliant validation from shared rules
+    final passwordValidation = validateNewPassword(password, confirmPassword);
+
+    if (!passwordValidation.isValid) {
+      switch (passwordValidation.error!) {
+        case AuthPasswordValidationError.emptyFields:
+          setState(() {
+            _passwordError = password.isEmpty;
+            _confirmPasswordError = confirmPassword.isEmpty;
+          });
+          return l10n.authSignupMissingFields;
+        case AuthPasswordValidationError.mismatch:
+          setState(() => _confirmPasswordError = true);
+          return l10n.authPasswordMismatchError;
+        case AuthPasswordValidationError.tooShort:
+          setState(() => _passwordError = true);
+          return l10n.authErrPasswordTooShort;
+        case AuthPasswordValidationError.commonWeak:
+          setState(() => _passwordError = true);
+          return l10n.authErrPasswordCommonWeak;
+      }
     }
 
     return null;
@@ -216,14 +232,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_signup_screen'),
-      onBack: () {
-        final router = GoRouter.of(context);
-        if (router.canPop()) {
-          router.pop();
-        } else {
-          context.go(AuthSignInScreen.routeName);
-        }
-      },
+      onBack: () => handleAuthBackNavigation(context),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -98,6 +98,32 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     required LoginNotifier loginNotifier,
     required String email,
   }) {
+    // Primary: Check error code (more robust than message matching)
+    final code = error.code?.toLowerCase();
+    if (code != null) {
+      if (code == 'invalid_credentials' || code == 'invalid_grant') {
+        // SSOT P0.7: Both fields show error on invalid credentials
+        // SECURITY: Don't write password back into provider state
+        loginNotifier.updateState(
+          email: email,
+          emailError: AuthStrings.invalidCredentials,
+          passwordError: AuthStrings.invalidCredentials,
+          globalError: null,
+        );
+        return;
+      }
+      if (code == 'email_not_confirmed' || code == 'otp_expired') {
+        loginNotifier.updateState(
+          email: email,
+          emailError: null,
+          passwordError: null,
+          globalError: AuthStrings.errConfirmEmail,
+        );
+        return;
+      }
+    }
+
+    // Fallback: Message matching (for cases where code is null)
     final message = error.message.toLowerCase();
 
     if (_kInvalidCredentialsPatterns.any(message.contains)) {

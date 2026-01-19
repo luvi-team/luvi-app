@@ -13,6 +13,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' show Session;
 
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_services/supabase_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -99,7 +100,7 @@ String? homeGuardRedirect({
 }) {
   // Fail-safe: If state unknown, delegate to Splash (no visible animation).
   if (!isStateKnown) {
-    return '${RoutePaths.splash}?skipAnimation=true';
+    return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
   }
   // State is known - apply gate logic
   if (hasCompletedOnboarding == false) {
@@ -127,7 +128,7 @@ String? homeGuardRedirectWithConsent({
 }) {
   // Fail-safe: If state unknown, delegate to Splash (no visible animation).
   if (!isStateKnown) {
-    return '${RoutePaths.splash}?skipAnimation=true';
+    return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
   }
 
   // Defense-in-Depth: Check consent version FIRST (matches Splash gate order)
@@ -290,7 +291,7 @@ String? supabaseRedirectWithSession(
   final isLoginOrSignIn = state.matchedLocation.startsWith(RoutePaths.login) ||
       state.matchedLocation.startsWith(RoutePaths.authSignIn);
   if (isLoginOrSignIn) {
-    return '${RoutePaths.splash}?skipAnimation=true';
+    return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
   }
 
   return null;

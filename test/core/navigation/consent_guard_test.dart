@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/features/consent/config/consent_config.dart';
 
@@ -93,7 +94,7 @@ void main() {
 
         expect(
           result,
-          equals('${RoutePaths.splash}?skipAnimation=true'),
+          equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'Should redirect to Splash fail-safe when state unknown',
         );
       });
@@ -108,7 +109,7 @@ void main() {
 
         expect(
           result,
-          equals('${RoutePaths.splash}?skipAnimation=true'),
+          equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'State unknown should redirect to Splash, not ConsentIntro',
         );
       });
@@ -156,7 +157,7 @@ void main() {
             acceptedConsentVersion: null,
             currentConsentVersion: 1,
           ),
-          equals('${RoutePaths.splash}?skipAnimation=true'),
+          equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'),
         );
 
         // 2. Consent missing (state known)
@@ -202,7 +203,7 @@ void main() {
         hasCompletedOnboarding: null,
       );
 
-      expect(result, equals('${RoutePaths.splash}?skipAnimation=true'));
+      expect(result, equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'));
     });
 
     test('redirects to Onboarding01 when onboarding incomplete', () {

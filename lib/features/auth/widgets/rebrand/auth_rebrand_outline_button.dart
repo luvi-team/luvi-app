@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'auth_rebrand_metrics.dart';
@@ -46,7 +47,7 @@ class AuthRebrandOutlineButton extends StatelessWidget {
       key: key,
       label: label,
       onPressed: onPressed,
-      svgIconPath: 'assets/icons/google_g.svg',
+      svgIconPath: Assets.icons.googleG,
       width: width,
     );
   }
@@ -71,7 +72,11 @@ class AuthRebrandOutlineButton extends StatelessWidget {
     final hasIcon = icon != null || svgIconPath != null;
     final disabledOpacity = onPressed == null ? 0.5 : 1.0;
 
-    return SizedBox(
+    return Semantics(
+      button: true,
+      label: label,
+      enabled: onPressed != null,
+      child: SizedBox(
       width: width ?? AuthRebrandMetrics.buttonWidth,
       height: AuthRebrandMetrics.buttonHeight,
       child: Material(
@@ -134,6 +139,7 @@ class AuthRebrandOutlineButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

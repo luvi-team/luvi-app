@@ -309,5 +309,85 @@ void main() {
         ),
       );
     });
+
+    testWidgets('shows error when password is too short', (tester) async {
+      final mockRepo = _MockAuthRepository();
+      // No mock setup needed - validation fails before API call
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      // Fill email and short password
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'short', // < 8 characters
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'short',
+      );
+
+      // Submit
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      // Verify error message is shown
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authErrPasswordTooShort), findsAtLeastNWidgets(1));
+
+      // Verify API was NOT called (validation failed before)
+      verifyNever(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      );
+    });
+
+    testWidgets('shows error when password is common/weak', (tester) async {
+      final mockRepo = _MockAuthRepository();
+      // No mock setup needed - validation fails before API call
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      // Fill email and common weak password (blocklisted in create_new_password_rules.dart:45)
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'password123', // Common weak password (blocklisted)
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'password123',
+      );
+
+      // Submit
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      // Verify error message is shown
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authErrPasswordCommonWeak), findsAtLeastNWidgets(1));
+
+      // Verify API was NOT called (validation failed before)
+      verifyNever(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      );
+    });
   });
 }

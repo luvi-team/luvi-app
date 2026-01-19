@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/splash/state/splash_controller.dart';
 import 'package:luvi_app/features/splash/state/splash_state.dart';
@@ -75,7 +76,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     // Read skipAnimation query param once (post-login redirect uses this)
     final routerState = GoRouterState.of(context);
-    _skipAnimation = routerState.uri.queryParameters['skipAnimation'] == 'true';
+    _skipAnimation = routerState.uri.queryParameters[RouteQueryParams.skipAnimation] == RouteQueryParams.trueValue;
 
     // skipAnimation=true: Navigate immediately without waiting for video
     if (_skipAnimation && !_hasNavigated && !_skipAnimationHandled) {

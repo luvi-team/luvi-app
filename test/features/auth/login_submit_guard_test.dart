@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../support/test_config.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
@@ -82,5 +83,144 @@ void main() {
     expect(state.emailError, AuthStrings.errEmailInvalid);
     expect(state.passwordError, AuthStrings.errPasswordInvalid);
     expect(state.globalError, isNull);
+  });
+
+  group('AuthException error.code handling', () {
+    test('uses error.code for invalid_credentials when code is present', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Some message without patterns',
+        code: 'invalid_credentials',
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, AuthStrings.invalidCredentials);
+      expect(state.passwordError, AuthStrings.invalidCredentials);
+      expect(state.globalError, isNull);
+    });
+
+    test('uses error.code for email_not_confirmed when code is present', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Some message without patterns',
+        code: 'email_not_confirmed',
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errConfirmEmail);
+    });
+
+    test('falls back to message matching when code is null', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Invalid credentials provided', // Contains 'invalid' and 'credentials'
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, AuthStrings.invalidCredentials);
+      expect(state.passwordError, AuthStrings.invalidCredentials);
+      expect(state.globalError, isNull);
+    });
+
+    test('falls back to message matching for email confirmation when code is null', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Please confirm your email', // Contains 'confirm'
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errConfirmEmail);
+    });
+
+    test('sets generic error when no patterns match and code is null', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Unknown server error', // No matching patterns
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errLoginUnavailable);
+    });
   });
 }

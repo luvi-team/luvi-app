@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
@@ -71,7 +72,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
     if (isAuthenticated) {
       // User is logged in → go to splash with skipAnimation
       // PostAuth guards will determine Onboarding vs Home
-      context.go('${RoutePaths.splash}?skipAnimation=true');
+      context.go('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}');
     } else {
       // User is not logged in → back to auth entry
       context.go(RoutePaths.authSignIn);

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
@@ -78,7 +79,7 @@ void main() {
       (tester) async {
         // Router with Splash (skipAnimation=true) and AuthSignIn routes
         final router = GoRouter(
-          initialLocation: '${SplashScreen.routeName}?skipAnimation=true',
+          initialLocation: '${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}',
           routes: [
             GoRoute(
               path: SplashScreen.routeName,
@@ -120,7 +121,7 @@ void main() {
       (tester) async {
         // Router with Splash (skipAnimation=true)
         final router = GoRouter(
-          initialLocation: '${SplashScreen.routeName}?skipAnimation=true',
+          initialLocation: '${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}',
           routes: [
             GoRoute(
               path: SplashScreen.routeName,

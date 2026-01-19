@@ -5,8 +5,8 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
+import 'package:luvi_app/features/auth/utils/auth_navigation_helpers.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
@@ -82,14 +82,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_login_screen'),
-      onBack: () {
-        final router = GoRouter.of(context);
-        if (router.canPop()) {
-          router.pop();
-        } else {
-          context.go(AuthSignInScreen.routeName);
-        }
-      },
+      onBack: () => handleAuthBackNavigation(context),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

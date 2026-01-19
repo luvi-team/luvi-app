@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -62,7 +63,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             right: 0,
             bottom: 0,
             child: Image.asset(
-              'assets/images/auth/hero_auth_entry.png',
+              Assets.images.auth.heroAuthEntry,
               fit: BoxFit.fitWidth,
               width: size.width,
               excludeFromSemantics: true,
@@ -82,7 +83,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
                 children: [
                   // Logo - fixed size for brand consistency
                   SvgPicture.asset(
-                    'assets/images/auth/logo_luvi.svg',
+                    Assets.images.auth.logoLuvi,
                     height: AuthRebrandMetrics.entryLogoHeight,
                     semanticsLabel: 'LUVI Logo',
                   ),

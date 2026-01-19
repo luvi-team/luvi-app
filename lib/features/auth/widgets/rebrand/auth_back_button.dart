@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'auth_rebrand_metrics.dart';
@@ -32,7 +33,7 @@ class AuthBackButton extends StatelessWidget {
         child: IconButton(
           onPressed: onPressed,
           icon: SvgPicture.asset(
-            'assets/icons/Auth/auth_back_chevron.svg',
+            Assets.icons.authBackChevron,
             // SVG is 44x44 with centered chevron - render at full touch target size
             width: Sizes.touchTargetMin,
             height: Sizes.touchTargetMin,

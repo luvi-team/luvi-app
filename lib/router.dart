@@ -17,6 +17,7 @@ import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as routes;
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
@@ -92,7 +93,7 @@ String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
 
       return needsConsent ? RoutePaths.consentIntro : null;
     },
-    loading: () => '${RoutePaths.splash}?skipAnimation=true',
+    loading: () => '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}',
     error: (error, st) {
       // Log sanitized error for debugging (fail-safe still returns splash)
       log.w(
@@ -101,7 +102,7 @@ String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
         error: sanitizeError(error) ?? error.runtimeType,
         stack: st,
       );
-      return '${RoutePaths.splash}?skipAnimation=true';
+      return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
     },
   );
 }
@@ -131,7 +132,7 @@ String? _postAuthGuard(BuildContext context, GoRouterState state) {
         currentConsentVersion: ConsentConfig.currentVersionInt,
       );
     },
-    loading: () => '${RoutePaths.splash}?skipAnimation=true',
+    loading: () => '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}',
     error: (error, st) {
       // Log sanitized error to prevent PII leakage
       log.w(
@@ -140,7 +141,7 @@ String? _postAuthGuard(BuildContext context, GoRouterState state) {
         error: sanitizeError(error) ?? error.runtimeType,
         stack: st,
       );
-      return '${RoutePaths.splash}?skipAnimation=true';
+      return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
     },
   );
 }

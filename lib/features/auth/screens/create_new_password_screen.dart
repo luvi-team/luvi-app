@@ -6,8 +6,8 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
-import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
+import 'package:luvi_app/features/auth/utils/auth_navigation_helpers.dart';
 import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
@@ -213,14 +213,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_create_password_screen'),
       compactKeyboard: true, // Fewer fields = compact padding
-      onBack: () {
-        final router = GoRouter.of(context);
-        if (router.canPop()) {
-          router.pop();
-        } else {
-          router.go(AuthSignInScreen.routeName);
-        }
-      },
+      onBack: () => handleAuthBackNavigation(context),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
