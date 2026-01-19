@@ -14,10 +14,11 @@ class {ScreenName}Screen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ignore: unused_local_variable - Template placeholder for localization
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: DsColors.splashBg,
+      backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: Spacing.l),

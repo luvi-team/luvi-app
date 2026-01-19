@@ -13,7 +13,7 @@ Table (Criterion | Finding | File:Line | Severity | Action) as PR comment.
 No full scans, GDPR-safe, short and concise.
 
 ## Acceptance Criterion
-≤ N lines; ≤1 false positive per PR in calibration phase.
+≤ 30 lines; ≤ 1 false positive per PR in calibration phase.
 
 ## Operative Mode
 Codex CLI-first (BMAD → PRP).

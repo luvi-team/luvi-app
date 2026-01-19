@@ -1,6 +1,6 @@
 # Chart Design Tokens
 
-## Farben für Charts (DsColors)
+## Colors for Charts (DsColors)
 | Verwendung | Token | Hex |
 |------------|-------|-----|
 | Primary Line | `DsColors.signature` | #9F2B68 |
@@ -10,7 +10,7 @@
 | Neutral | `DsColors.grayscale500` | #696969 |
 | Background | `DsColors.cardBackgroundNeutral` | #F7F7F8 |
 
-## Zyklus-Phasen Farben
+## Cycle Phase Colors
 | Phase | Token | Hex |
 |-------|-------|-----|
 | Menstruation | `DsColors.phaseMenstruation` | #FFB9B9 |

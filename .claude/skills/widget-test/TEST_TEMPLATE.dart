@@ -10,7 +10,7 @@ void main() {
   group('{ScreenName}Screen', () {
     testWidgets('renders correctly', (tester) async {
       await tester.pumpWidget(
-        buildTestApp(child: const {ScreenName}Screen()),
+        buildTestApp(child: {ScreenName}Screen()),
       );
       await tester.pumpAndSettle();
 
@@ -20,12 +20,17 @@ void main() {
     testWidgets('has correct semantics', (tester) async {
       final handle = tester.ensureSemantics();
       await tester.pumpWidget(
-        buildTestApp(child: const {ScreenName}Screen()),
+        buildTestApp(child: {ScreenName}Screen()),
       );
       await tester.pumpAndSettle();
 
-      // Verify key semantic labels exist
-      // expect(find.bySemanticsLabel('...'), findsOneWidget);
+      // TODO(a11y): Add semantics assertions for {ScreenName}Screen
+      // Example patterns:
+      //   expect(find.bySemanticsLabel(l10n.someLabel), findsOneWidget);
+      //   final semantics = tester.widget<Semantics>(
+      //     find.byWidgetPredicate((w) => w is Semantics && w.properties.button == true),
+      //   );
+      //   expect(semantics.properties.label, contains('expected text'));
 
       handle.dispose();
     });

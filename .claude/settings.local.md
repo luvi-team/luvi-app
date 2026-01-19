@@ -112,11 +112,11 @@
 | `echo:*` | 🟢 | Text ausgeben | Internes Tooling |
 | `curl:*` | 🟡 | HTTP Requests | "Hol die URL" |
 | `xargs:*` | 🟢 | Pipe-Verarbeitung | Internes Tooling |
-| `bash -c:*` | 🟡 | Shell-Ausführung | Komplexe Befehle |
+| `bash -c:*` | 🔴 | Shell-Ausführung | ⚠️ Erlaubt beliebige Befehle! |
 | `tee:*` | 🟢 | Output splitten | Internes Tooling |
 | `unzip:*` | 🟢 | Archive entpacken | "Entpack das ZIP" |
 | `test:*` | 🟢 | Bedingungen prüfen | Internes Tooling |
-| `source:*` | 🟡 | Scripts laden | Internes Tooling |
+| `source:*` | 🔴 | Scripts laden | ⚠️ Erlaubt beliebige Ausführung! |
 | `sips:*` | 🟢 | Bild-Verarbeitung | Screenshot-Konvertierung |
 
 ### 7. Scripts (3 Permissions)
@@ -134,7 +134,7 @@
 | `xcrun simctl:*` | 🟢 | iOS Simulator | "Starte den Simulator" |
 | `actionlint:*` | 🟢 | GitHub Actions Lint | "Check die Actions" |
 | `ruby -ryaml -e:*` | 🟢 | YAML-Verarbeitung | Internes Tooling |
-| `python3:*` | 🟡 | Python-Scripts | Internes Tooling |
+| `python3:*` | 🔴 | Python-Scripts | ⚠️ Erlaubt beliebige Ausführung! |
 | `ffprobe:*` | 🟢 | Media-Analyse | Video/Audio-Metadaten |
 
 ---
@@ -165,13 +165,21 @@
 
 ## Wildcard-Semantik
 
-> **Wichtig:** Wildcards wie `git push:*` erlauben Subkommandos und Argumente, aber Claude Code blockiert bekannte destruktive Flags automatisch.
+> **Wichtig:** Wildcards wie `git push:*` erlauben Subkommandos und Argumente.
 >
-> **Beispiele:**
-> - `git push:*` → erlaubt `git push origin main`, blockiert `git push --force`
-> - `git reset:*` → erlaubt `git reset HEAD~1`, blockiert `git reset --hard`
+> ⚠️ **Claude Code blockiert KEINE destruktiven Flags automatisch.**
 >
-> **Fazit:** Destruktive Flags (`--force`, `--hard`) erfordern IMMER manuelle Bestätigung, unabhängig von Wildcards.
+> Schutz erfolgt NUR durch:
+> 1. Explizite Einträge in "NICHT erlaubte Befehle" (Zeile 152-162)
+> 2. Manuell konfigurierte Safety-Hooks
+>
+> **Nicht abgedeckt durch Wildcard-Blocking:**
+> - `bash -c:*` → Kann beliebige Befehle ausführen
+> - `python3:*` → Kann beliebigen Code ausführen
+> - `source:*` → Kann beliebige Scripts laden
+>
+> **Empfehlung:** Destruktive Befehle explizit blocken oder gefährliche
+> Wildcards entfernen.
 
 ---
 
