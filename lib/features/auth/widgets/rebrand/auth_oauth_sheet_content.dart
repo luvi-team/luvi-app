@@ -10,6 +10,8 @@ import 'auth_rebrand_metrics.dart';
 import 'auth_rebrand_outline_button.dart';
 import 'auth_secondary_button.dart';
 
+import 'auth_rebrand_text_styles.dart';
+
 /// Shared OAuth content for Auth Rebrand v3 bottom sheets.
 ///
 /// Provides the common layout for both login and register sheets:
@@ -47,7 +49,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
 
     // Check if Apple Sign In is supported
     final appleSignInSupported = FeatureFlags.enableAppleSignIn &&
-        (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS);
+        (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS);
 
     return Center(
       child: SingleChildScrollView(
@@ -104,12 +106,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
                   // Divider (SSOT: Figma #030401, 17px, Regular)
                   Text(
                     l10n.authOr,
-                    style: const TextStyle(
-                      fontFamily: FontFamilies.figtree,
-                      fontSize: AuthRebrandMetrics.bodyFontSize,
-                      fontVariations: [FontVariation('wght', 400)], // Regular for variable font
-                      color: DsColors.grayscaleBlack,
-                    ),
+                    style: AuthRebrandTextStyles.divider,
                   ),
 
                   const SizedBox(height: Spacing.m),

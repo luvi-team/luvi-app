@@ -88,10 +88,16 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     // Use NIST-compliant validation from shared rules
     final passwordValidation = validateNewPassword(password, confirmPassword);
-    assert(
-      passwordValidation.error != AuthPasswordValidationError.emptyFields,
-      'Empty fields should be handled before validation',
-    );
+    
+    // Runtime check instead of assert for production safety
+    if (passwordValidation.error == AuthPasswordValidationError.emptyFields) {
+      setState(() {
+        _emailError = true;
+        _passwordError = true;
+        _confirmPasswordError = true;
+      });
+      return l10n.authSignupMissingFields;
+    }
 
     if (!passwordValidation.isValid) {
       switch (passwordValidation.error!) {

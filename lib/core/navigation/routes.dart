@@ -232,7 +232,7 @@ Session? _getSessionSafely({
       'auth_redirect_session_access_failed',
       tag: 'navigation',
       error: e.runtimeType.toString(),
-      stack: stack,
+      stack: kDebugMode ? stack : null,
     );
     return null;
   }

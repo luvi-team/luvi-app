@@ -10,7 +10,7 @@ void main() {
   group('{ScreenName}Screen', () {
     testWidgets('renders correctly', (tester) async {
       await tester.pumpWidget(
-        buildTestApp(child: {ScreenName}Screen()),
+        buildTestApp(child: const {ScreenName}Screen()),
       );
       await tester.pumpAndSettle();
 
@@ -20,7 +20,7 @@ void main() {
     testWidgets('has correct semantics', (tester) async {
       final handle = tester.ensureSemantics();
       await tester.pumpWidget(
-        buildTestApp(child: {ScreenName}Screen()),
+        buildTestApp(child: const {ScreenName}Screen()),
       );
       await tester.pumpAndSettle();
 

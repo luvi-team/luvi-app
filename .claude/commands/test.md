@@ -25,6 +25,6 @@ scripts/flutter_codex.sh test test/features/auth/
 
 **Flutter Tips:**
 - Golden mismatch → `scripts/flutter_codex.sh test --update-goldens`
-- Widget tree → `tester.element(find.byType(X)).debugDump()`
+- Widget tree → `debugDumpApp()`
 - Async issues → `await tester.pumpAndSettle()`
 - State not updating → Check provider scoping

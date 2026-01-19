@@ -112,6 +112,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
               top: AuthRebrandMetrics.entryTealDotTopOffset,
               child: ExcludeSemantics(
                 child: Container(
+                  key: const ValueKey('tealDot'),
                   width: AuthRebrandMetrics.entryTealDotSize,
                   height: AuthRebrandMetrics.entryTealDotSize,
                   decoration: const BoxDecoration(

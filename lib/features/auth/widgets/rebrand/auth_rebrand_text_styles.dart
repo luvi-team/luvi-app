@@ -33,4 +33,16 @@ class AuthRebrandTextStyles {
     height: AuthRebrandMetrics.bodyLineHeight,
     color: DsColors.authRebrandTextPrimary,
   );
+
+  /// Divider text style (e.g., "or", "oder").
+  ///
+  /// Figtree Regular 17px, line-height 24/17
+  /// Used in: AuthOAuthSheetContent
+  static const TextStyle divider = TextStyle(
+    fontFamily: FontFamilies.figtree,
+    fontSize: AuthRebrandMetrics.bodyFontSize,
+    fontWeight: FontWeight.w400,
+    height: AuthRebrandMetrics.bodyLineHeight,
+    color: DsColors.grayscaleBlack,
+  );
 }

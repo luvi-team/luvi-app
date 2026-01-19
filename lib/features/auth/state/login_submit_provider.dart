@@ -9,10 +9,10 @@ import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Patterns to detect invalid credentials error from Supabase.
-const _kInvalidCredentialsPatterns = ['invalid', 'credentials'];
+const _kInvalidCredentialsPatterns = ['invalid login credentials', 'invalid credentials'];
 
 /// Patterns to detect email confirmation required error from Supabase.
-const _kEmailConfirmationPatterns = ['confirm'];
+const _kEmailConfirmationPatterns = ['email not confirmed', 'confirm your email'];
 
 class LoginSubmitNotifier extends AsyncNotifier<void> {
   @override
@@ -104,11 +104,11 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     // Combined: code OR message pattern (defensive)
     final isInvalidCredentials = code == 'invalid_credentials' ||
         code == 'invalid_grant' ||
-        _kInvalidCredentialsPatterns.every(message.contains);
+        _kInvalidCredentialsPatterns.any(message.contains);
 
     final isEmailNotConfirmed = code == 'email_not_confirmed' ||
         code == 'otp_expired' ||
-        _kEmailConfirmationPatterns.every(message.contains);
+        _kEmailConfirmationPatterns.any(message.contains);
 
     if (isInvalidCredentials) {
       // SSOT P0.7: Both fields show error on invalid credentials

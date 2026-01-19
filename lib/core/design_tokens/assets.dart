@@ -39,7 +39,7 @@ class _Icons {
 
   // Auth/Social icons
   final String googleG = 'assets/icons/google_g.svg';
-  final String authBackChevron = 'assets/icons/Auth/auth_back_chevron.svg';
+  final String authBackChevron = 'assets/icons/auth/auth_back_chevron.svg';
 
   // Top bar
   final String search = 'assets/icons/dashboard/icon.search.svg';

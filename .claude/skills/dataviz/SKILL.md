@@ -55,8 +55,9 @@ LineChart(
 
 ### A11y Wrapper
 ```dart
+final localizations = AppLocalizations.of(context);
 Semantics(
-  label: AppLocalizations.of(context)!.chartDescription,
+  label: localizations?.chartDescription ?? 'Chart',
   child: LineChart(...),
 )
 ```

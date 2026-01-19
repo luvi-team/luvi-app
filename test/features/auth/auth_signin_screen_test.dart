@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
@@ -69,15 +68,8 @@ void main() {
     await tester.pumpWidget(_buildRouterHarness(router));
     await tester.pumpAndSettle();
 
-    // Find teal dot container by its decoration color
-    final tealDotFinder = find.byWidgetPredicate((widget) {
-      if (widget is Container && widget.decoration is BoxDecoration) {
-        final decoration = widget.decoration as BoxDecoration;
-        return decoration.color == DsColors.authRebrandTealDot &&
-            decoration.shape == BoxShape.circle;
-      }
-      return false;
-    });
+    // Find teal dot container by key (stable selector)
+    final tealDotFinder = find.byKey(const ValueKey('tealDot'));
     expect(tealDotFinder, findsOneWidget);
 
     // Find logo SVG

@@ -167,7 +167,7 @@
 > ⚠️ **Claude Code blockiert KEINE destruktiven Flags automatisch.**
 >
 > Schutz erfolgt NUR durch:
-> 1. Explizite Einträge in "NICHT erlaubte Befehle" (Zeile 152-162)
+> 1. Explizite Einträge in "NICHT erlaubte Befehle"
 > 2. Manuell konfigurierte Safety-Hooks
 >
 > **Nicht abgedeckt durch Wildcard-Blocking:**

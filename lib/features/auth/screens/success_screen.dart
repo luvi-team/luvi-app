@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -10,8 +11,8 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
+import 'package:luvi_app/features/splash/data/splash_dependencies.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_services/supabase_service.dart';
 
 /// SuccessScreen with Auth Rebrand v3 design (export-parity).
 ///
@@ -26,7 +27,7 @@ import 'package:luvi_services/supabase_service.dart';
 /// - Auto-redirect after 1.5 seconds:
 ///   - If authenticated → splash (Guards handle Onboarding vs Home)
 ///   - If not authenticated → auth entry
-class SuccessScreen extends StatefulWidget {
+class SuccessScreen extends ConsumerStatefulWidget {
   static const String passwordSavedRoutePath = '/auth/password/success';
   static const String passwordSavedRouteName = 'password_saved';
 
@@ -40,10 +41,10 @@ class SuccessScreen extends StatefulWidget {
   });
 
   @override
-  State<SuccessScreen> createState() => _SuccessScreenState();
+  ConsumerState<SuccessScreen> createState() => _SuccessScreenState();
 }
 
-class _SuccessScreenState extends State<SuccessScreen> {
+class _SuccessScreenState extends ConsumerState<SuccessScreen> {
   Timer? _redirectTimer;
 
   @override
@@ -68,7 +69,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
   void _performRedirect() {
     if (!mounted) return;
 
-    final isAuthenticated = SupabaseService.isAuthenticated;
+    final isAuthenticated = ref.read(isAuthenticatedFnProvider)();
     if (isAuthenticated) {
       // User is logged in → go to splash with skipAnimation
       // PostAuth guards will determine Onboarding vs Home

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -164,7 +165,8 @@ GoRoute? _findRouteByPath(List<RouteBase> routes, String path) {
         final nested = _findRouteByPath(subRoutes, path);
         if (nested != null) return nested;
       }
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('Error accessing routes for path $path: $e\n$st');
       // Route type does not have 'routes' property or access failed
     }
   }
