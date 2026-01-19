@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 
 import '../../../support/test_app.dart';
 import '../../../support/test_config.dart';
@@ -41,9 +42,12 @@ void main() {
         ),
       );
 
-      // Semantics should have a label (from L10n or fallback)
+      // Verify exact L10n value for semantics label
+      final context = tester.element(find.byType(AuthBackButton));
+      final l10n = AppLocalizations.of(context)!;
+
       final semantics = tester.getSemantics(find.byType(AuthBackButton));
-      expect(semantics.label, isNotEmpty);
+      expect(semantics.label, equals(l10n.authBackSemantic));
     });
 
     testWidgets('uses custom semanticsLabel when provided', (tester) async {

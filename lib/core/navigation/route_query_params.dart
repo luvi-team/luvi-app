@@ -12,5 +12,5 @@ abstract final class RouteQueryParams {
   /// Complete query string for skipAnimation=true.
   ///
   /// Usage: `'${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'`
-  static String get skipAnimationTrueQuery => '$skipAnimation=$trueValue';
+  static const String skipAnimationTrueQuery = '$skipAnimation=$trueValue';
 }

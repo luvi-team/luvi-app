@@ -92,6 +92,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     if (!passwordValidation.isValid) {
       switch (passwordValidation.error!) {
         case AuthPasswordValidationError.emptyFields:
+          // Unreachable: empty fields checked at lines 80-87 before validateNewPassword
+          // Kept for Dart switch exhaustiveness
           setState(() {
             _emailError = isEmailEmpty;
             _passwordError = isPasswordEmpty;
@@ -159,19 +161,27 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       setState(() {
         _errorMessage = _mapAuthError(error, l10n);
 
-        // Determine which field caused the error based on Supabase error message
-        final message = error.message.toLowerCase();
-        final isPasswordRelated = message.contains('password');
-
-        // Clear both flags first, then set the appropriate one
+        // Clear both flags first
         _emailError = false;
         _passwordError = false;
 
-        if (isPasswordRelated) {
-          _passwordError = true;
+        // Use error.code for field attribution (more robust than message parsing)
+        final code = error.code?.toLowerCase();
+        if (code != null) {
+          if (code == 'weak_password') {
+            _passwordError = true;
+          } else {
+            // email_address_invalid, email_exists, user_already_exists, etc.
+            _emailError = true;
+          }
         } else {
-          // Default to email for: invalid email, duplicate account, unknown errors
-          _emailError = true;
+          // Fallback: message pattern matching when code is null
+          final message = error.message.toLowerCase();
+          if (message.contains('password')) {
+            _passwordError = true;
+          } else {
+            _emailError = true;
+          }
         }
       });
     } catch (error, stackTrace) {
@@ -219,7 +229,26 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   }
 
   String _mapAuthError(AuthException error, AppLocalizations l10n) {
-    // Map common Supabase auth errors to user-friendly messages
+    final code = error.code?.toLowerCase();
+
+    // Primary: Check error.code (robust, structured)
+    if (code != null) {
+      switch (code) {
+        case 'email_address_invalid':
+        case 'validation_failed':
+          return l10n.authErrEmailInvalid;
+        case 'weak_password':
+          return l10n.authErrPasswordTooShort;
+        case 'email_exists':
+        case 'user_already_exists':
+          return l10n.authErrConfirmEmail;
+        case 'signup_disabled':
+        case 'over_request_rate_limit':
+          return l10n.authSignupGenericError;
+      }
+    }
+
+    // Fallback: Message pattern matching (when code is null)
     final message = error.message.toLowerCase();
     if (message.contains('email') && message.contains('invalid')) {
       return l10n.authErrEmailInvalid;
@@ -230,6 +259,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     if (message.contains('already') || message.contains('exists')) {
       return l10n.authErrConfirmEmail;
     }
+
     return l10n.authSignupGenericError;
   }
 

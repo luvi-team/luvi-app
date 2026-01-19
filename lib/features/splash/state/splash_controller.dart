@@ -76,13 +76,22 @@ class SplashController extends _$SplashController {
   ///
   /// Increments retry counter and re-runs gate sequence.
   /// Does nothing if not in Unknown state or max retries exhausted.
+  /// Shows spinner on retry button while retrying (stays on Unknown UI).
   Future<void> retry() async {
     if (state is! SplashUnknown) return;
     if (_manualRetryCount >= SplashUnknown.maxRetries) return;
 
     _manualRetryCount++;
-    state = const SplashInitial();
+
+    // Show spinner while retrying, stay on Unknown UI
+    state = SplashUnknown(
+      canRetry: true,
+      retryCount: _manualRetryCount,
+      isRetrying: true,
+    );
+
     await checkGates();
+    // After checkGates() completes, new state is set (without isRetrying)
   }
 
   /// The main gate sequence. Orchestrates gate checks in order.

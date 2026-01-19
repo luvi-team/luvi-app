@@ -34,10 +34,14 @@ final class SplashUnknown extends SplashState {
   const SplashUnknown({
     required this.canRetry,
     required this.retryCount,
+    this.isRetrying = false,
   });
 
   final bool canRetry;
   final int retryCount;
+
+  /// Whether a retry is currently in progress.
+  final bool isRetrying;
 
   /// Maximum manual retry attempts before disabling retry button.
   static const int maxRetries = 3;
@@ -47,8 +51,9 @@ final class SplashUnknown extends SplashState {
       identical(this, other) ||
       other is SplashUnknown &&
           canRetry == other.canRetry &&
-          retryCount == other.retryCount;
+          retryCount == other.retryCount &&
+          isRetrying == other.isRetrying;
 
   @override
-  int get hashCode => Object.hash(canRetry, retryCount);
+  int get hashCode => Object.hash(canRetry, retryCount, isRetrying);
 }

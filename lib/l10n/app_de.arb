@@ -1502,10 +1502,6 @@
   "@authSavePasswordCta": {
     "description": "CTA text for save new password button"
   },
-  "authSuccessSubtitle": "Neues Passwort gespeichert.",
-  "@authSuccessSubtitle": {
-    "description": "Subtitle on success screen"
-  },
   "authResetErrorGeneric": "Zurücksetzen fehlgeschlagen. Bitte versuche es erneut.",
   "@authResetErrorGeneric": {
     "description": "Generic error message when password reset fails"

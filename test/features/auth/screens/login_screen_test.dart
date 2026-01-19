@@ -85,7 +85,7 @@ void main() {
     expect(tester.widget<ElevatedButton>(innerButton).onPressed, isNotNull);
 
     await tester.tap(buttonFinder);
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     // LoginScreen shows generic L10n error messages
     final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;

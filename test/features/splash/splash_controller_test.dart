@@ -60,7 +60,12 @@ class MockUserStateService extends UserStateService {
   Future<void> markWelcomeSeen() async {}
 }
 
-/// Mock AnalyticsRecorder for testing.
+/// Manual mock for AnalyticsRecorder.
+///
+/// Hand-rolled instead of mocktail because:
+/// 1. Only recordEvent() is needed - no complex stubbing required
+/// 2. recordedEvents list enables simple verification of recorded events
+/// 3. Keeps test setup minimal and self-contained
 class MockAnalyticsRecorder implements AnalyticsRecorder {
   final List<String> recordedEvents = [];
 

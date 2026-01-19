@@ -146,11 +146,13 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
   }
 
   Widget _buildLoadingOverlay() {
-    return Container(
-      color: DsColors.authRebrandBackground.withValues(alpha: 0.7),
-      child: const Center(
-        child: CircularProgressIndicator(
-          color: DsColors.authRebrandCtaPrimary,
+    return Positioned.fill(
+      child: Container(
+        color: DsColors.authRebrandBackground.withValues(alpha: 0.7),
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: DsColors.authRebrandCtaPrimary,
+          ),
         ),
       ),
     );

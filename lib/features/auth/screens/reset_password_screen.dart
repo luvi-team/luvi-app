@@ -169,7 +169,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     try {
       await ref.read(resetSubmitProvider.notifier).submit(
             email,
-            onSuccess: () async {
+            onSuccess: () {
               if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -177,8 +177,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   duration: Timing.snackBarBrief,
                 ),
               );
-              await Future<void>.delayed(Timing.snackBarBrief);
-              if (!mounted) return;
               context.go(RoutePaths.authSignIn);
             },
           );

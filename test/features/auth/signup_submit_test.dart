@@ -413,4 +413,164 @@ void main() {
       );
     });
   });
+
+  group('AuthException error.code handling', () {
+    late GoRouter router;
+
+    setUp(() {
+      router = GoRouter(
+        routes: testAppRoutes,
+        initialLocation: AuthSignupScreen.routeName,
+      );
+    });
+
+    tearDown(() {
+      router.dispose();
+    });
+
+    testWidgets('uses error.code for weak_password', (tester) async {
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(AuthException('Some message', code: 'weak_password'));
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'strongpass',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'strongpass',
+      );
+
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      // Verify password error message is shown (not email)
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authErrPasswordTooShort), findsOneWidget);
+      // Password field should show error, not email
+      expect(find.text(l10n.authErrorPasswordCheck), findsOneWidget);
+      expect(find.text(l10n.authErrorEmailCheck), findsNothing);
+    });
+
+    testWidgets('uses error.code for email_exists', (tester) async {
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(AuthException('Some message', code: 'email_exists'));
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'strongpass',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'strongpass',
+      );
+
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      // Verify email error message is shown
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authErrConfirmEmail), findsOneWidget);
+      // Email field should show error, not password
+      expect(find.text(l10n.authErrorEmailCheck), findsOneWidget);
+      expect(find.text(l10n.authErrorPasswordCheck), findsNothing);
+    });
+
+    testWidgets('falls back to message matching when code is null', (tester) async {
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(AuthException('Email already registered')); // No code
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'strongpass',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'strongpass',
+      );
+
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      // Should still work via message fallback (contains 'already')
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authErrConfirmEmail), findsOneWidget);
+    });
+
+    testWidgets('uses error.code for user_already_exists', (tester) async {
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(AuthException('Some message', code: 'user_already_exists'));
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'strongpass',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'strongpass',
+      );
+
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+      expect(find.text(l10n.authErrConfirmEmail), findsOneWidget);
+    });
+  });
 }

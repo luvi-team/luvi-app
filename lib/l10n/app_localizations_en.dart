@@ -1100,8 +1100,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSavePasswordCta => 'Save';
 
   @override
-  String get authSuccessSubtitle => 'New password saved.';
-
-  @override
   String get authResetErrorGeneric => 'Reset failed. Please try again.';
 }

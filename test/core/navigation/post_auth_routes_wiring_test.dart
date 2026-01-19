@@ -160,6 +160,11 @@ GoRoute? _findRouteByPath(List<RouteBase> routes, String path) {
       final nested = _findRouteByPath(route.routes, path);
       if (nested != null) return nested;
     }
+    // StatefulShellRoute for future tab-navigation support
+    if (route is StatefulShellRoute) {
+      final nested = _findRouteByPath(route.routes, path);
+      if (nested != null) return nested;
+    }
     if (route is GoRoute && route.routes.isNotEmpty) {
       final nested = _findRouteByPath(route.routes, path);
       if (nested != null) return nested;

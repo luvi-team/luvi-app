@@ -2189,12 +2189,6 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get authSavePasswordCta;
 
-  /// Subtitle on success screen
-  ///
-  /// In en, this message translates to:
-  /// **'New password saved.'**
-  String get authSuccessSubtitle;
-
   /// Generic error message when password reset fails
   ///
   /// In en, this message translates to:

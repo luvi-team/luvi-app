@@ -153,11 +153,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Widget _buildUnknownUI(BuildContext context, AppLocalizations l10n, bool canRetry) {
+    final splashState = ref.read(splashControllerProvider);
+    final isRetrying = splashState is SplashUnknown && splashState.isRetrying;
+
     return UnknownStateUi(
       onRetry: canRetry ? _handleRetry : null,
       onSignOut: _handleSignOut,
       canRetry: canRetry,
-      isRetrying: false,
+      isRetrying: isRetrying,
     );
   }
 }

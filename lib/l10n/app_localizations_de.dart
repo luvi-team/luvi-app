@@ -1100,8 +1100,5 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authSavePasswordCta => 'Speichern';
 
   @override
-  String get authSuccessSubtitle => 'Neues Passwort gespeichert.';
-
-  @override
   String get authResetErrorGeneric => 'Zurücksetzen fehlgeschlagen. Bitte versuche es erneut.';
 }

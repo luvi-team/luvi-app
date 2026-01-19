@@ -25,6 +25,7 @@ class AuthBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      excludeSemantics: true,
       button: true,
       label: semanticsLabel ??
           AppLocalizations.of(context)?.authBackSemantic ??

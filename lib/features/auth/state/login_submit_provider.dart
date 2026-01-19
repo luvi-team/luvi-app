@@ -98,35 +98,19 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     required LoginNotifier loginNotifier,
     required String email,
   }) {
-    // Primary: Check error code (more robust than message matching)
     final code = error.code?.toLowerCase();
-    if (code != null) {
-      if (code == 'invalid_credentials' || code == 'invalid_grant') {
-        // SSOT P0.7: Both fields show error on invalid credentials
-        // SECURITY: Don't write password back into provider state
-        loginNotifier.updateState(
-          email: email,
-          emailError: AuthStrings.invalidCredentials,
-          passwordError: AuthStrings.invalidCredentials,
-          globalError: null,
-        );
-        return;
-      }
-      if (code == 'email_not_confirmed' || code == 'otp_expired') {
-        loginNotifier.updateState(
-          email: email,
-          emailError: null,
-          passwordError: null,
-          globalError: AuthStrings.errConfirmEmail,
-        );
-        return;
-      }
-    }
-
-    // Fallback: Message matching (for cases where code is null)
     final message = error.message.toLowerCase();
 
-    if (_kInvalidCredentialsPatterns.every(message.contains)) {
+    // Combined: code OR message pattern (defensive)
+    final isInvalidCredentials = code == 'invalid_credentials' ||
+        code == 'invalid_grant' ||
+        _kInvalidCredentialsPatterns.every(message.contains);
+
+    final isEmailNotConfirmed = code == 'email_not_confirmed' ||
+        code == 'otp_expired' ||
+        _kEmailConfirmationPatterns.every(message.contains);
+
+    if (isInvalidCredentials) {
       // SSOT P0.7: Both fields show error on invalid credentials
       // SECURITY: Don't write password back into provider state
       loginNotifier.updateState(
@@ -135,21 +119,31 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         passwordError: AuthStrings.invalidCredentials,
         globalError: null,
       );
-    } else if (_kEmailConfirmationPatterns.every(message.contains)) {
+      return;
+    }
+
+    if (isEmailNotConfirmed) {
       loginNotifier.updateState(
         email: email,
         emailError: null,
         passwordError: null,
         globalError: AuthStrings.errConfirmEmail,
       );
-    } else {
-      loginNotifier.updateState(
-        email: email,
-        emailError: null,
-        passwordError: null,
-        globalError: AuthStrings.errLoginUnavailable,
-      );
+      return;
     }
+
+    // Log unrecognized auth errors for inspection
+    log.i(
+      'auth_error_unrecognized: code=${code ?? "null"}, message=${sanitizeError(message) ?? message}',
+      tag: 'login_submit',
+    );
+
+    loginNotifier.updateState(
+      email: email,
+      emailError: null,
+      passwordError: null,
+      globalError: AuthStrings.errLoginUnavailable,
+    );
   }
 }
 

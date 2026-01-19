@@ -28,7 +28,7 @@ bool? parseNullableBool(dynamic value) {
 int? parseNullableInt(dynamic value) {
   if (value is int) return value;
   // Handle JSON-decoded numbers like 42.0 that should be treated as ints
-  if (value is double && value == value.toInt()) {
+  if (value is double && value.isFinite && value == value.toInt()) {
     return value.toInt();
   }
   return null;

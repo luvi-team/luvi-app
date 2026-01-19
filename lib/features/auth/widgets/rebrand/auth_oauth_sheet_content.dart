@@ -81,6 +81,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
                       label: l10n.authContinueApple,
                       onPressed: () async {
                         await Navigator.of(context).maybePop();
+                        if (!context.mounted) return;
                         onApplePressed();
                       },
                     ),
@@ -93,6 +94,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
                       label: l10n.authContinueGoogle,
                       onPressed: () async {
                         await Navigator.of(context).maybePop();
+                        if (!context.mounted) return;
                         onGooglePressed();
                       },
                     ),
@@ -117,6 +119,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
                     label: l10n.authContinueEmail,
                     onPressed: () async {
                       await Navigator.of(context).maybePop();
+                      if (!context.mounted) return;
                       onEmailPressed();
                     },
                   ),
