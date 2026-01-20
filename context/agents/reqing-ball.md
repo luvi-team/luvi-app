@@ -18,6 +18,13 @@ No full scans, GDPR-safe, short and concise.
 ## Operative Mode
 Codex CLI-first (BMAD → PRP).
 
+**Definitions:**
+- **Codex CLI-first:** Backend/DB tasks are prioritized via Codex agent.
+- **BMAD:** Business Model & Architecture Doc.
+- **PRP:** Project Roadmap & Plan.
+- **BMAD-Slim flow:** See `docs/bmad/claude-code-slim.md`.
+- **Acceptance gates:** See `context/agents/_acceptance_v1.1.md`.
+
 ## When to Use (LUVI-specific)
 - Use before larger backend or cross-feature tasks to refine requirements/PRD/ADRs (e.g., new dashboard module, additional consent step).
 - Required for high-impact topics (DB schema, privacy/RLS) before starting implementation.

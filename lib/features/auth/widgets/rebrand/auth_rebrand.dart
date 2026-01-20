@@ -17,6 +17,7 @@ export 'auth_rainbow_background.dart';
 export 'auth_rebrand_metrics.dart';
 export 'auth_rebrand_outline_button.dart';
 export 'auth_rebrand_scaffold.dart';
+export 'auth_rebrand_text_styles.dart';
 export 'auth_rebrand_text_field.dart';
 export 'auth_register_sheet.dart';
 export 'auth_secondary_button.dart';
