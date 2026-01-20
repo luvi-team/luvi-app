@@ -1,6 +1,6 @@
 # Agent Dossiers
 
-Preamble: 6 roles (architect-orchestrator · ui-frontend · api-backend · db-admin · dataviz · qa-dsgvo). Workflow: BMAD (Business Model & Arch Doc) → PRP (Project Roadmap & Plan), DoD/Gates. Task System: Archon.
+Preamble: 6 roles (architect-orchestrator · ui-frontend · api-backend · db-admin · dataviz · qa-gdpr). Workflow: BMAD (Business Model & Arch Doc) → PRP (Project Roadmap & Plan), DoD/Gates. Task System: Archon.
 Control: Auto-Role (default) or explicit `role: ...` for mixed tasks.
 Required Checks: Flutter CI / analyze-test (pull_request) · Flutter CI / privacy-gate (pull_request) · Greptile Review (Required Check) · Vercel Preview Health (200 OK).
 AI review setup (Greptile merge gate, local CodeRabbit preflight) is defined in docs/engineering/ai-reviewer.md. If anything else contradicts it, ai-reviewer.md wins.
@@ -14,4 +14,4 @@ Dossier Convention: YAML frontmatter (inputs/outputs) is machine-readable; the "
 | api-backend | context/agents/02-api-backend.md | → ui-frontend/db-admin (Docs + Functions) | Codex |
 | db-admin | context/agents/03-db-admin.md | → api-backend (Migrations + Docs) | Codex |
 | dataviz | context/agents/04-dataviz.md | → ui-frontend (Docs + PR) | Claude Code |
-| qa-dsgvo | context/agents/05-qa-dsgvo.md | → db-admin/ui-frontend (Privacy Reviews) | Codex |
+| qa-gdpr | context/agents/05-qa-gdpr.md | → db-admin/ui-frontend (Privacy Reviews) | Codex |

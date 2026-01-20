@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'auth_rainbow_background.dart';
 import 'auth_rebrand_metrics.dart';
 
@@ -84,13 +85,18 @@ class AuthBottomSheetShell extends StatelessWidget {
             children: [
               // Drag indicator (SSOT: 134×5, top=17, color=#030401, radius=100)
               const SizedBox(height: AuthRebrandMetrics.sheetDragIndicatorTop),
-              Container(
-                width: AuthRebrandMetrics.sheetDragIndicatorWidth,
-                height: AuthRebrandMetrics.sheetDragIndicatorHeight,
-                decoration: BoxDecoration(
-                  color: DsColors.grayscaleBlack,
-                  borderRadius: BorderRadius.circular(
-                    AuthRebrandMetrics.sheetDragIndicatorRadius,
+              Semantics(
+                label: AppLocalizations.of(context)?.authDragHandleSemantic ??
+                    'Drag handle',
+                excludeSemantics: true,
+                child: Container(
+                  width: AuthRebrandMetrics.sheetDragIndicatorWidth,
+                  height: AuthRebrandMetrics.sheetDragIndicatorHeight,
+                  decoration: BoxDecoration(
+                    color: DsColors.grayscaleBlack,
+                    borderRadius: BorderRadius.circular(
+                      AuthRebrandMetrics.sheetDragIndicatorRadius,
+                    ),
                   ),
                 ),
               ),

@@ -1,5 +1,9 @@
 // Template for widget tests
 // Replace: {feature}, {ScreenName}, {screen_file}
+//
+// IMPORTANT: Place test files at test/features/{feature}/screens/{screen}_test.dart
+// The relative imports below assume this directory depth (3 levels from test/).
+// If placing elsewhere, adjust import paths accordingly.
 
 // Material import kept for common test utilities (Key, BuildContext, etc.)
 import 'package:flutter/material.dart';

@@ -26,13 +26,16 @@ void main() {
       router.dispose();
     });
 
-    Future<void> pumpResetScreen(WidgetTester tester) async {
+    Future<void> pumpResetScreen(
+      WidgetTester tester, {
+      Locale locale = const Locale('de'),
+    }) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
+            locale: locale,
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
           ),

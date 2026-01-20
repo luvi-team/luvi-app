@@ -32,6 +32,12 @@ void main() {
     test('returns null when value is List', () {
       expect(parseNullableBool(<dynamic>[]), isNull);
     });
+
+    test('returns null when value is double', () {
+      expect(parseNullableBool(1.0), isNull);
+      expect(parseNullableBool(0.0), isNull);
+      expect(parseNullableBool(0.5), isNull);
+    });
   });
 
   group('parseNullableInt', () {
@@ -92,6 +98,12 @@ void main() {
 
     test('returns null for negative infinity', () {
       expect(parseNullableInt(double.negativeInfinity), isNull);
+    });
+
+    test('returns null for doubles outside safe integer range', () {
+      expect(parseNullableInt(1e20), isNull);
+      expect(parseNullableInt(-1e20), isNull);
+      expect(parseNullableInt(9007199254740992.0), isNull); // MAX_SAFE_INTEGER + 1
     });
   });
 }

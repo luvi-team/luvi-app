@@ -104,7 +104,7 @@ class AuthRebrandTextField extends StatelessWidget {
             color: showError
                 ? DsColors.authRebrandError
                 : DsColors.grayscale500,
-            height: AuthRebrandMetrics.placeholderLineHeight,
+            height: AuthRebrandMetrics.placeholderLineHeightRatio,
           ),
           filled: true,
           fillColor: DsColors.authRebrandInputBackground,

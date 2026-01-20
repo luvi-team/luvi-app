@@ -1101,4 +1101,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authResetErrorGeneric => 'Zurücksetzen fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
+  String get authDragHandleSemantic => 'Ziehgriff';
 }

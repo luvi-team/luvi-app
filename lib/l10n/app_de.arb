@@ -1505,5 +1505,9 @@
   "authResetErrorGeneric": "Zurücksetzen fehlgeschlagen. Bitte versuche es erneut.",
   "@authResetErrorGeneric": {
     "description": "Generic error message when password reset fails"
+  },
+  "authDragHandleSemantic": "Ziehgriff",
+  "@authDragHandleSemantic": {
+    "description": "Accessibility label for bottom sheet drag indicator"
   }
 }

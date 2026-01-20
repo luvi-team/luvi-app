@@ -37,6 +37,33 @@ grep -n "Figma: XXpx" lib/core/design_tokens/spacing.dart
 grep -n "Figma: XXpx" lib/core/design_tokens/sizes.dart
 ```
 
+### 3a. Token Creation (if not found)
+
+When adding new tokens, follow these patterns:
+
+**Color Token** (`lib/core/design_tokens/colors.dart`):
+```dart
+/// Figma: #E91E63 (Primary CTA Pink)
+static const Color primaryCtaPink = Color(0xFFE91E63);
+```
+
+**Spacing Token** (`lib/core/design_tokens/spacing.dart`):
+```dart
+/// Figma: 24px (Screen padding)
+static const double screenPadding = 24.0;
+```
+
+**Size Token** (`lib/core/design_tokens/sizes.dart`):
+```dart
+/// Figma: 56px (Large button height)
+static const double buttonHeightL = 56.0;
+```
+
+**Naming Convention:**
+- Use camelCase for all token names
+- Include context in name: `cardBackgroundNeutral`, not just `neutral`
+- Comment format: `/// Figma: #HEXCODE (Context)` or `/// Figma: XXpx (Context)`
+
 ### 4. Find Reference Screen
 - Glob: `lib/features/*/screens/*.dart`
 - Auth: `lib/features/auth/screens/`

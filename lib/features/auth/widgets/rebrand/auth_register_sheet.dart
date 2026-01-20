@@ -31,7 +31,7 @@ class AuthRegisterSheet extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     assert(l10n != null, 'AppLocalizations not found in context');
     if (l10n == null) {
-      log.w('AppLocalizations missing in AuthRegisterSheet', tag: 'auth');
+      log.e('Unexpected: AppLocalizations missing in AuthRegisterSheet', tag: 'auth');
       return const SizedBox.shrink();
     }
 

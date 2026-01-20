@@ -1101,4 +1101,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authResetErrorGeneric => 'Reset failed. Please try again.';
+
+  @override
+  String get authDragHandleSemantic => 'Drag handle';
 }

@@ -1,7 +1,7 @@
 # Figma → Flutter Token Mapping
 
-## Hauptfarben (DsColors)
-| Figma Hex | Flutter Token | Verwendung |
+## Primary Colors (DsColors)
+| Figma Hex | Flutter Token | Usage |
 |-----------|---------------|------------|
 | #E91E63 | `DsColors.welcomeButtonBg` | Primary CTA Pink |
 | #9F2B68 | `DsColors.headlineMagenta` | Headlines |
@@ -16,11 +16,11 @@
 | #D42C82 | `DsColors.authRebrandRainbowPink` | Pink Accent |
 | #F57A25 | `DsColors.authRebrandRainbowOrange` | Orange Accent |
 
-## Zyklus-Phasen Farben
+## Cycle Phase Colors
 | Figma Hex | Flutter Token | Phase |
 |-----------|---------------|-------|
 | #FFB9B9 | `DsColors.phaseMenstruation` | Menstruation |
-| #4169E1 | `DsColors.phaseFollicularDark` | Follikulär |
+| #4169E1 | `DsColors.phaseFollicularDark` | Follicular |
 | #E1B941 | `DsColors.phaseOvulation` | Ovulation |
 | #A755C2 | `DsColors.phaseLuteal` | Luteal |
 
@@ -36,7 +36,7 @@
 | 32 | `Spacing.xl` | - |
 
 ## Sizes
-| Figma px | Flutter Token | Verwendung |
+| Figma px | Flutter Token | Usage |
 |----------|---------------|------------|
 | 44 | `Sizes.touchTargetMin` | Min Touch Target |
 | 50 | `Sizes.buttonHeight` | Standard Button |
@@ -45,7 +45,7 @@
 | 16 | `Sizes.radiusCard` | Card Radius |
 | 40 | `Sizes.radiusXL` | Pill/Large Radius |
 
-## Neues Token erstellen (Pattern)
+## Creating New Tokens (Pattern)
 ```dart
 /// Figma: #HEXCODE (Name/Context)
 static const Color newTokenName = Color(0xFFHEXCODE);
@@ -53,7 +53,7 @@ static const Color newTokenName = Color(0xFFHEXCODE);
 
 ## Typography (Variable Fonts)
 
-LUVI verwendet **Variable Fonts**. Für korrekte Darstellung ist `fontVariations` PFLICHT!
+LUVI uses **Variable Fonts**. For correct rendering, `fontVariations` is REQUIRED!
 
 ### Fonts
 | Font | Type | FontFamily Token |
@@ -70,7 +70,7 @@ LUVI verwendet **Variable Fonts**. Für korrekte Darstellung ist `fontVariations
 | Bold (700) | 700 | `fontVariations: [FontVariation('wght', 700)]` |
 | ExtraBold (800) | 800 | `fontVariations: [FontVariation('wght', 800)]` |
 
-### Beispiel (korrekt)
+### Example (correct)
 ```dart
 Text(
   'Beispiel',
@@ -83,16 +83,16 @@ Text(
 )
 ```
 
-### ⚠️ WARNUNG
+### ⚠️ WARNING
 ```dart
-// ❌ FALSCH - fontWeight funktioniert NICHT bei Variable Fonts!
+// ❌ WRONG - fontWeight does NOT work with Variable Fonts!
 fontWeight: FontWeight.w400,
 
-// ✅ RICHTIG - fontVariations für Variable Fonts
+// ✅ CORRECT - fontVariations for Variable Fonts
 fontVariations: [FontVariation('wght', 400)],
 ```
 
 ---
 
-## Vollständige Suche
-Für alle Tokens: `grep -n "Figma:" lib/core/design_tokens/*.dart`
+## Full Token Search
+For all tokens: `grep -n "Figma:" lib/core/design_tokens/*.dart`

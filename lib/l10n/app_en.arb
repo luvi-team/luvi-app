@@ -1505,5 +1505,9 @@
   "authResetErrorGeneric": "Reset failed. Please try again.",
   "@authResetErrorGeneric": {
     "description": "Generic error message when password reset fails"
+  },
+  "authDragHandleSemantic": "Drag handle",
+  "@authDragHandleSemantic": {
+    "description": "Accessibility label for bottom sheet drag indicator"
   }
 }

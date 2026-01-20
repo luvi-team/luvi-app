@@ -2194,6 +2194,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset failed. Please try again.'**
   String get authResetErrorGeneric;
+
+  /// Accessibility label for bottom sheet drag indicator
+  ///
+  /// In en, this message translates to:
+  /// **'Drag handle'**
+  String get authDragHandleSemantic;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

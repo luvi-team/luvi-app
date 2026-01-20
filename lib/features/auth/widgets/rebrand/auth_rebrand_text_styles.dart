@@ -18,7 +18,7 @@ class AuthRebrandTextStyles {
     fontFamily: FontFamilies.playfairDisplay,
     fontSize: AuthRebrandMetrics.headlineFontSize,
     fontVariations: [FontVariation('wght', 600)],
-    height: AuthRebrandMetrics.headlineLineHeight,
+    height: AuthRebrandMetrics.headlineLineHeightRatio,
     color: DsColors.authRebrandTextPrimary,
   );
 
@@ -28,7 +28,7 @@ class AuthRebrandTextStyles {
     fontFamily: FontFamilies.figtree,
     fontSize: AuthRebrandMetrics.bodyFontSize,
     fontVariations: [FontVariation('wght', 400)],
-    height: AuthRebrandMetrics.bodyLineHeight,
+    height: AuthRebrandMetrics.bodyLineHeightRatio,
     color: DsColors.authRebrandTextPrimary,
   );
 

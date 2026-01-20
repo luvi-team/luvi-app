@@ -76,11 +76,11 @@ final class AuthRebrandMetrics {
   // ─── Rainbow Background (SSOT: rainbow_footer_stripes.ring_widths) ───
   /// Ring widths from outer to inner.
   /// Index mapping: [0]=teal, [1]=pink, [2]=orange, [3]=beige
-  static const List<double> rainbowRingWidths = [329.0, 249.0, 167.0, 87.0];
+  static const List<double> rainbowRingWidths = <double>[329.0, 249.0, 167.0, 87.0];
 
   /// Calculated stripe widths.
   /// Index mapping: [0]=teal(40), [1]=pink(41), [2]=orange(40), [3]=beige(87)
-  static const List<double> rainbowStripeWidths = [40.0, 41.0, 40.0, 87.0];
+  static const List<double> rainbowStripeWidths = <double>[40.0, 41.0, 40.0, 87.0];
 
   // ─── Rainbow Ring Offsets (SSOT: auth_email_form.ring_offsets) ───
   static const double ringTealX = 21.0; // (371 - 329) / 2
@@ -111,15 +111,12 @@ final class AuthRebrandMetrics {
   // ─── Typography ───
   static const double headlineFontSize = 20.0;
   static const double headlineLineHeightRatio = 24.0 / 20.0; // 1.2
-  static const double headlineLineHeight = headlineLineHeightRatio;
 
   static const double bodyFontSize = 17.0;
   static const double bodyLineHeightRatio = 24.0 / 17.0;
-  static const double bodyLineHeight = bodyLineHeightRatio;
 
   static const double placeholderFontSize = 12.0;
   static const double placeholderLineHeightRatio = 15.0 / 12.0; // 1.25
-  static const double placeholderLineHeight = placeholderLineHeightRatio;
 
   static const double buttonFontSize = 17.0;
   static const double linkFontSize = 17.0;
