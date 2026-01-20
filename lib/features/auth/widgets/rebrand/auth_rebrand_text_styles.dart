@@ -22,11 +22,9 @@ class AuthRebrandTextStyles {
     color: DsColors.authRebrandTextPrimary,
   );
 
-  /// Subtitle style for auth success/confirmation screens.
-  ///
+  /// Shared base style for body text (subtitle, divider).
   /// Figtree Regular 17px, line-height 24/17
-  /// Used in: SuccessScreen
-  static const TextStyle subtitle = TextStyle(
+  static const TextStyle _bodyBase = TextStyle(
     fontFamily: FontFamilies.figtree,
     fontSize: AuthRebrandMetrics.bodyFontSize,
     fontWeight: FontWeight.w400,
@@ -34,18 +32,14 @@ class AuthRebrandTextStyles {
     color: DsColors.authRebrandTextPrimary,
   );
 
+  /// Subtitle style for auth success/confirmation screens.
+  /// Used in: SuccessScreen
+  static const TextStyle subtitle = _bodyBase;
+
   /// Divider text style (e.g., "or", "oder").
-  ///
-  /// Figtree Regular 17px, line-height 24/17
   /// Used in: AuthOAuthSheetContent
   ///
   /// Note: Intentionally separate from [subtitle] to allow independent
   /// style evolution for different UI contexts (dividers vs subtitles).
-  static const TextStyle divider = TextStyle(
-    fontFamily: FontFamilies.figtree,
-    fontSize: AuthRebrandMetrics.bodyFontSize,
-    fontWeight: FontWeight.w400,
-    height: AuthRebrandMetrics.bodyLineHeight,
-    color: DsColors.authRebrandTextPrimary,
-  );
+  static const TextStyle divider = _bodyBase;
 }

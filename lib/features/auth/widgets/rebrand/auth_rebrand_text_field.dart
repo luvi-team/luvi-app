@@ -138,14 +138,14 @@ class AuthRebrandTextField extends StatelessWidget {
       ),
     );
 
-    final needsSemantics = semanticLabel != null || (showError && errorText != null);
-    if (!needsSemantics) return field;
+    // Only wrap with Semantics when a custom semanticLabel is explicitly provided.
+    // For error-only state: The visual hint text change is sufficient; adding a
+    // Semantics wrapper would cause double announcements without benefit.
+    // See: AuthErrorBanner pattern for error-specific live regions.
+    if (semanticLabel == null) return field;
 
-    // Semantics-Wrapper für custom label + error hint
-    // OHNE ExcludeSemantics: TextField-native Semantics bleiben erhalten
-    // (value, focus, textField-Rolle)
     return Semantics(
-      label: semanticLabel ?? hintText,
+      label: semanticLabel,
       hint: showError && errorText != null ? errorText : null,
       textField: true,
       child: field,

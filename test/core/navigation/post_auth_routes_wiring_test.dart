@@ -165,6 +165,9 @@ GoRoute? _findRouteByPath(List<RouteBase> routes, String path) {
       subRoutes = route.routes;
     } else if (route is StatefulShellRoute) {
       subRoutes = route.routes;
+    } else if (route is GoRoute && route.routes.isNotEmpty) {
+      // Also check GoRoute children (nested routes)
+      subRoutes = route.routes;
     }
     if (subRoutes != null && subRoutes.isNotEmpty) {
       final nested = _findRouteByPath(subRoutes, path);

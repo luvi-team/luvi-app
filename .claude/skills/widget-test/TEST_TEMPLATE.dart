@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/{feature}/screens/{screen_file}.dart';
 // Kept for semantics assertions in TODO comments below
+// ignore: unused_import
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
 

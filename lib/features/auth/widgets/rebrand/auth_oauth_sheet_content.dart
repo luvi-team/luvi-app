@@ -1,16 +1,13 @@
 import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
-import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'auth_content_card.dart';
 import 'auth_rebrand_metrics.dart';
 import 'auth_rebrand_outline_button.dart';
-import 'auth_secondary_button.dart';
-
 import 'auth_rebrand_text_styles.dart';
+import 'auth_secondary_button.dart';
 
 /// Shared OAuth content for Auth Rebrand v3 bottom sheets.
 ///
@@ -45,9 +42,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    assert(l10n != null, 'AppLocalizations not found in context');
-    if (l10n == null) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context)!;
 
     // Check if Apple Sign In is supported
     final appleSignInSupported = FeatureFlags.enableAppleSignIn &&
@@ -67,13 +62,7 @@ class AuthOAuthSheetContent extends StatelessWidget {
                   // Headline
                   Text(
                     headline,
-                    style: const TextStyle(
-                      fontFamily: FontFamilies.playfairDisplay,
-                      fontSize: AuthRebrandMetrics.headlineFontSize,
-                      fontWeight: FontWeight.w600,
-                      height: AuthRebrandMetrics.headlineLineHeight,
-                      color: DsColors.authRebrandTextPrimary,
-                    ),
+                    style: AuthRebrandTextStyles.headline,
                     textAlign: TextAlign.center,
                   ),
 

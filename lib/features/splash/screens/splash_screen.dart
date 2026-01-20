@@ -56,7 +56,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         if (!mounted) return;
         if (next is SplashResolved && !_hasNavigated) {
           _hasNavigated = true;
-          context.go(next.targetRoute);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go(next.targetRoute);
+            }
+          });
         }
       },
       fireImmediately: true,
@@ -100,6 +104,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   void _triggerGateCheck() {
+    if (!mounted) return;
     ref.read(splashControllerProvider.notifier).checkGates();
   }
 

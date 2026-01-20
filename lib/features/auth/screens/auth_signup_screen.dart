@@ -286,20 +286,20 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     final password = _passwordController.text;
 
     setState(() {
-      // Immer globale Fehlermeldung bei Änderung löschen
+      // Always clear global error message on change
       _errorMessage = null;
 
-      // Logik für _confirmPasswordError:
-      // - Leeres Feld: Error löschen (User tippt noch)
-      // - Beide non-empty und gleich: Error löschen (Match!)
-      // - Beide non-empty und ungleich: Error NICHT setzen während Tippen
-      //   (das macht _validateInputs bei Submit)
+      // Logic for _confirmPasswordError:
+      // - Empty field: clear error (user is still typing)
+      // - Both non-empty and equal: clear error (match!)
+      // - Both non-empty and unequal: do NOT set error while typing
+      //   (_validateInputs handles this on submit)
       if (value.isEmpty || (password.isNotEmpty && value == password)) {
         _confirmPasswordError = false;
       }
-      // Hinweis: Wir setzen _confirmPasswordError NICHT auf true hier,
-      // um nerviges Flackern während des Tippens zu vermeiden.
-      // Mismatch wird erst bei Submit geprüft.
+      // Note: We do NOT set _confirmPasswordError to true here,
+      // to avoid annoying flickering while typing.
+      // Mismatch is checked on submit.
     });
   }
 

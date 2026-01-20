@@ -17,7 +17,7 @@ final class SplashInitial extends SplashState {
       identical(this, other) || other is SplashInitial;
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => 0; // Stateless singleton - any stable constant works
 }
 
 /// Resolved state: Target route has been determined.

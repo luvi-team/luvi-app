@@ -1,6 +1,8 @@
 // Template for new screens
 // Replace: {ScreenName}, {route_name}
 
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
@@ -14,7 +16,7 @@ class {ScreenName}Screen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ignore: unused_local_variable - Placeholder for localized strings; use when adding l10n references
+    // Placeholder for localized strings; use when adding l10n references
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(

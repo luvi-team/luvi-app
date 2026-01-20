@@ -70,7 +70,7 @@ dependencies:
   video_player: ^2.10.1
 
   # Charts & Data Visualization
-  fl_chart: ^1.0.0
+  fl_chart: ^1.1.1
 
 dev_dependencies:
   flutter_test:

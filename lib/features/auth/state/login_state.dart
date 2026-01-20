@@ -143,6 +143,9 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   /// Any network submission or remote auth flow is handled by
   /// `login_submit_provider` to avoid mixing concerns.
   ///
+  /// NOTE: Intentionally returns `Future<void>` for subclass compatibility.
+  /// Subclasses (e.g., in tests) may override with actual async operations.
+  ///
   /// SECURITY: [password] is validated but NOT persisted in state.
   Future<void> validateAndSubmit({required String password}) async {
     validate(password: password);

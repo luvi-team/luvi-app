@@ -72,6 +72,15 @@ void main() {
         reason: 'containerTop must be set for device consistency',
       );
       expect(rainbow.containerTop, greaterThan(0));
+
+      // Upper-bound sanity check: containerTop should not exceed half screen height
+      final context = tester.element(rainbowFinder);
+      final screenHeight = MediaQuery.of(context).size.height;
+      expect(
+        rainbow.containerTop,
+        lessThan(screenHeight * 0.5),
+        reason: 'containerTop should not exceed 50% of screen height',
+      );
     });
   });
 }
