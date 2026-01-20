@@ -1466,7 +1466,7 @@
   "@authOr": {
     "description": "Divider text between OAuth and email options"
   },
-  "authEmailPlaceholderLong": "Deine E-Mail Adresse",
+  "authEmailPlaceholderLong": "Deine E-Mail-Adresse",
   "@authEmailPlaceholderLong": {
     "description": "Long placeholder text for email input field"
   },
@@ -1474,7 +1474,7 @@
   "@authPasswordPlaceholder": {
     "description": "Placeholder text for password input field"
   },
-  "authErrorEmailCheck": "Bitte E-Mail Adresse überprüfen",
+  "authErrorEmailCheck": "Bitte E-Mail-Adresse überprüfen",
   "@authErrorEmailCheck": {
     "description": "Error placeholder text for invalid email"
   },
@@ -1486,7 +1486,7 @@
   "@authRegisterEmailTitle": {
     "description": "Title for email registration screen"
   },
-  "authResetPasswordSubtitle": "E-Mail Adresse eingeben und erhalte einen Link zum Zurücksetzen.",
+  "authResetPasswordSubtitle": "E-Mail-Adresse eingeben und erhalte einen Link zum Zurücksetzen.",
   "@authResetPasswordSubtitle": {
     "description": "Subtitle for reset password screen"
   },

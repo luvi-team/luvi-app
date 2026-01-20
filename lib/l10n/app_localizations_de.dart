@@ -1073,13 +1073,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authOr => 'Oder';
 
   @override
-  String get authEmailPlaceholderLong => 'Deine E-Mail Adresse';
+  String get authEmailPlaceholderLong => 'Deine E-Mail-Adresse';
 
   @override
   String get authPasswordPlaceholder => 'Dein Passwort';
 
   @override
-  String get authErrorEmailCheck => 'Bitte E-Mail Adresse überprüfen';
+  String get authErrorEmailCheck => 'Bitte E-Mail-Adresse überprüfen';
 
   @override
   String get authErrorPasswordCheck => 'Bitte Passwort überprüfen';
@@ -1088,7 +1088,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authRegisterEmailTitle => 'Registrieren mit E-Mail';
 
   @override
-  String get authResetPasswordSubtitle => 'E-Mail Adresse eingeben und erhalte einen Link zum Zurücksetzen.';
+  String get authResetPasswordSubtitle => 'E-Mail-Adresse eingeben und erhalte einen Link zum Zurücksetzen.';
 
   @override
   String get authResetCtaShort => 'Zurücksetzen';
