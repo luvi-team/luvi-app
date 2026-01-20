@@ -37,7 +37,7 @@ void main() {
         email: any(named: 'email'),
         password: any(named: 'password'),
       ),
-    ).thenThrow(AuthException('invalid credentials'));
+    ).thenThrow(AuthException('Invalid login credentials', code: 'invalid_credentials'));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -165,7 +165,7 @@ void main() {
         email: any(named: 'email'),
         password: any(named: 'password'),
       ),
-    ).thenThrow(AuthException('invalid credentials'));
+    ).thenThrow(AuthException('Invalid login credentials', code: 'invalid_credentials'));
 
     await tester.pumpWidget(
       ProviderScope(

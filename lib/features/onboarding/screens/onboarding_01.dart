@@ -140,9 +140,10 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     OnboardingSpacing spacing,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    // Safely unwrap tokens with a fallback or error handling
-    final tokens = Theme.of(context).extension<DsTokens>() ??
-        (throw FlutterError('DsTokens extension missing in Theme'));
+    // Debug assertion + safe fallback for DsTokens
+    final themeTokens = Theme.of(context).extension<DsTokens>();
+    assert(themeTokens != null, 'DsTokens extension must be provided in Theme');
+    final tokens = themeTokens ?? DsTokens.light;
 
     final resolvedFontSize = Sizes.onboardingInputFontSize;
     // Extracted constant
