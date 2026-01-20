@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -138,11 +140,17 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     OnboardingSpacing spacing,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    final tokens = Theme.of(context).extension<DsTokens>()!;
+    // Safely unwrap tokens with a fallback or error handling
+    final tokens = Theme.of(context).extension<DsTokens>() ??
+        (throw FlutterError('DsTokens extension missing in Theme'));
+
     final resolvedFontSize = Sizes.onboardingInputFontSize;
-    const designLineHeightPx = 24.0;
+    // Extracted constant
+    const designLineHeightPx = Sizes.onboardingLineHeightPx;
+    
     final computedHeight = designLineHeightPx / resolvedFontSize;
-    final resolvedHeight = computedHeight < 1.2 ? 1.2 : computedHeight;
+    final resolvedHeight = math.max(1.2, computedHeight);
+    
     final inputStyle = textTheme.bodySmall?.copyWith(
       fontSize: resolvedFontSize,
       fontFamily: FontFamilies.playfairDisplay,

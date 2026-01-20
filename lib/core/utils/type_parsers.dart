@@ -29,7 +29,11 @@ int? parseNullableInt(dynamic value) {
   if (value is int) return value;
   // Handle JSON-decoded numbers like 42.0 that should be treated as ints
   if (value is double && value.isFinite && value == value.toInt()) {
-    return value.toInt();
+    // JS Number.MAX_SAFE_INTEGER is 9007199254740991.
+    // Ensure we don't cast unsafe large doubles that lose precision.
+    if (value.abs() <= 9007199254740991) {
+      return value.toInt();
+    }
   }
   return null;
 }

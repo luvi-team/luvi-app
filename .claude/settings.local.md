@@ -195,8 +195,8 @@
 > | `git commit:*` | `--amend` | **Blockiert via deny-Liste** |
 > | `git checkout:*` | `-f`, `--force` | Nur für Branch-Wechsel nutzen |
 > | `git merge:*` | `--no-ff` | Akzeptabel für Feature-Branches |
-> | `git push:*` | `--force`, `-f` | **Blockiert via deny-Liste** |
-> | `git reset:*` | `--hard` | **Blockiert via deny-Liste** |
+> | `git push:*` (Hypothetisch) | `--force`, `-f` | **Blockiert via deny-Liste** (Nicht in settings.local.json aktiviert) |
+> | `git reset:*` (Hypothetisch) | `--hard` | **Blockiert via deny-Liste** (Nicht in settings.local.json aktiviert) |
 >
 > ### Bestehender Runtime-Schutz
 > - Claude Code's eingebaute Safety-Rules verhindern:

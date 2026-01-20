@@ -49,7 +49,7 @@ void main() {
 
       expect(
         centerAncestor,
-        findsAtLeastNWidgets(1),
+        findsOneWidget,
         reason: 'AuthContentCard must be wrapped in Center for vertical centering',
       );
     });

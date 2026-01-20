@@ -73,7 +73,13 @@ class _SuccessScreenState extends ConsumerState<SuccessScreen> {
     if (isAuthenticated) {
       // User is logged in → go to splash with skipAnimation
       // PostAuth guards will determine Onboarding vs Home
-      context.go('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}');
+      final uri = Uri(
+        path: RoutePaths.splash,
+        queryParameters: {
+          RouteQueryParams.skipAnimation: 'true',
+        },
+      );
+      context.go(uri.toString());
     } else {
       // User is not logged in → back to auth entry
       context.go(RoutePaths.authSignIn);

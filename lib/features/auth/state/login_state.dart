@@ -147,8 +147,9 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   /// Subclasses (e.g., in tests) may override with actual async operations.
   ///
   /// SECURITY: [password] is validated but NOT persisted in state.
-  Future<void> validateAndSubmit({required String password}) async {
+  Future<void> validateAndSubmit({required String password}) {
     validate(password: password);
+    return Future.value();
   }
 
   @visibleForTesting

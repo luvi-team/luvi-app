@@ -134,6 +134,9 @@ class Sizes {
   /// Input Text Font Size (Figma: 18px)
   static const double onboardingInputFontSize = 18.0;
 
+  /// Input Line Height (Figma: 24px)
+  static const double onboardingLineHeightPx = 24.0;
+
   /// HEUTE Label Font Size - small for single line (Figma: 10px)
   static const double todayLabelFontSize = 10.0;
 

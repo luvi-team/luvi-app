@@ -31,7 +31,7 @@ class AuthLoginSheet extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     assert(l10n != null, 'AppLocalizations not found in context');
     if (l10n == null) {
-      log.w('AppLocalizations missing in AuthLoginSheet', tag: 'auth');
+      log.e('Unexpected: AppLocalizations missing in AuthLoginSheet', tag: 'auth');
       return const SizedBox.shrink();
     }
 

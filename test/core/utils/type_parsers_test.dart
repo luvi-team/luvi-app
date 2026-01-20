@@ -67,6 +67,16 @@ void main() {
       expect(parseNullableInt(0.1), isNull);
     });
 
+    test('returns null when value is Map', () {
+      expect(parseNullableInt(<String, dynamic>{}), isNull);
+      expect(parseNullableInt({'key': 1}), isNull);
+    });
+
+    test('returns null when value is List', () {
+      expect(parseNullableInt(<dynamic>[]), isNull);
+      expect(parseNullableInt([1, 2]), isNull);
+    });
+
     test('returns null when value is bool', () {
       expect(parseNullableInt(true), isNull);
       expect(parseNullableInt(false), isNull);

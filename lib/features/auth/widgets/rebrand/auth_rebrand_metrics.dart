@@ -110,11 +110,17 @@ final class AuthRebrandMetrics {
 
   // ─── Typography ───
   static const double headlineFontSize = 20.0;
-  static const double headlineLineHeight = 24.0 / 20.0; // 1.2
+  static const double headlineLineHeightRatio = 24.0 / 20.0; // 1.2
+  static const double headlineLineHeight = headlineLineHeightRatio;
+
   static const double bodyFontSize = 17.0;
-  static const double bodyLineHeight = 24.0 / 17.0;
+  static const double bodyLineHeightRatio = 24.0 / 17.0;
+  static const double bodyLineHeight = bodyLineHeightRatio;
+
   static const double placeholderFontSize = 12.0;
-  static const double placeholderLineHeight = 15.0 / 12.0; // 1.25
+  static const double placeholderLineHeightRatio = 15.0 / 12.0; // 1.25
+  static const double placeholderLineHeight = placeholderLineHeightRatio;
+
   static const double buttonFontSize = 17.0;
   static const double linkFontSize = 17.0;
   static const double inputTextFontSize = 14.0;

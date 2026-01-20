@@ -42,7 +42,7 @@ class AuthKeyboardAwarePadding extends StatelessWidget {
     return AnimatedPadding(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeOutCubic,
-      padding: EdgeInsets.only(bottom: (inset * factor).clamp(0, max)),
+      padding: EdgeInsets.only(bottom: (inset * factor).clamp(0.0, max)),
       child: child,
     );
   }
