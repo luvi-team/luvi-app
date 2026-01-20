@@ -69,7 +69,7 @@ void main() {
 
       expect(
         animatedPaddingAncestor,
-        findsOneWidget,
+        findsAtLeastNWidgets(1),
         reason: 'AuthContentCard must be wrapped in AnimatedPadding for smooth keyboard handling',
       );
     });

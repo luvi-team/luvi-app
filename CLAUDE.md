@@ -159,7 +159,7 @@ Details: `.claude/agents/*.md`
 > Below is a quick-reference with code examples.
 
 1. **Design Tokens (MUST-01):** `DsColors`, `DsTokens` – no `Color(0xFF...)`
-2. **Spacing:** `Spacing`, `Sizes` – no `EdgeInsets.all(16)`
+2. **Spacing (MUST-02):** `Spacing`, `Sizes` – no `EdgeInsets.all(16)`
 3. **L10n:** `AppLocalizations.of(context)` – no hardcoded strings
 4. **Navigation:** `context.goNamed(RouteNames.x)` – no `Navigator.push`
 5. **A11y:** `Semantics` + touch ≥44dp (`Sizes.touchTargetMin`)

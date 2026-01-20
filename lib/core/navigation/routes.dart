@@ -43,11 +43,11 @@ const String _consentPathPrefix = '$_consentRootPath/';
 /// 1. Add `redirect: _postAuthGuard` to the GoRoute
 /// 2. Add the path here to ensure wiring test coverage
 const List<String> kPostAuthPaths = [
-  RoutePaths.heute,
-  RoutePaths.workoutDetail,
-  RoutePaths.trainingsOverview,
-  RoutePaths.cycleOverview,
-  RoutePaths.profile,
+  RoutePaths.heute,              // '/heute'
+  RoutePaths.workoutDetail,      // '/workout/:id'
+  RoutePaths.trainingsOverview,  // '/trainings/overview'
+  RoutePaths.cycleOverview,      // '/zyklus'
+  RoutePaths.profile,            // '/profil'
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

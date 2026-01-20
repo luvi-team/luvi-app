@@ -149,23 +149,26 @@ void main() {
 
 /// Recursively finds a GoRoute by its path in the route tree.
 ///
+/// Uses explicit type checks for known container types (ShellRoute,
+/// StatefulShellRoute) to avoid fragile dynamic introspection.
+/// Validated against go_router ^14.0.0.
+///
 /// Returns null if no route with the given path exists.
 GoRoute? _findRouteByPath(List<RouteBase> routes, String path) {
   for (final route in routes) {
     if (route is GoRoute && route.path == path) {
       return route;
     }
-    // Generic recursion: Check any route that has sub-routes (ShellRoute, StatefulShellRoute, etc.)
-    // We use dynamic because RouteBase doesn't enforce a 'routes' property, but all containers have it.
-    try {
-      final dynamic dynamicRoute = route;
-      final subRoutes = dynamicRoute.routes;
-      if (subRoutes is List<RouteBase> && subRoutes.isNotEmpty) {
-        final nested = _findRouteByPath(subRoutes, path);
-        if (nested != null) return nested;
-      }
-    } catch (_) {
-      // Route type does not have 'routes' property - expected for some route types
+    // Explicit type checks for known container types
+    List<RouteBase>? subRoutes;
+    if (route is ShellRoute) {
+      subRoutes = route.routes;
+    } else if (route is StatefulShellRoute) {
+      subRoutes = route.routes;
+    }
+    if (subRoutes != null && subRoutes.isNotEmpty) {
+      final nested = _findRouteByPath(subRoutes, path);
+      if (nested != null) return nested;
     }
   }
   return null;

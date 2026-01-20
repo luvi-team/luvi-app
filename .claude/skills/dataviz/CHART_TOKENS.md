@@ -32,3 +32,8 @@
 - **Legends:** Must be keyboard-focusable and screen-reader accessible
   - Wrap legend items in `Semantics` with color + value description
   - Example: `Semantics(label: 'Menstruation phase: 5 days')`
+- **Touch Targets:** Minimum 44×44dp for interactive elements
+  - Applies to: data points, legend items, tooltip triggers, axis labels
+  - Hit areas may extend beyond visual bounds
+  - Use `SizedBox(width: 44, height: 44)` or `ConstrainedBox` for invisible hit areas
+  - Reference: `Sizes.touchTargetMin` (44dp) from design tokens

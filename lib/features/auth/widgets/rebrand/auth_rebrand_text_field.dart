@@ -145,7 +145,7 @@ class AuthRebrandTextField extends StatelessWidget {
       label: semanticLabel ?? hintText,
       hint: showError && errorText != null ? errorText : null,
       textField: true,
-      child: field,
+      child: ExcludeSemantics(child: field),
     );
   }
 }

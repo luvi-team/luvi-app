@@ -179,6 +179,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   duration: Timing.snackBarBrief,
                 ),
               );
+              if (!mounted) return;
               context.go(RoutePaths.authSignIn);
             },
           );

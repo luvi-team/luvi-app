@@ -8,6 +8,7 @@ import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_error_banner.dart';
 import 'package:luvi_app/router.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
@@ -571,6 +572,132 @@ void main() {
         tester.element(find.byType(AuthSignupScreen)),
       )!;
       expect(find.text(l10n.authErrConfirmEmail), findsOneWidget);
+    });
+
+    testWidgets('ambiguous error without code shows banner but no field errors',
+        (tester) async {
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(AuthException('Connection timeout')); // No code, no keywords
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'ValidPass123!',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'ValidPass123!',
+      );
+
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+
+      // POSITIVE: Error banner IS shown with generic message
+      expect(find.byType(AuthErrorBanner), findsOneWidget);
+      expect(find.text(l10n.authSignupGenericError), findsOneWidget);
+
+      // NEGATIVE: NO field-specific error indicators
+      expect(find.text(l10n.authErrorEmailCheck), findsNothing);
+      expect(find.text(l10n.authErrorPasswordCheck), findsNothing);
+    });
+
+    testWidgets('rate limit error with code shows banner but no field errors',
+        (tester) async {
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(
+        AuthException('Too many requests', code: 'over_request_rate_limit'),
+      );
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'ValidPass123!',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'ValidPass123!',
+      );
+
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+
+      // POSITIVE: Error banner IS shown with generic message
+      expect(find.byType(AuthErrorBanner), findsOneWidget);
+      expect(find.text(l10n.authSignupGenericError), findsOneWidget);
+
+      // NEGATIVE: NO field-specific error indicators (after bug fix!)
+      expect(find.text(l10n.authErrorEmailCheck), findsNothing);
+      expect(find.text(l10n.authErrorPasswordCheck), findsNothing);
+    });
+
+    testWidgets('signup disabled error with code shows banner but no field errors',
+        (tester) async {
+      final mockRepo = _MockAuthRepository();
+      when(
+        () => mockRepo.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(AuthException('Signup is disabled', code: 'signup_disabled'));
+
+      await pumpSignupScreen(tester, mockRepo, router);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_email_field')),
+        'user@example.com',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_field')),
+        'ValidPass123!',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('signup_password_confirm_field')),
+        'ValidPass123!',
+      );
+
+      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.pumpAndSettle();
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AuthSignupScreen)),
+      )!;
+
+      // Error banner shown, no field flags
+      expect(find.byType(AuthErrorBanner), findsOneWidget);
+      expect(find.text(l10n.authSignupGenericError), findsOneWidget);
+      expect(find.text(l10n.authErrorEmailCheck), findsNothing);
+      expect(find.text(l10n.authErrorPasswordCheck), findsNothing);
     });
   });
 }

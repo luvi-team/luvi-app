@@ -1,9 +1,11 @@
 // Template for widget tests
 // Replace: {feature}, {ScreenName}, {screen_file}
 
+// Material import kept for common test utilities (Key, BuildContext, etc.)
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/{feature}/screens/{screen_file}.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
 
 void main() {
@@ -27,12 +29,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // TODO(a11y): Add semantics assertions for {ScreenName}Screen
-      // Example patterns:
+      //
+      // Access localization in tests:
+      //   final l10n = AppLocalizations.of(
+      //     tester.element(find.byType({ScreenName}Screen)),
+      //   )!;
+      //
+      // Example assertions:
       //   expect(find.bySemanticsLabel(l10n.someLabel), findsOneWidget);
-      //   final semantics = tester.widget<Semantics>(
-      //     find.byWidgetPredicate((w) => w is Semantics && w.properties.button == true),
-      //   );
-      //   expect(semantics.properties.label, contains('expected text'));
+      //   expect(find.bySemanticsLabel('Expected Text'), findsOneWidget);
 
       handle.dispose();
     });

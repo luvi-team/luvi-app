@@ -25,10 +25,11 @@ class LoginState {
 
   factory LoginState.initial() => const LoginState();
 
-  /// Returns true if form is ready for submission.
+  /// Returns true if form has no validation errors and email is non-empty.
   ///
-  /// Note: Password validation happens via validate(password: ...) which sets
-  /// passwordError if invalid. After successful validation, passwordError is null.
+  /// IMPORTANT: This getter only reflects the current error state. It does NOT
+  /// perform validation. Callers should invoke [validate] prior to checking
+  /// this property to ensure errors are populated.
   bool get isValid =>
       email.isNotEmpty && emailError == null && passwordError == null;
 

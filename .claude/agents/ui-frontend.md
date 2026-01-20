@@ -21,6 +21,7 @@ model: opus
 - `lib/features/**`
 - `lib/core/**`
 - `test/features/**`
+- `test/core/**`
 - `lib/l10n/**`
 
 **Denied Paths:**

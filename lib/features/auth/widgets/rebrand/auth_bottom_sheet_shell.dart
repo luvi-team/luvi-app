@@ -38,11 +38,8 @@ class AuthBottomSheetShell extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: DsColors.transparent,
       barrierColor: DsColors.authRebrandBarrier,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AuthRebrandMetrics.sheetRadius),
-        ),
-      ),
+      // shape is omitted: backgroundColor is transparent, so visual rounding
+      // is handled by the Container decoration inside AuthBottomSheetShell.
       builder: (context) => AuthBottomSheetShell(
         child: builder(context),
       ),

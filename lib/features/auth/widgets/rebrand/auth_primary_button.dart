@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'auth_button_base.dart';
 import 'auth_rebrand_metrics.dart';
 
 /// Primary CTA button for Auth Rebrand v3 screens.
@@ -38,45 +38,14 @@ class AuthPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isEnabled = onPressed != null && !isLoading;
-
-    return SizedBox(
+    return AuthButtonBase(
+      label: label,
+      onPressed: onPressed,
+      backgroundColor: DsColors.authRebrandCtaPrimary,
+      isLoading: isLoading,
       width: width ?? AuthRebrandMetrics.ctaButtonWidth,
-      height: height ?? AuthRebrandMetrics.buttonHeight,
-      child: ElevatedButton(
-        onPressed: isEnabled ? onPressed : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: DsColors.authRebrandCtaPrimary,
-          disabledBackgroundColor: DsColors.authRebrandCtaPrimary.withValues(alpha: 0.5),
-          foregroundColor: DsColors.grayscaleWhite,
-          disabledForegroundColor: DsColors.grayscaleWhite.withValues(alpha: 0.7),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
-          ),
-          elevation: 0,
-          padding: EdgeInsets.zero,
-        ),
-        child: isLoading
-            ? SizedBox(
-                key: loadingKey,
-                width: AuthRebrandMetrics.loadingIndicatorSize,
-                height: AuthRebrandMetrics.loadingIndicatorSize,
-                child: const CircularProgressIndicator(
-                  strokeWidth: AuthRebrandMetrics.loadingIndicatorStrokeWidth,
-                  color: DsColors.grayscaleWhite,
-                ),
-              )
-            : Text(
-                label,
-                style: const TextStyle(
-                  fontFamily: FontFamilies.figtree,
-                  fontSize: AuthRebrandMetrics.buttonFontSize,
-                  fontVariations: [FontVariation('wght', 700)], // Bold for variable font
-                  height: AuthRebrandMetrics.bodyLineHeight, // 24/17
-                  color: DsColors.grayscaleWhite,
-                ),
-              ),
-      ),
+      height: height,
+      loadingKey: loadingKey,
     );
   }
 }

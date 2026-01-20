@@ -246,8 +246,8 @@ void main() {
     });
   });
 
-  group('SplashController Retry-Logik', () {
-    test('retry nach Unknown → SplashResolved bei Erfolg', () async {
+  group('SplashController Retry Logic', () {
+    test('retry after Unknown → SplashResolved on success', () async {
       int callCount = 0;
 
       final container = createTestContainer(
@@ -280,7 +280,7 @@ void main() {
       expect(state, isA<SplashResolved>());
     });
 
-    test('max retries erreicht → retry() ist no-op', () async {
+    test('max retries exhausted → retry() is no-op', () async {
       final container = createTestContainer(
         prefs: prefs,
         profileFetcher: () async => throw Exception('Persistent error'),
@@ -319,7 +319,7 @@ void main() {
   });
 
   group('SplashController Concurrency', () {
-    test('doppelter checkGates() → nur einer läuft (_inFlight Guard)',
+    test('duplicate checkGates() → only one runs (_inFlight Guard)',
         () async {
       int callCount = 0;
 
@@ -376,7 +376,7 @@ void main() {
       );
     });
 
-    test('checkGates() nach SplashResolved ist no-op', () async {
+    test('checkGates() after SplashResolved is no-op', () async {
       int callCount = 0;
 
       final container = createTestContainer(

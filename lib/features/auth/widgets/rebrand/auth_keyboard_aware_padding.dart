@@ -29,7 +29,9 @@ class AuthKeyboardAwarePadding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final inset = MediaQuery.of(context).viewInsets.bottom;
+    // Use viewInsetsOf to limit rebuilds to viewInsets changes only,
+    // avoiding unnecessary rebuilds from other MediaQuery changes.
+    final inset = MediaQuery.viewInsetsOf(context).bottom;
     final factor = compact
         ? AuthRebrandMetrics.keyboardPaddingFactorCompact
         : AuthRebrandMetrics.keyboardPaddingFactor;

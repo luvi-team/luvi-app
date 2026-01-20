@@ -104,37 +104,38 @@ class AuthRebrandOutlineButton extends StatelessWidget {
               padding: EdgeInsets.zero,
               child: Row(
                 children: [
-                  // Left padding (SSOT: 53px) - applies to both icon and no-icon variants
-                  const SizedBox(
-                    width: AuthRebrandMetrics.outlineButtonIconLeftPadding,
-                  ),
-                  // Icon
-                  if (icon != null)
-                    Icon(
-                      icon,
-                      size: AuthRebrandMetrics.outlineButtonIconSize,
-                      color: DsColors.authRebrandTextPrimary.withValues(
-                        alpha: disabledOpacity,
-                      ),
-                    )
-                  else if (svgIconPath != null)
-                    // SVG icons (e.g., Google) preserve their original colors.
-                    // Disabled state is indicated via opacity instead of colorFilter
-                    // to avoid breaking multicolor brand icons.
-                    Opacity(
-                      opacity: disabledOpacity,
-                      child: SvgPicture.asset(
-                        svgIconPath!,
-                        width: AuthRebrandMetrics.outlineButtonIconSize,
-                        height: AuthRebrandMetrics.outlineButtonIconSize,
-                      ),
+                  // Left padding + icon + gap only for icon variants
+                  if (hasIcon) ...[
+                    const SizedBox(
+                      width: AuthRebrandMetrics.outlineButtonIconLeftPadding,
                     ),
-                  // Gap between icon and text (SSOT: 26px)
-                  if (hasIcon)
+                    // Icon (Material or SVG)
+                    if (icon != null)
+                      Icon(
+                        icon,
+                        size: AuthRebrandMetrics.outlineButtonIconSize,
+                        color: DsColors.authRebrandTextPrimary.withValues(
+                          alpha: disabledOpacity,
+                        ),
+                      )
+                    else if (svgIconPath != null)
+                      // SVG icons (e.g., Google) preserve their original colors.
+                      // Disabled state is indicated via opacity instead of colorFilter
+                      // to avoid breaking multicolor brand icons.
+                      Opacity(
+                        opacity: disabledOpacity,
+                        child: SvgPicture.asset(
+                          svgIconPath!,
+                          width: AuthRebrandMetrics.outlineButtonIconSize,
+                          height: AuthRebrandMetrics.outlineButtonIconSize,
+                        ),
+                      ),
+                    // Gap between icon and text (SSOT: 26px)
                     const SizedBox(
                       width: AuthRebrandMetrics.outlineButtonIconToTextGap,
                     ),
-                  // Text (will expand to fill remaining space, left-aligned after icon)
+                  ],
+                  // Text (centered when no icon, left-aligned when icon present)
                   Expanded(
                     child: Text(
                       label,

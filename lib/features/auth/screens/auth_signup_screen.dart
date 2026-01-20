@@ -88,17 +88,6 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     // Use NIST-compliant validation from shared rules
     final passwordValidation = validateNewPassword(password, confirmPassword);
-    
-    // Defensive fallback: validateNewPassword may return emptyFields even after
-    // our initial empty check above. Retained for robustness against future changes.
-    if (passwordValidation.error == AuthPasswordValidationError.emptyFields) {
-      setState(() {
-        _emailError = true;
-        _passwordError = true;
-        _confirmPasswordError = true;
-      });
-      return l10n.authSignupMissingFields;
-    }
 
     if (!passwordValidation.isValid) {
       switch (passwordValidation.error!) {
@@ -179,6 +168,10 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         if (code != null) {
           if (code == 'weak_password') {
             _passwordError = true;
+          } else if (code == 'over_request_rate_limit' ||
+                     code == 'signup_disabled') {
+            // Ambiguous codes: no field-specific flags
+            // _errorMessage already shows the error in the banner
           } else {
             // email_address_invalid, email_exists, user_already_exists, etc.
             _emailError = true;
@@ -188,9 +181,13 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
           final message = error.message.toLowerCase();
           if (message.contains('password')) {
             _passwordError = true;
-          } else {
+          } else if (message.contains('email') ||
+                     message.contains('address') ||
+                     message.contains('user')) {
             _emailError = true;
           }
+          // Ambiguous errors (network, rate-limit, unknown): no field flags
+          // _errorMessage already shows the error in the banner
         }
       });
     } catch (error, stackTrace) {

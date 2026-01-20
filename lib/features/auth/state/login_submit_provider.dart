@@ -134,7 +134,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
 
     // Log unrecognized auth errors for inspection
     log.i(
-      'auth_error_unrecognized: code=${code ?? "null"}, message=${sanitizeError(message) ?? message}',
+      'auth_error_unrecognized: code=${code ?? "null"}, message=${sanitizeError(message) ?? "[redacted]"}',
       tag: 'login_submit',
     );
 

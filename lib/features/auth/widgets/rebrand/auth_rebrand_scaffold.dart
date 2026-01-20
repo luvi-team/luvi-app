@@ -54,7 +54,7 @@ class AuthRebrandScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
@@ -81,7 +81,7 @@ class AuthRebrandScaffold extends StatelessWidget {
                 ),
                 child: AuthBackButton(
                   onPressed: onBack,
-                  semanticsLabel: l10n.authBackSemantic,
+                  semanticsLabel: l10n?.authBackSemantic,
                 ),
               ),
             ),

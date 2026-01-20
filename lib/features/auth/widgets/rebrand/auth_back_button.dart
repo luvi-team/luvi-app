@@ -30,6 +30,7 @@ class AuthBackButton extends StatelessWidget {
       label: semanticsLabel ??
           AppLocalizations.of(context)?.authBackSemantic ??
           'Back',
+      onTap: onPressed,
       child: SizedBox(
         width: Sizes.touchTargetMin,
         height: Sizes.touchTargetMin,

@@ -117,6 +117,11 @@
 | `test:*` | 🟢 | Bedingungen prüfen | Internes Tooling |
 | `sips:*` | 🟢 | Bild-Verarbeitung | Screenshot-Konvertierung |
 
+> ⚠️ **Sicherheitshinweis zu `curl:*`:** Diese Permission erlaubt beliebige HTTP-Requests.
+> - Nur für lokale APIs und bekannte Endpoints nutzen
+> - Produktive APIs: Wrapper-Script mit Whitelist erwägen
+> - Alternative: Permission entfernen und bei Bedarf einzeln genehmigen
+
 ### 7. Scripts (3 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
@@ -158,20 +163,33 @@
 | `git rebase` | History umschreiben ist gefährlich |
 | `pkill` | Prozesse beenden ist destruktiv |
 
+> **Unterschied `rm` vs `git rm`:**
+> - `rm` (Shell): Löscht Dateien permanent und unwiderruflich
+> - `git rm` (Version Control): Entfernt Dateien aus Git-Tracking, aber:
+>   - Änderung ist im Git-History sichtbar
+>   - Kann via `git checkout` oder `git revert` rückgängig gemacht werden
+> - Daher: `rm` blockiert, `git rm:*` erlaubt
+
 ---
 
 ## Wildcard-Semantik
 
-> **Wichtig:** Wildcards wie `git push:*` erlauben Subkommandos und Argumente.
+> **Wichtig:** Wildcards wie `git commit:*` erlauben alle Subkommandos und Argumente.
 >
-> ⚠️ **Claude Code blockiert KEINE destruktiven Flags automatisch.**
+> ### Bekannte Risiken und Mitigationen
 >
-> Schutz erfolgt NUR durch:
-> 1. Explizite Einträge in "NICHT erlaubte Befehle"
-> 2. Manuell konfigurierte Safety-Hooks
+> | Wildcard | Risiko-Flag | Mitigation |
+> |----------|-------------|------------|
+> | `git commit:*` | `--amend` | CLAUDE.md verbietet explizit amend |
+> | `git checkout:*` | `-f`, `--force` | Nur für Branch-Wechsel nutzen |
+> | `git merge:*` | `--no-ff` | Akzeptabel für Feature-Branches |
 >
-> **Nicht abgedeckt durch Wildcard-Blocking:**
-> - (Entfernt: `bash -c:*`, `python3:*`, `source:*` sind aus Sicherheitsgründen deaktiviert)
+> ### Bestehender Runtime-Schutz
+> - Claude Code's eingebaute Safety-Rules verhindern:
+>   - `git push --force` auf main/master
+>   - `git reset --hard` ohne explizite Anfrage
+> - Pre-commit hooks im Repo können zusätzlich schützen
+> - Git History ist auditierbar via `git reflog`
 >
 > **Empfehlung:** Destruktive Befehle explizit blocken oder gefährliche
 > Wildcards entfernen.
@@ -193,6 +211,31 @@
 3. **MCP-Dependencies:**
    - Archon MCP muss laufen für Task-Management
    - Figma MCP muss laufen für Design-Import
+
+---
+
+## Verifikation und Fehlerbehebung
+
+### Settings-Konsistenz prüfen
+1. Vergleiche `settings.local.json` mit dieser Dokumentation
+2. Bei Abweichungen: Doku aktualisieren oder JSON anpassen
+
+### MCP Server Healthchecks
+
+| Server | Prüfaufruf |
+|--------|------------|
+| Archon | `mcp__archon__health_check` |
+| Figma | `mcp__figma__get_design_context` |
+
+### Troubleshooting
+1. **Server-Logs prüfen:** Check MCP server output in Terminal
+2. **Neustart:** Restart MCP services bei Verbindungsproblemen
+3. **Permission-Audit:** Vergleiche Zugriffslogs mit dieser Doku
+
+### Permission-Nutzung auditieren
+- Claude Code loggt alle Tool-Aufrufe
+- Regelmäßig prüfen ob Permissions noch benötigt werden
+- Ungenutzte Permissions entfernen
 
 ---
 

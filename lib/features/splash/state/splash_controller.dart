@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kDebugMode, kReleaseMode;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:luvi_app/core/analytics/analytics_recorder.dart';
@@ -205,28 +205,22 @@ class SplashController extends _$SplashController {
         );
       case RaceRetryNeeded():
         // Unreachable: _evaluateOnboardingGateWithRetry handles internally.
-        // 1. Log first (always executes)
+        // Log unexpected state (should be handled by _evaluateOnboardingGateWithRetry)
         log.e(
           'unexpected RaceRetryNeeded after retry - logic error',
           tag: 'splash',
         );
-        // 2. Telemetry for production monitoring (always executes)
+        // Telemetry for production monitoring
         ref.read(analyticsRecorderProvider).recordEvent(
           'splash_unreachable_race_retry',
           properties: {'retry_count': _manualRetryCount},
         );
-        // 3. Debug assertion (throws in debug builds AFTER logging)
+        // Debug assertion (throws in debug builds after logging)
         assert(
           false,
           'RaceRetryNeeded should never reach _handleOnboardingGateResult',
         );
-        // 4. Explicit debug throw (redundant with assert, but explicit)
-        if (kDebugMode) {
-          throw StateError(
-            'RaceRetryNeeded should never reach _runGateSequence switch',
-          );
-        }
-        // 5. Fallback state (only reached in release builds)
+        // Release fallback
         state = SplashUnknown(
           canRetry: _manualRetryCount < SplashUnknown.maxRetries,
           retryCount: _manualRetryCount,

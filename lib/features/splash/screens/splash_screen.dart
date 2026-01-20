@@ -41,6 +41,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _skipAnimationHandled = false;
   bool _hasNavigated = false;
   bool _hasConfiguredDelay = false;
+  bool _hasReadSkipAnimation = false;
 
   late final ProviderSubscription<SplashState> _subscription;
 
@@ -74,9 +75,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       );
     }
 
-    // Read skipAnimation query param once (post-login redirect uses this)
-    final routerState = GoRouterState.of(context);
-    _skipAnimation = routerState.uri.queryParameters[RouteQueryParams.skipAnimation] == RouteQueryParams.trueValue;
+    // Read skipAnimation query param exactly once (cache regardless of value)
+    if (!_hasReadSkipAnimation) {
+      _hasReadSkipAnimation = true;
+      final routerState = GoRouterState.of(context);
+      _skipAnimation = routerState.uri.queryParameters[RouteQueryParams.skipAnimation] == RouteQueryParams.trueValue;
+    }
 
     // skipAnimation=true: Navigate immediately without waiting for video
     if (_skipAnimation && !_hasNavigated && !_skipAnimationHandled) {

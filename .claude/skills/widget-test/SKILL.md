@@ -25,6 +25,36 @@ Creates widget tests for Flutter screens/components using LUVI's test infrastruc
 3. **Load localization** with `AppLocalizations.delegate`
 4. **Check Semantics** with `tester.ensureSemantics()`
 
+## Test Setup
+
+Every test file should start with:
+```dart
+import '../../../support/test_config.dart';
+
+void main() {
+  TestConfig.ensureInitialized();
+
+  group('ScreenName', () {
+    testWidgets('renders correctly', (tester) async {
+      // ...
+    });
+  });
+}
+```
+
+**What `TestConfig.ensureInitialized()` handles:**
+| Setup | Purpose |
+|-------|---------|
+| `TestWidgetsFlutterBinding` | Flutter test bindings |
+| `VideoPlayerMock` | Prevents "VideoPlayer not initialized" errors |
+| `AuthStrings` override | German localization for auth strings |
+| `InitMode.test` | Disables network calls and timers |
+
+**When to call:**
+- Always at the start of `void main()`
+- Before any `group()` or `testWidgets()` calls
+- Only once per test file (not per test)
+
 ## Quick Reference
 
 ### buildTestApp
@@ -49,6 +79,18 @@ find.text('Expected Text')
 find.bySemanticsLabel('Semantic Label')
 ```
 
+### Localization in Tests
+
+`buildTestApp` already configures `AppLocalizations.delegate` - no extra setup required.
+
+**Accessing L10n:**
+```dart
+final l10n = AppLocalizations.of(
+  tester.element(find.byType(MyScreen)),
+)!;
+expect(find.text(l10n.someLabel), findsOneWidget);
+```
+
 ## Run Tests
 ```bash
 scripts/flutter_codex.sh test test/features/{feature}/{test_file}.dart
@@ -58,6 +100,6 @@ scripts/flutter_codex.sh test test/features/{feature}/{test_file}.dart
 
 | Mistake | Fix |
 |---------|-----|
-| Missing `pumpAndSettle()` | Add after `pumpWidget()` for animations |
-| Forgot `ensureSemantics()` | Always check Semantics in A11y test |
+| Missing `pumpAndSettle()` | Call `pumpAndSettle()` after `pumpWidget()` for animations |
+| Forgot `ensureSemantics()` | Always call `ensureSemantics()` before accessibility assertions |
 | Wrong import path | Use relative `../../../support/test_app.dart` |
