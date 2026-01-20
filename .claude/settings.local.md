@@ -96,7 +96,7 @@
 | `mcp__figma__get_screenshot` | 🟢 | Screenshot holen | "Hol den Screenshot" |
 | `mcp__figma__get_variable_defs` | 🟢 | Variablen holen | "Welche Figma-Variablen?" |
 
-### 6. Shell Utilities (18 Permissions)
+### 6. Shell Utilities (16 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
@@ -125,7 +125,7 @@
 | `scripts/flutter_codex.sh:*` | 🟢 | Sandboxed Flutter | /analyze, /test Commands |
 | `./scripts/run_dev.sh:*` | 🟡 | Dev-Server starten | "Starte den Dev-Server" |
 
-### 8. Tools (5 Permissions)
+### 8. Tools (4 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
@@ -205,10 +205,10 @@
 | GitHub CLI | 9 |
 | MCP Archon | 8 |
 | MCP Figma | 3 |
-| Shell Utilities | 18 |
+| Shell Utilities | 16 |
 | Scripts | 3 |
-| Tools | 5 |
-| **Basis-Gesamt** | **71** |
+| Tools | 4 |
+| **Basis-Gesamt** | **68** |
 
 > **Hinweis:** Claude Code fügt automatisch neue Permissions hinzu, wenn du sie während einer Session genehmigst (z.B. WebFetch, WebSearch). Diese werden hier nicht dokumentiert, da sie session-spezifisch sind.
 

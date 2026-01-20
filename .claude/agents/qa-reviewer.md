@@ -58,6 +58,7 @@ NotificationPayload(body: '💡 5 Lebensmittel für mehr Energie')
 
 ## Output Format
 
+```markdown
 ## Privacy Quick-Check
 
 **Impact Level:** Low / Medium / High / Critical
@@ -69,3 +70,4 @@ NotificationPayload(body: '💡 5 Lebensmittel für mehr Energie')
    - Fix: Remediation
 
 **Recommendation:** [Fix before PR / OK / Needs full qa-dsgvo]
+```

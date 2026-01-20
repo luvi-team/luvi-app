@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'auth_rebrand_metrics.dart';
 
@@ -9,6 +8,10 @@ import 'auth_rebrand_metrics.dart';
 /// Black (#030401) background with white text.
 /// Used for "Weiter mit E-Mail" button in bottom sheets.
 /// Figma: 329×50, radius 12, Figtree Bold 17px.
+///
+/// Note: Text color is explicitly set in TextStyle (not via foregroundColor)
+/// to ensure consistent rendering with variable font. Disabled state uses
+/// background opacity (0.5) rather than text opacity for visual feedback.
 class AuthSecondaryButton extends StatelessWidget {
   const AuthSecondaryButton({
     super.key,
@@ -16,6 +19,7 @@ class AuthSecondaryButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.width,
+    this.loadingKey,
   });
 
   /// Button label text
@@ -29,6 +33,9 @@ class AuthSecondaryButton extends StatelessWidget {
 
   /// Optional fixed width (defaults to button width from metrics)
   final double? width;
+
+  /// Optional key for the loading indicator (for testing)
+  final Key? loadingKey;
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +58,12 @@ class AuthSecondaryButton extends StatelessWidget {
           padding: EdgeInsets.zero,
         ),
         child: isLoading
-            ? const SizedBox(
-                width: Sizes.loadingIndicatorSize,
-                height: Sizes.loadingIndicatorSize,
-                child: CircularProgressIndicator(
-                  strokeWidth: Sizes.loadingIndicatorStroke,
+            ? SizedBox(
+                key: loadingKey,
+                width: AuthRebrandMetrics.loadingIndicatorSize,
+                height: AuthRebrandMetrics.loadingIndicatorSize,
+                child: const CircularProgressIndicator(
+                  strokeWidth: AuthRebrandMetrics.loadingIndicatorStrokeWidth,
                   color: DsColors.grayscaleWhite,
                 ),
               )
@@ -64,8 +72,9 @@ class AuthSecondaryButton extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: FontFamilies.figtree,
                   fontSize: AuthRebrandMetrics.buttonFontSize,
-                  fontWeight: FontWeight.bold,
-                  // color handled by ElevatedButton.styleFrom foregroundColor
+                  fontVariations: [FontVariation('wght', 700)], // Bold for variable font
+                  height: AuthRebrandMetrics.bodyLineHeight, // 24/17
+                  color: DsColors.grayscaleWhite,
                 ),
               ),
       ),

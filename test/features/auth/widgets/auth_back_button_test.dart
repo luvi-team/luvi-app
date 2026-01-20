@@ -26,6 +26,7 @@ void main() {
       );
 
       await tester.tap(find.byType(AuthBackButton));
+      await tester.pumpAndSettle();
       expect(pressed, isTrue);
     });
 

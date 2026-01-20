@@ -104,11 +104,10 @@ class AuthRebrandOutlineButton extends StatelessWidget {
               padding: EdgeInsets.zero,
               child: Row(
                 children: [
-                  // Left padding before icon (SSOT: 53px)
-                  if (hasIcon)
-                    const SizedBox(
-                      width: AuthRebrandMetrics.outlineButtonIconLeftPadding,
-                    ),
+                  // Left padding (SSOT: 53px) - applies to both icon and no-icon variants
+                  const SizedBox(
+                    width: AuthRebrandMetrics.outlineButtonIconLeftPadding,
+                  ),
                   // Icon
                   if (icon != null)
                     Icon(

@@ -45,7 +45,9 @@ class AuthOAuthSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    assert(l10n != null, 'AppLocalizations not found in context');
+    if (l10n == null) return const SizedBox.shrink();
 
     // Check if Apple Sign In is supported
     final appleSignInSupported = FeatureFlags.enableAppleSignIn &&
@@ -77,8 +79,8 @@ class AuthOAuthSheetContent extends StatelessWidget {
 
                   const SizedBox(height: Spacing.l),
 
-                  // Apple button (if supported)
-                  if (appleSignInSupported) ...[
+                  // Apple button (if supported AND callback provided)
+                  if (appleSignInSupported && onApplePressed != null) ...[
                     AuthRebrandOutlineButton.apple(
                       label: l10n.authContinueApple,
                       onPressed: () async {
@@ -90,8 +92,9 @@ class AuthOAuthSheetContent extends StatelessWidget {
                     const SizedBox(height: Spacing.s),
                   ],
 
-                  // Google button
-                  if (FeatureFlags.enableGoogleSignIn) ...[
+                  // Google button (if enabled AND callback provided)
+                  if (FeatureFlags.enableGoogleSignIn &&
+                      onGooglePressed != null) ...[
                     AuthRebrandOutlineButton.google(
                       label: l10n.authContinueGoogle,
                       onPressed: () async {

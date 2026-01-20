@@ -124,6 +124,7 @@ class AuthRebrandMetrics {
   // ─── Icon Sizes ───
   static const double passwordToggleIconSize = 20.0;
   static const double loadingIndicatorSize = 20.0;
+  static const double loadingIndicatorStrokeWidth = 2.0;
   /// Back button icon size - reduced for Figma SVG alignment (stroke 1.5dp)
   static const double backButtonIconSize = 24.0;
 

@@ -49,6 +49,14 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   String? _newPasswordError;
   String? _confirmPasswordError;
 
+  /// Returns true if both password fields have content and no validation errors.
+  bool get _hasValidInput {
+    return _newPasswordController.text.isNotEmpty &&
+        _confirmPasswordController.text.isNotEmpty &&
+        _newPasswordError == null &&
+        _confirmPasswordError == null;
+  }
+
   void _showPasswordUpdateError(BuildContext context, AppLocalizations l10n) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.authPasswordUpdateError)),
@@ -216,7 +224,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final canSubmit = !_isLoading;
+    final canSubmit = !_isLoading && _hasValidInput;
 
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_create_password_screen'),

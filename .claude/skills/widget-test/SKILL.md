@@ -11,7 +11,7 @@ Creates widget tests for Flutter screens/components using LUVI's test infrastruc
 ## When to Use
 - You just implemented a new screen
 - You created a new reusable widget
-- Keywords: "Test erstellen", "Widget Test", "write tests"
+- Keywords: "create test", "widget test", "write tests"
 
 ## When NOT to Use
 - Unit tests for pure Dart logic (use regular unit tests)

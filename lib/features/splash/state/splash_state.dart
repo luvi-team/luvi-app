@@ -11,6 +11,13 @@ sealed class SplashState {
 /// Initial state: Loading/Video is playing, gates are being checked.
 final class SplashInitial extends SplashState {
   const SplashInitial();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is SplashInitial;
+
+  @override
+  int get hashCode => runtimeType.hashCode;
 }
 
 /// Resolved state: Target route has been determined.

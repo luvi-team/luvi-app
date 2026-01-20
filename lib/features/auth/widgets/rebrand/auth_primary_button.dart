@@ -62,7 +62,7 @@ class AuthPrimaryButton extends StatelessWidget {
                 width: AuthRebrandMetrics.loadingIndicatorSize,
                 height: AuthRebrandMetrics.loadingIndicatorSize,
                 child: const CircularProgressIndicator(
-                  strokeWidth: 2,
+                  strokeWidth: AuthRebrandMetrics.loadingIndicatorStrokeWidth,
                   color: DsColors.grayscaleWhite,
                 ),
               )

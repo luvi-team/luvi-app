@@ -100,7 +100,11 @@ class AuthBottomSheetShell extends StatelessWidget {
 
               // Content area
               Expanded(
-                child: child,
+                child: SafeArea(
+                  top: false,
+                  bottom: true,
+                  child: child,
+                ),
               ),
             ],
           ),

@@ -1,7 +1,7 @@
 # Chart Design Tokens
 
 ## Colors for Charts (DsColors)
-| Verwendung | Token | Hex |
+| Usage | Token | Hex |
 |------------|-------|-----|
 | Primary Line | `DsColors.signature` | #9F2B68 |
 | Secondary Line | `DsColors.primaryGold` | #D9B18E |

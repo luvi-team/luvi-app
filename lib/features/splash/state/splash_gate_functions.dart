@@ -116,6 +116,9 @@ OnboardingGateResult determineOnboardingGateRoute({
   // Local cache may be stale or cross-account; only allow the safe direction.
   if (localGate == false) return RouteResolved(RoutePaths.onboarding01);
 
-  // Both null → truly unknown
+  // Intentional: remoteGate == null && localGate == true (or null) → StateUnknown
+  // We treat "remote unavailable + local positive" as unknown to force network
+  // retry rather than trusting potentially stale local cache. This is a
+  // deliberate fail-safe, not an oversight.
   return const StateUnknown();
 }

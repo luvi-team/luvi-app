@@ -43,6 +43,6 @@ class AuthRebrandTextStyles {
     fontSize: AuthRebrandMetrics.bodyFontSize,
     fontWeight: FontWeight.w400,
     height: AuthRebrandMetrics.bodyLineHeight,
-    color: DsColors.grayscaleBlack,
+    color: DsColors.authRebrandTextPrimary,
   );
 }

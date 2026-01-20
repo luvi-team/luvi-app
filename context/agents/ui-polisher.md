@@ -16,7 +16,7 @@ No novels; focus on tokens/colors, typography, spacing, A11y (contrast/touch).
 Short & concrete line references in every suggestion.
 
 ## Operative Mode
-Codex CLI-first (BMAD → PRP).
+Codex CLI-first (BMAD → PRP). See `docs/bmad/claude-code-slim.md` for workflow details.
 
 ## When to Use (LUVI-specific)
 - After completing new screens/major UI components by Claude Code, before final review by Codex.

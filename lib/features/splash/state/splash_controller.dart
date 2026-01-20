@@ -205,15 +205,28 @@ class SplashController extends _$SplashController {
         );
       case RaceRetryNeeded():
         // Unreachable: _evaluateOnboardingGateWithRetry handles internally.
+        // 1. Log first (always executes)
         log.e(
           'unexpected RaceRetryNeeded after retry - logic error',
           tag: 'splash',
         );
+        // 2. Telemetry for production monitoring (always executes)
+        ref.read(analyticsRecorderProvider).recordEvent(
+          'splash_unreachable_race_retry',
+          properties: {'retry_count': _manualRetryCount},
+        );
+        // 3. Debug assertion (throws in debug builds AFTER logging)
+        assert(
+          false,
+          'RaceRetryNeeded should never reach _handleOnboardingGateResult',
+        );
+        // 4. Explicit debug throw (redundant with assert, but explicit)
         if (kDebugMode) {
           throw StateError(
             'RaceRetryNeeded should never reach _runGateSequence switch',
           );
         }
+        // 5. Fallback state (only reached in release builds)
         state = SplashUnknown(
           canRetry: _manualRetryCount < SplashUnknown.maxRetries,
           retryCount: _manualRetryCount,
