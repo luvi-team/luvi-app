@@ -7,8 +7,8 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
-import 'package:luvi_app/features/auth/widgets/auth_text_field.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_glass_card.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
@@ -138,6 +138,19 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     OnboardingSpacing spacing,
   ) {
     final l10n = AppLocalizations.of(context)!;
+    final tokens = Theme.of(context).extension<DsTokens>()!;
+    final resolvedFontSize = Sizes.onboardingInputFontSize;
+    const designLineHeightPx = 24.0;
+    final computedHeight = designLineHeightPx / resolvedFontSize;
+    final resolvedHeight = computedHeight < 1.2 ? 1.2 : computedHeight;
+    final inputStyle = textTheme.bodySmall?.copyWith(
+      fontSize: resolvedFontSize,
+      fontFamily: FontFamilies.playfairDisplay,
+      fontWeight: FontWeight.bold,
+      height: resolvedHeight,
+      color: colorScheme.onSurface,
+    );
+    final hintStyle = inputStyle?.copyWith(color: tokens.grayscale500);
 
     // Figma specs: Glass container 340×88px, radius 16, BackdropFilter blur (v3)
     return OnboardingGlassCard(
@@ -156,18 +169,22 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
               cursorColor: DsColors.grayscaleBlack,
               selectionHandleColor: DsColors.grayscaleBlack,
             ),
-            child: AuthTextField(
+            child: TextField(
               controller: _nameController,
-              frameless: true,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.name,
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.done,
               autofocus: true,
-              hintText: l10n.onboarding01NameHint,
-              fontSize: Sizes.onboardingInputFontSize, // 18px (Figma v2)
-              fontFamilyOverride: FontFamilies.playfairDisplay,
-              fontWeightOverride: FontWeight.bold,
+              style: inputStyle,
+              decoration:
+                  const InputDecoration(
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                  ).copyWith(
+                    hintText: l10n.onboarding01NameHint,
+                    hintStyle: hintStyle,
+                  ),
               onSubmitted: (_) {
                 if (_hasText) {
                   _handleContinue();
