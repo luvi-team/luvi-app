@@ -5,7 +5,7 @@ import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/privacy/consent_config.dart';
 import 'package:luvi_app/features/splash/state/splash_controller.dart';
-import 'package:luvi_app/features/splash/data/splash_dependencies.dart';
+import 'package:luvi_app/core/init/session_dependencies.dart';
 import 'package:luvi_app/features/splash/state/splash_state.dart';
 import 'package:luvi_services/device_state_service.dart';
 import 'package:luvi_services/init_mode.dart';
