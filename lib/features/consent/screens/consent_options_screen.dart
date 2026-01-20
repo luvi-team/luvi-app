@@ -13,12 +13,10 @@ import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/core/widgets/link_text.dart';
-import 'package:luvi_app/features/consent/config/consent_config.dart';
+import 'package:luvi_app/core/privacy/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
-import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_services/supabase_service.dart';
@@ -412,7 +410,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
       if (!context.mounted) return;
       if (error.code == 'unauthorized' || error.statusCode == 401) {
         // Session abgelaufen → User zu Auth redirecten
-        context.go(AuthSignInScreen.routeName);
+        context.go(RoutePaths.authSignIn);
         return;
       }
       final message = switch (error.code) {
@@ -699,7 +697,7 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
 /// Navigate to Onboarding after consent is accepted.
 void _navigateAfterConsent(BuildContext context) {
   final isAuth = SupabaseService.isAuthenticated;
-  context.go(isAuth ? Onboarding01Screen.routeName : AuthSignInScreen.routeName);
+  context.go(isAuth ? RoutePaths.onboarding01 : RoutePaths.authSignIn);
 }
 
 void _reportUnexpectedConsentError(
@@ -715,4 +713,3 @@ void _reportUnexpectedConsentError(
   );
   _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
 }
-

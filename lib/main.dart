@@ -27,7 +27,7 @@ import 'core/init/init_mode.dart' show initModeProvider;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
 import 'core/init/init_diagnostics.dart';
 import 'core/init/supabase_deep_link_handler.dart';
-import 'features/consent/config/consent_config.dart';
+import 'core/privacy/consent_config.dart';
 
 // TODO(arwin): Greptile status check smoke test
 void main() async {

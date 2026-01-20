@@ -21,7 +21,7 @@ import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as routes;
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
-import 'package:luvi_app/features/consent/config/consent_config.dart';
+import 'package:luvi_app/core/privacy/consent_config.dart';
 
 // Feature Screen imports (allowed here, NOT in core)
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';

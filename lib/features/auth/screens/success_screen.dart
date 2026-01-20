@@ -11,7 +11,7 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
-import 'package:luvi_app/features/splash/data/splash_dependencies.dart';
+import 'package:luvi_app/core/init/session_dependencies.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// SuccessScreen with Auth Rebrand v3 design (export-parity).

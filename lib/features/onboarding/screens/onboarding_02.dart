@@ -5,8 +5,8 @@ import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_03_fitness.dart';
 import 'package:luvi_app/features/onboarding/state/onboarding_state.dart';
 import 'package:luvi_app/features/onboarding/widgets/birthdate_picker.dart';
@@ -120,7 +120,7 @@ class _Onboarding02ScreenState extends ConsumerState<Onboarding02Screen> {
     if (router.canPop()) {
       context.pop();
     } else {
-      context.go(Onboarding01Screen.routeName);
+      context.go(RoutePaths.onboarding01);
     }
   }
 
