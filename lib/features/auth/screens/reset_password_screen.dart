@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/auth/state/reset_password_state.dart';
 import 'package:luvi_app/features/auth/utils/auth_navigation_helpers.dart';
 import 'package:luvi_app/features/auth/state/reset_submit_provider.dart';
@@ -185,7 +186,14 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     } catch (e, st) {
       // Errors surfaced via submitState listener in initState.
       // Catch prevents unhandled exception in async callback.
-      if (e is! AuthException) {
+      if (e is AuthException) {
+        // Log AuthException at debug level for observability (aids debugging new Supabase codes)
+        log.d(
+          'reset_password_auth_exception: code=${e.code ?? "null"}, message=${sanitizeError(e) ?? "[redacted]"}',
+          tag: 'reset_password',
+        );
+      } else {
+        // Unexpected errors: log at warning level
         log.w('reset_password_unexpected', error: e, stack: st);
       }
     }

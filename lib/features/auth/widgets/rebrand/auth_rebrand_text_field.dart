@@ -38,7 +38,11 @@ class AuthRebrandTextField extends StatelessWidget {
   /// Error message to display (replaces hint text when in error state)
   final String? errorText;
 
-  /// Whether the field is in error state
+  /// Whether the field is in error state.
+  ///
+  /// This is the authoritative flag for error styling. Callers should set
+  /// this to `true` when validation fails. If [errorText] is provided
+  /// (and non-empty), the error state is inferred even when this is `false`.
   final bool hasError;
 
   /// Whether to obscure text (for passwords)
@@ -71,7 +75,10 @@ class AuthRebrandTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showError = hasError || errorText != null;
+    // hasError is the primary source-of-truth; errorText presence serves as
+    // fallback to catch cases where caller forgets to set hasError explicitly.
+    // Empty errorText is ignored to avoid false-positive error styling.
+    final showError = hasError || (errorText != null && errorText!.isNotEmpty);
     final borderColor = showError
         ? DsColors.authRebrandError
         : DsColors.authRebrandInputBorder;

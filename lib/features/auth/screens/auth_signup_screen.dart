@@ -246,6 +246,12 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         case 'signup_disabled':
         case 'over_request_rate_limit':
           return l10n.authSignupGenericError;
+        default:
+          // Log unrecognized code for future mapping (aids discovering new Supabase codes)
+          log.i(
+            'signup_auth_error_unrecognized: code=$code',
+            tag: 'signup',
+          );
       }
     }
 

@@ -29,7 +29,7 @@ class AuthBackButton extends StatelessWidget {
       button: true,
       label: semanticsLabel ??
           AppLocalizations.of(context)?.authBackSemantic ??
-          'Back',
+          'Back', // A11y fallback: English default when l10n unavailable
       onTap: onPressed,
       child: SizedBox(
         width: Sizes.touchTargetMin,

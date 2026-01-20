@@ -140,6 +140,19 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   }
 
   /// Performs client-side validation only and completes synchronously.
+  ///
+  /// **Sync-but-Future Pattern:** The base implementation calls
+  /// `validate(password: password)` synchronously and returns `Future.value()`.
+  /// This shape is intentional so subclasses can override to perform async work
+  /// (e.g., network login in integration tests or async mocks).
+  ///
+  /// **Override Contract:**
+  /// - Subclasses should call `validate(password: password)` before async operations
+  ///   OR call `super.validateAndSubmit(password: password)` first
+  /// - The returned Future should complete with void on success
+  /// - Errors should be captured via [updateState] with appropriate error fields,
+  ///   NOT thrown (to maintain consistent state-based error handling)
+  ///
   /// Any network submission or remote auth flow is handled by
   /// `login_submit_provider` to avoid mixing concerns.
   ///

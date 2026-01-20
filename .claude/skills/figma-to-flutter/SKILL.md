@@ -37,7 +37,7 @@ grep -n "Figma: XXpx" lib/core/design_tokens/spacing.dart
 grep -n "Figma: XXpx" lib/core/design_tokens/sizes.dart
 ```
 
-### 3a. Token Creation (if not found)
+### 4. Token Creation (if not found)
 
 When adding new tokens, follow these patterns:
 
@@ -64,22 +64,22 @@ static const double buttonHeightL = 56.0;
 - Include context in name: `cardBackgroundNeutral`, not just `neutral`
 - Comment format: `/// Figma: #HEXCODE (Context)` or `/// Figma: XXpx (Context)`
 
-### 4. Find Reference Screen
+### 5. Find Reference Screen
 - Glob: `lib/features/*/screens/*.dart`
 - Auth: `lib/features/auth/screens/`
 - Onboarding: `lib/features/onboarding/screens/`
 
-### 5. Implement with:
+### 6. Implement with:
 - `DsColors.*` for colors
 - `Spacing.*` for spacing
 - `Sizes.*` for dimensions
 - `Semantics(label: AppLocalizations.of(context)!.xxx)` for A11y
 
-### 6. Create Widget Test
+### 7. Create Widget Test
 - Under `test/features/{feature}/`
 - Use `buildTestApp` from `test/support/test_app.dart`
 
-### 7. Verify
+### 8. Verify
 ```bash
 scripts/flutter_codex.sh analyze
 ```

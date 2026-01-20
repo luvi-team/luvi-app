@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -17,7 +18,7 @@ void main() {
     setUp(() {
       router = GoRouter(
         routes: testAppRoutes,
-        initialLocation: '/auth/password/new',
+        initialLocation: RoutePaths.createNewPassword,
       );
     });
 

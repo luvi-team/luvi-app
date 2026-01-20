@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'auth_content_card.dart';
 import 'auth_rebrand_metrics.dart';
@@ -42,7 +43,12 @@ class AuthOAuthSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    assert(l10n != null, 'AppLocalizations not found in context');
+    if (l10n == null) {
+      log.e('Unexpected: AppLocalizations missing in AuthOAuthSheetContent', tag: 'auth');
+      return const SizedBox.shrink();
+    }
 
     // Check if Apple Sign In is supported
     final appleSignInSupported = FeatureFlags.enableAppleSignIn &&
