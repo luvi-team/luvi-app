@@ -78,6 +78,7 @@ class SplashController extends _$SplashController {
   /// Does nothing if not in Unknown state or max retries exhausted.
   /// Shows spinner on retry button while retrying (stays on Unknown UI).
   Future<void> retry() async {
+    if (_inFlight) return;
     if (state is! SplashUnknown) return;
     if (_manualRetryCount >= SplashUnknown.maxRetries) return;
 

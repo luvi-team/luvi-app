@@ -9,8 +9,11 @@ import 'package:luvi_app/features/{feature}/screens/{screen_file}.dart';
 // ignore: unused_import
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_app.dart';
+import '../../../support/test_config.dart';
 
 void main() {
+  TestConfig.ensureInitialized();
+
   group('{ScreenName}Screen', () {
     testWidgets('renders correctly', (tester) async {
       await tester.pumpWidget(
