@@ -48,6 +48,10 @@ class AuthOAuthSheetContent extends StatelessWidget {
     final appleSignInSupported = FeatureFlags.enableAppleSignIn &&
         (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS);
 
+    // Determine if any OAuth button is shown
+    final hasOAuthButtons = (appleSignInSupported && onApplePressed != null) ||
+        (FeatureFlags.enableGoogleSignIn && onGooglePressed != null);
+
     return Center(
       child: SingleChildScrollView(
         child: Column(
@@ -99,13 +103,14 @@ class AuthOAuthSheetContent extends StatelessWidget {
                     const SizedBox(height: Spacing.m),
                   ],
 
-                  // Divider (SSOT: Figma #030401, 17px, Regular)
-                  Text(
-                    l10n.authOr,
-                    style: AuthRebrandTextStyles.divider,
-                  ),
-
-                  const SizedBox(height: Spacing.m),
+                  // Divider (only if OAuth buttons exist)
+                  if (hasOAuthButtons) ...[
+                    Text(
+                      l10n.authOr,
+                      style: AuthRebrandTextStyles.divider,
+                    ),
+                    const SizedBox(height: Spacing.m),
+                  ],
 
                   // Email button
                   AuthSecondaryButton(

@@ -8,12 +8,6 @@ import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Patterns to detect invalid credentials error from Supabase.
-const _kInvalidCredentialsPatterns = ['invalid login credentials', 'invalid credentials'];
-
-/// Patterns to detect email confirmation required error from Supabase.
-const _kEmailConfirmationPatterns = ['email not confirmed', 'confirm your email'];
-
 class LoginSubmitNotifier extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
@@ -99,16 +93,21 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     required String email,
   }) {
     final code = error.code?.toLowerCase();
-    final message = error.message.toLowerCase();
 
-    // Combined: code OR message pattern (defensive)
+    // Log warning if error code is missing (helps monitor edge cases)
+    if (code == null) {
+      log.w(
+        'auth_error_missing_code: message=${sanitizeError(error) ?? "[redacted]"}',
+        tag: 'login_submit',
+      );
+    }
+
+    // Structured error code checks only (no fragile message patterns)
     final isInvalidCredentials = code == 'invalid_credentials' ||
-        code == 'invalid_grant' ||
-        _kInvalidCredentialsPatterns.any(message.contains);
+        code == 'invalid_grant';
 
     final isEmailNotConfirmed = code == 'email_not_confirmed' ||
-        code == 'otp_expired' ||
-        _kEmailConfirmationPatterns.any(message.contains);
+        code == 'otp_expired';
 
     if (isInvalidCredentials) {
       // SSOT P0.7: Both fields show error on invalid credentials

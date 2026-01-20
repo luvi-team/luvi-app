@@ -142,13 +142,13 @@ void main() {
       expect(state.globalError, AuthStrings.errConfirmEmail);
     });
 
-    test('falls back to message matching when code is null', () async {
+    test('shows generic error when code is null (invalid credentials message)', () async {
       final mockRepo = _MockAuthRepository();
       when(() => mockRepo.signInWithPassword(
             email: any(named: 'email'),
             password: any(named: 'password'),
           )).thenThrow(AuthException(
-        'Invalid credentials provided', // Contains 'invalid' and 'credentials'
+        'Invalid credentials provided', // Message content ignored; code is null
       ));
 
       final container = ProviderContainer(overrides: [
@@ -164,45 +164,47 @@ void main() {
           .submit(email: 'user@example.com', password: 'validPassword123');
 
       final state = container.read(loginProvider).value!;
-      expect(state.emailError, AuthStrings.invalidCredentials);
-      expect(state.passwordError, AuthStrings.invalidCredentials);
-      expect(state.globalError, isNull);
-    });
-
-    test('falls back to message matching for email confirmation when code is null', () async {
-      final mockRepo = _MockAuthRepository();
-      when(() => mockRepo.signInWithPassword(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenThrow(AuthException(
-        'Please confirm your email', // Contains 'confirm'
-      ));
-
-      final container = ProviderContainer(overrides: [
-        authRepositoryProvider.overrideWithValue(mockRepo),
-      ]);
-      addTearDown(container.dispose);
-
-      final loginNotifier = container.read(loginProvider.notifier);
-      loginNotifier.setEmail('user@example.com');
-
-      await container
-          .read(loginSubmitProvider.notifier)
-          .submit(email: 'user@example.com', password: 'validPassword123');
-
-      final state = container.read(loginProvider).value!;
+      // No pattern matching; code is null -> generic error
       expect(state.emailError, isNull);
       expect(state.passwordError, isNull);
-      expect(state.globalError, AuthStrings.errConfirmEmail);
+      expect(state.globalError, AuthStrings.errLoginUnavailable);
     });
 
-    test('sets generic error when no patterns match and code is null', () async {
+    test('shows generic error when code is null (email confirmation message)', () async {
       final mockRepo = _MockAuthRepository();
       when(() => mockRepo.signInWithPassword(
             email: any(named: 'email'),
             password: any(named: 'password'),
           )).thenThrow(AuthException(
-        'Unknown server error', // No matching patterns
+        'Please confirm your email', // Message content ignored; code is null
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      // No pattern matching; code is null -> generic error
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errLoginUnavailable);
+    });
+
+    test('shows generic error when code is null (unknown message)', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Unknown server error', // Message content ignored; code is null
       ));
 
       final container = ProviderContainer(overrides: [
@@ -223,13 +225,13 @@ void main() {
       expect(state.globalError, AuthStrings.errLoginUnavailable);
     });
 
-    test('does not false-positive on partial pattern match', () async {
+    test('shows generic error for any message when code is null', () async {
       final mockRepo = _MockAuthRepository();
       when(() => mockRepo.signInWithPassword(
             email: any(named: 'email'),
             password: any(named: 'password'),
           )).thenThrow(AuthException(
-        'Invalid request format', // Contains 'invalid' but NOT 'credentials'
+        'Invalid request format', // Message content ignored; code is null
       ));
 
       final container = ProviderContainer(overrides: [
@@ -245,10 +247,10 @@ void main() {
           .submit(email: 'user@example.com', password: 'validPassword123');
 
       final state = container.read(loginProvider).value!;
-      // Should NOT match invalidCredentials pattern (only 'invalid', not 'credentials')
+      // No pattern matching; code is null -> generic error
       expect(state.emailError, isNull);
       expect(state.passwordError, isNull);
-      expect(state.globalError, AuthStrings.errLoginUnavailable); // Generic fallback
+      expect(state.globalError, AuthStrings.errLoginUnavailable);
     });
   });
 }
