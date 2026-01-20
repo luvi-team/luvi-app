@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
@@ -91,7 +92,7 @@ void main() {
         // showing the splash animation again after user just logged in
         expect(
           result,
-          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          equals('${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'LoginScreen with session should redirect to Splash with skipAnimation',
         );
       });
@@ -110,7 +111,7 @@ void main() {
         // showing the splash animation again after user just logged in
         expect(
           result,
-          equals('${SplashScreen.routeName}?skipAnimation=true'),
+          equals('${SplashScreen.routeName}?${RouteQueryParams.skipAnimationTrueQuery}'),
           reason: 'AuthSignInScreen with session should redirect to Splash with skipAnimation',
         );
       });

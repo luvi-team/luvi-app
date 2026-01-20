@@ -110,17 +110,3 @@ AuthPasswordValidationResult validateNewPassword(
 
   return const AuthPasswordValidationResult.valid();
 }
-
-const int _kBackoffBaseSeconds = 2;
-const int _kBackoffMaxSeconds = 60;
-
-Duration computePasswordBackoffDelay(int consecutiveFailures) {
-  if (consecutiveFailures <= 0) {
-    return Duration.zero;
-  }
-  final multiplier = 1 << consecutiveFailures;
-  final clampedSeconds =
-      (_kBackoffBaseSeconds * multiplier).clamp(0, _kBackoffMaxSeconds);
-  final seconds = clampedSeconds.toInt();
-  return Duration(seconds: seconds);
-}

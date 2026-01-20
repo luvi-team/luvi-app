@@ -5,12 +5,11 @@ import 'package:luvi_app/features/auth/state/login_state.dart';
 import '../../support/test_config.dart';
 
 class _FakeServerErrorLoginNotifier extends LoginNotifier {
-
   // Simulates server error after successful client-side validation
   @override
-  Future<void> validateAndSubmit() async {
+  Future<void> validateAndSubmit({required String password}) async {
     try {
-      await super.validateAndSubmit();
+      await super.validateAndSubmit(password: password);
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       return;
@@ -40,8 +39,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('badmail');
-    notifier.setPassword('123');
-    await notifier.validateAndSubmit();
+    await notifier.validateAndSubmit(password: '123');
 
     final state = notifier.debugState();
 
@@ -56,10 +54,8 @@ void main() {
     final notifier = container.read(loginProvider.notifier);
     await container.read(loginProvider.future);
 
-
     notifier.setEmail('ab@b.com');
-    notifier.setPassword('secret88');
-    await notifier.validateAndSubmit();
+    await notifier.validateAndSubmit(password: 'secret88');
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);
@@ -74,9 +70,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('');
-
-    notifier.setPassword('secret88');
-    await notifier.validateAndSubmit();
+    await notifier.validateAndSubmit(password: 'secret88');
 
     final state = notifier.debugState();
     expect(state.emailError, AuthStrings.errEmailEmpty);
@@ -91,12 +85,10 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
-    notifier.setPassword('');
-    await notifier.validateAndSubmit();
+    await notifier.validateAndSubmit(password: '');
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);
-
     expect(state.passwordError, AuthStrings.errPasswordEmpty);
     expect(state.isValid, isFalse);
   });
@@ -108,9 +100,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('test@');
-
-    notifier.setPassword('secret88');
-    await notifier.validateAndSubmit();
+    await notifier.validateAndSubmit(password: 'secret88');
 
     final state = notifier.debugState();
     expect(state.emailError, AuthStrings.errEmailInvalid);
@@ -125,8 +115,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
-    notifier.setPassword('12345');
-    await notifier.validateAndSubmit();
+    await notifier.validateAndSubmit(password: '12345');
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);
@@ -142,9 +131,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
-
-    notifier.setPassword('12345678');
-    await notifier.validateAndSubmit();
+    await notifier.validateAndSubmit(password: '12345678');
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);
@@ -163,9 +150,7 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
-
-    notifier.setPassword('12345678');
-    await notifier.validateAndSubmit();
+    await notifier.validateAndSubmit(password: '12345678');
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);

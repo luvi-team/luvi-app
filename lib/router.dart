@@ -15,11 +15,13 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as routes;
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
-import 'package:luvi_app/features/consent/config/consent_config.dart';
+import 'package:luvi_app/core/privacy/consent_config.dart';
 
 // Feature Screen imports (allowed here, NOT in core)
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
@@ -91,16 +93,16 @@ String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
 
       return needsConsent ? RoutePaths.consentIntro : null;
     },
-    loading: () => '${RoutePaths.splash}?skipAnimation=true',
+    loading: () => '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}',
     error: (error, st) {
-      // Log error for debugging (fail-safe still returns splash)
+      // Log sanitized error for debugging (fail-safe still returns splash)
       log.w(
         'consent_guard_state_error',
         tag: 'router',
-        error: error,
+        error: sanitizeError(error) ?? error.runtimeType,
         stack: st,
       );
-      return '${RoutePaths.splash}?skipAnimation=true';
+      return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
     },
   );
 }
@@ -130,15 +132,16 @@ String? _postAuthGuard(BuildContext context, GoRouterState state) {
         currentConsentVersion: ConsentConfig.currentVersionInt,
       );
     },
-    loading: () => '${RoutePaths.splash}?skipAnimation=true',
+    loading: () => '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}',
     error: (error, st) {
+      // Log sanitized error to prevent PII leakage
       log.w(
         'post_auth_guard_state_error',
         tag: 'router',
-        error: error,
+        error: sanitizeError(error) ?? error.runtimeType,
         stack: st,
       );
-      return '${RoutePaths.splash}?skipAnimation=true';
+      return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
     },
   );
 }
@@ -335,7 +338,7 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
 
     // ─────────────────────────────────────────────────────────────────────
     // Dashboard (post-auth protected routes)
-    // WICHTIG: Neue Routes → redirect: _postAuthGuard + kPostAuthPaths in routes.dart
+    // IMPORTANT: New routes → redirect: _postAuthGuard + kPostAuthPaths in routes.dart
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
       path: RoutePaths.heute,

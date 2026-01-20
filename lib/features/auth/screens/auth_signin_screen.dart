@@ -1,33 +1,35 @@
-import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 import 'package:luvi_app/core/config/app_links.dart';
-import 'package:luvi_app/core/config/feature_flags.dart';
+import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/features/auth/utils/oauth_cancellation.dart';
-import 'package:luvi_app/features/auth/widgets/auth_conic_gradient_background.dart';
-import 'package:luvi_app/features/auth/widgets/auth_glass_card.dart';
-import 'package:luvi_app/features/auth/widgets/auth_outline_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_bottom_sheet_shell.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_login_sheet.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_register_sheet.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// SignIn entry screen with Apple, Google, and Email login options.
-///
-/// Figma Node: 69020:1379
-/// Route: /auth/signin (replaces /auth/entry)
+/// Auth Entry screen with Auth Rebrand v3 design.
 ///
 /// Features:
-/// - Conic gradient background
-/// - Glassmorphism card with headline
-/// - Apple Sign In button (iOS/web only)
-/// - Google Sign In button
-/// - Email login outline button
+/// - Beige background (#F9F1E6)
+/// - Hero image at bottom
+/// - LUVI logo (SVG) with teal dot
+/// - "Los geht's" pink CTA → opens Register bottom sheet
+/// - "Ich habe bereits einen Account." link → opens Login bottom sheet
+///
+/// Route: /auth/signin
 class AuthSignInScreen extends ConsumerStatefulWidget {
   const AuthSignInScreen({super.key});
 
@@ -43,155 +45,180 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final size = MediaQuery.sizeOf(context);
+
+    // Calculate scale factor for responsive positioning
+    // Design baseline: 402×874 (AuthRebrandMetrics SSOT from PNG exports)
+    final scaleY = size.height / AuthRebrandMetrics.designHeight;
 
     return Scaffold(
       key: const ValueKey('auth_signin_screen'),
+      backgroundColor: DsColors.authRebrandBackground,
       body: Stack(
         children: [
-          // Full-screen conic gradient background
-          const Positioned.fill(
-            child: AuthConicGradientBackground(),
-          ),
+          _buildHeroImage(size),
+          _buildLogoWithTealDot(size: size, scaleY: scaleY),
+          _buildCtaContainer(l10n: l10n, scaleY: scaleY),
 
-          // Content
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-              child: Column(
-                children: [
-                  const Spacer(flex: 2),
+          // Loading overlay
+          if (_oauthLoading) _buildLoadingOverlay(),
+        ],
+      ),
+    );
+  }
 
-                  // Glass card with headline
-                  AuthGlassCard(
-                    key: const ValueKey('auth_glass_card'),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.l,
-                        vertical: Spacing.authGlassCardVertical,
-                      ),
-                      child: Text(
-                        l10n.authSignInHeadline,
-                        // Figma: Playfair Display Bold 32px, #9F2B68 (headlineMagenta)
-                        style: const TextStyle(
-                          fontFamily: FontFamilies.playfairDisplay,
-                          fontSize: AuthTypography.headlineFontSize,
-                          fontWeight: FontWeight.bold,
-                          height: AuthTypography.headlineLineHeight,
-                          color: DsColors.headlineMagenta,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+  Widget _buildHeroImage(Size size) {
+    // Hero image at bottom (decorative, excluded from semantics)
+    return Positioned(
+      key: const ValueKey('auth_entry_hero'),
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Image.asset(
+        Assets.images.auth.heroAuthEntry,
+        fit: BoxFit.fitWidth,
+        width: size.width,
+        excludeFromSemantics: true,
+      ),
+    );
+  }
+
+  Widget _buildLogoWithTealDot({
+    required Size size,
+    required double scaleY,
+  }) {
+    // LUVI Logo with Teal Dot - fixed size, responsive position
+    final topOffset = (size.height / 2) +
+        (AuthRebrandMetrics.entryLogoCenterYOffset * scaleY) -
+        (AuthRebrandMetrics.entryLogoHeight / 2);
+
+    return Positioned(
+      left: 0,
+      right: 0,
+      top: topOffset,
+      child: Center(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Logo - fixed size for brand consistency
+            SvgPicture.asset(
+              Assets.images.auth.logoLuvi,
+              height: AuthRebrandMetrics.entryLogoHeight,
+              semanticsLabel: 'LUVI Logo',
+            ),
+            // Teal Dot - fixed size, positioned relative to logo
+            Positioned(
+              right: AuthRebrandMetrics.entryTealDotRightOffset,
+              top: AuthRebrandMetrics.entryTealDotTopOffset,
+              child: ExcludeSemantics(
+                child: Container(
+                  key: const ValueKey('tealDot'),
+                  width: AuthRebrandMetrics.entryTealDotSize,
+                  height: AuthRebrandMetrics.entryTealDotSize,
+                  decoration: const BoxDecoration(
+                    color: DsColors.authRebrandTealDot,
+                    shape: BoxShape.circle,
                   ),
-
-                  const Spacer(flex: 1),
-
-                  // Auth buttons with loading overlay
-                  _buildAuthButtons(context, l10n),
-
-                  // Loading indicator during OAuth
-                  if (_oauthLoading)
-                    Padding(
-                      padding: const EdgeInsets.only(top: Spacing.m),
-                      child: SizedBox(
-                        height: Sizes.loadingIndicatorSize,
-                        width: Sizes.loadingIndicatorSize,
-                        child: CircularProgressIndicator(
-                          strokeWidth: Sizes.loadingIndicatorStroke,
-                          color: DsColors.headlineMagenta,
-                          semanticsLabel: l10n.authSignInLoading,
-                        ),
-                      ),
-                    ),
-
-                  const Spacer(flex: 2),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  /// Wraps a button with AnimatedOpacity and Semantics for consistent
-  /// loading state behavior across all auth buttons.
-  Widget _buildAnimatedButton({
-    required String semanticsLabel,
-    required Widget child,
+  Widget _buildCtaContainer({
+    required AppLocalizations l10n,
+    required double scaleY,
   }) {
-    return AnimatedOpacity(
-      opacity: _oauthLoading ? 0.5 : 1.0,
-      duration: const Duration(milliseconds: 150),
-      child: Semantics(
-        button: true,
-        enabled: !_oauthLoading,
-        label: semanticsLabel,
-        child: child,
+    // CTA Container - horizontally centered for symmetric margins
+    return Positioned(
+      left: 0,
+      right: 0,
+      top: AuthRebrandMetrics.entryCtaY * scaleY,
+      child: Center(
+        child: SizedBox(
+          width: AuthRebrandMetrics.entryCtaWidth,
+          child: _buildCtaSection(l10n),
+        ),
       ),
     );
   }
 
-  Widget _buildAuthButtons(BuildContext context, AppLocalizations l10n) {
-    final buttons = <Widget>[];
-
-    // Apple Sign In (iOS/web only, per Apple HIG - Apple first)
-    final appleSignInSupported = FeatureFlags.enableAppleSignIn &&
-        (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS);
-
-    if (appleSignInSupported) {
-      buttons.add(
-        _buildAnimatedButton(
-          semanticsLabel: l10n.authSignInApple,
-          child: AuthOutlineButton.apple(
-            key: const ValueKey('signin_apple_button'),
-            text: l10n.authSignInApple,
-            onPressed: _oauthLoading
-                ? null
-                : () => _handleOAuthSignIn(supa.OAuthProvider.apple),
+  Widget _buildLoadingOverlay() {
+    return Positioned.fill(
+      child: Container(
+        color: DsColors.authRebrandBackground.withValues(alpha: 0.7),
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: DsColors.authRebrandCtaPrimary,
           ),
-        ),
-      );
-    }
-
-    // Google Sign In
-    if (FeatureFlags.enableGoogleSignIn) {
-      buttons.add(
-        _buildAnimatedButton(
-          semanticsLabel: l10n.authSignInGoogle,
-          child: AuthOutlineButton.google(
-            key: const ValueKey('signin_google_button'),
-            text: l10n.authSignInGoogle,
-            onPressed: _oauthLoading
-                ? null
-                : () => _handleOAuthSignIn(supa.OAuthProvider.google),
-          ),
-        ),
-      );
-    }
-
-    // Email login outline button
-    buttons.add(
-      _buildAnimatedButton(
-        semanticsLabel: l10n.authSignInEmail,
-        child: AuthOutlineButton(
-          key: const ValueKey('signin_email_button'),
-          text: l10n.authSignInEmail,
-          icon: Icons.mail_outline,
-          borderColor: DsColors.authOutlineBorder,
-          onPressed:
-              _oauthLoading ? null : () => context.push(LoginScreen.routeName),
         ),
       ),
     );
+  }
 
+  Widget _buildCtaSection(AppLocalizations l10n) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        for (int i = 0; i < buttons.length; i++) ...[
-          if (i > 0) const SizedBox(height: Spacing.s), // 12px gap per Figma
-          buttons[i],
-        ],
+        // Primary CTA - "Los geht's"
+        AuthPrimaryButton(
+          key: const ValueKey('auth_entry_cta'),
+          label: l10n.authEntryCta,
+          width: AuthRebrandMetrics.entryCtaWidth,
+          height: AuthRebrandMetrics.entryPrimaryButtonHeight,
+          onPressed: _oauthLoading ? null : _showRegisterSheet,
+        ),
+
+        const SizedBox(height: AuthRebrandMetrics.entryCtaGap),
+
+        // Login link - "Ich habe bereits einen Account."
+        // SSOT: Figma 69690:2191 - Figtree SemiBold 17px, line-height 24px, #000000
+        // A11y: TextButton for proper focus/ripple and 44dp touch target
+        TextButton(
+          onPressed: _oauthLoading ? null : _showLoginSheet,
+          style: TextButton.styleFrom(
+            minimumSize: const Size(0, Sizes.touchTargetMin), // ✅ 44dp
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Pixel-parity
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
+            foregroundColor: DsColors.black,
+          ),
+          child: Text(
+            l10n.authEntryExistingAccount,
+            style: const TextStyle(
+              fontFamily: FontFamilies.figtree,
+              fontSize: AuthRebrandMetrics.linkFontSize,
+              fontVariations: [FontVariation('wght', 600)], // SemiBold for variable font
+              height: AuthRebrandMetrics.bodyLineHeightRatio, // 24/17
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
       ],
+    );
+  }
+
+  void _showRegisterSheet() {
+    AuthBottomSheetShell.show(
+      context: context,
+      builder: (context) => AuthRegisterSheet(
+        onApplePressed: () => _handleOAuthSignIn(supa.OAuthProvider.apple),
+        onGooglePressed: () => _handleOAuthSignIn(supa.OAuthProvider.google),
+        onEmailPressed: () => context.push(RoutePaths.signup),
+      ),
+    );
+  }
+
+  void _showLoginSheet() {
+    AuthBottomSheetShell.show(
+      context: context,
+      builder: (context) => AuthLoginSheet(
+        onApplePressed: () => _handleOAuthSignIn(supa.OAuthProvider.apple),
+        onGooglePressed: () => _handleOAuthSignIn(supa.OAuthProvider.google),
+        onEmailPressed: () => context.push(RoutePaths.login),
+      ),
     );
   }
 
@@ -209,23 +236,16 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             : supa.LaunchMode.externalApplication,
       );
     } on supa.AuthException catch (error) {
-      // Supabase typed auth exceptions - check for user-initiated cancellation.
-      // AuthException.message may contain cancellation indicators from the provider.
       if (isOAuthUserCancellation(error.message)) {
         return;
       }
-      // Log non-cancellation OAuth errors for observability (detect missed patterns)
       logNonCancellationOAuthError(error.message, provider: provider.name);
       _handleOAuthError(error, StackTrace.current, provider);
     } catch (error, stackTrace) {
-      // Fallback for platform-specific WebAuth cancellations (e.g., ASWebAuthSession,
-      // Chrome Custom Tabs) that may not map to typed Supabase exceptions and only
-      // surface as platform exceptions with cancellation strings.
       final errorString = error.toString();
       if (isOAuthUserCancellation(errorString)) {
         return;
       }
-      // Log non-cancellation OAuth errors for observability (detect missed patterns)
       logNonCancellationOAuthError(errorString, provider: provider.name);
       _handleOAuthError(error, stackTrace, provider);
     } finally {
@@ -249,7 +269,6 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     }
   }
 
-  /// Handles OAuth errors by reporting to Flutter error handler and showing snackbar.
   void _handleOAuthError(
     Object error,
     StackTrace stackTrace,

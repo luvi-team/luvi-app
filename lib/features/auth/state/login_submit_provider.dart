@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -19,7 +21,8 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     // validateAndSubmit performs local (synchronous) validation only and does not
     // perform any network calls. However, the provider may still be in a loading
     // or error state due to concurrent updates (e.g. other auth flows) — handle safely.
-    await loginNotifier.validateAndSubmit();
+    // SECURITY: Pass password as parameter, not stored in provider state.
+    await loginNotifier.validateAndSubmit(password: password);
 
     final loginAsync = ref.read(loginProvider);
     if (loginAsync.isLoading) {
@@ -69,12 +72,18 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         error: error,
         loginNotifier: loginNotifier,
         email: sanitizedEmail,
-        password: password,
       );
       state = const AsyncData(null);
     } catch (error, stackTrace) {
-      state = AsyncError(error, stackTrace);
-      rethrow;
+      // Log sanitized error, set global error - no crash
+      log.e(
+        'login_submit_unexpected_error',
+        tag: 'login_submit',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
+      loginNotifier.setGlobalError(AuthStrings.errLoginUnavailable);
+      state = const AsyncData(null);
     }
   }
 
@@ -82,35 +91,58 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     required AuthException error,
     required LoginNotifier loginNotifier,
     required String email,
-    required String password,
   }) {
-    final message = error.message.toLowerCase();
+    final code = error.code?.toLowerCase();
 
-    if (message.contains('invalid') || message.contains('credentials')) {
+    // Log warning if error code is missing (helps monitor edge cases)
+    if (code == null) {
+      log.w(
+        'auth_error_missing_code: message=${sanitizeError(error) ?? "[redacted]"}',
+        tag: 'login_submit',
+      );
+    }
+
+    // Structured error code checks only (no fragile message patterns)
+    final isInvalidCredentials = code == 'invalid_credentials' ||
+        code == 'invalid_grant';
+
+    final isEmailNotConfirmed = code == 'email_not_confirmed' ||
+        code == 'otp_expired';
+
+    if (isInvalidCredentials) {
+      // SSOT P0.7: Both fields show error on invalid credentials
+      // SECURITY: Don't write password back into provider state
       loginNotifier.updateState(
         email: email,
-        password: password,
         emailError: AuthStrings.invalidCredentials,
-        passwordError: null,
+        passwordError: AuthStrings.invalidCredentials,
         globalError: null,
       );
-    } else if (message.contains('confirm')) {
+      return;
+    }
+
+    if (isEmailNotConfirmed) {
       loginNotifier.updateState(
         email: email,
-        password: password,
         emailError: null,
         passwordError: null,
         globalError: AuthStrings.errConfirmEmail,
       );
-    } else {
-      loginNotifier.updateState(
-        email: email,
-        password: password,
-        emailError: null,
-        passwordError: null,
-        globalError: AuthStrings.errLoginUnavailable,
-      );
+      return;
     }
+
+    // Log unrecognized auth errors for inspection
+    log.i(
+      'auth_error_unrecognized: code=${code ?? "null"}, message=${sanitizeError(error) ?? "[redacted]"}',
+      tag: 'login_submit',
+    );
+
+    loginNotifier.updateState(
+      email: email,
+      emailError: null,
+      passwordError: null,
+      globalError: AuthStrings.errLoginUnavailable,
+    );
   }
 }
 

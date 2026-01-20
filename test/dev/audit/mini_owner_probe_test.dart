@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class FakeViewPadding implements ViewPadding {
@@ -71,7 +72,7 @@ void main() {
       }
 
       // Find widgets by specific finders
-      final backButtonFinder = find.byKey(const ValueKey('backButtonCircle'));
+      final backButtonFinder = find.byType(AuthBackButton);
 
       // Note: This finds the title (not subtitle) - CreateNewPasswordScreen has no subtitle
       final titleFinder = find.byKey(const ValueKey('create_new_title'));

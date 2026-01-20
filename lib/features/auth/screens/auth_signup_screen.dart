@@ -3,36 +3,36 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
-import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/auth/layout/auth_layout.dart';
-import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
-import 'package:luvi_app/features/auth/screens/login_screen.dart';
-import 'package:luvi_app/features/auth/state/auth_controller.dart';
-import 'package:luvi_app/features/auth/widgets/auth_linear_gradient_background.dart';
-import 'package:luvi_app/features/auth/widgets/auth_shell.dart';
-import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
-import 'package:luvi_app/features/auth/widgets/login_email_field.dart';
-import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
-import 'package:luvi_app/core/widgets/welcome_button.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
+import 'package:luvi_app/features/auth/screens/login_screen.dart';
+import 'package:luvi_app/features/auth/utils/auth_navigation_helpers.dart';
+import 'package:luvi_app/features/auth/utils/create_new_password_rules.dart';
+import 'package:luvi_app/features/auth/state/auth_controller.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_error_banner.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
+import 'package:luvi_app/features/auth/widgets/password_visibility_toggle_button.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// SignupScreen with Figma Auth UI v2 design.
-///
-/// Note: No Figma spec exists - design based on LoginScreen layout.
-/// Route: /auth/signup
+/// Signup screen with Auth Rebrand v3 design.
 ///
 /// Features:
-/// - Linear gradient background (same as Login)
-/// - Back button navigation
-/// - Email + Password form (simplified from 5 fields to 2)
-/// - Pink CTA button (56px height)
-/// - "Schon dabei? Anmelden" link
+/// - Rainbow background with arcs and stripes
+/// - Content card with headline and form
+/// - Email + Password + Confirm Password fields
+/// - Pink CTA button
+/// - CTA button only (no login link per SSOT P0.6)
+///
+/// Route: /auth/signup
 class AuthSignupScreen extends ConsumerStatefulWidget {
   const AuthSignupScreen({super.key});
 
@@ -45,59 +45,100 @@ class AuthSignupScreen extends ConsumerStatefulWidget {
 class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   Timer? _signupNavTimer;
 
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   bool _isSubmitting = false;
+  bool _emailError = false;
+  bool _passwordError = false;
+  bool _confirmPasswordError = false;
   String? _errorMessage;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _signupNavTimer?.cancel();
     super.dispose();
   }
 
-  Future<void> _handleSignup() async {
-    if (_isSubmitting) return;
+  /// Validates signup form inputs using NIST SP 800-63B compliant rules.
+  /// Returns error message if validation fails, null if valid.
+  String? _validateInputs({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required AppLocalizations l10n,
+  }) {
+    // Email validation (not covered by validateNewPassword)
+    final isEmailEmpty = email.isEmpty;
 
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
+    // NIST-compliant Validation via shared rules
+    final passwordValidation = validateNewPassword(password, confirmPassword);
 
-    if (email.isEmpty || password.isEmpty) {
-      setState(() {
-        _errorMessage = AppLocalizations.of(context)!.authSignupMissingFields;
-      });
-      return;
+    // Collect all error flags first
+    bool passwordError = false;
+    bool confirmError = false;
+    String? errorMessage;
+
+    if (!passwordValidation.isValid) {
+      switch (passwordValidation.error!) {
+        case AuthPasswordValidationError.emptyFields:
+          // Set specific flags based on actually empty fields
+          passwordError = password.isEmpty;
+          confirmError = confirmPassword.isEmpty;
+          errorMessage = l10n.authSignupMissingFields;
+        case AuthPasswordValidationError.mismatch:
+          confirmError = true;
+          errorMessage = l10n.authPasswordMismatchError;
+        case AuthPasswordValidationError.tooShort:
+          passwordError = true;
+          errorMessage = l10n.authErrPasswordTooShort;
+        case AuthPasswordValidationError.commonWeak:
+          passwordError = true;
+          errorMessage = l10n.authErrPasswordCommonWeak;
+      }
     }
 
-    FocusScope.of(context).unfocus();
+    // Check Email error additionally (not instead!)
+    // If Email empty AND Password-Error: show specific Password-Error
+    // If ONLY Email empty: show Missing Fields
+    if (isEmailEmpty && errorMessage == null) {
+      errorMessage = l10n.authSignupMissingFields;
+    }
 
+    // Set all flags once
     setState(() {
-      _isSubmitting = true;
-      _errorMessage = null;
+      _emailError = isEmailEmpty;
+      _passwordError = passwordError;
+      _confirmPasswordError = confirmError;
     });
 
+    return errorMessage;
+  }
+
+  /// Performs the actual signup API call and handles success/error states.
+  Future<void> _submitSignup({
+    required String email,
+    required String password,
+    required AppLocalizations l10n,
+  }) async {
     final authRepository = ref.read(authRepositoryProvider);
 
     try {
-      await authRepository.signUp(
-        email: email,
-        password: password,
-      );
+      await authRepository.signUp(email: email, password: password);
 
       if (!mounted) return;
-      // Show success message and navigate to login
-      // Note: VerificationScreen was removed per Auth v2 refactoring plan
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.authSignupSuccess),
+          content: Text(l10n.authSignupSuccess),
           duration: Timing.snackBarBrief,
         ),
       );
-      // Short delay for user to see success message, then navigate
-      // Using cancellable Timer for safe disposal (avoids navigation after unmount)
+
       _signupNavTimer?.cancel();
       _signupNavTimer = Timer(Timing.snackBarBrief, () {
         if (!mounted) return;
@@ -110,11 +151,39 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         stack: stackTrace,
       );
       if (!mounted) return;
-      final message = error.message;
       setState(() {
-        _errorMessage = message.isNotEmpty
-            ? message
-            : AppLocalizations.of(context)!.authSignupGenericError;
+        _errorMessage = _mapAuthError(error, l10n);
+
+        // Clear both flags first
+        _emailError = false;
+        _passwordError = false;
+
+        // Use error.code for field attribution (more robust than message parsing)
+        final code = error.code?.toLowerCase();
+        if (code != null) {
+          if (code == 'weak_password') {
+            _passwordError = true;
+          } else if (code == 'over_request_rate_limit' ||
+                     code == 'signup_disabled') {
+            // Ambiguous codes: no field-specific flags
+            // _errorMessage already shows the error in the banner
+          } else {
+            // email_address_invalid, email_exists, user_already_exists, etc.
+            _emailError = true;
+          }
+        } else {
+          // Fallback: message pattern matching when code is null
+          final message = error.message.toLowerCase();
+          if (message.contains('password')) {
+            _passwordError = true;
+          } else if (message.contains('email') ||
+                     message.contains('address') ||
+                     message.contains('user')) {
+            _emailError = true;
+          }
+          // Ambiguous errors (network, rate-limit, unknown): no field flags
+          // _errorMessage already shows the error in the banner
+        }
       });
     } catch (error, stackTrace) {
       log.e(
@@ -123,188 +192,241 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         stack: stackTrace,
       );
       if (!mounted) return;
-      setState(() {
-        _errorMessage = AppLocalizations.of(context)!.authSignupGenericError;
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
+      setState(() => _errorMessage = l10n.authSignupGenericError);
+    }
+  }
+
+  Future<void> _handleSignup() async {
+    if (_isSubmitting) return;
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+    final l10n = AppLocalizations.of(context)!;
+
+    final validationError = _validateInputs(
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      l10n: l10n,
+    );
+    if (validationError != null) {
+      setState(() => _errorMessage = validationError);
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _isSubmitting = true;
+      _errorMessage = null;
+      _emailError = false;
+      _passwordError = false;
+      _confirmPasswordError = false;
+    });
+
+    await _submitSignup(email: email, password: password, l10n: l10n);
+
+    if (mounted) setState(() => _isSubmitting = false);
+  }
+
+  String _mapAuthError(AuthException error, AppLocalizations l10n) {
+    final code = error.code?.toLowerCase();
+
+    // Primary: Check error.code (robust, structured)
+    if (code != null) {
+      switch (code) {
+        case 'email_address_invalid':
+        case 'validation_failed':
+          return l10n.authErrEmailInvalid;
+        case 'weak_password':
+          return l10n.authErrPasswordTooShort;
+        case 'email_exists':
+        case 'user_already_exists':
+          return l10n.authErrConfirmEmail;
+        case 'signup_disabled':
+        case 'over_request_rate_limit':
+          return l10n.authSignupGenericError;
+        default:
+          // Log unrecognized code for future mapping (aids discovering new Supabase codes)
+          log.i(
+            'signup_auth_error_unrecognized: code=$code',
+            tag: 'signup',
+          );
       }
     }
+
+    // Fallback: Message pattern matching (when code is null)
+    final message = error.message.toLowerCase();
+    if (message.contains('email') && message.contains('invalid')) {
+      return l10n.authErrEmailInvalid;
+    }
+    if (message.contains('password') && message.contains('short')) {
+      return l10n.authErrPasswordTooShort;
+    }
+    if (message.contains('already') || message.contains('exists')) {
+      return l10n.authErrConfirmEmail;
+    }
+
+    return l10n.authSignupGenericError;
+  }
+
+  void _onEmailChanged(String _) {
+    if (_errorMessage != null || _emailError) {
+      setState(() {
+        _errorMessage = null;
+        _emailError = false;
+      });
+    }
+  }
+
+  void _onPasswordChanged(String _) {
+    if (_errorMessage != null || _passwordError) {
+      setState(() {
+        _errorMessage = null;
+        _passwordError = false;
+      });
+    }
+  }
+
+  void _onConfirmPasswordChanged(String value) {
+    final password = _passwordController.text;
+
+    setState(() {
+      // Always clear global error message on change
+      _errorMessage = null;
+
+      // Logic for _confirmPasswordError:
+      // - Empty field: clear error (user is still typing)
+      // - Both non-empty and equal: clear error (match!)
+      // - Both non-empty and unequal: do NOT set error while typing
+      //   (_validateInputs handles this on submit)
+      if (value.isEmpty || (password.isNotEmpty && value == password)) {
+        _confirmPasswordError = false;
+      }
+      // Note: We do NOT set _confirmPasswordError to true here,
+      // to avoid annoying flickering while typing.
+      // Mismatch is checked on submit.
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Explicit null check with clear failure message for debugging
-    final localizations = AppLocalizations.of(context);
-    assert(
-      localizations != null,
-      'AppLocalizations not configured. Ensure localizationsDelegates '
-      'include AppLocalizations.delegate in MaterialApp.',
+    final l10n = AppLocalizations.of(context)!;
+
+    return AuthRebrandScaffold(
+      scaffoldKey: const ValueKey('auth_signup_screen'),
+      onBack: () => handleAuthBackNavigation(context),
+      child: _buildContent(l10n),
     );
-    final l10n = localizations!;
-    final theme = Theme.of(context);
-    final tokensNullable = theme.extension<DsTokens>();
-    assert(
-      tokensNullable != null,
-      'DsTokens not configured. Ensure AppTheme includes DsTokens extension.',
+  }
+
+  Widget _buildContent(AppLocalizations l10n) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (_errorMessage != null) AuthErrorBanner(message: _errorMessage!),
+        _buildFormCard(l10n),
+      ],
     );
-    final tokens = tokensNullable!;
+  }
 
-    final hasError = _errorMessage != null;
-    final canSubmit = !_isSubmitting;
-
-    // Figma: Title style - Playfair Display Bold, 24px (same as Login)
-    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontSize: Sizes.authTitleFontSize,
-      height: Sizes.authTitleLineHeight,
-      fontWeight: FontWeight.bold,
-      color: theme.colorScheme.onSurface,
-    );
-
-    // Link style for "Already have account?"
-    final linkStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: 16,
-      height: 24 / 16,
-      color: theme.colorScheme.onSurface,
-    );
-
-    final linkActionStyle = linkStyle?.copyWith(
-      fontWeight: FontWeight.bold,
-      color: tokens.cardBorderSelected,
-      decoration: TextDecoration.underline,
-    );
-
-    return Scaffold(
-      key: const ValueKey('auth_signup_screen'),
-      resizeToAvoidBottomInset: true,
-      body: AuthShell(
-        background: const AuthLinearGradientBackground(),
-        showBackButton: true,
-        onBackPressed: () {
-          final router = GoRouter.of(context);
-          if (router.canPop()) {
-            router.pop();
-          } else {
-            // Fallback to SignIn entry screen (consistent with auth flow)
-            context.go(AuthSignInScreen.routeName);
-          }
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Gap after back button
-            const SizedBox(height: AuthLayout.backButtonToTitle),
-
-            // Title: "Konto erstellen"
-            Text(
-              l10n.authSignupTitle,
-              style: titleStyle,
-            ),
-
-            // Gap between title and inputs
-            const SizedBox(height: Spacing.l + Spacing.xs), // 32px
-
-            // Email field
-            // Auth-Flow Bugfix: Keyboard öffnet nicht automatisch
-            LoginEmailField(
-              key: const ValueKey('signup_email_field'),
-              controller: _emailController,
-              errorText: null,
-              autofocus: false,
-              onChanged: (_) {
-                if (_errorMessage != null) {
-                  setState(() => _errorMessage = null);
-                }
-              },
-            ),
-
-            // Gap between inputs = 20px
-            const SizedBox(height: Spacing.goalCardVertical),
-
-            // Password field
-            LoginPasswordField(
-              key: const ValueKey('signup_password_field'),
-              controller: _passwordController,
-              errorText: null,
-              obscure: _obscurePassword,
-              onToggleObscure: () {
-                setState(() => _obscurePassword = !_obscurePassword);
-              },
-              onChanged: (_) {
-                if (_errorMessage != null) {
-                  setState(() => _errorMessage = null);
-                }
-              },
-              onSubmitted: (_) {
-                if (canSubmit) _handleSignup();
-              },
-            ),
-
-            // Error message
-            if (hasError) ...[
-              const SizedBox(height: Spacing.xs),
-              FieldErrorText(_errorMessage!),
-            ],
-
-            // Gap before CTA
-            const SizedBox(height: Spacing.l + Spacing.m), // 40px
-
-            // CTA Button - Figma: h=56px
-            SizedBox(
-              width: double.infinity,
-              height: Sizes.buttonHeightL,
-              child: WelcomeButton(
-                key: const ValueKey('signup_cta_button'),
-                onPressed: canSubmit ? _handleSignup : null,
-                isLoading: _isSubmitting,
-                label: l10n.authSignupCta,
-                loadingKey: const ValueKey('signup_cta_loading'),
-                labelKey: const ValueKey('signup_cta_label'),
-              ),
-            ),
-
-            // Gap before login link
-            const SizedBox(height: Spacing.l),
-
-            // "Schon dabei? Anmelden" link - centered
-            Center(
-              child: TextButton(
-                key: const ValueKey('signup_login_link'),
-                // Use context.go to replace stack consistently (clears auth screens)
-                onPressed: () => context.go(LoginScreen.routeName),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(
-                    Sizes.touchTargetMin,
-                    Sizes.touchTargetMin,
-                  ),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: l10n.authSignupAlreadyMember,
-                        style: linkStyle,
-                      ),
-                      TextSpan(
-                        text: l10n.authSignupLoginLink,
-                        style: linkActionStyle,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // Bottom padding
-            const SizedBox(height: Spacing.l),
-          ],
-        ),
+  Widget _buildFormCard(AppLocalizations l10n) {
+    return AuthContentCard(
+      width: AuthRebrandMetrics.cardWidthForm,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildHeadline(l10n),
+          const SizedBox(height: Spacing.m),
+          _buildEmailField(l10n),
+          const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+          _buildPasswordField(l10n),
+          const SizedBox(height: AuthRebrandMetrics.cardInputGap),
+          _buildConfirmPasswordField(l10n),
+          const SizedBox(height: Spacing.m),
+          _buildCtaButton(l10n),
+        ],
       ),
+    );
+  }
+
+  Widget _buildHeadline(AppLocalizations l10n) {
+    return Text(
+      l10n.authRegisterEmailTitle,
+      style: AuthRebrandTextStyles.headline,
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildEmailField(AppLocalizations l10n) {
+    return AuthRebrandTextField(
+      key: const ValueKey('signup_email_field'),
+      controller: _emailController,
+      hintText: l10n.authEmailPlaceholderLong,
+      errorText: _emailError ? l10n.authErrorEmailCheck : null,
+      hasError: _emailError,
+      keyboardType: TextInputType.emailAddress,
+      textInputAction: TextInputAction.next,
+      onChanged: _onEmailChanged,
+    );
+  }
+
+  Widget _buildPasswordField(AppLocalizations l10n) {
+    return AuthRebrandTextField(
+      key: const ValueKey('signup_password_field'),
+      controller: _passwordController,
+      hintText: l10n.authPasswordPlaceholder,
+      errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
+      hasError: _passwordError,
+      obscureText: _obscurePassword,
+      textInputAction: TextInputAction.next,
+      onChanged: _onPasswordChanged,
+      suffixIcon: PasswordVisibilityToggleButton(
+        obscured: _obscurePassword,
+        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+        color: DsColors.grayscale500,
+        size: AuthRebrandMetrics.passwordToggleIconSize,
+      ),
+    );
+  }
+
+  Widget _buildConfirmPasswordField(AppLocalizations l10n) {
+    final confirmErrorText = _confirmPasswordError
+        ? (_confirmPasswordController.text.isEmpty
+            ? l10n.authErrPasswordInvalid
+            : l10n.authPasswordMismatchError)
+        : null;
+
+    return AuthRebrandTextField(
+      key: const ValueKey('signup_password_confirm_field'),
+      controller: _confirmPasswordController,
+      hintText: l10n.authNewPasswordConfirmHint,
+      errorText: confirmErrorText,
+      hasError: _confirmPasswordError,
+      obscureText: _obscureConfirmPassword,
+      textInputAction: TextInputAction.done,
+      onChanged: _onConfirmPasswordChanged,
+      onSubmitted: (_) {
+        if (!_isSubmitting) _handleSignup();
+      },
+      suffixIcon: PasswordVisibilityToggleButton(
+        obscured: _obscureConfirmPassword,
+        onPressed: () => setState(
+          () => _obscureConfirmPassword = !_obscureConfirmPassword,
+        ),
+        color: DsColors.grayscale500,
+        size: AuthRebrandMetrics.passwordToggleIconSize,
+      ),
+    );
+  }
+
+  Widget _buildCtaButton(AppLocalizations l10n) {
+    return AuthPrimaryButton(
+      key: const ValueKey('signup_cta_button'),
+      loadingKey: const ValueKey('signup_cta_loading'),
+      label: l10n.authEntryCta,
+      onPressed: _isSubmitting ? null : _handleSignup,
+      isLoading: _isSubmitting,
     );
   }
 }

@@ -13,7 +13,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
-import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/features/onboarding/domain/fitness_level.dart';
 import 'package:luvi_app/features/onboarding/domain/goal.dart';
 import 'package:luvi_app/features/onboarding/domain/interest.dart';
@@ -23,7 +23,6 @@ import 'package:luvi_app/features/onboarding/widgets/circular_progress_ring.dart
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/data/onboarding_backend_writer.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_services/user_state_service.dart' as services;
 
@@ -125,7 +124,7 @@ class _OnboardingSuccessScreenState
         );
         if (mounted) {
           // P2.3b: Redirect to auth instead of showing error
-          context.go(AuthSignInScreen.routeName);
+          context.go(RoutePaths.authSignIn);
         }
         return;
       }
@@ -242,7 +241,7 @@ class _OnboardingSuccessScreenState
       // Navigate to home after short delay
       await Future.delayed(kOnboardingNavigationDelay);
       if (mounted) {
-        context.go(HeuteScreen.routeName);
+        context.go(RoutePaths.heute);
       }
     }
   }

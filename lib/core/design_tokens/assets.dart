@@ -39,6 +39,7 @@ class _Icons {
 
   // Auth/Social icons
   final String googleG = 'assets/icons/google_g.svg';
+  final String authBackChevron = 'assets/icons/auth/auth_back_chevron.svg';
 
   // Top bar
   final String search = 'assets/icons/dashboard/icon.search.svg';
@@ -78,6 +79,9 @@ class _Icons {
 
 class _Images {
   const _Images();
+
+  // Auth images (Auth Rebrand v3)
+  final _AuthImages auth = const _AuthImages();
 
   final String recoBeinePo = 'assets/images/dashboard/reco.beine_po.png';
   final String recoRueckenSchulter =
@@ -177,4 +181,11 @@ class _ConsentImages {
 
   final String shield1 = 'assets/images/consent/shield1.png';  // C2
   final String shield2 = 'assets/images/consent/shield2.png';  // C3
+}
+
+class _AuthImages {
+  const _AuthImages();
+
+  final String heroAuthEntry = 'assets/images/auth/hero_auth_entry.png';
+  final String logoLuvi = 'assets/images/auth/logo_luvi.svg';
 }

@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/features/splash/state/splash_controller.dart';
 import 'package:luvi_app/features/splash/state/splash_state.dart';
@@ -40,6 +41,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _skipAnimationHandled = false;
   bool _hasNavigated = false;
   bool _hasConfiguredDelay = false;
+  bool _hasReadSkipAnimation = false;
 
   late final ProviderSubscription<SplashState> _subscription;
 
@@ -54,7 +56,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         if (!mounted) return;
         if (next is SplashResolved && !_hasNavigated) {
           _hasNavigated = true;
-          context.go(next.targetRoute);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go(next.targetRoute);
+            }
+          });
         }
       },
       fireImmediately: true,
@@ -73,9 +79,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       );
     }
 
-    // Read skipAnimation query param once (post-login redirect uses this)
-    final routerState = GoRouterState.of(context);
-    _skipAnimation = routerState.uri.queryParameters['skipAnimation'] == 'true';
+    // Read skipAnimation query param exactly once (cache regardless of value)
+    if (!_hasReadSkipAnimation) {
+      _hasReadSkipAnimation = true;
+      final routerState = GoRouterState.of(context);
+      _skipAnimation = routerState.uri.queryParameters[RouteQueryParams.skipAnimation] == RouteQueryParams.trueValue;
+    }
 
     // skipAnimation=true: Navigate immediately without waiting for video
     if (_skipAnimation && !_hasNavigated && !_skipAnimationHandled) {
@@ -95,6 +104,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   void _triggerGateCheck() {
+    if (!mounted) return;
     ref.read(splashControllerProvider.notifier).checkGates();
   }
 
@@ -134,12 +144,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     // Show unknown UI when in SplashUnknown state
     final showUnknownUI = splashState is SplashUnknown;
-    final canRetry = splashState is SplashUnknown && splashState.canRetry;
 
     return Scaffold(
       backgroundColor: DsColors.splashBg,
       body: showUnknownUI
-          ? _buildUnknownUI(context, l10n, canRetry)
+          ? _buildUnknownUI(context, l10n, splashState)
           : _skipAnimation
               // skipAnimation: Show solid background (no 1-frame flash)
               ? Container(color: DsColors.splashBg)
@@ -151,12 +160,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     );
   }
 
-  Widget _buildUnknownUI(BuildContext context, AppLocalizations l10n, bool canRetry) {
+  Widget _buildUnknownUI(BuildContext context, AppLocalizations l10n, SplashState splashState) {
+    final unknown = splashState as SplashUnknown;
+    final canRetry = unknown.canRetry;
+    final isRetrying = unknown.isRetrying;
+
     return UnknownStateUi(
       onRetry: canRetry ? _handleRetry : null,
       onSignOut: _handleSignOut,
       canRetry: canRetry,
-      isRetrying: false,
+      isRetrying: isRetrying,
     );
   }
 }

@@ -40,31 +40,4 @@ void main() {
       expect(result.error, isNull);
     });
   });
-
-  group('computePasswordBackoffDelay', () {
-    test('returns zero for non-positive attempts', () {
-      expect(
-        computePasswordBackoffDelay(0),
-        Duration.zero,
-      );
-    });
-
-    test('doubles delay with each failure up to the cap', () {
-      expect(
-        computePasswordBackoffDelay(1),
-        const Duration(seconds: 4),
-      );
-      expect(
-        computePasswordBackoffDelay(2),
-        const Duration(seconds: 8),
-      );
-    });
-
-    test('caps the delay at one minute', () {
-      expect(
-        computePasswordBackoffDelay(10),
-        const Duration(seconds: 60),
-      );
-    });
-  });
 }

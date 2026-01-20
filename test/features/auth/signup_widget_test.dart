@@ -43,10 +43,14 @@ void main() {
     // Screen renders
     expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
 
-    // Per Auth v2 refactoring: Signup has only 2 fields (Email + Password)
+    // Per Auth Rebrand v3: Signup has 3 fields (Email + Password + Confirm)
     // The old test expected 5 fields (FirstName, LastName, Phone, Email, Password)
     expect(find.byKey(const ValueKey('signup_email_field')), findsOneWidget);
     expect(find.byKey(const ValueKey('signup_password_field')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('signup_password_confirm_field')),
+      findsOneWidget,
+    );
 
     // CTA button is present and enabled
     final ctaFinder = find.byKey(const ValueKey('signup_cta_button'));
@@ -61,8 +65,10 @@ void main() {
     final button = tester.widget<ElevatedButton>(elevatedButton);
     expect(button.onPressed, isNotNull, reason: 'CTA button should be enabled');
 
-    // Login link is present
-    expect(find.byKey(const ValueKey('signup_login_link')), findsOneWidget);
+    // Verify login link was removed per SSOT P0.6
+    // Key-based check is sufficient - no need for text-based assertions
+    // which could cause false failures if "Login" appears elsewhere
+    expect(find.byKey(const ValueKey('login_link')), findsNothing);
   });
 
   testWidgets('AuthSignupScreen renders correctly in English', (tester) async {

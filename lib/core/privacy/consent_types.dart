@@ -1,9 +1,8 @@
 // ignore_for_file: constant_identifier_names
 /// Canonical consent scopes and required-set used across the app.
 ///
-/// Diese Enum muss exakt zu `config/consent_scopes.json` passen
-/// (IDs + `required`). Änderungen immer zuerst in der JSON-Datei
-/// durchführen und anschließend diesen Code + Tests aktualisieren.
+/// This enum must match `config/consent_scopes.json` exactly (IDs + `required`).
+/// Always make changes in the JSON file first, then update this code + tests.
 /// This file provides a single source of truth to avoid drift between
 /// config, state, and UI when determining which consents are mandatory.
 enum ConsentScope {
@@ -23,9 +22,9 @@ const Set<ConsentScope> kRequiredConsentScopes = <ConsentScope>{
 };
 
 /// Visible optional scopes in MVP UI.
-/// DSGVO: "Alles akzeptieren" darf NUR diese Scopes setzen, nicht versteckte!
-/// Andere optionale Scopes (ai_journal, marketing, model_training) werden
-/// erst in zukünftigen Versionen im UI angezeigt.
+/// GDPR: "Accept all" must ONLY set these visible scopes, not hidden ones!
+/// Other optional scopes (ai_journal, marketing, model_training) will only
+/// be shown in future UI versions.
 const Set<ConsentScope> kVisibleOptionalScopes = <ConsentScope>{
   ConsentScope.analytics,
 };

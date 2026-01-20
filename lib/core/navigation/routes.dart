@@ -13,6 +13,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' show Session;
 
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_services/supabase_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -42,11 +43,11 @@ const String _consentPathPrefix = '$_consentRootPath/';
 /// 1. Add `redirect: _postAuthGuard` to the GoRoute
 /// 2. Add the path here to ensure wiring test coverage
 const List<String> kPostAuthPaths = [
-  RoutePaths.heute,
-  RoutePaths.workoutDetail,
-  RoutePaths.trainingsOverview,
-  RoutePaths.cycleOverview,
-  RoutePaths.profile,
+  RoutePaths.heute,              // '/heute'
+  RoutePaths.workoutDetail,      // '/workout/:id'
+  RoutePaths.trainingsOverview,  // '/trainings/overview'
+  RoutePaths.cycleOverview,      // '/zyklus'
+  RoutePaths.profile,            // '/profil'
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -99,7 +100,7 @@ String? homeGuardRedirect({
 }) {
   // Fail-safe: If state unknown, delegate to Splash (no visible animation).
   if (!isStateKnown) {
-    return '${RoutePaths.splash}?skipAnimation=true';
+    return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
   }
   // State is known - apply gate logic
   if (hasCompletedOnboarding == false) {
@@ -127,7 +128,7 @@ String? homeGuardRedirectWithConsent({
 }) {
   // Fail-safe: If state unknown, delegate to Splash (no visible animation).
   if (!isStateKnown) {
-    return '${RoutePaths.splash}?skipAnimation=true';
+    return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
   }
 
   // Defense-in-Depth: Check consent version FIRST (matches Splash gate order)
@@ -153,6 +154,111 @@ String? homeGuardRedirectWithConsent({
 String? supabaseRedirect(BuildContext context, GoRouterState state) =>
     supabaseRedirectWithSession(context, state);
 
+/// Route classification for redirect logic.
+class _RouteFlags {
+  const _RouteFlags({
+    required this.isAuthRoute,
+    required this.isLoginOrSignIn,
+    required this.isSplash,
+    required this.isWelcome,
+    required this.isOnboarding,
+    required this.isDashboard,
+    required this.isPasswordRecovery,
+  });
+
+  /// True if route is an auth flow route (login, signup, reset password).
+  final bool isAuthRoute;
+
+  /// True if route is specifically login or signIn (not signup/reset).
+  final bool isLoginOrSignIn;
+
+  /// True if route is the splash screen.
+  final bool isSplash;
+
+  /// True if route is a welcome screen (device-local, pre-auth).
+  final bool isWelcome;
+
+  /// True if route is an onboarding route (post-auth).
+  final bool isOnboarding;
+
+  /// True if route is the dashboard/heute route.
+  final bool isDashboard;
+
+  /// True if route is password recovery or success.
+  final bool isPasswordRecovery;
+}
+
+/// Classifies a route location into logical groups.
+_RouteFlags _classifyRoute(String location) {
+  final uri = Uri.parse(location);
+  final path = uri.path;
+
+  // Helper for safe prefix check (prevent /heute matching /heute-old)
+  bool matchesPrefix(String prefix) {
+    if (path == prefix) return true;
+    return path.startsWith('$prefix/');
+  }
+
+  final isLogin = matchesPrefix(RoutePaths.login);
+  final isSignIn = matchesPrefix(RoutePaths.authSignIn);
+
+  return _RouteFlags(
+    isAuthRoute: isLogin ||
+        isSignIn ||
+        matchesPrefix(RoutePaths.signup) ||
+        matchesPrefix(RoutePaths.resetPassword),
+    isLoginOrSignIn: isLogin || isSignIn,
+    isSplash: path == RoutePaths.splash,
+    isWelcome: isWelcomeRoute(path),
+    isOnboarding: isOnboardingRoute(path),
+    isDashboard: matchesPrefix(RoutePaths.heute),
+    isPasswordRecovery: matchesPrefix(RoutePaths.createNewPassword) ||
+        matchesPrefix(RoutePaths.passwordSaved),
+  );
+}
+
+/// Safely extracts session from Supabase, returns null on error.
+Session? _getSessionSafely({
+  Session? sessionOverride,
+  required bool isInitialized,
+}) {
+  if (sessionOverride != null) return sessionOverride;
+  if (!isInitialized) return null;
+
+  try {
+    return SupabaseService.client.auth.currentSession;
+  } catch (e, stack) {
+    log.w(
+      'auth_redirect_session_access_failed',
+      tag: 'navigation',
+      error: e.runtimeType.toString(),
+      stack: kDebugMode ? stack : null,
+    );
+    return null;
+  }
+}
+
+/// Checks if a route should bypass session validation.
+///
+/// Returns true if the route is allowed without further auth checks.
+bool _isBypassRoute({
+  required _RouteFlags flags,
+  required bool allowDashboardDev,
+  required bool allowOnboardingDev,
+}) {
+  // Password recovery routes always bypass (token-gated by email link)
+  if (flags.isPasswordRecovery) return true;
+
+  // Dev-only bypasses (only in debug mode)
+  if (allowOnboardingDev && !kReleaseMode && flags.isOnboarding) return true;
+  if (allowDashboardDev && !kReleaseMode && flags.isDashboard) return true;
+
+  // Splash and welcome always allowed (pre-auth gates)
+  if (flags.isSplash || flags.isWelcome) return true;
+
+  return false;
+}
+
 /// Testbare Version des Redirect-Guards mit optionalen Overrides.
 ///
 /// In Production wird [sessionOverride] und [isInitializedOverride] ignoriert.
@@ -176,75 +282,31 @@ String? supabaseRedirectWithSession(
   );
 
   final isInitialized = isInitializedOverride ?? SupabaseService.isInitialized;
-  final location = state.matchedLocation;
+  final flags = _classifyRoute(state.matchedLocation);
 
-  // Route checks using RoutePaths (SSOT)
-  final isLoggingIn = location.startsWith(RoutePaths.login);
-  final isAuthSignIn = location.startsWith(RoutePaths.authSignIn);
-  final isSigningUp = location.startsWith(RoutePaths.signup);
-  final isResettingPassword = location.startsWith(RoutePaths.resetPassword);
-  final isOnboarding = isOnboardingRoute(location);
-  final isDashboard = location.startsWith(RoutePaths.heute);
-  final isSplash = location == RoutePaths.splash;
-  final isWelcome = isWelcomeRoute(location);
-  final isPasswordRecoveryRoute = location.startsWith(RoutePaths.createNewPassword);
-  final isPasswordSuccessRoute = location.startsWith(RoutePaths.passwordSaved);
-
-  // Session access with defensive try-catch for resilience
-  Session? session;
-  if (sessionOverride != null) {
-    session = sessionOverride;
-  } else if (isInitialized) {
-    try {
-      session = SupabaseService.client.auth.currentSession;
-    } catch (e, stack) {
-      log.w(
-        'auth_redirect_session_access_failed',
-        tag: 'navigation',
-        error: e.runtimeType.toString(),
-        stack: stack,
-      );
-      session = null;
-    }
+  // Check bypass routes first
+  if (_isBypassRoute(
+    flags: flags,
+    allowDashboardDev: allowDashboardDev,
+    allowOnboardingDev: allowOnboardingDev,
+  )) {
+    return null; // Allowed - no redirect
   }
 
-  // Allow password recovery routes without session
-  if (isPasswordRecoveryRoute || isPasswordSuccessRoute) {
-    return null;
-  }
+  // Get session for auth-dependent decisions
+  final session = _getSessionSafely(
+    sessionOverride: sessionOverride,
+    isInitialized: isInitialized,
+  );
 
-  // Dev-only bypass to allow opening onboarding without auth
-  if (allowOnboardingDev && !kReleaseMode && isOnboarding) {
-    return null;
-  }
-
-  // Dev-only bypass to allow opening dashboard without auth
-  if (allowDashboardDev && !kReleaseMode && isDashboard) {
-    return null;
-  }
-
-  // Always allow splash
-  if (isSplash) {
-    return null;
-  }
-
-  // Allow welcome without session (device-local gate, shown before auth)
-  if (isWelcome) {
-    return null;
-  }
-
-  // No session: redirect to auth unless on auth routes
+  // No session: redirect to auth unless already on auth routes
   if (session == null) {
-    if (isLoggingIn || isAuthSignIn || isSigningUp || isResettingPassword) {
-      return null;
-    }
-    return RoutePaths.authSignIn;
+    return flags.isAuthRoute ? null : RoutePaths.authSignIn;
   }
 
-  // Has session: redirect from auth routes to splash
-  // UX-Fix: skipAnimation=true verhindert erneute Splash-Animation nach Login
-  if (isLoggingIn || isAuthSignIn) {
-    return '${RoutePaths.splash}?skipAnimation=true';
+  // Has session: redirect from login/signIn to splash (skip animation)
+  if (flags.isLoginOrSignIn) {
+    return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
   }
 
   return null;

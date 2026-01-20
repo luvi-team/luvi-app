@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/consent/config/consent_config.dart';
+import 'package:luvi_app/core/privacy/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';

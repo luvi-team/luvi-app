@@ -639,6 +639,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authBackSemantic => 'Back';
 
   @override
+  String get authShowPassword => 'Show password';
+
+  @override
+  String get authHidePassword => 'Hide password';
+
+  @override
   String get authSuccessPwdTitle => 'All done!';
 
   @override
@@ -1041,4 +1047,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authLoginHeaderSemantic => 'Welcome back';
+
+  @override
+  String get authEntryCta => 'Let\'s go';
+
+  @override
+  String get authEntryExistingAccount => 'I already have an account.';
+
+  @override
+  String get authRegisterHeadline => 'Register to get started';
+
+  @override
+  String get authLoginSheetHeadline => 'Sign in to get started';
+
+  @override
+  String get authContinueApple => 'Continue with Apple';
+
+  @override
+  String get authContinueGoogle => 'Continue with Google';
+
+  @override
+  String get authContinueEmail => 'Continue with Email';
+
+  @override
+  String get authOr => 'Or';
+
+  @override
+  String get authEmailPlaceholderLong => 'Your email address';
+
+  @override
+  String get authPasswordPlaceholder => 'Your password';
+
+  @override
+  String get authErrorEmailCheck => 'Please check your email address';
+
+  @override
+  String get authErrorPasswordCheck => 'Please check your password';
+
+  @override
+  String get authRegisterEmailTitle => 'Register with Email';
+
+  @override
+  String get authResetPasswordSubtitle => 'Enter your email address and receive a link to reset.';
+
+  @override
+  String get authResetCtaShort => 'Reset';
+
+  @override
+  String get authNewPasswordConfirmHint => 'Confirm password';
+
+  @override
+  String get authSavePasswordCta => 'Save';
+
+  @override
+  String get authResetErrorGeneric => 'Reset failed. Please try again.';
+
+  @override
+  String get authDragHandleSemantic => 'Drag handle';
 }

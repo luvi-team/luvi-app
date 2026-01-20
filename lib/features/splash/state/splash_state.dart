@@ -11,6 +11,13 @@ sealed class SplashState {
 /// Initial state: Loading/Video is playing, gates are being checked.
 final class SplashInitial extends SplashState {
   const SplashInitial();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is SplashInitial;
+
+  @override
+  int get hashCode => 0; // Stateless singleton - any stable constant works
 }
 
 /// Resolved state: Target route has been determined.
@@ -34,10 +41,14 @@ final class SplashUnknown extends SplashState {
   const SplashUnknown({
     required this.canRetry,
     required this.retryCount,
+    this.isRetrying = false,
   });
 
   final bool canRetry;
   final int retryCount;
+
+  /// Whether a retry is currently in progress.
+  final bool isRetrying;
 
   /// Maximum manual retry attempts before disabling retry button.
   static const int maxRetries = 3;
@@ -47,8 +58,9 @@ final class SplashUnknown extends SplashState {
       identical(this, other) ||
       other is SplashUnknown &&
           canRetry == other.canRetry &&
-          retryCount == other.retryCount;
+          retryCount == other.retryCount &&
+          isRetrying == other.isRetrying;
 
   @override
-  int get hashCode => Object.hash(canRetry, retryCount);
+  int get hashCode => Object.hash(canRetry, retryCount, isRetrying);
 }

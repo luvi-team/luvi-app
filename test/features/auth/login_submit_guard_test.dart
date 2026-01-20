@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../support/test_config.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
@@ -21,10 +22,10 @@ void main() {
     ]);
     addTearDown(container.dispose);
 
-    // Seed form state with valid-looking email and locally invalid password.
+    // Seed form state with valid-looking email.
     final loginNotifier = container.read(loginProvider.notifier);
     loginNotifier.setEmail('user@example.com');
-    loginNotifier.setPassword('short'); // too short to pass local validation
+    // Password is passed directly to submit, not stored in state (security).
 
     // Submit should short-circuit and not hit the repository.
     await container
@@ -50,10 +51,9 @@ void main() {
     ]);
     addTearDown(container.dispose);
 
-    // Seed invalid email and invalid password (short)
+    // Seed invalid email (password is passed directly to submit, not stored in state).
     final loginNotifier = container.read(loginProvider.notifier);
     loginNotifier.setEmail('bad');
-    loginNotifier.setPassword('short');
 
     // Listen for loading transitions on the submit provider
     var sawLoading = false;
@@ -83,5 +83,101 @@ void main() {
     expect(state.emailError, AuthStrings.errEmailInvalid);
     expect(state.passwordError, AuthStrings.errPasswordInvalid);
     expect(state.globalError, isNull);
+  });
+
+  group('AuthException error.code handling', () {
+    test('uses error.code for invalid_credentials when code is present', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Some message without patterns',
+        code: 'invalid_credentials',
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, AuthStrings.invalidCredentials);
+      expect(state.passwordError, AuthStrings.invalidCredentials);
+      expect(state.globalError, isNull);
+    });
+
+    test('uses error.code for email_not_confirmed when code is present', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Some message without patterns',
+        code: 'email_not_confirmed',
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errConfirmEmail);
+    });
+
+    // Parameterized tests for null error.code handling.
+    // Each message gets its own independent test for proper isolation.
+    group('null error.code shows generic error', () {
+      final nullCodeMessages = [
+        'Invalid credentials provided',
+        'Please confirm your email',
+        'Unknown server error',
+        'Invalid request format',
+      ];
+
+      for (final message in nullCodeMessages) {
+        test('for message: "$message"', () async {
+          final mockRepo = _MockAuthRepository();
+          when(() => mockRepo.signInWithPassword(
+                email: any(named: 'email'),
+                password: any(named: 'password'),
+              )).thenThrow(AuthException(message));
+
+          final container = ProviderContainer(overrides: [
+            authRepositoryProvider.overrideWithValue(mockRepo),
+          ]);
+          addTearDown(container.dispose);
+
+          final loginNotifier = container.read(loginProvider.notifier);
+          loginNotifier.setEmail('user@example.com');
+
+          await container
+              .read(loginSubmitProvider.notifier)
+              .submit(email: 'user@example.com', password: 'validPassword123');
+
+          final state = container.read(loginProvider).value!;
+          expect(state.emailError, isNull);
+          expect(state.passwordError, isNull);
+          expect(state.globalError, AuthStrings.errLoginUnavailable);
+        });
+      }
+    });
   });
 }

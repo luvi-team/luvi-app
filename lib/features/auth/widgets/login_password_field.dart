@@ -3,6 +3,7 @@ import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/widgets/field_error_text.dart';
+import 'package:luvi_app/features/auth/widgets/password_visibility_toggle_button.dart';
 
 class LoginPasswordField extends StatelessWidget {
   const LoginPasswordField({
@@ -83,19 +84,11 @@ class LoginPasswordField extends StatelessWidget {
                 top: Spacing.s,
                 bottom: Spacing.s,
               ),
-              suffixIcon: Semantics(
-                label: obscure ? 'Passwort anzeigen' : 'Passwort ausblenden',
-                button: true,
-                child: IconButton(
-                  icon: Icon(
-                    obscure
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
-                    size: Spacing.l,
-                    color: tokens.grayscale500,
-                  ),
-                  onPressed: onToggleObscure,
-                ),
+              suffixIcon: PasswordVisibilityToggleButton(
+                obscured: obscure,
+                onPressed: onToggleObscure,
+                color: tokens.grayscale500,
+                size: Spacing.l,
               ),
             ),
             onChanged: onChanged,

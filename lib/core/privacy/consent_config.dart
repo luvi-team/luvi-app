@@ -1,4 +1,4 @@
-import 'package:luvi_app/features/consent/domain/consent_types.dart';
+import 'package:luvi_app/core/privacy/consent_types.dart';
 
 class ConsentConfig {
   const ConsentConfig._();

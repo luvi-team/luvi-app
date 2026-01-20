@@ -1,116 +1,136 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luvi_app/core/design_tokens/sizes.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
-import 'package:luvi_app/core/navigation/route_names.dart';
-import 'package:luvi_app/features/auth/widgets/auth_radial_gradient_background.dart';
-import 'package:luvi_app/features/auth/widgets/glow_checkmark.dart';
-import 'package:luvi_app/core/widgets/welcome_button.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
+import 'package:luvi_app/core/init/session_dependencies.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// SuccessScreen with Figma Auth UI v2 design.
+/// SuccessScreen with Auth Rebrand v3 design (export-parity).
 ///
-/// Figma Node: 68919:8802
 /// Route: /auth/password/success
 ///
 /// Features:
-/// - Radial gradient background with beige glow
-/// - GlowCheckmark icon (beige radial gradient + white checkmark)
-/// - Title: "Geschafft!" (Playfair Regular 32px)
-/// - Subtitle: "Neues Passwort gespeichert." (Playfair Regular 24px)
-/// - CTA: "Zurück zur Anmeldung" → navigates to /auth/signin
-class SuccessScreen extends StatelessWidget {
+/// - Rainbow background (arcs + stripes)
+/// - AuthContentCard with Title + Subtitle (SSOT: auth_success)
+/// - Title: "Geschafft!" (Playfair SemiBold 20px)
+/// - Subtitle: "Neues Passwort gespeichert." (Figtree Regular 17px)
+/// - NO CTA button and NO back button (Requirement)
+/// - Auto-redirect after 1.5 seconds:
+///   - If authenticated → splash (Guards handle Onboarding vs Home)
+///   - If not authenticated → auth entry
+class SuccessScreen extends ConsumerStatefulWidget {
   static const String passwordSavedRoutePath = '/auth/password/success';
   static const String passwordSavedRouteName = 'password_saved';
 
-  const SuccessScreen({super.key});
+  /// Auto-redirect delay in milliseconds.
+  /// Configurable for testing.
+  final int autoRedirectDelayMs;
+
+  const SuccessScreen({
+    super.key,
+    this.autoRedirectDelayMs = 1500,
+  });
+
+  @override
+  ConsumerState<SuccessScreen> createState() => _SuccessScreenState();
+}
+
+class _SuccessScreenState extends ConsumerState<SuccessScreen> {
+  Timer? _redirectTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoRedirect();
+  }
+
+  @override
+  void dispose() {
+    _redirectTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startAutoRedirect() {
+    _redirectTimer = Timer(
+      Duration(milliseconds: widget.autoRedirectDelayMs),
+      _performRedirect,
+    );
+  }
+
+  void _performRedirect() {
+    if (!mounted) return;
+
+    final isAuthenticated = ref.read(isAuthenticatedFnProvider)();
+    if (isAuthenticated) {
+      // User is logged in → go to splash with skipAnimation
+      // PostAuth guards will determine Onboarding vs Home
+      final uri = Uri(
+        path: RoutePaths.splash,
+        queryParameters: {
+          RouteQueryParams.skipAnimation: 'true',
+        },
+      );
+      context.go(uri.toString());
+    } else {
+      // User is not logged in → back to auth entry
+      context.go(RoutePaths.authSignIn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
-    // Figma: Title style - Playfair Display Regular, 32px
-    final titleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontFamily: FontFamilies.playfairDisplay,
-      fontSize: AuthTypography.successTitleFontSize,
-      height: AuthTypography.successTitleLineHeight,
-      fontWeight: FontWeight.w400,
-      color: theme.colorScheme.onSurface,
-    );
-
-    // Figma: Subtitle style - Playfair Display Regular, 24px
-    final subtitleStyle = theme.textTheme.headlineMedium?.copyWith(
-      fontFamily: FontFamilies.playfairDisplay,
-      fontSize: AuthTypography.successSubtitleFontSize,
-      height: AuthTypography.successSubtitleLineHeight,
-      fontWeight: FontWeight.w400,
-      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-    );
 
     return Scaffold(
       key: const ValueKey('auth_success_screen'),
+      backgroundColor: DsColors.authRebrandBackground,
       body: Stack(
         children: [
-          // Full-screen radial gradient background
-          const Positioned.fill(
-            child: AuthRadialGradientBackground(),
+          // Rainbow background (containerTop aligned for device consistency)
+          Positioned.fill(
+            child: AuthRainbowBackground(
+              containerTop: MediaQuery.of(context).padding.top +
+                  AuthRebrandMetrics.rainbowContainerTopOffset,
+            ),
           ),
 
-          // Content
+          // Content - centered AuthContentCard (export-parity layout)
           SafeArea(
-            child: Column(
-              children: [
-                // Flexible top space (reduced to position content higher)
-                const Spacer(flex: 1),
-
-                // GlowCheckmark centered
-                const GlowCheckmark(),
-
-                // Space between icon and text
-                const SizedBox(height: Spacing.l + Spacing.m), // ~40px
-
-                // Title - using canonical authSuccessPwdTitle getter
-                Text(
-                  l10n.authSuccessPwdTitle,
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-
-                // Figma: Gap = 8px between title and subtitle
-                const SizedBox(height: Spacing.xs),
-
-                // Subtitle - using canonical authSuccessPwdSubtitle getter
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-                  child: Text(
-                    l10n.authSuccessPwdSubtitle,
-                    style: subtitleStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-                // Fixed gap between text and CTA (Figma: ~40px)
-                const SizedBox(height: Spacing.welcomeCtaGap),
-
-                // CTA Button - navigates to /auth/signin per plan
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: Sizes.buttonHeightL,
-                    child: WelcomeButton(
-                      key: const ValueKey('success_cta_button'),
-                      onPressed: () => context.goNamed(RouteNames.authSignIn),
-                      label: l10n.authSuccessBackToLogin,
+            child: Center(
+              child: AuthContentCard(
+                width: AuthRebrandMetrics.cardWidthForm,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Title: "Geschafft!"
+                    Text(
+                      l10n.authSuccessPwdTitle,
+                      style: AuthRebrandTextStyles.headline,
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                ),
 
-                // Flexible bottom space (pushes content group upward)
-                const Spacer(flex: 2),
-              ],
+                    const SizedBox(height: Spacing.xs),
+
+                    // Subtitle: "Neues Passwort gespeichert."
+                    Text(
+                      l10n.authSuccessPwdSubtitle,
+                      style: AuthRebrandTextStyles.subtitle,
+                      textAlign: TextAlign.center,
+                    ),
+
+                    // No CTA button - auto-redirect handles navigation
+                  ],
+                ),
+              ),
             ),
           ),
         ],

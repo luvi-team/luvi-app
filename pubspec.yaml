@@ -69,6 +69,9 @@ dependencies:
   sign_in_button: ^4.0.1
   video_player: ^2.10.1
 
+  # Charts & Data Visualization
+  fl_chart: ^1.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -94,7 +97,7 @@ flutter:
   assets:
     # Note: .env.development is NOT bundled as asset (security best practice).
     # Use --dart-define for credentials. See .vscode/launch.json
-    - assets/images/auth/hero_login_default_00.png
+    - assets/images/auth/
     - assets/images/consent/
     - assets/images/welcome/
     - assets/images/onboarding/
@@ -103,6 +106,7 @@ flutter:
       # requires: assets/icons/google_g.svg (official multicolor Google 'G')
     - assets/icons/dashboard/
     - assets/icons/onboarding/
+    - assets/icons/auth/
     - assets/animations/
     - assets/legal/
     - assets/videos/welcome/
@@ -153,13 +157,13 @@ flutter:
           weight: 700
     - family: Figtree
       fonts:
-        - asset: assets/fonts/Figtree/Figtree-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/Figtree/Figtree-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Figtree/Figtree-Italic.ttf
+        # Variable font: maps common weights to the same file for reliable selection.
+        - asset: assets/fonts/Figtree/Figtree[wght].ttf
+        - asset: assets/fonts/Figtree/Figtree-Italic[wght].ttf
           style: italic
     - family: Inter
       fonts:
-        - asset: assets/fonts/Inter/Inter-Medium.ttf
-          weight: 500
+        # Variable font: maps common weights to the same file for reliable selection.
+        - asset: assets/fonts/Inter/Inter[opsz,wght].ttf
+        - asset: assets/fonts/Inter/Inter-Italic[opsz,wght].ttf
+          style: italic

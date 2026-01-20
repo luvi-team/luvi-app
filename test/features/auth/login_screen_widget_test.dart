@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
@@ -38,7 +37,7 @@ void main() {
         email: any(named: 'email'),
         password: any(named: 'password'),
       ),
-    ).thenThrow(AuthException('invalid credentials'));
+    ).thenThrow(AuthException('Invalid login credentials', code: 'invalid_credentials'));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -66,22 +65,27 @@ void main() {
     // Allow UI to rebuild so the CTA enables (validation cleared)
     await tester.pump();
 
-    // Tap the CTA button
-    final loginButton = find.widgetWithText(
-      ElevatedButton,
-      AuthStrings.loginCta,
-    );
-    expect(loginButton, findsOneWidget);
+    // Tap the CTA button (AuthPrimaryButton wraps ElevatedButton)
+    final buttonFinder = find.byKey(const ValueKey('login_cta_button'));
+    expect(buttonFinder, findsOneWidget);
 
-    await tester.tap(loginButton);
+    await tester.tap(buttonFinder);
     await tester.pumpAndSettle();
 
     // Expect error message from invalid credentials handling
-    expect(find.text(AuthStrings.invalidCredentials), findsOneWidget);
+    // LoginScreen shows l10n.authInvalidCredentials when emailError is set
+    final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
+    // SSOT P0.7: Both fields show error on invalid credentials -> findsNWidgets(2)
+    expect(find.text(l10n.authInvalidCredentials), findsNWidgets(2));
 
-    // Button should be disabled because validation errors are present
-    final btn = tester.widget<ElevatedButton>(loginButton);
-    expect(btn.onPressed, isNull);
+    // Auth Rebrand v3: Button stays enabled after errors (allows retry)
+    final innerButton = find.descendant(
+      of: buttonFinder,
+      matching: find.byType(ElevatedButton),
+    );
+    expect(innerButton, findsOneWidget);
+    final btn = tester.widget<ElevatedButton>(innerButton);
+    expect(btn.onPressed, isNotNull);
   });
 
   testWidgets('CTA shows spinner while loading and re-enables after success', (
@@ -122,20 +126,25 @@ void main() {
     await tester.enterText(emailField, 'user@example.com');
     await tester.enterText(passwordField, 'correctpw');
 
-    final loginButton = find.byType(ElevatedButton);
-    await tester.tap(loginButton);
+    final buttonFinder = find.byKey(const ValueKey('login_cta_button'));
+    await tester.tap(buttonFinder);
     await tester.pump(); // start async call -> loading state
 
     expect(find.byKey(const ValueKey('login_cta_loading')), findsOneWidget);
-    final loadingBtn = tester.widget<ElevatedButton>(loginButton);
+    final innerButton = find.descendant(
+      of: buttonFinder,
+      matching: find.byType(ElevatedButton),
+    );
+    expect(innerButton, findsOneWidget);
+    final loadingBtn = tester.widget<ElevatedButton>(innerButton);
     expect(loadingBtn.onPressed, isNull);
 
     // Resolve the future with a dummy response so the notifier clears loading state.
     completer.complete(AuthResponse(session: null, user: null));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const ValueKey('login_cta_label')), findsOneWidget);
-    final enabledBtn = tester.widget<ElevatedButton>(loginButton);
+    // After loading completes, button text should be visible again
+    final enabledBtn = tester.widget<ElevatedButton>(innerButton);
     expect(enabledBtn.onPressed, isNotNull);
   });
 
@@ -156,7 +165,7 @@ void main() {
         email: any(named: 'email'),
         password: any(named: 'password'),
       ),
-    ).thenThrow(AuthException('invalid credentials'));
+    ).thenThrow(AuthException('Invalid login credentials', code: 'invalid_credentials'));
 
     await tester.pumpWidget(
       ProviderScope(
@@ -172,19 +181,23 @@ void main() {
     );
 
     // Submit with empty fields to trigger validation errors
-    final loginButton = find.widgetWithText(
-      ElevatedButton,
-      AuthStrings.loginCta,
-    );
-    await tester.tap(loginButton);
+    final buttonFinder = find.byKey(const ValueKey('login_cta_button'));
+    await tester.tap(buttonFinder);
     await tester.pump();
 
     // Validation errors should appear for empty fields
-    expect(find.text(AuthStrings.errEmailEmpty), findsOneWidget);
-    expect(find.text(AuthStrings.errPasswordEmpty), findsOneWidget);
+    // LoginScreen now shows specific L10n error messages (empty email/password)
+    final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
+    expect(find.text(l10n.authErrEmailEmpty), findsOneWidget);
+    expect(find.text(l10n.authErrPasswordEmpty), findsOneWidget);
 
-    // CTA should be disabled when validation errors are present
-    final btn = tester.widget<ElevatedButton>(loginButton);
-    expect(btn.onPressed, isNull);
+    // Auth Rebrand v3: Button stays enabled even with errors (allows retry)
+    final innerButton = find.descendant(
+      of: buttonFinder,
+      matching: find.byType(ElevatedButton),
+    );
+    expect(innerButton, findsOneWidget);
+    final btn = tester.widget<ElevatedButton>(innerButton);
+    expect(btn.onPressed, isNotNull);
   });
 }

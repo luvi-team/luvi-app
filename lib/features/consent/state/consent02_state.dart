@@ -1,10 +1,10 @@
 // ignore_for_file: constant_identifier_names
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter/foundation.dart';
-import 'package:luvi_app/features/consent/domain/consent_types.dart';
+import 'package:luvi_app/core/privacy/consent_types.dart';
 
 // Re-export to keep existing import sites working.
-export 'package:luvi_app/features/consent/domain/consent_types.dart'
+export 'package:luvi_app/core/privacy/consent_types.dart'
     show ConsentScope, kRequiredConsentScopes, kVisibleOptionalScopes;
 
 part 'consent02_state.g.dart';
