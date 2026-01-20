@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kReleaseMode;
+import 'package:flutter/foundation.dart' show kDebugMode, kReleaseMode;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:luvi_app/core/analytics/analytics_recorder.dart';
@@ -8,7 +8,7 @@ import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/core/utils/type_parsers.dart';
 import 'package:luvi_app/core/privacy/consent_config.dart';
-import 'package:luvi_app/core/init/session_dependencies.dart';
+import 'package:luvi_app/features/splash/data/splash_dependencies.dart';
 import 'package:luvi_app/features/splash/state/splash_gate_functions.dart';
 import 'package:luvi_app/features/splash/state/splash_state.dart';
 import 'package:luvi_services/device_state_service.dart';
@@ -228,11 +228,12 @@ class SplashController extends _$SplashController {
           'splash_unreachable_race_retry',
           properties: {'retry_count': _manualRetryCount},
         );
-        // Debug assertion (throws in debug builds after logging)
-        assert(
-          false,
-          'RaceRetryNeeded should never reach _handleOnboardingGateResult',
-        );
+        // Debug: Crash to surface issue immediately
+        if (kDebugMode) {
+          throw StateError(
+            'RaceRetryNeeded should never reach _handleOnboardingGateResult',
+          );
+        }
         // Release fallback
         state = SplashUnknown(
           canRetry: _manualRetryCount < SplashUnknown.maxRetries,

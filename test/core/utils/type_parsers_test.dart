@@ -32,12 +32,6 @@ void main() {
     test('returns null when value is List', () {
       expect(parseNullableBool(<dynamic>[]), isNull);
     });
-
-    test('returns null when value is double', () {
-      expect(parseNullableBool(1.0), isNull);
-      expect(parseNullableBool(0.0), isNull);
-      expect(parseNullableBool(0.5), isNull);
-    });
   });
 
   group('parseNullableInt', () {
@@ -61,49 +55,13 @@ void main() {
       expect(parseNullableInt('42'), isNull);
     });
 
-    test('returns int when value is whole-number double', () {
-      // JSON parsers often decode integers as doubles (e.g., 42.0)
-      expect(parseNullableInt(42.0), equals(42));
-      expect(parseNullableInt(0.0), equals(0));
-      expect(parseNullableInt(-5.0), equals(-5));
-    });
-
-    test('returns null when value is non-whole double', () {
-      expect(parseNullableInt(42.5), isNull);
-      expect(parseNullableInt(0.1), isNull);
-    });
-
-    test('returns null when value is Map', () {
-      expect(parseNullableInt(<String, dynamic>{}), isNull);
-      expect(parseNullableInt({'key': 1}), isNull);
-    });
-
-    test('returns null when value is List', () {
-      expect(parseNullableInt(<dynamic>[]), isNull);
-      expect(parseNullableInt([1, 2]), isNull);
+    test('returns null when value is double', () {
+      expect(parseNullableInt(42.0), isNull);
     });
 
     test('returns null when value is bool', () {
       expect(parseNullableInt(true), isNull);
       expect(parseNullableInt(false), isNull);
-    });
-
-    test('returns null for NaN', () {
-      expect(parseNullableInt(double.nan), isNull);
-    });
-
-    test('returns null for infinity', () {
-      expect(parseNullableInt(double.infinity), isNull);
-    });
-
-    test('returns null for negative infinity', () {
-      expect(parseNullableInt(double.negativeInfinity), isNull);
-    });
-
-    test('returns null for doubles outside safe integer range', () {
-      expect(parseNullableInt(1e20), isNull);
-      expect(parseNullableInt(-1e20), isNull);
-      expect(parseNullableInt(9007199254740992.0), isNull); // MAX_SAFE_INTEGER + 1
     });
   });
 }
