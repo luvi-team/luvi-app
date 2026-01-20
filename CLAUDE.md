@@ -140,6 +140,8 @@ BEFORE doing ANYTHING else, when you see ANY task management scenario:
 | `filter_value` | string | No | e.g., `"todo"`, `"doing"`, `"review"`, `"done"` |
 | `project_id` | string | No | Filter by project |
 | `include_closed` | bool | No | Include done tasks (default: true) |
+| `page` | int | No | Page number (default: 1) |
+| `per_page` | int | No | Items per page (default: 10) |
 
 → Returns: `{tasks: Task[], count: int}` or single `Task` if `task_id` provided
 
@@ -154,8 +156,9 @@ BEFORE doing ANYTHING else, when you see ANY task management scenario:
 | `status` | string | No | `"todo"` \| `"doing"` \| `"review"` \| `"done"` |
 | `assignee` | string | No | `"User"`, `"Archon"`, or agent name |
 | `feature` | string | No | Feature label for grouping |
+| `task_order` | int | No | Priority/Order (0-100) |
 
-→ Returns: `{success: bool, task?: object, message: string}`
+→ Returns: `{success: bool, task?: object, message: string}` (Task object has optimized fields like `sources_count` instead of arrays)
 
 ## RAG Workflow
 

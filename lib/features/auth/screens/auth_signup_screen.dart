@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
@@ -18,6 +17,7 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_error_banner.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_primary_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_scaffold.dart';
+import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_styles.dart';
 import 'package:luvi_app/features/auth/widgets/password_visibility_toggle_button.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -73,13 +73,13 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     required String confirmPassword,
     required AppLocalizations l10n,
   }) {
-    // Email-Validierung (nicht von validateNewPassword abgedeckt)
+    // Email validation (not covered by validateNewPassword)
     final isEmailEmpty = email.isEmpty;
 
     // NIST-compliant Validation via shared rules
     final passwordValidation = validateNewPassword(password, confirmPassword);
 
-    // Sammle alle Error-Flags zuerst
+    // Collect all error flags first
     bool passwordError = false;
     bool confirmError = false;
     String? errorMessage;
@@ -87,7 +87,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     if (!passwordValidation.isValid) {
       switch (passwordValidation.error!) {
         case AuthPasswordValidationError.emptyFields:
-          // Spezifische Flags basierend auf tatsächlich leeren Feldern
+          // Set specific flags based on actually empty fields
           passwordError = password.isEmpty;
           confirmError = confirmPassword.isEmpty;
           errorMessage = l10n.authSignupMissingFields;
@@ -103,14 +103,14 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       }
     }
 
-    // Email-Error zusätzlich prüfen (nicht statt!)
-    // Wenn Email leer UND Password-Error: zeige spezifischen Password-Error
-    // Wenn NUR Email leer: zeige Missing Fields
+    // Check Email error additionally (not instead!)
+    // If Email empty AND Password-Error: show specific Password-Error
+    // If ONLY Email empty: show Missing Fields
     if (isEmailEmpty && errorMessage == null) {
       errorMessage = l10n.authSignupMissingFields;
     }
 
-    // Setze alle Flags einmalig
+    // Set all flags once
     setState(() {
       _emailError = isEmailEmpty;
       _passwordError = passwordError;
@@ -347,13 +347,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
   Widget _buildHeadline(AppLocalizations l10n) {
     return Text(
       l10n.authRegisterEmailTitle,
-      style: const TextStyle(
-        fontFamily: FontFamilies.playfairDisplay,
-        fontSize: AuthRebrandMetrics.headlineFontSize,
-        fontWeight: FontWeight.w600,
-        height: AuthRebrandMetrics.headlineLineHeight,
-        color: DsColors.authRebrandTextPrimary,
-      ),
+      style: AuthRebrandTextStyles.headline,
       textAlign: TextAlign.center,
     );
   }

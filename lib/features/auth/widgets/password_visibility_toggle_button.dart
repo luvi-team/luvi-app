@@ -32,10 +32,10 @@ class PasswordVisibilityToggleButton extends StatelessWidget {
   /// Callback when the toggle button is pressed.
   final VoidCallback onPressed;
 
-  /// Icon color. Defaults to grey if not specified.
+  /// Icon color. Optional (defaults to IconTheme if null).
   final Color? color;
 
-  /// Icon size. Defaults to 24 if not specified.
+  /// Icon size. Optional (defaults to IconTheme if null).
   final double? size;
 
   @override

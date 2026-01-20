@@ -92,7 +92,19 @@ class SplashController extends _$SplashController {
     );
 
     await checkGates();
-    // After checkGates() completes, new state is set (without isRetrying)
+
+    // Safety net: If checkGates early-returned (e.g. race condition) without
+    // updating state, we must clear the isRetrying flag manually.
+    // If checkGates ran normally, it would have already updated the state.
+    if (!_disposed &&
+        state is SplashUnknown &&
+        (state as SplashUnknown).isRetrying) {
+      state = SplashUnknown(
+        canRetry: _manualRetryCount < SplashUnknown.maxRetries,
+        retryCount: _manualRetryCount,
+        isRetrying: false,
+      );
+    }
   }
 
   /// The main gate sequence. Orchestrates gate checks in order.

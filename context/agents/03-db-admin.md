@@ -38,6 +38,11 @@ To api-backend/qa-dsgvo; format: `supabase/migrations/**` + notes. Backend servi
 ## Operative Mode
 Codex owns schema/migration/RLS (Supabase MCP, BMAD → PRP). Claude Code only accesses documented views/APIs and adapts UI after backend signal.
 
+> **Definitions:**
+> - **MCP:** Model Context Protocol
+> - **BMAD:** Business Metadata and Data (Design Phase)
+> - **PRP:** Privacy/Regulatory Program (Compliance Phase)
+
 ## Checklists & Runbooks
 - DB Checklist: `docs/engineering/checklists/db.md`
 - RLS Debug Runbook: `docs/runbooks/debug-rls-policy.md`

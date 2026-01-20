@@ -17,7 +17,7 @@ class AuthRebrandTextStyles {
   static const TextStyle headline = TextStyle(
     fontFamily: FontFamilies.playfairDisplay,
     fontSize: AuthRebrandMetrics.headlineFontSize,
-    fontWeight: FontWeight.w600,
+    fontVariations: [FontVariation('wght', 600)],
     height: AuthRebrandMetrics.headlineLineHeight,
     color: DsColors.authRebrandTextPrimary,
   );
@@ -27,7 +27,7 @@ class AuthRebrandTextStyles {
   static const TextStyle _bodyBase = TextStyle(
     fontFamily: FontFamilies.figtree,
     fontSize: AuthRebrandMetrics.bodyFontSize,
-    fontWeight: FontWeight.w400,
+    fontVariations: [FontVariation('wght', 400)],
     height: AuthRebrandMetrics.bodyLineHeight,
     color: DsColors.authRebrandTextPrimary,
   );

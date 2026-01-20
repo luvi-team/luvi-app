@@ -159,40 +159,11 @@ flutter:
       fonts:
         # Variable font: maps common weights to the same file for reliable selection.
         - asset: assets/fonts/Figtree/Figtree[wght].ttf
-          weight: 400
-        - asset: assets/fonts/Figtree/Figtree[wght].ttf
-          weight: 600
-        - asset: assets/fonts/Figtree/Figtree[wght].ttf
-          weight: 700
         - asset: assets/fonts/Figtree/Figtree-Italic[wght].ttf
-          weight: 400
-          style: italic
-        - asset: assets/fonts/Figtree/Figtree-Italic[wght].ttf
-          weight: 600
-          style: italic
-        - asset: assets/fonts/Figtree/Figtree-Italic[wght].ttf
-          weight: 700
           style: italic
     - family: Inter
       fonts:
         # Variable font: maps common weights to the same file for reliable selection.
         - asset: assets/fonts/Inter/Inter[opsz,wght].ttf
-          weight: 400
-        - asset: assets/fonts/Inter/Inter[opsz,wght].ttf
-          weight: 500
-        - asset: assets/fonts/Inter/Inter[opsz,wght].ttf
-          weight: 600
-        - asset: assets/fonts/Inter/Inter[opsz,wght].ttf
-          weight: 700
         - asset: assets/fonts/Inter/Inter-Italic[opsz,wght].ttf
-          weight: 400
-          style: italic
-        - asset: assets/fonts/Inter/Inter-Italic[opsz,wght].ttf
-          weight: 500
-          style: italic
-        - asset: assets/fonts/Inter/Inter-Italic[opsz,wght].ttf
-          weight: 600
-          style: italic
-        - asset: assets/fonts/Inter/Inter-Italic[opsz,wght].ttf
-          weight: 700
           style: italic
