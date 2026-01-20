@@ -81,7 +81,7 @@ class AuthRebrandScaffold extends StatelessWidget {
                 ),
                 child: AuthBackButton(
                   onPressed: onBack,
-                  semanticsLabel: l10n?.authBackSemantic,
+                  semanticsLabel: l10n?.authBackSemantic ?? 'Back',
                 ),
               ),
             ),

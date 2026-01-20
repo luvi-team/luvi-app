@@ -2,7 +2,7 @@
 ///
 /// Baseline: 402×874 (PNG export SSOT from context/design/Auth Screens/)
 /// All values are pixel-exact from Figma audit YAML.
-class AuthRebrandMetrics {
+final class AuthRebrandMetrics {
   const AuthRebrandMetrics._();
 
   // ─── Design Baseline ───

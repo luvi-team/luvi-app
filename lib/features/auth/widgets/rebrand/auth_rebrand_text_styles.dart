@@ -38,6 +38,9 @@ class AuthRebrandTextStyles {
   ///
   /// Figtree Regular 17px, line-height 24/17
   /// Used in: AuthOAuthSheetContent
+  ///
+  /// Note: Intentionally separate from [subtitle] to allow independent
+  /// style evolution for different UI contexts (dividers vs subtitles).
   static const TextStyle divider = TextStyle(
     fontFamily: FontFamilies.figtree,
     fontSize: AuthRebrandMetrics.bodyFontSize,

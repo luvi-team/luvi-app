@@ -141,11 +141,14 @@ class AuthRebrandTextField extends StatelessWidget {
     final needsSemantics = semanticLabel != null || (showError && errorText != null);
     if (!needsSemantics) return field;
 
+    // Semantics-Wrapper für custom label + error hint
+    // OHNE ExcludeSemantics: TextField-native Semantics bleiben erhalten
+    // (value, focus, textField-Rolle)
     return Semantics(
       label: semanticLabel ?? hintText,
       hint: showError && errorText != null ? errorText : null,
       textField: true,
-      child: ExcludeSemantics(child: field),
+      child: field,
     );
   }
 }

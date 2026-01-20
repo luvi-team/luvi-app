@@ -170,6 +170,18 @@
 >   - Kann via `git checkout` oder `git revert` rückgängig gemacht werden
 > - Daher: `rm` blockiert, `git rm:*` erlaubt
 
+### Explizit blockierte Befehle (deny-Liste)
+
+| Befehl | Warum blockiert? |
+|--------|-----------------|
+| `git commit --amend` | Verhindert versehentliches History-Rewriting |
+| `git push --force` / `-f` | Verhindert Remote-History-Zerstörung |
+| `git reset --hard` | Verhindert unwiderruflichen Datenverlust |
+
+> **Hinweis:** Diese Befehle sind auf Policy-Ebene in `settings.local.json` blockiert.
+> Claude kann sie auch auf explizite Anfrage nicht ausführen.
+> Falls nötig, muss der Benutzer sie manuell im Terminal ausführen.
+
 ---
 
 ## Wildcard-Semantik
@@ -180,9 +192,11 @@
 >
 > | Wildcard | Risiko-Flag | Mitigation |
 > |----------|-------------|------------|
-> | `git commit:*` | `--amend` | CLAUDE.md verbietet explizit amend |
+> | `git commit:*` | `--amend` | **Blockiert via deny-Liste** |
 > | `git checkout:*` | `-f`, `--force` | Nur für Branch-Wechsel nutzen |
 > | `git merge:*` | `--no-ff` | Akzeptabel für Feature-Branches |
+> | `git push:*` | `--force`, `-f` | **Blockiert via deny-Liste** |
+> | `git reset:*` | `--hard` | **Blockiert via deny-Liste** |
 >
 > ### Bestehender Runtime-Schutz
 > - Claude Code's eingebaute Safety-Rules verhindern:

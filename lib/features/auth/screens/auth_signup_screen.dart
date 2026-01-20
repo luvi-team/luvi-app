@@ -73,56 +73,51 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     required String confirmPassword,
     required AppLocalizations l10n,
   }) {
+    // Email-Validierung (nicht von validateNewPassword abgedeckt)
     final isEmailEmpty = email.isEmpty;
-    final isPasswordEmpty = password.isEmpty;
-    final isConfirmEmpty = confirmPassword.isEmpty;
 
-    if (isEmailEmpty || isPasswordEmpty || isConfirmEmpty) {
-      setState(() {
-        _emailError = isEmailEmpty;
-        _passwordError = isPasswordEmpty;
-        _confirmPasswordError = isConfirmEmpty;
-      });
-      return l10n.authSignupMissingFields;
-    }
-
-    // Use NIST-compliant validation from shared rules
+    // NIST-compliant Validation via shared rules
     final passwordValidation = validateNewPassword(password, confirmPassword);
+
+    // Sammle alle Error-Flags zuerst
+    bool passwordError = false;
+    bool confirmError = false;
+    String? errorMessage;
 
     if (!passwordValidation.isValid) {
       switch (passwordValidation.error!) {
-        case AuthPasswordValidationError.mismatch:
-          setState(() {
-            _emailError = false;
-            _passwordError = false;
-            _confirmPasswordError = true;
-          });
-          return l10n.authPasswordMismatchError;
-        case AuthPasswordValidationError.tooShort:
-          setState(() {
-            _emailError = false;
-            _passwordError = true;
-            _confirmPasswordError = false;
-          });
-          return l10n.authErrPasswordTooShort;
-        case AuthPasswordValidationError.commonWeak:
-          setState(() {
-            _emailError = false;
-            _passwordError = true;
-            _confirmPasswordError = false;
-          });
-          return l10n.authErrPasswordCommonWeak;
         case AuthPasswordValidationError.emptyFields:
-          setState(() {
-            _emailError = true; // Or appropriate error flagging
-            _passwordError = true;
-            _confirmPasswordError = true;
-          });
-          return l10n.authSignupMissingFields;
+          // Spezifische Flags basierend auf tatsächlich leeren Feldern
+          passwordError = password.isEmpty;
+          confirmError = confirmPassword.isEmpty;
+          errorMessage = l10n.authSignupMissingFields;
+        case AuthPasswordValidationError.mismatch:
+          confirmError = true;
+          errorMessage = l10n.authPasswordMismatchError;
+        case AuthPasswordValidationError.tooShort:
+          passwordError = true;
+          errorMessage = l10n.authErrPasswordTooShort;
+        case AuthPasswordValidationError.commonWeak:
+          passwordError = true;
+          errorMessage = l10n.authErrPasswordCommonWeak;
       }
     }
 
-    return null;
+    // Email-Error zusätzlich prüfen (nicht statt!)
+    // Wenn Email leer UND Password-Error: zeige spezifischen Password-Error
+    // Wenn NUR Email leer: zeige Missing Fields
+    if (isEmailEmpty && errorMessage == null) {
+      errorMessage = l10n.authSignupMissingFields;
+    }
+
+    // Setze alle Flags einmalig
+    setState(() {
+      _emailError = isEmailEmpty;
+      _passwordError = passwordError;
+      _confirmPasswordError = confirmError;
+    });
+
+    return errorMessage;
   }
 
   /// Performs the actual signup API call and handles success/error states.
@@ -287,13 +282,25 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     }
   }
 
-  void _onConfirmPasswordChanged(String _) {
-    if (_errorMessage != null || _confirmPasswordError) {
-      setState(() {
-        _errorMessage = null;
+  void _onConfirmPasswordChanged(String value) {
+    final password = _passwordController.text;
+
+    setState(() {
+      // Immer globale Fehlermeldung bei Änderung löschen
+      _errorMessage = null;
+
+      // Logik für _confirmPasswordError:
+      // - Leeres Feld: Error löschen (User tippt noch)
+      // - Beide non-empty und gleich: Error löschen (Match!)
+      // - Beide non-empty und ungleich: Error NICHT setzen während Tippen
+      //   (das macht _validateInputs bei Submit)
+      if (value.isEmpty || (password.isNotEmpty && value == password)) {
         _confirmPasswordError = false;
-      });
-    }
+      }
+      // Hinweis: Wir setzen _confirmPasswordError NICHT auf true hier,
+      // um nerviges Flackern während des Tippens zu vermeiden.
+      // Mismatch wird erst bei Submit geprüft.
+    });
   }
 
   @override

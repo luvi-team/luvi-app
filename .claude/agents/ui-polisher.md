@@ -51,6 +51,7 @@ EdgeInsets.all(Spacing.m)
 
 ## Output Format
 
+```markdown
 ## UI Polish Findings
 
 ### 1. [Category]: [Issue]
@@ -64,3 +65,4 @@ EdgeInsets.all(Spacing.m)
 - Spacing issues: X
 
 **Recommendation:** [Fix critical / OK to proceed]
+```

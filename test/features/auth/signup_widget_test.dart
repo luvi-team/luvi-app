@@ -43,7 +43,7 @@ void main() {
     // Screen renders
     expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
 
-    // Per Auth v2 refactoring: Signup has 3 fields (Email + Password + Confirm)
+    // Per Auth Rebrand v3: Signup has 3 fields (Email + Password + Confirm)
     // The old test expected 5 fields (FirstName, LastName, Phone, Email, Password)
     expect(find.byKey(const ValueKey('signup_email_field')), findsOneWidget);
     expect(find.byKey(const ValueKey('signup_password_field')), findsOneWidget);

@@ -84,9 +84,11 @@ class AuthOAuthSheetContent extends StatelessWidget {
                     AuthRebrandOutlineButton.apple(
                       label: l10n.authContinueApple,
                       onPressed: () async {
+                        // Capture callback before await (null-checked in if above)
+                        final callback = onApplePressed!;
                         await Navigator.of(context).maybePop();
                         if (!context.mounted) return;
-                        onApplePressed?.call();
+                        callback();
                       },
                     ),
                     const SizedBox(height: Spacing.s),
@@ -98,9 +100,11 @@ class AuthOAuthSheetContent extends StatelessWidget {
                     AuthRebrandOutlineButton.google(
                       label: l10n.authContinueGoogle,
                       onPressed: () async {
+                        // Capture callback before await (null-checked in if above)
+                        final callback = onGooglePressed!;
                         await Navigator.of(context).maybePop();
                         if (!context.mounted) return;
-                        onGooglePressed?.call();
+                        callback();
                       },
                     ),
                     const SizedBox(height: Spacing.m),

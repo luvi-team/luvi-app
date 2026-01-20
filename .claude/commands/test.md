@@ -4,13 +4,21 @@ Run tests.
 
 ## All Tests:
 ```bash
+# -j 1: Serielle Ausführung für Test-Isolation
+# (Supabase Mocks, Filesystem, Provider State)
 scripts/flutter_codex.sh test -j 1
 ```
 
 ## Specific Test:
 ```bash
-scripts/flutter_codex.sh test $ARGUMENTS
+# $TEST_PATH akzeptiert: Dateipfad, Verzeichnis, oder Glob-Pattern
+scripts/flutter_codex.sh test $TEST_PATH
 ```
+
+**Akzeptierte Formate:**
+- Einzelne Datei: `test/features/auth/login_test.dart`
+- Verzeichnis: `test/features/auth/`
+- Glob-Pattern: `test/**/*_test.dart`
 
 **Examples:**
 ```bash
