@@ -1062,27 +1062,6 @@
     "description": "Fitness level label for fit users (maps to DB: fit)"
   },
 
-  "consentIntroTitle": "Lass uns LUVI für dich personalisieren",
-  "@consentIntroTitle": {
-    "description": "Title for consent intro screen (C1)"
-  },
-  "consentIntroBody": "Um LUVI für dich zu personalisieren, brauchen wir zuerst dein Okay.",
-  "@consentIntroBody": {
-    "description": "Body text for consent intro screen (C1)"
-  },
-  "consentIntroCtaLabel": "Weiter",
-  "@consentIntroCtaLabel": {
-    "description": "CTA button label for consent intro screen"
-  },
-  "consentIntroIllustrationSemantic": "Illustration: Hand hält Stift zum Unterschreiben",
-  "@consentIntroIllustrationSemantic": {
-    "description": "Semantics label for consent intro illustration"
-  },
-  "consentIntroCtaSemantic": "Weiter zur Datenschutz-Einwilligung",
-  "@consentIntroCtaSemantic": {
-    "description": "Semantics label for consent intro continue button"
-  },
-
   "consentOptionsTitle": "Du und LUVI",
   "@consentOptionsTitle": {
     "description": "Title for consent options screen (C2)"
@@ -1158,27 +1137,6 @@
   "consentOptionsShieldSemantic": "Schild-Symbol für Datenschutz",
   "@consentOptionsShieldSemantic": {
     "description": "Semantics label for shield icon on C2"
-  },
-
-  "consentBlockingTitle": "Deine Zustimmung macht LUVI möglich",
-  "@consentBlockingTitle": {
-    "description": "Title for consent blocking screen (C3)"
-  },
-  "consentBlockingBody": "LUVI braucht deine Zyklus- und Gesundheitsangaben, um dir zyklusbasierte Inhalte und Empfehlungen anzuzeigen. Ohne diese Verarbeitung können wir den Dienst nicht bereitstellen.",
-  "@consentBlockingBody": {
-    "description": "Body text for consent blocking screen (C3)"
-  },
-  "consentBlockingCtaBack": "Zurück & Zustimmen",
-  "@consentBlockingCtaBack": {
-    "description": "Back button label on consent blocking screen (C3)"
-  },
-  "consentBlockingCtaSemantic": "Zurück zur Einwilligung",
-  "@consentBlockingCtaSemantic": {
-    "description": "Semantics label for back button on consent blocking screen"
-  },
-  "consentBlockingShieldSemantic": "Schild-Symbol für Datenschutz",
-  "@consentBlockingShieldSemantic": {
-    "description": "Accessibility label for shield icon on consent blocking screen."
   },
 
   "onboarding03FitnessTitle": "{name}, wie fit fühlst du dich?",

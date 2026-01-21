@@ -1595,46 +1595,16 @@ abstract class AppLocalizations {
   /// **'Very active'**
   String get fitnessLevelFit;
 
-  /// Title for consent intro screen (C1)
-  ///
-  /// In en, this message translates to:
-  /// **'Let\'s personalize LUVI for you'**
-  String get consentIntroTitle;
-
-  /// Body text for consent intro screen (C1)
-  ///
-  /// In en, this message translates to:
-  /// **'To personalize LUVI for you, we first need your okay.'**
-  String get consentIntroBody;
-
-  /// CTA button label for consent intro screen
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get consentIntroCtaLabel;
-
-  /// Semantics label for consent intro illustration
-  ///
-  /// In en, this message translates to:
-  /// **'Illustration: Hand holding a pen to sign'**
-  String get consentIntroIllustrationSemantic;
-
-  /// Semantics label for consent intro continue button
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to privacy consent'**
-  String get consentIntroCtaSemantic;
-
   /// Title for consent options screen (C2)
   ///
   /// In en, this message translates to:
-  /// **'Your Privacy Choices'**
+  /// **'You and LUVI'**
   String get consentOptionsTitle;
 
   /// Subtitle for consent options screen (C2)
   ///
   /// In en, this message translates to:
-  /// **'Securely stored, strictly protected. GDPR, EU hosting'**
+  /// **'Securely stored, strictly protected.\nGDPR, EU hosting'**
   String get consentOptionsSubtitle;
 
   /// Section header for required consents on C2
@@ -1726,36 +1696,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shield icon for data protection'**
   String get consentOptionsShieldSemantic;
-
-  /// Title for consent blocking screen (C3)
-  ///
-  /// In en, this message translates to:
-  /// **'Your consent makes LUVI possible'**
-  String get consentBlockingTitle;
-
-  /// Body text for consent blocking screen (C3)
-  ///
-  /// In en, this message translates to:
-  /// **'LUVI needs your cycle and health data to show you cycle-based content and recommendations. Without this processing, we cannot provide the service.'**
-  String get consentBlockingBody;
-
-  /// Back button label on consent blocking screen (C3)
-  ///
-  /// In en, this message translates to:
-  /// **'Back & Agree'**
-  String get consentBlockingCtaBack;
-
-  /// Semantics label for back button on consent blocking screen
-  ///
-  /// In en, this message translates to:
-  /// **'Back to consent'**
-  String get consentBlockingCtaSemantic;
-
-  /// Accessibility label for shield icon on consent blocking screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Shield icon for data protection'**
-  String get consentBlockingShieldSemantic;
 
   /// Personalized title for fitness level screen (O3)
   ///

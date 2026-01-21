@@ -793,25 +793,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fitnessLevelFit => 'Very active';
 
   @override
-  String get consentIntroTitle => 'Let\'s personalize LUVI for you';
+  String get consentOptionsTitle => 'You and LUVI';
 
   @override
-  String get consentIntroBody => 'To personalize LUVI for you, we first need your okay.';
-
-  @override
-  String get consentIntroCtaLabel => 'Continue';
-
-  @override
-  String get consentIntroIllustrationSemantic => 'Illustration: Hand holding a pen to sign';
-
-  @override
-  String get consentIntroCtaSemantic => 'Continue to privacy consent';
-
-  @override
-  String get consentOptionsTitle => 'Your Privacy Choices';
-
-  @override
-  String get consentOptionsSubtitle => 'Securely stored, strictly protected. GDPR, EU hosting';
+  String get consentOptionsSubtitle => 'Securely stored, strictly protected.\nGDPR, EU hosting';
 
   @override
   String get consentOptionsSectionRequired => 'REQUIRED';
@@ -861,21 +846,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consentOptionsShieldSemantic => 'Shield icon for data protection';
-
-  @override
-  String get consentBlockingTitle => 'Your consent makes LUVI possible';
-
-  @override
-  String get consentBlockingBody => 'LUVI needs your cycle and health data to show you cycle-based content and recommendations. Without this processing, we cannot provide the service.';
-
-  @override
-  String get consentBlockingCtaBack => 'Back & Agree';
-
-  @override
-  String get consentBlockingCtaSemantic => 'Back to consent';
-
-  @override
-  String get consentBlockingShieldSemantic => 'Shield icon for data protection';
 
   @override
   String onboarding03FitnessTitle(String name) {

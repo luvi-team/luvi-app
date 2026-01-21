@@ -793,25 +793,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get fitnessLevelFit => 'Sehr aktiv';
 
   @override
-  String get consentIntroTitle => 'Lass uns LUVI für dich personalisieren';
+  String get consentOptionsTitle => 'Du und LUVI';
 
   @override
-  String get consentIntroBody => 'Um LUVI für dich zu personalisieren, brauchen wir zuerst dein Okay.';
-
-  @override
-  String get consentIntroCtaLabel => 'Weiter';
-
-  @override
-  String get consentIntroIllustrationSemantic => 'Illustration: Hand hält Stift zum Unterschreiben';
-
-  @override
-  String get consentIntroCtaSemantic => 'Weiter zur Datenschutz-Einwilligung';
-
-  @override
-  String get consentOptionsTitle => 'Deine Datenschutz-Einstellungen';
-
-  @override
-  String get consentOptionsSubtitle => 'Sicher gespeichert, streng geschützt. DSGVO, EU-Hosting';
+  String get consentOptionsSubtitle => 'Sicher gespeichert, streng geschützt.\nDSGVO, EU-Hosting';
 
   @override
   String get consentOptionsSectionRequired => 'ERFORDERLICH';
@@ -861,21 +846,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentOptionsShieldSemantic => 'Schild-Symbol für Datenschutz';
-
-  @override
-  String get consentBlockingTitle => 'Deine Zustimmung macht LUVI möglich';
-
-  @override
-  String get consentBlockingBody => 'LUVI braucht deine Zyklus- und Gesundheitsangaben, um dir zyklusbasierte Inhalte und Empfehlungen anzuzeigen. Ohne diese Verarbeitung können wir den Dienst nicht bereitstellen.';
-
-  @override
-  String get consentBlockingCtaBack => 'Zurück & Zustimmen';
-
-  @override
-  String get consentBlockingCtaSemantic => 'Zurück zur Einwilligung';
-
-  @override
-  String get consentBlockingShieldSemantic => 'Schild-Symbol für Datenschutz';
 
   @override
   String onboarding03FitnessTitle(String name) {
