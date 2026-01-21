@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +11,7 @@ const _keyHasSeenWelcome = 'has_seen_welcome';
 const _keyHasCompletedOnboarding = 'has_completed_onboarding';
 const _keyFitnessLevel = 'onboarding_fitness_level';
 const _keyAcceptedConsentVersion = 'accepted_consent_version';
+const _keyAcceptedConsentScopesJson = 'accepted_consent_scopes_json';
 
 enum FitnessLevel {
   beginner,
@@ -71,6 +74,7 @@ class UserStateService {
     _keyHasCompletedOnboarding,
     _keyFitnessLevel,
     _keyAcceptedConsentVersion,
+    _keyAcceptedConsentScopesJson,
   ];
 
   String? _scopedKey(String baseKey) {
@@ -164,6 +168,24 @@ class UserStateService {
     return key == null ? null : prefs.getInt(key);
   }
 
+  /// Returns the accepted consent scopes, or null if not yet persisted.
+  ///
+  /// Scopes are stored as a JSON array of scope name strings (e.g., ["health", "terms", "analytics"]).
+  /// Used by [analyticsConsentGateProvider] to determine analytics opt-in status.
+  Set<String>? get acceptedConsentScopesOrNull {
+    final key = _scopedKey(_keyAcceptedConsentScopesJson);
+    if (key == null) return null;
+    final json = prefs.getString(key);
+    if (json == null) return null;
+    try {
+      final decoded = jsonDecode(json) as List<dynamic>;
+      return decoded.cast<String>().toSet();
+    } on FormatException {
+      // Corrupted JSON - return null (fail-safe)
+      return null;
+    }
+  }
+
   Future<void> setHasCompletedOnboarding(bool value) async {
     final key = _scopedKey(_keyHasCompletedOnboarding);
     if (key == null) {
@@ -201,6 +223,22 @@ class UserStateService {
     final success = await prefs.setInt(key, version);
     if (!success) {
       throw StateError('Failed to persist accepted consent version');
+    }
+  }
+
+  /// Persists the accepted consent scopes as a JSON array.
+  ///
+  /// Scopes are stored by their name (e.g., "health", "terms", "analytics").
+  /// Used to derive analytics opt-in status via [analyticsConsentGateProvider].
+  Future<void> setAcceptedConsentScopes(Set<String> scopes) async {
+    final key = _scopedKey(_keyAcceptedConsentScopesJson);
+    if (key == null) {
+      throw StateError('UserStateService is not bound to a user');
+    }
+    final json = jsonEncode(scopes.toList());
+    final success = await prefs.setString(key, json);
+    if (!success) {
+      throw StateError('Failed to persist accepted consent scopes');
     }
   }
 
@@ -295,6 +333,7 @@ class UserStateService {
     await removeKey(_keyHasCompletedOnboarding);
     await removeKey(_keyFitnessLevel);
     await removeKey(_keyAcceptedConsentVersion);
+    await removeKey(_keyAcceptedConsentScopesJson);
 
     // Also clear scoped keys for the currently bound user (if any).
     final uid = _boundUserId;
@@ -303,6 +342,7 @@ class UserStateService {
       await removeKey(_scopedKeyFor(uid, _keyHasCompletedOnboarding));
       await removeKey(_scopedKeyFor(uid, _keyFitnessLevel));
       await removeKey(_scopedKeyFor(uid, _keyAcceptedConsentVersion));
+      await removeKey(_scopedKeyFor(uid, _keyAcceptedConsentScopesJson));
     }
 
     if (failures.isNotEmpty) {

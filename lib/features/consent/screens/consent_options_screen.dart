@@ -14,7 +14,6 @@ import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/core/widgets/link_text.dart';
 import 'package:luvi_app/core/privacy/consent_config.dart';
-import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/state/consent02_state.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -33,24 +32,11 @@ final _consentBtnBusyProvider =
   _ConsentBtnBusyNotifier.new,
 );
 
-/// Fix 4: Scroll-Gate for "Alles akzeptieren" button (DSGVO UX)
-/// Button is disabled until user scrolls to end of content.
-class _ScrolledToEndNotifier extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void setScrolledToEnd(bool value) => state = value;
-}
-
-final _scrolledToEndProvider =
-    NotifierProvider.autoDispose<_ScrolledToEndNotifier, bool>(
-  _ScrolledToEndNotifier.new,
-);
-
-/// C2 - Consent Options Screen
+/// C2 - Consent Options Screen (Single-Screen Consent Flow)
 ///
 /// Main consent screen where users accept required and optional consent scopes.
-/// Navigates to C3 (blocking) if required consents are not accepted.
+/// "Weiter" button is disabled until required consents are accepted.
+/// "Alle akzeptieren" button is always active and sets all visible scopes.
 ///
 /// Route: /consent/options
 class ConsentOptionsScreen extends ConsumerStatefulWidget {
@@ -64,81 +50,25 @@ class ConsentOptionsScreen extends ConsumerStatefulWidget {
 }
 
 class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-    // Fix 4 Edge-Case: Check after first frame if content is scrollable
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkInitialScroll());
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  /// Edge-Case 1: If content fits on screen (maxScrollExtent == 0),
-  /// enable button immediately since there's nothing to scroll.
-  void _checkInitialScroll() {
-    if (!_scrollController.hasClients) return;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    if (_isScrolledToEnd(maxScroll, 0)) {
-      ref.read(_scrolledToEndProvider.notifier).setScrolledToEnd(true);
-    }
-  }
-
-  /// DRY: Checks if user scrolled to end (within 20px) or content not scrollable.
-  bool _isScrolledToEnd(double maxScroll, double currentScroll) {
-    return maxScroll <= 0 || (maxScroll - currentScroll < 20);
-  }
-
-  void _onScroll() {
-    if (!_scrollController.hasClients) return;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.offset;
-    if (_isScrolledToEnd(maxScroll, currentScroll)) {
-      ref.read(_scrolledToEndProvider.notifier).setScrolledToEnd(true);
-    }
-  }
-
-  /// Gap 2: Handle layout changes (e.g., screen rotation).
-  bool _handleScrollMetricsNotification(ScrollMetricsNotification notification) {
-    final maxScroll = notification.metrics.maxScrollExtent;
-    final currentScroll = notification.metrics.pixels;
-    if (_isScrolledToEnd(maxScroll, currentScroll)) {
-      ref.read(_scrolledToEndProvider.notifier).setScrolledToEnd(true);
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(consent02Provider);
     final notifier = ref.read(consent02Provider.notifier);
     final l10n = AppLocalizations.of(context)!;
-    final isNextBusy = ref.watch(_consentBtnBusyProvider);
-    final hasScrolledToEnd = ref.watch(_scrolledToEndProvider);
+    final isBusy = ref.watch(_consentBtnBusyProvider);
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
 
     return Scaffold(
-      backgroundColor: DsColors.bgCream,
+      backgroundColor: DsColors.splashBg,
       body: SafeArea(
         bottom: false, // Footer handles bottom padding manually to avoid double SafeArea
         child: Column(
           children: [
             // Scrollable content
             Expanded(
-              // Gap 2: NotificationListener for screen rotation handling
-              child: NotificationListener<ScrollMetricsNotification>(
-                onNotification: _handleScrollMetricsNotification,
-                child: SingleChildScrollView(
-                  controller: _scrollController, // Fix 4: Scroll-gate tracking
-                  padding: EdgeInsets.symmetric(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
                   horizontal: ConsentSpacing.pageHorizontal,
                 ),
                 child: Column(
@@ -151,7 +81,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                       child: Semantics(
                         label: l10n.consentOptionsShieldSemantic,
                         child: Image.asset(
-                          Assets.consentImages.shield1,
+                          Assets.consentImages.consentShield,
                           width: 209,
                           height: 117,
                           fit: BoxFit.contain,
@@ -245,7 +175,6 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                   ],
                 ),
               ),
-              ), // Closes NotificationListener (Gap 2)
             ),
 
             // Footer with buttons - positioned near bottom per Figma
@@ -260,23 +189,28 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Primary: Weiter (IMMER tappbar - navigiert zu C3 wenn Required ❌)
+                  // "Weiter" Button - disabled until required consents accepted
                   SizedBox(
                     width: double.infinity,
                     height: Sizes.buttonHeight,
                     child: ElevatedButton(
                       key: const Key('consent_options_btn_continue'),
-                      onPressed: !isNextBusy
+                      onPressed: (state.requiredAccepted && !isBusy)
                           ? () async => _handleContinue(context, ref, l10n)
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DsColors.buttonPrimary,
-                        foregroundColor: DsColors.grayscaleWhite,
-                        disabledBackgroundColor: DsColors.buttonPrimary.withValues(alpha: 0.5),
-                        disabledForegroundColor: DsColors.grayscaleWhite.withValues(alpha: 0.5),
+                        backgroundColor: state.requiredAccepted
+                            ? DsColors.buttonPrimary
+                            : DsColors.gray300,
+                        foregroundColor: state.requiredAccepted
+                            ? DsColors.grayscaleWhite
+                            : DsColors.gray500,
+                        disabledBackgroundColor: DsColors.gray300,
+                        disabledForegroundColor: DsColors.gray500,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(Sizes.radiusXL),
                         ),
+                        elevation: 0,
                       ),
                       child: Text(
                         l10n.consentOptionsCtaContinue,
@@ -288,37 +222,28 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                       ),
                     ),
                   ),
-                  // Fix 6: Use correct design token for button gap (64px per Figma)
                   const SizedBox(height: ConsentSpacing.buttonGapC2),
 
-                  // Secondary: Alles akzeptieren
-                  // Fix 4: Button disabled until user scrolls to end (DSGVO UX)
+                  // "Alle akzeptieren" Button - always active (Teal), except when busy
                   SizedBox(
                     width: double.infinity,
                     height: Sizes.buttonHeight,
                     child: ElevatedButton(
                       key: const Key('consent_options_btn_accept_all'),
-                      onPressed: hasScrolledToEnd
-                          ? () async {
-                              // Atomic: Accept all required + visible optional scopes
-                              // Avoids race condition from stale state closure
-                              notifier.acceptAll();
-                              await _handleContinue(context, ref, l10n);
-                            }
-                          : null,
+                      onPressed: isBusy
+                          ? null
+                          : () => _handleAcceptAll(context, ref, l10n),
                       style: ElevatedButton.styleFrom(
-                        // Fix 4: Dynamic color based on scroll state
-                        backgroundColor: hasScrolledToEnd
-                            ? DsColors.buttonPrimary // #A8406F (rot) when enabled
-                            : DsColors.gray300, // #DCDCDC (grau) when disabled
-                        foregroundColor: hasScrolledToEnd
-                            ? DsColors.grayscaleWhite
-                            : DsColors.gray500,
-                        disabledBackgroundColor: DsColors.gray300,
-                        disabledForegroundColor: DsColors.gray500,
+                        backgroundColor: DsColors.authRebrandRainbowTeal,
+                        foregroundColor: DsColors.grayscaleWhite,
+                        disabledBackgroundColor:
+                            DsColors.authRebrandRainbowTeal.withValues(alpha: 0.5),
+                        disabledForegroundColor:
+                            DsColors.grayscaleWhite.withValues(alpha: 0.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(Sizes.radiusXL),
                         ),
+                        elevation: 0,
                       ),
                       child: Text(
                         l10n.consentOptionsCtaAcceptAll,
@@ -369,22 +294,29 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     );
   }
 
+  /// Handles "Alle akzeptieren" button tap.
+  /// Sets all visible consent scopes and navigates immediately.
+  void _handleAcceptAll(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
+    // 1. Set all visible consent scopes (required + optional)
+    ref.read(consent02Provider.notifier).acceptAll();
+
+    // 2. Navigate immediately (state is synchronously updated)
+    _handleContinue(context, ref, l10n);
+  }
+
+  /// Handles "Weiter" button tap.
+  /// Button is already disabled when required consents are not accepted.
   Future<void> _handleContinue(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
   ) async {
-    // Always read fresh state from provider to avoid stale closure captures.
+    // Read fresh state from provider to avoid stale closure captures.
     final currentState = ref.read(consent02Provider);
-
-    // Check if required consents are accepted (using fresh state)
-    if (!currentState.requiredAccepted) {
-      // Navigate to blocking screen (C3)
-      if (context.mounted) {
-        context.push(ConsentBlockingScreen.routeName);
-      }
-      return;
-    }
 
     if (!_acquireBusy(ref)) {
       return;
@@ -392,7 +324,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     final scopes = _computeScopes(currentState);
     try {
       await _acceptConsent(ref, scopes);
-      final welcomeMarked = await _markWelcomeSeen(ref);
+      final welcomeMarked = await _markWelcomeSeen(ref, currentState);
 
       if (!context.mounted) return;
 
@@ -429,13 +361,13 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
   }
 }
 
-/// Divider line (Figma: #A1A1A1, 1px)
+/// Divider line (Teal: #1B9BA4, 1px)
 class _ConsentDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 1,
-      color: DsColors.divider,
+      color: DsColors.authRebrandRainbowTeal,
     );
   }
 }
@@ -632,7 +564,7 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
   );
 }
 
-Future<bool> _markWelcomeSeen(WidgetRef ref) async {
+Future<bool> _markWelcomeSeen(WidgetRef ref, Consent02State currentState) async {
   // Point 12: Explicit success tracking for each operation
   var serverSucceeded = true;
   var localSucceeded = true;
@@ -663,10 +595,18 @@ Future<bool> _markWelcomeSeen(WidgetRef ref) async {
     if (uid != null) {
       // bindUser MUST complete first - sets _boundUserId needed by other methods
       await userState.bindUser(uid);
-      // These two are now independent and can run in parallel
+
+      // Derive accepted scopes from current state (for analytics consent gating)
+      final acceptedScopes = currentState.choices.entries
+          .where((e) => e.value)
+          .map((e) => e.key.name)
+          .toSet();
+
+      // These three are now independent and can run in parallel
       await Future.wait([
         userState.markWelcomeSeen(),
         userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
+        userState.setAcceptedConsentScopes(acceptedScopes),
       ]);
     } else {
       // Debug: track edge case where uid is null (auth state race or test env).

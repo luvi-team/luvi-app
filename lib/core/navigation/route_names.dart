@@ -5,5 +5,5 @@ class RouteNames {
   static const String authSignIn = 'auth_signin';
   static const String profile = 'profil'; // Keep route value as 'profil' for URL
   static const String welcome = 'welcome';
-  static const String consentIntro = 'consent_intro';
+  static const String consentOptions = 'consent_options';
 }

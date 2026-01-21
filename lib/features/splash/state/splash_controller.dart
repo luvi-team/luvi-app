@@ -412,7 +412,7 @@ class SplashController extends _$SplashController {
   String? _evaluateConsentRoute(int? remoteAcceptedVersion) {
     final needsConsent = remoteAcceptedVersion == null ||
         remoteAcceptedVersion < ConsentConfig.currentVersionInt;
-    return needsConsent ? RoutePaths.consentIntro : null;
+    return needsConsent ? RoutePaths.consentOptions : null;
   }
 
   void _maybeBackfillOnboarding({

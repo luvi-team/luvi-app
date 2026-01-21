@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/privacy/consent_types.dart';
 import 'package:luvi_app/core/privacy/pii_keys.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
+import 'package:luvi_services/user_state_service.dart';
 
 /// Lightweight analytics recorder contract so UI flows can emit structured
 /// events while allowing tests to override the implementation.
@@ -32,6 +34,43 @@ final analyticsBackendSinkProvider = Provider<AnalyticsEventSink?>((_) => null);
 ///   (e.g., while hardening PII filters or during privacy reviews).
 /// - Default: `false` (analytics enabled).
 final analyticsOptOutProvider = Provider<bool>((_) => false);
+
+/// Derives analytics consent from persisted consent scopes.
+///
+/// Returns `true` if the user has explicitly opted into analytics consent.
+/// Fail-safe: returns `false` (analytics disabled) if:
+/// - UserStateService is not yet loaded (AsyncValue.loading)
+/// - UserStateService failed to load (AsyncValue.error)
+/// - No consent scopes are persisted (null)
+/// - Analytics scope is not present in persisted scopes
+///
+/// This provider is used by [analyticsConsentOptOutProvider] to derive the
+/// opt-out state for [analyticsRecorderProvider].
+final analyticsConsentGateProvider = Provider<bool>((ref) {
+  final userStateAsync = ref.watch(userStateServiceProvider);
+  return userStateAsync.maybeWhen(
+    data: (userState) {
+      final scopes = userState.acceptedConsentScopesOrNull;
+      // Fail-safe: no scopes = no consent = no analytics
+      if (scopes == null) return false;
+      // Check for analytics scope using canonical enum name
+      return scopes.contains(ConsentScope.analytics.name);
+    },
+    // Fail-safe: loading/error states = no analytics
+    orElse: () => false,
+  );
+});
+
+/// Consent-based analytics opt-out provider.
+///
+/// Returns `true` when analytics should be DISABLED (user has NOT consented).
+/// Use this to override [analyticsOptOutProvider] in ProviderScope.
+final analyticsConsentOptOutProvider = Provider<bool>((ref) {
+  final isAnalyticsConsented = ref.watch(analyticsConsentGateProvider);
+  // opt-out = true means analytics DISABLED
+  // opt-out = false means analytics ENABLED
+  return !isAnalyticsConsented;
+});
 
 /// Returns true when [properties] contains keys that look like PII indicators
 /// (e.g., email, phone, name, address).

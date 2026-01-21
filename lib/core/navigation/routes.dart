@@ -117,7 +117,7 @@ String? homeGuardRedirect({
 ///
 /// Gate priority (matches Splash logic):
 /// 1. State unknown → Splash (fail-safe)
-/// 2. Consent outdated/missing → ConsentIntroScreen
+/// 2. Consent outdated/missing → ConsentOptionsScreen
 /// 3. Onboarding incomplete → Onboarding01
 /// 4. All gates passed → null (allow)
 String? homeGuardRedirectWithConsent({
@@ -135,7 +135,7 @@ String? homeGuardRedirectWithConsent({
   final needsConsent = acceptedConsentVersion == null ||
       acceptedConsentVersion < currentConsentVersion;
   if (needsConsent) {
-    return RoutePaths.consentIntro;
+    return RoutePaths.consentOptions;
   }
 
   // Then check onboarding

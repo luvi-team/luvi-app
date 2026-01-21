@@ -6,14 +6,12 @@ import 'package:mocktail/mocktail.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/privacy/consent_config.dart';
-import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
 import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
-import '../../../support/test_app.dart';
 import '../../../support/test_config.dart';
 
 /// Mock ConsentService for testing navigation without Supabase
@@ -167,7 +165,8 @@ void main() {
       expect(find.byType(ElevatedButton), findsNWidgets(2));
     });
 
-    testWidgets('Continue button is always enabled (navigates to blocking if required not accepted)', (tester) async {
+    // New CTA Logic: Weiter button is disabled until required consents accepted
+    testWidgets('Weiter button is disabled when required consents not accepted', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -185,13 +184,14 @@ void main() {
       final continueButtonFinder = find.byKey(const Key('consent_options_btn_continue'));
       expect(continueButtonFinder, findsOneWidget);
 
-      // Fix 1: Button is ALWAYS enabled (not disabled when required not accepted)
-      // If required consents are not accepted, tapping navigates to C3 (Blocking)
+      // Button should be DISABLED when required consents are not accepted
       final button = tester.widget<ElevatedButton>(continueButtonFinder);
-      expect(button.onPressed, isNotNull);
+      expect(button.onPressed, isNull,
+          reason: 'Weiter button should be disabled when required consents not accepted');
     });
 
-    testWidgets('Accept all button is enabled after scrolling (scroll-gate test)', (tester) async {
+    // New CTA Logic: Accept all button is always enabled
+    testWidgets('Accept all button is always enabled (no scroll-gate)', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -205,86 +205,17 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Scroll to the bottom to enable "Accept all" button (Fix 4)
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -500));
-      await tester.pumpAndSettle();
-
       // Find the Accept All button by key
       final acceptAllFinder = find.byKey(const Key('consent_options_btn_accept_all'));
       expect(acceptAllFinder, findsOneWidget);
 
-      // Verify button is enabled after scroll (Fix 4)
+      // Button should be ENABLED immediately (no scroll-gate)
       final acceptAllButton = tester.widget<ElevatedButton>(acceptAllFinder);
       expect(acceptAllButton.onPressed, isNotNull,
-          reason: 'Accept all button should be enabled after scrolling');
-
-      // Continue button should still be enabled
-      final continueButtonFinder = find.byKey(const Key('consent_options_btn_continue'));
-      final button = tester.widget<ElevatedButton>(continueButtonFinder);
-      expect(button.onPressed, isNotNull);
+          reason: 'Accept all button should always be enabled (scroll-gate removed)');
     });
 
-    // Gap 1: Test button is disabled BEFORE scrolling (when content is scrollable)
-    testWidgets('Accept all button is disabled before scrolling (scroll-gate)', (tester) async {
-      // Force small viewport to ensure content IS scrollable
-      await tester.binding.setSurfaceSize(const Size(400, 300));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
-
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Find the Accept All button by key
-      final acceptAllFinder = find.byKey(const Key('consent_options_btn_accept_all'));
-      expect(acceptAllFinder, findsOneWidget);
-
-      // Button should be DISABLED before scrolling (content is scrollable)
-      final button = tester.widget<ElevatedButton>(acceptAllFinder);
-      expect(button.onPressed, isNull,
-          reason: 'Accept all button should be disabled before scrolling');
-    });
-
-    // Gap 3: Test button is enabled immediately when content fits on screen
-    testWidgets('Accept all button enabled immediately when content fits on screen', (tester) async {
-      // Force very large viewport so content definitely fits
-      await tester.binding.setSurfaceSize(const Size(800, 2000));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
-
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            theme: AppTheme.buildAppTheme(),
-            home: const ConsentOptionsScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Find the Accept All button by key
-      final acceptAllFinder = find.byKey(const Key('consent_options_btn_accept_all'));
-      expect(acceptAllFinder, findsOneWidget);
-
-      // Button should be ENABLED immediately (no scroll needed, content fits)
-      final button = tester.widget<ElevatedButton>(acceptAllFinder);
-      expect(button.onPressed, isNotNull,
-          reason: 'Accept all should be enabled when content fits on screen');
-    });
-
-    // Fix 6: Button Gap Test (updated to 16px per Figma audit)
-    // Note: buttonGapC2 = 16px which equals Spacing.m, so multiple SizedBoxes may match.
-    // We verify the design token is used correctly by checking at least one exists.
+    // Button Gap Test
     testWidgets('Button gap uses correct design token (16px per Figma)', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
@@ -300,7 +231,6 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find SizedBox with buttonGapC2 height (16px per Figma)
-      // Note: Multiple may exist since Spacing.m also equals 16px
       final sizedBoxFinder = find.byWidgetPredicate(
         (widget) =>
             widget is SizedBox && widget.height == ConsentSpacing.buttonGapC2,
@@ -309,45 +239,48 @@ void main() {
           reason: 'Should find SizedBox(es) with height = buttonGapC2 (16px per Figma)');
     });
 
-    // Gap 4: Navigation Integration Test with GoRouter (per CLAUDE.md buildTestApp)
-    testWidgets('Continue button navigates to blocking screen when required not accepted', (tester) async {
-      // Setup GoRouter with consent routes
-      final router = GoRouter(
-        initialLocation: '/consent/options',
-        routes: [
-          GoRoute(
-            path: '/consent/options',
-            builder: (context, state) => const ConsentOptionsScreen(),
+    // New CTA Logic: Weiter button becomes enabled after accepting required consents
+    testWidgets('Weiter button enabled after accepting required consents', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            theme: AppTheme.buildAppTheme(),
+            home: const ConsentOptionsScreen(),
           ),
-          GoRoute(
-            path: '/consent/blocking',
-            builder: (context, state) => const ConsentBlockingScreen(),
-          ),
-        ],
+        ),
       );
-
-      // Use buildTestApp per CLAUDE.md guidelines
-      await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
-      // Verify we're on ConsentOptionsScreen
-      expect(find.byType(ConsentOptionsScreen), findsOneWidget);
+      // Initially disabled
+      var continueButtonFinder = find.byKey(const Key('consent_options_btn_continue'));
+      var button = tester.widget<ElevatedButton>(continueButtonFinder);
+      expect(button.onPressed, isNull);
 
-      // Tap Continue button (without accepting required consents)
-      final continueButton = find.byKey(const Key('consent_options_btn_continue'));
-      expect(continueButton, findsOneWidget);
-      await tester.tap(continueButton);
+      // Scroll to make checkboxes visible and tap health consent
+      final healthCheckbox = find.byKey(const Key('consent_options_health'));
+      await tester.ensureVisible(healthCheckbox);
+      await tester.pumpAndSettle();
+      await tester.tap(healthCheckbox);
       await tester.pumpAndSettle();
 
-      // Should navigate to ConsentBlockingScreen
-      expect(find.byType(ConsentBlockingScreen), findsOneWidget,
-          reason: 'Should navigate to blocking screen when required consents not accepted');
+      // Scroll to make terms checkbox visible and tap it
+      final termsCheckbox = find.byKey(const Key('consent_options_terms'));
+      await tester.ensureVisible(termsCheckbox);
+      await tester.pumpAndSettle();
+      await tester.tap(termsCheckbox);
+      await tester.pumpAndSettle();
+
+      // Now the button should be enabled
+      button = tester.widget<ElevatedButton>(continueButtonFinder);
+      expect(button.onPressed, isNotNull,
+          reason: 'Weiter button should be enabled after accepting all required consents');
     });
 
-    // Bug Fix: Test for "Alles akzeptieren" race condition fix
-    // Verifies that tapping "Accept all" navigates to Auth, NOT blocking screen.
-    // Uses mocked ConsentService and UserStateService for full integration test.
-    testWidgets('Accept all button navigates to auth (race condition fix)', (tester) async {
+    // Accept all button navigates to auth
+    testWidgets('Accept all button navigates to auth', (tester) async {
       // Setup mocks
       final mockConsentService = _MockConsentService();
       final mockUserStateService = _MockUserStateService();
@@ -358,7 +291,6 @@ void main() {
           scopes: any(named: 'scopes'),
         ),
       ).thenAnswer((_) async {});
-      // Stub local cache methods (not called when uid is null in test env).
       when(() => mockUserStateService.bindUser(any())).thenAnswer((_) async {});
       when(() => mockUserStateService.markWelcomeSeen()).thenAnswer((_) async {});
       when(() => mockUserStateService.setAcceptedConsentVersion(any()))
@@ -371,10 +303,6 @@ void main() {
           GoRoute(
             path: '/consent/options',
             builder: (context, state) => const ConsentOptionsScreen(),
-          ),
-          GoRoute(
-            path: '/consent/blocking',
-            builder: (context, state) => const ConsentBlockingScreen(),
           ),
           GoRoute(
             path: '/onboarding/01',
@@ -408,25 +336,16 @@ void main() {
       // Verify we're on ConsentOptionsScreen
       expect(find.byType(ConsentOptionsScreen), findsOneWidget);
 
-      // Scroll to enable "Alles akzeptieren" button (DSGVO scroll-gate)
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -500));
-      await tester.pumpAndSettle();
-
-      // Find and verify the Accept All button is enabled
+      // Find and verify the Accept All button is enabled (no scroll needed)
       final acceptAllButton = find.byKey(const Key('consent_options_btn_accept_all'));
       expect(acceptAllButton, findsOneWidget);
       final button = tester.widget<ElevatedButton>(acceptAllButton);
       expect(button.onPressed, isNotNull,
-          reason: 'Accept all button should be enabled after scrolling');
+          reason: 'Accept all button should be enabled immediately');
 
-      // Tap "Alles akzeptieren" - the race condition fix ensures fresh state is read
+      // Tap "Alles akzeptieren"
       await tester.tap(acceptAllButton);
       await tester.pumpAndSettle();
-
-      // CRITICAL: Should NOT navigate to ConsentBlockingScreen
-      // Before the fix, the stale state caused navigation to blocking on first tap
-      expect(find.byType(ConsentBlockingScreen), findsNothing,
-          reason: 'Accept all should NOT navigate to blocking screen (race condition fix)');
 
       // Should navigate to AuthSignInScreen (pre-auth consent flow)
       expect(find.byType(AuthSignInScreen), findsOneWidget,
@@ -439,8 +358,6 @@ void main() {
           scopes: any(named: 'scopes'),
         ),
       ).called(1);
-      // Local cache writes are skipped when uid is null (test env has no real Supabase).
-      verifyNever(() => mockUserStateService.markWelcomeSeen());
     });
 
     testWidgets(
@@ -466,10 +383,6 @@ void main() {
             GoRoute(
               path: '/consent/options',
               builder: (context, state) => const ConsentOptionsScreen(),
-            ),
-            GoRoute(
-              path: '/consent/blocking',
-              builder: (context, state) => const ConsentBlockingScreen(),
             ),
             GoRoute(
               path: '/onboarding/01',
@@ -504,13 +417,7 @@ void main() {
         final screenContext = tester.element(find.byType(ConsentOptionsScreen));
         final l10n = AppLocalizations.of(screenContext)!;
 
-        // Scroll to enable "Alles akzeptieren" button (DSGVO scroll-gate).
-        await tester.drag(
-          find.byType(SingleChildScrollView),
-          const Offset(0, -500),
-        );
-        await tester.pumpAndSettle();
-
+        // Tap "Alles akzeptieren" (no scroll needed - scroll-gate removed)
         final acceptAllButton =
             find.byKey(const Key('consent_options_btn_accept_all'));
         expect(acceptAllButton, findsOneWidget);
