@@ -228,6 +228,10 @@ class DsColors {
   /// Alias: Same as divider for semantic clarity
   static const Color dividerGray = divider;
 
+  /// Consent Options Subheader Text (Figma: #0A0A0A)
+  /// Slightly lighter than grayscaleBlack for subheader text
+  static const Color consentSubheaderText = Color(0xFF0A0A0A);
+
   // ─── Calendar/Period Picker Specific (Figma Onboarding 2024-12) ───
 
   /// Calendar Weekday Header Gray (Figma: #99A1AF)

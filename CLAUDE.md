@@ -231,4 +231,4 @@ Details: `.claude/agents/*.md`
 | DataViz-Dossier | `context/agents/04-dataviz.md` |
 | Acceptance Gates | `context/agents/_acceptance_v1.1.md` |
 | BMAD-Slim | `docs/bmad/claude-code-slim.md` |
-| Tech-Stack | `docs/engineering/tech-stack.md` |
+| Tech-Stack | `context/refs/tech_stack_current.yaml` |

@@ -91,7 +91,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     ),
                     const SizedBox(height: Spacing.l),
 
-                    // Title (Figma: Playfair Display SemiBold 28px)
+                    // Title (Figma: Playfair Display Bold 28px, line-height 34px)
                     Semantics(
                       header: true,
                       child: Text(
@@ -100,24 +100,24 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                         style: theme.textTheme.headlineMedium?.copyWith(
                           color: theme.colorScheme.onSurface,
                           fontFamily: FontFamilies.playfairDisplay,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 28,
-                          height: 38 / 28,
+                          fontWeight: FontWeight.w700,
+                          fontSize: ConsentTypography.headerFontSize,
+                          height: ConsentTypography.headerLineHeight,
                         ),
                       ),
                     ),
                     const SizedBox(height: Spacing.xs),
 
-                    // Subtitle (Figma: Figtree Regular 16px)
+                    // Subtitle (Figma: Playfair Display SemiBold 17px, line-height 24px)
                     Text(
                       l10n.consentOptionsSubtitle,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                        fontFamily: FontFamilies.figtree,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        height: 26 / 16,
+                        color: DsColors.consentSubheaderText,
+                        fontFamily: FontFamilies.playfairDisplay,
+                        fontWeight: FontWeight.w600,
+                        fontSize: ConsentTypography.subheaderFontSize,
+                        height: ConsentTypography.subheaderLineHeight,
                       ),
                     ),
                     const SizedBox(height: ConsentSpacing.sectionGap),
@@ -139,19 +139,19 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                       semanticSection: l10n.consentOptionsSectionRequired,
                       l10n: l10n,
                     ),
-                    const SizedBox(height: ConsentSpacing.sectionGap),
+                    const SizedBox(height: ConsentSpacing.checkboxItemGap),
 
-                    // Terms Consent (with links)
+                    // Terms Consent (with links) - full text in trailing for inline flow
                     _ConsentCheckboxRow(
                       key: const Key('consent_options_terms'),
-                      text: l10n.consentOptionsTermsPrefix,
+                      text: '',
                       trailing: _buildTermsLinks(context, l10n),
                       selected: state.choices[ConsentScope.terms] == true,
                       onTap: () => notifier.toggle(ConsentScope.terms),
                       semanticSection: l10n.consentOptionsSectionRequired,
                       l10n: l10n,
                     ),
-                    const SizedBox(height: ConsentSpacing.sectionGap),
+                    const SizedBox(height: ConsentSpacing.itemToDividerGap),
 
                     // Divider
                     _ConsentDivider(),
@@ -186,76 +186,85 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                 // Buttons sit just above safe area (home indicator)
                 mediaQuery.padding.bottom + ConsentSpacing.ctaBottomInset,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // "Weiter" Button - disabled until required consents accepted
-                  SizedBox(
-                    width: double.infinity,
-                    height: Sizes.buttonHeight,
-                    child: ElevatedButton(
-                      key: const Key('consent_options_btn_continue'),
-                      onPressed: (state.requiredAccepted && !isBusy)
-                          ? () async => _handleContinue(context, ref, l10n)
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: state.requiredAccepted
-                            ? DsColors.buttonPrimary
-                            : DsColors.gray300,
-                        foregroundColor: state.requiredAccepted
-                            ? DsColors.grayscaleWhite
-                            : DsColors.gray500,
-                        disabledBackgroundColor: DsColors.gray300,
-                        disabledForegroundColor: DsColors.gray500,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(Sizes.radiusXL),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        l10n.consentOptionsCtaContinue,
-                        style: TextStyle(
-                          fontFamily: FontFamilies.figtree,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: ConsentSpacing.ctaButtonMaxWidth,
                   ),
-                  const SizedBox(height: ConsentSpacing.buttonGapC2),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // "Weiter" Button - disabled until required consents accepted
+                      SizedBox(
+                        width: double.infinity,
+                        height: Sizes.buttonHeight,
+                        child: ElevatedButton(
+                          key: const Key('consent_options_btn_continue'),
+                          onPressed: (state.requiredAccepted && !isBusy)
+                              ? () async => _handleContinue(context, ref, l10n)
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: state.requiredAccepted
+                                ? DsColors.buttonPrimary
+                                : DsColors.gray300,
+                            foregroundColor: state.requiredAccepted
+                                ? DsColors.grayscaleWhite
+                                : DsColors.gray500,
+                            disabledBackgroundColor: DsColors.gray300,
+                            disabledForegroundColor: DsColors.gray500,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(Sizes.radiusM),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            l10n.consentOptionsCtaContinue,
+                            style: TextStyle(
+                              fontFamily: FontFamilies.figtree,
+                              fontWeight: FontWeight.w700,
+                              fontSize: ConsentTypography.buttonFontSize,
+                              height: ConsentTypography.buttonLineHeight,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: ConsentSpacing.buttonGapC2),
 
-                  // "Alle akzeptieren" Button - always active (Teal), except when busy
-                  SizedBox(
-                    width: double.infinity,
-                    height: Sizes.buttonHeight,
-                    child: ElevatedButton(
-                      key: const Key('consent_options_btn_accept_all'),
-                      onPressed: isBusy
-                          ? null
-                          : () => _handleAcceptAll(context, ref, l10n),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: DsColors.authRebrandRainbowTeal,
-                        foregroundColor: DsColors.grayscaleWhite,
-                        disabledBackgroundColor:
-                            DsColors.authRebrandRainbowTeal.withValues(alpha: 0.5),
-                        disabledForegroundColor:
-                            DsColors.grayscaleWhite.withValues(alpha: 0.5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(Sizes.radiusXL),
+                      // "Alle akzeptieren" Button - always active (Teal), except when busy
+                      SizedBox(
+                        width: double.infinity,
+                        height: Sizes.buttonHeight,
+                        child: ElevatedButton(
+                          key: const Key('consent_options_btn_accept_all'),
+                          onPressed: isBusy
+                              ? null
+                              : () => _handleAcceptAll(context, ref, l10n),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: DsColors.authRebrandRainbowTeal,
+                            foregroundColor: DsColors.grayscaleWhite,
+                            disabledBackgroundColor:
+                                DsColors.authRebrandRainbowTeal.withValues(alpha: 0.5),
+                            disabledForegroundColor:
+                                DsColors.grayscaleWhite.withValues(alpha: 0.5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(Sizes.radiusM),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            l10n.consentOptionsCtaAcceptAll,
+                            style: TextStyle(
+                              fontFamily: FontFamilies.figtree,
+                              fontWeight: FontWeight.w700,
+                              fontSize: ConsentTypography.buttonFontSize,
+                              height: ConsentTypography.buttonLineHeight,
+                            ),
+                          ),
                         ),
-                        elevation: 0,
                       ),
-                      child: Text(
-                        l10n.consentOptionsCtaAcceptAll,
-                        style: TextStyle(
-                          fontFamily: FontFamilies.figtree,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -273,21 +282,23 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
         fontFamily: FontFamilies.figtree,
         fontWeight: FontWeight.w400,
         fontSize: 14,
-        height: 22.75 / 14,
+        height: ConsentTypography.bodyLineHeight,
       ),
       parts: [
+        // Prefix text for inline flow (was previously separate Text widget)
+        LinkTextPart(l10n.consentOptionsTermsPrefix),
         LinkTextPart(
           l10n.consentOptionsTermsLink,
           onTap: () => openTerms(context, ref),
-          bold: true,
-          color: DsColors.signature,
+          bold: false,
+          color: DsColors.buttonPrimary,
         ),
         LinkTextPart(l10n.consentOptionsTermsConjunction),
         LinkTextPart(
           l10n.consentOptionsPrivacyLink,
           onTap: () => openPrivacy(context, ref),
-          bold: true,
-          color: DsColors.signature,
+          bold: false,
+          color: DsColors.buttonPrimary,
         ),
         LinkTextPart(l10n.consentOptionsTermsSuffix),
       ],
@@ -361,12 +372,12 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
   }
 }
 
-/// Divider line (Teal: #1B9BA4, 1px)
+/// Divider line (Teal: #1B9BA4, 2px)
 class _ConsentDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 1,
+      height: 2,
       color: DsColors.authRebrandRainbowTeal,
     );
   }
@@ -422,7 +433,7 @@ class _ConsentCheckboxRow extends StatelessWidget {
       fontFamily: FontFamilies.figtree,
       fontWeight: FontWeight.w400,
       fontSize: 14,
-      height: 22.75 / 14,
+      height: ConsentTypography.bodyLineHeight,
       color: theme.colorScheme.onSurface,
     );
 
@@ -441,8 +452,8 @@ class _ConsentCheckboxRow extends StatelessWidget {
         },
         borderRadius: BorderRadius.circular(Sizes.radiusM),
         child: Padding(
-          // A11y-Fix: Mindesthöhe ≥44px (WCAG/iOS HIG) statt ~32px mit Spacing.xs
-          padding: EdgeInsets.symmetric(vertical: Spacing.m),
+          // Text height (min ~44px for 2 lines) ensures A11y touch target ≥44dp
+          padding: EdgeInsets.zero,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -452,13 +463,15 @@ class _ConsentCheckboxRow extends StatelessWidget {
                   Expanded(
                     child: trailing == null
                         ? Text(text, style: textStyle)
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(text, style: textStyle),
-                              trailing!,
-                            ],
-                          ),
+                        : text.isEmpty
+                            ? trailing! // Full text in trailing for inline flow
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(text, style: textStyle),
+                                  trailing!,
+                                ],
+                              ),
                   ),
                   const SizedBox(width: Spacing.m),
                   // Checkbox (Figma: 24x24, Circle)

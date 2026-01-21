@@ -1114,7 +1114,7 @@
   "@consentOptionsCtaContinue": {
     "description": "Continue button label on C2"
   },
-  "consentOptionsCtaAcceptAll": "Alles akzeptieren",
+  "consentOptionsCtaAcceptAll": "Alle akzeptieren",
   "@consentOptionsCtaAcceptAll": {
     "description": "Accept all button label on C2"
   },

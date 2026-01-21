@@ -147,7 +147,7 @@ void main() {
       }
     });
 
-    testWidgets('has two buttons (Weiter and Alles akzeptieren)', (tester) async {
+    testWidgets('has two buttons (Weiter and Alle akzeptieren)', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -343,7 +343,7 @@ void main() {
       expect(button.onPressed, isNotNull,
           reason: 'Accept all button should be enabled immediately');
 
-      // Tap "Alles akzeptieren"
+      // Tap "Alle akzeptieren"
       await tester.tap(acceptAllButton);
       await tester.pumpAndSettle();
 
@@ -417,7 +417,7 @@ void main() {
         final screenContext = tester.element(find.byType(ConsentOptionsScreen));
         final l10n = AppLocalizations.of(screenContext)!;
 
-        // Tap "Alles akzeptieren" (no scroll needed - scroll-gate removed)
+        // Tap "Alle akzeptieren" (no scroll needed - scroll-gate removed)
         final acceptAllButton =
             find.byKey(const Key('consent_options_btn_accept_all'));
         expect(acceptAllButton, findsOneWidget);

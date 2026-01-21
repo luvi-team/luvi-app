@@ -6,14 +6,19 @@
 --
 -- GDPR Art. 7(1) requires demonstrable proof of consent. To satisfy audit
 -- requirements, consent records must be:
--- 1. Append-only (no UPDATE/DELETE)
+-- 1. Append-only (no UPDATE; DELETE reserved for erasure)
 -- 2. Timestamped immutably (created_at)
 -- 3. User-scoped (via RLS)
 --
 -- This migration:
 -- 1. Drops UPDATE and DELETE RLS policies (client cannot bypass)
 -- 2. Revokes UPDATE/DELETE privileges from authenticated role
--- 3. Adds defense-in-depth triggers (catches service_role bypass attempts)
+-- 3. Adds defense-in-depth trigger for UPDATEs (catches bypass attempts)
+--
+-- IMPORTANT: We intentionally do NOT block DELETE via trigger.
+-- Reason: Account deletion (ON DELETE CASCADE from auth.users) and potential
+-- retention/erasure workflows must remain possible. DELETE is still disallowed
+-- for authenticated clients via dropped policies + revoked privileges.
 --
 -- Rollback: See bottom of file for manual rollback instructions.
 -- ============================================================================
@@ -23,38 +28,40 @@ BEGIN;
 -- Step 1: Drop UPDATE and DELETE RLS policies
 -- These policies were created in 20250903235538_create_consents_table.sql
 DROP POLICY IF EXISTS "Users can update their own consents" ON public.consents;
+DROP POLICY IF EXISTS consents_update_own ON public.consents;
 DROP POLICY IF EXISTS "Users can delete their own consents" ON public.consents;
+DROP POLICY IF EXISTS consents_delete_own ON public.consents;
 
 -- Step 2: Revoke UPDATE/DELETE privileges from authenticated role
 -- Note: service_role retains privileges for admin/support workflows, but
--- the trigger below will block modifications regardless.
+-- the UPDATE trigger below will block UPDATEs regardless.
 REVOKE UPDATE, DELETE ON public.consents FROM authenticated;
 
--- Step 3: Defense-in-depth trigger (catches any bypass attempts, including service_role)
--- This is belt-and-suspenders: even if someone escalates to service_role or
--- bypasses RLS, the trigger will prevent modifications.
-CREATE OR REPLACE FUNCTION public.prevent_consent_modification()
-RETURNS TRIGGER AS $$
-BEGIN
-  RAISE EXCEPTION 'Consent log is append-only (GDPR audit requirement). Modifications are not allowed.';
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Drop existing triggers if they exist (idempotent)
+-- Step 3: Defense-in-depth trigger to prevent UPDATEs (append-only semantics)
+-- We do NOT create a DELETE trigger; see IMPORTANT note above.
 DROP TRIGGER IF EXISTS consent_no_update ON public.consents;
 DROP TRIGGER IF EXISTS consent_no_delete ON public.consents;
+DROP FUNCTION IF EXISTS public.prevent_consent_modification();
 
--- Create triggers for both UPDATE and DELETE
+CREATE OR REPLACE FUNCTION public.prevent_consent_update()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = 'public'
+AS $$
+BEGIN
+  RAISE EXCEPTION 'Consent log is append-only (GDPR audit requirement). UPDATE is not allowed.';
+END;
+$$;
+
+-- Create trigger for UPDATE only
 CREATE TRIGGER consent_no_update
   BEFORE UPDATE ON public.consents
-  FOR EACH ROW EXECUTE FUNCTION public.prevent_consent_modification();
-
-CREATE TRIGGER consent_no_delete
-  BEFORE DELETE ON public.consents
-  FOR EACH ROW EXECUTE FUNCTION public.prevent_consent_modification();
+  FOR EACH ROW EXECUTE FUNCTION public.prevent_consent_update();
 
 -- Step 4: Add comment documenting the immutability requirement
-COMMENT ON TABLE public.consents IS 'Append-only consent audit log (GDPR Art. 7). UPDATE/DELETE blocked by trigger.';
+COMMENT ON TABLE public.consents IS
+  'Append-only consent audit log (GDPR Art. 7). Client UPDATE/DELETE disallowed; UPDATE blocked by trigger; DELETE reserved for erasure/retention.';
 
 COMMIT;
 
@@ -65,12 +72,15 @@ COMMIT;
 -- 1. Check policies (should only show SELECT and INSERT):
 --    SELECT policyname, cmd FROM pg_policies WHERE tablename = 'consents';
 --
--- 2. Check triggers (should show consent_no_update and consent_no_delete):
+-- 2. Check triggers (should show consent_no_update):
 --    SELECT tgname FROM pg_trigger WHERE tgrelid = 'public.consents'::regclass;
 --
 -- 3. Test UPDATE blocking:
 --    UPDATE public.consents SET version = '999' WHERE user_id = auth.uid();
 --    -- Expected: ERROR: Consent log is append-only (GDPR audit requirement)
+--
+-- 4. Verify client DELETE is disallowed (should fail for authenticated):
+--    DELETE FROM public.consents WHERE user_id = auth.uid();
 --
 -- ============================================================================
 -- Rollback Instructions (NOT RECOMMENDED - breaks GDPR compliance)
@@ -78,8 +88,7 @@ COMMIT;
 --
 -- -- Revert triggers
 -- DROP TRIGGER IF EXISTS consent_no_update ON public.consents;
--- DROP TRIGGER IF EXISTS consent_no_delete ON public.consents;
--- DROP FUNCTION IF EXISTS public.prevent_consent_modification();
+-- DROP FUNCTION IF EXISTS public.prevent_consent_update();
 --
 -- -- Restore privileges (NOT RECOMMENDED)
 -- GRANT UPDATE, DELETE ON public.consents TO authenticated;

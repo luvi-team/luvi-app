@@ -832,7 +832,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentOptionsCtaContinue => 'Weiter';
 
   @override
-  String get consentOptionsCtaAcceptAll => 'Alles akzeptieren';
+  String get consentOptionsCtaAcceptAll => 'Alle akzeptieren';
 
   @override
   String consentOptionsCheckboxSelectedSemantic(String section, String text) {

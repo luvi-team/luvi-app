@@ -84,7 +84,7 @@ void main() {
         final mockService = _MockUserStateService();
         // User accepted health and terms, but NOT analytics
         when(() => mockService.acceptedConsentScopesOrNull)
-            .thenReturn({'health', 'terms'});
+            .thenReturn({ConsentScope.health_processing.name, ConsentScope.terms.name});
 
         final container = ProviderContainer(
           overrides: [
@@ -108,7 +108,11 @@ void main() {
         final mockService = _MockUserStateService();
         // User accepted health, terms, AND analytics
         when(() => mockService.acceptedConsentScopesOrNull)
-            .thenReturn({'health', 'terms', ConsentScope.analytics.name});
+            .thenReturn({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+          ConsentScope.analytics.name,
+        });
 
         final container = ProviderContainer(
           overrides: [
@@ -133,7 +137,7 @@ void main() {
       test('returns true (opt-out) when analytics consent is false', () async {
         final mockService = _MockUserStateService();
         when(() => mockService.acceptedConsentScopesOrNull)
-            .thenReturn({'health', 'terms'}); // No analytics
+            .thenReturn({ConsentScope.health_processing.name, ConsentScope.terms.name}); // No analytics
 
         final container = ProviderContainer(
           overrides: [
@@ -156,7 +160,11 @@ void main() {
       test('returns false (opted-in) when analytics consent is true', () async {
         final mockService = _MockUserStateService();
         when(() => mockService.acceptedConsentScopesOrNull)
-            .thenReturn({'health', 'terms', 'analytics'});
+            .thenReturn({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+          ConsentScope.analytics.name,
+        });
 
         final container = ProviderContainer(
           overrides: [
@@ -181,7 +189,7 @@ void main() {
       test('events are dropped when analytics consent is false', () async {
         final mockService = _MockUserStateService();
         when(() => mockService.acceptedConsentScopesOrNull)
-            .thenReturn({'health', 'terms'}); // No analytics consent
+            .thenReturn({ConsentScope.health_processing.name, ConsentScope.terms.name}); // No analytics consent
 
         final recordedEvents = <String>[];
 
@@ -216,7 +224,11 @@ void main() {
       test('events flow when analytics consent is true', () async {
         final mockService = _MockUserStateService();
         when(() => mockService.acceptedConsentScopesOrNull)
-            .thenReturn({'health', 'terms', 'analytics'});
+            .thenReturn({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+          ConsentScope.analytics.name,
+        });
 
         final recordedEvents = <String>[];
 
@@ -260,12 +272,23 @@ void main() {
         expect(service.acceptedConsentScopesOrNull, isNull);
 
         // Persist scopes
-        await service.setAcceptedConsentScopes({'health', 'terms', 'analytics'});
+        await service.setAcceptedConsentScopes({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+          ConsentScope.analytics.name,
+        });
 
         // Retrieve scopes
         final scopes = service.acceptedConsentScopesOrNull;
         expect(scopes, isNotNull);
-        expect(scopes, containsAll(['health', 'terms', 'analytics']));
+        expect(
+          scopes,
+          containsAll([
+            ConsentScope.health_processing.name,
+            ConsentScope.terms.name,
+            ConsentScope.analytics.name,
+          ]),
+        );
       });
 
       test('scopes handle corrupted JSON gracefully', () async {

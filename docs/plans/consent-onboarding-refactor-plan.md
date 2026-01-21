@@ -697,7 +697,7 @@ Jeder neue Screen bekommt mindestens 1 Widget-Test unter `test/features/`.
 | Screen | Test-Datei | Test-Cases |
 |--------|------------|------------|
 | C1 | `consent_intro_screen_test.dart` | Render, Button tap → Navigation |
-| C2 | `consent_options_screen_test.dart` | Render, Checkbox toggle, Required validation, "Alles akzeptieren" |
+| C2 | `consent_options_screen_test.dart` | Render, Checkbox toggle, Required validation, "Alle akzeptieren" |
 | C3 | `consent_blocking_screen_test.dart` | Render, "Zurück" → C2, "App verlassen" → Login |
 | O1 | `onboarding_01_test.dart` | Render, Name input, Weiter enabled/disabled |
 | O2 | `onboarding_02_test.dart` | Render, Date picker, Weiter |

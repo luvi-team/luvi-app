@@ -17,6 +17,16 @@ class ConsentSpacing {
   static const double checkboxInnerSize = 14.0;
   static const double checkboxBorderWidth = 2.0;
 
+  // Consent Options Screen Specific (Figma Alignment 2026-01)
+  /// Gap between checkbox items (Health↔Terms): 16px
+  static const double checkboxItemGap = 16.0;
+
+  /// Gap between last checkbox item and divider: 11px
+  static const double itemToDividerGap = 11.0;
+
+  /// CTA button max width: 300px (responsive on smaller screens)
+  static const double ctaButtonMaxWidth = 300.0;
+
   // Card list paddings and gaps.
   static const double listPaddingTop = 24.0;
   static const double listPaddingBottom = 24.0;

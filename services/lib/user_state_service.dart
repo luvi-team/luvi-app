@@ -170,7 +170,8 @@ class UserStateService {
 
   /// Returns the accepted consent scopes, or null if not yet persisted.
   ///
-  /// Scopes are stored as a JSON array of scope name strings (e.g., ["health", "terms", "analytics"]).
+  /// Scopes are stored as a JSON array of scope name strings
+  /// (e.g., ["health_processing", "terms", "analytics"]).
   /// Used by [analyticsConsentGateProvider] to determine analytics opt-in status.
   Set<String>? get acceptedConsentScopesOrNull {
     final key = _scopedKey(_keyAcceptedConsentScopesJson);
@@ -228,7 +229,7 @@ class UserStateService {
 
   /// Persists the accepted consent scopes as a JSON array.
   ///
-  /// Scopes are stored by their name (e.g., "health", "terms", "analytics").
+  /// Scopes are stored by their enum name (e.g., "health_processing", "terms", "analytics").
   /// Used to derive analytics opt-in status via [analyticsConsentGateProvider].
   Future<void> setAcceptedConsentScopes(Set<String> scopes) async {
     final key = _scopedKey(_keyAcceptedConsentScopesJson);

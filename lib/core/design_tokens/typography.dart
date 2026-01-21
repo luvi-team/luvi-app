@@ -43,6 +43,12 @@ class TypographyTokens {
 
   /// Consent intro body: 29.25px line-height on 18px font (ratio: 1.625)
   static const double lineHeightRatio29_25on18 = 29.25 / 18;
+
+  /// Consent Options header: 34px line-height on 28px font (ratio: 1.214)
+  static const double lineHeightRatio34on28 = 34 / 28;
+
+  /// Consent Options body: 22px line-height on 14px font (ratio: 1.571)
+  static const double lineHeightRatio22on14 = 22 / 14;
 }
 
 /// Shared font family identifiers to centralize typography references.
@@ -113,6 +119,31 @@ class ConsentTypography {
 
   /// Consent intro body lineHeight ratio (Figma: 29.25/18 = 1.625)
   static const double introBodyLineHeight = TypographyTokens.lineHeightRatio29_25on18;
+
+  // ─── Consent Options Header (Playfair Display Bold 28px) ───
+  /// Consent options header fontSize (Figma: 28px)
+  static const double headerFontSize = TypographyTokens.size28;
+
+  /// Consent options header lineHeight ratio (Figma: 34/28 = 1.214)
+  static const double headerLineHeight = TypographyTokens.lineHeightRatio34on28;
+
+  // ─── Consent Options Subheader (Playfair Display SemiBold 17px) ───
+  /// Consent options subheader fontSize (Figma: 17px)
+  static const double subheaderFontSize = TypographyTokens.size17;
+
+  /// Consent options subheader lineHeight ratio (Figma: 24/17 = 1.412)
+  static const double subheaderLineHeight = TypographyTokens.lineHeightRatio24on17;
+
+  // ─── Consent Options Body Text (Figtree Regular 14px) ───
+  /// Consent options body lineHeight ratio (Figma: 22/14 = 1.571)
+  static const double bodyLineHeight = TypographyTokens.lineHeightRatio22on14;
+
+  // ─── Consent Options CTA Button (Figtree Bold 17px) ───
+  /// Consent options button fontSize (Figma: 17px)
+  static const double buttonFontSize = TypographyTokens.size17;
+
+  /// Consent options button lineHeight ratio (Figma: 24/17 = 1.412)
+  static const double buttonLineHeight = TypographyTokens.lineHeightRatio24on17;
 }
 
 /// Welcome screen typography constants (Figma Welcome Rebrand).
