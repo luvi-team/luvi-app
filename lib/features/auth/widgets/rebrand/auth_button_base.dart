@@ -44,42 +44,51 @@ class AuthButtonBase extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEnabled = onPressed != null && !isLoading;
 
-    return SizedBox(
-      width: width ?? AuthRebrandMetrics.buttonWidth,
-      height: height ?? AuthRebrandMetrics.buttonHeight,
-      child: ElevatedButton(
-        onPressed: isEnabled ? onPressed : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          disabledBackgroundColor: backgroundColor.withValues(alpha: 0.5),
-          foregroundColor: DsColors.grayscaleWhite,
-          disabledForegroundColor: DsColors.grayscaleWhite.withValues(alpha: 0.7),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
-          ),
-          elevation: 0,
-          padding: EdgeInsets.zero,
-        ),
-        child: isLoading
-            ? SizedBox(
-                key: loadingKey,
-                width: AuthRebrandMetrics.loadingIndicatorSize,
-                height: AuthRebrandMetrics.loadingIndicatorSize,
-                child: const CircularProgressIndicator(
-                  strokeWidth: AuthRebrandMetrics.loadingIndicatorStrokeWidth,
-                  color: DsColors.grayscaleWhite,
-                ),
-              )
-            : Text(
-                label,
-                style: const TextStyle(
-                  fontFamily: FontFamilies.figtree,
-                  fontSize: AuthRebrandMetrics.buttonFontSize,
-                  fontVariations: [FontVariation('wght', 700)],
-                  height: AuthRebrandMetrics.bodyLineHeightRatio,
-                  color: DsColors.grayscaleWhite,
-                ),
+    return Semantics(
+      label: label,
+      button: true,
+      enabled: isEnabled,
+      child: ExcludeSemantics(
+        child: SizedBox(
+          width: width ?? AuthRebrandMetrics.buttonWidth,
+          height: height ?? AuthRebrandMetrics.buttonHeight,
+          child: ElevatedButton(
+            onPressed: isEnabled ? onPressed : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: backgroundColor,
+              disabledBackgroundColor: backgroundColor.withValues(alpha: 0.5),
+              foregroundColor: DsColors.grayscaleWhite,
+              disabledForegroundColor:
+                  DsColors.grayscaleWhite.withValues(alpha: 0.7),
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(AuthRebrandMetrics.buttonRadius),
               ),
+              elevation: 0,
+              padding: EdgeInsets.zero,
+            ),
+            child: isLoading
+                ? SizedBox(
+                    key: loadingKey,
+                    width: AuthRebrandMetrics.loadingIndicatorSize,
+                    height: AuthRebrandMetrics.loadingIndicatorSize,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: AuthRebrandMetrics.loadingIndicatorStrokeWidth,
+                      color: DsColors.grayscaleWhite,
+                    ),
+                  )
+                : Text(
+                    label,
+                    style: const TextStyle(
+                      fontFamily: FontFamilies.figtree,
+                      fontSize: AuthRebrandMetrics.buttonFontSize,
+                      fontVariations: [FontVariation('wght', 700)],
+                      height: AuthRebrandMetrics.bodyLineHeightRatio,
+                      color: DsColors.grayscaleWhite,
+                    ),
+                  ),
+          ),
+        ),
       ),
     );
   }

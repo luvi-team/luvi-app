@@ -230,13 +230,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Find SizedBox with buttonGapC2 height (16px per Figma)
-      final sizedBoxFinder = find.byWidgetPredicate(
-        (widget) =>
-            widget is SizedBox && widget.height == ConsentSpacing.buttonGapC2,
-      );
-      expect(sizedBoxFinder, findsWidgets,
-          reason: 'Should find SizedBox(es) with height = buttonGapC2 (16px per Figma)');
+      // Find the button gap SizedBox by key
+      final buttonGapFinder = find.byKey(const Key('consent_options_button_gap'));
+      expect(buttonGapFinder, findsOneWidget,
+          reason: 'Should find exactly one SizedBox between the two buttons');
+
+      // Verify it uses the correct design token height
+      final sizedBox = tester.widget<SizedBox>(buttonGapFinder);
+      expect(sizedBox.height, ConsentSpacing.buttonGapC2,
+          reason: 'Button gap should use ConsentSpacing.buttonGapC2 (16px per Figma)');
     });
 
     // New CTA Logic: Weiter button becomes enabled after accepting required consents

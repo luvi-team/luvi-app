@@ -241,7 +241,10 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: ConsentSpacing.buttonGapC2),
+                      const SizedBox(
+                        key: Key('consent_options_button_gap'),
+                        height: ConsentSpacing.buttonGapC2,
+                      ),
 
                       // "Alle akzeptieren" Button - always active (Teal), except when busy
                       SizedBox(

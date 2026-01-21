@@ -78,8 +78,12 @@ final class AuthRebrandMetrics {
   /// Index mapping: [0]=teal, [1]=pink, [2]=orange, [3]=beige
   static const List<double> rainbowRingWidths = <double>[329.0, 249.0, 167.0, 87.0];
 
-  /// Calculated stripe widths.
-  /// Index mapping: [0]=teal(40), [1]=pink(41), [2]=orange(40), [3]=beige(87)
+  /// Calculated stripe widths (visual band, not full arc).
+  /// Each stripe width = half the difference between adjacent ring widths:
+  ///   - stripe[0] (teal)   = (329-249)/2 = 40
+  ///   - stripe[1] (pink)   = (249-167)/2 = 41
+  ///   - stripe[2] (orange) = (167-87)/2  = 40
+  ///   - stripe[3] (beige)  = 87 (innermost, full width - no inner ring)
   static const List<double> rainbowStripeWidths = <double>[40.0, 41.0, 40.0, 87.0];
 
   // ─── Rainbow Ring Offsets (SSOT: auth_email_form.ring_offsets) ───

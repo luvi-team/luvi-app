@@ -135,6 +135,9 @@ class ConsentTypography {
   static const double subheaderLineHeight = TypographyTokens.lineHeightRatio24on17;
 
   // ─── Consent Options Body Text (Figtree Regular 14px) ───
+  /// Consent options body fontSize (Figma: 14px)
+  static const double bodyFontSize = TypographyTokens.size14;
+
   /// Consent options body lineHeight ratio (Figma: 22/14 = 1.571)
   static const double bodyLineHeight = TypographyTokens.lineHeightRatio22on14;
 

@@ -18,6 +18,7 @@ class AuthSecondaryButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.width,
+    this.height,
     this.loadingKey,
   });
 
@@ -33,6 +34,9 @@ class AuthSecondaryButton extends StatelessWidget {
   /// Optional fixed width (defaults to button width from metrics)
   final double? width;
 
+  /// Optional fixed height (defaults to button height from metrics)
+  final double? height;
+
   /// Optional key for the loading indicator (for testing)
   final Key? loadingKey;
 
@@ -44,6 +48,7 @@ class AuthSecondaryButton extends StatelessWidget {
       backgroundColor: DsColors.authRebrandCtaSecondary,
       isLoading: isLoading,
       width: width,
+      height: height,
       loadingKey: loadingKey,
     );
   }

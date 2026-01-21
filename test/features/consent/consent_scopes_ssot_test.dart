@@ -36,4 +36,13 @@ void main() {
         kRequiredConsentScopes.map((scope) => scope.name).toSet();
     expect(dartRequiredIds, equals(jsonRequiredIds));
   });
+
+  test('SSOT: required and visible-optional scopes do not overlap', () {
+    expect(
+      kVisibleOptionalScopes.intersection(kRequiredConsentScopes),
+      isEmpty,
+      reason:
+          'kVisibleOptionalScopes and kRequiredConsentScopes must be disjoint sets',
+    );
+  });
 }
