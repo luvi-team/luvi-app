@@ -47,7 +47,7 @@ EdgeInsets.all(Spacing.m)
 ### 3. A11y
 - Touch targets >= 44dp
 - Semantics labels present
-- Color contrast ratio
+- Color contrast ratio — WCAG AA: ≥4.5:1 normal text, ≥3:1 large text
 
 ## Output Format
 

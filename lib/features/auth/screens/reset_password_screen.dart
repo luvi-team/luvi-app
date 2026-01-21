@@ -42,6 +42,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _emailController = TextEditingController();
   ProviderSubscription<ResetPasswordState>? _stateSubscription;
   ProviderSubscription<AsyncValue<void>>? _submitSubscription;
+  bool _didSetupSubmitListener = false;
 
   @override
   void initState() {
@@ -60,23 +61,32 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         );
       }
     });
+  }
 
-    // Listen for submit errors and show snackbar (moved from build to initState)
-    _submitSubscription = ref.listenManual<AsyncValue<void>>(
-      resetSubmitProvider,
-      (prev, next) {
-        if (!mounted) return;
-        if (next.hasError && !next.isLoading) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.authResetErrorGeneric),
-              backgroundColor: DsColors.authRebrandError,
-              duration: Timing.snackBarBrief,
-            ),
-          );
-        }
-      },
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Setup submit error listener here (not initState) because it accesses
+    // context-dependent APIs (ScaffoldMessenger, AppLocalizations).
+    if (!_didSetupSubmitListener) {
+      _didSetupSubmitListener = true;
+      _submitSubscription = ref.listenManual<AsyncValue<void>>(
+        resetSubmitProvider,
+        (prev, next) {
+          if (!mounted) return;
+          if (next.hasError && !next.isLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text(AppLocalizations.of(context)!.authResetErrorGeneric),
+                backgroundColor: DsColors.authRebrandError,
+                duration: Timing.snackBarBrief,
+              ),
+            );
+          }
+        },
+      );
+    }
   }
 
   @override
@@ -97,7 +107,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final hasError = errorText != null;
     final canSubmit = state.isValid && !submitState.isLoading;
 
-    // NOTE: Submit error listener moved to initState for proper lifecycle management
+    // NOTE: Submit error listener in didChangeDependencies for safe context access
 
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_reset_screen'),

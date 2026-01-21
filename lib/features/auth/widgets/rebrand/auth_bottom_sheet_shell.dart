@@ -49,7 +49,7 @@ class AuthBottomSheetShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.sizeOf(context).height;
     final sheetHeight = screenHeight - AuthRebrandMetrics.sheetTopY;
 
     return Container(
@@ -87,7 +87,7 @@ class AuthBottomSheetShell extends StatelessWidget {
               const SizedBox(height: AuthRebrandMetrics.sheetDragIndicatorTop),
               Semantics(
                 label: AppLocalizations.of(context)?.authDragHandleSemantic ??
-                    'Drag handle',
+                    '',
                 excludeSemantics: true,
                 child: Container(
                   width: AuthRebrandMetrics.sheetDragIndicatorWidth,

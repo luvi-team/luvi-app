@@ -16,8 +16,9 @@ class {ScreenName}Screen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Placeholder for localized strings; use when adding l10n references
-    final l10n = AppLocalizations.of(context)!;
+    // Requires MaterialApp.router with localizationsDelegates configured
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return const SizedBox.shrink();
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

@@ -30,6 +30,8 @@ void main() {
 
     testWidgets('has correct semantics', (tester) async {
       final handle = tester.ensureSemantics();
+      addTearDown(handle.dispose);
+
       await tester.pumpWidget(
         // Add const if screen has const constructor
         buildTestApp(child: {ScreenName}Screen()),
@@ -46,8 +48,6 @@ void main() {
       // Example assertions:
       //   expect(find.bySemanticsLabel(l10n.someLabel), findsOneWidget);
       //   expect(find.bySemanticsLabel('Expected Text'), findsOneWidget);
-
-      handle.dispose();
     });
   });
 }

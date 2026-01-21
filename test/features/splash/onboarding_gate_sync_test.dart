@@ -262,7 +262,7 @@ void main() {
       expect(result, equals(AuthSignInScreen.routeName));
     });
 
-    test('auth user goes to ConsentIntro (safe fallback)', () {
+    test('auth user goes to ConsentOptionsScreen (safe fallback)', () {
       final result = determineFallbackRoute(isAuth: true);
       expect(result, equals(ConsentOptionsScreen.routeName));
     });

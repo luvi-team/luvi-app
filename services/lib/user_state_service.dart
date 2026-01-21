@@ -179,10 +179,11 @@ class UserStateService {
     final json = prefs.getString(key);
     if (json == null) return null;
     try {
-      final decoded = jsonDecode(json) as List<dynamic>;
-      return decoded.cast<String>().toSet();
-    } on FormatException {
-      // Corrupted JSON - return null (fail-safe)
+      final decoded = jsonDecode(json);
+      if (decoded is! List) return null;
+      return decoded.whereType<String>().toSet();
+    } catch (_) {
+      // Corrupted/malformed JSON - fail-safe return null
       return null;
     }
   }
