@@ -157,11 +157,8 @@ flutter:
           weight: 700
     - family: Figtree
       fonts:
-        # Variable font with explicit weight mappings for Flutter iOS compatibility.
+        # Variable font: weight is controlled via fontVariations in TextStyle
         - asset: assets/fonts/Figtree/Figtree[wght].ttf
-          weight: 400
-        - asset: assets/fonts/Figtree/Figtree[wght].ttf
-          weight: 700
         - asset: assets/fonts/Figtree/Figtree-Italic[wght].ttf
           style: italic
     - family: Inter

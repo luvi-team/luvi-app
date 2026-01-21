@@ -29,8 +29,8 @@ class _ConsentBtnBusyNotifier extends Notifier<bool> {
 
 final _consentBtnBusyProvider =
     NotifierProvider.autoDispose<_ConsentBtnBusyNotifier, bool>(
-  _ConsentBtnBusyNotifier.new,
-);
+      _ConsentBtnBusyNotifier.new,
+    );
 
 /// C2 - Consent Options Screen (Single-Screen Consent Flow)
 ///
@@ -62,7 +62,8 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     return Scaffold(
       backgroundColor: DsColors.splashBg,
       body: SafeArea(
-        bottom: false, // Footer handles bottom padding manually to avoid double SafeArea
+        bottom:
+            false, // Footer handles bottom padding manually to avoid double SafeArea
         child: Column(
           children: [
             // Scrollable content
@@ -134,8 +135,10 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     _ConsentCheckboxRow(
                       key: const Key('consent_options_health'),
                       text: l10n.consentOptionsHealthText,
-                      selected: state.choices[ConsentScope.health_processing] == true,
-                      onTap: () => notifier.toggle(ConsentScope.health_processing),
+                      selected:
+                          state.choices[ConsentScope.health_processing] == true,
+                      onTap: () =>
+                          notifier.toggle(ConsentScope.health_processing),
                       semanticSection: l10n.consentOptionsSectionRequired,
                       l10n: l10n,
                     ),
@@ -145,6 +148,12 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     _ConsentCheckboxRow(
                       key: const Key('consent_options_terms'),
                       text: '',
+                      semanticsText:
+                          '${l10n.consentOptionsTermsPrefix}'
+                          '${l10n.consentOptionsTermsLink}'
+                          '${l10n.consentOptionsTermsConjunction}'
+                          '${l10n.consentOptionsPrivacyLink}'
+                          '${l10n.consentOptionsTermsSuffix}',
                       trailing: _buildTermsLinks(context, l10n),
                       selected: state.choices[ConsentScope.terms] == true,
                       onTap: () => notifier.toggle(ConsentScope.terms),
@@ -213,7 +222,9 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                             disabledBackgroundColor: DsColors.gray300,
                             disabledForegroundColor: DsColors.gray500,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(Sizes.radiusM),
+                              borderRadius: BorderRadius.circular(
+                                Sizes.radiusM,
+                              ),
                             ),
                             elevation: 0,
                           ),
@@ -221,7 +232,9 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                             l10n.consentOptionsCtaContinue,
                             style: TextStyle(
                               fontFamily: FontFamilies.figtree,
-                              fontWeight: FontWeight.w700,
+                              fontVariations: const [
+                                FontVariation('wght', 700),
+                              ],
                               fontSize: ConsentTypography.buttonFontSize,
                               height: ConsentTypography.buttonLineHeight,
                             ),
@@ -242,12 +255,15 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: DsColors.authRebrandRainbowTeal,
                             foregroundColor: DsColors.grayscaleWhite,
-                            disabledBackgroundColor:
-                                DsColors.authRebrandRainbowTeal.withValues(alpha: 0.5),
-                            disabledForegroundColor:
-                                DsColors.grayscaleWhite.withValues(alpha: 0.5),
+                            disabledBackgroundColor: DsColors
+                                .authRebrandRainbowTeal
+                                .withValues(alpha: 0.5),
+                            disabledForegroundColor: DsColors.grayscaleWhite
+                                .withValues(alpha: 0.5),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(Sizes.radiusM),
+                              borderRadius: BorderRadius.circular(
+                                Sizes.radiusM,
+                              ),
                             ),
                             elevation: 0,
                           ),
@@ -255,7 +271,9 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                             l10n.consentOptionsCtaAcceptAll,
                             style: TextStyle(
                               fontFamily: FontFamilies.figtree,
-                              fontWeight: FontWeight.w700,
+                              fontVariations: const [
+                                FontVariation('wght', 700),
+                              ],
                               fontSize: ConsentTypography.buttonFontSize,
                               height: ConsentTypography.buttonLineHeight,
                             ),
@@ -284,6 +302,8 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
         fontSize: 14,
         height: ConsentTypography.bodyLineHeight,
       ),
+      // Use overflow hit rect instead of inline padding to avoid extra spacing
+      allowHorizontalOverflowHitRect: true,
       parts: [
         // Prefix text for inline flow (was previously separate Text widget)
         LinkTextPart(l10n.consentOptionsTermsPrefix),
@@ -341,10 +361,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
 
       // Best-effort: consent is accepted; we warn but do not block navigation.
       if (!welcomeMarked) {
-        _showConsentErrorSnackbar(
-          context,
-          l10n.consentErrorSavingConsent,
-        );
+        _showConsentErrorSnackbar(context, l10n.consentErrorSavingConsent);
       }
 
       if (!context.mounted) return;
@@ -376,10 +393,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
 class _ConsentDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 2,
-      color: DsColors.authRebrandRainbowTeal,
-    );
+    return Container(height: 2, color: DsColors.authRebrandRainbowTeal);
   }
 }
 
@@ -395,7 +409,7 @@ class _SectionHeader extends StatelessWidget {
       title,
       style: TextStyle(
         fontFamily: FontFamilies.figtree,
-        fontWeight: FontWeight.w700,
+        fontVariations: const [FontVariation('wght', 700)],
         fontSize: 14,
         height: 20 / 14,
         letterSpacing: 0.7,
@@ -408,7 +422,9 @@ class _SectionHeader extends StatelessWidget {
 /// Consent checkbox row (Text + Checkbox on right)
 class _ConsentCheckboxRow extends StatelessWidget {
   final String text;
-  final String? footnote; // C12: Optional footnote text (e.g. revoke instructions)
+  final String? semanticsText;
+  final String?
+  footnote; // C12: Optional footnote text (e.g. revoke instructions)
   final Widget? trailing;
   final bool selected;
   final VoidCallback onTap;
@@ -418,6 +434,7 @@ class _ConsentCheckboxRow extends StatelessWidget {
   const _ConsentCheckboxRow({
     super.key,
     required this.text,
+    this.semanticsText,
     this.footnote,
     this.trailing,
     required this.selected,
@@ -437,9 +454,16 @@ class _ConsentCheckboxRow extends StatelessWidget {
       color: theme.colorScheme.onSurface,
     );
 
+    final resolvedSemanticText = semanticsText ?? text;
     final semanticLabel = selected
-        ? l10n.consentOptionsCheckboxSelectedSemantic(semanticSection, text)
-        : l10n.consentOptionsCheckboxUnselectedSemantic(semanticSection, text);
+        ? l10n.consentOptionsCheckboxSelectedSemantic(
+            semanticSection,
+            resolvedSemanticText,
+          )
+        : l10n.consentOptionsCheckboxUnselectedSemantic(
+            semanticSection,
+            resolvedSemanticText,
+          );
 
     return Semantics(
       label: semanticLabel,
@@ -451,47 +475,51 @@ class _ConsentCheckboxRow extends StatelessWidget {
           onTap();
         },
         borderRadius: BorderRadius.circular(Sizes.radiusM),
-        child: Padding(
-          // Text height (min ~44px for 2 lines) ensures A11y touch target ≥44dp
-          padding: EdgeInsets.zero,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: trailing == null
-                        ? Text(text, style: textStyle)
-                        : text.isEmpty
-                            ? trailing! // Full text in trailing for inline flow
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(text, style: textStyle),
-                                  trailing!,
-                                ],
-                              ),
-                  ),
-                  const SizedBox(width: Spacing.m),
-                  // Checkbox (Figma: 24x24, Circle)
-                  _ConsentCircleCheckbox(selected: selected),
-                ],
-              ),
-              // C12: Optional footnote displayed below the checkbox row
-              if (footnote != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: Spacing.xs),
-                  child: Text(
-                    footnote!,
-                    style: TextStyle(
-                      fontFamily: FontFamilies.figtree,
-                      fontSize: 12,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: Sizes.touchTargetMin),
+          child: Padding(
+            padding: EdgeInsets.zero,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: trailing == null
+                          ? Text(text, style: textStyle)
+                          : text.isEmpty
+                          ? trailing! // Full text in trailing for inline flow
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(text, style: textStyle),
+                                trailing!,
+                              ],
+                            ),
+                    ),
+                    const SizedBox(width: Spacing.m),
+                    // Checkbox (Figma: 24x24, Circle)
+                    _ConsentCircleCheckbox(selected: selected),
+                  ],
+                ),
+                // C12: Optional footnote displayed below the checkbox row
+                if (footnote != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: Spacing.xs),
+                    child: Text(
+                      footnote!,
+                      style: TextStyle(
+                        fontFamily: FontFamilies.figtree,
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -546,9 +574,7 @@ List<String> _scopeIdsFor(Consent02State state) {
 }
 
 void _showConsentErrorSnackbar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(message)),
-  );
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 }
 
 bool _acquireBusy(WidgetRef ref) {
@@ -577,7 +603,10 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
   );
 }
 
-Future<bool> _markWelcomeSeen(WidgetRef ref, Consent02State currentState) async {
+Future<bool> _markWelcomeSeen(
+  WidgetRef ref,
+  Consent02State currentState,
+) async {
   // Point 12: Explicit success tracking for each operation
   var serverSucceeded = true;
   var localSucceeded = true;
