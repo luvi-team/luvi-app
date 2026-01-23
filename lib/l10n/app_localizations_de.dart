@@ -799,7 +799,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentOptionsTitle => 'Du und LUVI';
 
   @override
-  String get consentOptionsSubtitle => 'Sicher gespeichert, streng geschützt.\nDSGVO, EU-Hosting';
+  String get consentOptionsSubtitle => 'Sicher gespeichert, streng geschützt. DSGVO, EU-Hosting';
 
   @override
   String get consentOptionsSectionRequired => 'ERFORDERLICH';
