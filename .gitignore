@@ -201,6 +201,7 @@ docs/privacy/*
 docs/audits/
 docs/runbooks/
 docs/contracts/
+docs/adr/
 
 # Agent Governance
 context/*
