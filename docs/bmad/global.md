@@ -8,7 +8,7 @@
 > (App-Kontext, Roadmap, Dossiers, Tech-Stack, DoD, Checklisten, ADRs).
 > Es erfindet nichts Neues, sondern ordnet und verlinkt.
 
-## 0. BMAD bei LUVI — Begriffe
+## 1. BMAD bei LUVI — Begriffe
 
 - **Business (B)**
   Warum es LUVI gibt, für wen wir bauen, welche Probleme wir lösen,
@@ -34,7 +34,7 @@
   ADR-Pflege, Runbooks), wie sie in DoD-, Checklisten- und
   Governance-Dokumenten definiert sind.
 
-## 6. Dokumenten-Hierarchie & Versionierung
+## 7. Dokumenten-Hierarchie & Versionierung
 
 - Für jedes Themengebiet (z. B. App-Kontext, Roadmap,
   Phase-Definitionen, Ranking-Heuristik, Safety & Scope) existiert genau

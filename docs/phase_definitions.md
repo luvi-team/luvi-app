@@ -25,6 +25,7 @@ Die Phasenberechnung basiert auf dem Objekt `cycle_data` mit folgenden Feldern:
 | `period_length` | Integer | optional | Durchschnittliche Dauer der Menstruation in Tagen; default: 5 |
 | `menopause` | Boolean | optional | `true`, wenn die Nutzerin in der Menopause ist |
 | `on_hormonal_contraception` | Boolean | optional | `true`, wenn hormonelle Verhütung aktiv ist |
+| `irregular_cycle` | Boolean | optional | `true`, wenn der Zyklus unregelmäßig ist |
 
 ## Algorithmus zur Phasenberechnung
 
@@ -70,7 +71,7 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 | Situation | Aktion |
 |-----------|--------|
 | Keine Angaben | Nutze Defaults, informiere Nutzerin (UI: „Bitte Zyklusdaten hinzufügen") |
-| Unregelmäßiger Zyklus | Wenn letzte 3 Zyklen >7 Tage voneinander abweichen: `phase = unknown`, neutrale Inhalte |
+| Unregelmäßiger Zyklus | Wenn `irregular_cycle = true`: `phase = unknown`, neutrale Inhalte |
 | Menopause/Hormonelle Verhütung | `phase = none`, KI und Ranking ignorieren Phasensignale |
 | Datenwiderspruch | Wenn `cycle_len < period_len` oder absurde Werte: `phase = unknown` |
 

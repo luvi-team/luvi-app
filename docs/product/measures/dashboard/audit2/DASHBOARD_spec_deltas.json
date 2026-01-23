@@ -320,10 +320,10 @@
     }
   ],
   "summary": {
-    "totalDeltas": 20,
+    "totalDeltas": 19,
     "operations": {
       "ADD": 14,
-      "UPDATE": 6,
+      "UPDATE": 5,
       "DELETE": 0
     },
     "criticalIssues": [

@@ -64,7 +64,7 @@
 {
   "userName": String,           // e.g., "Anna"
   "date": String,               // e.g., "28. Sept"
-  "cyclePhase": String,         // e.g., "Folikelphase"
+  "cyclePhase": String,         // e.g., "Follikelphase"
   "onSearchTap": VoidCallback,
   "onNotificationsTap": VoidCallback,
   "hasUnreadNotifications": bool

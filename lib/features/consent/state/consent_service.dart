@@ -113,7 +113,24 @@ class ConsentService {
 
   Map<String, dynamic>? _asJsonMap(dynamic data) {
     if (data is Map<String, dynamic>) return data;
-    if (data is Map) return data.map((key, value) => MapEntry(key.toString(), value));
+    if (data is Map) {
+      final jsonMap = <String, dynamic>{};
+      for (final entry in data.entries) {
+        final key = entry.key;
+        String keyString;
+        if (key is String) {
+          keyString = key;
+        } else if (key is num || key is bool) {
+          keyString = key.toString();
+        } else {
+          // Skip complex keys or log warning if needed, 
+          // but here we just ignore them to ensure safe JSON shape.
+          continue; 
+        }
+        jsonMap[keyString] = entry.value;
+      }
+      return jsonMap;
+    }
     return null;
   }
 }

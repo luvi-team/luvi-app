@@ -54,5 +54,5 @@ Index: AGENTS.md im Repo-Root verweist auf Dossiers & SSOT.
 - Visual-Smoke: 1 Screenshot-/Golden-Test (optional).
 - Token-Mapping: kurzer Satz „Figma→Flutter Mapping“ im PR.
 
-## Ergänzungen v1.3 (Sept 2025 • Add-ons)
+## Ergänzungen v1.3 (Jan 2026 • Add-ons)
 - DCM non-blocking in CI, Flutter-Version pinnen, Greptile Review als Required Check (CodeRabbit-Reviews optional lokal bei Ready for review, nur Preflight; Policy siehe `docs/engineering/ai-reviewer.md`).

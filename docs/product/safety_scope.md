@@ -38,4 +38,4 @@ In diesen Fällen muss LUVI immer auf medizinisches Fachpersonal verweisen; es d
 - Bei Konflikten mit anderen Dokumenten hat Safety & Scope Vorrang.
 - Agents dürfen nur Inhalte liefern, die in "Erlaubte Inhalte" fallen, und müssen "Nicht erlaubte Inhalte" sowie die Verweis-Regeln beachten.
 - Standard-Disclaimer gehören in jede Antwort, sobald sensible Health-Themen vorkommen.
-- Änderungen am Health-Scope (z. B. neue Claims oder medizinische Features) erfordern eine aktualisierte Version dieses Dokuments und jurische Freigabe.
+- Änderungen am Health-Scope (z. B. neue Claims oder medizinische Features) erfordern eine aktualisierte Version dieses Dokuments und juristische Freigabe.

@@ -7,9 +7,14 @@ class ConsentConfig {
   /// Single source of truth - [currentVersionInt] is derived from this.
   static const String currentVersion = 'v1.0';
 
+  static int? _cachedCurrentVersionInt;
+
   /// Numeric major version derived from [currentVersion].
   /// Throws [StateError] if currentVersion format is invalid.
   static int get currentVersionInt {
+    if (_cachedCurrentVersionInt != null) {
+      return _cachedCurrentVersionInt!;
+    }
     final match = RegExp(r'^v(\d+)(?:\.\d+)?$').firstMatch(currentVersion);
     if (match == null) {
       throw StateError(
@@ -17,7 +22,8 @@ class ConsentConfig {
         'expected format v{major} or v{major}.{minor}',
       );
     }
-    return int.parse(match.group(1)!);
+    _cachedCurrentVersionInt = int.parse(match.group(1)!);
+    return _cachedCurrentVersionInt!;
   }
 
   /// Validates version format at startup.

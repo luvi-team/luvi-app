@@ -145,8 +145,8 @@
   ],
   "summary": {
     "totalContainers": 9,
-    "extractedRadii": 3,
-    "nullRadii": 6,
+    "extractedRadii": 4,
+    "nullRadii": 5,
     "cornerSmoothingAvailable": 0,
     "independentCornersDetected": 0
   },

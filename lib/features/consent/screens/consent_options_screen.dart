@@ -795,11 +795,11 @@ Future<bool> _persistConsentToLocalCache(
   // Parallel writes for efficiency.
   // Issue 5: Use Future.wait to capture all errors via ParallelWaitError (if available) or standard processing.
   try {
-    await Future.wait([
+    await [
       userState.markWelcomeSeen(),
       userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
       userState.setAcceptedConsentScopes(acceptedScopes),
-    ]);
+    ].wait;
     return true;
   } on ParallelWaitError catch (e, stackTrace) {
     // Log all errors occurred during parallel execution

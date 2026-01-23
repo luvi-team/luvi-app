@@ -2,7 +2,7 @@
 
 ## 0. Meta
 
-- Zeitraum: TODO
+- Zeitraum: 2026-02-01 bis 2026-02-14
 - Fokus/Thema: Zyklus-Logik & Today-Badge (Home + Kalender)
 - Relevante Dossiers/ADRs: Phase-Definitionen, ADR-0002 (Least-Privilege & RLS), Roadmap S1
 - DSGVO-Impact-Schwerpunkte (Low/Medium/High + warum): Medium – CycleData sind sensibel, aber Lifestyle-orientiert, kein Medizinprodukt; RLS owner-based, kein `service_role`
@@ -123,8 +123,9 @@
 
 ## 6. Referenzen
 
+- Referenzen:
 - Roadmap-Sprint: `docs/product/roadmap.md` (Abschnitt „S1 — Zyklus-Logik & Home-Bindung (deterministisch)`)
-- Relevante Use-Cases (`docs/product/use-cases.md`): TODO – passenden Today/Cycle-Use-Case verlinken
+- Relevante Use-Cases: [Beispiel-Use-Case](docs/product/use-cases.md) (Note: Specific Today/Cycle use cases pending in `docs/product/use-cases.md`)
 - Relevante Screen-Contracts (`docs/product/screens/*.md`): `docs/product/screens/heute.md`
 - Relevante Dossiers (Phase/Consent/Ranking): `docs/phase_definitions.md`, `docs/consent_texts.md`, `docs/ranking_heuristic.md`
 - Relevante ADRs: `context/ADR/0002-least-privilege-rls.md`

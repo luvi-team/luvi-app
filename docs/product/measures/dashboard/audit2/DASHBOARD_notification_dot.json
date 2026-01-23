@@ -76,7 +76,8 @@
       "figmaNodeId": "68426:7261",
       "size": "20×20px",
       "position": "Centered in 40×40px container (10px padding all sides)",
-      "svgAsset": "http://localhost:3845/assets/34cb20f22935066d3750c7ad0a373a81aca70166.svg"
+      "svgAsset": "http://localhost:3845/assets/34cb20f22935066d3750c7ad0a373a81aca70166.svg",
+      "note": "Dev-only URL. Resolve from Figma/CDN for production."
     }
   },
   "implementation": {

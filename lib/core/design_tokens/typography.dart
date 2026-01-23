@@ -171,6 +171,9 @@ class ConsentTypography {
   static const double buttonLineHeight = TypographyTokens.lineHeightRatio24on17;
 
   // ─── Consent Options Section Header (Figtree Bold 14px) ───
+  /// Section header font size (14px)
+  static const double sectionHeaderFontSize = TypographyTokens.size14;
+
   /// Section header line height ratio (20px / 14px = 1.429)
   static const double sectionHeaderLineHeight = TypographyTokens.lineHeightRatio20on14;
 
