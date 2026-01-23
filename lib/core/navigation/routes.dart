@@ -82,6 +82,18 @@ bool isConsentRoute(String location) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Route Matching Utilities
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Safe prefix check that prevents false positives like /heute matching /heute-old.
+///
+/// Returns true if [path] equals [prefix] exactly, or starts with [prefix]/
+bool _matchesPrefix(String path, String prefix) {
+  if (path == prefix) return true;
+  return path.startsWith('$prefix/');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Home Guard Redirects
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -194,27 +206,21 @@ _RouteFlags _classifyRoute(String location) {
   final uri = Uri.parse(location);
   final path = uri.path;
 
-  // Helper for safe prefix check (prevent /heute matching /heute-old)
-  bool matchesPrefix(String prefix) {
-    if (path == prefix) return true;
-    return path.startsWith('$prefix/');
-  }
-
-  final isLogin = matchesPrefix(RoutePaths.login);
-  final isSignIn = matchesPrefix(RoutePaths.authSignIn);
+  final isLogin = _matchesPrefix(path, RoutePaths.login);
+  final isSignIn = _matchesPrefix(path, RoutePaths.authSignIn);
 
   return _RouteFlags(
     isAuthRoute: isLogin ||
         isSignIn ||
-        matchesPrefix(RoutePaths.signup) ||
-        matchesPrefix(RoutePaths.resetPassword),
+        _matchesPrefix(path, RoutePaths.signup) ||
+        _matchesPrefix(path, RoutePaths.resetPassword),
     isLoginOrSignIn: isLogin || isSignIn,
     isSplash: path == RoutePaths.splash,
     isWelcome: isWelcomeRoute(path),
     isOnboarding: isOnboardingRoute(path),
-    isDashboard: matchesPrefix(RoutePaths.heute),
-    isPasswordRecovery: matchesPrefix(RoutePaths.createNewPassword) ||
-        matchesPrefix(RoutePaths.passwordSaved),
+    isDashboard: _matchesPrefix(path, RoutePaths.heute),
+    isPasswordRecovery: _matchesPrefix(path, RoutePaths.createNewPassword) ||
+        _matchesPrefix(path, RoutePaths.passwordSaved),
   );
 }
 

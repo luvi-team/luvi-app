@@ -8,6 +8,7 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/router.dart';
 
 import '../../support/test_config.dart';
+import '../../support/test_view.dart';
 
 /// Tests SuccessScreen rendering (Auth Rebrand v3).
 ///
@@ -20,6 +21,8 @@ void main() {
   testWidgets(
     'Auth SuccessScreen renders correctly',
     (tester) async {
+      addTearDown(configureTestView(tester));
+
       // Use testAppRoutes for proper route configuration
       final router = GoRouter(
         routes: testAppRoutes,

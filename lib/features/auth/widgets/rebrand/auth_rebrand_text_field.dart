@@ -104,7 +104,9 @@ class AuthRebrandTextField extends StatelessWidget {
               : DsColors.authRebrandTextPrimary,
         ),
         decoration: InputDecoration(
-          hintText: errorText ?? hintText,
+          hintText: (errorText != null && errorText!.isNotEmpty)
+              ? errorText
+              : hintText,
           hintStyle: TextStyle(
             fontFamily: FontFamilies.figtree,
             fontSize: AuthRebrandMetrics.placeholderFontSize,

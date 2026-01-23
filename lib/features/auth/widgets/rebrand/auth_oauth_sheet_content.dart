@@ -122,11 +122,9 @@ class AuthOAuthSheetContent extends StatelessWidget {
                   AuthSecondaryButton(
                     label: l10n.authContinueEmail,
                     onPressed: () async {
-                      // Capture callback before await (consistent with Apple/Google handlers)
-                      final onEmail = onEmailPressed;
                       await Navigator.of(context).maybePop();
                       if (!context.mounted) return;
-                      onEmail();
+                      onEmailPressed();
                     },
                   ),
                 ],

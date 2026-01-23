@@ -153,6 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             label: l10n.authEntryCta,
             onPressed: isLoading ? null : _submit,
             isLoading: isLoading,
+            loadingSemanticLabel: l10n.authLoginCtaLoadingSemantic,
           ),
           const SizedBox(height: Spacing.m),
           _buildForgotLink(l10n),

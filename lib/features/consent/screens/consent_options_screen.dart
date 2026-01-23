@@ -734,37 +734,59 @@ Future<bool> _persistConsentGateToServer() async {
 }
 
 /// Persists consent state to local cache for offline access and analytics gating.
-/// Returns true on success or if no user ID available.
+/// Returns true on success, false on failure or skip (best-effort semantics).
 Future<bool> _persistConsentToLocalCache(
   WidgetRef ref,
   Consent02State currentState,
 ) async {
+  // Wrap provider read to handle provider errors gracefully (best-effort)
+  final UserStateService userState;
   try {
-    final userState = await ref.read(userStateServiceProvider.future);
-    final uid = SupabaseService.currentUser?.id;
+    userState = await ref.read(userStateServiceProvider.future);
+  } catch (error, stackTrace) {
+    log.e(
+      'consent_user_state_provider_failed',
+      tag: 'consent_options',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    return false; // Best-effort: navigation continues
+  }
 
-    if (uid == null) {
-      // Skipped - returning false for consistency with server-side skips
-      log.d('consent_cache_skip_no_uid: returning false', tag: 'consent_options');
-      return false;
-    }
+  final uid = SupabaseService.currentUser?.id;
 
-    // bindUser MUST complete first - sets _boundUserId needed by other methods
+  if (uid == null) {
+    // Skipped - returning false for consistency with server-side skips
+    log.d('consent_cache_skip_no_uid: returning false', tag: 'consent_options');
+    return false;
+  }
+
+  // Separate try/catch for bindUser to distinguish binding failures
+  try {
     await userState.bindUser(uid);
+  } catch (error, stackTrace) {
+    log.e(
+      'consent_bind_user_failed',
+      tag: 'consent_options',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    return false;
+  }
 
-    // Derive accepted scopes from current state (for analytics consent gating)
-    final acceptedScopes = currentState.choices.entries
-        .where((e) => e.value)
-        .map((e) => e.key.name)
-        .toSet();
+  // Derive accepted scopes from current state (for analytics consent gating)
+  final acceptedScopes = currentState.choices.entries
+      .where((e) => e.value)
+      .map((e) => e.key.name)
+      .toSet();
 
-    // Parallel writes for efficiency
+  // Parallel writes for efficiency
+  try {
     await Future.wait([
       userState.markWelcomeSeen(),
       userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
       userState.setAcceptedConsentScopes(acceptedScopes),
     ]);
-
     return true;
   } catch (error, stackTrace) {
     log.e(

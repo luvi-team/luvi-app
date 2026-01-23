@@ -1,3 +1,5 @@
+import 'dart:math' show max;
+
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -56,9 +58,11 @@ class AuthBottomSheetShell extends StatelessWidget {
     const contentOffsetBelowStatusBar =
         AuthRebrandMetrics.sheetTopY - AuthRebrandMetrics.statusBarHeight;
     final sheetHeight = screenHeight - topPadding - contentOffsetBelowStatusBar;
+    // Clamp to minimum height for tiny devices
+    final safeSheetHeight = max(sheetHeight, AuthRebrandMetrics.minSheetHeight);
 
     return Container(
-      height: sheetHeight,
+      height: safeSheetHeight,
       decoration: const BoxDecoration(
         color: DsColors.authRebrandBackground,
         borderRadius: BorderRadius.vertical(
@@ -79,7 +83,7 @@ class AuthBottomSheetShell extends StatelessWidget {
               top: Radius.circular(AuthRebrandMetrics.sheetRadius),
             ),
             child: SizedBox(
-              height: sheetHeight,
+              height: safeSheetHeight,
               width: double.infinity,
               child: const AuthRainbowBackground(),
             ),

@@ -357,12 +357,11 @@ void main() {
         // Set valid scopes first (creates the key via public API)
         await service.setAcceptedConsentScopes({'health_processing', 'terms'});
 
-        // Find the actual key (implementation-agnostic - no coupling to _scopedKey format)
-        final scopesKey = prefs.getKeys().firstWhere(
-          (k) => k.contains('accepted_consent_scopes_json'),
-          orElse: () =>
-              throw StateError('Scopes key not found after setAcceptedConsentScopes'),
-        );
+        // Use test accessor to get the actual key
+        final scopesKey = service.acceptedConsentScopesKeyForTesting;
+        if (scopesKey == null) {
+          throw StateError('User not bound - acceptedConsentScopesKeyForTesting is null');
+        }
 
         // Corrupt the JSON
         await prefs.setString(scopesKey, 'invalid json {{{');

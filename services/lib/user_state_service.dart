@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -208,6 +209,15 @@ class UserStateService {
     }
   }
 
+  /// Test-only accessor for the consent scopes storage key.
+  ///
+  /// Returns the actual SharedPreferences key used for accepted consent scopes,
+  /// allowing tests to corrupt/manipulate stored JSON without coupling to
+  /// internal key naming conventions.
+  @visibleForTesting
+  String? get acceptedConsentScopesKeyForTesting =>
+      _scopedKey(_keyAcceptedConsentScopesJson);
+
   Future<void> setHasCompletedOnboarding(bool value) async {
     final key = _scopedKey(_keyHasCompletedOnboarding);
     if (key == null) {
@@ -252,12 +262,14 @@ class UserStateService {
   ///
   /// Scopes are stored by their enum name (e.g., "health_processing", "terms", "analytics").
   /// Used to derive analytics opt-in status via [analyticsConsentGateProvider].
+  /// The list is sorted alphabetically for deterministic JSON output.
   Future<void> setAcceptedConsentScopes(Set<String> scopes) async {
     final key = _scopedKey(_keyAcceptedConsentScopesJson);
     if (key == null) {
       throw StateError('UserStateService is not bound to a user');
     }
-    final json = jsonEncode(scopes.toList());
+    final sortedList = scopes.toList()..sort();
+    final json = jsonEncode(sortedList);
     final success = await prefs.setString(key, json);
     if (!success) {
       throw StateError('Failed to persist accepted consent scopes');

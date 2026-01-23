@@ -2,18 +2,17 @@
 // Replace: {ScreenName}, {route_name}
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-class {ScreenName}Screen extends ConsumerWidget {
+class {ScreenName}Screen extends StatelessWidget {
   const {ScreenName}Screen({super.key});
 
   static const routeName = '{route_name}';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     // Requires MaterialApp.router with localizationsDelegates configured
     final l10n = AppLocalizations.of(context);
     assert(l10n != null, 'AppLocalizations missing - check MaterialApp.router localizationsDelegates');

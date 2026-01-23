@@ -16,6 +16,7 @@ class AuthPrimaryButton extends StatelessWidget {
     this.width,
     this.height,
     this.loadingKey,
+    this.loadingSemanticLabel,
   });
 
   /// Button label text
@@ -36,6 +37,9 @@ class AuthPrimaryButton extends StatelessWidget {
   /// Optional key for the loading indicator (for testing)
   final Key? loadingKey;
 
+  /// Optional semantic label announced when loading (a11y)
+  final String? loadingSemanticLabel;
+
   @override
   Widget build(BuildContext context) {
     return AuthButtonBase(
@@ -46,6 +50,7 @@ class AuthPrimaryButton extends StatelessWidget {
       width: width ?? AuthRebrandMetrics.ctaButtonWidth,
       height: height,
       loadingKey: loadingKey,
+      loadingSemanticLabel: loadingSemanticLabel,
     );
   }
 }

@@ -141,6 +141,14 @@ final class AuthRebrandMetrics {
   static const double sheetBottomGap = 40.0; // Gap for bottom stripes in sheets
   static const double entryLogoGap = 80.0; // Gap between logo and CTA on entry
 
+  // ─── Minimum Sheet Height ───
+  /// Minimum safe height for auth bottom sheet on tiny devices.
+  ///
+  /// Calculated: dragIndicatorTop(17) + dragIndicatorHeight(5) + gap(16)
+  ///           + cardPadding(16) + headline(24) + gap(16) + 3×button(50+8)
+  ///           + bottomSafeArea(~34) ≈ 302, rounded up with margin → 400
+  static const double minSheetHeight = 400.0;
+
   // ─── Keyboard Handling ───
   /// Factor applied to keyboard height for padding calculation.
   /// Calculated as targetMax / typicalKeyboardHeight (200 / 320 ≈ 0.625)

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'auth_rebrand_metrics.dart';
+import 'auth_rebrand_text_styles.dart';
 
 /// Base widget for Auth Rebrand CTA buttons.
 ///
@@ -17,6 +17,7 @@ class AuthButtonBase extends StatelessWidget {
     this.width,
     this.height,
     this.loadingKey,
+    this.loadingSemanticLabel,
   });
 
   /// Button label text
@@ -40,14 +41,24 @@ class AuthButtonBase extends StatelessWidget {
   /// Optional key for the loading indicator (for testing)
   final Key? loadingKey;
 
+  /// Optional semantic label announced when loading (a11y)
+  /// When null, falls back to [label].
+  final String? loadingSemanticLabel;
+
   @override
   Widget build(BuildContext context) {
     final isEnabled = onPressed != null && !isLoading;
 
+    // A11y: Use loading label when loading, otherwise button label
+    final semanticLabel = isLoading && loadingSemanticLabel != null
+        ? loadingSemanticLabel!
+        : label;
+
     return Semantics(
-      label: label,
+      label: semanticLabel,
       button: true,
       enabled: isEnabled,
+      liveRegion: isLoading, // Announce loading state changes
       child: ExcludeSemantics(
         child: SizedBox(
           width: width ?? AuthRebrandMetrics.buttonWidth,
@@ -79,12 +90,7 @@ class AuthButtonBase extends StatelessWidget {
                   )
                 : Text(
                     label,
-                    style: const TextStyle(
-                      fontFamily: FontFamilies.figtree,
-                      fontSize: AuthRebrandMetrics.buttonFontSize,
-                      fontVariations: [FontVariations.bold],
-                      height: AuthRebrandMetrics.bodyLineHeightRatio,
-                    ),
+                    style: AuthRebrandTextStyles.button,
                   ),
           ),
         ),

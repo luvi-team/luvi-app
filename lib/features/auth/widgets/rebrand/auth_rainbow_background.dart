@@ -2,6 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'auth_rebrand_metrics.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Ring Data Structure
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Immutable data for a single rainbow ring.
+///
+/// Consolidates color, width, and offsets to prevent parallel arrays
+/// from getting out of sync.
+class _RingData {
+  const _RingData({
+    required this.color,
+    required this.width,
+    required this.xOffset,
+    required this.yOffset,
+  });
+
+  final Color color;
+  final double width;
+  final double xOffset;
+  final double yOffset;
+}
+
+/// All ring data from outer (teal) to inner (beige).
+/// SSOT: context/design/auth_screens_design_audit.yaml
+const List<_RingData> _rings = [
+  _RingData(
+    color: DsColors.authRebrandRainbowTeal,
+    width: 329.0,
+    xOffset: AuthRebrandMetrics.ringTealX,
+    yOffset: AuthRebrandMetrics.ringTealY,
+  ),
+  _RingData(
+    color: DsColors.authRebrandRainbowPink,
+    width: 249.0,
+    xOffset: AuthRebrandMetrics.ringPinkX,
+    yOffset: AuthRebrandMetrics.ringPinkY,
+  ),
+  _RingData(
+    color: DsColors.authRebrandRainbowOrange,
+    width: 167.0,
+    xOffset: AuthRebrandMetrics.ringOrangeX,
+    yOffset: AuthRebrandMetrics.ringOrangeY,
+  ),
+  _RingData(
+    color: DsColors.authRebrandBackground,
+    width: 87.0,
+    xOffset: AuthRebrandMetrics.ringBeigeX,
+    yOffset: AuthRebrandMetrics.ringBeigeY,
+  ),
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Rainbow Background Widget
+// ─────────────────────────────────────────────────────────────────────────────
+
 /// Custom painter for the rainbow background used in Auth Rebrand v3.
 ///
 /// Creates 4 vertical "Pill" RRects with rounded tops, from outer to inner:
@@ -52,66 +107,34 @@ class _RainbowPillPainter extends CustomPainter {
   final double containerWidth;
   final double? containerTop;
 
-  // Rainbow colors from outer to inner (SSOT)
-  static const List<Color> _ringColors = [
-    DsColors.authRebrandRainbowTeal, // #1B9BA4
-    DsColors.authRebrandRainbowPink, // #D42C82
-    DsColors.authRebrandRainbowOrange, // #F57A25
-    DsColors.authRebrandBackground, // Beige center
-  ];
-
-  // Ring widths from SSOT
-  static const List<double> _ringWidths = AuthRebrandMetrics.rainbowRingWidths;
-
-  // Ring X offsets relative to container (SSOT: auth_email_form.ring_offsets)
-  static const List<double> _ringXOffsets = [
-    AuthRebrandMetrics.ringTealX, // 21
-    AuthRebrandMetrics.ringPinkX, // 58
-    AuthRebrandMetrics.ringOrangeX, // 99
-    AuthRebrandMetrics.ringBeigeX, // 139
-  ];
-
-  // Ring Y offsets relative to rainbow container (SSOT: auth_email_form.ring_offsets)
-  static const List<double> _ringYOffsets = [
-    AuthRebrandMetrics.ringTealY, // 7
-    AuthRebrandMetrics.ringPinkY, // 56
-    AuthRebrandMetrics.ringOrangeY, // 112
-    AuthRebrandMetrics.ringBeigeY, // 168
-  ];
-
   @override
   void paint(Canvas canvas, Size size) {
     final centerX = size.width / 2;
     final containerCenterX = containerWidth / 2;
+    final effectiveContainerTop =
+        containerTop ?? AuthRebrandMetrics.overlayRainbowContainerTop;
 
     // Paint rings from outer (teal) to inner (beige)
-    for (int i = 0; i < _ringWidths.length; i++) {
-      final width = _ringWidths[i];
-      final radius = width / 2; // Pill radius = half width for perfect round top
-      final xOffset = _ringXOffsets[i];
-
-      // Apply containerTop offset (dynamic or default from metrics)
-      final effectiveContainerTop = containerTop ?? AuthRebrandMetrics.overlayRainbowContainerTop;
-      final yOffset = _ringYOffsets[i] + effectiveContainerTop;
+    for (final ring in _rings) {
+      final radius = ring.width / 2; // Pill radius = half width for round top
+      final yOffset = ring.yOffset + effectiveContainerTop;
 
       // Skip rings entirely below canvas (off-screen optimization)
       if (yOffset >= size.height) continue;
 
       // Dynamic height extending to canvas bottom
-      // Mathematically equivalent to SSOT heights, but device-independent
       final height = size.height - yOffset + radius;
 
       // Ring X position relative to canvas center
-      // xOffset is relative to container left edge, containerCenterX is half of container
-      final ringLeft = centerX - containerCenterX + xOffset;
+      final ringLeft = centerX - containerCenterX + ring.xOffset;
 
       final paint = Paint()
-        ..color = _ringColors[i]
+        ..color = ring.color
         ..style = PaintingStyle.fill;
 
       // Draw RRect with rounded top corners only (pill shape)
       final rrect = RRect.fromRectAndCorners(
-        Rect.fromLTWH(ringLeft, yOffset, width, height),
+        Rect.fromLTWH(ringLeft, yOffset, ring.width, height),
         topLeft: Radius.circular(radius),
         topRight: Radius.circular(radius),
         // Bottom corners are square (0 radius) - stripes extend straight down

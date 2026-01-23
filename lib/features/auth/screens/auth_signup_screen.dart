@@ -192,30 +192,36 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         _emailError = false;
         _passwordError = false;
 
+        // Known error codes (whitelist approach - conservative field attribution)
+        const emailCodes = {
+          'email_address_invalid',
+          'validation_failed',
+          'email_exists',
+          'user_already_exists',
+          'email_not_confirmed',
+        };
+        const passwordCodes = {'weak_password'};
+        // Ambiguous codes: over_request_rate_limit, signup_disabled, etc.
+        // These show banner only, no field flags
+
         // Use error.code for field attribution (more robust than message parsing)
         final code = error.code?.toLowerCase();
         if (code != null) {
-          if (code == 'weak_password') {
+          if (passwordCodes.contains(code)) {
             _passwordError = true;
-          } else if (code == 'over_request_rate_limit' ||
-                     code == 'signup_disabled') {
-            // Ambiguous codes: no field-specific flags
-            // _errorMessage already shows the error in the banner
-          } else if (code == 'email_not_confirmed') {
-            // Email-specific: user needs to confirm their email address
-            _emailError = true;
-          } else {
-            // email_address_invalid, email_exists, user_already_exists, etc.
+          } else if (emailCodes.contains(code)) {
             _emailError = true;
           }
+          // Unknown codes: no field flags, rely on banner only
         } else {
           // Fallback: message pattern matching when code is null
+          // Conservative: only set flags for clear keyword matches
           final message = error.message.toLowerCase();
-          if (message.contains('password')) {
+          if (message.contains('password') && message.contains('short')) {
             _passwordError = true;
-          } else if (message.contains('email') ||
-                     message.contains('address') ||
-                     message.contains('user')) {
+          } else if (message.contains('email') && message.contains('invalid')) {
+            _emailError = true;
+          } else if (message.contains('already') || message.contains('exists')) {
             _emailError = true;
           }
           // Ambiguous errors (network, rate-limit, unknown): no field flags
@@ -464,6 +470,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       label: l10n.authEntryCta,
       onPressed: _isSubmitting ? null : _handleSignup,
       isLoading: _isSubmitting,
+      loadingSemanticLabel: l10n.authSignupCtaLoadingSemantic,
     );
   }
 }

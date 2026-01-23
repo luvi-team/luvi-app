@@ -15,10 +15,9 @@ void handleAuthBackNavigation(BuildContext context) {
   // Guard against unmounted context (e.g., called from async callback)
   if (!context.mounted) return;
 
-  final router = GoRouter.of(context);
-  if (router.canPop()) {
-    router.pop();
+  if (context.canPop()) {
+    context.pop();
   } else {
-    router.go(RoutePaths.authSignIn);
+    context.go(RoutePaths.authSignIn);
   }
 }

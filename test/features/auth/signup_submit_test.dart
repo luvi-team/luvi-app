@@ -31,6 +31,13 @@ void main() {
     registerFallbackValue(<String, dynamic>{});
   });
 
+  // Shared router lifecycle for all test groups
+  late GoRouter router;
+
+  setUp(() => router = _createSignupTestRouter());
+
+  tearDown(() => router.dispose());
+
   Future<void> pumpSignupScreen(
     WidgetTester tester,
     AuthRepository repository,
@@ -60,11 +67,6 @@ void main() {
   }
 
   group('AuthSignupScreen submit behaviour', () {
-    late GoRouter router;
-
-    setUp(() => router = _createSignupTestRouter());
-
-    tearDown(() => router.dispose());
 
     testWidgets('empty submit shows missing fields and field errors', (tester) async {
       final mockRepo = _MockAuthRepository();
@@ -380,7 +382,7 @@ void main() {
 
       await pumpSignupScreen(tester, mockRepo, router);
 
-      // Fill email and common weak password (blocklisted in create_new_password_rules.dart:45)
+      // Fill email and common weak password (blocked by _commonWeakPatterns in create_new_password_rules.dart)
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
         'user@example.com',
@@ -416,12 +418,6 @@ void main() {
   });
 
   group('AuthException error.code handling', () {
-    late GoRouter router;
-
-    setUp(() => router = _createSignupTestRouter());
-
-    tearDown(() => router.dispose());
-
     testWidgets('uses error.code for weak_password', (tester) async {
       final mockRepo = _MockAuthRepository();
       when(
