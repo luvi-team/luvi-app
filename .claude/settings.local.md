@@ -87,7 +87,7 @@
 | `mcp__archon__rag_search_code_examples` | 🟢 | Code-Beispiele suchen | "Zeig Beispiele für X" |
 | `mcp__archon__rag_get_available_sources` | 🟢 | Quellen auflisten | Internes Tooling |
 
-> 📋 **Setup & Verification:** Health-Check via `mcp__archon__health_check` → `{status: "healthy"}`. Bei Fehler: Task-Tracking deaktiviert. Setup: [Archon Docs](https://github.com/coleam00/archon)
+> 📋 **Setup & Verification:** Health-check via `mcp__archon__health_check` → `{status: "healthy"}`. On error: Task tracking disabled. Setup: [Archon Docs](https://github.com/coleam00/archon)
 
 ### 5. MCP Figma (3 Permissions)
 
@@ -99,7 +99,7 @@
 | `mcp__figma__get_screenshot` | 🟢 | Screenshot holen | "Hol den Screenshot" |
 | `mcp__figma__get_variable_defs` | 🟢 | Variablen holen | "Welche Figma-Variablen?" |
 
-> 📋 **Setup & Verification:** Health-Check via `mcp__figma__get_design_context`. Bei Fehler: Design-Import nicht verfügbar. Setup: Figma MCP Server Docs
+> 📋 **Setup & Verification:** Health-check via `mcp__figma__get_design_context`. On error: Design import unavailable. Setup: Figma MCP Server Docs
 
 ### 6. Shell Utilities (16 Permissions)
 
@@ -174,7 +174,7 @@
 | `git reset --hard` | Änderungen unwiderruflich verlieren |
 | `git rebase` | History umschreiben ist gefährlich |
 | `pkill` | Prozesse beenden ist destruktiv |
-| `ruby -ryaml -e:*` | Arbitrary Ruby execution - nutze Python PyYAML stattdessen |
+| `ruby -ryaml -e:*` | Arbitrary Ruby execution - use Python PyYAML instead |
 
 > **Unterschied `rm` vs `git rm`:**
 > - `rm` (Shell): Löscht Dateien permanent und unwiderruflich
@@ -258,16 +258,16 @@
 
 ### MCP Server Healthchecks
 
-| Server | Prüfaufruf | Erwartete Antwort | Bei Fehler |
-|--------|------------|-------------------|------------|
-| Archon | `mcp__archon__health_check` | `{status: "healthy"}` | Task-Tracking deaktiviert |
-| Figma | `mcp__figma__get_design_context` | Design-JSON | Design-Import nicht verfügbar |
+| Server | Health Check | Expected Response | On Error |
+|--------|--------------|-------------------|----------|
+| Archon | `mcp__archon__health_check` | `{status: "healthy"}` | Task tracking disabled |
+| Figma | `mcp__figma__get_design_context` | Design JSON | Design import unavailable |
 
 ### Troubleshooting
-1. **Server-Logs prüfen:** Check MCP server output in Terminal
-2. **Neustart:** Restart MCP services bei Verbindungsproblemen
-3. **Permission-Audit:** Vergleiche Zugriffslogs mit dieser Doku
-4. **Fallback-Verhalten:** Bei MCP-Ausfall arbeitet Claude ohne entsprechende Features weiter
+1. **Check server logs:** Inspect MCP server output in Terminal
+2. **Restart:** Restart MCP services on connection issues
+3. **Permission audit:** Compare access logs with this documentation
+4. **Fallback behavior:** On MCP outage, Claude continues without corresponding features
 
 ### Permission-Nutzung auditieren
 - Claude Code loggt alle Tool-Aufrufe
