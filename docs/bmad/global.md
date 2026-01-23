@@ -98,7 +98,7 @@ zufriedener zu werden.
 | **Friction Reduction** | 1 Klick zum Training statt 3 Screens |
 | **Evidenzbasiert** | Wissenschaftliche Quellen (Stacy Sims) statt Influencer-Hype |
 
-(Quellen: docs/product/app-context.md, context/refs/app_context_v3.2.md)
+(Quellen: docs/product/app-context.md)
 
 ### 1.2 Zielgruppe
 
@@ -856,7 +856,7 @@ docs/privacy/reviews/*.md)*
 | Consent-Texte | `docs/consent_texts.md` | CMP-/Consent-Copy |
 | Ranking-Heuristik | `docs/ranking_heuristic.md` | Feed-/Content-Priorisierung |
 | Analytics-Taxonomy | `docs/analytics/taxonomy.md` | Event-Schema |
-| Tech-Stack | `docs/tech-stack.md` | Technologie-Übersicht |
+| Tech-Stack | `docs/engineering/tech-stack.md` | Technologie-Übersicht |
 | Definition of Done | `docs/definition-of-done.md` | Globale DoD |
 | Healthcheck | `docs/platform/healthcheck.md` | /api/health Spezifikation |
 | AI-Reviewer | `docs/engineering/ai-reviewer.md` | Greptile/CodeRabbit Policy |

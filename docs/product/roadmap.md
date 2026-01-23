@@ -6,7 +6,7 @@
 
 ---
 
-## KONSTANTEN (Global für ALLE Sprints)
+## 🛠 KONSTANTEN (Global für ALLE Sprints)
 
 *Diese Regeln sind unveränderlich und müssen bei jedem PR beachtet werden.*
 
@@ -53,7 +53,7 @@
 
 ---
 
-## S0 — Foundation & Setup (Erledigt/Wartung)
+## ✅ S0 — Foundation & Setup (Erledigt/Wartung)
 
 - **Tech:** Archon (MCP), Langfuse, Supabase MCP konfiguriert.
 - **Repo:** Struktur steht, CI-Pipeline grün.
@@ -62,7 +62,7 @@
 
 ---
 
-## S1 — Rebranding & The Mathematical Heart
+## 🎨 S1 — Rebranding & The Mathematical Heart
 
 **Ziel:** Das Design-System (Tokens) finalisieren, existierende Screens (Auth/Onboarding) optisch anpassen und die Zyklus-Logik implementieren.
 
@@ -99,7 +99,7 @@
 
 ---
 
-## S2 — The Daily Companion (Home & Navigation)
+## 🏠 S2 — The Daily Companion (Home & Navigation)
 
 **Ziel:** Der User landet auf einem Home-Screen, der die in S1 berechnete Phase korrekt anzeigt.
 
@@ -132,7 +132,7 @@
 
 ---
 
-## S3 — The Engine: Active Workout (High Tech)
+## 🏋️ S3 — The Engine: Active Workout (High Tech)
 
 **Ziel:** Das Training funktioniert robust und offline-sicher (SQLCipher).
 
@@ -166,7 +166,7 @@
 
 ---
 
-## S4 — LUVI Coach (Progress)
+## 📈 S4 — LUVI Coach (Progress)
 
 **Ziel:** Feedback-Loops schließen. User sieht Fortschritt.
 
@@ -189,7 +189,7 @@
 
 ---
 
-## S5 — LUVI Brain (Content Hub)
+## 🧠 S5 — LUVI Brain (Content Hub)
 
 **Ziel:** Ersatz für den "Stream". Eine durchsuchbare Wissensdatenbank.
 
@@ -213,7 +213,7 @@
 
 ---
 
-## S6 — Monetization & AI Activation
+## 💰 S6 — Monetization & AI Activation
 
 **Ziel:** Business-Logic und "Magic" Features scharfschalten.
 
@@ -239,7 +239,7 @@
 
 ---
 
-## S7 — Launch Prep
+## 🏁 S7 — Launch Prep
 
 **Ziel:** Store Readiness.
 
