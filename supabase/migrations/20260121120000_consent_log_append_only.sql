@@ -56,6 +56,7 @@ SET search_path = "public"
 AS $$
 BEGIN
   RAISE EXCEPTION 'Consent log is append-only (GDPR audit requirement). UPDATE is not allowed.';
+  RETURN OLD;
 END;
 $$;
 
