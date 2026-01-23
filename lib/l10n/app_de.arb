@@ -711,6 +711,11 @@
   "@authErrPasswordEmpty": {
     "description": "Validierungsfehler, wenn das Passwort-Feld leer ist."
   },
+  "authErrOtpExpired": "Der Link ist abgelaufen. Bitte fordere einen neuen an.",
+  "@authErrOtpExpired": {
+    "description": "Fehlertext, wenn der Verifizierungslink abgelaufen ist."
+  },
+  "authErrConfirmEmail": "Bitte bestätige deine E-Mail (Link erneut senden?).",
   "authLoginHeadline": "Willkommen zurück 💜",
   "@authLoginHeadline": {
     "description": "Überschrift auf dem Login-Screen."

@@ -15,10 +15,10 @@ No full scans, GDPR-safe (no PII in outputs, no persistent storage of personal d
 ## Acceptance Criterion
 - **Output Length:** ≤ 30 lines per PR comment.
 - **False Positive Definition:** An alert flagged by the agent that, after human review by the PR author or designated reviewer, is determined to be incorrect (i.e., the flagged issue does not actually violate the criterion).
-- **Measurement:** Count of adjudicated false-positive alerts divided by number of PRs reviewed.
+- **Measurement:** Count of adjudicated false-positive alerts divided by number of PRs reviewed. **Adjudication:** Decided by PR author/reviewer consensus and recorded in PR comments.
 - **Calibration Phase:** First 20 PRs or 4 weeks (whichever comes first).
-- **Threshold:** ≤ 1 false positive per PR during calibration; post-calibration target ≤ 0.5 per PR.
-- **Enforcement:** If threshold exceeded for 3 consecutive PRs, agent rules are reviewed and adjusted.
+- **Threshold:** ≤ 0.5 false positive per PR during calibration; post-calibration target ≤ 0.1–0.2 per PR.
+- **Enforcement:** If threshold exceeded for 3 consecutive PRs, agent rules must be reviewed and adjusted before further automated reviews.
 
 ## Operative Mode
 Codex CLI-first (BMAD → PRP).

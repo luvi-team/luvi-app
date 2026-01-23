@@ -142,7 +142,7 @@ void main() {
       expect(state.globalError, AuthStrings.errConfirmEmail);
     });
 
-    // Issue 2: Test otp_expired code path (maps to same error as email_not_confirmed)
+    // Issue 2: Test otp_expired code path (maps to distinct error)
     test('uses error.code for otp_expired when code is present', () async {
       final mockRepo = _MockAuthRepository();
       when(() => mockRepo.signInWithPassword(
@@ -168,7 +168,7 @@ void main() {
       final state = container.read(loginProvider).value!;
       expect(state.emailError, isNull);
       expect(state.passwordError, isNull);
-      expect(state.globalError, AuthStrings.errConfirmEmail);
+      expect(state.globalError, AuthStrings.errOtpExpired);
     });
 
     // Test: null code + message pattern fallback detects invalid credentials

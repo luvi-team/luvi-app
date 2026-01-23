@@ -1157,6 +1157,12 @@ abstract class AppLocalizations {
   /// **'Please enter your password.'**
   String get authErrPasswordEmpty;
 
+  /// Error displayed when the OTP/verification link has expired.
+  ///
+  /// In en, this message translates to:
+  /// **'The verification link has expired. Please request a new one.'**
+  String get authErrOtpExpired;
+
   /// Error displayed when the user's email has not been confirmed.
   ///
   /// In en, this message translates to:

@@ -18,20 +18,7 @@ class {ScreenName}Screen extends StatelessWidget {
     // Requires MaterialApp.router with localizationsDelegates configured
     final l10n = AppLocalizations.of(context);
     assert(l10n != null, 'AppLocalizations missing - check MaterialApp.router localizationsDelegates');
-    if (l10n == null) {
-      log.e(
-        'AppLocalizations.of(context) returned null',
-        tag: '{route_name}',
-      );
-      FlutterError.reportError(FlutterErrorDetails(
-        exception: FlutterError('AppLocalizations.of(context) returned null'),
-        library: '{route_name}_screen',
-        context: ErrorDescription(
-          'Localizations not available in {ScreenName}Screen (route: $routeName)',
-        ),
-      ));
-      return const SizedBox.shrink();
-    }
+    if (l10n == null) return const SizedBox.shrink();
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

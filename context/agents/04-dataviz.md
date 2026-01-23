@@ -15,8 +15,8 @@ inputs:
 outputs:
   - Chart-Widgets
   - Tests
-  - Doku (docs/)
-  - Klare Achsen/Legenden
+  - Documentation (docs/)
+  - Clear axes/legends
 acceptance_refs:
   - context/agents/_acceptance_v1.1.md#core
   - context/agents/_acceptance_v1.1.md#role-extensions

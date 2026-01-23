@@ -164,7 +164,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         email: email,
         emailError: null,
         passwordError: null,
-        globalError: AuthStrings.errConfirmEmail,
+        globalError: AuthStrings.errOtpExpired,
       );
       return;
     }

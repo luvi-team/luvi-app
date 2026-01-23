@@ -51,7 +51,6 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     // Calculate scale factor for responsive positioning
     // Design baseline: AuthRebrandMetrics.designWidth × AuthRebrandMetrics.designHeight (402×874)
     final scaleY = size.height / AuthRebrandMetrics.designHeight;
-    // TODO: Compute scaleX from AuthRebrandMetrics.designWidth for horizontal scaling
 
     return Scaffold(
       key: const ValueKey('auth_signin_screen'),

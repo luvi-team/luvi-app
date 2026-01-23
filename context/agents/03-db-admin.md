@@ -41,7 +41,7 @@ Codex owns schema/migration/RLS (Supabase MCP, BMAD → PRP). Claude Code only a
 > **Definitions:**
 > - **MCP:** Model Context Protocol
 > - **BMAD:** Business Model & Architecture Doc — planning framework covering business goals, domain modeling, architecture decisions, and Definition of Done.
-> - **PRP:** Privacy/Regulatory Program (Compliance Phase)
+> - **PRP:** Project Roadmap & Plan (Implementation & Execution Phase)
 
 ## Checklists & Runbooks
 - DB Checklist: `docs/engineering/checklists/db.md`

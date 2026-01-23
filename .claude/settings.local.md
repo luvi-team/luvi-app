@@ -47,7 +47,7 @@
 | `git add:*` | 🟢 | Dateien stagen | "Stage die Änderungen" |
 | `git commit:*` | 🟡 | Commits erstellen | "Mach einen Commit" |
 | `git branch:*` | 🟢 | Branches verwalten | "Welche Branches gibt es?" |
-| `git checkout:*` | 🟡 | Branch wechseln (`--force`/`-f` blockiert) | "Wechsel zu main" |
+| `git checkout:*` | 🟡 | Branch wechseln (force blockiert — überschreibt u.U. uncommitted files) | "Wechsel zu main" |
 | `git fetch:*` | 🟢 | Remote holen | "Hol die neuesten Änderungen" |
 | `git merge:*` | 🟡 | Branches mergen | "Merge main rein" |
 | `git stash:*` | 🟢 | Änderungen zwischenspeichern | "Stash das mal" |
@@ -99,7 +99,7 @@
 | `mcp__figma__get_screenshot` | 🟢 | Screenshot holen | "Hol den Screenshot" |
 | `mcp__figma__get_variable_defs` | 🟢 | Variablen holen | "Welche Figma-Variablen?" |
 
-> 📋 **Setup & Verification:** Health-check via `mcp__figma__get_design_context`. On error: Design import unavailable. Setup: Figma MCP Server Docs
+> 📋 **Setup & Verification:** Health-check via `mcp__figma__get_design_context`. On error: Design import unavailable. Setup: [Figma MCP Server Docs](https://github.com/roidlipav/figma-mcp-server)
 
 ### 6. Shell Utilities (16 Permissions)
 

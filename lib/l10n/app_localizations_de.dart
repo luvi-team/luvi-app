@@ -562,6 +562,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authErrPasswordEmpty => 'Bitte gib dein Passwort ein.';
 
   @override
+  String get authErrOtpExpired => 'Der Link ist abgelaufen. Bitte fordere einen neuen an.';
+
+  @override
   String get authErrConfirmEmail => 'Bitte bestätige deine E-Mail (Link erneut senden?).';
 
   @override

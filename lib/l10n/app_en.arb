@@ -751,6 +751,10 @@
   "@authErrPasswordEmpty": {
     "description": "Validation error shown when the password field is empty."
   },
+  "authErrOtpExpired": "The verification link has expired. Please request a new one.",
+  "@authErrOtpExpired": {
+    "description": "Error displayed when the OTP/verification link has expired."
+  },
   "authErrConfirmEmail": "Please verify your email (resend the link?).",
   "@authErrConfirmEmail": {
     "description": "Error displayed when the user's email has not been confirmed."
