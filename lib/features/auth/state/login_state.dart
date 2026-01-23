@@ -146,28 +146,27 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   /// Performs client-side validation only and completes synchronously.
   ///
   /// **Sync-but-Future Pattern:** The base implementation calls
-  /// `validate(password: password)` synchronously and returns `Future.value()`.
+  /// `validate(password: password)` synchronously and returns `Future.value(isValid)`.
   /// This shape is intentional so subclasses can override to perform async work
   /// (e.g., network login in integration tests or async mocks).
   ///
   /// **Override Contract:**
   /// - Subclasses should call `validate(password: password)` before async operations
   ///   OR call `super.validateAndSubmit(password: password)` first
-  /// - The returned Future should complete with void on success
+  /// - The returned Future should complete with bool indicating validation success
   /// - Errors should be captured via [updateState] with appropriate error fields,
   ///   NOT thrown (to maintain consistent state-based error handling)
   ///
   /// Any network submission or remote auth flow is handled by
   /// `login_submit_provider` to avoid mixing concerns.
   ///
-  /// NOTE: Intentionally returns `Future<void>` for subclass compatibility.
+  /// NOTE: Returns `Future<bool>` for validation result propagation.
   /// Subclasses (e.g., in tests) may override with actual async operations.
-  /// Use [validate]'s return value for immediate validation result if needed.
   ///
   /// SECURITY: [password] is validated but NOT persisted in state.
-  Future<void> validateAndSubmit({required String password}) {
-    validate(password: password);
-    return Future.value();
+  Future<bool> validateAndSubmit({required String password}) {
+    final isValid = validate(password: password);
+    return Future.value(isValid);
   }
 
   @visibleForTesting

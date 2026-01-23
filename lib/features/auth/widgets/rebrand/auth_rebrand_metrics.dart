@@ -104,7 +104,7 @@ final class AuthRebrandMetrics {
 
   // ─── Back Button ───
   static const double backButtonLeft = 10.0;
-  static const double backButtonTop = 20.0; // Näher an Status Bar (Figma-Alignment)
+  static const double backButtonTop = 20.0; // Closer to status bar (Figma alignment)
   // Note: backButtonTouchTarget removed - use Sizes.touchTargetMin (SSOT)
 
   // ─── Rainbow Container Alignment ───
@@ -136,10 +136,10 @@ final class AuthRebrandMetrics {
   static const double backButtonIconSize = 24.0;
 
   // ─── Content Spacing ───
-  static const double contentTopGap = 100.0; // Gap nach Back-Button zu Content
-  static const double contentBottomGap = 60.0; // Gap vor CTA-Button
-  static const double sheetBottomGap = 40.0; // Gap für Bottom Stripes in Sheets
-  static const double entryLogoGap = 80.0; // Gap zwischen Logo und CTA auf Entry
+  static const double contentTopGap = 100.0; // Gap after back button to content
+  static const double contentBottomGap = 60.0; // Gap before CTA button
+  static const double sheetBottomGap = 40.0; // Gap for bottom stripes in sheets
+  static const double entryLogoGap = 80.0; // Gap between logo and CTA on entry
 
   // ─── Keyboard Handling ───
   /// Factor applied to keyboard height for padding calculation.

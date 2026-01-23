@@ -7,12 +7,14 @@ import '../../support/test_config.dart';
 class _FakeServerErrorLoginNotifier extends LoginNotifier {
   // Simulates server error after successful client-side validation
   @override
-  Future<void> validateAndSubmit({required String password}) async {
+  Future<bool> validateAndSubmit({required String password}) async {
+    bool isValid;
     try {
-      await super.validateAndSubmit(password: password);
+      isValid = await super.validateAndSubmit(password: password);
+      if (!isValid) return false;
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
-      return;
+      return false;
     }
     final current = state.value;
     if (current == null) {
@@ -20,13 +22,14 @@ class _FakeServerErrorLoginNotifier extends LoginNotifier {
         StateError('No current state after validation'),
         StackTrace.current,
       );
-      return;
+      return false;
     }
     state = AsyncData(
       current.copyWith(
         globalError: AuthStrings.errLoginUnavailable,
       ),
     );
+    return isValid;
   }
 }
 

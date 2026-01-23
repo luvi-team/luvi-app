@@ -114,8 +114,8 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     final isInvalidCredentials = code == 'invalid_credentials' ||
         code == 'invalid_grant';
 
-    final isEmailNotConfirmed = code == 'email_not_confirmed' ||
-        code == 'otp_expired';
+    final isEmailNotConfirmed = code == 'email_not_confirmed';
+    final isOtpExpired = code == 'otp_expired';
 
     if (isInvalidCredentials) {
       // SSOT P0.7: Both fields show error on invalid credentials
@@ -130,6 +130,18 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
     }
 
     if (isEmailNotConfirmed) {
+      loginNotifier.updateState(
+        email: email,
+        emailError: null,
+        passwordError: null,
+        globalError: AuthStrings.errConfirmEmail,
+      );
+      return;
+    }
+
+    if (isOtpExpired) {
+      // OTP expired: prompt user to request new verification email
+      // Reuses errConfirmEmail message for MVP (user action is the same)
       loginNotifier.updateState(
         email: email,
         emailError: null,

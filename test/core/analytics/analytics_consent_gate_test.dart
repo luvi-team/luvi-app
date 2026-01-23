@@ -349,12 +349,23 @@ void main() {
       });
 
       test('scopes handle corrupted JSON gracefully', () async {
-        SharedPreferences.setMockInitialValues({
-          'u:test-user:accepted_consent_scopes_json': 'invalid json {{{',
-        });
+        SharedPreferences.setMockInitialValues({});
         final prefs = await SharedPreferences.getInstance();
         final service = UserStateService(prefs: prefs);
         await service.bindUser('test-user');
+
+        // Set valid scopes first (creates the key via public API)
+        await service.setAcceptedConsentScopes({'health_processing', 'terms'});
+
+        // Find the actual key (implementation-agnostic - no coupling to _scopedKey format)
+        final scopesKey = prefs.getKeys().firstWhere(
+          (k) => k.contains('accepted_consent_scopes_json'),
+          orElse: () =>
+              throw StateError('Scopes key not found after setAcceptedConsentScopes'),
+        );
+
+        // Corrupt the JSON
+        await prefs.setString(scopesKey, 'invalid json {{{');
 
         // Should return null on corrupted JSON (fail-safe)
         expect(service.acceptedConsentScopesOrNull, isNull);

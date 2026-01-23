@@ -276,8 +276,8 @@ class _SectionHeader extends StatelessWidget {
 class _ConsentCheckboxRow extends StatelessWidget {
   final String text;
   final String? semanticsText;
-  final String?
-  footnote; // C12: Optional footnote text (e.g. revoke instructions)
+  // C12: Optional footnote text (e.g. revoke instructions)
+  final String? footnote;
   final Widget? trailing;
   final bool selected;
   final VoidCallback onTap;
@@ -744,9 +744,9 @@ Future<bool> _persistConsentToLocalCache(
     final uid = SupabaseService.currentUser?.id;
 
     if (uid == null) {
-      // Not a failure, just skipped (auth state race or test env)
-      log.d('consent_cache_skip_no_uid', tag: 'consent_options');
-      return true;
+      // Skipped - returning false for consistency with server-side skips
+      log.d('consent_cache_skip_no_uid: returning false', tag: 'consent_options');
+      return false;
     }
 
     // bindUser MUST complete first - sets _boundUserId needed by other methods

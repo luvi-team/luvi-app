@@ -163,7 +163,7 @@ flutter:
           style: italic
     - family: Inter
       fonts:
-        # Variable font: maps common weights to the same file for reliable selection.
+        # Variable font: use fontVariations in TextStyle to select weight (e.g., FontVariation('wght', 500))
         - asset: assets/fonts/Inter/Inter[opsz,wght].ttf
         - asset: assets/fonts/Inter/Inter-Italic[opsz,wght].ttf
           style: italic

@@ -50,7 +50,12 @@ class AuthBottomSheetShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final sheetHeight = screenHeight - AuthRebrandMetrics.sheetTopY;
+    final topPadding = MediaQuery.paddingOf(context).top;
+    // Figma baseline: sheetTopY (253) = statusBarHeight (47) + contentOffset (206)
+    // Adjust for actual device's safe area inset to handle notches/Dynamic Island
+    const contentOffsetBelowStatusBar =
+        AuthRebrandMetrics.sheetTopY - AuthRebrandMetrics.statusBarHeight;
+    final sheetHeight = screenHeight - topPadding - contentOffsetBelowStatusBar;
 
     return Container(
       height: sheetHeight,

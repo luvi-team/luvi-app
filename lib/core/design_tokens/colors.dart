@@ -229,7 +229,8 @@ class DsColors {
   static const Color dividerGray = divider;
 
   /// Consent Options Subheader Text (Figma: #0A0A0A)
-  /// Slightly lighter than grayscaleBlack for subheader text
+  /// Note: Distinct from grayscaleBlack (#030401) per Figma spec.
+  /// Visual difference minimal (ΔE < 1) but kept separate for design fidelity.
   static const Color consentSubheaderText = Color(0xFF0A0A0A);
 
   // ─── Calendar/Period Picker Specific (Figma Onboarding 2024-12) ───

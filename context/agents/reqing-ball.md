@@ -13,7 +13,12 @@ Table (Criterion | Finding | File:Line | Severity | Action) as PR comment.
 No full scans, GDPR-safe (no PII in outputs, no persistent storage of personal data), short and concise.
 
 ## Acceptance Criterion
-≤ 30 lines; ≤ 1 false positive per PR in calibration phase.
+- **Output Length:** ≤ 30 lines per PR comment.
+- **False Positive Definition:** An alert flagged by the agent that, after human review by the PR author or designated reviewer, is determined to be incorrect (i.e., the flagged issue does not actually violate the criterion).
+- **Measurement:** Count of adjudicated false-positive alerts divided by number of PRs reviewed.
+- **Calibration Phase:** First 20 PRs or 4 weeks (whichever comes first).
+- **Threshold:** ≤ 1 false positive per PR during calibration; post-calibration target ≤ 0.5 per PR.
+- **Enforcement:** If threshold exceeded for 3 consecutive PRs, agent rules are reviewed and adjusted.
 
 ## Operative Mode
 Codex CLI-first (BMAD → PRP).

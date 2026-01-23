@@ -184,16 +184,32 @@ If `health_check()` fails:
 
 # Custom Agents
 
-Agents auto-delegate based on their `description` field.
-Request explicitly: "Use [agent-name] for this task"
+## Agent Usage Rules (MUST FOLLOW)
 
-| Agent | When to Use |
-|-------|----------------|
-| `ui-frontend` | Flutter screens, widgets, navigation |
-| `dataviz` | Charts, dashboards, metrics |
-| `reqing-ball` | BEFORE DB/RLS/privacy changes |
-| `ui-polisher` | AFTER UI work, BEFORE PR |
-| `qa-reviewer` | User data, logging, consent flows |
+| Priority | Condition | Agent | Action |
+|----------|-----------|-------|--------|
+| 1 | DB/RLS/Migration task | `reqing-ball` | Use BEFORE implementation |
+| 2 | Flutter UI task | `ui-frontend` | Use for implementation |
+| 3 | Chart/Dashboard task | `dataviz` | Use for implementation |
+| 4 | User data/PII involved | `qa-reviewer` | Use before PR |
+| 5 | UI work complete | `ui-polisher` | Use before PR |
+
+**Multiple conditions?** Start with Priority 1, work down.
+
+**Examples:**
+- "Create a login screen" → Priority 2 → `ui-frontend`
+- "Add dashboard showing user cycle data" → Priority 3 + 4 → `dataviz`, then `qa-reviewer`
+- "Change RLS policy and update UI" → Priority 1 + 2 → `reqing-ball`, then `ui-frontend`
+
+## Available Agents
+
+| Agent | Capabilities |
+|-------|--------------|
+| `ui-frontend` | Design Tokens, L10n, A11y (44dp, Semantics), GoRouter |
+| `dataviz` | fl_chart, WCAG, Privacy-Aggregation, Legends |
+| `reqing-ball` | ADR validation, PRD check, Schema review |
+| `ui-polisher` | Token/Spacing audit, WCAG AA Contrast |
+| `qa-reviewer` | PII check, ADR-0005 Push Privacy, GDPR |
 
 Details: `.claude/agents/*.md`
 

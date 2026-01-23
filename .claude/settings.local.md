@@ -47,7 +47,7 @@
 | `git add:*` | 🟢 | Dateien stagen | "Stage die Änderungen" |
 | `git commit:*` | 🟡 | Commits erstellen | "Mach einen Commit" |
 | `git branch:*` | 🟢 | Branches verwalten | "Welche Branches gibt es?" |
-| `git checkout:*` | 🟡 | Branch wechseln | "Wechsel zu main" |
+| `git checkout:*` | 🟡 | Branch wechseln (`--force`/`-f` blockiert) | "Wechsel zu main" |
 | `git fetch:*` | 🟢 | Remote holen | "Hol die neuesten Änderungen" |
 | `git merge:*` | 🟡 | Branches mergen | "Merge main rein" |
 | `git stash:*` | 🟢 | Änderungen zwischenspeichern | "Stash das mal" |
@@ -119,8 +119,16 @@
 | `sips:*` | 🟢 | Bild-Verarbeitung | Screenshot-Konvertierung |
 
 > ⚠️ **Sicherheitshinweis zu `curl:*`:** Diese Permission erlaubt beliebige HTTP-Requests.
+>
+> **Risiken:**
+> - Exfiltration von Secrets via POST an Angreifer-Endpoints
+> - SSRF (Server-Side Request Forgery) zu internen Services
+> - Unbeabsichtigte Änderungen an Produktions-Ressourcen
+>
+> **Mitigations:**
 > - Nur für lokale APIs und bekannte Endpoints nutzen
-> - Produktive APIs: Wrapper-Script mit Whitelist erwägen
+> - Produktive APIs: Wrapper-Script mit Allowlist erwägen
+> - Rate-Limiting und Audit-Logs aktivieren
 > - Alternative: Permission entfernen und bei Bedarf einzeln genehmigen
 
 ### 7. Scripts (3 Permissions)
@@ -137,8 +145,13 @@
 |------------|--------|----------------|------------------|
 | `xcrun simctl:*` | 🟢 | iOS Simulator | "Starte den Simulator" |
 | `actionlint:*` | 🟢 | GitHub Actions Lint | "Check die Actions" |
-| `ruby -ryaml -e:*` | 🟢 | YAML-Verarbeitung | Internes Tooling |
+| `ruby -ryaml -e:*` | 🟡 | YAML-Verarbeitung | Internes Tooling |
 | `ffprobe:*` | 🟢 | Media-Analyse | Video/Audio-Metadaten |
+
+> ⚠️ **Sicherheitshinweis zu `ruby -ryaml -e:*`:** Diese Permission erlaubt beliebige Ruby-Ausführung.
+> - Nur für vertrauenswürdige YAML-Verarbeitung nutzen
+> - Keine User-Inputs an `-e` übergeben
+> - Alternative: Dediziertes Script mit festem Code verwenden
 
 ---
 
@@ -178,6 +191,7 @@
 | `git commit --amend` | Verhindert versehentliches History-Rewriting |
 | `git push --force` / `-f` | Verhindert Remote-History-Zerstörung |
 | `git reset --hard` | Verhindert unwiderruflichen Datenverlust |
+| `git checkout --force` / `-f` | Verhindert Force-Checkout mit Datenverlust |
 
 > **Hinweis:** Diese Befehle sind auf Policy-Ebene in `settings.local.json` blockiert.
 > Claude kann sie auch auf explizite Anfrage nicht ausführen.
@@ -189,15 +203,23 @@
 
 > **Wichtig:** Wildcards wie `git commit:*` erlauben alle Subkommandos und Argumente.
 >
-> ### Bekannte Risiken und Mitigationen
+> ### Aktive Wildcards und deren Mitigationen
 >
 > | Wildcard | Risiko-Flag | Mitigation |
 > |----------|-------------|------------|
 > | `git commit:*` | `--amend` | **Blockiert via deny-Liste** |
-> | `git checkout:*` | `-f`, `--force` | Nur für Branch-Wechsel nutzen |
+> | `git checkout:*` | `--force`, `-f` | **Blockiert via deny-Liste** |
 > | `git merge:*` | `--no-ff` | Akzeptabel für Feature-Branches |
-> | `git push:*` (Hypothetisch) | `--force`, `-f` | **Blockiert via deny-Liste** (Nicht in settings.local.json aktiviert) |
-> | `git reset:*` (Hypothetisch) | `--hard` | **Blockiert via deny-Liste** (Nicht in settings.local.json aktiviert) |
+>
+> ### Nicht aktivierte Wildcards (Referenz)
+>
+> | Wildcard | Warum nicht aktiviert? |
+> |----------|------------------------|
+> | `git push:*` | Zu gefährlich - `--force` würde Remote-History zerstören |
+> | `git reset:*` | Zu gefährlich - `--hard` würde lokale Änderungen verlieren |
+>
+> **Hinweis:** Diese Wildcards sind bewusst NICHT in `settings.local.json` aktiviert.
+> Die Deny-Einträge (`git push --force`, `git reset --hard`) dienen als Fallback-Schutz.
 >
 > ### Bestehender Runtime-Schutz
 > - Claude Code's eingebaute Safety-Rules verhindern:

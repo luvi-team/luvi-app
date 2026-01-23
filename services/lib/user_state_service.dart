@@ -187,7 +187,17 @@ class UserStateService {
         );
         return null;
       }
-      return decoded.whereType<String>().toSet();
+      final stringElements = decoded.whereType<String>();
+      final stringCount = stringElements.length;
+      if (stringCount != decoded.length) {
+        final droppedCount = decoded.length - stringCount;
+        log.d(
+          'acceptedConsentScopesOrNull: dropped $droppedCount non-String elements, '
+          'key=$key, raw=$json, originalLength=${decoded.length}, stringCount=$stringCount',
+          tag: 'UserStateService',
+        );
+      }
+      return stringElements.toSet();
     } catch (e) {
       // Corrupted/malformed JSON - fail-safe return null
       log.d(

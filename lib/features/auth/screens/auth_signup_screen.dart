@@ -201,6 +201,9 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
                      code == 'signup_disabled') {
             // Ambiguous codes: no field-specific flags
             // _errorMessage already shows the error in the banner
+          } else if (code == 'email_not_confirmed') {
+            // Email-specific: user needs to confirm their email address
+            _emailError = true;
           } else {
             // email_address_invalid, email_exists, user_already_exists, etc.
             _emailError = true;
