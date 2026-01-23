@@ -87,6 +87,8 @@
 | `mcp__archon__rag_search_code_examples` | 🟢 | Code-Beispiele suchen | "Zeig Beispiele für X" |
 | `mcp__archon__rag_get_available_sources` | 🟢 | Quellen auflisten | Internes Tooling |
 
+> 📋 **Setup & Verification:** Health-Check via `mcp__archon__health_check` → `{status: "healthy"}`. Bei Fehler: Task-Tracking deaktiviert. Setup: [Archon Docs](https://github.com/coleam00/archon)
+
 ### 5. MCP Figma (3 Permissions)
 
 > ⚠️ **Figma MCP Server muss laufen!**
@@ -96,6 +98,8 @@
 | `mcp__figma__get_design_context` | 🟢 | Design-Kontext holen | "Hol den Figma-Kontext" |
 | `mcp__figma__get_screenshot` | 🟢 | Screenshot holen | "Hol den Screenshot" |
 | `mcp__figma__get_variable_defs` | 🟢 | Variablen holen | "Welche Figma-Variablen?" |
+
+> 📋 **Setup & Verification:** Health-Check via `mcp__figma__get_design_context`. Bei Fehler: Design-Import nicht verfügbar. Setup: Figma MCP Server Docs
 
 ### 6. Shell Utilities (16 Permissions)
 
@@ -254,15 +258,16 @@
 
 ### MCP Server Healthchecks
 
-| Server | Prüfaufruf |
-|--------|------------|
-| Archon | `mcp__archon__health_check` |
-| Figma | `mcp__figma__get_design_context` |
+| Server | Prüfaufruf | Erwartete Antwort | Bei Fehler |
+|--------|------------|-------------------|------------|
+| Archon | `mcp__archon__health_check` | `{status: "healthy"}` | Task-Tracking deaktiviert |
+| Figma | `mcp__figma__get_design_context` | Design-JSON | Design-Import nicht verfügbar |
 
 ### Troubleshooting
 1. **Server-Logs prüfen:** Check MCP server output in Terminal
 2. **Neustart:** Restart MCP services bei Verbindungsproblemen
 3. **Permission-Audit:** Vergleiche Zugriffslogs mit dieser Doku
+4. **Fallback-Verhalten:** Bei MCP-Ausfall arbeitet Claude ohne entsprechende Features weiter
 
 ### Permission-Nutzung auditieren
 - Claude Code loggt alle Tool-Aufrufe
