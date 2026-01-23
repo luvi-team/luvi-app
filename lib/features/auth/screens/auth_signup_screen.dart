@@ -79,8 +79,8 @@ _SignupValidationResult _validateSignupForm({
       passwordValidation.error == AuthPasswordValidationError.emptyFields;
   final shouldFlagEmail = isEmailEmpty && (errorMessage == null || isEmptyFieldsError);
 
-  if (isEmailEmpty && errorMessage == null) {
-    errorMessage = l10n.authSignupMissingFields;
+  if (shouldFlagEmail) {
+    errorMessage ??= l10n.authSignupMissingFields;
   }
 
   return _SignupValidationResult(

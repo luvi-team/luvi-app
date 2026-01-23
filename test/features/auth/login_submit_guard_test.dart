@@ -199,7 +199,7 @@ void main() {
     });
 
     // Issue 1: Test statusCode 400 fallback (no code, no message pattern match)
-    test('null error.code with statusCode 400 shows field errors (statusCode fallback)', () async {
+    test('null error.code with statusCode 400 shows generic error (no fallback)', () async {
       final mockRepo = _MockAuthRepository();
       when(() => mockRepo.signInWithPassword(
             email: any(named: 'email'),
@@ -222,10 +222,10 @@ void main() {
           .submit(email: 'user@example.com', password: 'validPassword123');
 
       final state = container.read(loginProvider).value!;
-      // statusCode '400' fallback → treat as invalid credentials
-      expect(state.emailError, AuthStrings.invalidCredentials);
-      expect(state.passwordError, AuthStrings.invalidCredentials);
-      expect(state.globalError, isNull);
+      // statusCode '400' alone -> generic error (not invalid credentials)
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errLoginUnavailable);
     });
 
     // Parameterized tests for null error.code handling.

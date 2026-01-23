@@ -26,28 +26,28 @@ class _RingData {
 
 /// All ring data from outer (teal) to inner (beige).
 /// SSOT: context/design/auth_screens_design_audit.yaml
-const List<_RingData> _rings = [
+List<_RingData> get _rings => [
   _RingData(
     color: DsColors.authRebrandRainbowTeal,
-    width: 329.0,
+    width: AuthRebrandMetrics.rainbowRingWidths[0],
     xOffset: AuthRebrandMetrics.ringTealX,
     yOffset: AuthRebrandMetrics.ringTealY,
   ),
   _RingData(
     color: DsColors.authRebrandRainbowPink,
-    width: 249.0,
+    width: AuthRebrandMetrics.rainbowRingWidths[1],
     xOffset: AuthRebrandMetrics.ringPinkX,
     yOffset: AuthRebrandMetrics.ringPinkY,
   ),
   _RingData(
     color: DsColors.authRebrandRainbowOrange,
-    width: 167.0,
+    width: AuthRebrandMetrics.rainbowRingWidths[2],
     xOffset: AuthRebrandMetrics.ringOrangeX,
     yOffset: AuthRebrandMetrics.ringOrangeY,
   ),
   _RingData(
     color: DsColors.authRebrandBackground,
-    width: 87.0,
+    width: AuthRebrandMetrics.rainbowRingWidths[3],
     xOffset: AuthRebrandMetrics.ringBeigeX,
     yOffset: AuthRebrandMetrics.ringBeigeY,
   ),

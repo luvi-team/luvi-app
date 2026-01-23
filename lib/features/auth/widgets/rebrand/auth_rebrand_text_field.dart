@@ -152,11 +152,13 @@ class AuthRebrandTextField extends StatelessWidget {
     // Uses existing L10n keys: authEmailHint, authPasswordHint
     final l10n = AppLocalizations.of(context);
     final fallbackLabel = semanticLabel ??
-        (keyboardType == TextInputType.emailAddress
-            ? (l10n?.authEmailHint ?? 'Email')
-            : obscureText
-                ? (l10n?.authPasswordHint ?? 'Password')
-                : hintText);
+        (showError && errorText != null && errorText!.isNotEmpty
+            ? errorText!
+            : (keyboardType == TextInputType.emailAddress
+                ? (l10n?.authEmailHint ?? 'Email')
+                : obscureText
+                    ? (l10n?.authPasswordHint ?? 'Password')
+                    : hintText));
 
     // Issue 4: Error text is already shown visually as hintText (line 107-109).
     // Removed Semantics.hint to prevent duplicate screen-reader announcements.

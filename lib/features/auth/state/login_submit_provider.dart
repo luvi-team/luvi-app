@@ -108,11 +108,12 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
       // Do not rely on this as a definitive check.
       final statusCode = error.statusCode;
       final message = error.message.toLowerCase();
-      final isLikelyInvalidCredentials = statusCode == '400' ||
+      final isLikelyInvalidCredentials = statusCode == '401' ||
           (message.contains('invalid') &&
               (message.contains('credentials') || message.contains('grant')));
 
       if (isLikelyInvalidCredentials) {
+        log.d('login_fallback_heuristic_triggered', tag: 'login_submit');
         loginNotifier.updateState(
           email: email,
           emailError: AuthStrings.invalidCredentials,

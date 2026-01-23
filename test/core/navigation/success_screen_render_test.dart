@@ -18,35 +18,38 @@ import '../../support/test_view.dart';
 void main() {
   TestConfig.ensureInitialized();
 
-  testWidgets(
-    'Auth SuccessScreen renders correctly',
-    (tester) async {
-      addTearDown(configureTestView(tester));
+  for (final locale in const [Locale('de'), Locale('en')]) {
+    testWidgets(
+      'Auth SuccessScreen renders correctly ($locale)',
+      (tester) async {
+        addTearDown(configureTestView(tester));
 
-      // Use testAppRoutes for proper route configuration
-      final router = GoRouter(
-        routes: testAppRoutes,
-        initialLocation: SuccessScreen.passwordSavedRoutePath,
-      );
-      addTearDown(router.dispose);
+        // Use testAppRoutes for proper route configuration
+        final router = GoRouter(
+          routes: testAppRoutes,
+          initialLocation: SuccessScreen.passwordSavedRoutePath,
+        );
+        addTearDown(router.dispose);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.buildAppTheme(),
-            locale: const Locale('de'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp.router(
+              routerConfig: router,
+              theme: AppTheme.buildAppTheme(),
+              locale: locale,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+            ),
           ),
-        ),
-      );
+        );
 
-      // Wait for initial screen to render
-      await tester.pumpAndSettle();
+        // Wait for initial screen to render
+        await tester.pumpAndSettle();
 
-      // Verify SuccessScreen is shown
-      expect(find.byKey(const ValueKey('auth_success_screen')), findsOneWidget);
-    },
-  );
+        // Verify SuccessScreen is shown
+        expect(
+            find.byKey(const ValueKey('auth_success_screen')), findsOneWidget);
+      },
+    );
+  }
 }
