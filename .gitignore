@@ -195,11 +195,12 @@ docs/security/
 docs/privacy/*
 !docs/privacy/privacy.md
 !docs/privacy/terms.md
-!docs/privacy/reviews/
-!docs/privacy/reviews/**
+# Privacy reviews: local-only (GDPR audit artifacts)
 
-# Operational Runbooks / API Contracts / Audits / Privacy reviews:
-# These are referenced by SSOT docs and must be available in fresh clones.
+# Operational Docs (local-only, not for public repo)
+docs/audits/
+docs/runbooks/
+docs/contracts/
 
 # Agent Governance
 context/*
@@ -212,6 +213,8 @@ context/agents/*
 !context/agents/reqing-ball.md
 !context/agents/ui-polisher.md
 !context/refs/
+context/refs/archive/
+context/refs/*.json
 # CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
 
 # UI measurement exports (noisy / not SSOT)
