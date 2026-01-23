@@ -1,3 +1,22 @@
+import 'dart:ui';
+
+/// Centralized FontVariation constants for variable fonts.
+///
+/// Consolidates inline FontVariation('wght', xxx) usage across the codebase.
+abstract final class FontVariations {
+  /// Bold weight (700)
+  static const FontVariation bold = FontVariation('wght', 700);
+
+  /// SemiBold weight (600)
+  static const FontVariation semiBold = FontVariation('wght', 600);
+
+  /// Medium weight (500)
+  static const FontVariation medium = FontVariation('wght', 500);
+
+  /// Regular weight (400)
+  static const FontVariation regular = FontVariation('wght', 400);
+}
+
 /// Typography tokens used across onboarding.
 class TypographyTokens {
   const TypographyTokens._();
@@ -147,6 +166,14 @@ class ConsentTypography {
 
   /// Consent options button lineHeight ratio (Figma: 24/17 = 1.412)
   static const double buttonLineHeight = TypographyTokens.lineHeightRatio24on17;
+
+  // ─── Consent Options Section Header (Figtree Bold 14px) ───
+  /// Section header line height ratio (20px / 14px = 1.429)
+  static const double sectionHeaderLineHeight = 20 / 14;
+
+  // ─── Consent Options Footnote (Figtree Regular 12px) ───
+  /// Footnote font size (12px) - used for revoke instructions
+  static const double footnoteFontSize = TypographyTokens.size12;
 }
 
 /// Welcome screen typography constants (Figma Welcome Rebrand).

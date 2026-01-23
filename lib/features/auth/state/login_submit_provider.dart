@@ -100,6 +100,14 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         'auth_error_missing_code: message=${sanitizeError(error) ?? "[redacted]"}',
         tag: 'login_submit',
       );
+      // Treat missing code as generic unavailable error (matches unrecognized fallback)
+      loginNotifier.updateState(
+        email: email,
+        emailError: null,
+        passwordError: null,
+        globalError: AuthStrings.errLoginUnavailable,
+      );
+      return;
     }
 
     // Structured error code checks only (no fragile message patterns)
@@ -133,7 +141,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
 
     // Log unrecognized auth errors for inspection
     log.i(
-      'auth_error_unrecognized: code=${code ?? "null"}, message=${sanitizeError(error) ?? "[redacted]"}',
+      'auth_error_unrecognized: code=$code, message=${sanitizeError(error) ?? "[redacted]"}',
       tag: 'login_submit',
     );
 

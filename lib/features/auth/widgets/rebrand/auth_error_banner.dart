@@ -51,7 +51,7 @@ class AuthErrorBanner extends StatelessWidget {
               style: TextStyle(
                 fontFamily: FontFamilies.figtree,
                 fontSize: AuthRebrandMetrics.errorTextFontSize,
-                fontVariations: const [FontVariation('wght', 400)],
+                fontVariations: const [FontVariations.regular],
                 color: DsColors.authRebrandError,
               ),
               textAlign: TextAlign.center,

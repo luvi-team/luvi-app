@@ -56,14 +56,11 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     final notifier = ref.read(consent02Provider.notifier);
     final l10n = AppLocalizations.of(context)!;
     final isBusy = ref.watch(_consentBtnBusyProvider);
-    final theme = Theme.of(context);
-    final mediaQuery = MediaQuery.of(context);
 
     return Scaffold(
       backgroundColor: DsColors.splashBg,
       body: SafeArea(
-        bottom:
-            false, // Footer handles bottom padding manually to avoid double SafeArea
+        bottom: false, // Footer handles bottom padding manually
         child: Column(
           children: [
             // Scrollable content
@@ -75,63 +72,11 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: Spacing.xl),
-
-                    // Shield Icon (Figma: 209 x 117 px)
-                    Center(
-                      child: Semantics(
-                        label: l10n.consentOptionsShieldSemantic,
-                        child: Image.asset(
-                          Assets.consentImages.consentShield,
-                          width: 209,
-                          height: 117,
-                          fit: BoxFit.contain,
-                          errorBuilder: Assets.defaultImageErrorBuilder,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.l),
-
-                    // Title (Figma: Playfair Display Bold 28px, line-height 34px)
-                    Semantics(
-                      header: true,
-                      child: Text(
-                        l10n.consentOptionsTitle,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                          fontFamily: FontFamilies.playfairDisplay,
-                          fontWeight: FontWeight.w700,
-                          fontSize: ConsentTypography.headerFontSize,
-                          height: ConsentTypography.headerLineHeight,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.xs),
-
-                    // Subtitle (Figma: Playfair Display SemiBold 17px, line-height 24px)
-                    Text(
-                      l10n.consentOptionsSubtitle,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: DsColors.consentSubheaderText,
-                        fontFamily: FontFamilies.playfairDisplay,
-                        fontWeight: FontWeight.w600,
-                        fontSize: ConsentTypography.subheaderFontSize,
-                        height: ConsentTypography.subheaderLineHeight,
-                      ),
-                    ),
-                    const SizedBox(height: ConsentSpacing.sectionGap),
-
-                    // Divider
-                    _ConsentDivider(),
-                    const SizedBox(height: ConsentSpacing.sectionGap),
+                    _ConsentHeader(l10n: l10n),
 
                     // REQUIRED Section
                     _SectionHeader(title: l10n.consentOptionsSectionRequired),
                     const SizedBox(height: Spacing.s),
-
-                    // Health Processing Consent
                     _ConsentCheckboxRow(
                       key: const Key('consent_options_health'),
                       text: l10n.consentOptionsHealthText,
@@ -143,8 +88,6 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                       l10n: l10n,
                     ),
                     const SizedBox(height: ConsentSpacing.checkboxItemGap),
-
-                    // Terms Consent (with links) - full text in trailing for inline flow
                     _ConsentCheckboxRow(
                       key: const Key('consent_options_terms'),
                       text: '',
@@ -162,15 +105,12 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     ),
                     const SizedBox(height: ConsentSpacing.itemToDividerGap),
 
-                    // Divider
                     _ConsentDivider(),
                     const SizedBox(height: ConsentSpacing.sectionGap),
 
                     // OPTIONAL Section
                     _SectionHeader(title: l10n.consentOptionsSectionOptional),
                     const SizedBox(height: Spacing.s),
-
-                    // Analytics Consent (C12: footnote for revoke instructions)
                     _ConsentCheckboxRow(
                       key: const Key('consent_options_analytics'),
                       text: l10n.consentOptionsAnalyticsText,
@@ -186,107 +126,13 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
               ),
             ),
 
-            // Footer with buttons - positioned near bottom per Figma
-            Container(
-              padding: EdgeInsets.fromLTRB(
-                ConsentSpacing.pageHorizontal,
-                ConsentSpacing.footerPaddingTop, // 8px - minimal top padding
-                ConsentSpacing.pageHorizontal,
-                // Buttons sit just above safe area (home indicator)
-                mediaQuery.padding.bottom + ConsentSpacing.ctaBottomInset,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: ConsentSpacing.ctaButtonMaxWidth,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // "Weiter" Button - disabled until required consents accepted
-                      SizedBox(
-                        width: double.infinity,
-                        height: Sizes.buttonHeight,
-                        child: ElevatedButton(
-                          key: const Key('consent_options_btn_continue'),
-                          onPressed: (state.requiredAccepted && !isBusy)
-                              ? () async => _handleContinue(context, ref, l10n)
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: state.requiredAccepted
-                                ? DsColors.buttonPrimary
-                                : DsColors.gray300,
-                            foregroundColor: state.requiredAccepted
-                                ? DsColors.grayscaleWhite
-                                : DsColors.gray500,
-                            disabledBackgroundColor: DsColors.gray300,
-                            disabledForegroundColor: DsColors.gray500,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                Sizes.radiusM,
-                              ),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            l10n.consentOptionsCtaContinue,
-                            style: TextStyle(
-                              fontFamily: FontFamilies.figtree,
-                              fontVariations: const [
-                                FontVariation('wght', 700),
-                              ],
-                              fontSize: ConsentTypography.buttonFontSize,
-                              height: ConsentTypography.buttonLineHeight,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        key: Key('consent_options_button_gap'),
-                        height: ConsentSpacing.buttonGapC2,
-                      ),
-
-                      // "Alle akzeptieren" Button - always active (Teal), except when busy
-                      SizedBox(
-                        width: double.infinity,
-                        height: Sizes.buttonHeight,
-                        child: ElevatedButton(
-                          key: const Key('consent_options_btn_accept_all'),
-                          onPressed: isBusy
-                              ? null
-                              : () => _handleAcceptAll(context, ref, l10n),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: DsColors.authRebrandRainbowTeal,
-                            foregroundColor: DsColors.grayscaleWhite,
-                            disabledBackgroundColor: DsColors
-                                .authRebrandRainbowTeal
-                                .withValues(alpha: 0.5),
-                            disabledForegroundColor: DsColors.grayscaleWhite
-                                .withValues(alpha: 0.5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                Sizes.radiusM,
-                              ),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            l10n.consentOptionsCtaAcceptAll,
-                            style: TextStyle(
-                              fontFamily: FontFamilies.figtree,
-                              fontVariations: const [
-                                FontVariation('wght', 700),
-                              ],
-                              fontSize: ConsentTypography.buttonFontSize,
-                              height: ConsentTypography.buttonLineHeight,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            // Footer with CTA buttons
+            _ConsentFooter(
+              requiredAccepted: state.requiredAccepted,
+              isBusy: isBusy,
+              onContinue: () async => _handleContinue(context, ref, l10n),
+              onAcceptAll: () async => _handleAcceptAll(context, ref, l10n),
+              l10n: l10n,
             ),
           ],
         ),
@@ -302,7 +148,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
         color: theme.colorScheme.onSurface,
         fontFamily: FontFamilies.figtree,
         fontWeight: FontWeight.w400,
-        fontSize: 14,
+        fontSize: ConsentTypography.bodyFontSize,
         height: ConsentTypography.bodyLineHeight,
       ),
       // Use overflow hit rect instead of inline padding to avoid extra spacing
@@ -330,16 +176,16 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
 
   /// Handles "Alle akzeptieren" button tap.
   /// Sets all visible consent scopes and navigates immediately.
-  void _handleAcceptAll(
+  Future<void> _handleAcceptAll(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
-  ) {
+  ) async {
     // 1. Set all visible consent scopes (required + optional)
     ref.read(consent02Provider.notifier).acceptAll();
 
-    // 2. Navigate immediately (state is synchronously updated)
-    _handleContinue(context, ref, l10n);
+    // 2. Navigate (await ensures proper error handling propagation)
+    await _handleContinue(context, ref, l10n);
   }
 
   /// Handles "Weiter" button tap.
@@ -396,7 +242,10 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
 class _ConsentDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(height: 2, color: DsColors.authRebrandRainbowTeal);
+    return Container(
+      height: ConsentSpacing.dividerHeight,
+      color: DsColors.authRebrandRainbowTeal,
+    );
   }
 }
 
@@ -412,9 +261,9 @@ class _SectionHeader extends StatelessWidget {
       title,
       style: TextStyle(
         fontFamily: FontFamilies.figtree,
-        fontVariations: const [FontVariation('wght', 700)],
-        fontSize: 14,
-        height: 20 / 14,
+        fontVariations: const [FontVariations.bold],
+        fontSize: ConsentTypography.bodyFontSize,
+        height: ConsentTypography.sectionHeaderLineHeight,
         letterSpacing: 0.7,
         color: Theme.of(context).colorScheme.onSurface,
       ),
@@ -452,7 +301,7 @@ class _ConsentCheckboxRow extends StatelessWidget {
     final textStyle = TextStyle(
       fontFamily: FontFamilies.figtree,
       fontWeight: FontWeight.w400,
-      fontSize: 14,
+      fontSize: ConsentTypography.bodyFontSize,
       height: ConsentTypography.bodyLineHeight,
       color: theme.colorScheme.onSurface,
     );
@@ -490,14 +339,14 @@ class _ConsentCheckboxRow extends StatelessWidget {
                   children: [
                     Expanded(
                       child: trailing == null
-                          ? Text(text, style: textStyle)
+                          ? ExcludeSemantics(child: Text(text, style: textStyle))
                           : text.isEmpty
-                          ? trailing! // Full text in trailing for inline flow
+                          ? trailing! // Links remain focusable for VoiceOver
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(text, style: textStyle),
-                                trailing!,
+                                ExcludeSemantics(child: Text(text, style: textStyle)),
+                                trailing!, // Links remain focusable for VoiceOver
                               ],
                             ),
                     ),
@@ -514,7 +363,7 @@ class _ConsentCheckboxRow extends StatelessWidget {
                       footnote!,
                       style: TextStyle(
                         fontFamily: FontFamilies.figtree,
-                        fontSize: 12,
+                        fontSize: ConsentTypography.footnoteFontSize,
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.6,
                         ),
@@ -565,6 +414,218 @@ class _ConsentCircleCheckbox extends StatelessWidget {
   }
 }
 
+/// Header section: Shield Icon + Title + Subtitle
+class _ConsentHeader extends StatelessWidget {
+  final AppLocalizations l10n;
+
+  const _ConsentHeader({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      children: [
+        const SizedBox(height: Spacing.xl),
+        // Shield Icon (Figma: 209 x 117 px)
+        Center(
+          child: Semantics(
+            label: l10n.consentOptionsShieldSemantic,
+            child: Image.asset(
+              Assets.consentImages.consentShield,
+              width: ConsentSpacing.shieldIconWidth,
+              height: ConsentSpacing.shieldIconHeight,
+              fit: BoxFit.contain,
+              errorBuilder: Assets.defaultImageErrorBuilder,
+            ),
+          ),
+        ),
+        const SizedBox(height: Spacing.l),
+        // Title (Figma: Playfair Display Bold 28px, line-height 34px)
+        Semantics(
+          header: true,
+          child: Text(
+            l10n.consentOptionsTitle,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineMedium?.copyWith(
+              color: theme.colorScheme.onSurface,
+              fontFamily: FontFamilies.playfairDisplay,
+              fontWeight: FontWeight.w700,
+              fontSize: ConsentTypography.headerFontSize,
+              height: ConsentTypography.headerLineHeight,
+            ),
+          ),
+        ),
+        const SizedBox(height: Spacing.xs),
+        // Subtitle (Figma: Playfair Display SemiBold 17px, line-height 24px)
+        Text(
+          l10n.consentOptionsSubtitle,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: DsColors.consentSubheaderText,
+            fontFamily: FontFamilies.playfairDisplay,
+            fontWeight: FontWeight.w600,
+            fontSize: ConsentTypography.subheaderFontSize,
+            height: ConsentTypography.subheaderLineHeight,
+          ),
+        ),
+        const SizedBox(height: ConsentSpacing.sectionGap),
+        // Divider
+        _ConsentDivider(),
+        const SizedBox(height: ConsentSpacing.sectionGap),
+      ],
+    );
+  }
+}
+
+/// Footer with CTA buttons
+class _ConsentFooter extends StatelessWidget {
+  final bool requiredAccepted;
+  final bool isBusy;
+  final VoidCallback onContinue;
+  final VoidCallback onAcceptAll;
+  final AppLocalizations l10n;
+
+  const _ConsentFooter({
+    required this.requiredAccepted,
+    required this.isBusy,
+    required this.onContinue,
+    required this.onAcceptAll,
+    required this.l10n,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        ConsentSpacing.pageHorizontal,
+        ConsentSpacing.footerPaddingTop,
+        ConsentSpacing.pageHorizontal,
+        mediaQuery.padding.bottom + ConsentSpacing.ctaBottomInset,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: ConsentSpacing.ctaButtonMaxWidth,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _ContinueButton(
+                enabled: requiredAccepted && !isBusy,
+                onPressed: onContinue,
+                label: l10n.consentOptionsCtaContinue,
+              ),
+              const SizedBox(
+                key: Key('consent_options_button_gap'),
+                height: ConsentSpacing.buttonGapC2,
+              ),
+              _AcceptAllButton(
+                enabled: !isBusy,
+                onPressed: onAcceptAll,
+                label: l10n.consentOptionsCtaAcceptAll,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Weiter" Button - disabled until required consents accepted
+class _ContinueButton extends StatelessWidget {
+  final bool enabled;
+  final VoidCallback onPressed;
+  final String label;
+
+  const _ContinueButton({
+    required this.enabled,
+    required this.onPressed,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: Sizes.buttonHeight,
+      child: ElevatedButton(
+        key: const Key('consent_options_btn_continue'),
+        onPressed: enabled ? onPressed : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: enabled ? DsColors.buttonPrimary : DsColors.gray300,
+          foregroundColor:
+              enabled ? DsColors.grayscaleWhite : DsColors.gray500,
+          disabledBackgroundColor: DsColors.gray300,
+          disabledForegroundColor: DsColors.gray500,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Sizes.radiusM),
+          ),
+          elevation: 0,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: FontFamilies.figtree,
+            fontVariations: const [FontVariations.bold],
+            fontSize: ConsentTypography.buttonFontSize,
+            height: ConsentTypography.buttonLineHeight,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Alle akzeptieren" Button - always active (Teal), except when busy
+class _AcceptAllButton extends StatelessWidget {
+  final bool enabled;
+  final VoidCallback onPressed;
+  final String label;
+
+  const _AcceptAllButton({
+    required this.enabled,
+    required this.onPressed,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: Sizes.buttonHeight,
+      child: ElevatedButton(
+        key: const Key('consent_options_btn_accept_all'),
+        onPressed: enabled ? onPressed : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: DsColors.authRebrandRainbowTeal,
+          foregroundColor: DsColors.grayscaleWhite,
+          disabledBackgroundColor:
+              DsColors.authRebrandRainbowTeal.withValues(alpha: 0.5),
+          disabledForegroundColor:
+              DsColors.grayscaleWhite.withValues(alpha: 0.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Sizes.radiusM),
+          ),
+          elevation: 0,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: FontFamilies.figtree,
+            fontVariations: const [FontVariations.bold],
+            fontSize: ConsentTypography.buttonFontSize,
+            height: ConsentTypography.buttonLineHeight,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // ─── Helper Functions (unchanged from original) ───
 
 List<String> _scopeIdsFor(Consent02State state) {
@@ -606,77 +667,94 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
   );
 }
 
+/// Orchestrates consent persistence to server and local cache.
+/// Returns true if at least one operation succeeded (best-effort semantics).
 Future<bool> _markWelcomeSeen(
   WidgetRef ref,
   Consent02State currentState,
 ) async {
-  // Point 12: Explicit success tracking for each operation
-  var serverSucceeded = true;
-  var localSucceeded = true;
+  final serverSucceeded = await _persistConsentGateToServer();
+  final localSucceeded = await _persistConsentToLocalCache(ref, currentState);
 
-  // 1. Server SSOT: write gate state when authenticated + initialized.
-  // In tests (or very early init) Supabase may not be ready; don't throw.
-  if (SupabaseService.isInitialized && SupabaseService.currentUser != null) {
-    try {
-      await SupabaseService.upsertConsentGate(
-        acceptedConsentVersion: ConsentConfig.currentVersionInt,
-        markWelcomeSeen: true,
-      );
-    } catch (error, stackTrace) {
-      serverSucceeded = false;
-      log.w(
-        'consent_gate_upsert_failed',
-        tag: 'consent_options',
-        error: sanitizeError(error) ?? error.runtimeType,
-        stack: stackTrace,
-      );
-    }
-  }
-
-  // 2. Local cache: best-effort write if user ID available.
-  try {
-    final userState = await ref.read(userStateServiceProvider.future);
-    final uid = SupabaseService.currentUser?.id;
-    if (uid != null) {
-      // bindUser MUST complete first - sets _boundUserId needed by other methods
-      await userState.bindUser(uid);
-
-      // Derive accepted scopes from current state (for analytics consent gating)
-      final acceptedScopes = currentState.choices.entries
-          .where((e) => e.value)
-          .map((e) => e.key.name)
-          .toSet();
-
-      // These three are now independent and can run in parallel
-      await Future.wait([
-        userState.markWelcomeSeen(),
-        userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
-        userState.setAcceptedConsentScopes(acceptedScopes),
-      ]);
-    } else {
-      // Debug: track edge case where uid is null (auth state race or test env).
-      log.d('consent_cache_skip_no_uid', tag: 'consent_options');
-    }
-  } catch (error, stackTrace) {
-    localSucceeded = false;
-    log.e(
-      'consent_mark_welcome_failed',
-      tag: 'consent_options',
-      error: sanitizeError(error) ?? error.runtimeType,
-      stack: stackTrace,
-    );
-  }
-
-  // Best-effort semantics: return true if AT LEAST ONE operation succeeded.
-  // This allows navigation to continue even if server or local cache fails temporarily.
-  // The caller shows a warning snackbar if this returns false, but does NOT block navigation.
+  // Log partial success for debugging
   if (serverSucceeded != localSucceeded) {
     log.w(
       'consent_persistence_partial: server=$serverSucceeded local=$localSucceeded',
       tag: 'consent_options',
     );
   }
+
+  // Best-effort: navigation continues if at least one operation succeeded
   return serverSucceeded || localSucceeded;
+}
+
+/// Persists consent gate state to server (SSOT).
+/// Returns true on success or if Supabase is not initialized/authenticated.
+Future<bool> _persistConsentGateToServer() async {
+  // Skip if Supabase not initialized or no current user (test env, early init)
+  if (!SupabaseService.isInitialized || SupabaseService.currentUser == null) {
+    return true; // Not a failure, just skipped
+  }
+
+  try {
+    await SupabaseService.upsertConsentGate(
+      acceptedConsentVersion: ConsentConfig.currentVersionInt,
+      markWelcomeSeen: true,
+    );
+    return true;
+  } catch (error, stackTrace) {
+    log.w(
+      'consent_gate_upsert_failed',
+      tag: 'consent_options',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    return false;
+  }
+}
+
+/// Persists consent state to local cache for offline access and analytics gating.
+/// Returns true on success or if no user ID available.
+Future<bool> _persistConsentToLocalCache(
+  WidgetRef ref,
+  Consent02State currentState,
+) async {
+  try {
+    final userState = await ref.read(userStateServiceProvider.future);
+    final uid = SupabaseService.currentUser?.id;
+
+    if (uid == null) {
+      // Not a failure, just skipped (auth state race or test env)
+      log.d('consent_cache_skip_no_uid', tag: 'consent_options');
+      return true;
+    }
+
+    // bindUser MUST complete first - sets _boundUserId needed by other methods
+    await userState.bindUser(uid);
+
+    // Derive accepted scopes from current state (for analytics consent gating)
+    final acceptedScopes = currentState.choices.entries
+        .where((e) => e.value)
+        .map((e) => e.key.name)
+        .toSet();
+
+    // Parallel writes for efficiency
+    await Future.wait([
+      userState.markWelcomeSeen(),
+      userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
+      userState.setAcceptedConsentScopes(acceptedScopes),
+    ]);
+
+    return true;
+  } catch (error, stackTrace) {
+    log.e(
+      'consent_mark_welcome_failed',
+      tag: 'consent_options',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    return false;
+  }
 }
 
 /// Navigate to Onboarding after consent is accepted.

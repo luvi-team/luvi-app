@@ -12,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show Session;
 
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_services/supabase_service.dart';
@@ -231,7 +232,7 @@ Session? _getSessionSafely({
     log.w(
       'auth_redirect_session_access_failed',
       tag: 'navigation',
-      error: e.runtimeType.toString(),
+      error: sanitizeError(e) ?? e.runtimeType,
       stack: kDebugMode ? stack : null,
     );
     return null;

@@ -1,3 +1,4 @@
+<!-- NOTE: This file is maintained in German for local/team use. -->
 # Claude Code Permissions - LUVI
 
 > Diese Datei dokumentiert alle vorab genehmigten Befehle in `settings.local.json`.

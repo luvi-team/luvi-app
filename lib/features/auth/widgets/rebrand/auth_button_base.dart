@@ -82,7 +82,7 @@ class AuthButtonBase extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: FontFamilies.figtree,
                       fontSize: AuthRebrandMetrics.buttonFontSize,
-                      fontVariations: [FontVariation('wght', 700)],
+                      fontVariations: [FontVariations.bold],
                       height: AuthRebrandMetrics.bodyLineHeightRatio,
                       color: DsColors.grayscaleWhite,
                     ),

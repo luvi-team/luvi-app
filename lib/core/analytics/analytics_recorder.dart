@@ -85,9 +85,9 @@ bool _containsSuspiciousPII(Map<String, Object?> properties) {
   if (properties.isEmpty) return false;
 
   // Safe keys that may otherwise falsely match (e.g., contain "email").
+  // NOTE: 'username' was removed - it's now classified as PII (2026-01).
   const safeAllowlist = <String>{
     'theme',
-    'username',
     'customer_email_count',
   };
 

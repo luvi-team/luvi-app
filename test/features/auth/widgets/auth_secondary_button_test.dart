@@ -92,21 +92,28 @@ void main() {
     });
 
     testWidgets('is disabled when onPressed is null', (tester) async {
-      await tester.pumpWidget(
-        buildTestApp(
-          home: Scaffold(
-            body: Center(
-              child: AuthSecondaryButton(
-                label: 'Test',
-                onPressed: null,
+      // Use semantics-based testing to avoid coupling to internal widget types
+      final handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          buildTestApp(
+            home: Scaffold(
+              body: Center(
+                child: AuthSecondaryButton(
+                  label: 'Test',
+                  onPressed: null,
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
-      expect(button.onPressed, isNull);
+        // Test via accessibility semantics tree (not widget tree)
+        final semantics = tester.getSemantics(find.byType(AuthSecondaryButton));
+        expect(semantics.flagsCollection.isEnabled, isFalse);
+      } finally {
+        handle.dispose();
+      }
     });
   });
 }

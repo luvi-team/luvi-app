@@ -9,8 +9,11 @@ import 'package:luvi_app/router.dart';
 
 import '../../support/test_config.dart';
 
-/// Per Auth Rebrand v3: SuccessScreen now uses auto-redirect after a delay
-/// instead of a CTA button. This test verifies the screen renders correctly.
+/// Tests SuccessScreen rendering (Auth Rebrand v3).
+///
+/// NOTE: Auto-redirect navigation cannot be verified in widget tests because
+/// GoRouter doesn't actually navigate in test environments. Redirect behavior
+/// should be verified in integration tests.
 void main() {
   TestConfig.ensureInitialized();
 

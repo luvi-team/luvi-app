@@ -4,28 +4,29 @@ class ConsentConfig {
   const ConsentConfig._();
 
   /// Consent policy version string for APIs/display.
-  /// ⚠️ SYNC: Must match currentVersionInt (format: "v{major}.{minor}").
+  /// Single source of truth - [currentVersionInt] is derived from this.
   static const String currentVersion = 'v1.0';
 
-  /// Numeric version for gate-check comparisons.
-  /// ⚠️ SYNC: Must match major version in currentVersion.
-  static const int currentVersionInt = 1;
-
-  /// Validates version constants are synchronized.
-  /// Called at app startup to catch drift early.
-  /// Throws [StateError] in all builds (debug + release) if versions don't match.
-  static void assertVersionsMatch() {
-    // Strict validation: v{major} or v{major}.{minor}
-    // Anchored regex prevents false positives (e.g., v10.0 matching v1)
-    final versionPattern =
-        RegExp(r'^v' + currentVersionInt.toString() + r'(\.\d+)?$');
-    if (!versionPattern.hasMatch(currentVersion)) {
+  /// Numeric major version derived from [currentVersion].
+  /// Throws [StateError] if currentVersion format is invalid.
+  static int get currentVersionInt {
+    final match = RegExp(r'^v(\d+)').firstMatch(currentVersion);
+    if (match == null) {
       throw StateError(
-        'ConsentConfig version drift: currentVersion="$currentVersion" '
-        'does not match currentVersionInt=$currentVersionInt. '
-        'Expected format: v$currentVersionInt or v$currentVersionInt.x',
+        'ConsentConfig.currentVersion "$currentVersion" does not match '
+        'expected format v{major} or v{major}.{minor}',
       );
     }
+    return int.parse(match.group(1)!);
+  }
+
+  /// Validates version format at startup.
+  /// Called by app initialization to catch format errors early.
+  /// Throws [StateError] in all builds (debug + release) if format is invalid.
+  static void assertVersionsMatch() {
+    // Accessing the getter validates the format.
+    // ignore: unused_local_variable
+    final _ = currentVersionInt;
   }
 
   // For APIs/analytics that expect string names.

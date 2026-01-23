@@ -73,7 +73,7 @@ LUVI uses **Variable Fonts**. For correct rendering, `fontVariations` is REQUIRE
 ### Example (correct)
 ```dart
 Text(
-  'Beispiel',
+  'Example',
   style: const TextStyle(
     fontFamily: FontFamilies.figtree,
     fontSize: 17,

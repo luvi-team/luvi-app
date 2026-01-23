@@ -33,8 +33,13 @@ DROP POLICY IF EXISTS "Users can delete their own consents" ON public.consents;
 DROP POLICY IF EXISTS consents_delete_own ON public.consents;
 
 -- Step 2: Revoke UPDATE/DELETE privileges from authenticated role
--- Note: service_role retains privileges for admin/support workflows, but
--- the UPDATE trigger below will block UPDATEs regardless.
+-- Note: service_role retains GRANTed UPDATE/DELETE privileges, however the
+-- FOR EACH ROW UPDATE trigger defined below fires for ALL roles (including
+-- service_role) and will block the operation. To perform admin/support
+-- corrections, temporarily disable the trigger:
+--   ALTER TABLE public.consents DISABLE TRIGGER consent_no_update;
+--   -- perform correction --
+--   ALTER TABLE public.consents ENABLE TRIGGER consent_no_update;
 REVOKE UPDATE, DELETE ON public.consents FROM authenticated;
 
 -- Step 3: Defense-in-depth trigger to prevent UPDATEs (append-only semantics)

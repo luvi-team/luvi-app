@@ -1058,7 +1058,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authRegisterEmailTitle => 'Registrieren mit E-Mail';
 
   @override
-  String get authResetPasswordSubtitle => 'E-Mail-Adresse eingeben und erhalte einen Link zum Zurücksetzen.';
+  String get authResetPasswordSubtitle => 'Gib deine E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten.';
 
   @override
   String get authResetCtaShort => 'Zurücksetzen';

@@ -257,6 +257,63 @@ void main() {
           reason: 'Events should flow when analytics consent is true',
         );
       });
+
+      test('blocks username property key even when consent is true', () async {
+        // Privacy gate: username is classified as PII (2026-01 governance fix).
+        // Events containing username property key must never reach the backend.
+        final mockService = _MockUserStateService();
+        when(() => mockService.acceptedConsentScopesOrNull)
+            .thenReturn({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+          ConsentScope.analytics.name,
+        });
+
+        final recordedEvents = <(String, Map<String, Object?>)>[];
+
+        final container = ProviderContainer(
+          overrides: [
+            userStateServiceProvider
+                .overrideWith((ref) => Future.value(mockService)),
+            analyticsOptOutProvider.overrideWith(
+              (ref) => ref.watch(analyticsConsentOptOutProvider),
+            ),
+            analyticsBackendSinkProvider.overrideWithValue(
+              (name, props) => recordedEvents.add((name, props)),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await container.read(userStateServiceProvider.future);
+
+        final recorder = container.read(analyticsRecorderProvider);
+
+        // Attempt to record event with username property - should be blocked
+        recorder.recordEvent(
+          'profile_viewed',
+          properties: {'username': 'alice', 'screen': 'profile'},
+        );
+
+        expect(
+          recordedEvents,
+          isEmpty,
+          reason: 'Events with username property must be blocked as PII',
+        );
+
+        // Verify that events without PII keys still flow
+        recorder.recordEvent(
+          'screen_viewed',
+          properties: {'screen': 'home'},
+        );
+
+        expect(
+          recordedEvents,
+          hasLength(1),
+          reason: 'Clean events should still flow',
+        );
+        expect(recordedEvents.first.$1, 'screen_viewed');
+      });
     });
 
     group('UserStateService scope persistence', () {

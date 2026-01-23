@@ -87,7 +87,7 @@ class AuthBottomSheetShell extends StatelessWidget {
               const SizedBox(height: AuthRebrandMetrics.sheetDragIndicatorTop),
               Semantics(
                 label: AppLocalizations.of(context)?.authDragHandleSemantic ??
-                    '',
+                    'Drag handle', // A11y fallback: English default when l10n unavailable
                 excludeSemantics: true,
                 child: Container(
                   width: AuthRebrandMetrics.sheetDragIndicatorWidth,

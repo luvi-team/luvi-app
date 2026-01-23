@@ -52,59 +52,55 @@ class ConsentService {
         body: {'version': version, 'scopes': scopesMap},
       );
     } on FunctionException catch (e) {
-      // FunctionException is thrown for ALL non-2xx status codes.
-      // Status-based mapping to provide precise error codes.
-      final status = e.status;
-      final errorBody = _asJsonMap(e.details);
-      final requestId = errorBody?['request_id']?.toString();
-      log.w(
-        'log_consent failed (status=$status, request_id=${requestId ?? 'n/a'})',
-        tag: _logTag,
-      );
-
-      if (status == 401) {
-        throw ConsentException(401, 'Unauthorized', code: 'unauthorized');
-      } else if (status == 429) {
-        throw ConsentException(429, 'Rate limit exceeded', code: 'rate_limit');
-      } else if (status >= 500) {
-        throw ConsentException(status, 'Server error', code: 'server_error');
-      } else if (status == 404) {
-        // Edge Function not deployed or not found
-        throw ConsentException(
-          404,
-          'Function not found',
-          code: 'function_unavailable',
-        );
-      } else {
-        // Other client errors (4xx)
-        throw ConsentException(
-          status,
-          'Client error',
-          code: 'client_error',
-        );
-      }
+      throw _mapFunctionException(e);
     } on Exception catch (error, stackTrace) {
       // Network/transport errors (offline/DNS/timeout) are not FunctionException.
-      // Classify as function_unavailable for consistent UX messaging.
       log.w(
         'log_consent invoke failed (transport)',
         tag: _logTag,
         error: error.runtimeType,
         stack: stackTrace,
       );
-      throw ConsentException(
-        503,
-        'Service unavailable',
-        code: 'function_unavailable',
-      );
+      throw ConsentException(503, 'Service unavailable', code: 'function_unavailable');
     }
 
     // 2xx success - validate response payload
+    _requireOkPayload(response);
+
     final responseBody = _asJsonMap(response.data);
-    if (responseBody == null || responseBody['ok'] != true) {
+    final requestId = responseBody?['request_id']?.toString();
+    if (requestId != null) {
+      log.i('log_consent succeeded (request_id=$requestId)', tag: _logTag);
+    }
+  }
+
+  /// Maps FunctionException to ConsentException based on HTTP status code.
+  ConsentException _mapFunctionException(FunctionException e) {
+    final status = e.status;
+    final errorBody = _asJsonMap(e.details);
+    final requestId = errorBody?['request_id']?.toString();
+
+    log.w(
+      'log_consent failed (status=$status, request_id=${requestId ?? 'n/a'})',
+      tag: _logTag,
+    );
+
+    return switch (status) {
+      401 => ConsentException(401, 'Unauthorized', code: 'unauthorized'),
+      429 => ConsentException(429, 'Rate limit exceeded', code: 'rate_limit'),
+      404 => ConsentException(404, 'Function not found', code: 'function_unavailable'),
+      >= 500 => ConsentException(status, 'Server error', code: 'server_error'),
+      _ => ConsentException(status, 'Client error', code: 'client_error'),
+    };
+  }
+
+  /// Validates response payload has ok=true. Throws ConsentException if invalid.
+  void _requireOkPayload(FunctionResponse response) {
+    final body = _asJsonMap(response.data);
+    if (body == null || body['ok'] != true) {
       final diagnostics = payloadDiagnosticsShapeOnly(response.data);
       log.w(
-        'log_consent returned unexpected payload (status=${response.status}, ok=${responseBody?['ok']}, payload=$diagnostics)',
+        'log_consent returned unexpected payload (status=${response.status}, ok=${body?['ok']}, payload=$diagnostics)',
         tag: _logTag,
       );
       throw ConsentException(
@@ -113,23 +109,13 @@ class ConsentService {
         code: 'unexpected_response',
       );
     }
-
-    final requestId = responseBody['request_id']?.toString();
-    if (requestId != null) {
-      log.i('log_consent succeeded (request_id=$requestId)', tag: _logTag);
-    }
   }
 
   Map<String, dynamic>? _asJsonMap(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      return data;
-    }
-    if (data is Map) {
-      return data.map((key, value) => MapEntry(key.toString(), value));
-    }
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return data.map((key, value) => MapEntry(key.toString(), value));
     return null;
   }
-
 }
 
 /// Riverpod provider for [ConsentService] to support DI and testability.

@@ -190,7 +190,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             style: const TextStyle(
               fontFamily: FontFamilies.figtree,
               fontSize: AuthRebrandMetrics.linkFontSize,
-              fontVariations: [FontVariation('wght', 600)], // SemiBold for variable font
+              fontVariations: [FontVariations.semiBold], // SemiBold for variable font
               height: AuthRebrandMetrics.bodyLineHeightRatio, // 24/17
               decoration: TextDecoration.underline,
             ),

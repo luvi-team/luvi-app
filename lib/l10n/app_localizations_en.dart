@@ -1058,7 +1058,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authRegisterEmailTitle => 'Register with Email';
 
   @override
-  String get authResetPasswordSubtitle => 'Enter your email address and receive a link to reset.';
+  String get authResetPasswordSubtitle => 'Enter your email to receive a password reset link.';
 
   @override
   String get authResetCtaShort => 'Reset';

@@ -2108,7 +2108,7 @@ abstract class AppLocalizations {
   /// Subtitle for reset password screen
   ///
   /// In en, this message translates to:
-  /// **'Enter your email address and receive a link to reset.'**
+  /// **'Enter your email to receive a password reset link.'**
   String get authResetPasswordSubtitle;
 
   /// Short CTA text for reset password button

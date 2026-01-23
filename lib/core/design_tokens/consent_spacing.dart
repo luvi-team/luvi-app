@@ -18,6 +18,15 @@ class ConsentSpacing {
   static const double checkboxBorderWidth = 2.0;
 
   // Consent Options Screen Specific (Figma Alignment 2026-01)
+  /// Shield icon width from Figma (209px)
+  static const double shieldIconWidth = 209.0;
+
+  /// Shield icon height from Figma (117px)
+  static const double shieldIconHeight = 117.0;
+
+  /// Teal divider height from Figma (2px)
+  static const double dividerHeight = 2.0;
+
   /// Gap between checkbox items (Health↔Terms): 16px
   static const double checkboxItemGap = 16.0;
 

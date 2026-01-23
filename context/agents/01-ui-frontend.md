@@ -39,6 +39,12 @@ PRs go to Codex for technical review (architecture, state management, GDPR). The
 ## Operative Mode
 Claude Code implements screens/widgets/navigation incl. tests and BMAD-slim, Codex reviews every PR before merge (Architecture + Privacy Checks).
 
+## Definitions
+- **BMAD:** Business Model & Architecture Doc - planning framework covering Business goals, Domain Modeling, Architecture decisions, and Definition of Done.
+- **BMAD-Slim:** Condensed BMAD for UI/Frontend tasks (see `docs/bmad/claude-code-slim.md`).
+- **PRP:** Project Roadmap & Plan - execution phase following BMAD (Plan → Run → Prove).
+- **BMAD → PRP flow:** Full governance workflow from planning through implementation with acceptance gates.
+
 ## Checklists & Runbooks
 - Claude Code UI Checklist (canonical UI rules): `docs/engineering/checklists/ui_claude_code.md`
 - UI Checklist (generic cheat sheet): `docs/engineering/checklists/ui.md`

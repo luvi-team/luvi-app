@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
+import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/privacy/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
@@ -300,18 +301,18 @@ void main() {
 
       // Setup GoRouter with consent + onboarding routes
       final router = GoRouter(
-        initialLocation: '/consent/options',
+        initialLocation: RoutePaths.consentOptions,
         routes: [
           GoRoute(
-            path: '/consent/options',
+            path: RoutePaths.consentOptions,
             builder: (context, state) => const ConsentOptionsScreen(),
           ),
           GoRoute(
-            path: '/onboarding/01',
+            path: RoutePaths.onboarding01,
             builder: (context, state) => const Onboarding01Screen(),
           ),
           GoRoute(
-            path: '/auth/signin',
+            path: RoutePaths.authSignIn,
             builder: (context, state) => const AuthSignInScreen(),
           ),
         ],
@@ -380,18 +381,18 @@ void main() {
             .thenAnswer((_) async {});
 
         final router = GoRouter(
-          initialLocation: '/consent/options',
+          initialLocation: RoutePaths.consentOptions,
           routes: [
             GoRoute(
-              path: '/consent/options',
+              path: RoutePaths.consentOptions,
               builder: (context, state) => const ConsentOptionsScreen(),
             ),
             GoRoute(
-              path: '/onboarding/01',
+              path: RoutePaths.onboarding01,
               builder: (context, state) => const Onboarding01Screen(),
             ),
             GoRoute(
-              path: '/auth/signin',
+              path: RoutePaths.authSignIn,
               builder: (context, state) => const AuthSignInScreen(),
             ),
           ],
@@ -430,6 +431,80 @@ void main() {
         // Unauthorized consent logging must not block navigation in the pre-auth flow.
         expect(find.byType(AuthSignInScreen), findsOneWidget);
         expect(find.text(l10n.consentSnackbarError), findsNothing);
+
+        verify(
+          () => mockConsentService.accept(
+            version: ConsentConfig.currentVersion,
+            scopes: any(named: 'scopes'),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'Navigation succeeds when userStateServiceProvider throws (local cache failure)',
+      (tester) async {
+        // Phase 2.2 test: local cache failure should not block navigation
+        final mockConsentService = _MockConsentService();
+
+        when(
+          () => mockConsentService.accept(
+            version: ConsentConfig.currentVersion,
+            scopes: any(named: 'scopes'),
+          ),
+        ).thenAnswer((_) async {});
+
+        final router = GoRouter(
+          initialLocation: RoutePaths.consentOptions,
+          routes: [
+            GoRoute(
+              path: RoutePaths.consentOptions,
+              builder: (context, state) => const ConsentOptionsScreen(),
+            ),
+            GoRoute(
+              path: RoutePaths.onboarding01,
+              builder: (context, state) => const Onboarding01Screen(),
+            ),
+            GoRoute(
+              path: RoutePaths.authSignIn,
+              builder: (context, state) => const AuthSignInScreen(),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              consentServiceProvider.overrideWithValue(mockConsentService),
+              // Simulate local cache failure
+              userStateServiceProvider.overrideWith(
+                (ref) => Future<UserStateService>.error(
+                  StateError('Local cache failure'),
+                ),
+              ),
+            ],
+            child: MaterialApp.router(
+              theme: AppTheme.buildAppTheme(),
+              locale: const Locale('de'),
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              routerConfig: router,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Tap "Alle akzeptieren"
+        final acceptAllButton =
+            find.byKey(const Key('consent_options_btn_accept_all'));
+        expect(acceptAllButton, findsOneWidget);
+
+        await tester.tap(acceptAllButton);
+        await tester.pumpAndSettle();
+
+        // Navigation should succeed despite local cache failure (best-effort semantics)
+        expect(find.byType(AuthSignInScreen), findsOneWidget,
+            reason: 'Navigation should proceed even when local cache fails');
 
         verify(
           () => mockConsentService.accept(

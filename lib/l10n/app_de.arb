@@ -1444,7 +1444,7 @@
   "@authRegisterEmailTitle": {
     "description": "Title for email registration screen"
   },
-  "authResetPasswordSubtitle": "E-Mail-Adresse eingeben und erhalte einen Link zum Zurücksetzen.",
+  "authResetPasswordSubtitle": "Gib deine E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten.",
   "@authResetPasswordSubtitle": {
     "description": "Subtitle for reset password screen"
   },

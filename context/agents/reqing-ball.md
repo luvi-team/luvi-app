@@ -10,7 +10,7 @@ PR diff (only diff, no full codebase), story/PRD criteria, ADR snippets.
 Table (Criterion | Finding | File:Line | Severity | Action) as PR comment.
 
 ## Rules
-No full scans, GDPR-safe, short and concise.
+No full scans, GDPR-safe (no PII in outputs, no persistent storage of personal data), short and concise.
 
 ## Acceptance Criterion
 ≤ 30 lines; ≤ 1 false positive per PR in calibration phase.
@@ -22,6 +22,7 @@ Codex CLI-first (BMAD → PRP).
 - **Codex CLI-first:** Backend/DB tasks are prioritized via Codex agent.
 - **BMAD:** Business Model & Architecture Doc.
 - **PRP:** Project Roadmap & Plan.
+- **RLS:** Row-Level Security (Postgres policy-based access control).
 - **BMAD-Slim flow:** See `docs/bmad/claude-code-slim.md`.
 - **Acceptance gates:** See `context/agents/_acceptance_v1.1.md`.
 
