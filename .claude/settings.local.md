@@ -139,19 +139,13 @@
 | `scripts/flutter_codex.sh:*` | 🟢 | Sandboxed Flutter | /analyze, /test Commands |
 | `./scripts/run_dev.sh:*` | 🟡 | Dev-Server starten | "Starte den Dev-Server" |
 
-### 8. Tools (4 Permissions)
+### 8. Tools (3 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
 | `xcrun simctl:*` | 🟢 | iOS Simulator | "Starte den Simulator" |
 | `actionlint:*` | 🟢 | GitHub Actions Lint | "Check die Actions" |
-| `ruby -ryaml -e:*` | 🟡 | YAML-Verarbeitung | Internes Tooling |
 | `ffprobe:*` | 🟢 | Media-Analyse | Video/Audio-Metadaten |
-
-> ⚠️ **Sicherheitshinweis zu `ruby -ryaml -e:*`:** Diese Permission erlaubt beliebige Ruby-Ausführung.
-> - Nur für vertrauenswürdige YAML-Verarbeitung nutzen
-> - Keine User-Inputs an `-e` übergeben
-> - Alternative: Dediziertes Script mit festem Code verwenden
 
 ---
 
@@ -176,6 +170,7 @@
 | `git reset --hard` | Änderungen unwiderruflich verlieren |
 | `git rebase` | History umschreiben ist gefährlich |
 | `pkill` | Prozesse beenden ist destruktiv |
+| `ruby -ryaml -e:*` | Arbitrary Ruby execution - nutze Python PyYAML stattdessen |
 
 > **Unterschied `rm` vs `git rm`:**
 > - `rm` (Shell): Löscht Dateien permanent und unwiderruflich
@@ -287,12 +282,12 @@
 | MCP Figma | 3 |
 | Shell Utilities | 16 |
 | Scripts | 3 |
-| Tools | 4 |
-| **Basis-Gesamt** | **68** |
+| Tools | 3 |
+| **Basis-Gesamt** | **67** |
 
 > **Hinweis:** Claude Code fügt automatisch neue Permissions hinzu, wenn du sie während einer Session genehmigst (z.B. WebFetch, WebSearch). Diese werden hier nicht dokumentiert, da sie session-spezifisch sind.
 
 ---
 
-*Letzte Aktualisierung: 2026-01-19*
+*Letzte Aktualisierung: 2026-01-23*
 *Bereinigt von: Claude Code*
