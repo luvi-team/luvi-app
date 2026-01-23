@@ -29,7 +29,7 @@ class _FakeServerErrorLoginNotifier extends LoginNotifier {
         globalError: AuthStrings.errLoginUnavailable,
       ),
     );
-    return isValid;
+    return false;
   }
 }
 
@@ -153,12 +153,14 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
-    await notifier.validateAndSubmit(password: '12345678');
+    final result = await notifier.validateAndSubmit(password: '12345678');
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);
     expect(state.passwordError, isNull);
     expect(state.globalError, AuthStrings.errLoginUnavailable);
+    // Inputs are valid (user can retry), but submission failed (result is false)
     expect(state.isValid, isTrue);
+    expect(result, isFalse);
   });
 }

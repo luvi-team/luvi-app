@@ -183,6 +183,8 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     AppLocalizations l10n,
   ) async {
     // 1. Set all visible consent scopes (required + optional)
+    // Note: acceptAll() may throw, but we intentionally do not manage busy state here
+    // because it is handled inside _handleContinue (which calls _acquireBusy/_releaseBusy).
     try {
       ref.read(consent02Provider.notifier).acceptAll();
     } catch (error, stackTrace) {
@@ -359,37 +361,34 @@ class _ConsentCheckboxRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(Sizes.radiusM),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: Sizes.touchTargetMin),
-          child: Padding(
-            padding: EdgeInsets.zero,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: _buildRowContent(textStyle)),
-                    const SizedBox(width: Spacing.m),
-                    // Checkbox (Figma: 24x24, Circle)
-                    _ConsentCircleCheckbox(selected: selected),
-                  ],
-                ),
-                // C12: Optional footnote displayed below the checkbox row
-                if (footnote != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: Spacing.xs),
-                    child: Text(
-                      footnote!,
-                      style: TextStyle(
-                        fontFamily: FontFamilies.figtree,
-                        fontSize: ConsentTypography.footnoteFontSize,
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.6,
-                        ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: _buildRowContent(textStyle)),
+                  const SizedBox(width: Spacing.m),
+                  // Checkbox (Figma: 24x24, Circle)
+                  _ConsentCircleCheckbox(selected: selected),
+                ],
+              ),
+              // C12: Optional footnote displayed below the checkbox row
+              if (footnote != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: Spacing.xs),
+                  child: Text(
+                    footnote!,
+                    style: TextStyle(
+                      fontFamily: FontFamilies.figtree,
+                      fontSize: ConsentTypography.footnoteFontSize,
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.6,
                       ),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),
@@ -794,13 +793,13 @@ Future<bool> _persistConsentToLocalCache(
       .toSet();
 
   // Parallel writes for efficiency.
-  // Issue 5: Use .wait extension to capture all errors via ParallelWaitError
+  // Issue 5: Use Future.wait to capture all errors via ParallelWaitError (if available) or standard processing.
   try {
-    await [
+    await Future.wait([
       userState.markWelcomeSeen(),
       userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
       userState.setAcceptedConsentScopes(acceptedScopes),
-    ].wait;
+    ]);
     return true;
   } on ParallelWaitError catch (e, stackTrace) {
     // Log all errors occurred during parallel execution

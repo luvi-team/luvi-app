@@ -360,7 +360,7 @@ void main() {
         // Use test accessor to get the actual key
         final scopesKey = service.acceptedConsentScopesKeyForTesting;
         if (scopesKey == null) {
-          throw StateError('User not bound - acceptedConsentScopesKeyForTesting is null');
+          fail('User not bound - acceptedConsentScopesKeyForTesting is null');
         }
 
         // Corrupt the JSON

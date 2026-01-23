@@ -103,16 +103,22 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
 
       // Fallback: detect invalid credentials via statusCode or message pattern
       // Note: AuthException.statusCode is String?, not int
-      // WARNING: This is a best-effort heuristic and fragile because backend error messages can change.
-      // We rely on error.message pattern matching as a fallback when error.code is null.
-      // Do not rely on this as a definitive check.
+      // WARNING: This is a best-effort heuristic.
       final statusCode = error.statusCode;
       final message = error.message.toLowerCase();
-      final isLikelyInvalidCredentials = statusCode == '401' ||
-          (message.contains('invalid') &&
-              (message.contains('credentials') || message.contains('grant')));
 
-      if (isLikelyInvalidCredentials) {
+      // Split OR logic to reduce false positives (CodeRabbit fix)
+      var isInvalidCredentials = false;
+      if (statusCode == '401') {
+        // 401 Unauthorized is a strong indicator
+        isInvalidCredentials = true;
+      } else if (message.contains('invalid') &&
+          (message.contains('credentials') || message.contains('grant'))) {
+        // Message fallback
+        isInvalidCredentials = true;
+      }
+
+      if (isInvalidCredentials) {
         log.d('login_fallback_heuristic_triggered', tag: 'login_submit');
         loginNotifier.updateState(
           email: email,

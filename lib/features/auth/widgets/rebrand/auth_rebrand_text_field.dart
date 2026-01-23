@@ -151,14 +151,7 @@ class AuthRebrandTextField extends StatelessWidget {
     // Derive fallback label from field properties (MUST-03 compliant)
     // Uses existing L10n keys: authEmailHint, authPasswordHint
     final l10n = AppLocalizations.of(context);
-    final fallbackLabel = semanticLabel ??
-        (showError && errorText != null && errorText!.isNotEmpty
-            ? errorText!
-            : (keyboardType == TextInputType.emailAddress
-                ? (l10n?.authEmailHint ?? 'Email')
-                : obscureText
-                    ? (l10n?.authPasswordHint ?? 'Password')
-                    : hintText));
+    final fallbackLabel = _deriveFallbackLabel(l10n, showError);
 
     // Issue 4: Error text is already shown visually as hintText (line 107-109).
     // Removed Semantics.hint to prevent duplicate screen-reader announcements.
@@ -167,5 +160,28 @@ class AuthRebrandTextField extends StatelessWidget {
       textField: true,
       child: field,
     );
+  }
+
+  /// Computes a fallback semantic label when none is explicitly provided.
+  ///
+  /// Logic order:
+  /// 1. [semanticLabel] if provided.
+  /// 2. [errorText] if the field is in error state.
+  /// 3. L10n specific hints for email/password types.
+  /// 4. [hintText] as last resort.
+  String _deriveFallbackLabel(AppLocalizations? l10n, bool showError) {
+    if (semanticLabel != null) {
+      return semanticLabel!;
+    }
+    if (showError && errorText != null && errorText!.isNotEmpty) {
+      return errorText!;
+    }
+    if (keyboardType == TextInputType.emailAddress) {
+      return l10n?.authEmailHint ?? 'Email';
+    }
+    if (obscureText) {
+      return l10n?.authPasswordHint ?? 'Password';
+    }
+    return hintText;
   }
 }

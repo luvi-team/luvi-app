@@ -26,7 +26,8 @@ class _RingData {
 
 /// All ring data from outer (teal) to inner (beige).
 /// SSOT: context/design/auth_screens_design_audit.yaml
-List<_RingData> get _rings => [
+// Optimized: Cached as a final list to prevent reallocation on every paint.
+final List<_RingData> _rings = [
   _RingData(
     color: DsColors.authRebrandRainbowTeal,
     width: AuthRebrandMetrics.rainbowRingWidths[0],

@@ -7,7 +7,7 @@ Validate PR diffs against story/PRD and relevant ADRs; identify gaps and next ac
 PR diff (only diff, no full codebase), story/PRD criteria, ADR snippets.
 
 ## Output
-Table (Criterion | Finding | File:Line | Severity | Action) as PR comment.
+Table (Finding_ID | Criterion | Finding | File:Line | Severity | Action) as PR comment.
 
 ## Rules
 No full scans, GDPR-safe (no PII in outputs, no persistent storage of personal data), short and concise.

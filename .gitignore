@@ -192,10 +192,6 @@ docs/dev/*
 # Security/Crypto details
 docs/security/
 
-# Business Strategy
-docs/product/
-docs/bmad/
-
 # Legal Drafts & Privacy (privacy.md + terms.md bleiben für CI)
 docs/privacy/*
 !docs/privacy/privacy.md
@@ -210,11 +206,6 @@ docs/contracts/
 # Audits (contains schema exports)
 docs/audits/
 
-# Algorithms
-docs/phase_definitions.md
-docs/ranking_heuristic.md
-docs/LUVI_Dossiers_v1.0.md
-
 # Agent Governance
 context/*
 !context/agents/
@@ -225,15 +216,8 @@ context/agents/*
 !context/agents/README.md
 !context/agents/reqing-ball.md
 !context/agents/ui-polisher.md
+!context/refs/
 # CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
-
-# Engineering Docs (local only)
-docs/engineering/field-guides/gold-standard-workflow.md
-docs/engineering/tech-stack.md
-docs/engineering/traycer/
-
-# ADRs (local only)
-docs/adr/
 
 # Traycer docs (local only)
 docs/traycer/

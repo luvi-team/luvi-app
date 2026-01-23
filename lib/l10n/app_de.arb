@@ -1067,7 +1067,7 @@
   "@consentOptionsTitle": {
     "description": "Title for consent options screen (C2)"
   },
-  "consentOptionsSubtitle": "Sicher gespeichert, streng geschützt.\nDSGVO, EU-Hosting",
+  "consentOptionsSubtitle": "Sicher gespeichert, streng geschützt. DSGVO, EU-Hosting",
   "@consentOptionsSubtitle": {
     "description": "Subtitle for consent options screen (C2)"
   },

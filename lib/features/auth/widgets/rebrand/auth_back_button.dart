@@ -28,31 +28,26 @@ class AuthBackButton extends StatelessWidget {
         AppLocalizations.of(context)?.authBackSemantic ??
         'Back'; // A11y fallback: English default when l10n unavailable
 
-    return Semantics(
-      excludeSemantics: true,
-      button: true,
-      label: label,
-      child: SizedBox(
-        width: Sizes.touchTargetMin,
-        height: Sizes.touchTargetMin,
-        child: IconButton(
-          onPressed: onPressed,
-          tooltip: label,
-          icon: SvgPicture.asset(
-            Assets.icons.authBackChevron,
-            // SVG is 44x44 with centered chevron - render at full touch target size
-            width: Sizes.touchTargetMin,
-            height: Sizes.touchTargetMin,
-            colorFilter: const ColorFilter.mode(
-              DsColors.authRebrandTextPrimary,
-              BlendMode.srcIn,
-            ),
+    return SizedBox(
+      width: Sizes.touchTargetMin,
+      height: Sizes.touchTargetMin,
+      child: IconButton(
+        onPressed: onPressed,
+        tooltip: label,
+        icon: SvgPicture.asset(
+          Assets.icons.authBackChevron,
+          // SVG is 44x44 with centered chevron - render at full touch target size
+          width: Sizes.touchTargetMin,
+          height: Sizes.touchTargetMin,
+          colorFilter: const ColorFilter.mode(
+            DsColors.authRebrandTextPrimary,
+            BlendMode.srcIn,
           ),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(
-            minWidth: Sizes.touchTargetMin,
-            minHeight: Sizes.touchTargetMin,
-          ),
+        ),
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints(
+          minWidth: Sizes.touchTargetMin,
+          minHeight: Sizes.touchTargetMin,
         ),
       ),
     );
