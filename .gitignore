@@ -136,7 +136,6 @@ lib/dev_main_*.dart
 # local audits (do not commit)
 context/debug/audits/
 context/agents/_drift_report.md
-docs/audits/*.txt
 test/goldens/failures/
 
 # test artifacts (not versioned)
@@ -196,15 +195,11 @@ docs/security/
 docs/privacy/*
 !docs/privacy/privacy.md
 !docs/privacy/terms.md
+!docs/privacy/reviews/
+!docs/privacy/reviews/**
 
-# Operational Runbooks
-docs/runbooks/
-
-# API Contracts
-docs/contracts/
-
-# Audits (contains schema exports)
-docs/audits/
+# Operational Runbooks / API Contracts / Audits / Privacy reviews:
+# These are referenced by SSOT docs and must be available in fresh clones.
 
 # Agent Governance
 context/*
@@ -218,6 +213,9 @@ context/agents/*
 !context/agents/ui-polisher.md
 !context/refs/
 # CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
+
+# UI measurement exports (noisy / not SSOT)
+docs/product/measures/dashboard/
 
 # Traycer docs (local only)
 docs/traycer/

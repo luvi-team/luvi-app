@@ -1,0 +1,186 @@
+{
+  "fileKey": "iQthMdxpCbl6afzXxvzqlt",
+  "nodeId": "67069-6953",
+  "nodeName": "01_Onboarding",
+  "extractedAt": "2025-09-30",
+  "variables": {
+    "colors": {
+      "Grayscale/White": {
+        "value": "#FFFFFF",
+        "type": "color",
+        "usage": ["screen background", "button key backgrounds"]
+      },
+      "Grayscale/Black": {
+        "value": "#030401",
+        "type": "color",
+        "usage": ["primary text", "instruction text", "input text", "keyboard labels", "CTA button text", "home indicator"]
+      },
+      "Primary color/100": {
+        "value": "#D9B18E",
+        "type": "color",
+        "usage": ["CTA button background"]
+      }
+    },
+    "typography": {
+      "Callout": {
+        "value": {
+          "fontFamily": "Inter",
+          "fontStyle": "Medium",
+          "fontSize": 16,
+          "fontWeight": 500,
+          "lineHeight": 24
+        },
+        "type": "typography",
+        "usage": ["step counter (1/7)"]
+      },
+      "Body/Regular": {
+        "value": {
+          "fontFamily": "Figtree",
+          "fontStyle": "Regular",
+          "fontSize": 20,
+          "fontWeight": 400,
+          "lineHeight": 24
+        },
+        "type": "typography",
+        "usage": ["instruction text (Wie soll ich dich nennen?)"]
+      },
+      "Heading/H1": {
+        "value": {
+          "fontFamily": "Playfair Display",
+          "fontStyle": "Regular",
+          "fontSize": 32,
+          "fontWeight": 400,
+          "lineHeight": 40
+        },
+        "type": "typography",
+        "usage": ["user input display (Claire)"]
+      },
+      "Button": {
+        "value": {
+          "fontFamily": "Figtree",
+          "fontStyle": "Bold",
+          "fontSize": 20,
+          "fontWeight": 700,
+          "lineHeight": 24
+        },
+        "type": "typography",
+        "usage": ["CTA button label (Weiter)"]
+      }
+    },
+    "spacing": {
+      "_note": "Spacing values extracted from layout (not explicit Figma variables)",
+      "vertical": {
+        "section_gap": {
+          "value": 84,
+          "unit": "px",
+          "usage": ["instruction to input", "input to button", "title to instruction"]
+        },
+        "title_bar_height": {
+          "value": 112,
+          "unit": "px",
+          "usage": ["status bar + title combined height"]
+        },
+        "status_bar_height": {
+          "value": 47,
+          "unit": "px",
+          "usage": ["iOS status bar"]
+        },
+        "keyboard_height": {
+          "value": 282,
+          "unit": "px",
+          "usage": ["iOS keyboard total height"]
+        },
+        "home_indicator_height": {
+          "value": 34,
+          "unit": "px",
+          "usage": ["iOS home indicator container"]
+        }
+      },
+      "horizontal": {
+        "screen_padding": {
+          "value": 20,
+          "unit": "px",
+          "usage": ["left/right content inset"]
+        },
+        "button_padding": {
+          "value": 12,
+          "unit": "px",
+          "usage": ["button inner padding (all sides)"]
+        },
+        "key_gap": {
+          "value": 6,
+          "unit": "px",
+          "usage": ["keyboard key spacing"]
+        }
+      }
+    },
+    "radii": {
+      "_note": "Border radius values extracted from components",
+      "button_radius": {
+        "value": 12,
+        "unit": "px",
+        "usage": ["CTA button corners"]
+      },
+      "key_radius": {
+        "value": 4.6,
+        "unit": "px",
+        "usage": ["keyboard key corners"]
+      },
+      "home_indicator_radius": {
+        "value": 100,
+        "unit": "px",
+        "usage": ["home indicator pill shape"]
+      }
+    },
+    "shadows": {
+      "_note": "Shadow values extracted from components",
+      "key_shadow": {
+        "value": "0px 1px 0px 0px rgba(0,0,0,0.3)",
+        "usage": ["keyboard key drop shadow"]
+      }
+    },
+    "additionalColors": {
+      "_note": "Colors found in code but not explicitly named as variables",
+      "keyboard_background": {
+        "value": "#D1D3D9",
+        "type": "color",
+        "usage": ["keyboard container background with backdrop blur"]
+      },
+      "key_action_background": {
+        "value": "#ABB0BC",
+        "type": "color",
+        "usage": ["secondary keyboard keys (123, return, shift, delete)"]
+      }
+    }
+  },
+  "fallbackStrategy": {
+    "colors": "If variable unavailable, use hex value directly",
+    "typography": "If variable unavailable, use inline TextStyle with family/size/weight",
+    "spacing": "If variable unavailable, use numeric value with unit conversion (px → logical pixels)",
+    "radii": "If variable unavailable, use BorderRadius.circular(value)"
+  },
+  "flutterMapping": {
+    "colors": {
+      "Grayscale/White": "DsColors.white",
+      "Grayscale/Black": "DsColors.black",
+      "Primary color/100": "DsColors.primary100"
+    },
+    "typography": {
+      "Callout": "DsTextStyles.callout",
+      "Body/Regular": "DsTextStyles.bodyRegular",
+      "Heading/H1": "DsTextStyles.headingH1",
+      "Button": "DsTextStyles.button"
+    },
+    "spacing": {
+      "section_gap": "DsSpacing.xxlarge",
+      "screen_padding": "DsSpacing.large",
+      "button_padding": "DsSpacing.medium",
+      "key_gap": "DsSpacing.small"
+    },
+    "radii": {
+      "button_radius": "DsRadii.large",
+      "key_radius": "DsRadii.small",
+      "home_indicator_radius": "DsRadii.pill"
+    }
+  }
+}

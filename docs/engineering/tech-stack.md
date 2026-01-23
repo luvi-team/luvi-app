@@ -69,7 +69,7 @@
 - **Offline & Security:**  
   - **SQLCipher** für lokale verschlüsselte DB (Crash Protection bei laufenden Workouts)  
   - **flutter_secure_storage** für Encryption Keys  
-  - `is_session_active` Flagate nach App-Crash
+  - `is_session_active` Flag nach App-Crash
 
 ---
 
@@ -92,7 +92,7 @@
 ### 3.3 API-Gateway: Vercel Edge (`region: 'fra1'`)
 
 - **Funktion:** Edge-Functions nahe den EU-Usern/DBs; CORS/Rate-Limit/PII-Redaction.  
-- **Routen:** `/api/health` (200 + timestamp), `/api/ai/*`, W **Quality Gate:** **Vercel Preview Health (200 OK)** als **Required Check** vor Merge/Promotion.
+- **Routen:** `/api/health` (200 + timestamp), `/api/ai/*`, **Quality Gate:** **Vercel Preview Health (200 OK)** als **Required Check** vor Merge/Promotion.
 
 ---
 
@@ -120,8 +120,7 @@
 
 - **Analytics:** **PostHog (EU)**  
 - **Push:** **OneSignal** (DPA/SCCs)  
-  **Privacy-Policy (ADR-0006):** Payloads dürfen **KEIN* 
-  (Zyklusphase, Symptome) enthalten. Content-First-Strategie.)  
+  **Privacy-Policy (ADR-0006):** Payloads dürfen **KEINE** sensiblen Daten (Zyklusphase, Symptome) enthalten. Content-First-Strategie.  
 - **Crash/Performance:** **Sentry**  
 - **CI/CD:** **GitHub Actions** + **Vercel** (PR-Previews, Prod-Deploy on merge) + **Greptile Review** (Required Check im PR; optional lokales CodeRabbit-Review als Preflight, kein GitHub-Check)
 
@@ -138,7 +137,7 @@
   **Funktion:** IAP-Abo-Verwaltung (StoreKit / Play Billing), Entitlements, Analytics.  
   **Einsatz:** 7-Tage-Trial, Abo-Gates für Premium-Features, Workout-Einzelkäufe in LUVI Coach, Restore Purchases.  
   **Integration:** Supabase-Sync für Entitlements, Webhook für Abo-Events.  
-  **Preis-Range:** ~10–15 €/Monat (Abo),ts ab 4,99 €.
+  **Preis-Range:** ~10–15 €/Monat (Abo), Einzelkaufpreise ab 4,99 €.
 
 ---
 
@@ -161,18 +160,18 @@
 
 | Tool/Komponente                 | Kategorie        | Status             | Funktion/Kernnutzen                                  | Herkunft   |
 |---------------------------------|------------------|--------------------|------------------------------------------------------|-----------|
-| **Gemini**                      | Dev-AI (Arch)    | Neu                | Architektur & Orchestrierun                | Session   |
+| **Gemini**                      | Dev-AI (Arch)    | Neu                | Architektur & Orchestrierung               | Session   |
 | **Codex CLI**                   | Dev-AI (Back)    | Bestätigt          | Agentisches Coding (Backend/DB/Privacy)              | Video     |
 | **Claude Code**                 | Dev-AI (Front)   | Bestätigt          | UI/Dataviz Implementierung                           | Session   |
 | **Archon (MCP)**                | Knowledge/SSOT   | Neu                | Dossiers/Policies + MCP-Bridge für AI-Kontext        | Video     |
 | **Langfuse**                    | LLM Observability| Neu                | Traces/Costs/Latency/Evals                           | Video     |
 | **Supabase (EU) + pgvector**    | DB/Auth          | Beibehalten        | SQL + Vektor + RLS                                   | Baseline  |
 | **Supabase MCP (Dev-only, RO)** | DB-Ops via MCP   | Neu (User-Wunsch)  | AI-gestützte Schema/Plan-Ops mit Guardrails          | Anfrage   |
-| **Vercel Edge (fra1)**          | API/Edge         | Beibehalten        | `/api/health`, `/api/ai/*`, Previews                 |eline  |
+| **Vercel Edge (fra1)**          | API/Edge         | Beibehalten        | `/api/health`, `/api/ai/*`, Previews                 | Baseline  |
 | **Vercel Preview Health 200**   | QA/Gate          | Reaktiviert        | Required Check auf PR-Preview-Erreichbarkeit         | Baseline  |
 | **Redis**                       | Cache            | Beibehalten        | Schnelle Feeds, geringere Kosten                     | Baseline  |
 | **PostHog (EU)**                | Analytics        | Beibehalten        | Events/Funnel/Retention                              | Baseline  |
 | **Sentry**                      | Crash/Perf       | Beibehalten        | Stabilitäts-Monitoring                               | Baseline  |
 | **GitHub Actions + Greptile Review** | CI/QA        | Aktualisiert       | Build/Test + AI-PR-Review (Greptile Review als Required Check); optional lokales CodeRabbit-Preflight (kein GitHub-Check) | Baseline  |
 | **Newsletter (Brevo/DOI)**      | Comms            | Wieder aufgenommen | Opt-in Mailversand, Onboarding/Updates               | Baseline  |
-| **Flutter (iOS-first)**         | App-UI           | Beibehalten        | UI-Impementierung, Time-to-Market                   | Baseline  |
+| **Flutter (iOS-first)**         | App-UI           | Beibehalten        | UI-Implementierung, Time-to-Market                   | Baseline  |

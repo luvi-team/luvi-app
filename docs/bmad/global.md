@@ -8,7 +8,7 @@
 > (App-Kontext, Roadmap, Dossiers, Tech-Stack, DoD, Checklisten, ADRs).
 > Es erfindet nichts Neues, sondern ordnet und verlinkt.
 
-## 1. BMAD bei LUVI — Begriffe
+## 0. BMAD bei LUVI — Begriffe
 
 - **Business (B)**
   Warum es LUVI gibt, für wen wir bauen, welche Probleme wir lösen,
@@ -34,7 +34,7 @@
   ADR-Pflege, Runbooks), wie sie in DoD-, Checklisten- und
   Governance-Dokumenten definiert sind.
 
-## 7. Dokumenten-Hierarchie & Versionierung
+## 6. Dokumenten-Hierarchie & Versionierung
 
 - Für jedes Themengebiet (z. B. App-Kontext, Roadmap,
   Phase-Definitionen, Ranking-Heuristik, Safety & Scope) existiert genau
@@ -516,7 +516,7 @@ docs/audits/SUPABASE_SCHEMA_public.ts)*
   verschlüsselte Datenbank (SQLCipher) genutzt, deren Schlüssel in
   Secure Storage liegen. `is_session_active` Flag für Resume-Handling.
 
-*(Quellen: tech-stack.md, tech_stack_current.yaml, repo-structure.md,
+*(Quellen: context/refs/tech_stack_current.yaml, repo-structure.md,
 flutter-structure.md, platform/healthcheck.md, offline_resume_key_management.md)*
 
 ### 3.2 Bottom-Navigation (MVP)
@@ -856,7 +856,7 @@ docs/privacy/reviews/*.md)*
 | Consent-Texte | `docs/consent_texts.md` | CMP-/Consent-Copy |
 | Ranking-Heuristik | `docs/ranking_heuristic.md` | Feed-/Content-Priorisierung |
 | Analytics-Taxonomy | `docs/analytics/taxonomy.md` | Event-Schema |
-| Tech-Stack | `docs/engineering/tech-stack.md` | Technologie-Übersicht |
+| Tech-Stack | `context/refs/tech_stack_current.yaml` | Tech-Stack SSOT (YAML) |
 | Definition of Done | `docs/definition-of-done.md` | Globale DoD |
 | Healthcheck | `docs/platform/healthcheck.md` | /api/health Spezifikation |
 | AI-Reviewer | `docs/engineering/ai-reviewer.md` | Greptile/CodeRabbit Policy |

@@ -1,0 +1,299 @@
+{
+  "screen": "Onboarding_Success",
+  "node_id": "68597-8050",
+  "file_key": "iQthMdxpCbl6afzXxvzqlt",
+  "figma_url": "https://www.figma.com/design/iQthMdxpCbl6afzXxvzqlt/Nova-Health-UI-%E2%80%93-Working-Copy?node-id=68597-8050&m=dev",
+  "viewport": {
+    "width": 428,
+    "height": 926
+  },
+  "trophy": {
+    "bounding_box": {
+      "width": 308,
+      "height": 300
+    },
+    "position": {
+      "x": 55,
+      "y": 244
+    },
+    "components": {
+      "body": {
+        "width": 172.53,
+        "height": 182.15,
+        "fill_color": "#D9B18E",
+        "position": {
+          "x": 127.72,
+          "y": 361.85
+        },
+        "node_id": "68597:8085",
+        "layer_type": "Vector"
+      },
+      "handles": [
+        {
+          "side": "left",
+          "fill_color": "#FF8C00",
+          "layer_type": "Vector",
+          "symmetrical": true
+        },
+        {
+          "side": "right",
+          "fill_color": "#FF8C00",
+          "layer_type": "Vector",
+          "symmetrical": true
+        }
+      ],
+      "star": {
+        "count": 1,
+        "color": "#FFD700",
+        "layer_type": "Vector",
+        "grouping": "Part of trophy group"
+      },
+      "confetti": {
+        "total_count": 47,
+        "streamers_count": 5,
+        "dots_count": 42,
+        "layer_type": "Vector",
+        "export_note": "All confetti elements are part of single SVG group (node 68597:8099). Structure changed from hierarchical to flat elements[] array for exact per-element docs (2025-10-22)",
+        "count_correction": {
+          "previous_estimate": {"streamers": 6, "dots": 41},
+          "exact_measurement": {"streamers": 5, "dots": 42},
+          "classification_criteria": "Streamers: width OR height >20px; Dots: width AND height ≤20px",
+          "note": "Counts corrected based on exact Figma node measurements (2025-10-22)"
+        },
+        "elements": [
+          {"id": "streamer_01", "node_id": "68597:8100", "type": "Streamer", "shape": "Curved path", "width": 86.46, "height": 26.45, "color_placeholder": "#896CFE", "color_verified": null, "position": {"x": 55, "y": 358.28}, "region": "left"},
+          {"id": "streamer_02", "node_id": "68597:8103", "type": "Streamer", "shape": "Curved path", "width": 65.88, "height": 63.91, "color_placeholder": "#7B68EE", "color_verified": null, "position": {"x": 241.88, "y": 271.23}, "region": "center"},
+          {"id": "streamer_03", "node_id": "68597:8106", "type": "Streamer", "shape": "Curved path", "width": 81.95, "height": 41.75, "color_placeholder": "#6A5ACD", "color_verified": null, "position": {"x": 280.93, "y": 351.44}, "region": "right"},
+          {"id": "streamer_04", "node_id": "68597:8109", "type": "Streamer", "shape": "Curved path", "width": 58.11, "height": 61.59, "color_placeholder": "#896CFE", "color_verified": null, "position": {"x": 104.61, "y": 273.27}, "region": "left"},
+          {"id": "streamer_05", "node_id": "68597:8193", "type": "Streamer", "shape": "Curved path", "width": 27.55, "height": 86.19, "color_placeholder": "#7B68EE", "color_verified": null, "position": {"x": 179.81, "y": 244}, "region": "center"},
+          {"id": "dot_01", "node_id": "68597:8112", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.59, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 59.76, "y": 349.06}, "region": "left"},
+          {"id": "dot_02", "node_id": "68597:8115", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.64, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 260.19, "y": 309.57}, "region": "center"},
+          {"id": "dot_03", "node_id": "68597:8118", "type": "Dot", "shape": "Circle", "width": 8.79, "height": 8.86, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 325.84, "y": 326.09}, "region": "right"},
+          {"id": "dot_04", "node_id": "68597:8121", "type": "Dot", "shape": "Circle", "width": 8.79, "height": 8.86, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 335.28, "y": 362.38}, "region": "right"},
+          {"id": "dot_05", "node_id": "68597:8124", "type": "Dot", "shape": "Circle", "width": 8.79, "height": 8.86, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 279.92, "y": 337}, "region": "right"},
+          {"id": "dot_06", "node_id": "68597:8127", "type": "Dot", "shape": "Circle", "width": 8.79, "height": 8.86, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 251.58, "y": 324.95}, "region": "center"},
+          {"id": "dot_07", "node_id": "68597:8130", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.59, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 147.22, "y": 341.34}, "region": "left"},
+          {"id": "dot_08", "node_id": "68597:8133", "type": "Dot", "shape": "Circle", "width": 8.79, "height": 8.86, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 264.63, "y": 349.42}, "region": "center"},
+          {"id": "dot_09", "node_id": "68597:8136", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.64, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 165.39, "y": 325.59}, "region": "center"},
+          {"id": "dot_10", "node_id": "68597:8139", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.59, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 169.84, "y": 266.41}, "region": "center"},
+          {"id": "dot_11", "node_id": "68597:8142", "type": "Dot", "shape": "Circle", "width": 8.79, "height": 8.86, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 274.81, "y": 364.84}, "region": "right"},
+          {"id": "dot_12", "node_id": "68597:8145", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.64, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 321.24, "y": 268.28}, "region": "right"},
+          {"id": "dot_13", "node_id": "68597:8148", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.64, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 286.91, "y": 248.63}, "region": "right"},
+          {"id": "dot_14", "node_id": "68597:8151", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.64, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 265.94, "y": 257.51}, "region": "center"},
+          {"id": "dot_15", "node_id": "68597:8154", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.64, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 306.26, "y": 256.29}, "region": "right"},
+          {"id": "dot_16", "node_id": "68597:8157", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.74, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 287.45, "y": 272.55}, "region": "right"},
+          {"id": "dot_17", "node_id": "68597:8160", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.74, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 325.68, "y": 286.48}, "region": "right"},
+          {"id": "dot_18", "node_id": "68597:8163", "type": "Dot", "shape": "Circle", "width": 8.7, "height": 8.88, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 321.95, "y": 342.51}, "region": "right"},
+          {"id": "dot_19", "node_id": "68597:8166", "type": "Dot", "shape": "Circle", "width": 8.7, "height": 8.88, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 352.89, "y": 321.03}, "region": "right"},
+          {"id": "dot_20", "node_id": "68597:8169", "type": "Dot", "shape": "Circle", "width": 8.7, "height": 8.88, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 354.68, "y": 360.43}, "region": "right"},
+          {"id": "dot_21", "node_id": "68597:8172", "type": "Dot", "shape": "Circle", "width": 8.87, "height": 8.64, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 142.79, "y": 299.75}, "region": "left"},
+          {"id": "dot_22", "node_id": "68597:8175", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.59, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 59.35, "y": 319.41}, "region": "left"},
+          {"id": "dot_23", "node_id": "68597:8178", "type": "Dot", "shape": "Circle", "width": 8.85, "height": 8.58, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 107.26, "y": 359.97}, "region": "left"},
+          {"id": "dot_24", "node_id": "68597:8181", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.58, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 113.43, "y": 326.23}, "region": "left"},
+          {"id": "dot_25", "node_id": "68597:8184", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.59, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 94.36, "y": 297.93}, "region": "left"},
+          {"id": "dot_26", "node_id": "68597:8187", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.59, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 87.52, "y": 354.28}, "region": "left"},
+          {"id": "dot_27", "node_id": "68597:8190", "type": "Dot", "shape": "Circle", "width": 8.7, "height": 8.89, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 297.15, "y": 321.10}, "region": "right"},
+          {"id": "dot_28", "node_id": "68597:8196", "type": "Dot", "shape": "Circle", "width": 8.87, "height": 8.77, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 206.68, "y": 266.32}, "region": "center"},
+          {"id": "dot_29", "node_id": "68597:8199", "type": "Dot", "shape": "Circle", "width": 8.87, "height": 8.77, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 243.41, "y": 258.79}, "region": "center"},
+          {"id": "dot_30", "node_id": "68597:8202", "type": "Dot", "shape": "Circle", "width": 8.87, "height": 8.77, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 215.16, "y": 312.74}, "region": "center"},
+          {"id": "dot_31", "node_id": "68597:8205", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.68, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 241.59, "y": 287.08}, "region": "center"},
+          {"id": "dot_32", "node_id": "68597:8208", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.68, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 169.82, "y": 286.56}, "region": "center"},
+          {"id": "dot_33", "node_id": "68597:8211", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.67, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 223.13, "y": 248.61}, "region": "center"},
+          {"id": "dot_34", "node_id": "68597:8214", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.67, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 147.22, "y": 261.81}, "region": "left"},
+          {"id": "dot_35", "node_id": "68597:8217", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.67, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 200.18, "y": 294.8}, "region": "center"},
+          {"id": "dot_36", "node_id": "68597:8220", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.73, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 303.25, "y": 289.18}, "region": "right"},
+          {"id": "dot_37", "node_id": "68597:8223", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.64, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 223.13, "y": 287.10}, "region": "center"},
+          {"id": "dot_38", "node_id": "68597:8226", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.74, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 117.86, "y": 263.42}, "region": "left"},
+          {"id": "dot_39", "node_id": "68597:8229", "type": "Dot", "shape": "Circle", "width": 8.88, "height": 8.73, "color_placeholder": "#FFFF00", "color_verified": null, "position": {"x": 133.67, "y": 280.05}, "region": "left"},
+          {"id": "dot_40", "node_id": "68597:8232", "type": "Dot", "shape": "Circle", "width": 8.85, "height": 8.58, "color_placeholder": "#B19CD9", "color_verified": null, "position": {"x": 123.77, "y": 343.43}, "region": "left"},
+          {"id": "dot_41", "node_id": "68597:8235", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.59, "color_placeholder": "#A89FD9", "color_verified": null, "position": {"x": 75.40, "y": 298.90}, "region": "left"},
+          {"id": "dot_42", "node_id": "68597:8238", "type": "Dot", "shape": "Circle", "width": 8.86, "height": 8.58, "color_placeholder": "#FFEB3B", "color_verified": null, "position": {"x": 83.09, "y": 326.23}, "region": "left"}
+        ]
+      }
+    }
+  },
+  "title": {
+    "text": "Du bist startklar!",
+    "font_family": "Playfair Display",
+    "font_style": "Regular",
+    "font_size": 24,
+    "font_weight": 400,
+    "line_height": 32,
+    "line_height_ratio": 1.333,
+    "color": "#030401",
+    "text_alignment": "center",
+    "position": {
+      "x": 40,
+      "y": 572
+    },
+    "width": 348,
+    "height": 32
+  },
+  "button": {
+    "label": "Los gehts!",
+    "label_corrected": "Los geht's!",
+    "width": 388,
+    "height": 50,
+    "border_radius": 12,
+    "bg_color": "#D9B18E",
+    "border": "None",
+    "font_family": "Figtree",
+    "font_style": "Bold",
+    "font_size": 20,
+    "font_weight": 700,
+    "line_height": 24,
+    "text_color": "#030401",
+    "padding": {
+      "horizontal": 12,
+      "top": 12,
+      "bottom": 11
+    },
+    "position": {
+      "x": 24,
+      "y": 670
+    }
+  },
+  "spacing": {
+    "status_bar_height": 47,
+    "home_indicator_height": 34,
+    "top_to_trophy": 197,
+    "trophy_to_title": 28,
+    "title_to_button": 66,
+    "button_to_bottom": 172
+  },
+  "tokens": {
+    "colors": {
+      "screen_bg": "#FFFFFF",
+      "title_color": "#030401",
+      "button_bg": "#D9B18E",
+      "button_text": "#030401",
+      "trophy_colors": {
+        "body": "#D9B18E",
+        "handles": ["#FF8C00", "#FF8C00"],
+        "star": "#FFD700",
+        "confetti": ["#7B68EE", "#6A5ACD", "#FFFF00", "#FFEB3B", "#B19CD9", "#A89FD9"]
+      }
+    },
+    "typography": {
+      "title_token": "Heading 2",
+      "title_details": "Playfair Display Regular 24/32",
+      "button_token": "Button",
+      "button_details": "Figtree Bold 20/24"
+    },
+    "radii": {
+      "button_radius": 12
+    }
+  },
+  "export_recommendation": {
+    "format": "SVG",
+    "resolutions": ["single"],
+    "filenames": ["onboarding_success_trophy.svg"],
+    "rationale": "Trophy consists exclusively of vector shapes (Body with gradient, Handles, Star, 47 Confetti elements). No raster effects (shadows, blurs). Gradient fills are within SVG vectors and exportable. SVG provides best quality, smallest file size, and scalability. All elements exportable as group, no animation planned → Single asset preferred.",
+    "export_settings": {
+      "svg": "Include 'id' attribute ✓, Outline Text N/A (no text), Simplify Stroke ✗",
+      "source_node": "68597:8084"
+    }
+  },
+  "responsive": {
+    "auto_layout": false,
+    "auto_layout_details": {
+      "positioning": "Absolute (manual Y-coordinates)"
+    },
+    "constraints": {
+      "trophy": {
+        "horizontal": "Center",
+        "vertical": "Top"
+      },
+      "title": {
+        "horizontal": "Center",
+        "vertical": "Top"
+      },
+      "button": {
+        "horizontal": "Center",
+        "vertical": "Top"
+      }
+    },
+    "strategy": "Trophy scales proportional on larger screens (max 400px width), scales down on smaller screens (min 80% = 246px). Title and Button: Centered horizontal, fixed spacing to Trophy (28px Trophy→Title, 66px Title→Button). Recommend MainAxisAlignment.center for vertical centering instead of absolute positioning."
+  },
+  "accessibility": {
+    "semantics": {
+      "title": {
+        "role": "heading",
+        "level": 1,
+        "accessible_label": "Du bist startklar!"
+      },
+      "trophy": {
+        "role": "image",
+        "strategy": "Decorative",
+        "decorative": true,
+        "rationale": "Trophy is purely visual, conveys no essential info (title already communicates success)"
+      },
+      "button": {
+        "role": "button",
+        "label": "Los geht's!",
+        "accessible_hint": "Startet die App und navigiert zum Heute-Dashboard"
+      }
+    },
+    "contrast": {
+      "title_on_bg": {
+        "colors": "#030401 on #FFFFFF",
+        "ratio": "21:1",
+        "wcag_level": "AAA"
+      },
+      "button_text_on_button_bg": {
+        "colors": "#030401 on #D9B18E",
+        "ratio": "10.4:1",
+        "wcag_level": "AAA",
+        "note": "Black text (#030401) on gold (#D9B18E) has ~10.4:1 contrast and meets WCAG AAA for normal text (well above AA threshold 4.5:1)."
+      }
+    },
+    "tap_targets": {
+      "button": {
+        "size_px": {
+          "width": 388,
+          "height": 50
+        },
+        "size_pt": {
+          "width": 97,
+          "height": 50
+        },
+        "minimum_requirement": "44×44 pt (iOS HIG)",
+        "meets_44pt": true
+      }
+    }
+  },
+  "notes": [
+    "Trophy-Body Base Color uses Figma variable 'Primary color/100' (#D9B18E): Tokenized",
+    "Trophy-Handles, Star, Confetti colors are NOT defined as Figma variables: Not tokenized (OK for static SVG)",
+    "Title uses Playfair Display 24px: Correct, defined as Figma variable 'Heading 2'",
+    "Button uses Figtree Bold 20px: Correct, defined as Figma variable 'Button'",
+    "Spacing Trophy→Title (28px) does NOT match existing tokens (Spacing.l = 24px, Spacing.xl = 32px): NEW TOKEN REQUIRED",
+    "Spacing Title→Button (66px) does NOT match existing tokens (closest: Spacing.xxl = 48px): NEW TOKEN REQUIRED",
+    "Action Required: Add new tokens `trophyToTitle` (28px) and `titleToButton` (66px) in onboarding_spacing.dart",
+    "Screen uses absolute positioning in Figma; recommend MainAxisAlignment.center in Flutter for better responsiveness",
+    "Button text in Figma: 'Los gehts!' (missing apostrophe); correct German: 'Los geht's!' → CHECK l10n/app_de.arb",
+    "Button contrast (~10.4:1) passes WCAG AAA with black text (#030401) on gold background (#D9B18E)"
+  ],
+  "metadata": {
+    "generated": "2025-10-22",
+    "auditor": "Claude Code (ui-frontend)",
+    "status": "Complete"
+  },
+  "verification_checklist": {
+    "trophy_body": true,
+    "handles": true,
+    "star": true,
+    "confetti_all": true,
+    "trophy_bounding_box": true,
+    "layout_measures": true,
+    "title_typography": true,
+    "button_specs": true,
+    "tokens_all": true,
+    "export_format_decided": true,
+    "responsive_constraints": true,
+    "a11y_contrast_calculated": true,
+    "a11y_tap_targets_verified": true,
+    "notes_documented": true,
+    "status": "complete"
+  }
+}

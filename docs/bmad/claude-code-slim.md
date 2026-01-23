@@ -122,4 +122,4 @@ Semantics(
 | UI Checklist | `docs/engineering/checklists/ui_claude_code.md` |
 | Gold-Standard Workflow | `docs/engineering/field-guides/gold-standard-workflow.md` |
 | Acceptance | `context/agents/_acceptance_v1.1.md` |
-| Tech-Stack | `docs/engineering/tech-stack.md` |
+| Tech-Stack SSOT | `context/refs/tech_stack_current.yaml` |

@@ -7,7 +7,7 @@ This repository works with three active dev agents:
 - **Codex CLI** – Backend/API, Supabase/DB administration, Privacy/QA, and technical reviewer.
 - **Claude Code** – UI-Frontend & Dataviz (Flutter screens, widgets, charts) with GDPR awareness.
 
-All three agents share the same SSOT sources: `AGENTS.md`, `context/agents/*` including `01–05`, `_acceptance_v1.1.md`, BMAD (`docs/bmad/global.md` + Sprint BMADs), `docs/product/app-context.md`, `docs/product/roadmap.md`, `docs/engineering/assistant-answer-format.md`, `docs/engineering/ai-reviewer.md`.
+All three agents share the same SSOT sources: `AGENTS.md`, `context/agents/*` including `01–05`, `_acceptance_v1.1.md`, BMAD (`docs/bmad/global.md` + Sprint BMADs), `docs/product/app-context.md`, `docs/product/roadmap.md`, `context/refs/tech_stack_current.yaml`, `docs/engineering/assistant-answer-format.md`, `docs/engineering/ai-reviewer.md`.
 
 Scope & Usage: Applies from repo root recursively; Default Auto-Role; Mixed tasks via `role: …`; SSOT Acceptance v1.1.
 
@@ -114,7 +114,7 @@ Governance
 Recommended Reading Order (for new devs/agents)
 1. `docs/product/app-context.md` – What LUVI is and who it's for.
 2. `docs/product/roadmap.md` – Which sprints/phases exist.
-3. `docs/engineering/tech-stack.md` – How the stack is structured.
+3. `context/refs/tech_stack_current.yaml` – Tech-Stack SSOT (versioned).
 4. `AGENTS.md` + `context/agents/*` – Roles, governance, DoD/checks.
 
 Workflow

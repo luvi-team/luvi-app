@@ -1,0 +1,1193 @@
+{
+  "meta": {
+    "auditVersion": "2.0",
+    "figmaNode": "68672:7335",
+    "figmaUrl": "https://www.figma.com/design/iQthMdxpCbl6afzXxvzqlt/Nova-Health-UI-%E2%80%93-Working-Copy?node-id=68672-7335&m=dev",
+    "extractedAt": "2025-10-15T00:00:00Z",
+    "extractionMethod": "Figma MCP (get_code + get_variable_defs + get_screenshot)",
+    "comparedWith": "docs/product/measures/dashboard/DASHBOARD_spec.json (node 68426:7203)",
+    "purpose": "Comprehensive Dashboard design audit for UI implementation prerequisites"
+  },
+  "structuralChanges": {
+    "note": "Node 68672:7335 is a DIFFERENT design iteration than the baseline spec (68426:7203)",
+    "majorDifferences": [
+      "Calendar week strip added (node 68672:7364 - days 27-30, 1-3)",
+      "Hero card changed from purple (CCB2F4) with progress circle to gradient card with workout details",
+      "Workout details section expanded with two side-by-side cards",
+      "Recommendations section restructured into 'Ernährung & Nutrition' and 'Regeneration & Achtsamkeit'",
+      "Bottom navigation changed from 5-item pill to icon-based nav bar with Home/Heart/Social/Chart/Account",
+      "Categories section (Training/Ernährung/Regeneration/Achtsamkeit) removed or relocated"
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "playfairDisplay": {
+        "variants": [
+          {
+            "style": "Regular",
+            "weight": 400,
+            "size": 32,
+            "lineHeight": 40,
+            "letterSpacing": 0,
+            "figmaVariableName": "Heading/H1",
+            "usage": "Header title 'Hey, Anna 💜'",
+            "node": "68672:7386",
+            "codebaseEquivalent": "lib/core/theme/app_theme.dart:24 (_textThemeConst.headlineMedium)",
+            "delta": "MATCH"
+          },
+          {
+            "style": "Bold",
+            "weight": 700,
+            "size": 24,
+            "lineHeight": 32,
+            "letterSpacing": 0,
+            "figmaVariableName": "H2 bold",
+            "usage": "Workout card titles ('GanzkörperKraftraining', 'HIIT Cardio', 'Vitamin C', etc.)",
+            "node": "68672:7411",
+            "codebaseEquivalent": "NONE - needs creation",
+            "delta": "MISSING"
+          },
+          {
+            "style": "Bold",
+            "weight": 700,
+            "size": 16,
+            "lineHeight": null,
+            "letterSpacing": 0,
+            "figmaVariableName": null,
+            "usage": "Calendar day numbers (selected state)",
+            "node": "68672:7371",
+            "codebaseEquivalent": "NONE",
+            "delta": "MISSING"
+          }
+        ]
+      },
+      "figtree": {
+        "variants": [
+          {
+            "style": "Regular",
+            "weight": 400,
+            "size": 20,
+            "lineHeight": 24,
+            "letterSpacing": 0,
+            "figmaVariableName": "Body/Regular",
+            "usage": "Section headers ('Dein Training für diese Woche', 'Weitere Empfehlungen für diese Phase')",
+            "node": "68672:7400",
+            "codebaseEquivalent": "lib/core/theme/app_theme.dart:32 (_textThemeConst.bodyMedium)",
+            "delta": "MATCH"
+          },
+          {
+            "style": "Regular",
+            "weight": 400,
+            "size": 16,
+            "lineHeight": 24,
+            "letterSpacing": 0,
+            "figmaVariableName": "Regular klein",
+            "usage": "Subtitle 'Follikelphase', workout card descriptions",
+            "node": "68672:7387",
+            "codebaseEquivalent": "lib/core/design_tokens/typography.dart (size16 + ratio24on16)",
+            "delta": "MATCH"
+          },
+          {
+            "style": "Italic",
+            "weight": 400,
+            "size": 16,
+            "lineHeight": 24,
+            "letterSpacing": 0,
+            "figmaVariableName": "Regular klein kursic",
+            "usage": "'Erstellt von deinen LUVI-Expert:innen'",
+            "node": "68672:7401",
+            "codebaseEquivalent": "NONE - needs creation",
+            "delta": "MISSING"
+          },
+          {
+            "style": "Bold",
+            "weight": 700,
+            "size": 16,
+            "lineHeight": 24,
+            "letterSpacing": 0,
+            "figmaVariableName": "Regular klein/bold",
+            "usage": "Workout frame date 'Heute, 28. Sept'",
+            "node": "68672:7394",
+            "codebaseEquivalent": "NONE - can derive from existing Figtree",
+            "delta": "PARTIAL"
+          },
+          {
+            "style": "Regular",
+            "weight": 400,
+            "size": 14,
+            "lineHeight": 24,
+            "letterSpacing": 0,
+            "figmaVariableName": null,
+            "usage": "Workout card body text (smaller descriptions)",
+            "node": "68672:7394",
+            "codebaseEquivalent": "lib/core/theme/app_theme.dart:48 (_textThemeConst.bodySmall) BUT uses Inter, not Figtree",
+            "delta": "FONT_MISMATCH"
+          },
+          {
+            "style": "Regular",
+            "weight": 400,
+            "size": 12,
+            "lineHeight": 24,
+            "letterSpacing": 0,
+            "figmaVariableName": "Regular 12",
+            "usage": "Time labels ('60 min'), recommendation card subtitles",
+            "node": "68672:7426",
+            "codebaseEquivalent": "NONE",
+            "delta": "MISSING"
+          },
+          {
+            "style": "SemiBold",
+            "weight": 600,
+            "size": 14,
+            "lineHeight": null,
+            "letterSpacing": 0,
+            "figmaVariableName": null,
+            "usage": "Calendar weekday labels (M D M D F S S)",
+            "node": "68672:7375",
+            "codebaseEquivalent": "NONE",
+            "delta": "MISSING"
+          }
+        ]
+      },
+      "nunito": {
+        "variants": [
+          {
+            "style": "Bold",
+            "weight": 700,
+            "size": 16,
+            "lineHeight": null,
+            "letterSpacing": 0,
+            "figmaVariableName": null,
+            "usage": "Calendar day numbers (non-selected)",
+            "node": "68672:7446",
+            "codebaseEquivalent": "NONE - NEW FONT (not in codebase FontFamilies)",
+            "delta": "NEW_FONT_REQUIRED"
+          },
+          {
+            "style": "SemiBold",
+            "weight": 600,
+            "size": 14,
+            "lineHeight": null,
+            "letterSpacing": 0,
+            "figmaVariableName": null,
+            "usage": "Calendar weekday labels",
+            "node": "68672:7375",
+            "codebaseEquivalent": "NONE - NEW FONT",
+            "delta": "NEW_FONT_REQUIRED"
+          }
+        ]
+      },
+      "dmSans": {
+        "note": "System font for status bar mock",
+        "variants": [
+          {
+            "style": "SemiBold",
+            "weight": 600,
+            "size": 15,
+            "lineHeight": "normal",
+            "letterSpacing": -0.165,
+            "figmaVariableName": null,
+            "usage": "Status bar time '19:27'",
+            "node": "68672:7359",
+            "codebaseEquivalent": "System widget - exclude from implementation",
+            "delta": "SYSTEM_COMPONENT"
+          }
+        ]
+      }
+    },
+    "reuseAssessment": {
+      "existingMatches": [
+        "Playfair Display Regular 32/40 → lib/core/theme/app_theme.dart:24",
+        "Figtree Regular 20/24 → lib/core/theme/app_theme.dart:32",
+        "Figtree Regular 16/24 → lib/core/design_tokens/typography.dart (size16 + ratio24on16)"
+      ],
+      "newCreationRequired": [
+        "Playfair Display Bold 24/32 (H2 bold)",
+        "Figtree Italic 16/24 (Regular klein kursic)",
+        "Figtree Bold 16/24 (Regular klein/bold - can derive)",
+        "Figtree Regular 12/24 (Regular 12)",
+        "Figtree SemiBold 14 (Calendar weekdays)",
+        "Nunito Bold 16 (Calendar day numbers)",
+        "Nunito SemiBold 14 (Calendar weekdays)"
+      ],
+      "fontMismatch": [
+        "bodySmall uses Inter 14/24, Dashboard needs Figtree 14/24"
+      ]
+    }
+  },
+  "colors": {
+    "figmaVariables": {
+      "grayscaleBlack": {
+        "hex": "#030401",
+        "variable": "Grayscale/Black",
+        "usage": "Primary text, header title, section titles",
+        "codebaseEquivalent": "lib/core/theme/app_theme.dart:16 (_onPrimary) AND :17 (_onSurface)",
+        "delta": "MATCH"
+      },
+      "subTex2": {
+        "hex": "#6d6d6d",
+        "variable": "sub tex 2",
+        "usage": "Subtitle 'Follikelphase', recommendation card tags",
+        "codebaseEquivalent": "CLOSE to lib/core/theme/app_theme.dart:152 (DsTokens.grayscale500 = #696969)",
+        "delta": "NEAR_MATCH (diff: #6d6d6d vs #696969)"
+      },
+      "primaryColor100": {
+        "hex": "#D9B18E",
+        "variable": "Primary color/100",
+        "usage": "CTA button backgrounds, selected calendar day background, Training chip background",
+        "codebaseEquivalent": "lib/core/theme/app_theme.dart:10 (_primary = #D9B18E)",
+        "delta": "EXACT_MATCH"
+      },
+      "secondaryColor100": {
+        "hex": "#1C1411",
+        "variable": "Secondary color/100",
+        "usage": "Workout frame text, calendar day text (some states)",
+        "codebaseEquivalent": "lib/core/theme/app_theme.dart:150 (DsTokens.cardBorderSelected = #1C1411)",
+        "delta": "EXACT_MATCH"
+      },
+      "grayscaleWhite": {
+        "hex": "#FFFFFF",
+        "variable": "Grayscale/White",
+        "usage": "Card backgrounds, button text (on primary), workout card text overlays",
+        "codebaseEquivalent": "Standard white, background colors",
+        "delta": "MATCH"
+      },
+      "grayscale500": {
+        "hex": "#696969",
+        "variable": "Grayscale/500",
+        "usage": "Workout frame border",
+        "codebaseEquivalent": "lib/core/theme/app_theme.dart:152 (DsTokens.grayscale500 = #696969)",
+        "delta": "EXACT_MATCH"
+      },
+      "grayscale100": {
+        "hex": "#F7F7F8",
+        "variable": "Grayscale/100",
+        "usage": "Recommendation section background, bottom nav inactive buttons",
+        "codebaseEquivalent": "lib/core/theme/app_theme.dart:149 (DsTokens.cardSurface = #F7F7F8)",
+        "delta": "EXACT_MATCH"
+      }
+    },
+    "additionalColorsInDesign": {
+      "calendarWeekBackground": {
+        "hex": "#E1B941",
+        "opacity": 0.5,
+        "usage": "Calendar selected day 28 background (rgba(225,185,65,0.5))",
+        "node": "68672:7367",
+        "codebaseEquivalent": "NONE",
+        "delta": "NEW_COLOR_REQUIRED"
+      },
+      "calendarActiveDay": {
+        "hex": "#4169E1",
+        "opacity": 1.0,
+        "usage": "Calendar day 28 indicator (royalblue)",
+        "node": "68672:7366",
+        "codebaseEquivalent": "NONE",
+        "delta": "NEW_COLOR_REQUIRED"
+      },
+      "calendarDayText": {
+        "hex": "#282B31",
+        "opacity": 1.0,
+        "usage": "Calendar non-selected day numbers",
+        "node": "68672:7446",
+        "codebaseEquivalent": "NONE - close to #1C1411 but distinct",
+        "delta": "NEW_COLOR_REQUIRED"
+      },
+      "calendarWeekdayLabel": {
+        "hex": "#C5C7C9",
+        "opacity": 1.0,
+        "usage": "Calendar weekday labels (M D M D F S S)",
+        "node": "68672:7374",
+        "codebaseEquivalent": "NONE",
+        "delta": "NEW_COLOR_REQUIRED"
+      },
+      "timeIconColor": {
+        "hex": "#FFFFFF",
+        "opacity": 0.6,
+        "usage": "Time icon and text '60 min' on workout cards",
+        "node": "68672:7426",
+        "codebaseEquivalent": "Can derive with OpacityTokens.inactive (0.2) BUT needs 0.6",
+        "delta": "NEW_OPACITY_VALUE_REQUIRED"
+      },
+      "workoutFrameBorder": {
+        "hex": "#696969",
+        "opacity": 1.0,
+        "usage": "Workout frame outer border (dimgrey)",
+        "node": "68672:7392",
+        "codebaseEquivalent": "lib/core/theme/app_theme.dart:152 (DsTokens.grayscale500)",
+        "delta": "MATCH"
+      },
+      "ctaButtonLabel": {
+        "hex": "#1C1411",
+        "opacity": 1.0,
+        "usage": "'Mehr' button text on workout frame",
+        "node": "68672:7395",
+        "codebaseEquivalent": "lib/core/theme/app_theme.dart:150 (DsTokens.cardBorderSelected)",
+        "delta": "MATCH"
+      },
+      "waveOverlayBeige": {
+        "hex": "#D9B18E26",
+        "opacity": 0.15,
+        "usage": "Recommendations section wave background (15% beige tint per Figma)",
+        "node": "68672:7427",
+        "codebaseEquivalent": "lib/core/theme/app_theme.dart SurfaceColorTokens.waveOverlayBeige",
+        "delta": "CORRECTED_2025-10-16_C",
+        "note": "Tint now matches Figma fill (#D9B18E @ 15% opacity). Frame background uses Grayscale/100 (#F7F7F8) for contrast."
+      }
+    },
+    "gradients": {
+      "workoutCardOverlay": [
+        {
+          "type": "linear",
+          "direction": "to-bottom",
+          "stops": [
+            {
+              "position": 0.14609,
+              "color": "#1A1A1A",
+              "opacity": 0
+            },
+            {
+              "position": 0.95,
+              "color": "#1A1A1A",
+              "opacity": 1.0
+            }
+          ],
+          "usage": "Workout detail cards text overlay gradient",
+          "nodes": ["68679:7699", "68672:7414", "68674:7497", "68674:7499", "68674:7488", "68674:7495"],
+          "codebaseEquivalent": "NONE - docs/audits/dashboard_reuse_inventory.md:23 confirms missing",
+          "delta": "NEW_GRADIENT_REQUIRED"
+        }
+      ],
+      "note": "No gradient tokens exist in codebase; high collision risk per reuse inventory"
+    },
+    "reuseAssessment": {
+      "existingMatches": [
+        "#030401 → _onPrimary/_onSurface",
+        "#D9B18E → _primary",
+        "#1C1411 → DsTokens.cardBorderSelected",
+        "#696969 → DsTokens.grayscale500",
+        "#F7F7F8 → DsTokens.cardSurface"
+      ],
+      "newTokensRequired": [
+        "Calendar gold (#E1B941 @ 0.5 opacity)",
+        "Calendar blue (#4169E1 royalblue)",
+        "Calendar day text (#282B31)",
+        "Calendar weekday label (#C5C7C9)",
+        "White @ 0.6 opacity for time labels",
+        "Workout card overlay gradient (linear, #1A1A1A 0→100% opacity)",
+        "Wave overlay beige (#F0E5DA) for recommendations section background"
+      ],
+      "nearMatches": [
+        "#6d6d6d (sub tex 2) vs #696969 (DsTokens.grayscale500) - consider unifying or documenting divergence"
+      ]
+    }
+  },
+  "spacing": {
+    "observedValues": [
+      {"px": 0, "source": "Padding zero values", "nodes": ["multiple"]},
+      {"px": 2, "source": "Header title-subtitle gap", "nodes": ["68672:7384"]},
+      {"px": 4, "source": "Time container icon-text gap", "nodes": ["68672:7422"]},
+      {"px": 8, "source": "Header text block gap", "nodes": ["68672:7383"]},
+      {"px": 10, "source": "Header icon container padding, calendar internal spacing", "nodes": ["68672:7390"]},
+      {"px": 14, "source": "Workout frame text left padding", "nodes": ["68672:7394"]},
+      {"px": 16, "source": "Workout frame internal padding, CTA button padding", "nodes": ["68672:7395"]},
+      {"px": 20, "source": "Main sections horizontal margin, recommendation section top padding", "nodes": ["68672:7382"]},
+      {"px": 21, "source": "Hero workout frame left/right margins", "nodes": ["68672:7392"]},
+      {"px": 24, "source": "Workout frame corner radius, section vertical gaps", "nodes": ["68672:7392"]},
+      {"px": 35, "source": "Calendar weekday labels gap", "nodes": ["68672:7374"]},
+      {"px": 41, "source": "Internal category chip gaps (if rendered)", "nodes": []},
+      {"px": 42, "source": "Main vertical section gaps", "nodes": []}
+    ],
+    "reuseAssessment": {
+      "existingMatches": [
+        "20px → Spacing.goalCardVertical (lib/core/design_tokens/spacing.dart:6) AND AuthLayout.horizontalPadding (~20)",
+        "16px → Spacing.m (lib/core/design_tokens/spacing.dart:3)",
+        "24px → Spacing.l (lib/core/design_tokens/spacing.dart:2) AND OnboardingSpacing.cardGap",
+        "8px → Spacing.xs (lib/core/design_tokens/spacing.dart:5)"
+      ],
+      "newTokensRequired": [
+        "2px (header subtitle gap) - very tight, consider semantic token",
+        "4px (time icon gap) - micro spacing",
+        "10px (icon container padding) - between xs (8) and m (16)",
+        "14px (workout frame text padding) - ad-hoc value",
+        "21px (hero card margins) - close to 20px, rationalize or unify",
+        "35px (weekday labels gap) - large horizontal gap",
+        "41px (chip gap) - no existing equivalent",
+        "42px (main sections gap) - similar to OnboardingSpacing patterns but unique"
+      ],
+      "conflicts": [
+        "21px vs 20px (Spacing.goalCardVertical / AuthLayout.horizontalPadding) - near collision, needs decision"
+      ]
+    }
+  },
+  "radii": {
+    "observedValues": [
+      {"px": 2, "source": "Calendar selected day partial corner (rounded-tr-[2px])", "nodes": ["68672:7367"]},
+      {"px": 12, "source": "CTA button 'Mehr' on workout frame", "nodes": ["68672:7395"]},
+      {"px": 16, "source": "Implicit on small chips (if categories rendered)", "nodes": []},
+      {"px": 20, "source": "Workout detail cards, recommendation section container", "nodes": ["68672:7408", "68672:7427"]},
+      {"px": 24, "source": "Hero workout frame", "nodes": ["68672:7392"]},
+      {"px": 26.667, "source": "Header icon containers (search/notification)", "nodes": ["68672:7389", "68672:7390"]},
+      {"px": 40, "source": "Calendar pill shapes (left/top corners)", "nodes": ["68672:7367"]},
+      {"px": 100, "source": "Home indicator (pill shape)", "nodes": []},
+      {"px": "variable", "source": "Bottom nav items (not specified in this node)", "nodes": []}
+    ],
+    "reuseAssessment": {
+      "existingMatches": [
+        "12px → Sizes.radiusM (lib/core/design_tokens/sizes.dart:3)",
+        "20px → Sizes.radiusL (lib/core/design_tokens/sizes.dart:4)",
+        "40px → Sizes.radiusXL (lib/core/design_tokens/sizes.dart:11)",
+        "100px → Used in homeIndicator (baseline spec)"
+      ],
+      "newTokensRequired": [
+        "2px (calendar corner tweak) - micro radius for asymmetric corners",
+        "16px (category chips) - between radiusM (12) and radiusL (20)",
+        "24px (hero workout frame) - new semantic value",
+        "26.667px (header icons) - unusual fractional value, consider rounding to 27 or using existing token"
+      ],
+      "notes": "Corner smoothing not available in Figma Dev Mode export; all radii are standard CSS border-radius"
+    }
+  },
+  "shadows": {
+    "observedValues": [
+      {
+        "x": 0,
+        "y": 4,
+        "blur": 4,
+        "spread": 0,
+        "color": "#000000",
+        "opacity": 0.25,
+        "cssValue": "0px 4px 4px 0px rgba(0,0,0,0.25)",
+        "usage": "Workout detail cards",
+        "nodes": ["68672:7408", "68672:7413", "68672:7433", "68672:7435", "68674:7487", "68674:7490"]
+      }
+    ],
+    "baselineComparison": {
+      "baseline": {
+        "x": 0,
+        "y": 0,
+        "blur": 24,
+        "spread": 0,
+        "color": "#000000",
+        "opacity": 0.12,
+        "cssValue": "0px 0px 24px rgba(0,0,0,0.12)",
+        "usage": "Bottom actions container (node 68426:7203)"
+      },
+      "delta": "DIFFERENT - Node 68672:7335 uses 0px 4px 4px 0.25, baseline used 0px 0px 24px 0.12"
+    },
+    "reuseAssessment": {
+      "existingMatches": "NONE - no shadow tokens in codebase per docs/audits/dashboard_reuse_inventory.md:52",
+      "newTokensRequired": [
+        "Card shadow: 0px 4px 4px rgba(0,0,0,0.25)",
+        "Bottom nav shadow (from baseline): 0px 0px 24px rgba(0,0,0,0.12)"
+      ],
+      "collisionRisk": "HIGH - no existing shadow system"
+    }
+  },
+  "layout": {
+    "frame": {
+      "width": 428,
+      "height": 1558,
+      "safeAreas": {
+        "top": 44,
+        "bottom": 121,
+        "note": "Bottom includes nav bar (121px total)"
+      }
+    },
+    "sections": [
+      {
+        "name": "Status Bar",
+        "node": "68672:7340",
+        "position": {"x": 0, "y": 0, "w": 423, "h": 44},
+        "implementation": "System widget - exclude from custom implementation"
+      },
+      {
+        "name": "Header Section",
+        "node": "68672:7382",
+        "position": {"x": 20, "y": 60, "w": 386, "h": 66},
+        "autoLayout": {
+          "direction": "horizontal",
+          "gap": 8,
+          "alignment": "space-between"
+        },
+        "children": [
+          {
+            "name": "Title + Subtitle",
+            "node": "68672:7384",
+            "gap": 2,
+            "title": "Hey, Anna 💜",
+            "subtitle": "Follikelphase"
+          },
+          {
+            "name": "Icon Actions",
+            "node": "68672:7388",
+            "children": [
+              {"icon": "search", "node": "68672:7389", "size": {"w": 40, "h": 40}},
+              {"icon": "notification", "node": "68672:7390", "size": {"w": 40, "h": 40}}
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Calendar Week Strip",
+        "node": "68672:7364",
+        "position": {"x": -1, "y": 147, "w": 442, "h": 48},
+        "note": "NEW SECTION - not in baseline spec node 68426:7203",
+        "children": [
+          {
+            "name": "Weekday Labels",
+            "node": "68672:7374",
+            "labels": ["M", "D", "M", "D", "F", "S", "S"],
+            "gap": 35
+          },
+          {
+            "name": "Day Numbers Row",
+            "days": [
+              {"number": "27", "state": "default", "node": "68672:7370"},
+              {"number": "28", "state": "selected", "node": "68672:7371"},
+              {"number": "29", "state": "default", "node": "68672:7373"},
+              {"number": "30", "state": "default", "node": "68672:7372"},
+              {"number": "1", "state": "default", "node": "68672:7446"},
+              {"number": "2", "state": "default", "node": "68672:7368"},
+              {"number": "3", "state": "default", "node": "68672:7369"}
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Workout Frame (Hero)",
+        "node": "68672:7392",
+        "position": {"x": 21, "y": 216, "w": 387, "h": 249},
+        "container": {
+          "bg": "gradient/image",
+          "radius": 24,
+          "border": {"color": "#696969", "width": 1}
+        },
+        "children": [
+          {
+            "name": "Gradient Background",
+            "type": "image",
+            "asset": "imgWorkoutFrame"
+          },
+          {
+            "name": "Text Overlay Card",
+            "node": "68672:7393",
+            "position": {"x": 0, "y": 137, "w": 385, "h": 112},
+            "bg": "#FFFFFF",
+            "content": {
+              "date": "Heute, 28. Sept",
+              "description": "Wir starten heute ruhig und strukturiert - eine lockere Cardio Einheit hilft dir fokussiert zu bleiben...",
+              "cta": "Mehr"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Section Header: Training",
+        "node": "68672:7399",
+        "position": {"x": 21, "y": 511, "w": 385, "h": 40},
+        "title": "Dein Training für diese Woche",
+        "subtitle": "Erstellt von deinen LUVI-Expert:innen"
+      },
+      {
+        "name": "Workout Cards Carousel",
+        "node": "68672:7402",
+        "position": {"x": 20, "y": 558, "w": 714, "h": 296},
+        "scrollDirection": "horizontal",
+        "gap": 17,
+        "cards": [
+          {
+            "node": "68672:7408",
+            "size": {"w": 340, "h": 280},
+            "image": "imgWorkoutDetailsCard",
+            "overlay": "gradient",
+            "title": "Ganzkörper Krafttraining",
+            "subtitle": "Baue deine Basis auf\nTag 1",
+            "duration": "60 min",
+            "radius": 20,
+            "shadow": "0px 4px 4px 0px rgba(0,0,0,0.25)"
+          },
+          {
+            "node": "68672:7413",
+            "size": {"w": 340, "h": 280},
+            "image": "imgWorkoutDetailsCard1",
+            "overlay": "gradient",
+            "title": "HIIT\nCardio",
+            "subtitle": "Steigere deine Ausdauer",
+            "duration": "60 min",
+            "radius": 20,
+            "shadow": "0px 4px 4px 0px rgba(0,0,0,0.25)"
+          }
+        ]
+      },
+      {
+        "name": "Recommendations Section",
+        "node": "68672:7427",
+        "position": {"x": 21, "y": 884, "w": 393, "h": 553},
+        "bg": "#F7F7F8",
+        "implementationNote": "Wave background uses #D9B18E26 (15% beige tint, corrected 2025-10-16). Frame container uses #F7F7F8 (Figma Grayscale/100). Divider inside frame follows #DCDCDC like spec.",
+        "radius": 20,
+        "subsections": [
+          {
+            "title": "Weitere Empfehlungen für diese Phase",
+            "y": 6
+          },
+          {
+            "title": "Ernährung & Nutrition",
+            "y": 41,
+            "cards": [
+              {
+                "node": "68672:7433",
+                "size": {"w": 160, "h": 210},
+                "image": "imgWorkoutDetailsCard2",
+                "title": "Vitamin C",
+                "subtitle": "Stärke dein Immunsystem"
+              },
+              {
+                "node": "68672:7435",
+                "size": {"w": 160, "h": 210},
+                "image": "imgWorkoutDetailsCard3",
+                "title": "Eisen Baby",
+                "subtitle": "Fülle deine Reserven"
+              }
+            ]
+          },
+          {
+            "title": "Regeneration & Achtsamkeit",
+            "y": 301,
+            "cards": [
+              {
+                "node": "68674:7487",
+                "size": {"w": 165, "h": 210},
+                "image": "imgWorkoutDetailsCard5",
+                "title": "Meditation",
+                "subtitle": "Finde innere Ruhe"
+              },
+              {
+                "node": "68674:7490",
+                "size": {"w": 165, "h": 210},
+                "image": "imgWorkoutDetailsCard6",
+                "title": "Stretching",
+                "subtitle": "Entspanne deine Muskeln"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Bottom Navigation Bar",
+        "node": "68674:7518",
+        "position": {"x": 0, "y": 1437, "w": 428, "h": 121},
+        "note": "DIFFERENT from baseline - baseline had 5-item pill with 'Start' label, this has icon-only nav",
+        "fillStrategy": "Two-pass painter: theme surface fill below wave line, purple stroke on top",
+        "underlayInteraction": "Mulde area (above wave line) is transparent, allowing beige underlay from Ticket 8 to show through. Nav area (below wave line) uses DsTokens.cardSurface / colorScheme.surface.",
+        "implementationFile": "lib/features/dashboard/widgets/painters/bottom_wave_border_painter.dart",
+        "icons": [
+          {"name": "Home", "node": "68674:7523", "position": "left"},
+          {"name": "Heart", "node": "multiple", "position": "center-left"},
+          {"name": "Track (centered large)", "node": "68674:7518", "position": "center", "elevated": true},
+          {"name": "Chart", "node": "68674:7522", "position": "center-right"},
+          {"name": "Account", "node": "68674:7525", "position": "right"}
+        ]
+      }
+    ]
+  },
+  "icons": {
+    "inventory": [
+      {
+        "name": "Search Icon (Magnifying Glass)",
+        "node": "68672:7389",
+        "context": "Header action",
+        "size": {"container": 40, "icon": 20},
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
+        "implementation": "Use existing icon library or SVG asset"
+      },
+      {
+        "name": "Notification Bell",
+        "node": "68672:7390",
+        "context": "Header action with dot indicator",
+        "size": {"container": 40, "icon": 20},
+        "hasNotificationDot": true,
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
+        "implementation": "Custom icon with badge overlay"
+      },
+      {
+        "name": "Play Button",
+        "node": "68672:7396",
+        "context": "Workout frame overlay (top-right corner)",
+        "size": {"w": 64, "h": 64},
+        "position": {"top": 14, "right": 16},
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
+        "implementation": "Rendered via HeroSyncPreview.badgeSize (default 64px)",
+        "note": "Size inferred from product requirement (~2x baseline 32px); verify in Figma if updated"
+      },
+      {
+        "name": "Time Icon (Clock)",
+        "node": "68672:7422",
+        "context": "Workout card duration indicator",
+        "size": 14,
+        "color": "rgba(255,255,255,0.6)",
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
+        "implementation": "Icon with opacity"
+      },
+      {
+        "name": "Home Icon",
+        "node": "68674:7523",
+        "context": "Bottom nav",
+        "size": 38,
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
+        "implementation": "Rendered via BottomNavDock at 38px (updated 2025-10-15)"
+      },
+      {
+        "name": "Heart Icon",
+        "node": "referenced in bottom nav",
+        "context": "Bottom nav",
+        "size": 24,
+        "implementation": "Navigation icon"
+      },
+      {
+        "name": "Track Icon (centered large)",
+        "node": "68674:7518",
+        "context": "Bottom nav center elevated button",
+        "size": "larger than others",
+        "elevated": true,
+        "implementation": "Primary navigation action"
+      },
+      {
+        "name": "Chart Icon",
+        "node": "68674:7522",
+        "context": "Bottom nav",
+        "size": 37,
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
+        "implementation": "Rendered via BottomNavDock at 38px (normalized from 37px)"
+      },
+      {
+        "name": "Account Icon",
+        "node": "68674:7525",
+        "context": "Bottom nav",
+        "size": 37,
+        "assetUrl": "REPLACE_WITH_ASSET_URL",
+        "implementation": "Rendered via BottomNavDock at 38px (normalized from 37px)"
+      }
+    ],
+    "implementationNote": "Bottom nav icons normalized to 38px (largest measured size) for consistency and visibility. Token: tabIconSize in bottom_nav_tokens.dart. Heart icon (24px) is an outlier, likely center elevated button, not regular nav icon.",
+    "reuseAssessment": {
+      "note": "No existing icon component inventory found in reuse_inventory.md",
+      "recommendation": "Create centralized icon registry in lib/core/design_tokens/icons.dart or lib/core/widgets/app_icons.dart"
+    }
+  },
+  "images": {
+    "assets": [
+      {
+        "name": "Workout Frame Background",
+        "assetName": "imgWorkoutFrame",
+        "node": "68672:7392",
+        "usage": "Hero card gradient/photo background",
+        "implementation": "Network image or local asset, requires gradient overlay"
+      },
+      {
+        "name": "Workout Detail Card 1",
+        "assetName": "imgWorkoutDetailsCard",
+        "node": "68672:7408",
+        "usage": "Ganzkörper Krafttraining card background"
+      },
+      {
+        "name": "Workout Detail Card 2",
+        "assetName": "imgWorkoutDetailsCard1",
+        "node": "68672:7413",
+        "usage": "HIIT Cardio card background"
+      },
+      {
+        "name": "Recommendation Card: Vitamin C",
+        "assetName": "imgWorkoutDetailsCard2",
+        "node": "68672:7433",
+        "usage": "Nutrition recommendation"
+      },
+      {
+        "name": "Recommendation Card: Eisen Baby",
+        "assetName": "imgWorkoutDetailsCard3",
+        "node": "68672:7435",
+        "usage": "Nutrition recommendation"
+      },
+      {
+        "name": "Recommendation Card: Meditation",
+        "assetName": "imgWorkoutDetailsCard5",
+        "node": "68674:7487",
+        "usage": "Regeneration recommendation"
+      },
+      {
+        "name": "Recommendation Card: Stretching",
+        "assetName": "imgWorkoutDetailsCard6",
+        "node": "68674:7490",
+        "usage": "Regeneration recommendation"
+      }
+    ],
+    "overlayGradients": {
+      "allCards": {
+        "type": "linear",
+        "direction": "to-bottom",
+        "stops": [
+          {"position": 0.14609, "color": "#1A1A1A", "opacity": 0},
+          {"position": 0.95, "color": "#1A1A1A", "opacity": 1.0}
+        ]
+      }
+    },
+    "implementation": {
+      "recommendation": "Create ImageCard widget with optional gradient overlay",
+      "codebaseEquivalent": "NONE - no existing pattern per reuse_inventory.md"
+    }
+  },
+  "interactions": {
+    "note": "Figma Dev Mode does not export interaction variants (pressed/hover states)",
+    "inferredStates": [
+      {
+        "element": "Calendar day number",
+        "states": ["default", "selected"],
+        "selectedVisuals": {
+          "bg": "rgba(225,185,65,0.5)",
+          "indicator": "#4169E1 (royalblue)",
+          "textColor": "#FFFFFF"
+        },
+        "defaultVisuals": {
+          "bg": "transparent",
+          "textColor": "#282B31"
+        }
+      },
+      {
+        "element": "Workout card",
+        "states": ["default", "pressed"],
+        "note": "No pressed state visible in static export"
+      },
+      {
+        "element": "Bottom nav icon",
+        "states": ["active", "inactive"],
+        "activeVisuals": {
+          "bg": "#D9B18E",
+          "iconColor": "#1C1411"
+        },
+        "inactiveVisuals": {
+          "bg": "#F7F7F8",
+          "iconColor": "#696969 (inferred)"
+        }
+      },
+      {
+        "element": "CTA Button 'Mehr'",
+        "states": ["default", "pressed"],
+        "defaultVisuals": {
+          "bg": "#D9B18E",
+          "textColor": "#1C1411",
+          "radius": 12,
+          "padding": "16px horizontal, 4px vertical"
+        }
+      }
+    ]
+  },
+  "accessibility": {
+    "contrastIssues": [
+      {
+        "element": "Calendar weekday labels",
+        "foreground": "#C5C7C9",
+        "background": "#FFFFFF",
+        "ratio": "~3.2:1",
+        "wcagLevel": "FAIL AA (text < 4.5:1)",
+        "severity": "MEDIUM",
+        "replacementToken": "DsTokens.grayscale500",
+        "recommendation": "Darken to #949494 or use existing DsTokens.grayscale500 (#696969)"
+      },
+      {
+        "element": "Time label '60 min' on workout cards",
+        "foreground": "rgba(255,255,255,0.6)",
+        "background": "varies (image with dark gradient)",
+        "ratio": "depends on image",
+        "wcagLevel": "CONDITIONAL - requires testing on actual images",
+        "severity": "LOW (decorative info)",
+        "recommendation": "Test with real images; consider 0.7-0.8 opacity if fails"
+      },
+      {
+        "element": "Workout frame subtitle (#6d6d6d on white)",
+        "foreground": "#6d6d6d",
+        "background": "#FFFFFF",
+        "ratio": "~4.6:1",
+        "wcagLevel": "PASS AA normal text, FAIL AA large text (needs 3:1 but close)",
+        "severity": "LOW",
+        "recommendation": "Acceptable for body text; monitor if used for headers"
+      }
+    ],
+    "semanticLabels": {
+      "calendarStrip": "Week navigation: select day to view workouts",
+      "workoutCards": "Training recommendations carousel: swipe to view more",
+      "recommendationCards": "Health recommendations: tap to view details"
+    }
+  },
+  "componentMapping": {
+    "newWidgetsRequired": [
+      {
+        "name": "CalendarWeekStrip",
+        "figmaNode": "68672:7364",
+        "props": {
+          "days": "List<DayInfo>",
+          "selectedDay": "int",
+          "onDaySelected": "Function(int)",
+          "weekdayLabels": "List<String>"
+        },
+        "reuseOpportunities": "NONE in codebase",
+        "tokenDependencies": [
+          "Calendar gold (#E1B941 @ 0.5)",
+          "Calendar blue (#4169E1)",
+          "Nunito Bold 16",
+          "Nunito SemiBold 14"
+        ]
+      },
+      {
+        "name": "WorkoutHeroCard",
+        "figmaNode": "68672:7392",
+        "props": {
+          "backgroundImage": "String",
+          "date": "String",
+          "description": "String",
+          "onCtaTap": "VoidCallback",
+          "ctaLabel": "String"
+        },
+        "reuseOpportunities": "Partial - WelcomeShell (lib/features/consent/widgets/welcome_shell.dart:8) has hero layout but no CTA overlay",
+        "tokenDependencies": [
+          "Figtree Bold 16/24",
+          "Figtree Regular 14/24",
+          "Primary color #D9B18E",
+          "Radius 24px (new)"
+        ]
+      },
+      {
+        "name": "WorkoutDetailCard",
+        "figmaNode": "68672:7408",
+        "props": {
+          "image": "String",
+          "title": "String",
+          "subtitle": "String",
+          "duration": "String",
+          "onTap": "VoidCallback"
+        },
+        "reuseOpportunities": "Partial - GoalCard (lib/features/onboarding/widgets/goal_card.dart:17) has title/selected but no image/gradient",
+        "tokenDependencies": [
+          "Playfair Display Bold 24/32 (H2 bold) - NEW",
+          "Figtree Regular 16/24",
+          "Figtree Regular 12/24 - NEW",
+          "Gradient overlay - NEW",
+          "Shadow 0px 4px 4px 0.25 - NEW"
+        ]
+      },
+      {
+        "name": "RecommendationCard",
+        "figmaNode": "68672:7433",
+        "props": {
+          "image": "String",
+          "title": "String",
+          "subtitle": "String",
+          "onTap": "VoidCallback"
+        },
+        "reuseOpportunities": "Can reuse WorkoutDetailCard widget with size variant",
+        "tokenDependencies": "Same as WorkoutDetailCard"
+      },
+      {
+        "name": "SectionHeader",
+        "figmaNode": "68672:7399",
+        "props": {
+          "title": "String",
+          "subtitle": "String?",
+          "trailing": "Widget? (for 'Alles' link if needed)"
+        },
+        "reuseOpportunities": "Partial - LoginHeader (lib/features/auth/widgets/login_header.dart:5) has two-line layout but no trailing",
+        "tokenDependencies": [
+          "Figtree Regular 20/24 - EXISTS",
+          "Figtree Italic 16/24 - NEW"
+        ]
+      },
+      {
+        "name": "BottomNavBar",
+        "figmaNode": "68674:7518",
+        "props": {
+          "items": "List<BottomNavItem>",
+          "currentIndex": "int",
+          "onTap": "Function(int)"
+        },
+        "reuseOpportunities": "NONE - baseline spec had different design (5-item pill); current bottom nav is icon-based",
+        "tokenDependencies": [
+          "Primary color #D9B18E",
+          "Grayscale/100 #F7F7F8",
+          "Icon sizes 24-38px",
+          "Shadow (if needed from baseline): 0px 0px 24px 0.12"
+        ]
+      }
+    ]
+  },
+  "deltas": {
+    "summary": {
+      "structuralChanges": 6,
+      "newTypographyVariants": 7,
+      "newColors": 6,
+      "newSpacingValues": 8,
+      "newRadiiValues": 4,
+      "newShadows": 2,
+      "newGradients": 1,
+      "newWidgetsRequired": 6,
+      "fontConflicts": 1,
+      "accessibilityIssues": 3
+    },
+    "criticalBlockers": [
+      {
+        "category": "Typography",
+        "issue": "Nunito font family not in codebase",
+        "impact": "Calendar day numbers and weekday labels cannot render correctly",
+        "resolution": "Add Nunito to pubspec.yaml fonts, create FontFamily.nunito token",
+        "priority": "HIGH"
+      },
+      {
+        "category": "Colors",
+        "issue": "No gradient system exists",
+        "impact": "Workout card text overlays will lack proper readability",
+        "resolution": "Create GradientTokens class in lib/core/design_tokens/gradients.dart",
+        "priority": "HIGH"
+      },
+      {
+        "category": "Shadows",
+        "issue": "No shadow tokens exist",
+        "impact": "Cards will lack elevation/depth",
+        "resolution": "Create ShadowTokens class in lib/core/design_tokens/shadows.dart with card and nav shadows",
+        "priority": "MEDIUM"
+      },
+      {
+        "category": "Layout",
+        "issue": "No horizontal scroll carousel pattern exists",
+        "impact": "Workout cards section cannot be implemented",
+        "resolution": "Create HorizontalCardCarousel widget with PageView or ListView.builder(scrollDirection: Axis.horizontal)",
+        "priority": "HIGH"
+      },
+      {
+        "category": "Widgets",
+        "issue": "No image card component exists",
+        "impact": "All workout/recommendation cards are blocked",
+        "resolution": "Create ImageCard widget with gradient overlay support",
+        "priority": "HIGH"
+      }
+    ],
+    "breakingChanges": [
+      {
+        "from": "Node 68426:7203 (baseline)",
+        "to": "Node 68672:7335 (current)",
+        "change": "Hero card changed from purple progress card to gradient workout card",
+        "impact": "Existing heroCard.progress implementation is obsolete",
+        "migration": "Replace with WorkoutHeroCard widget"
+      },
+      {
+        "from": "Node 68426:7203 (baseline)",
+        "to": "Node 68672:7335 (current)",
+        "change": "Categories section removed/relocated",
+        "impact": "categories.chips[] implementation may be unused",
+        "migration": "Verify if categories moved to different screen or removed entirely"
+      },
+      {
+        "from": "Node 68426:7203 (baseline)",
+        "to": "Node 68672:7335 (current)",
+        "change": "Bottom nav changed from 5-item pill with 'Start' label to icon-only nav",
+        "impact": "bottomActions.items[] structure is completely different",
+        "migration": "Create new BottomNavBar widget with icon-based design"
+      }
+    ],
+    "comparisonWithBaseline": {
+      "note": "Baseline spec is node 68426:7203, audit spec is node 68672:7335 - these are different design iterations",
+      "sharedElements": [
+        "Status bar (system component)",
+        "Header with title/subtitle + action icons",
+        "Section headers with title",
+        "Card-based recommendations layout",
+        "Bottom navigation presence (but different design)"
+      ],
+      "removedElements": [
+        "Hero progress circle (25% indicator)",
+        "Categories horizontal chip row (Training/Ernährung/Regeneration/Achtsamkeit)",
+        "5-item bottom pill with 'Start' label"
+      ],
+      "addedElements": [
+        "Calendar week strip with day selection",
+        "Workout frame with gradient background + text overlay card",
+        "Horizontal scrolling workout cards carousel",
+        "Subsection organization (Ernährung & Nutrition, Regeneration & Achtsamkeit)",
+        "Icon-based bottom navigation"
+      ]
+    }
+  },
+  "implementationPriority": {
+    "phase1_foundations": [
+      "Add Nunito font to pubspec.yaml",
+      "Create GradientTokens (lib/core/design_tokens/gradients.dart)",
+      "Create ShadowTokens (lib/core/design_tokens/shadows.dart)",
+      "Add missing typography variants (Figtree Italic 16, Figtree Bold 16, Figtree 12, Playfair Bold 24, Nunito Bold 16, Nunito SemiBold 14)",
+      "Add calendar color tokens (gold #E1B941 @ 0.5, blue #4169E1, day text #282B31, weekday #C5C7C9)",
+      "Add spacing tokens (2px, 4px, 10px, 14px, 21px, 35px, 41px, 42px)",
+      "Add radius tokens (2px, 16px, 24px, 26.667px)",
+      "Add opacity token 0.6 for time labels"
+    ],
+    "phase2_baseWidgets": [
+      "Create ImageCard widget with gradient overlay support",
+      "Create SectionHeader widget (title + optional subtitle + optional trailing)",
+      "Create HorizontalCardCarousel wrapper"
+    ],
+    "phase3_dashboardWidgets": [
+      "Create CalendarWeekStrip widget",
+      "Create WorkoutHeroCard widget",
+      "Create WorkoutDetailCard widget (reuse ImageCard)",
+      "Create RecommendationCard widget (alias/variant of WorkoutDetailCard)",
+      "Create BottomNavBar widget"
+    ],
+    "phase4_screenComposition": [
+      "Compose DashboardScreen with all widgets",
+      "Wire up navigation and state management",
+      "Add interactions (card taps, calendar selection, nav bar routing)",
+      "Implement horizontal scroll physics and snap behavior"
+    ],
+    "phase5_polish": [
+      "Add skeleton loaders for async data",
+      "Implement image caching strategy",
+      "Add pull-to-refresh",
+      "Optimize scroll performance",
+      "Add accessibility labels and semantics",
+      "Fix contrast issues (calendar weekday labels)"
+    ]
+  },
+  "testingRecommendations": [
+    {
+      "category": "Widget Tests",
+      "tests": [
+        "CalendarWeekStrip: day selection state, weekday labels render",
+        "WorkoutHeroCard: CTA tap callback, text truncation",
+        "WorkoutDetailCard: gradient overlay renders, duration label shows",
+        "SectionHeader: title/subtitle layout, optional trailing widget",
+        "BottomNavBar: active/inactive states, tap callbacks"
+      ]
+    },
+    {
+      "category": "Golden Tests",
+      "tests": [
+        "Dashboard full screen at 428x1558",
+        "Calendar strip selected/unselected states",
+        "Workout cards with different image aspect ratios",
+        "Bottom nav active tab variants"
+      ]
+    },
+    {
+      "category": "Accessibility",
+      "tests": [
+        "Contrast ratio verification for calendar weekday labels",
+        "Semantic labels for screen reader navigation",
+        "Touch target sizes (minimum 44x44 for interactive elements)",
+        "Focus order for keyboard navigation"
+      ]
+    },
+    {
+      "category": "Performance",
+      "tests": [
+        "Horizontal scroll jank (should maintain 60fps)",
+        "Image loading (should show placeholders, avoid layout shifts)",
+        "Memory usage with many cards (check for image cache limits)"
+      ]
+    }
+  ]
+}
