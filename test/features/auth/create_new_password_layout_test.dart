@@ -40,18 +40,18 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-    }
 
-    testWidgets('uses Center widget for card positioning (Figma-alignment)',
-        (tester) async {
-      await pumpCreatePasswordScreen(tester);
-
-      // Guard: Verify widget exists before checking ancestors
+      // Guard: Verify AuthContentCard rendered (shared across all tests)
       expect(
         find.byType(AuthContentCard),
         findsOneWidget,
         reason: 'AuthContentCard must be rendered on CreateNewPasswordScreen',
       );
+    }
+
+    testWidgets('uses Center widget for card positioning (Figma-alignment)',
+        (tester) async {
+      await pumpCreatePasswordScreen(tester);
 
       final centerAncestor = find.ancestor(
         of: find.byType(AuthContentCard),
@@ -67,13 +67,6 @@ void main() {
 
     testWidgets('uses AnimatedPadding for keyboard handling', (tester) async {
       await pumpCreatePasswordScreen(tester);
-
-      // Guard: Verify widget exists before checking ancestors
-      expect(
-        find.byType(AuthContentCard),
-        findsOneWidget,
-        reason: 'AuthContentCard must be rendered on CreateNewPasswordScreen',
-      );
 
       final animatedPaddingAncestor = find.ancestor(
         of: find.byType(AuthContentCard),

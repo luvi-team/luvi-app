@@ -72,16 +72,20 @@ _SignupValidationResult _validateSignupForm({
     }
   }
 
-  // Check email additionally (not instead!)
-  // If email empty AND password error: show specific password error
-  // If ONLY email empty: show missing fields
+  // Email should be flagged when:
+  // 1. Email is empty AND no password error exists (email-only problem), OR
+  // 2. Email is empty AND validation error is emptyFields (all fields empty)
+  final isEmptyFieldsError = !passwordValidation.isValid &&
+      passwordValidation.error == AuthPasswordValidationError.emptyFields;
+  final shouldFlagEmail = isEmailEmpty && (errorMessage == null || isEmptyFieldsError);
+
   if (isEmailEmpty && errorMessage == null) {
     errorMessage = l10n.authSignupMissingFields;
   }
 
   return _SignupValidationResult(
     errorMessage: errorMessage,
-    emailError: isEmailEmpty,
+    emailError: shouldFlagEmail,
     passwordError: passwordError,
     confirmError: confirmError,
   );

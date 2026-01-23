@@ -65,6 +65,32 @@ void main() {
       }
     });
 
+    testWidgets('uses loadingSemanticLabel when loading', (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          buildTestApp(
+            home: Scaffold(
+              body: Center(
+                child: AuthButtonBase(
+                  label: 'Test Button',
+                  onPressed: () {},
+                  backgroundColor: DsColors.authRebrandCtaPrimary,
+                  isLoading: true,
+                  loadingSemanticLabel: 'Signing in...',
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final semantics = tester.getSemantics(find.byType(AuthButtonBase));
+        expect(semantics.label, 'Signing in...');
+      } finally {
+        handle.dispose();
+      }
+    });
+
     testWidgets('has correct semantics when disabled', (tester) async {
       final handle = tester.ensureSemantics();
       try {

@@ -115,5 +115,52 @@ void main() {
         handle.dispose();
       }
     });
+
+    testWidgets('shows loading indicator when isLoading is true',
+        (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          home: Scaffold(
+            body: Center(
+              child: AuthSecondaryButton(
+                label: 'Test',
+                onPressed: () {},
+                isLoading: true,
+                loadingKey: const ValueKey('loading_indicator'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byKey(const ValueKey('loading_indicator')), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
+    testWidgets('announces loadingSemanticLabel during loading',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          buildTestApp(
+            home: Scaffold(
+              body: Center(
+                child: AuthSecondaryButton(
+                  label: 'Test',
+                  onPressed: () {},
+                  isLoading: true,
+                  loadingSemanticLabel: 'Processing request...',
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final semantics = tester.getSemantics(find.byType(AuthSecondaryButton));
+        expect(semantics.label, 'Processing request...');
+      } finally {
+        handle.dispose();
+      }
+    });
   });
 }
