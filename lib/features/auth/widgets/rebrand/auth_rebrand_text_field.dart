@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'auth_rebrand_metrics.dart';
 
 /// Text field for Auth Rebrand v3 screens.
@@ -145,14 +146,18 @@ class AuthRebrandTextField extends StatelessWidget {
       ),
     );
 
-    // Only wrap with Semantics when a custom semanticLabel is explicitly provided.
-    // For error-only state: The visual hint text change is sufficient; adding a
-    // Semantics wrapper would cause double announcements without benefit.
-    // See: AuthErrorBanner pattern for error-specific live regions.
-    if (semanticLabel == null) return field;
+    // Derive fallback label from field properties (MUST-03 compliant)
+    // Uses existing L10n keys: authEmailHint, authPasswordHint
+    final l10n = AppLocalizations.of(context);
+    final fallbackLabel = semanticLabel ??
+        (keyboardType == TextInputType.emailAddress
+            ? (l10n?.authEmailHint ?? 'Email')
+            : obscureText
+                ? (l10n?.authPasswordHint ?? 'Password')
+                : hintText);
 
     return Semantics(
-      label: semanticLabel,
+      label: fallbackLabel,
       hint: showError && errorText != null ? errorText : null,
       textField: true,
       child: field,

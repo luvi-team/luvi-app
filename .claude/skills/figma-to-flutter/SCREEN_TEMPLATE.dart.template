@@ -18,7 +18,11 @@ class {ScreenName}Screen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Requires MaterialApp.router with localizationsDelegates configured
     final l10n = AppLocalizations.of(context);
-    if (l10n == null) return const SizedBox.shrink();
+    assert(l10n != null, 'AppLocalizations missing - check MaterialApp.router localizationsDelegates');
+    if (l10n == null) {
+      debugPrint('[{ScreenName}Screen] AppLocalizations.of returned null for $context');
+      return const SizedBox.shrink();
+    }
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

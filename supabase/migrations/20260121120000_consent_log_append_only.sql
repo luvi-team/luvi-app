@@ -52,7 +52,7 @@ CREATE OR REPLACE FUNCTION public.prevent_consent_update()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY INVOKER
-SET search_path = 'public'
+SET search_path = "public"
 AS $$
 BEGIN
   RAISE EXCEPTION 'Consent log is append-only (GDPR audit requirement). UPDATE is not allowed.';

@@ -180,10 +180,20 @@ class UserStateService {
     if (json == null) return null;
     try {
       final decoded = jsonDecode(json);
-      if (decoded is! List) return null;
+      if (decoded is! List) {
+        log.d(
+          'acceptedConsentScopesOrNull: decoded value is not List, key=$key, raw=$json',
+          tag: 'UserStateService',
+        );
+        return null;
+      }
       return decoded.whereType<String>().toSet();
-    } catch (_) {
+    } catch (e) {
       // Corrupted/malformed JSON - fail-safe return null
+      log.d(
+        'acceptedConsentScopesOrNull: malformed JSON, key=$key, raw=$json, error=$e',
+        tag: 'UserStateService',
+      );
       return null;
     }
   }

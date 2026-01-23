@@ -18,6 +18,9 @@ Implement a screen based on Figma design.
    - `lib/core/design_tokens/consent_spacing.dart`
    - `lib/core/design_tokens/bottom_nav_tokens.dart`
    - `lib/core/design_tokens/dashboard_typography_tokens.dart`
+
+   **Note:** Also check feature-level metrics when relevant:
+   - `lib/features/auth/widgets/rebrand/auth_rebrand_metrics.dart` (Auth screens)
 3. **Create missing tokens** with `/// Figma: xxx` comment
 4. **Implement** the screen
 5. **Create Widget Test**

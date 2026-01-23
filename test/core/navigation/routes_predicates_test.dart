@@ -39,7 +39,7 @@ void main() {
   group('isConsentRoute', () {
     test('covers consent root and nested screens', () {
       expect(isConsentRoute('/consent'), isTrue);
-      expect(isConsentRoute('/consent/intro'), isTrue);  // ConsentOptionsScreen
+      expect(isConsentRoute('/consent/intro'), isTrue);  // Legacy redirect to ConsentOptionsScreen
       expect(isConsentRoute('/consent/02'), isTrue);     // Consent02Screen (legacy/test)
       expect(isConsentRoute('/consent/02/confirm'), isTrue);
     });

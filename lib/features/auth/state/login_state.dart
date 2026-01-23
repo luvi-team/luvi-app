@@ -28,8 +28,8 @@ class LoginState {
   /// Returns true if form has no validation errors and email is non-empty.
   ///
   /// IMPORTANT: This getter only reflects the current error state. It does NOT
-  /// perform validation. Callers should invoke [validate] prior to checking
-  /// this property to ensure errors are populated.
+  /// perform validation. Prefer using [LoginNotifier.validate]'s return value
+  /// for immediate results. This getter reflects state set by previous validate() call.
   bool get isValid =>
       email.isNotEmpty && emailError == null && passwordError == null;
 
@@ -99,12 +99,13 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   }
 
   /// Performs client-side validation only.
+  /// Returns true if form is valid, false otherwise.
   ///
   /// Server-side submission is handled separately by login_submit_provider.
   ///
   /// SECURITY: [password] is validated but NOT persisted in state.
   /// Password should only live in TextEditingController, not in provider state.
-  void validate({required String password}) {
+  bool validate({required String password}) {
     try {
       final current = _current();
       final trimmedEmail = current.email.trim();
@@ -134,8 +135,11 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
               (eErr == null && pErr == null) ? null : current.globalError,
         ),
       );
+
+      return eErr == null && pErr == null;
     } catch (e, st) {
       state = AsyncError(e, st);
+      return false;
     }
   }
 
@@ -158,6 +162,7 @@ class LoginNotifier extends AsyncNotifier<LoginState> {
   ///
   /// NOTE: Intentionally returns `Future<void>` for subclass compatibility.
   /// Subclasses (e.g., in tests) may override with actual async operations.
+  /// Use [validate]'s return value for immediate validation result if needed.
   ///
   /// SECURITY: [password] is validated but NOT persisted in state.
   Future<void> validateAndSubmit({required String password}) {

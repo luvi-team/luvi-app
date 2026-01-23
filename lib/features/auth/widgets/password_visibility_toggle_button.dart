@@ -49,7 +49,6 @@ class PasswordVisibilityToggleButton extends StatelessWidget {
       excludeSemantics: true,
       button: true,
       label: label,
-      onTap: onPressed,
       child: IconButton(
         tooltip: label,
         icon: Icon(

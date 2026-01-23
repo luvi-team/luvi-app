@@ -68,6 +68,9 @@ class TypographyTokens {
 
   /// Consent Options body: 22px line-height on 14px font (ratio: 1.571)
   static const double lineHeightRatio22on14 = 22 / 14;
+
+  /// Section header: 20px line-height on 14px font (ratio: 1.429)
+  static const double lineHeightRatio20on14 = 20 / 14;
 }
 
 /// Shared font family identifiers to centralize typography references.
@@ -169,7 +172,7 @@ class ConsentTypography {
 
   // ─── Consent Options Section Header (Figtree Bold 14px) ───
   /// Section header line height ratio (20px / 14px = 1.429)
-  static const double sectionHeaderLineHeight = 20 / 14;
+  static const double sectionHeaderLineHeight = TypographyTokens.lineHeightRatio20on14;
 
   // ─── Consent Options Footnote (Figtree Regular 12px) ───
   /// Footnote font size (12px) - used for revoke instructions

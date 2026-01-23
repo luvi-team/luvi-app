@@ -296,6 +296,24 @@ class _ConsentCheckboxRow extends StatelessWidget {
     required this.l10n,
   });
 
+  /// Builds the row content based on text and trailing widget presence.
+  /// Handles three cases: text-only, trailing-only, and text+trailing.
+  Widget _buildRowContent(TextStyle textStyle) {
+    if (trailing == null) {
+      return ExcludeSemantics(child: Text(text, style: textStyle));
+    }
+    if (text.isEmpty) {
+      return trailing!; // Links remain focusable for VoiceOver
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ExcludeSemantics(child: Text(text, style: textStyle)),
+        trailing!, // Links remain focusable for VoiceOver
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -338,19 +356,7 @@ class _ConsentCheckboxRow extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: trailing == null
-                          ? ExcludeSemantics(child: Text(text, style: textStyle))
-                          : text.isEmpty
-                          ? trailing! // Links remain focusable for VoiceOver
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ExcludeSemantics(child: Text(text, style: textStyle)),
-                                trailing!, // Links remain focusable for VoiceOver
-                              ],
-                            ),
-                    ),
+                    Expanded(child: _buildRowContent(textStyle)),
                     const SizedBox(width: Spacing.m),
                     // Checkbox (Figma: 24x24, Circle)
                     _ConsentCircleCheckbox(selected: selected),
@@ -690,11 +696,24 @@ Future<bool> _markWelcomeSeen(
 }
 
 /// Persists consent gate state to server (SSOT).
-/// Returns true on success or if Supabase is not initialized/authenticated.
+/// Returns true on success, false on skip or failure.
 Future<bool> _persistConsentGateToServer() async {
-  // Skip if Supabase not initialized or no current user (test env, early init)
-  if (!SupabaseService.isInitialized || SupabaseService.currentUser == null) {
-    return true; // Not a failure, just skipped
+  // Skip if Supabase not initialized
+  if (!SupabaseService.isInitialized) {
+    log.d(
+      'consent_gate_skipped: supabase_not_initialized',
+      tag: 'consent_options',
+    );
+    return false; // Skipped, not success
+  }
+
+  // Skip if no current user (test env, early init)
+  if (SupabaseService.currentUser == null) {
+    log.d(
+      'consent_gate_skipped: no_current_user',
+      tag: 'consent_options',
+    );
+    return false; // Skipped, not success
   }
 
   try {

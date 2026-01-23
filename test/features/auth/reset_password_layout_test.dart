@@ -16,6 +16,8 @@ void main() {
     late GoRouter router;
 
     setUp(() {
+      // Requires /auth/reset route in testAppRoutes (router.dart:308)
+      // If this test fails with "no routes for location", verify route exists
       router = GoRouter(
         routes: testAppRoutes,
         initialLocation: '/auth/reset',

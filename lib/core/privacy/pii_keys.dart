@@ -139,5 +139,6 @@ class PiiKeys {
     'ip-address',
     'mac_address',
     'mac-address',
+    'username', // GDPR: Can identify individuals in compound keys
   ];
 }

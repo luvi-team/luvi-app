@@ -23,6 +23,70 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.d
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+/// Pure validation result for signup form.
+/// Separates validation logic from UI state management (Clean Architecture).
+class _SignupValidationResult {
+  final String? errorMessage;
+  final bool emailError;
+  final bool passwordError;
+  final bool confirmError;
+
+  const _SignupValidationResult({
+    this.errorMessage,
+    this.emailError = false,
+    this.passwordError = false,
+    this.confirmError = false,
+  });
+}
+
+/// Pure validation logic for signup form - no side effects.
+/// Uses NIST SP 800-63B compliant rules via [validateNewPassword].
+_SignupValidationResult _validateSignupForm({
+  required String email,
+  required String password,
+  required String confirmPassword,
+  required AppLocalizations l10n,
+}) {
+  final isEmailEmpty = email.isEmpty;
+  final passwordValidation = validateNewPassword(password, confirmPassword);
+
+  bool passwordError = false;
+  bool confirmError = false;
+  String? errorMessage;
+
+  if (!passwordValidation.isValid) {
+    switch (passwordValidation.error!) {
+      case AuthPasswordValidationError.emptyFields:
+        passwordError = password.isEmpty;
+        confirmError = confirmPassword.isEmpty;
+        errorMessage = l10n.authSignupMissingFields;
+      case AuthPasswordValidationError.mismatch:
+        confirmError = true;
+        errorMessage = l10n.authPasswordMismatchError;
+      case AuthPasswordValidationError.tooShort:
+        passwordError = true;
+        errorMessage = l10n.authErrPasswordTooShort;
+      case AuthPasswordValidationError.commonWeak:
+        passwordError = true;
+        errorMessage = l10n.authErrPasswordCommonWeak;
+    }
+  }
+
+  // Check email additionally (not instead!)
+  // If email empty AND password error: show specific password error
+  // If ONLY email empty: show missing fields
+  if (isEmailEmpty && errorMessage == null) {
+    errorMessage = l10n.authSignupMissingFields;
+  }
+
+  return _SignupValidationResult(
+    errorMessage: errorMessage,
+    emailError: isEmailEmpty,
+    passwordError: passwordError,
+    confirmError: confirmError,
+  );
+}
+
 /// Signup screen with Auth Rebrand v3 design.
 ///
 /// Features:
@@ -65,7 +129,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     super.dispose();
   }
 
-  /// Validates signup form inputs using NIST SP 800-63B compliant rules.
+  /// Validates signup form inputs and updates UI state.
+  /// Delegates to [_validateSignupForm] for pure validation logic.
   /// Returns error message if validation fails, null if valid.
   String? _validateInputs({
     required String email,
@@ -73,51 +138,20 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     required String confirmPassword,
     required AppLocalizations l10n,
   }) {
-    // Email validation (not covered by validateNewPassword)
-    final isEmailEmpty = email.isEmpty;
+    final result = _validateSignupForm(
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      l10n: l10n,
+    );
 
-    // NIST-compliant Validation via shared rules
-    final passwordValidation = validateNewPassword(password, confirmPassword);
-
-    // Collect all error flags first
-    bool passwordError = false;
-    bool confirmError = false;
-    String? errorMessage;
-
-    if (!passwordValidation.isValid) {
-      switch (passwordValidation.error!) {
-        case AuthPasswordValidationError.emptyFields:
-          // Set specific flags based on actually empty fields
-          passwordError = password.isEmpty;
-          confirmError = confirmPassword.isEmpty;
-          errorMessage = l10n.authSignupMissingFields;
-        case AuthPasswordValidationError.mismatch:
-          confirmError = true;
-          errorMessage = l10n.authPasswordMismatchError;
-        case AuthPasswordValidationError.tooShort:
-          passwordError = true;
-          errorMessage = l10n.authErrPasswordTooShort;
-        case AuthPasswordValidationError.commonWeak:
-          passwordError = true;
-          errorMessage = l10n.authErrPasswordCommonWeak;
-      }
-    }
-
-    // Check Email error additionally (not instead!)
-    // If Email empty AND Password-Error: show specific Password-Error
-    // If ONLY Email empty: show Missing Fields
-    if (isEmailEmpty && errorMessage == null) {
-      errorMessage = l10n.authSignupMissingFields;
-    }
-
-    // Set all flags once
     setState(() {
-      _emailError = isEmailEmpty;
-      _passwordError = passwordError;
-      _confirmPasswordError = confirmError;
+      _emailError = result.emailError;
+      _passwordError = result.passwordError;
+      _confirmPasswordError = result.confirmError;
     });
 
-    return errorMessage;
+    return result.errorMessage;
   }
 
   /// Performs the actual signup API call and handles success/error states.

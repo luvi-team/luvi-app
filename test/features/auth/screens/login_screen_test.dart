@@ -51,8 +51,9 @@ void main() {
     expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
     final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
     expect(find.text(l10n.authLoginTitle), findsOneWidget);
-    // AuthPrimaryButton uses l10n.authEntryCta for button label
+    // AuthPrimaryButton displays l10n.authEntryCta as button label
     expect(find.byType(AuthPrimaryButton), findsOneWidget);
+    expect(find.text(l10n.authEntryCta), findsOneWidget);
   });
 
   testWidgets('CTA shows validation errors on empty submit', (
@@ -93,6 +94,12 @@ void main() {
     expect(find.text(l10n.authErrPasswordEmpty), findsOneWidget);
     // Auth Rebrand v3: Button stays enabled even with errors (allows retry)
     expect(tester.widget<ElevatedButton>(innerButton).onPressed, isNotNull);
+
+    // Verify auth repository was NOT called (validation blocked the API call)
+    verifyNever(() => mockRepo.signInWithPassword(
+      email: any(named: 'email'),
+      password: any(named: 'password'),
+    ));
   });
 
   // Note: Signup link was removed from LoginScreen per SSOT P0.6

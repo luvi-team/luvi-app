@@ -18,6 +18,13 @@ import '../../support/test_config.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
+/// Creates a GoRouter configured for AuthSignupScreen tests.
+/// Extracted to reduce duplication across test groups.
+GoRouter _createSignupTestRouter() => GoRouter(
+      routes: testAppRoutes,
+      initialLocation: AuthSignupScreen.routeName,
+    );
+
 void main() {
   TestConfig.ensureInitialized();
   setUpAll(() {
@@ -55,16 +62,9 @@ void main() {
   group('AuthSignupScreen submit behaviour', () {
     late GoRouter router;
 
-    setUp(() {
-      router = GoRouter(
-        routes: testAppRoutes,
-        initialLocation: AuthSignupScreen.routeName,
-      );
-    });
+    setUp(() => router = _createSignupTestRouter());
 
-    tearDown(() {
-      router.dispose();
-    });
+    tearDown(() => router.dispose());
 
     testWidgets('empty submit shows missing fields and field errors', (tester) async {
       final mockRepo = _MockAuthRepository();
@@ -418,16 +418,9 @@ void main() {
   group('AuthException error.code handling', () {
     late GoRouter router;
 
-    setUp(() {
-      router = GoRouter(
-        routes: testAppRoutes,
-        initialLocation: AuthSignupScreen.routeName,
-      );
-    });
+    setUp(() => router = _createSignupTestRouter());
 
-    tearDown(() {
-      router.dispose();
-    });
+    tearDown(() => router.dispose());
 
     testWidgets('uses error.code for weak_password', (tester) async {
       final mockRepo = _MockAuthRepository();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/analytics/telemetry.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
@@ -203,8 +204,14 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           tag: 'reset_password',
         );
       } else {
-        // Unexpected errors: log at warning level
+        // Unexpected errors: log + telemetry for monitoring
         log.w('reset_password_unexpected', error: e, stack: st);
+        Telemetry.maybeCaptureException(
+          'reset_password_unexpected',
+          error: e,
+          stack: st,
+          data: {'context': 'reset_submit'},
+        );
       }
     }
   }

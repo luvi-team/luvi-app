@@ -176,5 +176,33 @@ void main() {
       await tester.pumpAndSettle();
       expect(pressed, isTrue);
     });
+
+    testWidgets('does not call onPressed when tapped while loading',
+        (tester) async {
+      var pressed = false;
+
+      await tester.pumpWidget(
+        buildTestApp(
+          home: Scaffold(
+            body: Center(
+              child: AuthButtonBase(
+                label: 'Test Button',
+                onPressed: () => pressed = true,
+                backgroundColor: DsColors.authRebrandCtaPrimary,
+                isLoading: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(AuthButtonBase));
+      // Use pump() instead of pumpAndSettle() because CircularProgressIndicator
+      // animates forever and pumpAndSettle would time out
+      await tester.pump();
+
+      expect(pressed, isFalse,
+          reason: 'onPressed should not be called when loading');
+    });
   });
 }
