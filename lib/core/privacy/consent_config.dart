@@ -23,8 +23,9 @@ class ConsentConfig {
   /// Validates version format at startup.
   /// Called by app initialization to catch format errors early.
   /// Throws [StateError] in all builds (debug + release) if format is invalid.
-  // ignore: unnecessary_statements
-  static void assertVersionsMatch() => currentVersionInt;
+  static void assertVersionsMatch() {
+    final _ = currentVersionInt;
+  }
 
   // For APIs/analytics that expect string names.
   static final List<String> requiredScopeNames = List.unmodifiable(

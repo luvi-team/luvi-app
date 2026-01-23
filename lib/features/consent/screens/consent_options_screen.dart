@@ -183,7 +183,18 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     AppLocalizations l10n,
   ) async {
     // 1. Set all visible consent scopes (required + optional)
-    ref.read(consent02Provider.notifier).acceptAll();
+    try {
+      ref.read(consent02Provider.notifier).acceptAll();
+    } catch (error, stackTrace) {
+      log.e(
+        'consent_accept_all_failed',
+        tag: 'consent_options',
+        error: sanitizeError(error) ?? error.runtimeType,
+        stack: stackTrace,
+      );
+      _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
+      return;
+    }
 
     // 2. Navigate (await ensures proper error handling propagation)
     await _handleContinue(context, ref, l10n);
@@ -784,18 +795,27 @@ Future<bool> _persistConsentToLocalCache(
       .toSet();
 
   // Parallel writes for efficiency.
-  // Issue 5: eagerError: false ensures all futures complete before throwing,
-  // preserving partial successes even if one operation fails.
+  // Issue 5: Use .wait extension to capture all errors via ParallelWaitError
   try {
-    await Future.wait(
-      [
-        userState.markWelcomeSeen(),
-        userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
-        userState.setAcceptedConsentScopes(acceptedScopes),
-      ],
-      eagerError: false,
-    );
+    await [
+      userState.markWelcomeSeen(),
+      userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
+      userState.setAcceptedConsentScopes(acceptedScopes),
+    ].wait;
     return true;
+  } on ParallelWaitError catch (e, stackTrace) {
+    // Log all errors occurred during parallel execution
+    for (final error in e.errors) {
+      if (error != null) {
+        log.e(
+          'consent_persistence_parallel_error',
+          tag: 'consent_options',
+          error: sanitizeError(error) ?? error.runtimeType,
+          stack: stackTrace,
+        );
+      }
+    }
+    return false;
   } catch (error, stackTrace) {
     log.e(
       'consent_mark_welcome_failed',

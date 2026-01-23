@@ -1,11 +1,8 @@
 // Template for new screens
 // Replace: {ScreenName}, {route_name}
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class {ScreenName}Screen extends StatelessWidget {

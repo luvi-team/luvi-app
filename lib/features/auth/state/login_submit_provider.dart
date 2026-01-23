@@ -103,6 +103,9 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
 
       // Fallback: detect invalid credentials via statusCode or message pattern
       // Note: AuthException.statusCode is String?, not int
+      // WARNING: This is a best-effort heuristic and fragile because backend error messages can change.
+      // We rely on error.message pattern matching as a fallback when error.code is null.
+      // Do not rely on this as a definitive check.
       final statusCode = error.statusCode;
       final message = error.message.toLowerCase();
       final isLikelyInvalidCredentials = statusCode == '400' ||
@@ -159,7 +162,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
 
     if (isOtpExpired) {
       // OTP expired: prompt user to request new verification email
-      // Reuses errConfirmEmail message for MVP (user action is the same)
+      // Sets globalError to AuthStrings.errOtpExpired so UI can show specific message/action
       loginNotifier.updateState(
         email: email,
         emailError: null,

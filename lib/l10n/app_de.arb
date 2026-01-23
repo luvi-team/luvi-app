@@ -768,14 +768,7 @@
   "@authErrPasswordInvalid": {
     "description": "Validierungsfehler, wenn das Passwort ungültig ist."
   },
-  "authErrConfirmEmail": "Bitte bestätige deine E-Mail (Link erneut senden?).",
-  "@authErrConfirmEmail": {
-    "description": "Hinweis, die E-Mail-Adresse zu bestätigen."
-  },
   "authErrLoginUnavailable": "Anmeldung ist derzeit nicht verfügbar.",
-  "@authErrLoginUnavailable": {
-    "description": "Fehlermeldung bei nicht verfügbarer Anmeldung."
-  },
   "authPasswordMismatchError": "Passwörter stimmen nicht überein.",
   "@authPasswordMismatchError": {
     "description": "Fehler, wenn Passwörter nicht identisch sind."

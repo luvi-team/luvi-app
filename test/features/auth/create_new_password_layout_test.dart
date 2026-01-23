@@ -30,6 +30,10 @@ void main() {
     Future<void> pumpCreatePasswordScreen(WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
+          // Validation: Provide explicit overrides container for isolation.
+          // Currently empty as screen uses direct Supabase instance (legacy),
+          // but ensures test is ready for Riverpod migration/mocking.
+          overrides: [],
           child: MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.buildAppTheme(),
