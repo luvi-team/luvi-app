@@ -123,10 +123,7 @@ VALUES (
   DEFAULT,
   'rls-smoke'
 )
-ON CONFLICT (id) DO UPDATE
-SET user_id = EXCLUDED.user_id,
-    scopes = DEFAULT,
-    version = EXCLUDED.version;
+ON CONFLICT (id) DO NOTHING;
 DO $$
 DECLARE
   default_def text;

@@ -5,6 +5,7 @@
 - `20250903235538_create_consents_table.sql` - User consent management with GDPR compliance
 - `20251215123000_harden_consents_scopes_array.sql` - Anti-drift (legacy): enforce `consents.scopes` as JSONB array
 - `20251222173000_consents_scopes_object_bool.sql` - Canonicalize: enforce `consents.scopes` as JSONB object<boolean> (SSOT)
+- `20260121120000_consent_log_append_only.sql` - Make `public.consents` append-only (GDPR audit trail)
 - `20250903235539_create_cycle_data_table.sql` - Menstrual cycle tracking data
 - `20250903235540_create_email_preferences_table.sql` - User email notification preferences
 
@@ -30,15 +31,17 @@ VALUES (auth.uid(), '{"terms": true, "health_processing": true, "analytics": tru
 -- View own consents (should succeed)
 SELECT * FROM consents WHERE user_id = auth.uid();
 
--- Update own consent (should succeed)
+-- Update own consent (should FAIL; consent log is append-only)
 UPDATE consents 
 SET scopes = '{"terms": true, "health_processing": true, "marketing": true}'::jsonb
 WHERE user_id = auth.uid() AND version = 'v1.0';
 
--- Revoke consent (should succeed)
-UPDATE consents 
-SET revoked_at = NOW() 
-WHERE user_id = auth.uid() AND version = 'v1.0';
+-- Record changed consent (should SUCCEED via INSERT; do not UPDATE existing rows)
+INSERT INTO consents (user_id, scopes, version) 
+VALUES (auth.uid(), '{"terms": true, "health_processing": true, "analytics": false}'::jsonb, 'v1.0');
+
+-- Delete own consent (should FAIL for authenticated; DELETE reserved for erasure/retention workflows)
+DELETE FROM consents WHERE user_id = auth.uid();
 
 -- Try to view other user's consents (should return empty)
 SELECT * FROM consents WHERE user_id != auth.uid();

@@ -46,7 +46,7 @@ if (!SUPABASE_URL) {
 if (!SUPABASE_ANON_KEY) {
   throw new Error("Missing required environment variable: SUPABASE_ANON_KEY must be set");
 }
-// Canonical scopes list: keep in sync with client/shared config (see lib/features/consent/model/consent_types.dart).
+// Canonical scopes list: keep in sync with client/shared config (see lib/core/privacy/consent_types.dart).
 // TODO: Move to env (CONSENT_VALID_SCOPES), shared config module, or DB table to avoid drift.
 // Diese Liste muss zu `config/consent_scopes.json` passen; Deno-Tests prüfen die IDs.
 export const VALID_SCOPES = [

@@ -443,9 +443,9 @@ void main() {
     );
 
     testWidgets(
-      'Navigation succeeds when userStateServiceProvider throws (local cache failure)',
+      'Navigation is blocked when userStateServiceProvider throws (local cache failure)',
       (tester) async {
-        // Phase 2.2 test: local cache failure should not block navigation
+        // Local cache is required for guard consistency; provider failures must block navigation.
         final mockConsentService = _MockConsentService();
 
         when(
@@ -495,6 +495,9 @@ void main() {
         );
         await tester.pumpAndSettle();
 
+        final screenContext = tester.element(find.byType(ConsentOptionsScreen));
+        final l10n = AppLocalizations.of(screenContext)!;
+
         // Tap "Alle akzeptieren"
         final acceptAllButton =
             find.byKey(const Key('consent_options_btn_accept_all'));
@@ -503,9 +506,11 @@ void main() {
         await tester.tap(acceptAllButton);
         await tester.pumpAndSettle();
 
-        // Navigation should succeed despite local cache failure (best-effort semantics)
-        expect(find.byType(AuthSignInScreen), findsOneWidget,
-            reason: 'Navigation should proceed even when local cache fails');
+        // Provider failure must block navigation (stay on consent screen + error snackbar).
+        expect(find.byType(ConsentOptionsScreen), findsOneWidget);
+        expect(find.byType(AuthSignInScreen), findsNothing);
+        expect(find.byType(Onboarding01Screen), findsNothing);
+        expect(find.text(l10n.consentSnackbarError), findsOneWidget);
 
         verify(
           () => mockConsentService.accept(

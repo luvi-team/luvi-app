@@ -144,7 +144,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     final themeTokens = Theme.of(context).extension<DsTokens>();
     assert(
       themeTokens != null,
-      'DsTokens extension missing from Theme; using DsTokens.light fallback',
+      'DsTokens extension missing from Theme',
     );
     final tokens = themeTokens ?? DsTokens.light;
 

@@ -142,11 +142,38 @@ void main() {
       expect(state.globalError, AuthStrings.errConfirmEmail);
     });
 
+    // Test: null code + message pattern fallback detects invalid credentials
+    test('null error.code with "Invalid credentials" message shows field errors', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException('Invalid credentials provided'));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      // Message-pattern fallback: "invalid" + "credentials" → field errors
+      expect(state.emailError, AuthStrings.invalidCredentials);
+      expect(state.passwordError, AuthStrings.invalidCredentials);
+      expect(state.globalError, isNull);
+    });
+
     // Parameterized tests for null error.code handling.
     // Each message gets its own independent test for proper isolation.
+    // Note: "Invalid credentials" is now detected via message-pattern fallback (tested above).
     group('null error.code shows generic error', () {
       final nullCodeMessages = [
-        'Invalid credentials provided',
         'Please confirm your email',
         'Unknown server error',
         'Invalid request format',

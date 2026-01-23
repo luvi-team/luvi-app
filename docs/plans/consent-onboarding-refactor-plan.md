@@ -6,6 +6,10 @@
 > **Status:** ✅ READY FOR IMPLEMENTATION (alle Entscheidungen getroffen)
 > **Bewertung:** 9.5/10 (nach 31 Review-Korrekturen, 0 Blocker, 3 resolved)
 
+> ⚠️ **NOTE (2026-01):** Aktuelle Implementation nutzt einen Single-Screen Consent Flow unter `/consent/options`.
+> Die früheren Screens C1/C3 sind historisch; `/consent/intro`, `/consent/blocking`, `/consent/02` sind Legacy Redirects → `/consent/options` (siehe `lib/router.dart`).
+> SSOT DB-Format für `public.consents.scopes`: JSONB Object\<bool\> (siehe `supabase/migrations/20251222173000_consents_scopes_object_bool.sql`).
+
 ---
 
 ## ✅ RESOLVED: Codex-Review Runde 7-9 (SSOT-Konflikt-Audit)
@@ -62,31 +66,29 @@ Dies ist KORREKT - Server-Roundtrip bei jeder Navigation wäre zu langsam.
 
 | Konflikt | Details |
 |----------|---------|
-| **DB Default (ALT):** | `scopes JSONB NOT NULL DEFAULT '{}'` (Object) |
-| **DB Default (NEU):** | `scopes JSONB NOT NULL DEFAULT '[]'` (Array) ✅ |
-| **RPC erwartet:** | `jsonb_typeof(p_scopes) <> 'array'` (Array) ✅ |
+| **DB SSOT (kanonisch):** | `scopes JSONB NOT NULL DEFAULT '{}'` (Object\<bool\>) ✅ |
+| **RPC akzeptiert:** | Legacy Array **oder** kanonisches Object — wird serverseitig normalisiert ✅ |
 
-**Lösung (Codex 2024-12-15):**
-- [supabase/migrations/20251215123000_harden_consents_scopes_array.sql](supabase/migrations/20251215123000_harden_consents_scopes_array.sql)
-  - Backfill: `{"scope": true}` → `["scope"]`
-  - Default: `'[]'::jsonb`
-  - CHECK: `consents_scopes_is_array` constraint
+**Lösung (SSOT seit 2025-12-22):**
+- [supabase/migrations/20251222173000_consents_scopes_object_bool.sql](supabase/migrations/20251222173000_consents_scopes_object_bool.sql)
+  - Kanonisch: Object\<bool\> in `public.consents.scopes`
+  - CHECK: `consents_scopes_is_object_bool`
+  - RPC `log_consent_if_allowed(...)` akzeptiert legacy Array und normalisiert zu kanonischem Object
 
 **Verifizierung (Smoke Tests):**
-- [supabase/tests/rls_smoke.sql:46-86](supabase/tests/rls_smoke.sql#L46-L86) — Default + Constraint + RPC akzeptiert Array
-- [supabase/tests/rls_smoke_negative.sql:25-38](supabase/tests/rls_smoke_negative.sql#L25-L38) — Object-map wird rejected
+- `supabase/tests/rls_smoke.sql` — Default `'{}'::jsonb` + Constraint `consents_scopes_is_object_bool` + RPC akzeptiert Object und legacy Array
 
 **Erledigte Aktionen:**
-- [x] DB-Migration: Default auf `'[]'` geändert
-- [x] CHECK constraint hinzugefügt: `jsonb_typeof(scopes) = 'array'`
-- [x] Backfill bestehende Rows: Object → Array
+- [x] DB kanonisiert auf Object\<bool\> (`DEFAULT '{}'::jsonb`)
+- [x] CHECK constraint aktiv: `consents_scopes_is_object_bool`
+- [x] RPC normalisiert legacy Array → kanonisches Object
 
 ---
 
 ## Stop-Kriterien (NICHT implementieren wenn:)
 
 1. ~~❌ Birthdate wird "required" OHNE aktualisiertes Privacy-Review/Legal-Signoff~~ → ✅ Entscheidung: Required + Privacy-Review Update pending
-2. ~~❌ Consent-Scope-Änderung OHNE SSOT-Update + Version-Bump~~ → ✅ DB jetzt gehärtet (Array-only)
+2. ~~❌ Consent-Scope-Änderung OHNE SSOT-Update + Version-Bump~~ → ✅ DB SSOT gehärtet (Object<bool> + Allowlist)
 3. ~~❌ Implementierung führt zu Drift zwischen lokalem Gate-State und `public.profiles`~~ → ✅ Entscheidung: Server-SSOT (profiles)
 
 ---
@@ -131,7 +133,7 @@ Refactoring der Consent- und Onboarding-Screens, um exakt dem Figma-Design zu en
 **⚠️ NICHT NEU ERSTELLEN! Enum existiert bereits im Repo:**
 
 ```dart
-// lib/features/consent/model/consent_types.dart (SSOT!)
+// lib/core/privacy/consent_types.dart (SSOT!)
 enum ConsentScope {
   terms,              // ✅ required - Nutzungsbedingungen
   health_processing,  // ✅ required - Gesundheitsdaten-Verarbeitung
@@ -150,27 +152,25 @@ const Set<ConsentScope> kRequiredConsentScopes = {
 
 ### ✅ Consent Scopes Datenformat (DB-gehärtet!)
 
-**Status:** ✅ RESOLVED (Migration `20251215123000_harden_consents_scopes_array.sql`)
+**Status:** ✅ RESOLVED (Migration `20251222173000_consents_scopes_object_bool.sql`)
 
 **DB-Schema (ab jetzt enforced):**
 ```sql
--- consents.scopes ist JSONB ARRAY von Strings (enum.name)
--- Default: '[]'::jsonb
--- Constraint: consents_scopes_is_array CHECK (jsonb_typeof(scopes) = 'array')
--- Beispiel: ["terms", "health_processing", "analytics"]
+-- consents.scopes ist JSONB OBJECT mit Boolean-Werten (SSOT)
+-- Default: '{}'::jsonb
+-- Constraint: consents_scopes_is_object_bool (Object-Shape + Boolean-Werte + erlaubte Keys)
+-- Beispiel: {"terms": true, "health_processing": true, "analytics": true}
 ```
 
 **Dart-seitig:**
 ```dart
 // Import existing types!
-import 'package:luvi_app/features/consent/model/consent_types.dart';
+import 'package:luvi_app/core/privacy/consent_types.dart';
 
-// RICHTIG: Array von Strings (enum.name)
-final scopes = acceptedScopes.map((s) => s.name).toList();
-// → ["terms", "health_processing"]
-
-// FALSCH: Object/Map — wird von DB abgelehnt!
-// → {"terms": true, "health_processing": true}  ← CHECK VIOLATION!
+// Canonical payload (SSOT): Map<String,bool>
+final scopeIds = acceptedScopes.map((s) => s.name).toList();
+final scopesPayload = {for (final id in scopeIds) id: true};
+// → {"terms": true, "health_processing": true}
 ```
 
 **DoD/Prove (nach Migration):**
@@ -178,17 +178,16 @@ final scopes = acceptedScopes.map((s) => s.name).toList();
 # Positive Tests: Default + Constraint + RPC
 psql "$DATABASE_URL" -f supabase/tests/rls_smoke.sql
 
-# Negative Test: Object-map wird rejected
+# Negative Tests: falsche Types/Values werden rejected
 psql "$DATABASE_URL" -f supabase/tests/rls_smoke_negative.sql
 
 # Erwartung:
-# - Default ist '[]'::jsonb ✓
-# - consents_scopes_is_array constraint existiert ✓
-# - INSERT mit '{}' → CHECK VIOLATION ✓
-# - log_consent_if_allowed mit Array → erlaubt ✓
+# - Default ist '{}'::jsonb ✓
+# - consents_scopes_is_object_bool constraint existiert ✓
+# - log_consent_if_allowed akzeptiert Object ✓ (legacy Array wird normalisiert)
 ```
 
-**Migration bereits angewendet:** Legacy Object-Rows wurden zu Arrays backfilled.
+**Migration bereits angewendet:** Legacy Rows wurden zu kanonischen Object<bool> normalisiert.
 
 **MVP-Hinweis zu optionalen Scopes:**
 - UI zeigt im MVP nur `analytics` als optional
@@ -413,23 +412,14 @@ class OnboardingState extends _$OnboardingState {
 ┌─────────────────────────────────────────────────────────────┐
 │  NEUER FLOW (Welcome Rebrand)                               │
 ├─────────────────────────────────────────────────────────────┤
-│  Welcome (3 Pages) → /auth/signin → /consent/intro (C1)     │
-│                                            ↓                │
-│                                  /consent/options (C2) → O1 │
-│                                            ↓                │
-│                                  /consent/blocking (C3)     │
-│                                     ↓              ↓        │
-│                               "Zurück"    "App verlassen"   │
-│                                  ↓              ↓           │
-│                         /consent/options   Sign-out + Auth  │
+│  Welcome (3 Pages) → /auth/signin → /consent/options (C2) → O1 │
 └─────────────────────────────────────────────────────────────┘
 
 Route Mapping:
 - /welcome         → WelcomeScreen (3 Seiten, device-local)
 - /auth/signin     → AuthSignInScreen (nach Welcome)
-- /consent/intro   → C1 (ConsentIntroScreen) ← Auth navigiert hierhin
-- /consent/options → C2 (ConsentOptionsScreen)
-- /consent/blocking → C3 (ConsentBlockingScreen)
+- /consent/options → C2 (ConsentOptionsScreen) (Single-Screen Flow)
+- /consent/intro, /consent/blocking, /consent/02 → Legacy Redirects → /consent/options
 
 ┌─────────────────────────────────────────────────────────────┐
 │  ONBOARDING FLOW                                            │
@@ -805,15 +795,15 @@ Jeder neue Screen bekommt mindestens 1 Widget-Test unter `test/features/`.
 |---|----------|--------|
 | 22 | **Birthdate Required vs Optional** | ✅ RESOLVED - Entscheidung: **Required** (Age 16-120) |
 | 23 | **Gate-SSOT Lokal vs Server** | ✅ RESOLVED - Entscheidung: **Server-SSOT** (profiles) |
-| 24 | **consents.scopes Format** | ✅ RESOLVED - Migration `20251215123000` + Smoke Tests |
+| 24 | **consents.scopes Format** | ✅ RESOLVED - SSOT: Object<bool> (Migration `20251222173000`) + Smoke Tests |
 
 ### Codex-Review Runde 8 (BLOCKER #24 Resolution) - 2024-12-15
 
 | # | Änderung | Details |
 |---|----------|---------|
-| 25 | **consents.scopes Migration** | `20251215123000_harden_consents_scopes_array.sql` — Default `'[]'`, CHECK constraint, Backfill |
-| 26 | **Smoke Tests erweitert** | `rls_smoke.sql:46-86` prüft Default + Constraint + RPC Array |
-| 27 | **Negative Tests hinzugefügt** | `rls_smoke_negative.sql:25-38` prüft CHECK VIOLATION bei Object-map |
+| 25 | **consents.scopes Migration** | `20251222173000_consents_scopes_object_bool.sql` — Default `'{}'`, CHECK constraint, Normalisierung |
+| 26 | **Smoke Tests erweitert** | `rls_smoke.sql` prüft Default + Constraint + RPC (Object + legacy Array) |
+| 27 | **Negative Tests hinzugefügt** | `rls_smoke_negative.sql` prüft CHECK violations (z. B. non-boolean values) |
 | 28 | **DoD/Prove Sektion** | psql-Befehle für Verifizierung dokumentiert |
 
 ### Codex-Review Runde 9 (BLOCKER #22/#23 Resolution) - 2024-12-15

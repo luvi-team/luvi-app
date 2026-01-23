@@ -100,7 +100,25 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         'auth_error_missing_code: message=${sanitizeError(error) ?? "[redacted]"}',
         tag: 'login_submit',
       );
-      // Treat missing code as generic unavailable error (matches unrecognized fallback)
+
+      // Fallback: detect invalid credentials via statusCode or message pattern
+      // Note: AuthException.statusCode is String?, not int
+      final statusCode = error.statusCode;
+      final message = error.message.toLowerCase();
+      final isLikelyInvalidCredentials = statusCode == '400' ||
+          (message.contains('invalid') &&
+              (message.contains('credentials') || message.contains('grant')));
+
+      if (isLikelyInvalidCredentials) {
+        loginNotifier.updateState(
+          email: email,
+          emailError: AuthStrings.invalidCredentials,
+          passwordError: AuthStrings.invalidCredentials,
+          globalError: null,
+        );
+        return;
+      }
+
       loginNotifier.updateState(
         email: email,
         emailError: null,

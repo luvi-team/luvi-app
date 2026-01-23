@@ -734,24 +734,15 @@ Future<bool> _persistConsentGateToServer() async {
 }
 
 /// Persists consent state to local cache for offline access and analytics gating.
-/// Returns true on success, false on failure or skip (best-effort semantics).
+/// Returns true on success, false on failure or skip.
+///
+/// If [userStateServiceProvider] fails to resolve, this function throws and
+/// navigation must not proceed.
 Future<bool> _persistConsentToLocalCache(
   WidgetRef ref,
   Consent02State currentState,
 ) async {
-  // Wrap provider read to handle provider errors gracefully (best-effort)
-  final UserStateService userState;
-  try {
-    userState = await ref.read(userStateServiceProvider.future);
-  } catch (error, stackTrace) {
-    log.e(
-      'consent_user_state_provider_failed',
-      tag: 'consent_options',
-      error: sanitizeError(error) ?? error.runtimeType,
-      stack: stackTrace,
-    );
-    return false; // Best-effort: navigation continues
-  }
+  final userState = await ref.read(userStateServiceProvider.future);
 
   final uid = SupabaseService.currentUser?.id;
 
