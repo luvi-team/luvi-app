@@ -10,7 +10,7 @@ class ConsentConfig {
   /// Numeric major version derived from [currentVersion].
   /// Throws [StateError] if currentVersion format is invalid.
   static int get currentVersionInt {
-    final match = RegExp(r'^v(\d+)').firstMatch(currentVersion);
+    final match = RegExp(r'^v(\d+)(?:\.\d+)?$').firstMatch(currentVersion);
     if (match == null) {
       throw StateError(
         'ConsentConfig.currentVersion "$currentVersion" does not match '

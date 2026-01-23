@@ -80,7 +80,7 @@ final analyticsConsentOptOutProvider = Provider<bool>((ref) {
 /// - Checks against an explicit suspicious-keys set (exact matches) and a
 ///   conservative whole-word regex (word boundaries by start/end/underscore/hyphen/space).
 /// - Applies an allowlist of safe keys to avoid false positives (e.g.,
-///   `username`, `theme`, `customer_email_count`).
+///   `theme`, `customer_email_count`).
 bool _containsSuspiciousPII(Map<String, Object?> properties) {
   if (properties.isEmpty) return false;
 
