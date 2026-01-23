@@ -158,9 +158,10 @@ class AuthRebrandTextField extends StatelessWidget {
                 ? (l10n?.authPasswordHint ?? 'Password')
                 : hintText);
 
+    // Issue 4: Error text is already shown visually as hintText (line 107-109).
+    // Removed Semantics.hint to prevent duplicate screen-reader announcements.
     return Semantics(
       label: fallbackLabel,
-      hint: showError && errorText != null ? errorText : null,
       textField: true,
       child: field,
     );

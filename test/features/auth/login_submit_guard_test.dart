@@ -142,6 +142,35 @@ void main() {
       expect(state.globalError, AuthStrings.errConfirmEmail);
     });
 
+    // Issue 2: Test otp_expired code path (maps to same error as email_not_confirmed)
+    test('uses error.code for otp_expired when code is present', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'OTP has expired',
+        code: 'otp_expired',
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errConfirmEmail);
+    });
+
     // Test: null code + message pattern fallback detects invalid credentials
     test('null error.code with "Invalid credentials" message shows field errors', () async {
       final mockRepo = _MockAuthRepository();
@@ -164,6 +193,36 @@ void main() {
 
       final state = container.read(loginProvider).value!;
       // Message-pattern fallback: "invalid" + "credentials" → field errors
+      expect(state.emailError, AuthStrings.invalidCredentials);
+      expect(state.passwordError, AuthStrings.invalidCredentials);
+      expect(state.globalError, isNull);
+    });
+
+    // Issue 1: Test statusCode 400 fallback (no code, no message pattern match)
+    test('null error.code with statusCode 400 shows field errors (statusCode fallback)', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Generic error without credential patterns',
+        statusCode: '400',
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      // statusCode '400' fallback → treat as invalid credentials
       expect(state.emailError, AuthStrings.invalidCredentials);
       expect(state.passwordError, AuthStrings.invalidCredentials);
       expect(state.globalError, isNull);

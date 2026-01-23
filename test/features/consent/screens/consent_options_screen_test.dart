@@ -443,9 +443,11 @@ void main() {
     );
 
     testWidgets(
-      'Navigation is blocked when userStateServiceProvider throws (local cache failure)',
+      'Navigation proceeds with warning when userStateServiceProvider throws (graceful fallback)',
       (tester) async {
-        // Local cache is required for guard consistency; provider failures must block navigation.
+        // Issue 3 (CodeRabbit): Provider failures use graceful fallback (return false),
+        // consistent with uid==null behavior. Navigation proceeds with warning snackbar.
+        // Server consent (SSOT) is primary; local cache failure is best-effort.
         final mockConsentService = _MockConsentService();
 
         when(
@@ -477,7 +479,7 @@ void main() {
           ProviderScope(
             overrides: [
               consentServiceProvider.overrideWithValue(mockConsentService),
-              // Simulate local cache failure
+              // Simulate local cache failure (graceful fallback, not blocking)
               userStateServiceProvider.overrideWith(
                 (ref) => Future<UserStateService>.error(
                   StateError('Local cache failure'),
@@ -506,11 +508,11 @@ void main() {
         await tester.tap(acceptAllButton);
         await tester.pumpAndSettle();
 
-        // Provider failure must block navigation (stay on consent screen + error snackbar).
-        expect(find.byType(ConsentOptionsScreen), findsOneWidget);
-        expect(find.byType(AuthSignInScreen), findsNothing);
-        expect(find.byType(Onboarding01Screen), findsNothing);
-        expect(find.text(l10n.consentSnackbarError), findsOneWidget);
+        // Best-effort: Navigation proceeds with warning snackbar (not blocking).
+        // User is not authenticated → navigates to AuthSignInScreen.
+        expect(find.byType(ConsentOptionsScreen), findsNothing);
+        expect(find.byType(AuthSignInScreen), findsOneWidget);
+        expect(find.text(l10n.consentErrorSavingConsent), findsOneWidget);
 
         verify(
           () => mockConsentService.accept(

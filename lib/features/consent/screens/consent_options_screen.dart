@@ -736,13 +736,25 @@ Future<bool> _persistConsentGateToServer() async {
 /// Persists consent state to local cache for offline access and analytics gating.
 /// Returns true on success, false on failure or skip.
 ///
-/// If [userStateServiceProvider] fails to resolve, this function throws and
-/// navigation must not proceed.
+/// Returns false if provider resolution fails (graceful degradation).
 Future<bool> _persistConsentToLocalCache(
   WidgetRef ref,
   Consent02State currentState,
 ) async {
-  final userState = await ref.read(userStateServiceProvider.future);
+  // Issue 3: Wrap provider resolution in try-catch for graceful failure.
+  // Explicit type annotation required (Dart cannot infer from try-block assignment).
+  final UserStateService userState;
+  try {
+    userState = await ref.read(userStateServiceProvider.future);
+  } catch (error, stackTrace) {
+    log.e(
+      'consent_user_state_provider_failed',
+      tag: 'consent_options',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    return false;
+  }
 
   final uid = SupabaseService.currentUser?.id;
 
@@ -771,13 +783,18 @@ Future<bool> _persistConsentToLocalCache(
       .map((e) => e.key.name)
       .toSet();
 
-  // Parallel writes for efficiency
+  // Parallel writes for efficiency.
+  // Issue 5: eagerError: false ensures all futures complete before throwing,
+  // preserving partial successes even if one operation fails.
   try {
-    await Future.wait([
-      userState.markWelcomeSeen(),
-      userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
-      userState.setAcceptedConsentScopes(acceptedScopes),
-    ]);
+    await Future.wait(
+      [
+        userState.markWelcomeSeen(),
+        userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
+        userState.setAcceptedConsentScopes(acceptedScopes),
+      ],
+      eagerError: false,
+    );
     return true;
   } catch (error, stackTrace) {
     log.e(
