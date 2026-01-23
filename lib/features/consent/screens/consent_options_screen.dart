@@ -574,9 +574,8 @@ class _ContinueButton extends StatelessWidget {
         key: const Key('consent_options_btn_continue'),
         onPressed: enabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: enabled ? DsColors.buttonPrimary : DsColors.gray300,
-          foregroundColor:
-              enabled ? DsColors.grayscaleWhite : DsColors.gray500,
+          backgroundColor: DsColors.buttonPrimary,
+          foregroundColor: DsColors.grayscaleWhite,
           disabledBackgroundColor: DsColors.gray300,
           disabledForegroundColor: DsColors.gray500,
           shape: RoundedRectangleBorder(
@@ -807,11 +806,15 @@ Future<bool> _persistConsentToLocalCache(
     // Log all errors occurred during parallel execution
     for (final error in e.errors) {
       if (error != null) {
+        // Issue 7: Unwrap AsyncError to extract underlying error and stack trace
+        final actualError = error is AsyncError ? error.error : error;
+        final actualStack = error is AsyncError ? error.stackTrace : stackTrace;
+
         log.e(
           'consent_persistence_parallel_error',
           tag: 'consent_options',
-          error: sanitizeError(error) ?? error.runtimeType,
-          stack: stackTrace,
+          error: sanitizeError(actualError) ?? actualError.runtimeType,
+          stack: actualStack,
         );
       }
     }

@@ -716,6 +716,9 @@
     "description": "Fehlertext, wenn der Verifizierungslink abgelaufen ist."
   },
   "authErrConfirmEmail": "Bitte bestätige deine E-Mail (Link erneut senden?).",
+  "@authErrConfirmEmail": {
+    "description": "Fehlertext, wenn die E-Mail-Adresse noch bestätigt werden muss (Mirror of English locale)."
+  },
   "authLoginHeadline": "Willkommen zurück 💜",
   "@authLoginHeadline": {
     "description": "Überschrift auf dem Login-Screen."

@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 class {ScreenName}Screen extends StatelessWidget {
@@ -12,10 +13,8 @@ class {ScreenName}Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Requires MaterialApp.router with localizationsDelegates configured
-    final l10n = AppLocalizations.of(context);
-    assert(l10n != null, 'AppLocalizations missing - check MaterialApp.router localizationsDelegates');
-    if (l10n == null) return const SizedBox.shrink();
+    // Guaranteed by MaterialApp.router localizationsDelegates
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

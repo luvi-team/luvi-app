@@ -95,16 +95,17 @@
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
-| `mcp__figma__get_design_context` | 🟢 | Design-Kontext holen | "Hol den Figma-Kontext" |
+| `mcp__figma__get_variable_defs` | 🟢 | Design-Variablen abrufen | "Welche Figma-Variablen?" |
 | `mcp__figma__get_screenshot` | 🟢 | Screenshot holen | "Hol den Screenshot" |
-| `mcp__figma__get_variable_defs` | 🟢 | Variablen holen | "Welche Figma-Variablen?" |
+| `mcp__figma__get_design_context` | 🟢 | Design-Kontext holen | "Hol den Figma-Kontext" |
 
-> 📋 **Setup & Verification:** Health-check via `mcp__figma__get_design_context`. On error: Design import unavailable. Setup: [Figma MCP Server Docs](https://github.com/roidlipav/figma-mcp-server)
+> 📋 **Setup & Verifikation:** Health-Check via `mcp__figma__get_variable_defs`. Bei Fehlern: Design-Import nicht verfügbar. Setup: [Figma MCP Server (Official)](https://github.com/modelcontextprotocol/servers/tree/main/src/figma)
 
-### 6. Shell Utilities (16 Permissions)
+### 6. Shell Utilities (17 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
+| `python3 -c "import yaml; ...":*` | 🟢 | YAML Verarbeitung (PyYAML) | "Parse das YAML" |
 | `grep:*` | 🟢 | Text suchen | "Such nach X im Code" |
 | `find:*` | 🟢 | Dateien finden | "Find alle .dart Dateien" |
 | `ls:*` | 🟢 | Verzeichnis listen | "Was ist im Ordner?" |
@@ -174,7 +175,7 @@
 | `git reset --hard` | Änderungen unwiderruflich verlieren |
 | `git rebase` | History umschreiben ist gefährlich |
 | `pkill` | Prozesse beenden ist destruktiv |
-| `ruby -ryaml -e:*` | Arbitrary Ruby execution - use Python PyYAML instead |
+| `ruby -ryaml -e:*` | Willkürliche Ruby-Ausführung - nutze stattdessen Python PyYAML (`python3 -c "import yaml; ..."`) |
 
 > **Unterschied `rm` vs `git rm`:**
 > - `rm` (Shell): Löscht Dateien permanent und unwiderruflich
@@ -258,19 +259,19 @@
 
 ### MCP Server Healthchecks
 
-| Server | Health Check | Expected Response | On Error |
-|--------|--------------|-------------------|----------|
-| Archon | `mcp__archon__health_check` | `{status: "healthy"}` | Task tracking disabled |
-| Figma | `mcp__figma__get_design_context` | Design JSON | Design import unavailable |
+| Server | Health Check | Erwartete Antwort | Bei Fehlern |
+|--------|--------------|-------------------|-------------|
+| Archon | `mcp__archon__health_check` | `{status: "healthy"}` | Task-Tracking deaktiviert |
+| Figma | `mcp__figma__get_variable_defs` | Liste von Variablen | Design-Import nicht verfügbar |
 
-### Troubleshooting
-1. **Check server logs:** Inspect MCP server output in Terminal
-2. **Restart:** Restart MCP services on connection issues
-3. **Permission audit:** Compare access logs with this documentation
-4. **Fallback behavior:** On MCP outage, Claude continues without corresponding features
+### Fehlerbehebung (Troubleshooting)
+1. **Server-Logs prüfen:** Untersuche MCP-Server-Output im Terminal
+2. **Neustart:** Starte MCP-Dienste bei Verbindungsproblemen neu
+3. **Permission-Audit:** Vergleiche Zugriffsprotokolle mit dieser Dokumentation
+4. **Fallback-Verhalten:** Bei MCP-Ausfall arbeitet Claude ohne entsprechende Features weiter
 
 ### Permission-Nutzung auditieren
-- Claude Code loggt alle Tool-Aufrufe
+- Claude Code protokolliert alle Tool-Aufrufe
 - Regelmäßig prüfen ob Permissions noch benötigt werden
 - Ungenutzte Permissions entfernen
 
@@ -285,10 +286,10 @@
 | GitHub CLI | 9 |
 | MCP Archon | 8 |
 | MCP Figma | 3 |
-| Shell Utilities | 16 |
+| Shell Utilities | 17 |
 | Scripts | 3 |
 | Tools | 3 |
-| **Basis-Gesamt** | **67** |
+| **Basis-Gesamt** | **68** |
 
 > **Hinweis:** Claude Code fügt automatisch neue Permissions hinzu, wenn du sie während einer Session genehmigst (z.B. WebFetch, WebSearch). Diese werden hier nicht dokumentiert, da sie session-spezifisch sind.
 

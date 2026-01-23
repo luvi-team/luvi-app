@@ -186,30 +186,30 @@ If `health_check()` fails:
 
 ## Agent Usage Rules (MUST FOLLOW)
 
-| Priority | Condition | Agent | Action |
-|----------|-----------|-------|--------|
-| 1 | DB/RLS/Migration task | `reqing-ball` | Use BEFORE implementation |
-| 2 | Flutter UI task | `ui-frontend` | Use for implementation |
-| 3 | Chart/Dashboard task | `dataviz` | Use for implementation |
-| 4 | User data/PII involved | `qa-reviewer` | Use before PR |
-| 5 | UI work complete | `ui-polisher` | Use before PR |
+| Stage | Condition | Agent | Action |
+|-------|-----------|-------|--------|
+| Planning | DB/RLS/Migration task | `reqing-ball` | Use BEFORE implementation |
+| Implementation | Flutter UI task | `ui-frontend` | Use for implementation |
+| Implementation | Chart/Dashboard task | `dataviz` | Use for implementation |
+| Review | User data/PII involved | `qa-reviewer` | Use before PR |
+| Audit | UI work complete | `ui-polisher` | Use before PR |
 
-**Multiple conditions?** Start with Priority 1, work down.
+**Multiple conditions?** Invoke agents for ALL matching conditions, in priority order (1→2→3→4→5).
 
 **Examples:**
-- "Create a login screen" → Priority 2 → `ui-frontend`
-- "Add dashboard showing user cycle data" → Priority 3 + 4 → `dataviz`, then `qa-reviewer`
-- "Change RLS policy and update UI" → Priority 1 + 2 → `reqing-ball`, then `ui-frontend`
+- "Create a login screen" → Stage: Implementation → `ui-frontend`
+- "Add dashboard showing user cycle data" → Stage: Implementation + Review → `dataviz`, then `qa-reviewer`
+- "Change RLS policy and update UI" → Stage: Planning + Implementation → `reqing-ball`, then `ui-frontend`
 
 ## Available Agents
 
-| Agent | Capabilities |
-|-------|--------------|
-| `ui-frontend` | Design Tokens, L10n, A11y (44dp, Semantics), GoRouter |
-| `dataviz` | fl_chart, WCAG, Privacy-Aggregation, Legends |
-| `reqing-ball` | ADR validation, PRD check, Schema review |
-| `ui-polisher` | Token/Spacing audit, WCAG AA Contrast |
-| `qa-reviewer` | PII check, ADR-0005 Push Privacy, GDPR |
+| Agent | Scope | Capabilities |
+|-------|-------|--------------|
+| `ui-frontend` | Implementation | Design Tokens, L10n, A11y (44dp, Semantics), GoRouter |
+| `dataviz` | Implementation | fl_chart, WCAG, Privacy-Aggregation, Legends |
+| `reqing-ball` | Pre-Implementation | ADR validation, PRD check, Schema review |
+| `ui-polisher` | Post-Implementation | Token/Spacing audit, WCAG AA Contrast |
+| `qa-reviewer` | Compliance Check | PII check, ADR-0005 Push Privacy, GDPR |
 
 Details: `.claude/agents/*.md`
 

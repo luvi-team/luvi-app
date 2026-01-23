@@ -33,7 +33,7 @@ void main() {
           // Validation: Provide explicit overrides container for isolation.
           // Currently empty as screen uses direct Supabase instance (legacy),
           // but ensures test is ready for Riverpod migration/mocking.
-          overrides: [],
+          overrides: const [],
           child: MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.buildAppTheme(),
