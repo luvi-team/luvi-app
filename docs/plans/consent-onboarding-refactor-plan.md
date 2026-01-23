@@ -28,14 +28,35 @@
 
 | Entscheidung | Details |
 |--------------|---------|
-| **Finale Policy:** | Server-SSOT via `public.profiles.has_completed_onboarding` |
-| **Migration:** | `UserStateService` (SharedPreferences) → Supabase Profiles |
+| **Runtime-Policy:** | Local Cache (SharedPreferences) für Guards - performant + offline-fähig |
+| **Audit-SSOT:** | Server (`public.profiles`) für GDPR-Nachweis |
+| **Sync-Mechanismus:** | Best-effort bei Splash-Flow (siehe unten) |
 
-**Implementierungs-Tasks:**
-- [ ] `UserStateService` refactoren: `hasCompletedOnboarding` aus `profiles` lesen
-- [ ] `acceptedConsentVersion` aus `profiles.accepted_consent_version` lesen
-- [ ] Splash/Guards auf `public.profiles` umstellen
-- [ ] SharedPreferences als Cache behalten (Offline-Fallback), aber Server = SSOT
+**Architektur-Klarstellung (2026-01):**
+
+Guards (`_postAuthGuard`, `_onboardingConsentGuard`) lesen IMMER aus lokalem Cache.
+Dies ist KORREKT - Server-Roundtrip bei jeder Navigation wäre zu langsam.
+
+**Sync-Bedingungen (alle müssen erfüllt sein):**
+1. App durchläuft Splash-Flow (nicht bei jeder Navigation!)
+2. User ist authenticated (Gate 2 passiert)
+3. Remote-Profile-Fetch erfolgreich (online + Supabase erreichbar)
+4. Remote-Version > Local-Version (monotone Aktualisierung)
+
+**Bei Sync-Failure:**
+- Local Cache behält alten Wert (fail-safe)
+- User kann App weiter nutzen
+- Nächster Splash-Durchlauf versucht erneut
+
+**Server bleibt Audit-SSOT:**
+- GDPR Art. 7 Nachweis via `public.consents` Tabelle
+- `profiles.accepted_consent_version` für Gate-Logik
+- Local Cache ist Performance-Optimierung, nicht SSOT
+
+**Erledigte Tasks:**
+- [x] Splash synct `profiles.accepted_consent_version` → SharedPreferences (best-effort)
+- [x] Guards nutzen lokalen Cache (korrekt, performant)
+- [x] Sync-Failure führt zu SplashUnknown UI (nicht silent fail)
 
 ### ✅ BLOCKER 3: consents.scopes Format (DB vs RPC) — RESOLVED
 

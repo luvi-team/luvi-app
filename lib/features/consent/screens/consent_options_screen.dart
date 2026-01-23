@@ -19,6 +19,7 @@ import 'package:luvi_app/features/consent/state/consent_service.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_services/supabase_service.dart';
+import 'package:luvi_app/core/init/session_dependencies.dart';
 
 class _ConsentBtnBusyNotifier extends Notifier<bool> {
   @override
@@ -214,7 +215,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
       }
 
       if (!context.mounted) return;
-      _navigateAfterConsent(context);
+      _navigateAfterConsent(context, ref);
     } on ConsentException catch (error) {
       if (!context.mounted) return;
       if (error.code == 'unauthorized' || error.statusCode == 401) {
@@ -758,8 +759,9 @@ Future<bool> _persistConsentToLocalCache(
 }
 
 /// Navigate to Onboarding after consent is accepted.
-void _navigateAfterConsent(BuildContext context) {
-  final isAuth = SupabaseService.isAuthenticated;
+/// Uses isAuthenticatedFnProvider for testability (not static SupabaseService).
+void _navigateAfterConsent(BuildContext context, WidgetRef ref) {
+  final isAuth = ref.read(isAuthenticatedFnProvider)();
   context.go(isAuth ? RoutePaths.onboarding01 : RoutePaths.authSignIn);
 }
 

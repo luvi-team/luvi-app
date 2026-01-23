@@ -13,6 +13,7 @@ import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/user_state_service.dart';
+import 'package:luvi_app/core/init/session_dependencies.dart';
 import '../../../support/test_config.dart';
 
 /// Mock ConsentService for testing navigation without Supabase
@@ -512,6 +513,84 @@ void main() {
             scopes: any(named: 'scopes'),
           ),
         ).called(1);
+      },
+    );
+
+    testWidgets(
+      'Authenticated user navigates to onboarding after consent',
+      (tester) async {
+        // Setup mocks
+        final mockConsentService = _MockConsentService();
+        final mockUserStateService = _MockUserStateService();
+
+        when(
+          () => mockConsentService.accept(
+            version: ConsentConfig.currentVersion,
+            scopes: any(named: 'scopes'),
+          ),
+        ).thenAnswer((_) async {});
+        when(() => mockUserStateService.bindUser(any()))
+            .thenAnswer((_) async {});
+        when(() => mockUserStateService.markWelcomeSeen())
+            .thenAnswer((_) async {});
+        when(() => mockUserStateService.setAcceptedConsentVersion(any()))
+            .thenAnswer((_) async {});
+        when(() => mockUserStateService.setAcceptedConsentScopes(any()))
+            .thenAnswer((_) async {});
+
+        // Setup GoRouter
+        final router = GoRouter(
+          initialLocation: RoutePaths.consentOptions,
+          routes: [
+            GoRoute(
+              path: RoutePaths.consentOptions,
+              builder: (context, state) => const ConsentOptionsScreen(),
+            ),
+            GoRoute(
+              path: RoutePaths.onboarding01,
+              builder: (context, state) => const Onboarding01Screen(),
+            ),
+            GoRoute(
+              path: RoutePaths.authSignIn,
+              builder: (context, state) => const AuthSignInScreen(),
+            ),
+          ],
+        );
+
+        // Build widget with auth = TRUE (authenticated user)
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              consentServiceProvider.overrideWithValue(mockConsentService),
+              userStateServiceProvider
+                  .overrideWith((ref) async => mockUserStateService),
+              // KEY: Override isAuthenticatedFnProvider to return true
+              isAuthenticatedFnProvider.overrideWithValue(() => true),
+            ],
+            child: MaterialApp.router(
+              theme: AppTheme.buildAppTheme(),
+              locale: const Locale('de'),
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              routerConfig: router,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Tap "Alle akzeptieren"
+        final acceptAllButton =
+            find.byKey(const Key('consent_options_btn_accept_all'));
+        await tester.tap(acceptAllButton);
+        await tester.pumpAndSettle();
+
+        // AUTH USER → should navigate to Onboarding, NOT AuthSignIn
+        expect(
+          find.byType(Onboarding01Screen),
+          findsOneWidget,
+          reason: 'Authenticated user should go to Onboarding after consent',
+        );
+        expect(find.byType(AuthSignInScreen), findsNothing);
       },
     );
   });
