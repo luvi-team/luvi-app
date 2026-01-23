@@ -161,6 +161,28 @@ void main() {
       expect(size.height, customHeight);
     });
 
+    testWidgets('respects custom width parameter', (tester) async {
+      const customWidth = 200.0;
+
+      await tester.pumpWidget(
+        buildTestApp(
+          home: Scaffold(
+            body: Center(
+              child: AuthButtonBase(
+                label: 'Test Button',
+                onPressed: () {},
+                backgroundColor: DsColors.authRebrandCtaPrimary,
+                width: customWidth,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final size = tester.getSize(find.byType(AuthButtonBase));
+      expect(size.width, customWidth);
+    });
+
     testWidgets('uses default height from metrics when not specified',
         (tester) async {
       await tester.pumpWidget(

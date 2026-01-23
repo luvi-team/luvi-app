@@ -41,8 +41,9 @@ The following data is extracted from `get_code` and `get_metadata` outputs. Adva
 - **Type:** `rounded-rectangle`
 - **Dimensions:** 155 × 180 px
 - **Border Radius:** 20px (extracted from get_code: `rounded-[20px]`)
-- **Position:** x=0, y=0 (relative to Workout Article 68426:7322)
-- **Asset URL:** `http://localhost:3845/assets/70652ba5bab98c750983679383797de68521b1ee.png`
+- Position: x=0, y=0 (relative to Workout Article 68426:7322)
+- **Asset URL:** `http://localhost:3845/assets/70652ba5bab98c750983679383797de68521b1ee.png` (Ephemeral/Dev-Only)
+  > **Note:** This URL is a local development artifact. For production, resolve the stable asset URL via Figma Export or the Content CDN.
 - **Crop Mode:**
   - Object-fit: `cover` (extracted from get_code: `object-cover`)
   - Object-position: `50% 50%` (extracted from get_code: `object-50%-50%`)

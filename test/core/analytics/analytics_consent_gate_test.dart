@@ -1,3 +1,5 @@
+import 'dart:async'; // Add import for Completer
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/analytics/analytics_recorder.dart';
@@ -16,14 +18,12 @@ void main() {
   group('Analytics Consent Gating', () {
     group('analyticsConsentGateProvider', () {
       test('returns false when UserStateService is loading', () {
+        final completer = Completer<UserStateService>(); // Use Completer
         final container = ProviderContainer(
           overrides: [
             // Simulate loading state by not providing a value
             userStateServiceProvider.overrideWith(
-              (ref) => Future.delayed(
-                const Duration(days: 1),
-                () => _MockUserStateService(),
-              ),
+              (ref) => completer.future, // Return the incomplete future
             ),
           ],
         );
