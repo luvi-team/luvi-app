@@ -194,7 +194,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             },
           );
     } catch (e, st) {
-      // Errors surfaced via submitState listener in initState.
+      // Errors surfaced via submitState listener in didChangeDependencies.
       // Catch prevents unhandled exception in async callback.
       if (e is AuthException) {
         // Log AuthException at debug level for observability (aids debugging new Supabase codes)

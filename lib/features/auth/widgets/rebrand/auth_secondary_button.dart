@@ -8,9 +8,8 @@ import 'auth_button_base.dart';
 /// Used for "Weiter mit E-Mail" button in bottom sheets.
 /// Figma: 329×50, radius 12, Figtree Bold 17px.
 ///
-/// Note: Text color is explicitly set in TextStyle (not via foregroundColor)
-/// to ensure consistent rendering with variable font. Disabled state uses
-/// background opacity (0.5) rather than text opacity for visual feedback.
+/// Note: Disabled state uses both background opacity (0.5) and text opacity
+/// (0.7) for visual feedback. Text color inherits from ElevatedButton.styleFrom.
 class AuthSecondaryButton extends StatelessWidget {
   const AuthSecondaryButton({
     super.key,

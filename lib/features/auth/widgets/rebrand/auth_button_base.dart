@@ -84,7 +84,6 @@ class AuthButtonBase extends StatelessWidget {
                       fontSize: AuthRebrandMetrics.buttonFontSize,
                       fontVariations: [FontVariations.bold],
                       height: AuthRebrandMetrics.bodyLineHeightRatio,
-                      color: DsColors.grayscaleWhite,
                     ),
                   ),
           ),
