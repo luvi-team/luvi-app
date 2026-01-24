@@ -46,10 +46,16 @@ if (!SUPABASE_URL) {
 if (!SUPABASE_ANON_KEY) {
   throw new Error("Missing required environment variable: SUPABASE_ANON_KEY must be set");
 }
-// Canonical scopes list: keep in sync with client/shared config (see lib/core/privacy/consent_types.dart).
-// TODO: Move to env (CONSENT_VALID_SCOPES), shared config module, or DB table to avoid drift.
-// Diese Liste muss zu `config/consent_scopes.json` passen; Deno-Tests prüfen die IDs.
-export const VALID_SCOPES = [
+// ---------------------------------------------------------------------------
+// Consent Scopes Configuration
+// ---------------------------------------------------------------------------
+// SSOT: Scopes are loaded from config/consent_scopes.json at module init.
+// The SSOT test (consent_scopes_ssot.test.ts) validates sync between this
+// export and the JSON file. Dart enum is at lib/core/privacy/consent_types.dart.
+// ---------------------------------------------------------------------------
+
+// Fallback scopes used if config file cannot be read (deployment resilience)
+const FALLBACK_SCOPES = [
   "terms",
   "health_processing",
   "ai_journal",
@@ -57,6 +63,45 @@ export const VALID_SCOPES = [
   "marketing",
   "model_training",
 ] as const;
+
+async function loadConsentScopes(): Promise<readonly string[]> {
+  try {
+    const configUrl = new URL("../../../config/consent_scopes.json", import.meta.url);
+    const jsonText = await Deno.readTextFile(configUrl);
+    const scopes = JSON.parse(jsonText) as Array<{ id: string }>;
+    const ids = scopes.map((scope) => scope.id);
+
+    if (ids.length === 0) {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "empty_config",
+          message: "consent_scopes.json returned empty array, using fallback",
+        })
+      );
+      return FALLBACK_SCOPES;
+    }
+
+    return ids;
+  } catch (error) {
+    console.warn(
+      JSON.stringify({
+        severity: "warning",
+        ts: new Date().toISOString(),
+        event: "consent_scopes_load",
+        status: "fallback",
+        message: "Failed to load consent_scopes.json, using fallback",
+        error: error instanceof Error ? error.message : String(error),
+      })
+    );
+    return FALLBACK_SCOPES;
+  }
+}
+
+// Top-level await (supported in Deno Edge Functions)
+export const VALID_SCOPES: readonly string[] = await loadConsentScopes();
 
 interface ConsentRequestPayload {
   policy_version?: unknown;
