@@ -23,6 +23,20 @@ set +a
 : "${SUPABASE_PROJECT_REF:?SUPABASE_PROJECT_REF is required (in .env.local)}"
 : "${SUPABASE_DB_PASSWORD:?SUPABASE_DB_PASSWORD is required (in .env.local)}"
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Connection Setup
+# ─────────────────────────────────────────────────────────────────────────────
+# NOTE: Using postgres superuser is intentional for RLS smoke tests.
+# The superuser privilege is required to execute SET ROLE statements that
+# simulate different authentication contexts (authenticated, anon, service_role).
+# RLS policies are actually tested by switching roles via SET ROLE, not by
+# the connection user's privileges. The test flow is:
+#   1. Connect as postgres (superuser)
+#   2. SET ROLE authenticated (simulate app client)
+#   3. Set JWT claims via set_config()
+#   4. Execute queries that should respect RLS policies
+# A less-privileged test user would require CREATEROLE or similar permissions
+# to SET ROLE, which defeats the purpose. See: PostgreSQL SET ROLE documentation.
 db_url="postgresql://postgres@db.${SUPABASE_PROJECT_REF}.supabase.co:5432/postgres?sslmode=require"
 
 run_psql_file() {

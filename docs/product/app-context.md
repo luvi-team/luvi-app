@@ -193,13 +193,13 @@ Splash → Auth → Home
 | 5 | **Name** | Personalisierte Ansprache |
 | 6 | **Geburtsdatum** | Altersgerechte Empfehlungen |
 | 7 | **Ziele & Interessen** | 2–3 Hauptziele + Content-Säulen |
-| 8 | **Zyklusdaten** | Beginn letzte Periode + Dauer (Default: 7 Tage) |
+| 8 | **Zyklusdaten** | Beginn letzte Periode + Dauer (Default: 5 Tage) |
 | 9 | **Ernährungspräferenz** | Omnivor / Vegetarisch / Vegan / Keine Angabe |
 | 10 | Success-Screen | Erklärung, was als Nächstes passiert |
 
 **Zyklus-Erfassung (Friction-Minimierung):**
 - User gibt nur Beginn-Datum der letzten Periode an
-- App nimmt **7 Tage als Standard-Periodendauer** (Default-Logik)
+- App nimmt **5 Tage als Standard-Periodendauer** (siehe phase_definitions.md SSOT)
 - Weniger Screens, weniger Friction
 
 ---

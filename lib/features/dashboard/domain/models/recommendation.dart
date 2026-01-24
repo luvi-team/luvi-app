@@ -1,4 +1,32 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
+import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
+
+/// Tag-to-Category mapping. Add new tags here as content expands.
+/// Keys are lowercase for case-insensitive matching.
+const _tagCategoryMap = <String, Category>{
+  // Training
+  'kraft': Category.training,
+  'cardio': Category.training,
+  'hiit': Category.training,
+  // Nutrition
+  'supplements': Category.nutrition,
+  'makros': Category.nutrition,
+  'tagebuch': Category.nutrition,
+  'rezepte': Category.nutrition,
+  // Regeneration
+  'achtsamkeit': Category.regeneration,
+  'beweglichkeit': Category.regeneration,
+  'beauty': Category.regeneration,
+  'schlaf': Category.regeneration,
+  // Mindfulness
+  'meditation': Category.mindfulness,
+  'wellness': Category.mindfulness,
+  'entspannung': Category.mindfulness,
+};
+
+/// Maps a recommendation tag to its corresponding category.
+/// Returns null if tag is unmapped (recommendation shows in all categories).
+Category? categoryFromTag(String tag) => _tagCategoryMap[tag.toLowerCase()];
 
 @immutable
 class Recommendation {

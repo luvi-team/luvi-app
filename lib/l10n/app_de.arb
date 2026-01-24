@@ -969,10 +969,6 @@
   "@authResetTitle": {
     "description": "Titel auf dem Reset-Password-Screen (ohne Emoji)."
   },
-  "authResetSubtitle": "Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu.",
-  "@authResetSubtitle": {
-    "description": "Untertitel auf dem Reset-Password-Screen."
-  },
   "authResetCta": "Passwort zurücksetzen",
   "@authResetCta": {
     "description": "CTA-Button-Text auf dem Reset-Password-Screen."
@@ -1356,6 +1352,15 @@
     "placeholders": {
       "percent": {
         "type": "int"
+      }
+    }
+  },
+  "semanticButtonLoading": "{label}, wird geladen",
+  "@semanticButtonLoading": {
+    "description": "Semantik-Label für Button im Ladezustand wenn kein custom Loading-Label angegeben",
+    "placeholders": {
+      "label": {
+        "type": "String"
       }
     }
   },

@@ -19,7 +19,7 @@ import '../../support/test_config.dart';
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 /// Creates a GoRouter configured for AuthSignupScreen tests.
-/// Caller MUST register disposal via tester.addTearDown(router.dispose).
+/// Note: When used via pumpSignupScreen, disposal is handled automatically.
 GoRouter _createSignupTestRouter() => GoRouter(
       routes: testAppRoutes,
       initialLocation: AuthSignupScreen.routeName,
@@ -33,6 +33,7 @@ void main() {
 
   // Each test creates its own router instance for isolation
   // Router disposal is handled via addTearDown in pumpSignupScreen
+  // Note: tester.addTearDown() is not available in Flutter 3.38; using global addTearDown()
 
   Future<void> pumpSignupScreen(
     WidgetTester tester,

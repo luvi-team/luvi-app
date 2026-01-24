@@ -317,7 +317,7 @@ Lern-/Handlungsplattform funktioniert:
 
 **Zyklus:**
 - **CycleData** — Basisdaten für die Zyklusberechnung (letzte Periode,
-  Zykluslänge, Periodendauer (Default: 7 Tage), Alter, user_id).
+  Zykluslänge, Periodendauer (Default: 5 Tage, siehe phase_definitions.md SSOT), Alter, user_id).
 - **Phase** — Fachliches Modell der Zyklusphasen inklusive Dauer,
   Kriterien und UI-Hinweisen (wird berechnet, nicht gespeichert).
 - **Cycle/Phase Computation („TodayState")** — Logik zur Berechnung der

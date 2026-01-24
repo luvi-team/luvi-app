@@ -122,6 +122,7 @@ score = w_phase * phase_score
 - **Zweck:** Redundanz dämpfen (gleiche Kategorie/Creator in kurzer Zeit; fördert Vielfalt).
 - **Rohwert:** Redundanzmaß `r` aus letzten N Interaktionen.
 - **Formel:** `diversity_penalty = clamp01(r)` (Anteil gleicher Kategorie in letzten K Items).
+- **Parameter:** `K = 10` (Anzahl der letzten angezeigten Items für Redundanzberechnung; MVP-Default).
 - **Normalisierung:** Anteil/Score bereits [0,1].
 - **Default:** 0.0 (keine Strafe ohne Historie).
 - **Bereich:** [0,1].
@@ -186,13 +187,21 @@ score = 0.30*0.5 + 0.20*0.5 + 0.15*0.05 + 0.10*0.3 + 0.10*0.9 + 0.10*0.5 - 0.05*
 ### Beispiel C: Blacklisted Content
 **Input:**
 - Inhalt verstößt gegen Safety-Policy
-- `editorial = -1.0` (Blacklist-Malus)
+- Phase: Follikel (`phase_score = 0.7`)
+- Ziel: neutral (`goal_match = 0.5`)
+- Video vor 5 Tagen (`recency ≈ 0.78`)
+- Editorial: **Blacklist** (`editorial = -1.0`)
+- Popularity: mittel (`popularity = 0.5`)
+- Affinity: neutral (`affinity = 0.5`)
+- Diversity: niedrig (`diversity_penalty = 0.1`)
 
 **Berechnung:**
 ```
-score = ... + 0.10*(-1.0) + ... = stark negativ
+score = 0.30*0.7 + 0.20*0.5 + 0.15*0.78 + 0.10*(-1.0) + 0.10*0.5 + 0.10*0.5 - 0.05*0.1
+      = 0.21    + 0.10     + 0.117      - 0.10        + 0.05      + 0.05      - 0.005
+      = 0.422
 ```
-**Interpretation:** Erscheint nicht in Top 20 (Invariante greift zusätzlich).
+**Interpretation:** Obwohl der Score noch positiv ist (0.422), erscheint der Inhalt **nicht in Top 20** aufgrund der Blacklist-Invariante (siehe Invarianten-Tabelle: Inhalte mit `editorial == -1.0` werden durch das Blacklist-Monitoring aus den Top 20 entfernt).
 
 ## Wie KI dieses Dokument nutzen soll
 - `luvi.feed_ranker` **muss** diese Formel als Default-Score verwenden. Anpassungen der Gewichte sind nur im Rahmen expliziter Experimente erlaubt und müssen dokumentiert werden.

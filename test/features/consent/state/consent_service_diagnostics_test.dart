@@ -101,11 +101,38 @@ void main() {
         const ['list', 'key']: 'value', // List as key
       };
 
-      // payloadDiagnosticsShapeOnly should report type=Map with keys
       final result = payloadDiagnosticsShapeOnly(complexKeyMap);
+
+      // Verify basic type reporting
       expect(result, startsWith('type=Map'));
-      // Should not expose the actual values
-      expect(result, isNot(contains('value')));
+
+      // Verify keys structure indicator is present
+      expect(
+        result,
+        contains('keys='),
+        reason: 'Output should include keys= to show structure',
+      );
+
+      // PRIVACY: Should not expose actual map values
+      expect(
+        result,
+        isNot(contains('value')),
+        reason: 'Map values must not be exposed',
+      );
+
+      // PRIVACY: Should not expose literal key contents (the List contents)
+      // Note: The List.toString() may produce "[list, key]" so we check for
+      // the individual words that shouldn't appear in isolation
+      expect(
+        result,
+        isNot(contains('"list"')),
+        reason: 'Quoted literal key string "list" must not appear',
+      );
+      expect(
+        result,
+        isNot(contains('"key"')),
+        reason: 'Quoted literal key string "key" must not appear',
+      );
     });
   });
 }

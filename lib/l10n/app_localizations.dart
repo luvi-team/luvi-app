@@ -1481,12 +1481,6 @@ abstract class AppLocalizations {
   /// **'Forgot password?'**
   String get authResetTitle;
 
-  /// Subtitle on the Reset Password screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter your email and we\'ll send you a link to reset it.'**
-  String get authResetSubtitle;
-
   /// CTA button text on the Reset Password screen.
   ///
   /// In en, this message translates to:
@@ -1984,6 +1978,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{percent} percent'**
   String semanticProgressPercent(int percent);
+
+  /// Semantic label for button in loading state when no custom loading label provided
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, loading'**
+  String semanticButtonLoading(String label);
 
   /// Empathetic title shown when splash screen cannot determine onboarding state
   ///

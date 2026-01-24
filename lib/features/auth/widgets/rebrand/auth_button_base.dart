@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/l10n/app_localizations.dart';
 import 'auth_rebrand_metrics.dart';
 import 'auth_rebrand_text_styles.dart';
 
@@ -48,11 +49,21 @@ class AuthButtonBase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEnabled = onPressed != null && !isLoading;
+    final l10n = AppLocalizations.of(context);
 
-    // A11y: Use loading label when loading, otherwise button label
-    final semanticLabel = isLoading && loadingSemanticLabel != null
-        ? loadingSemanticLabel!
-        : label;
+    // A11y: Use loading label when loading, with interpolated fallback
+    final String semanticLabel;
+    if (isLoading) {
+      if (loadingSemanticLabel != null) {
+        semanticLabel = loadingSemanticLabel!;
+      } else if (label.isNotEmpty) {
+        semanticLabel = l10n?.semanticButtonLoading(label) ?? '$label, loading';
+      } else {
+        semanticLabel = l10n?.semanticLoadingProgress ?? 'Loading';
+      }
+    } else {
+      semanticLabel = label;
+    }
 
     return Semantics(
       label: semanticLabel,

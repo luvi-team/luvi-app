@@ -24,8 +24,17 @@ class _RingData {
   final double yOffset;
 }
 
-// Design invariant: rainbowRingWidths expects 4 elements [teal, pink, orange, beige].
-// Assert runs once at module load in debug builds.
+// ─────────────────────────────────────────────────────────────────────────────
+// Design Invariant Validation (Debug-Only)
+// ─────────────────────────────────────────────────────────────────────────────
+// This IIFE (Immediately Invoked Function Expression) validates that
+// AuthRebrandMetrics.rainbowRingWidths has the expected 4 elements at module
+// load time. The pattern works as follows:
+// 1. `final` forces immediate evaluation when the module loads
+// 2. The assert() only runs in debug builds (tree-shaken in release)
+// 3. Provides fail-fast validation before any widget attempts to render
+// The `unused_element` ignore silences the lint since we only need the
+// side-effect (assertion), not the return value.
 // ignore: unused_element
 final _ringWidthsValidated = () {
   assert(

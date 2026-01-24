@@ -95,7 +95,6 @@ fontVariations: [FontVariation('wght', 400)],
 ---
 
 ## Full Token Search
-
 Search for design token documentation:
-- **grep:** `grep -n "Figma:" lib/core/design_tokens/*.dart`
+- **grep:** `grep -rn "Figma:" lib/core/design_tokens/`
 - **ripgrep:** `rg "Figma:" lib/core/design_tokens/`

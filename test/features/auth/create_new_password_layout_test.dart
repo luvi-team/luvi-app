@@ -44,14 +44,18 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      // Guard removed - see dedicated 'renders AuthContentCard' test below
+    }
 
-      // Guard: Verify AuthContentCard rendered (shared across all tests)
+    testWidgets('renders AuthContentCard', (tester) async {
+      await pumpCreatePasswordScreen(tester);
+
       expect(
         find.byType(AuthContentCard),
         findsOneWidget,
         reason: 'AuthContentCard must be rendered on CreateNewPasswordScreen',
       );
-    }
+    });
 
     testWidgets('uses Center widget for card positioning (Figma-alignment)',
         (tester) async {

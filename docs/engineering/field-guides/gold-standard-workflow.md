@@ -292,7 +292,7 @@ Kerngedanke:
 | 10:20 | Prove: Self-Check + DSGVO-Review (10–13 Min) |
 | 10:45 | PR → Greptile Review → Merge |
 
-**Ergebnis:** ~70–75 Min · Vorher: ~120 Min → **≈ 40 % schneller**
+**Ergebnis:** ~70–75 Min · Vorher: ~120 Min → **≈ 40 % schneller** (Beispielschätzung; einzelner Anwendungsfall, nicht repräsentativer Durchschnitt)
 
 ---
 

@@ -972,10 +972,6 @@
   "@authResetTitle": {
     "description": "Title on the Reset Password screen (no emoji)."
   },
-  "authResetSubtitle": "Enter your email and we'll send you a link to reset it.",
-  "@authResetSubtitle": {
-    "description": "Subtitle on the Reset Password screen."
-  },
   "authResetCta": "Reset password",
   "@authResetCta": {
     "description": "CTA button text on the Reset Password screen."
@@ -1359,6 +1355,15 @@
     "placeholders": {
       "percent": {
         "type": "int"
+      }
+    }
+  },
+  "semanticButtonLoading": "{label}, loading",
+  "@semanticButtonLoading": {
+    "description": "Semantic label for button in loading state when no custom loading label provided",
+    "placeholders": {
+      "label": {
+        "type": "String"
       }
     }
   },

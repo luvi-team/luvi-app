@@ -732,9 +732,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authResetTitle => 'Passwort vergessen?';
 
   @override
-  String get authResetSubtitle => 'Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu.';
-
-  @override
   String get authResetCta => 'Passwort zurücksetzen';
 
   @override
@@ -995,6 +992,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String semanticProgressPercent(int percent) {
     return '$percent Prozent';
+  }
+
+  @override
+  String semanticButtonLoading(String label) {
+    return '$label, wird geladen';
   }
 
   @override

@@ -41,7 +41,7 @@ backend:
 
 ai_layer:
   status: planned
-  router: Node (Vercel AI SDK)
+  router: "Node (Vercel AI SDK)"
   providers: [openai_eu_project, bedrock_eu, vertex_ai_eu]
   caching: upstash_redis
   observability: langfuse  # LLM tracing, costs, latency, evals

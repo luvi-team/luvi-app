@@ -157,18 +157,18 @@ class AuthRebrandTextField extends StatelessWidget {
     // Derive fallback label from field properties (MUST-03 compliant)
     // Uses existing L10n keys: authEmailHint, authPasswordHint
     final l10n = AppLocalizations.of(context);
-    final fallbackLabel = _deriveFallbackLabel(l10n, showError);
+    final effectiveLabel = _deriveFallbackLabel(l10n, showError);
 
-    // Issue 4: Error text is already shown visually as hintText (line 107-109).
+    // Issue 4: Error text is already shown visually as hintText (lines 113-115).
     // Removed Semantics.hint to prevent duplicate screen-reader announcements.
     return Semantics(
-      label: fallbackLabel,
+      label: effectiveLabel,
       textField: true,
       child: field,
     );
   }
 
-  /// Computes a fallback semantic label when none is explicitly provided.
+  /// Computes the effective semantic label to use for accessibility.
   ///
   /// Logic order:
   /// 1. [semanticLabel] if provided.

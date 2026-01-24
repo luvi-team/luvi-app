@@ -6,6 +6,22 @@ zukünftige Team-Mitglieder.
 
 BMAD = Business → Modellierung → Architektur → Definition of Done.
 
+---
+
+## English Summary
+
+BMAD = Business → Modeling → Architecture → Definition of Done.
+
+This directory defines how BMAD is used in LUVI for planning, implementing, and reviewing features. It serves as documentation for developers, AI agents (Codex, Claude Code), and future team members.
+
+**Two levels exist:**
+1. **BMAD Global** (`global.md`) — System-wide documentation covering vision, data models, architecture, and quality gates
+2. **BMAD Sprint** (`sprints/*.md`) — Per-sprint briefing documents with focused scope, affected domains, and success criteria
+
+**Key principle:** BMAD documents synthesize and link to existing SSOT documents (App-Context, Roadmap, ADRs, Dossiers). They do not define new truths.
+
+---
+
 Es gibt zwei Ebenen:
 
 1. **BMAD Global** – beschreibt das System als Ganzes.  

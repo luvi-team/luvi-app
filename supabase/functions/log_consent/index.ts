@@ -64,9 +64,35 @@ const FALLBACK_SCOPES = [
   "model_training",
 ] as const;
 
+/** Type guard for consent scope config items. */
+function isValidScopeItem(item: unknown): item is { id: string } {
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    "id" in item &&
+    typeof (item as Record<string, unknown>).id === "string" &&
+    ((item as Record<string, unknown>).id as string).trim() !== ""
+  );
+}
+
 async function loadConsentScopes(): Promise<readonly string[]> {
   try {
     const configUrl = new URL("../../../config/consent_scopes.json", import.meta.url);
+
+    // Guard against unexpected https: protocol (Supabase Edge Functions use file: protocol)
+    if (configUrl.protocol !== "file:") {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "unsupported_protocol",
+          message: `Config URL protocol '${configUrl.protocol}' not supported, using fallback`,
+        })
+      );
+      return FALLBACK_SCOPES;
+    }
+
     const jsonText = await Deno.readTextFile(configUrl);
     const parsed: unknown = JSON.parse(jsonText);
 
@@ -90,14 +116,8 @@ async function loadConsentScopes(): Promise<readonly string[]> {
     let invalidCount = 0;
 
     for (const item of parsed) {
-      if (
-        typeof item === "object" &&
-        item !== null &&
-        "id" in item &&
-        typeof (item as Record<string, unknown>).id === "string" &&
-        ((item as Record<string, unknown>).id as string).trim() !== ""
-      ) {
-        validIdsSet.add((item as { id: string }).id);
+      if (isValidScopeItem(item)) {
+        validIdsSet.add(item.id);
       } else {
         invalidCount++;
       }

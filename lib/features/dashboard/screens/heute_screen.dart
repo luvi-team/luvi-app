@@ -23,6 +23,7 @@ import 'package:luvi_app/features/dashboard/widgets/heute_header.dart';
 import 'package:luvi_app/features/dashboard/widgets/weekly_training_section.dart';
 import 'package:luvi_app/features/dashboard/widgets/phase_recommendations_section.dart';
 import 'package:luvi_app/features/dashboard/widgets/legacy_sections.dart';
+import 'package:luvi_app/features/dashboard/domain/models/recommendation.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// Calculates the visible portion of the wave arc based on viewport scaling.
@@ -136,6 +137,13 @@ class _HeuteStatsSection extends StatelessWidget {
       );
     }
 
+    // Filter recommendations by selected category
+    final filteredRecommendations = state.recommendations.where((r) {
+      final category = categoryFromTag(r.tag);
+      // Show if: unmapped (null) OR matches selected category
+      return category == null || category == selectedCategory;
+    }).toList();
+
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       sliver: SliverToBoxAdapter(
@@ -148,7 +156,7 @@ class _HeuteStatsSection extends StatelessWidget {
               selectedCategory: selectedCategory,
               onCategoryTap: onCategoryTap,
               topRecommendation: state.topRecommendation,
-              recommendations: state.recommendations,
+              recommendations: filteredRecommendations,
               trainingStats: state.trainingStats,
               isWearableConnected: state.wearable.connected,
               currentPhase: currentPhase,

@@ -35,7 +35,7 @@ acceptance_version: "1.1"
 **Datenabhängigkeiten**
 - Zyklus: `CycleInfo.phaseFor(date)` für Phase im Header/Calendar (CycleInfo / Phase).
 - Wearables: StatsScroller zeigt entweder Live‑Karten oder `WearableConnectCard` Fallback (wenn `connected=false`) (StatsScroller).
-- Empfehlungen: aktuell aus Fixtures; Filterung nach Kategorie ist vorbereitet (TODO‑Hook in `_onCategoryTap`) (HeuteScreen).
+- Empfehlungen: aus Fixtures; Filterung nach Kategorie via `categoryFromTag()` implementiert (HeuteScreen).
 
 **Lokalisierung (Auszug)**
 - Titel: `dashboardCategoriesTitle`, `dashboardTopRecommendationTitle`, `dashboardMoreTrainingsTitle`, `dashboardTrainingDataTitle` (AppLocalizations).

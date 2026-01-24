@@ -57,7 +57,8 @@ void main() {
         );
 
         final semantics = tester.getSemantics(find.byType(AuthButtonBase));
-        expect(semantics.label, 'Test Button');
+        // Loading state uses L10n interpolated label: "{label}, wird geladen" (de)
+        expect(semantics.label, contains('Test Button'));
         expect(semantics.flagsCollection.isButton, isTrue);
         // When loading, button is disabled
         // Using explicit comparison for Tristate (type-safe)
@@ -114,6 +115,41 @@ void main() {
         expect(semantics.label, 'Test Button');
         // Using explicit comparison for Tristate (type-safe)
         expect(semantics.flagsCollection.isEnabled == false, isTrue);
+      } finally {
+        handle.dispose();
+      }
+    });
+
+    testWidgets('has correct semantics when loading AND onPressed is null',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          buildTestApp(
+            home: Scaffold(
+              body: Center(
+                child: AuthButtonBase(
+                  label: 'Test Button',
+                  onPressed: null, // Disabled via null callback
+                  backgroundColor: DsColors.authRebrandCtaPrimary,
+                  isLoading: true, // Also loading
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final semantics = tester.getSemantics(find.byType(AuthButtonBase));
+        // Loading state should show interpolated label (L10n fallback)
+        expect(semantics.label, contains('Test Button'));
+        expect(semantics.flagsCollection.isButton, isTrue);
+        // Both conditions should result in disabled state
+        expect(
+          semantics.flagsCollection.isEnabled == false,
+          isTrue,
+          reason:
+              'Button should be disabled when both isLoading and onPressed is null',
+        );
       } finally {
         handle.dispose();
       }

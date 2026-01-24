@@ -122,14 +122,13 @@ class ConsentService {
         } else if (key is num || key is bool) {
           jsonMap[key.toString()] = entry.value;
         } else {
-          // Log at warning level and fail-fast for unexpected complex keys
+          // Complex key detected - return null for graceful degradation
+          // rather than throwing, as caller handles null appropriately
           log.w(
-            '_asJsonMap: unexpected complex key type=${key.runtimeType}',
+            '_asJsonMap: unexpected complex key type=${key.runtimeType}, returning null',
             tag: _logTag,
           );
-          throw FormatException(
-            'Unexpected non-primitive map key: ${key.runtimeType}',
-          );
+          return null;
         }
       }
       return jsonMap;
