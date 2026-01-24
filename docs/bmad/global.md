@@ -34,7 +34,7 @@
   ADR-Pflege, Runbooks), wie sie in DoD-, Checklisten- und
   Governance-Dokumenten definiert sind.
 
-## 6. Dokumenten-Hierarchie & Versionierung
+## 0.1 Dokumenten-Hierarchie & Versionierung
 
 - Für jedes Themengebiet (z. B. App-Kontext, Roadmap,
   Phase-Definitionen, Ranking-Heuristik, Safety & Scope) existiert genau

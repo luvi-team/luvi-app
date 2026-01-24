@@ -218,7 +218,6 @@ Kerngedanke:
 - Consent ist nicht optional: wenn Datenfluss/Tracking, dann Consent sauber.
 
 ---
----
 
 # Teil 2: Praktische Anleitung · Ultra-Slim (Quick-Reference)
 

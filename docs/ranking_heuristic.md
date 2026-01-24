@@ -94,6 +94,26 @@ score = w_phase * phase_score
   affinity = clamp01(1 - ∏(1 - f_i))
   ```
   Wobei `f_i` die Einzelbeiträge (normiert [0,1]) sind.
+
+  **Erklärung:** Die Produkt-Notation (∏) bedeutet, dass alle `(1 - f_i)` Terme
+  miteinander multipliziert werden ("Noisy-OR" Aggregation):
+
+  - `f_i` = einzelne Affinitäts-Komponente (normiert auf [0,1])
+  - `∏(1 - f_i)` = Wahrscheinlichkeit, dass *keines* der Signale zutrifft
+  - `1 - ∏(...)` = Wahrscheinlichkeit, dass *mindestens ein* Signal zutrifft
+
+  **Rechenbeispiel:**
+  Gegeben: f_save = 0.5, f_like = 0.3, f_watch = 0.2
+
+  Schritt 1 – (1 - f_i) berechnen:
+    (1 - 0.5) = 0.5 | (1 - 0.3) = 0.7 | (1 - 0.2) = 0.8
+
+  Schritt 2 – Produkt (∏):
+    0.5 × 0.7 × 0.8 = 0.28
+
+  Schritt 3 – Komplement:
+    affinity = 1 - 0.28 = **0.72** (moderat hohe Affinität)
+
 - **Normalisierung:** Einzelkomponenten auf [0,1]; Endwert clamp [0,1].
 - **Default:** 0.5 für neue Nutzer*innen (cold_start).
 - **Bereich:** [0,1].
