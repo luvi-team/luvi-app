@@ -211,7 +211,10 @@ score = 0.30*0.7 + 0.20*0.5 + 0.15*0.78 + 0.10*(-1.0) + 0.10*0.5 + 0.10*0.5 - 0.
 - Diese Heuristik dient als MVP-Basis; Weiterentwicklungen müssen versioniert und als neue SSOT-Version dokumentiert werden.
 
 ## Monitoring & Iteration
-- **Parameter:** `H=14` (Recency Halbwertszeit) und Popularitätsquantile regelmäßig neu schätzen (täglich) und überwachen.
+- **Parameters:**
+  - `H = 14` — Recency half-life in days; re-estimate daily
+  - `K = 10` — Window size of last displayed items for diversity/redundancy penalty
+  - Popularity quantiles (5th–95th percentile); daily refit
 - **Cold-Start:** Für neue Nutzerinnen dominieren `phase_score`, `goal_match` und `recency`; `affinity` steigt mit Interaktionen.
 - **Monitoring:** Gewichte und Schlagworte überwachen (Impact/Drift, A/B), Fairness/Vielfaltsmetriken reporten.
 - **A/B Testing:** Gewichtsänderungen vor Rollout in kontrolliertem Experiment validieren.

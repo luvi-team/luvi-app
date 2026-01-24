@@ -48,10 +48,18 @@ ai_layer:
   edge_region: fra1  # Vercel Edge region (EU)
 
 analytics_push_crash:
-  analytics: posthog_eu (planned)
-  push: onesignal_eu (planned)
-  crash: sentry (planned)
-  cdn_security: cloudflare (planned)
+  analytics:
+    provider: posthog_eu
+    status: planned
+  push:
+    provider: onesignal_eu
+    status: planned
+  crash:
+    provider: sentry
+    status: planned
+  cdn_security:
+    provider: cloudflare
+    status: planned
 
 payments:
   provider: revenuecat  # IAP, subscriptions, entitlements

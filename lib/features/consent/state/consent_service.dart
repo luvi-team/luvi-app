@@ -122,6 +122,10 @@ class ConsentService {
     if (data is Map<String, dynamic>) return data;
     if (data is Map) {
       final jsonMap = <String, dynamic>{};
+      var skippedCount = 0;
+      final skippedTypes = <String>[];
+      const maxSamples = 3;
+
       for (final entry in data.entries) {
         final key = entry.key;
         if (key is String) {
@@ -129,13 +133,21 @@ class ConsentService {
         } else if (key is num || key is bool) {
           jsonMap[key.toString()] = entry.value;
         } else {
-          // Complex key detected - skip entry and continue processing.
-          // Log for debugging but preserve valid entries.
-          log.w(
-            '_asJsonMap: skipping complex key type=${key.runtimeType}',
-            tag: _logTag,
-          );
+          // Complex key detected - skip entry and track for batched logging.
+          skippedCount++;
+          if (skippedTypes.length < maxSamples) {
+            skippedTypes.add(key.runtimeType.toString());
+          }
         }
+      }
+
+      // Batch log: emit single warning with summary instead of per-key noise.
+      if (skippedCount > 0) {
+        log.w(
+          '_asJsonMap: skipped $skippedCount complex key(s), '
+          'sample types: $skippedTypes',
+          tag: _logTag,
+        );
       }
       return jsonMap;
     }

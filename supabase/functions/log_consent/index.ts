@@ -69,8 +69,7 @@ function isValidScopeItem(item: unknown): item is { id: string } {
   if (typeof item !== "object" || item === null || !("id" in item)) {
     return false;
   }
-  const obj = item as Record<string, unknown>;
-  const id = obj.id;
+  const id = (item as { id: unknown }).id;
   return typeof id === "string" && id.trim() !== "";
 }
 

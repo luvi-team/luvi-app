@@ -4,6 +4,17 @@
 
 > **Legal Status:** Juristische Prüfung ausstehend. Freigabe erforderlich vor Merge.
 
+> **⚠️ BLOCKED — Legal Review Required**
+>
+> | Field | Value |
+> |-------|-------|
+> | Status | 🔴 Pending Legal Approval |
+> | Ticket | `[LEGAL-REVIEW-PENDING]` — Create in project tracker |
+> | Blocker | Do NOT merge until legal signs off |
+> | Approver | Legal/Compliance Team |
+>
+> Update this section with approval date and approver name when complete.
+
 ## Zweck & Scope
 Dieses Dokument definiert den Gesundheitsrahmen für alle Funktionen, Inhalte und KI-gestützten Antworten in der LUVI-App. Es legt fest, was LUVI leisten darf (Lifestyle-Guidance) und was nicht (keine Diagnostik/Therapie) und ist verbindlich für Product, Content und Agents.
 
