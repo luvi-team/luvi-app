@@ -220,6 +220,10 @@ context/refs/*.json
 
 # UI measurement exports (noisy / not SSOT)
 docs/product/measures/dashboard/
+docs/ui/specs/DASHBOARD_*
+
+# Local performance benchmarks
+docs/perf/**/*.json
 
 # Traycer docs (local only)
 docs/traycer/
