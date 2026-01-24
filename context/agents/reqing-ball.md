@@ -18,8 +18,8 @@ No full scans, GDPR-safe (no PII in outputs, no persistent storage of personal d
 - **Measurement:** Count of adjudicated false-positive alerts divided by number of PRs reviewed. **Adjudication:** Decided by PR author/reviewer consensus and recorded by applying the label `adjudicated` to the PR and adding a comment with format: `[FP-Adjudication] Finding: {Finding_ID}, Decision: False Positive, By: @user`.
 - **True Positive Recording:** When a finding is confirmed valid (true positive), record with comment: `[FP-Adjudication] Finding: {Finding_ID}, Decision: True Positive, By: @user`. Reuse `adjudicated` label (indicates "adjudicated", Decision field differentiates outcome).
 - **Calibration Phase:** First 20 PRs or 4 weeks (whichever comes first).
-- **Threshold:** ≤ 0.5 false positive per PR during calibration; post-calibration target ≤ 0.1–0.2 per PR. Berechnung: (FP-Summe / PR-Anzahl) im Rolling Window der letzten 10 PRs.
-- **Enforcement:** If threshold exceeded for 3 consecutive PRs (basierend auf Rolling 10-PR Window), agent rules must be reviewed and adjusted before further automated reviews.
+- **Threshold:** ≤ 0.5 false positive per PR during calibration; post-calibration target ≤ 0.1–0.2 per PR. Calculation: (FP total / PR count) over a rolling window of the last 10 PRs.
+- **Enforcement:** If threshold exceeded for 3 consecutive PRs (based on the rolling 10-PR window), agent rules must be reviewed and adjusted before further automated reviews.
 
 ## Operative Mode
 Codex CLI-first (BMAD → PRP).

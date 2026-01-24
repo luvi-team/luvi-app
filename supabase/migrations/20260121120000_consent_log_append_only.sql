@@ -45,6 +45,13 @@ DROP POLICY IF EXISTS consents_delete_own ON public.consents;
 --   version/scopes and/or revoked_at), never mutate historical rows.
 -- - If a break-glass trigger disable is ever required, follow the runbook and
 --   obtain explicit approval: docs/runbooks/consents-append-only-breakglass.md
+-- - If using break-glass, log trigger toggles via `public.admin_audit_log`
+--   (helper: `public.admin_breakglass_set_consent_no_update_enabled(...)`).
+--
+-- Example (break-glass, approved only; same session):
+--   select public.admin_breakglass_set_consent_no_update_enabled(false, '<reason>');
+--   -- perform correction (prefer INSERT a new consent row; never UPDATE historical rows)
+--   select public.admin_breakglass_set_consent_no_update_enabled(true, '<reason>');
 REVOKE UPDATE, DELETE ON public.consents FROM authenticated;
 
 -- ============================================================================

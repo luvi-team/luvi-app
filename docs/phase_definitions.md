@@ -38,6 +38,7 @@ Die Phasenberechnung basiert auf dem Objekt `cycle_data` mit folgenden Feldern:
 cycle_len = cycle_length oder 28 (default)
 period_len = period_length oder 5 (default)
 ovulation_day = round(cycle_len * 0.5) (MVP-Schätzwert)
+ovulation_day_alt = cycle_len - 14 (Alternative bei variabler Zykluslänge)
 ```
 
 > **Minimum Cycle Length Guard:** Zykluslängen unter 21 Tagen gelten medizinisch
@@ -47,13 +48,20 @@ ovulation_day = round(cycle_len * 0.5) (MVP-Schätzwert)
 > angezeigt: „Zykluslänge ungewöhnlich kurz — bitte Zyklusdaten prüfen oder
 > ärztlichen Rat einholen." Die Warnung wird im Observability-Layer geloggt.
 
-> **MVP-Vereinfachung:** Diese 50%-Heuristik ist eine Lifestyle-Schätzung.
-> Biologische Ovulation variiert typischerweise ±2–3 Tage und hängt von
-> individuellen Faktoren ab. Klinisch wird der Eisprung per LH-Surge-Test
-> oder Basaltemperatur (BBT) bestätigt.
+> **MVP-Vereinfachung:** Die 50%-Heuristik ist ein einfacher Startwert und
+> passt am ehesten zu ~28‑Tage-Zyklen. Biologische Ovulation variiert typischerweise
+> ±2–3 Tage und hängt von individuellen Faktoren ab. Klinisch wird der Eisprung
+> per LH-Surge-Test oder Basaltemperatur (BBT) bestätigt.
+> **Alternative (biologisch näher):** `cycle_len - 14` modelliert eine relativ
+> konstante Lutealphase und ist oft robuster für kurze oder lange Zyklen,
+> bleibt aber eine grobe Schätzung.
+> **Accuracy‑Trade-offs:** 50% kann bei kurzen Zyklen zu spät und bei langen
+> Zyklen zu früh liegen; `cycle_len - 14` kann bei stark variabler Lutealphase
+> ebenfalls abweichen. Für bessere Genauigkeit sollten `cycle_len - 14` oder
+> hybride/Confidence‑Score‑Ansätze bevorzugt werden.
 > **Roadmap:** Integration von Wearable-Daten, LH/BBT-Eingaben und
 > User-Feedback zur Verbesserung der Phasengenauigkeit.
-> - [ ] Follow-up: Confidence-Score bei Phasengrenzen implementieren (Archon: Consent Flow Redesign v3, Task: phase-confidence-score)
+> - [ ] Follow-up: Phase‑Confidence‑Score bei Phasengrenzen (Archon Task: eef75718-27f8-4493-80d9-82c9dcff4f49)
 
 > **Edge Case Guard:** Falls `period_len >= ovulation_day` (möglich bei kurzen
 > Zyklen oder ungenauen Eingaben), wird `ovulation_day` auf `period_len + 1`

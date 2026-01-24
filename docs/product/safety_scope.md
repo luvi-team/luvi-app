@@ -9,7 +9,7 @@
 > | Field | Value |
 > |-------|-------|
 > | Status | 🔴 Pending Legal Approval |
-> | Ticket | `[LEGAL-REVIEW-PENDING]` — Create in project tracker |
+> | Ticket | `ARCHON:d60b4eee-d4f5-4e17-9f34-8605533e834b` — Legal review task created |
 > | Blocker | Do NOT merge until legal signs off |
 > | Approver | Legal/Compliance Team |
 >

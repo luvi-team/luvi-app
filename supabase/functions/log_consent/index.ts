@@ -80,6 +80,9 @@ async function loadConsentScopes(): Promise<readonly string[]> {
   try {
     // Keep the file bundled with the Edge Function to avoid silent fallbacks
     // when deploying only the function directory.
+    // CI guardrail: `.github/workflows/ci.yml` runs
+    // `deno test supabase/functions/log_consent/consent_scopes_ssot.test.ts`
+    // which fails if this file is missing or out of sync with SSOT.
     const configUrl = new URL("./consent_scopes.json", import.meta.url);
 
     // Guard against unexpected https: protocol (Supabase Edge Functions use file: protocol)

@@ -89,18 +89,28 @@ Consent records follow an **append-only model** with one documented exception fo
 
 **Mechanism:**
 - Withdrawal is recorded as a **new append-only row** in `consents` table
-- Schema: `{user_id, version, scopes, created_at, withdrawn_at}`
-- Active consent determined by: latest entry per scope where `withdrawn_at IS NULL`
+- Schema: `{user_id, version, scopes, created_at, revoked_at}`
+- Active consent determined by: latest entry per scope, then check `revoked_at` on that newest row
 
 **Processing Logic:**
 ```sql
 -- Active consent check (per scope)
-SELECT * FROM consents
-WHERE user_id = auth.uid()
-  AND 'scope_name' = ANY(scopes)
-  AND withdrawn_at IS NULL
-ORDER BY created_at DESC
-LIMIT 1;
+WITH latest_per_scope AS (
+  SELECT DISTINCT ON (scope_name)
+    scope_name,
+    user_id,
+    scopes,
+    created_at,
+    revoked_at
+  FROM consents
+  CROSS JOIN LATERAL jsonb_object_keys(scopes) AS scope_name
+  WHERE user_id = auth.uid()
+  ORDER BY scope_name, created_at DESC
+)
+SELECT *
+FROM latest_per_scope
+WHERE scope_name = 'scope_name'
+  AND revoked_at IS NULL;
 ```
 
 **Impact on Services:**
@@ -110,7 +120,7 @@ LIMIT 1;
 
 **Example Flow:**
 1. User withdraws `analytics` scope
-2. System inserts: `{version: 'v1.0', scopes: ['analytics'], withdrawn_at: NOW()}`
+2. System inserts: `{version: 'v1.0', scopes: ['analytics'], revoked_at: NOW()}`
 3. Services check latest entry → find withdrawal → stop analytics processing
 
 ## Versioning & Audit

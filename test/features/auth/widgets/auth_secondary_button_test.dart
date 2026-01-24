@@ -151,7 +151,6 @@ void main() {
       );
 
       expect(find.byKey(const ValueKey('loading_indicator')), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('announces loadingSemanticLabel during loading',

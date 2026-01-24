@@ -530,7 +530,8 @@ Nach Push-Klick öffnet sich der Artikel mit Bridge zum Training:
 
 - **Consent-Logs:**
   - `user_id, video_id, decision, timestamp, ua_hash, ip_hash, client_version, locale`
-  - Retention: 12 Monate
+  - `ua_hash`/`ip_hash`: HMAC-SHA256 über normalisierte UA/IP mit per-environment Secret (Salt/Pepper); **keine Raw Identifiers speichern**. Keys in Secret-Manager verwalten und regelmäßig rotieren.
+  - Retention: 12 Monate (unverändert)
   - Export/Löschung durch Nutzer*in in den Einstellungen (DSGVO-konform)
 
 - **Push-Nachrichten:**

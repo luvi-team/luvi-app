@@ -545,16 +545,25 @@ class _ConsentFooter extends StatelessWidget {
   }
 }
 
-/// "Weiter" Button - disabled until required consents accepted
-class _ContinueButton extends StatelessWidget {
+class _ConsentPrimaryButton extends StatelessWidget {
+  final Key? buttonKey;
   final bool enabled;
   final VoidCallback onPressed;
   final String label;
+  final Color backgroundColor;
+  final Color disabledBackgroundColor;
+  final Color foregroundColor;
+  final Color disabledForegroundColor;
 
-  const _ContinueButton({
+  const _ConsentPrimaryButton({
+    this.buttonKey,
     required this.enabled,
     required this.onPressed,
     required this.label,
+    required this.backgroundColor,
+    required this.disabledBackgroundColor,
+    required this.foregroundColor,
+    required this.disabledForegroundColor,
   });
 
   @override
@@ -563,13 +572,13 @@ class _ContinueButton extends StatelessWidget {
       width: double.infinity,
       height: Sizes.buttonHeight,
       child: ElevatedButton(
-        key: const Key('consent_options_btn_continue'),
+        key: buttonKey,
         onPressed: enabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: DsColors.buttonPrimary,
-          foregroundColor: DsColors.grayscaleWhite,
-          disabledBackgroundColor: DsColors.gray300,
-          disabledForegroundColor: DsColors.gray500,
+          backgroundColor: backgroundColor,
+          foregroundColor: foregroundColor,
+          disabledBackgroundColor: disabledBackgroundColor,
+          disabledForegroundColor: disabledForegroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Sizes.radiusM),
           ),
@@ -589,6 +598,33 @@ class _ContinueButton extends StatelessWidget {
   }
 }
 
+/// "Weiter" Button - disabled until required consents accepted
+class _ContinueButton extends StatelessWidget {
+  final bool enabled;
+  final VoidCallback onPressed;
+  final String label;
+
+  const _ContinueButton({
+    required this.enabled,
+    required this.onPressed,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _ConsentPrimaryButton(
+      buttonKey: const Key('consent_options_btn_continue'),
+      enabled: enabled,
+      onPressed: onPressed,
+      label: label,
+      backgroundColor: DsColors.buttonPrimary,
+      foregroundColor: DsColors.grayscaleWhite,
+      disabledBackgroundColor: DsColors.gray300,
+      disabledForegroundColor: DsColors.gray500,
+    );
+  }
+}
+
 /// "Alle akzeptieren" Button - always active (Teal), except when busy
 class _AcceptAllButton extends StatelessWidget {
   final bool enabled;
@@ -603,34 +639,17 @@ class _AcceptAllButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: Sizes.buttonHeight,
-      child: ElevatedButton(
-        key: const Key('consent_options_btn_accept_all'),
-        onPressed: enabled ? onPressed : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: DsColors.authRebrandRainbowTeal,
-          foregroundColor: DsColors.grayscaleWhite,
-          disabledBackgroundColor:
-              DsColors.authRebrandRainbowTeal.withValues(alpha: 0.5),
-          disabledForegroundColor:
-              DsColors.grayscaleWhite.withValues(alpha: 0.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Sizes.radiusM),
-          ),
-          elevation: 0,
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontFamily: FontFamilies.figtree,
-            fontVariations: const [FontVariations.bold],
-            fontSize: ConsentTypography.buttonFontSize,
-            height: ConsentTypography.buttonLineHeight,
-          ),
-        ),
-      ),
+    return _ConsentPrimaryButton(
+      buttonKey: const Key('consent_options_btn_accept_all'),
+      enabled: enabled,
+      onPressed: onPressed,
+      label: label,
+      backgroundColor: DsColors.authRebrandRainbowTeal,
+      foregroundColor: DsColors.grayscaleWhite,
+      disabledBackgroundColor:
+          DsColors.authRebrandRainbowTeal.withValues(alpha: 0.5),
+      disabledForegroundColor:
+          DsColors.grayscaleWhite.withValues(alpha: 0.5),
     );
   }
 }
@@ -677,10 +696,13 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
 }
 
 /// Orchestrates consent persistence to server and local cache.
-/// Returns true if at least one operation succeeded (best-effort semantics).
+/// Returns true only when the server upsert succeeds (SSOT); local cache is best-effort.
 ///
 /// [acceptedScopes] is captured early in [_handleContinue] to prevent race
 /// conditions if user toggles consents during async operations.
+///
+/// If local cache persistence fails, analytics gating may remain inactive
+/// until the next session refresh even though server consent is accepted.
 Future<bool> _markWelcomeSeen(
   WidgetRef ref,
   Set<String> acceptedScopes,
@@ -696,8 +718,8 @@ Future<bool> _markWelcomeSeen(
     );
   }
 
-  // Server-first: navigation requires server success (SSOT).
-  // Local cache is best-effort for offline/analytics - failure is acceptable.
+  // Server-first: _handleContinue already awaits _acceptConsent (hard requirement).
+  // _markWelcomeSeen is best-effort; failures only warn and do not block navigation.
   if (!serverSucceeded) {
     log.w(
       'consent_navigation_blocked: server_persistence_required',
@@ -747,12 +769,13 @@ Future<bool> _persistConsentGateToServer() async {
 }
 
 /// Persists consent state to local cache for offline access and analytics gating.
-/// Returns true on success, false on failure or skip.
+/// Returns true on success, false on failure or skip (best-effort).
 ///
 /// [acceptedScopes] is captured early in [_handleContinue] to prevent race
 /// conditions if user toggles consents during async operations.
 ///
 /// Returns false if provider resolution fails (graceful degradation).
+/// If this fails, analytics gating may remain stale until next app start.
 Future<bool> _persistConsentToLocalCache(
   WidgetRef ref,
   Set<String> acceptedScopes,
