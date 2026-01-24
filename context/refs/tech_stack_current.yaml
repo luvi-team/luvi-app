@@ -6,8 +6,8 @@ meta:
 flutter:
   channel: stable
   version_ci: "3.35.4"
-  dart_min_ci: "3.9.0"
-  dart_min_pubspec: "3.9.0"  # aligned to CI and pubspec.yaml
+  dart_min_ci: "3.9.2"  # Flutter 3.35.4 bundles Dart 3.9.2
+  dart_min_pubspec: "3.9.0"  # pubspec.yaml allows >=3.9.0
 
 packages:
   flutter_riverpod: "^3.0.0"

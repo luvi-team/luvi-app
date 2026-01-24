@@ -191,7 +191,7 @@ docs/dev/*
 # Security/Crypto details
 docs/security/
 
-# Legal Drafts & Privacy (privacy.md + terms.md + reviews bleiben für CI)
+# Legal Drafts & Privacy (privacy.md + terms.md + reviews kept for CI)
 docs/privacy/*
 !docs/privacy/privacy.md
 !docs/privacy/terms.md

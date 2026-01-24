@@ -313,6 +313,7 @@ Kerngedanke:
 - [ ] Greptile Review grün
 - [ ] CI/Privacy-Gate grün
 - [ ] (UI) UI-Checklist beachtet + keine hardcoded Farben/Strings
+- [ ] Legacy Redirects / Deep Links nach Route-Konsolidierung verifiziert
 - [ ] Merge
 
 ---

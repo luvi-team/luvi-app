@@ -48,6 +48,11 @@ ovulation_day = round(cycle_len * 0.5) (MVP-Schätzwert)
 > User-Feedback zur Verbesserung der Phasengenauigkeit.
 > - [ ] Follow-up: Confidence-Score bei Phasengrenzen implementieren
 
+> **Edge Case Guard:** Falls `period_len >= ovulation_day` (möglich bei kurzen
+> Zyklen oder ungenauen Eingaben), wird `ovulation_day` auf `period_len + 1`
+> korrigiert, damit die Follikelphase (`period_len < cycle_day < ovulation_day`)
+> definiert bleibt. Diese Korrektur wird geloggt und im UI als Datenwarnung angezeigt.
+
 ### 3. cycle_day berechnen
 ```
 cycle_day = ((heutiges_datum - last_period_start) mod cycle_len) + 1
@@ -74,6 +79,7 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 | Unregelmäßiger Zyklus | Wenn `irregular_cycle = true`: `phase = unknown`, neutrale Inhalte |
 | Menopause/Hormonelle Verhütung | `phase = none`, KI und Ranking ignorieren Phasensignale |
 | Datenwiderspruch | Wenn `cycle_len < period_len` oder absurde Werte: `phase = unknown` |
+| `period_len >= ovulation_day` | Anatomisch ungültig: Ovulation während Menstruation. Setze `ovulation_day = period_len + 1` als Safe-Fallback, logge Warnung im Observability-Layer. UI-Hinweis: „Bitte Zyklusdaten prüfen" |
 
 ## Scope & Grenzen
 - Die Phasenlogik dient **nur** der Priorisierung und Personalisierung von Lifestyle-Inhalten.

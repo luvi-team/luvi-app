@@ -43,7 +43,7 @@
 
 - **Greptile (GitHub App)**  
   **Funktion:** AI-Code-Review im Pull Request mit GitHub-Statuscheck.  
-  **Einsatz:** Offizieller Merge-Gatekeeper (Required Check `Grepeview`).
+  **Einsatz:** Offizieller Merge-Gatekeeper (Required Check `Greptile Review`).
 
 ### 1.3 Archon — MCP-Wissens/Task „SSOT“
 
@@ -57,12 +57,12 @@
 
 ## 2) Frontend (Mobile)
 
-- **Flutter 3.35 / Dart 3.9** *(CI-gepinnt)*  
-  **Funktion:** Cross-platform UI; iOS-first Rollout.  
+- **Flutter 3.35.4 / Dart 3.9.2** *(CI-gepinnt)*
+  **Funktion:** Cross-platform UI; iOS-first Rollout.
   **Warum:** Beste Time-to-Market im bestehenden Setup.
 
-- **State & Navigation:** `Riverpod 3`, `GoRouter`  
-  **Einsatz:** Home/„Heute in der Phase“, Stream, Coach, Profil.
+- **State & Navigation:** `Riverpod 3.0.3`, `GoRouter 16.2.0`
+  **Einsatz:** Home/„Heute in der Phase", Stream, Coach, Profil.
 
 - **Health-Integration (Baseline-Roadmap):** HealthKit-Anbindung
 

@@ -85,8 +85,8 @@ async function loadConsentScopes(): Promise<readonly string[]> {
       return FALLBACK_SCOPES;
     }
 
-    // Validate each element and extract valid IDs
-    const validIds: string[] = [];
+    // Validate each element and extract valid IDs (deduplicated)
+    const validIdsSet = new Set<string>();
     let invalidCount = 0;
 
     for (const item of parsed) {
@@ -97,11 +97,13 @@ async function loadConsentScopes(): Promise<readonly string[]> {
         typeof (item as Record<string, unknown>).id === "string" &&
         ((item as Record<string, unknown>).id as string).trim() !== ""
       ) {
-        validIds.push((item as { id: string }).id);
+        validIdsSet.add((item as { id: string }).id);
       } else {
         invalidCount++;
       }
     }
+
+    const validIds = Array.from(validIdsSet);
 
     // Log warning if any invalid items were found
     if (invalidCount > 0) {

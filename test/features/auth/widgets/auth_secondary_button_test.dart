@@ -108,10 +108,23 @@ void main() {
           ),
         );
 
-        // Test via accessibility semantics tree (not widget tree)
-        // Using explicit comparison for Tristate (type-safe)
+        // Full semantics assertions for disabled button state
         final semantics = tester.getSemantics(find.byType(AuthSecondaryButton));
-        expect(semantics.flagsCollection.isEnabled == false, isTrue);
+        expect(
+          semantics.flagsCollection.hasEnabledState,
+          isTrue,
+          reason: 'Button should expose enabled state to accessibility',
+        );
+        expect(
+          semantics.flagsCollection.isEnabled,
+          isFalse,
+          reason: 'Disabled button should report isEnabled=false',
+        );
+        expect(
+          semantics.flagsCollection.isButton,
+          isTrue,
+          reason: 'Widget should identify as button for accessibility',
+        );
       } finally {
         handle.dispose();
       }

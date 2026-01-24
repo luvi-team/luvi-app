@@ -69,6 +69,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     super.didChangeDependencies();
     // Setup submit error listener here (not initState) because it accesses
     // context-dependent APIs (ScaffoldMessenger, AppLocalizations).
+    // Guard: didChangeDependencies can fire multiple times; setup listener once.
+    // Pattern consistent with splash_screen.dart, heute_screen.dart, etc.
     if (!_didSetupSubmitListener) {
       _didSetupSubmitListener = true;
       _submitSubscription = ref.listenManual<AsyncValue<void>>(

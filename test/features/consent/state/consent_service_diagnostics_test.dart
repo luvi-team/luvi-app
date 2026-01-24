@@ -93,5 +93,19 @@ void main() {
         expect(result, isNot(contains('raw_user')));
       }
     });
+
+    test('handles Map with complex keys (reports type only)', () {
+      // Complex keys like List as key - payloadDiagnosticsShapeOnly should
+      // report type info without values (keys are complex, not iterable as strings)
+      final complexKeyMap = <Object, dynamic>{
+        const ['list', 'key']: 'value', // List as key
+      };
+
+      // payloadDiagnosticsShapeOnly should report type=Map with keys
+      final result = payloadDiagnosticsShapeOnly(complexKeyMap);
+      expect(result, startsWith('type=Map'));
+      // Should not expose the actual values
+      expect(result, isNot(contains('value')));
+    });
   });
 }

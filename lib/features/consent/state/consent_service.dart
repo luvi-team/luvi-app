@@ -117,20 +117,20 @@ class ConsentService {
       final jsonMap = <String, dynamic>{};
       for (final entry in data.entries) {
         final key = entry.key;
-        String keyString;
         if (key is String) {
-          keyString = key;
+          jsonMap[key] = entry.value;
         } else if (key is num || key is bool) {
-          keyString = key.toString();
+          jsonMap[key.toString()] = entry.value;
         } else {
-          // Skip complex keys - log at debug level for visibility during development.
-          log.d(
-            '_asJsonMap: skipping key with type=${key.runtimeType}',
+          // Log at warning level and fail-fast for unexpected complex keys
+          log.w(
+            '_asJsonMap: unexpected complex key type=${key.runtimeType}',
             tag: _logTag,
           );
-          continue;
+          throw FormatException(
+            'Unexpected non-primitive map key: ${key.runtimeType}',
+          );
         }
-        jsonMap[keyString] = entry.value;
       }
       return jsonMap;
     }
