@@ -9,6 +9,7 @@ import 'auth_rebrand_metrics.dart';
 /// universal field semantics and are acceptable per CodeRabbit option (b).
 const String _kEmailFallback = 'Email';
 const String _kPasswordFallback = 'Password';
+const String _kGenericFieldFallback = 'Text field';
 
 /// Text field for Auth Rebrand v3 screens.
 ///
@@ -194,6 +195,7 @@ class AuthRebrandTextField extends StatelessWidget {
   }
 
   /// Returns the appropriate field-type label based on keyboard type.
+  /// Ensures a non-empty fallback for accessibility compliance.
   String _getFieldTypeLabel(AppLocalizations? l10n) {
     if (keyboardType == TextInputType.emailAddress) {
       return l10n?.authEmailHint ?? _kEmailFallback;
@@ -203,6 +205,10 @@ class AuthRebrandTextField extends StatelessWidget {
     if (obscureText || keyboardType == TextInputType.visiblePassword) {
       return l10n?.authPasswordHint ?? _kPasswordFallback;
     }
-    return hintText;
+    // Ensure non-empty fallback for generic fields
+    if (hintText.isNotEmpty) {
+      return hintText;
+    }
+    return _kGenericFieldFallback;
   }
 }

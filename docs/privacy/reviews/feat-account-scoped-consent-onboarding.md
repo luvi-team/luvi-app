@@ -39,6 +39,19 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 - `public.consents.version` — String (e.g., `"v1.0"`)
 - `public.profiles.accepted_consent_version` — Numeric (e.g., `1`)
 
+**Client-Side Implementation:**
+- **File:** [`lib/core/privacy/consent_config.dart`](../../../lib/core/privacy/consent_config.dart)
+- **Key Symbols:**
+  - `ConsentConfig.currentVersion` — canonical version string (`'v1.0'`)
+  - `ConsentConfig.currentVersionInt` — derived major version integer (parsing inline via getter)
+  - Version regex: `^v(\d+)(?:\.\d+)?$` (extracts major from `vX.Y`)
+
+> Note: There is no separate `parseConsentVersion` function. The parsing logic is implemented inline in the `currentVersionInt` getter using RegExp.
+
+**CI Validation (TODO):**
+- CI pre-merge hook should mirror the parsing rules from `ConsentConfig.currentVersionInt` getter
+- Test cases: `v1.0` ↔ `1` (pass), `v2.0` ↔ `2` (pass), `v1.0` ↔ `2` (fail)
+
 **Sync Rules:**
 1. **Canonical Source:** `config/consent_scopes.json` defines the current version; both fields derive from this.
 2. **Validation (Current):**

@@ -104,7 +104,7 @@ void main() {
           currentConsentVersion: ConsentConfig.currentVersionInt,
         );
 
-        // Should redirect to consent welcome screen
+        // Should redirect to consent options screen
         expect(redirect, ConsentOptionsScreen.routeName);
       },
     );

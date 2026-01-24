@@ -37,6 +37,14 @@ set +a
 #   4. Execute queries that should respect RLS policies
 # A less-privileged test user would require CREATEROLE or similar permissions
 # to SET ROLE, which defeats the purpose. See: PostgreSQL SET ROLE documentation.
+# ─────────────────────────────────────────────────────────────────────────────
+# Authentication Note:
+# The db_url below deliberately omits the password. Authentication is handled
+# via the PGPASSWORD environment variable (set from SUPABASE_DB_PASSWORD in
+# .env.local). This approach avoids URL-encoding issues with special characters.
+# If you ever need to embed the password in the URL, ensure special characters
+# (like @, %, /, etc.) are URL-encoded to prevent connection failures.
+# ─────────────────────────────────────────────────────────────────────────────
 db_url="postgresql://postgres@db.${SUPABASE_PROJECT_REF}.supabase.co:5432/postgres?sslmode=require"
 
 run_psql_file() {

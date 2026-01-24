@@ -33,7 +33,7 @@ void main() {
 
   // Each test creates its own router instance for isolation
   // Router disposal is handled via addTearDown in pumpSignupScreen
-  // Note: tester.addTearDown() is not available in Flutter 3.38; using global addTearDown()
+  // Note: tester.addTearDown() is not available in Flutter 3.35.x; using global addTearDown()
 
   Future<void> pumpSignupScreen(
     WidgetTester tester,

@@ -21,6 +21,10 @@ import 'package:luvi_services/user_state_service.dart';
 import 'package:luvi_services/supabase_service.dart';
 import 'package:luvi_app/core/init/session_dependencies.dart';
 
+/// Retry delay for local cache persistence after ParallelWaitError.
+/// 300ms allows transient I/O contention to resolve (CodeRabbit recommendation: 250-500ms).
+const _kConsentRetryDelay = Duration(milliseconds: 300);
+
 class _ConsentBtnBusyNotifier extends Notifier<bool> {
   @override
   bool build() => false;
@@ -830,10 +834,10 @@ Future<bool> _persistConsentToLocalCache(
       }
     }
 
-    // CodeRabbit fix: Single retry after short delay for transient failures.
+    // CodeRabbit fix: Single retry after delay for transient failures.
     // Server is SSOT; local cache is best-effort. Gap until next session is
     // acceptable if retry also fails.
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(_kConsentRetryDelay);
     try {
       await [
         userState.markWelcomeSeen(),

@@ -41,7 +41,8 @@ ovulation_day = round(cycle_len * 0.5) (MVP-Schätzwert)
 ```
 
 > **Minimum Cycle Length Guard:** Zykluslängen unter 21 Tagen gelten medizinisch
-> als Oligomenorrhoe (ACOG-Richtlinien: Normalbereich 21–35 Tage). Falls
+> als Oligomenorrhoe (ACOG-Richtlinien: Normalbereich 21–35 Tage; Quelle: ACOG 
+> Committee Opinion No. XXX, [Jahr], verfügbar unter [URL]). Falls
 > `cycle_len < 21`, wird `phase = unknown` gesetzt und im UI ein Hinweis
 > angezeigt: „Zykluslänge ungewöhnlich kurz — bitte Zyklusdaten prüfen oder
 > ärztlichen Rat einholen." Die Warnung wird im Observability-Layer geloggt.

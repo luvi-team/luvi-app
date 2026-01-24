@@ -50,10 +50,27 @@ BMAD Global ist das „Master Brain“ für LUVI. Es fasst kurz zusammen:
   Analytics/Push, CI/CD, Security) und zentrale Flows (FTUE, Today,
   Stream, Coach, Kalender, Healthcheck).
 
-- **4. Definition of Done (DoD & Quality Gates)**  
-  Globales DoD, rollen-spezifische DoD-Erweiterungen (ui-frontend,
-  api-backend, db-admin, qa-dsgvo, dataviz), Required Checks (CI,
-  Greptile Review, Health, Privacy; CodeRabbit optional lokal als Preflight, kein GitHub-Check; Details: `docs/engineering/ai-reviewer.md`), AI-/MCP-Gates und Runbooks.
+- **4. Definition of Done (DoD & Quality Gates)**
+
+  Globales DoD mit rollen-spezifischen Erweiterungen und Required Checks.
+
+  **Rollen-spezifische DoD-Erweiterungen:**
+  - ui-frontend
+  - api-backend
+  - db-admin
+  - qa-dsgvo
+  - dataviz
+
+  **Required Checks:**
+  - CI (build, lint, test)
+  - Greptile Review
+  - Health (observability)
+  - Privacy
+
+  > CodeRabbit: Optional lokal als Preflight, kein GitHub-Check.
+  > Details: [`docs/engineering/ai-reviewer.md`](../engineering/ai-reviewer.md)
+
+  AI-/MCP-Gates und Runbooks sind ebenfalls dokumentiert.
 
 - **5. Quellen & Referenzen**  
   Verweise auf App-Kontext, Roadmap, Dossiers, Tech-Stack, ADRs,

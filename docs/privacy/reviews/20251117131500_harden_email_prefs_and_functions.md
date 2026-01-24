@@ -1,27 +1,27 @@
 # Privacy Review — 20251117131500_harden_email_prefs_and_functions
 
 ## Change
-- Pin `search_path` für optionale Helfer-/Archon-Funktionen via DO-Block mit `IF EXISTS`-Checks.
-- Aktualisiere die vier `email_preferences`-Policies, um `(user_id = (SELECT auth.uid()))` zu nutzen.
-- Ergänze `IF NOT EXISTS`-Index für `public.archon_tasks(parent_task_id)`.
+- Pin `search_path` for optional helper/Archon functions via a DO block with `IF EXISTS` checks.
+- Update the four `email_preferences` policies to use `(user_id = (SELECT auth.uid()))`.
+- Add an `IF NOT EXISTS` index for `public.archon_tasks(parent_task_id)`.
 
 ## Data Impact
-- **Keine neuen Tabellen/Spalten**
-- **Keine zusätzlichen Datenlese-/schreibpfade**
-- Trigger- und Helper-Funktionskörper bleiben unverändert.
+- **No new tables/columns**
+- **No additional data read/write paths**
+- Trigger and helper function bodies remain unchanged.
 
 ## Purpose / Risk
-- Hardening: schützt vor `search_path`-Hijacking und Migrationsfehlern bei fehlenden optionalen Funktionen.
-- Reduziert RLS-Overhead, indem per-row-`auth.*()`-Aufrufe vermieden werden.
-- Risiko: kein funktionales Privacy-Risiko; Verhalten der RLS-Logik bleibt semantisch gleich.
+- Hardening: protects against `search_path` hijacking and migration failures when optional functions are missing.
+- Reduces RLS overhead by avoiding per-row `auth.*()` calls.
+- Risk: no functional privacy risk; RLS semantics remain unchanged.
 
 ## RLS / Access Control
-- Owner-basierte RLS auf `email_preferences` (`user_id = auth.uid()`) bleibt erhalten.
-- Policies nutzen nun Subquery-Pattern `(SELECT auth.uid())` gemäß Supabase-RLS-Best Practices.
+- Owner-based RLS on `email_preferences` (`user_id = auth.uid()`) remains in place.
+- Policies now use the subquery pattern `(SELECT auth.uid())` per Supabase RLS best practices.
 
 ## DPIA/DSGVO
-- Keine Änderung am Verarbeitungsumfang oder an Datenkategorien.
-- Keine neuen Auftragsverarbeiter/Transfers.
+- No change to processing scope or data categories.
+- No new processors/transfers.
 
 ## Result
-- ✅ Privacy- und sicherheitsfördernde Migration; keine weiteren Maßnahmen erforderlich.
+- ✅ Privacy- and security-hardening migration; no further action required.

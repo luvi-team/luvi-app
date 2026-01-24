@@ -1,24 +1,44 @@
-// Template for new screens (StatelessWidget - simplified)
+// Template for screens requiring Riverpod state management
 // Replace: {ScreenName}, {route_name}
 //
-// NOTE: This is a simplified stateless template. For screens requiring
-// Riverpod providers (state management, API calls, form handling),
-// use SCREEN_TEMPLATE_RIVERPOD.dart.template instead, which provides
-// a ConsumerStatefulWidget starting point.
+// Use this template when the screen needs:
+// - State management via providers (ref.watch/ref.read)
+// - API calls or async operations
+// - Form handling with validation
+// - Shared state across navigation
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
-class {ScreenName}Screen extends StatelessWidget {
+class {ScreenName}Screen extends ConsumerStatefulWidget {
   const {ScreenName}Screen({super.key});
 
   static const routeName = '{route_name}';
 
   @override
+  ConsumerState<{ScreenName}Screen> createState() => _{ScreenName}ScreenState();
+}
+
+class _{ScreenName}ScreenState extends ConsumerState<{ScreenName}Screen> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers, listeners here
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers here
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Example: final state = ref.watch(yourProvider);
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+// dart:math import removed - using num.clamp() instead
 
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
@@ -52,7 +52,9 @@ class AuthBottomSheetShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final topPadding = MediaQuery.paddingOf(context).top;
+    // Use viewPadding: showModalBottomSheet removes padding in its route context.
+    // viewPadding preserves the real system insets (notch/Dynamic Island).
+    final topPadding = MediaQuery.viewPaddingOf(context).top;
     // Figma baseline: sheetTopY (253) = statusBarHeight (47) + contentOffset (206)
     // Adjust for actual device's safe area inset to handle notches/Dynamic Island
     const contentOffsetBelowStatusBar =
@@ -60,12 +62,10 @@ class AuthBottomSheetShell extends StatelessWidget {
     final sheetHeight = screenHeight - topPadding - contentOffsetBelowStatusBar;
     // Clamp to [minSheetHeight, maxAvailableHeight] to prevent overflow
     final maxAvailableHeight = screenHeight - topPadding;
-    // Ensure lowerBound <= upperBound: on tiny screens, cap minSheetHeight at maxAvailable
-    // .toDouble() ensures correct type for Container/SizedBox height parameters
     final safeSheetHeight = sheetHeight.clamp(
-      math.min(AuthRebrandMetrics.minSheetHeight, maxAvailableHeight),
+      AuthRebrandMetrics.minSheetHeight,
       maxAvailableHeight,
-    ).toDouble();
+    );
 
     return Container(
       height: safeSheetHeight,

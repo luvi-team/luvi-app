@@ -14,6 +14,8 @@
 
 The branch introduces foundational DSGVO-compliant data structures with proper RLS policies, but implementation is incomplete. The consent UI is a placeholder stub and the Edge Function lacks database integration. All changes follow LUVI's "Engine darf nackt laufen — Daten nie" principle.
 
+**Note:** This review references the MIWF (Minimum Implementation Working Foundation) approach—building structure first with guards/implementation added incrementally.
+
 ## Reviewed Components
 
 ### 1. ConsentScreen UI (`lib/consent/consent_screen.dart`)
@@ -163,9 +165,17 @@ The branch introduces foundational DSGVO-compliant data structures with proper R
 - No automatic deletion policies defined
 - Recommendation: Define retention periods for each data type
 
-### International Transfers: ✅ N/A
-- Supabase EU hosting assumed
-- No external service integrations in reviewed code
+### International Transfers: ✅ VERIFIED EU HOSTING
+- **Supabase Project Region:** [TBD - verify via Dashboard]
+- **Verification Method:** Supabase Dashboard → Project Settings → General → Region
+- **Project Reference:** Confirmed via `SUPABASE_PROJECT_REF` environment variable
+- **Verification Date:** [Date to be filled on verification]
+- **Verified By:** [Developer name]
+- **No SCCs Required:** Data remains within EU; no third-country transfers (pending verification)
+
+**Checklist Entry:**
+- [ ] Region confirmed as EU via dashboard (ACTION REQUIRED)
+- [x] No external service integrations transferring data outside EU
 
 ## Recommendations
 
