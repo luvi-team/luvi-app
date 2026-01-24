@@ -15,11 +15,11 @@ No full scans, GDPR-safe (no PII in outputs, no persistent storage of personal d
 ## Acceptance Criterion
 - **Output Length:** ≤ 30 lines per PR comment. **Action on Violation:** Self-truncate to 30 lines and append a note: "*(Truncated for brevity)*".
 - **False Positive Definition:** An alert flagged by the agent that, after human review by the PR author or designated reviewer, is determined to be incorrect (i.e., the flagged issue does not actually violate the criterion).
-- **Measurement:** Count of adjudicated false-positive alerts divided by number of PRs reviewed. **Adjudication:** Decided by PR author/reviewer consensus and recorded by applying the label `fp-reviewed` to the PR and adding a comment with format: `[FP-Adjudication] Finding: {Finding_ID}, Decision: False Positive, By: @user`.
-- **True Positive Recording:** When a finding is confirmed valid (true positive), record with comment: `[FP-Adjudication] Finding: {Finding_ID}, Decision: True Positive, By: @user`. Reuse `fp-reviewed` label (indicates "adjudicated", Decision field differentiates outcome).
+- **Measurement:** Count of adjudicated false-positive alerts divided by number of PRs reviewed. **Adjudication:** Decided by PR author/reviewer consensus and recorded by applying the label `adjudicated` to the PR and adding a comment with format: `[FP-Adjudication] Finding: {Finding_ID}, Decision: False Positive, By: @user`.
+- **True Positive Recording:** When a finding is confirmed valid (true positive), record with comment: `[FP-Adjudication] Finding: {Finding_ID}, Decision: True Positive, By: @user`. Reuse `adjudicated` label (indicates "adjudicated", Decision field differentiates outcome).
 - **Calibration Phase:** First 20 PRs or 4 weeks (whichever comes first).
-- **Threshold:** ≤ 0.5 false positive per PR during calibration; post-calibration target ≤ 0.1–0.2 per PR.
-- **Enforcement:** If threshold exceeded for 3 consecutive PRs, agent rules must be reviewed and adjusted before further automated reviews.
+- **Threshold:** ≤ 0.5 false positive per PR during calibration; post-calibration target ≤ 0.1–0.2 per PR. Berechnung: (FP-Summe / PR-Anzahl) im Rolling Window der letzten 10 PRs.
+- **Enforcement:** If threshold exceeded for 3 consecutive PRs (basierend auf Rolling 10-PR Window), agent rules must be reviewed and adjusted before further automated reviews.
 
 ## Operative Mode
 Codex CLI-first (BMAD → PRP).

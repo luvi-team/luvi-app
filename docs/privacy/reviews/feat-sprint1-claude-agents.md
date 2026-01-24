@@ -165,13 +165,14 @@ The branch introduces foundational DSGVO-compliant data structures with proper R
 - No automatic deletion policies defined
 - Recommendation: Define retention periods for each data type
 
-### International Transfers: ✅ VERIFIED EU HOSTING
-- **Supabase Project Region:** [TBD - verify via Dashboard]
+### International Transfers: ⚠️ ARCHIVED — VERIFICATION INCOMPLETE
+- **Supabase Project Region:** *Not verified at time of archive*
 - **Verification Method:** Supabase Dashboard → Project Settings → General → Region
 - **Project Reference:** Confirmed via `SUPABASE_PROJECT_REF` environment variable
-- **Verification Date:** [Date to be filled on verification]
-- **Verified By:** [Developer name]
+- **Verification Date:** *Archived before verification*
+- **Verified By:** *N/A (archived document)*
 - **No SCCs Required:** Data remains within EU; no third-country transfers (pending verification)
+- **Note:** For current region verification, see active sprint review documents.
 
 **Checklist Entry:**
 - [ ] Region confirmed as EU via dashboard (ACTION REQUIRED)

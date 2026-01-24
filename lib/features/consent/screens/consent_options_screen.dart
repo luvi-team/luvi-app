@@ -186,23 +186,9 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     WidgetRef ref,
     AppLocalizations l10n,
   ) async {
-    // 1. Set all visible consent scopes (required + optional)
-    // Note: acceptAll() may throw, but we intentionally do not manage busy state here
-    // because it is handled inside _handleContinue (which calls _acquireBusy/_releaseBusy).
-    try {
-      ref.read(consent02Provider.notifier).acceptAll();
-    } catch (error, stackTrace) {
-      log.e(
-        'consent_accept_all_failed',
-        tag: 'consent_options',
-        error: sanitizeError(error) ?? error.runtimeType,
-        stack: stackTrace,
-      );
-      _showConsentErrorSnackbar(context, l10n.consentSnackbarError);
-      return;
-    }
-
-    // 2. Navigate (await ensures proper error handling propagation)
+    // Set all visible consent scopes (required + optional).
+    // Errors bubble to _handleContinue's central error handling (lines 239-258).
+    ref.read(consent02Provider.notifier).acceptAll();
     await _handleContinue(context, ref, l10n);
   }
 
@@ -810,6 +796,7 @@ Future<bool> _persistConsentToLocalCache(
   // Parallel writes for efficiency.
   // Using .wait (Dart 3.0+) for ParallelWaitError - collects ALL errors, not just first.
   // Note: Future.wait() would only throw the first error, breaking our error collection.
+  // All three operations are idempotent - safe to retry on partial failure.
   try {
     await [
       userState.markWelcomeSeen(),
@@ -846,8 +833,14 @@ Future<bool> _persistConsentToLocalCache(
       ].wait;
       log.d('consent_local_cache_retry_succeeded', tag: 'consent_options');
       return true;
-    } on ParallelWaitError {
-      log.w('consent_local_cache_retry_failed', tag: 'consent_options');
+    } on ParallelWaitError catch (e) {
+      // High-severity: stale cache → analyticsConsentGateProvider returns false
+      // until next session refresh, despite user giving consent.
+      log.e(
+        'consent_local_cache_retry_failed',
+        tag: 'consent_options',
+        error: 'ParallelWaitError: ${e.errors.whereType<Object>().length} op(s) failed after retry',
+      );
       return false;
     }
   } catch (error, stackTrace) {

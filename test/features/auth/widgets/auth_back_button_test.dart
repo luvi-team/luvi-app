@@ -50,6 +50,12 @@ void main() {
 
       // IconButton uses Tooltip which provides the semantic label
       expect(find.byTooltip(label), findsOneWidget);
+
+      // Verify Semantics widget has the localized label for screen readers
+      final semanticsFinder = find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.label == label,
+      );
+      expect(semanticsFinder, findsOneWidget);
     });
 
     testWidgets('uses custom semanticsLabel when provided', (tester) async {
@@ -69,6 +75,12 @@ void main() {
       );
 
       expect(find.byTooltip(customLabel), findsOneWidget);
+
+      // Verify Semantics widget has the custom label for screen readers
+      final semanticsFinder = find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.label == customLabel,
+      );
+      expect(semanticsFinder, findsOneWidget);
     });
 
     testWidgets('has correct touch target size (44dp)', (tester) async {

@@ -39,6 +39,12 @@ class _{ScreenName}ScreenState extends ConsumerState<{ScreenName}Screen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     // Example: final state = ref.watch(yourProvider);
+    //
+    // L10n Usage Examples:
+    // - Simple string: Text(l10n.screenTitle)
+    // - With placeholder: l10n.welcomeMessage(userName)
+    // - Plurals: l10n.itemCount(count)
+    // See lib/l10n/app_de.arb for available keys
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

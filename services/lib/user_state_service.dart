@@ -188,20 +188,28 @@ class UserStateService {
         );
         return null;
       }
-      final stringElements = decoded.whereType<String>();
-      final stringCount = stringElements.length;
+      // Single-pass: collect strings and count non-strings
+      final result = <String>{};
+      var nonStringCount = 0;
+      for (final element in decoded) {
+        if (element is String) {
+          result.add(element);
+        } else {
+          nonStringCount++;
+        }
+      }
+
       // CodeRabbit fix: Corrupted JSON should invalidate ALL consent for audit integrity.
       // Partial recovery could silently lose consent the user gave.
-      if (stringCount != decoded.length) {
-        final droppedCount = decoded.length - stringCount;
+      if (nonStringCount > 0) {
         log.w(
-          'acceptedConsentScopesOrNull: CORRUPTED - $droppedCount non-String elements, '
+          'acceptedConsentScopesOrNull: CORRUPTED - $nonStringCount non-String elements, '
           'invalidating all consent for data integrity. key=$key, raw=$json',
           tag: 'UserStateService',
         );
         return null;
       }
-      return stringElements.toSet();
+      return result;
     } catch (e) {
       // Corrupted/malformed JSON - fail-safe return null
       log.d(

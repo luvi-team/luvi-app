@@ -268,7 +268,7 @@
 | SplashScreen | `/` | S0/S1 |
 | WelcomeScreen | `/welcome` | S1 |
 | AuthScreen (Login/Register/PW-Reset) | `/auth/*` | S1 |
-| ConsentScreen | `/consent` | S1 |
+| ConsentOptionsScreen | `/consent/options` | S1 |
 | OnboardingFlow (9 Steps) | `/onboarding/*` | S1 |
 | SuccessScreen | `/success` | S1 |
 | HomeScreen | `/heute` | S2 |

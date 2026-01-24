@@ -105,7 +105,7 @@
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
-| `python3 -c "import yaml; ...":*` | 🟢 | YAML Verarbeitung (PyYAML) | "Parse das YAML" |
+| `python3 -c "import yaml; ...":*` | 🟡 | YAML-Verarbeitung (PyYAML) — `-c` erlaubt arbitrary Code-Ausführung | "Parse das YAML" |
 | `grep:*` | 🟢 | Text suchen | "Such nach X im Code" |
 | `find:*` | 🟢 | Dateien finden | "Find alle .dart Dateien" |
 | `ls:*` | 🟢 | Verzeichnis listen | "Was ist im Ordner?" |

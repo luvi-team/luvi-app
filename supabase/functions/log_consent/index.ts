@@ -1,8 +1,14 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+function requireEnv(name: string): string {
+  const value = Deno.env.get(name);
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name} must be set`);
+  }
+  return value;
+}
+
 // Salt used to pseudonymize consent/user identifiers in metrics logs.
 // If not provided, we fall back to an unsalted SHA-256 hash to avoid logging PII
 // while keeping metrics functional in lower environments.
@@ -39,13 +45,6 @@ if (!Number.isFinite(parsedAlertSampleRate)) {
 const ALERT_SAMPLE_RATE = Math.max(0, Math.min(1, parsedAlertSampleRate));
 const MAX_LOGGED_INVALID_SCOPES = 10;
 const MAX_INVALID_SCOPE_STRING_LENGTH = 200;
-
-if (!SUPABASE_URL) {
-  throw new Error("Missing required environment variable: SUPABASE_URL must be set");
-}
-if (!SUPABASE_ANON_KEY) {
-  throw new Error("Missing required environment variable: SUPABASE_ANON_KEY must be set");
-}
 // ---------------------------------------------------------------------------
 // Consent Scopes Configuration
 // ---------------------------------------------------------------------------
@@ -180,13 +179,14 @@ async function loadConsentScopes(): Promise<readonly string[]> {
 
     return validIds;
   } catch (error) {
-    console.warn(
+    // ERROR level: Missing config file indicates deployment issue that needs operator attention
+    console.error(
       JSON.stringify({
-        severity: "warning",
+        severity: "error",
         ts: new Date().toISOString(),
         event: "consent_scopes_load",
         status: "fallback",
-        message: "Failed to load consent_scopes.json, using fallback",
+        message: "Failed to load consent_scopes.json, using fallback - check deployment bundle",
         error: error instanceof Error ? error.message : String(error),
       })
     );
@@ -597,7 +597,7 @@ if (import.meta.main) {
     );
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  const supabase = createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_ANON_KEY"), {
     global: {
       headers: {
         Authorization: authorization,

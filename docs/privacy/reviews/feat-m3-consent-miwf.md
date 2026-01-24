@@ -29,7 +29,7 @@
 **Security:** RLS owner-based policies enforced; user_id set via DB trigger; ANON key only (no service_role)
 
 **Rate Limiting & Abuse Controls:**
-- **Per-user limit:** 10 requests/minute (burst: 5) *
+- **Per-user limit:** 20 requests/minute (configurable via `CONSENT_RATE_LIMIT_MAX_REQUESTS`) *
 - **Per-IP limit:** 30 requests/minute (ANON key context) *
 - **Abuse detection:** IP throttling with exponential backoff (1s → 2s → 4s → block 5min)
 - **Monitoring:** Consent logging metrics exposed via Supabase observability (request count, error rate, latency)
@@ -85,7 +85,7 @@ Consent records follow an **append-only model** with one documented exception fo
 ### Consent Withdrawal (Art. 7(3) GDPR)
 
 **Endpoint:** `POST /functions/v1/withdraw_consent` (planned)
-**Status:** Not yet implemented (tracked for future sprint)
+**Status:** Not yet implemented — tracked in Archon Project `0c3dd817-69cd-4791-ba70-a71485f6f80a` (Consent Flow Redesign v3)
 
 **Mechanism:**
 - Withdrawal is recorded as a **new append-only row** in `consents` table

@@ -14,6 +14,14 @@ LIMIT 1
 \quit 1
 \endif
 
+-- Optional: pick a second auth.users row for cross-user (unauthorized) RLS checks.
+SELECT id AS other_user_id
+FROM auth.users
+WHERE id <> :'test_user_id'
+ORDER BY created_at NULLS LAST, id
+LIMIT 1
+\gset
+
 -- Grants (Defense-in-depth): anon/public must not have access to sensitive tables.
 DO $$
 BEGIN
@@ -118,7 +126,8 @@ END $$;
 -- (position('auth.uid()' in ...) to detect owner-scoped policies. This is a
 -- best-effort smoke test with known limitations: spacing, parentheses, aliases,
 -- or functionally equivalent expressions may bypass detection. Deeper security
--- audits should not rely solely on this check.
+-- audits should not rely solely on this check; see the functional cross-user
+-- RLS check further below (runs when >= 2 auth.users rows exist).
 -- RLS: consents must remain owner-scoped and append-only.
 DO $$
 BEGIN
@@ -168,6 +177,32 @@ VALUES (
   'rls-smoke'
 )
 ON CONFLICT (id) DO NOTHING;
+
+-- 1b) Cross-user check: another authenticated user must not see the owner's rows.
+\if :{?other_user_id}
+SELECT set_config(
+  'request.jwt.claims',
+  json_build_object('sub', :'other_user_id', 'role', 'authenticated')::text,
+  false
+);
+DO $$
+DECLARE
+  rls_blocks boolean;
+BEGIN
+  SELECT COUNT(*) = 0 INTO rls_blocks FROM public.consents WHERE id = '00000000-0000-0000-0000-00000000c001';
+  ASSERT rls_blocks, 'consents must not leak rows across authenticated users (cross-user RLS check)';
+END $$;
+
+-- Reset back to owner context for the remaining checks.
+SELECT set_config(
+  'request.jwt.claims',
+  json_build_object('sub', :'test_user_id', 'role', 'authenticated')::text,
+  false
+);
+\else
+\echo 'rls_smoke.sql: skipping cross-user RLS check (only one auth.users row found).'
+\endif
+
 DO $$
 DECLARE
   default_def text;

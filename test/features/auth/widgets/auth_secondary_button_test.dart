@@ -86,6 +86,9 @@ void main() {
         ),
       );
 
+      // Pre-condition: verify test isolation
+      expect(pressed, isFalse, reason: 'pressed should be false before tap');
+
       await tester.tap(find.byType(AuthSecondaryButton));
       await tester.pumpAndSettle();
       expect(pressed, isTrue);

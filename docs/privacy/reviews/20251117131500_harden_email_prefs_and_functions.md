@@ -1,9 +1,9 @@
 # Privacy Review — 20251117131500_harden_email_prefs_and_functions
 
 ## Change
-- Pin `search_path` for optional helper/Archon functions via a DO block with `IF EXISTS` checks.
+- Pin `search_path` for optional helper/Archon functions via a DO-Block with `IF EXISTS` checks.
 - Update the four `email_preferences` policies to use `(user_id = (SELECT auth.uid()))`.
-- Add an `IF NOT EXISTS` index for `public.archon_tasks(parent_task_id)`.
+- Add an `IF NOT EXISTS` index on `public.archon_tasks(parent_task_id)`.
 
 ## Data Impact
 - **No new tables/columns**

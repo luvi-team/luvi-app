@@ -70,7 +70,7 @@ communications:
   status: planned
 
 health_wearables:
-  plugin: flutter_health (planned)
+  plugin: "flutter_health"  # planned
 
 dev_tooling:
   ide: cursor  # Repo navigation, minimal editing

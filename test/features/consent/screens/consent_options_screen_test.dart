@@ -299,6 +299,8 @@ void main() {
       when(() => mockUserStateService.markWelcomeSeen()).thenAnswer((_) async {});
       when(() => mockUserStateService.setAcceptedConsentVersion(any()))
           .thenAnswer((_) async {});
+      when(() => mockUserStateService.setAcceptedConsentScopes(any()))
+          .thenAnswer((_) async {});
 
       // Setup GoRouter with consent + onboarding routes
       final router = GoRouter(

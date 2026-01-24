@@ -37,12 +37,47 @@ DROP POLICY IF EXISTS consents_delete_own ON public.consents;
 -- Step 2: Revoke UPDATE/DELETE privileges from authenticated role
 -- Note: service_role retains GRANTed UPDATE/DELETE privileges, however the
 -- FOR EACH ROW UPDATE trigger defined below fires for ALL roles (including
--- service_role) and will block the operation. To perform admin/support
--- corrections, temporarily disable the trigger:
---   ALTER TABLE public.consents DISABLE TRIGGER consent_no_update;
---   -- perform correction --
---   ALTER TABLE public.consents ENABLE TRIGGER consent_no_update;
+-- service_role) and will block the operation.
+--
+-- Operational note:
+-- - Admin/support MUST NOT UPDATE existing consent rows (GDPR audit integrity).
+-- - Corrections must be append-only (INSERT a new consent row, e.g. with a newer
+--   version/scopes and/or revoked_at), never mutate historical rows.
+-- - If a break-glass trigger disable is ever required, follow the runbook and
+--   obtain explicit approval: docs/runbooks/consents-append-only-breakglass.md
 REVOKE UPDATE, DELETE ON public.consents FROM authenticated;
+
+-- ============================================================================
+-- Admin Correction Workflow (SECURITY NOTE)
+-- ============================================================================
+--
+-- SCENARIO: Support needs to correct a consent record (rare, requires audit trail)
+--
+-- PREREQUISITES:
+--   - Superuser or postgres role access
+--   - Audit log entry BEFORE modification (external system)
+--   - Documented reason for correction
+--
+-- PROCEDURE:
+--   -- 1. Document the correction reason in your audit system
+--   -- 2. Disable trigger temporarily
+--   ALTER TABLE public.consents DISABLE TRIGGER consent_no_update;
+--
+--   -- 3. Perform the specific correction
+--   UPDATE public.consents SET version = 'v1.1' WHERE id = '<consent_id>';
+--
+--   -- 4. Re-enable trigger IMMEDIATELY (do not leave disabled!)
+--   ALTER TABLE public.consents ENABLE TRIGGER consent_no_update;
+--
+--   -- 5. Verify trigger is re-enabled
+--   SELECT tgname, tgenabled FROM pg_trigger
+--     WHERE tgrelid = 'public.consents'::regclass
+--       AND tgname = 'consent_no_update';
+--   -- Expected: tgenabled = 'O' (Origin/enabled)
+--
+-- WARNING: Never leave the trigger disabled. If your session crashes,
+-- reconnect and verify trigger state before any other operations.
+-- ============================================================================
 
 -- Step 3: Defense-in-depth trigger to prevent UPDATEs (append-only semantics)
 -- We do NOT create a DELETE trigger; see IMPORTANT note above.

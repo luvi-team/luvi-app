@@ -1,37 +1,41 @@
 # Privacy Review — feat-account-scoped-consent-onboarding
 
 ## Purpose
-Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von device-only Storage (SharedPreferences) in eine account-scoped, serverseitige SSOT in Supabase/Postgres, damit:
-- Gate-Entscheidungen (Consent/Onboarding) geräteübergreifend konsistent sind.
-- Onboarding-Antworten (z. B. Name/Fitnesslevel/Ziele) serverseitig für Personalisierung verfügbar sind.
-- Least-Privilege über RLS garantiert bleibt (Owner-only Zugriff).
+
+This feature moves gate state and selected onboarding answers from device-only storage (SharedPreferences) to an account-scoped, server-side SSOT in Supabase/Postgres, so that:
+- Gate decisions (Consent/Onboarding) are consistent across devices.
+- Onboarding answers (e.g., name/fitness level/goals) are available server-side for personalization.
+- Least-privilege via RLS remains guaranteed (owner-only access).
 
 ## Data-Flow (High-Level)
+
 - **Auth:** Client ↔ Supabase Auth (`auth.users`).
 - **Consent-Logging:** Client → `POST /functions/v1/log_consent` → DB RPC `public.log_consent_if_allowed(...)` → Insert in `public.consents`.
-- **Gate SSOT + Onboarding-Antworten:** Client (authenticated) → PostgREST → `public.profiles` (Upsert/Select owner-only).
-- **Cycle-Input:** Client (authenticated) → PostgREST → `public.cycle_data` (Upsert/Select owner-only; erweitert um `cycle_regularity`).
+- **Gate SSOT + Onboarding Answers:** Client (authenticated) → PostgREST → `public.profiles` (Upsert/Select owner-only).
+- **Cycle-Input:** Client (authenticated) → PostgREST → `public.cycle_data` (Upsert/Select owner-only; extended with `cycle_regularity`).
 
 ## Data Categories (PII / Health Data)
-- **PII (Art. 4 DSGVO):**
-  - `public.profiles.display_name` (Name)
-  - `public.profiles.birth_date` (Geburtsdatum; required wenn `has_completed_onboarding=true` · 16–120)
-- **Gesundheitsdaten (Art. 9 DSGVO / FemTech):**
-  - `public.cycle_data`: `cycle_length`, `period_duration`, `last_period`, `age`, `cycle_regularity`
-  - `public.daily_plan`: Mood/Energy/Symptoms/Notes etc. (bereits vorhanden)
-- **Consent-Nachweise (auditierbar, ohne IP/UA in DB):**
-  - `public.consents`: `user_id`, `version`, `scopes`, `created_at`, `revoked_at`
-  - IP/UA werden ausschließlich in Observability-Logs pseudonymisiert (Hash/HMAC) verarbeitet, nicht in Tabellen persistiert.
 
-## Consent (Pflicht vs Optional, Versioning, Widerruf)
+- **PII (GDPR Art. 4):**
+  - `public.profiles.display_name` (Name)
+  - `public.profiles.birth_date` (Date of birth; required when `has_completed_onboarding=true` · 16–120)
+- **Health Data (GDPR Art. 9 / FemTech):**
+  - `public.cycle_data`: `cycle_length`, `period_duration`, `last_period`, `age`, `cycle_regularity`
+  - `public.daily_plan`: Mood/Energy/Symptoms/Notes etc. (already existing)
+- **Consent Records (auditable, no IP/UA in DB):**
+  - `public.consents`: `user_id`, `version`, `scopes`, `created_at`, `revoked_at`
+  - IP/UA are only processed pseudonymized (Hash/HMAC) in observability logs, not persisted in tables.
+
+## Consent (Required vs Optional, Versioning, Revocation)
+
 - **Scopes-SSOT:** `config/consent_scopes.json` (`required=true|false`).
 - **Versioning:**
-  - String-Version im Consent-Log: `public.consents.version` (z. B. `v1.0`).
-  - Gate-Version (numerisch) für schnelle Vergleiche: `public.profiles.accepted_consent_version` (z. B. `1`).
+  - String version in consent log: `public.consents.version` (e.g., `v1.0`).
+  - Gate version (numeric) for fast comparisons: `public.profiles.accepted_consent_version` (e.g., `1`).
 - **Timestamps:**
-  - Consent-Event: `public.consents.created_at`, optional `revoked_at`.
-  - Gate-State: `public.profiles.accepted_consent_at` (falls genutzt/gesetzt).
-- **Widerruf:** über Update eines passenden Consent-Events (`revoked_at`) oder durch neues, explizites „revoke"-Event (separates Feature/PR; nicht Teil dieser Migration).
+  - Consent event: `public.consents.created_at`, optional `revoked_at`.
+  - Gate state: `public.profiles.accepted_consent_at` (if used/set).
+- **Revocation:** via update of a matching consent event (`revoked_at`) or via new explicit "revoke" event (separate feature/PR; not part of this migration).
 
 ### Version Sync Requirements
 
@@ -70,27 +74,30 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 > formats will be rejected. Test cases: v1.0↔1 (pass), v2.0↔2 (pass), v1.0↔2 (fail).
 
 ## Access Control (RLS / Least Privilege)
-### profiles (neu)
-- `public.profiles` hat **RLS enabled + FORCE RLS**.
-- Policies sind owner-only für `authenticated` via `user_id = auth.uid()` (SELECT/INSERT/UPDATE/DELETE).
-- Privileges: **kein anon/public Zugriff** (nur `authenticated`).
 
-### cycle_data (bestehend, erweitert)
-- `public.cycle_data` bleibt owner-only über bestehende Policies.
-- Neuer Enum-ähnlicher CHECK für `cycle_regularity` (nullable; Werte: `regular|unpredictable|unknown`).
+### profiles (new)
+- `public.profiles` has **RLS enabled + FORCE RLS**.
+- Policies are owner-only for `authenticated` via `user_id = auth.uid()` (SELECT/INSERT/UPDATE/DELETE).
+- Privileges: **no anon/public access** (only `authenticated`).
+
+### cycle_data (existing, extended)
+- `public.cycle_data` remains owner-only via existing policies.
+- New enum-like CHECK for `cycle_regularity` (nullable; values: `regular|unpredictable|unknown`).
 
 ### daily_plan (Hardening)
-- `public.daily_plan` wird auf **FORCE RLS** gehärtet und `anon`-Table-Privileges werden entzogen (Defense-in-depth).
+- `public.daily_plan` is hardened to **FORCE RLS** and `anon` table privileges are revoked (defense-in-depth).
 
 ### log_consent_if_allowed (Hardening)
-- `public.log_consent_if_allowed(...)` wird von `public/anon` entprivilegiert (EXECUTE), bleibt für `authenticated` ausführbar (Owner-Guard: `p_user_id == auth.uid()`; kein `service_role`-Bypass; `service_role` EXECUTE entzogen via Patch-Migration).
+- `public.log_consent_if_allowed(...)` is deprivileged from `public/anon` (EXECUTE), remains executable for `authenticated` (owner-guard: `p_user_id == auth.uid()`; no `service_role` bypass; `service_role` EXECUTE revoked via patch migration).
 
 ## Logging / Telemetry (PII-Safety)
-- Keine PII/Health-Daten in App-Logs oder Edge-Logs ausgeben.
-- `log_consent` nutzt pseudonymisierte Metriken (`ip_hash`, `ua_hash`, `consent_id_hash`) und speichert in der DB nur `user_id/version/scopes`.
+
+- No PII/health data in app logs or edge logs.
+- `log_consent` uses pseudonymized metrics (`ip_hash`, `ua_hash`, `consent_id_hash`) and stores only `user_id/version/scopes` in the DB.
 
 ## Evidence (RLS + Gates)
-### Migrationen
+
+### Migrations
 - `supabase/migrations/20251214193000_create_profiles_gate_ssot.sql`
 - `supabase/migrations/20251214193100_add_cycle_data_regularity.sql`
 - `supabase/migrations/20251214193200_harden_privileges_daily_plan_and_log_consent.sql`
@@ -110,14 +117,14 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 >
 > See `supabase/migrations/README.md` for the Consent Change-Set Rule requiring coordinated deployment.
 
-### RLS Smoke (Soll-Ausgabe)
-- Option A (ohne `SUPABASE_DB_URL`, empfohlen): `.env.local` + `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`
+### RLS Smoke (Expected Output)
+- Option A (without `SUPABASE_DB_URL`, recommended): `.env.local` + `SUPABASE_PROJECT_REF` + `SUPABASE_DB_PASSWORD`
   - `set -a; source .env.local; set +a`
   - `PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://postgres@db.${SUPABASE_PROJECT_REF}.supabase.co:5432/postgres?sslmode=require" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke.sql`
   - `PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://postgres@db.${SUPABASE_PROJECT_REF}.supabase.co:5432/postgres?sslmode=require" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke_negative.sql`
-- Option B (falls vorhanden): `psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke.sql` (+ `_negative.sql`)
-  - Erwartung: `profiles baseline must return zero rows without context` ✅
-  - Erwartung: Insert/Select unter `ROLE authenticated` und `request.jwt.claims.sub=<user>` ✅
+- Option B (if available): `psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -P pager=off -f supabase/tests/rls_smoke.sql` (+ `_negative.sql`)
+  - Expected: `profiles baseline must return zero rows without context` ✅
+  - Expected: Insert/Select under `ROLE authenticated` and `request.jwt.claims.sub=<user>` ✅
 
 ### Security Note for Shell Commands
 > **Warning:** Commands using `PGPASSWORD` or database credentials can leak into shell history.
@@ -129,8 +136,9 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 > - Clear history after testing: `history -c` (bash) or `fc -p` (zsh)
 
 ## Risks & Mitigations
-- **Mehr Persistenz von PII (Name/Geburtsdatum):** `birth_date` ist erforderlich, sobald Onboarding abgeschlossen ist; Zugriff owner-only; DB-CHECK erzwingt 16–120 (gate-sicher) und verhindert „completed ohne birthdate“.
-- **Cross-device Konsistenz:** serverseitige Gate-SSOT verhindert lokale Drift zwischen Geräten.
+
+- **Increased PII persistence (name/date of birth):** `birth_date` is required once onboarding is completed; access is owner-only; DB CHECK enforces 16–120 (gate-safe) and prevents "completed without birthdate".
+- **Cross-device consistency:** Server-side gate SSOT prevents local drift between devices.
 
 ### Cross-Device Sync Behavior
 
@@ -155,14 +163,14 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 - No background sync queue (not implemented)
 - App remains functional with cached local state
 
-- **Abuse/Noise durch anon RPC:** EXECUTE-Revokes reduzieren Angriffsfläche und vermeiden DB-Fehler-Spam.
+- **Abuse/noise via anon RPC:** EXECUTE revokes reduce attack surface and prevent DB error spam.
 
 ## Backout / Revert (operational)
 
 ### Database Changes
 - Drop `profiles` table: `DROP TABLE IF EXISTS public.profiles;`
 - Drop `cycle_regularity` column: `ALTER TABLE public.cycle_data DROP COLUMN IF EXISTS cycle_regularity;`
-- Restore `log_consent_if_allowed` EXECUTE grants (nur falls benötigt) per neuem Revert-Migration-File.
+- Restore `log_consent_if_allowed` EXECUTE grants (only if needed) via new revert migration file.
 
 ### Data Migration Considerations
 **Note:** Data migrated from SharedPreferences to the server will be lost on rollback.
