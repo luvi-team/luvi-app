@@ -215,10 +215,13 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     if (!_acquireBusy(ref)) {
       return;
     }
+    // CodeRabbit fix: Capture scopes IMMEDIATELY before any async work.
+    // Prevents race condition if user toggles rapidly during persistence.
     final scopes = _computeScopes(currentState);
+    final scopesAsSet = scopes.toSet(); // For local cache (Set<String>)
     try {
       await _acceptConsent(ref, scopes);
-      final welcomeMarked = await _markWelcomeSeen(ref, currentState);
+      final welcomeMarked = await _markWelcomeSeen(ref, scopesAsSet);
 
       if (!context.mounted) return;
 
@@ -685,12 +688,15 @@ Future<void> _acceptConsent(WidgetRef ref, List<String> scopes) {
 
 /// Orchestrates consent persistence to server and local cache.
 /// Returns true if at least one operation succeeded (best-effort semantics).
+///
+/// [acceptedScopes] is captured early in [_handleContinue] to prevent race
+/// conditions if user toggles consents during async operations.
 Future<bool> _markWelcomeSeen(
   WidgetRef ref,
-  Consent02State currentState,
+  Set<String> acceptedScopes,
 ) async {
   final serverSucceeded = await _persistConsentGateToServer();
-  final localSucceeded = await _persistConsentToLocalCache(ref, currentState);
+  final localSucceeded = await _persistConsentToLocalCache(ref, acceptedScopes);
 
   // Log partial success for debugging
   if (serverSucceeded != localSucceeded) {
@@ -753,10 +759,13 @@ Future<bool> _persistConsentGateToServer() async {
 /// Persists consent state to local cache for offline access and analytics gating.
 /// Returns true on success, false on failure or skip.
 ///
+/// [acceptedScopes] is captured early in [_handleContinue] to prevent race
+/// conditions if user toggles consents during async operations.
+///
 /// Returns false if provider resolution fails (graceful degradation).
 Future<bool> _persistConsentToLocalCache(
   WidgetRef ref,
-  Consent02State currentState,
+  Set<String> acceptedScopes,
 ) async {
   // Issue 3: Wrap provider resolution in try-catch for graceful failure.
   // Explicit type annotation required (Dart cannot infer from try-block assignment).
@@ -794,12 +803,6 @@ Future<bool> _persistConsentToLocalCache(
     return false;
   }
 
-  // Derive accepted scopes from current state (for analytics consent gating)
-  final acceptedScopes = currentState.choices.entries
-      .where((e) => e.value)
-      .map((e) => e.key.name)
-      .toSet();
-
   // Parallel writes for efficiency.
   // Using .wait (Dart 3.0+) for ParallelWaitError - collects ALL errors, not just first.
   // Note: Future.wait() would only throw the first error, breaking our error collection.
@@ -826,7 +829,23 @@ Future<bool> _persistConsentToLocalCache(
         );
       }
     }
-    return false;
+
+    // CodeRabbit fix: Single retry after short delay for transient failures.
+    // Server is SSOT; local cache is best-effort. Gap until next session is
+    // acceptable if retry also fails.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    try {
+      await [
+        userState.markWelcomeSeen(),
+        userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
+        userState.setAcceptedConsentScopes(acceptedScopes),
+      ].wait;
+      log.d('consent_local_cache_retry_succeeded', tag: 'consent_options');
+      return true;
+    } on ParallelWaitError {
+      log.w('consent_local_cache_retry_failed', tag: 'consent_options');
+      return false;
+    }
   } catch (error, stackTrace) {
     log.e(
       'consent_persistence_failed',

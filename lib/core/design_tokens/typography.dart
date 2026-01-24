@@ -180,6 +180,9 @@ class ConsentTypography {
   // ─── Consent Options Footnote (Figtree Regular 12px) ───
   /// Footnote font size (12px) - used for revoke instructions
   static const double footnoteFontSize = TypographyTokens.size12;
+
+  /// Footnote line height ratio (16px / 12px = 1.333, standard for 12px text)
+  static const double footnoteLineHeight = TypographyTokens.lineHeightRatio16on12;
 }
 
 /// Welcome screen typography constants (Figma Welcome Rebrand).

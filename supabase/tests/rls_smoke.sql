@@ -36,6 +36,15 @@ BEGIN
     'anon must not have SELECT on public.daily_plan';
 END $$;
 
+-- Grants: service_role must not be able to directly DELETE from consents (append-only audit log).
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
+    ASSERT NOT has_table_privilege('service_role', 'public.consents', 'DELETE'),
+      'service_role must not have DELETE on public.consents (append-only)';
+  END IF;
+END $$;
+
 -- Grants: ensure no explicit privileges exist for the PUBLIC pseudo-role (grantee=0).
 DO $$
 BEGIN
@@ -105,6 +114,11 @@ BEGIN
     'authenticated must not have DELETE on public.consents (append-only)';
 END $$;
 
+-- NOTE: The following RLS policy scope check uses string-matching heuristics
+-- (position('auth.uid()' in ...) to detect owner-scoped policies. This is a
+-- best-effort smoke test with known limitations: spacing, parentheses, aliases,
+-- or functionally equivalent expressions may bypass detection. Deeper security
+-- audits should not rely solely on this check.
 -- RLS: consents must remain owner-scoped and append-only.
 DO $$
 BEGIN

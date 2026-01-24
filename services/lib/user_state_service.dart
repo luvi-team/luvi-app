@@ -190,13 +190,16 @@ class UserStateService {
       }
       final stringElements = decoded.whereType<String>();
       final stringCount = stringElements.length;
+      // CodeRabbit fix: Corrupted JSON should invalidate ALL consent for audit integrity.
+      // Partial recovery could silently lose consent the user gave.
       if (stringCount != decoded.length) {
         final droppedCount = decoded.length - stringCount;
-        log.d(
-          'acceptedConsentScopesOrNull: dropped $droppedCount non-String elements, '
-          'key=$key, raw=$json, originalLength=${decoded.length}, stringCount=$stringCount',
+        log.w(
+          'acceptedConsentScopesOrNull: CORRUPTED - $droppedCount non-String elements, '
+          'invalidating all consent for data integrity. key=$key, raw=$json',
           tag: 'UserStateService',
         );
+        return null;
       }
       return stringElements.toSet();
     } catch (e) {

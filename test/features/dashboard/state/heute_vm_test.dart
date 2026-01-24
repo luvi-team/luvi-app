@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/features/dashboard/domain/models/category.dart';
 import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
 
 void main() {

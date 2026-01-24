@@ -16,7 +16,7 @@ import 'package:luvi_app/features/dashboard/widgets/painters/wave_painter.dart';
 import 'package:luvi_app/features/cycle/domain/week_strip.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 import 'package:luvi_app/features/dashboard/widgets/dashboard_calendar.dart';
-import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
+import 'package:luvi_app/features/dashboard/domain/models/category.dart';
 import 'package:luvi_app/features/dashboard/screens/luvi_sync_journal_stub.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/features/dashboard/widgets/heute_header.dart';

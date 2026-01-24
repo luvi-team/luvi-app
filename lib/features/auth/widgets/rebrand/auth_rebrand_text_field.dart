@@ -172,22 +172,34 @@ class AuthRebrandTextField extends StatelessWidget {
   ///
   /// Logic order:
   /// 1. [semanticLabel] if provided.
-  /// 2. [errorText] if the field is in error state.
-  /// 3. L10n specific hints for email/password types.
+  /// 2. Field-type + error message if in error state.
+  /// 3. Field-type label based on keyboard type.
   /// 4. [hintText] as last resort.
   String _deriveFallbackLabel(AppLocalizations? l10n, bool showError) {
+    // 1. Explicit semanticLabel always wins
     if (semanticLabel != null) {
       return semanticLabel!;
     }
+
+    // 2. Determine field-type label (extracted to avoid duplication)
+    final fieldLabel = _getFieldTypeLabel(l10n);
+
+    // 3. Error state: combine field-type with error message
     if (showError && errorText != null && errorText!.isNotEmpty) {
-      return errorText!;
+      return '$fieldLabel: $errorText';
     }
+
+    // 4. Normal state: just field-type label
+    return fieldLabel;
+  }
+
+  /// Returns the appropriate field-type label based on keyboard type.
+  String _getFieldTypeLabel(AppLocalizations? l10n) {
     if (keyboardType == TextInputType.emailAddress) {
       return l10n?.authEmailHint ?? _kEmailFallback;
     }
     // Check both obscureText and visiblePassword keyboard type to handle
-    // password fields even when visibility is toggled. For explicit control,
-    // callers should provide semanticLabel directly.
+    // password fields even when visibility is toggled.
     if (obscureText || keyboardType == TextInputType.visiblePassword) {
       return l10n?.authPasswordHint ?? _kPasswordFallback;
     }

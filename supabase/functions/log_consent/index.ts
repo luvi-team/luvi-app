@@ -49,9 +49,13 @@ if (!SUPABASE_ANON_KEY) {
 // ---------------------------------------------------------------------------
 // Consent Scopes Configuration
 // ---------------------------------------------------------------------------
-// SSOT: Scopes are loaded from config/consent_scopes.json at module init.
-// The SSOT test (consent_scopes_ssot.test.ts) validates sync between this
-// export and the JSON file. Dart enum is at lib/core/privacy/consent_types.dart.
+// SSOT: `config/consent_scopes.json` is the canonical scope list (shared with the app).
+// For Edge deployments, we include a copy in this function directory:
+// `supabase/functions/log_consent/consent_scopes.json`.
+// The SSOT test (consent_scopes_ssot.test.ts) validates:
+// - function copy matches `config/consent_scopes.json`
+// - VALID_SCOPES export matches that list
+// Dart enum is at lib/core/privacy/consent_types.dart.
 // ---------------------------------------------------------------------------
 
 // Fallback scopes used if config file cannot be read (deployment resilience)
@@ -75,7 +79,9 @@ function isValidScopeItem(item: unknown): item is { id: string } {
 
 async function loadConsentScopes(): Promise<readonly string[]> {
   try {
-    const configUrl = new URL("../../../config/consent_scopes.json", import.meta.url);
+    // Keep the file bundled with the Edge Function to avoid silent fallbacks
+    // when deploying only the function directory.
+    const configUrl = new URL("./consent_scopes.json", import.meta.url);
 
     // Guard against unexpected https: protocol (Supabase Edge Functions use file: protocol)
     if (configUrl.protocol !== "file:") {

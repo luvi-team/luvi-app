@@ -5,19 +5,8 @@
 ## Ziel
 Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-Inhalten im LUVI-Feed und beschreibt die Komponenten, Fallbacks und Sicherheitsregeln. Die Heuristik unterstützt eine zyklusbewusste, zielorientierte und dennoch vielfältige Mischung aus Videos und Artikeln. Sie ist einfach gehalten (MVP) und lässt sich später anpassen.
 
-## Score-Formel (v1.2)
+## Score-Formel (v1.3)
 
-```
-score = w_phase * phase_score
-      + w_goal * goal_match
-      + w_recency * recency
-      + w_editorial * editorial
-      + w_pop * popularity
-      + w_affinity * affinity
-      - w_div * diversity_penalty
-```
-
-### Standardgewichte (v1.2)
 
 | Gewicht | Wert | Begründung |
 |---------|------|------------|

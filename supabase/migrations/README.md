@@ -6,6 +6,7 @@
 - `20251215123000_harden_consents_scopes_array.sql` - Anti-drift (legacy): enforce `consents.scopes` as JSONB array
 - `20251222173000_consents_scopes_object_bool.sql` - Canonicalize: enforce `consents.scopes` as JSONB object<boolean> (SSOT)
 - `20260121120000_consent_log_append_only.sql` - Make `public.consents` append-only (GDPR audit trail)
+- `20260124120000_consents_revoke_service_role_delete.sql` - Prevent direct DELETEs on `public.consents` via `service_role`
 - `20250903235539_create_cycle_data_table.sql` - Menstrual cycle tracking data
 - `20250903235540_create_email_preferences_table.sql` - User email notification preferences
 

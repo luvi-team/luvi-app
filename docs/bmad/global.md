@@ -624,7 +624,7 @@ security/offline_resume_key_management)*
 
 ### 3.4 Tech-Stack-Summary
 
-- **Frontend:** Flutter 3.35 / Dart 3.9, Riverpod 3, GoRouter, Feature-
+- **Frontend:** Flutter 3.35.4 / Dart 3.9.2, Riverpod 3, GoRouter, Feature-
   Mirror-Struktur für lib/features/**, Tests spiegeln Features.
 
 - **Backend/DB:** Supabase Postgres (EU/Frankfurt) mit RLS owner-based,

@@ -42,8 +42,9 @@ class AuthButtonBase extends StatelessWidget {
   /// Optional key for the loading indicator (for testing)
   final Key? loadingKey;
 
-  /// Optional semantic label announced when loading (a11y)
-  /// When null, falls back to [label].
+  /// Optional semantic label announced when loading (a11y).
+  /// When null, falls back to the L10n-interpolated loading label
+  /// (e.g., "$label, loading" via `semanticButtonLoading`).
   final String? loadingSemanticLabel;
 
   @override

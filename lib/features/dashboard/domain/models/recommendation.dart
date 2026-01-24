@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart' hide Category;
-import 'package:luvi_app/features/dashboard/state/heute_vm.dart';
+import 'category.dart';
 
 /// Tag-to-Category mapping. Add new tags here as content expands.
 /// Keys are lowercase for case-insensitive matching.
