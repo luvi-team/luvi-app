@@ -18,10 +18,15 @@ class AuthBottomSheetShell extends StatelessWidget {
   const AuthBottomSheetShell({
     super.key,
     required this.child,
+    this.topPaddingOverride,
   });
 
   /// The content to display in the sheet
   final Widget child;
+  /// Optional top safe-area inset from the caller context.
+  ///
+  /// Needed because showModalBottomSheet removes top padding in its route context.
+  final double? topPaddingOverride;
 
   /// Shows the auth bottom sheet modal.
   ///
@@ -36,6 +41,7 @@ class AuthBottomSheetShell extends StatelessWidget {
     required BuildContext context,
     required WidgetBuilder builder,
   }) {
+    final topPadding = MediaQuery.viewPaddingOf(context).top;
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
@@ -44,6 +50,7 @@ class AuthBottomSheetShell extends StatelessWidget {
       // shape is omitted: backgroundColor is transparent, so visual rounding
       // is handled by the Container decoration inside AuthBottomSheetShell.
       builder: (context) => AuthBottomSheetShell(
+        topPaddingOverride: topPadding,
         child: builder(context),
       ),
     );
@@ -52,9 +59,10 @@ class AuthBottomSheetShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
-    // Use viewPadding: showModalBottomSheet removes padding in its route context.
-    // viewPadding preserves the real system insets (notch/Dynamic Island).
-    final topPadding = MediaQuery.viewPaddingOf(context).top;
+    // Prefer caller-provided safe-area inset because the sheet route can
+    // remove padding/viewPadding in its own MediaQuery.
+    final topPadding =
+        topPaddingOverride ?? MediaQuery.viewPaddingOf(context).top;
     // Figma baseline: sheetTopY (253) = statusBarHeight (47) + contentOffset (206)
     // Adjust for actual device's safe area inset to handle notches/Dynamic Island
     const contentOffsetBelowStatusBar =
