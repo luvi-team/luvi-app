@@ -157,13 +157,13 @@ flutter:
           weight: 700
     - family: Figtree
       fonts:
-        # Variable font: use fontVariations in TextStyle to select weight (e.g., FontVariation('wght', 500))
+        # Variable font: use fontVariations in TextStyle to select weight (e.g., FontVariation('wght', 500.0))
         - asset: assets/fonts/Figtree/Figtree[wght].ttf
         - asset: assets/fonts/Figtree/Figtree-Italic[wght].ttf
           style: italic
     - family: Inter
       fonts:
-        # Variable font: use fontVariations in TextStyle to select weight (e.g., FontVariation('wght', 500))
+        # Variable font: use fontVariations in TextStyle to select weight (e.g., FontVariation('wght', 500.0))
         - asset: assets/fonts/Inter/Inter[opsz,wght].ttf
         - asset: assets/fonts/Inter/Inter-Italic[opsz,wght].ttf
           style: italic

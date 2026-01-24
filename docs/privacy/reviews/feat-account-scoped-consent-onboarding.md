@@ -50,7 +50,11 @@ Dieses Feature verschiebt Gate-State und ausgewählte Onboarding-Antworten von d
 4. **Migration Procedure:** Version bumps update both fields atomically via a single DB transaction.
 5. **Mismatch Handling:** On detection, reject the write and emit an audit log entry.
 
-> **TODO:** Create follow-up ticket for CI validation hook implementation.
+> **Follow-up Tracked:** Archon Task `419030ef-69e1-463a-a70a-8d3f53f015b5` —
+> "Implement CI pre-merge hook for consent version validation".
+> Scope: Validate format consistency between `consents.version` (string, e.g., "v1.0")
+> and `profiles.accepted_consent_version` (numeric, e.g., 1). PRs with mismatched
+> formats will be rejected. Test cases: v1.0↔1 (pass), v2.0↔2 (pass), v1.0↔2 (fail).
 
 ## Access Control (RLS / Least Privilege)
 ### profiles (neu)

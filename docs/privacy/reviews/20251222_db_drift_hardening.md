@@ -1,5 +1,7 @@
 # Privacy Review — 20251222 DB Drift Hardening (Grants + Constraints)
 
+**Review date:** 2026-01-24 (retroactive; filename keeps the migration date for traceability)
+
 ## Purpose
 This change fixes confirmed DB drift in Supabase/Postgres to:
 - prevent save/retry loops in onboarding caused by constraint mismatches,

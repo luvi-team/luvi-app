@@ -40,6 +40,12 @@ period_len = period_length oder 5 (default)
 ovulation_day = round(cycle_len * 0.5) (MVP-Schätzwert)
 ```
 
+> **Minimum Cycle Length Guard:** Zykluslängen unter 21 Tagen gelten medizinisch
+> als Oligomenorrhoe (ACOG-Richtlinien: Normalbereich 21–35 Tage). Falls
+> `cycle_len < 21`, wird `phase = unknown` gesetzt und im UI ein Hinweis
+> angezeigt: „Zykluslänge ungewöhnlich kurz — bitte Zyklusdaten prüfen oder
+> ärztlichen Rat einholen." Die Warnung wird im Observability-Layer geloggt.
+
 > **MVP-Vereinfachung:** Diese 50%-Heuristik ist eine Lifestyle-Schätzung.
 > Biologische Ovulation variiert typischerweise ±2–3 Tage und hängt von
 > individuellen Faktoren ab. Klinisch wird der Eisprung per LH-Surge-Test
@@ -79,6 +85,7 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 | Unregelmäßiger Zyklus | Wenn `irregular_cycle = true`: `phase = unknown`, neutrale Inhalte |
 | Menopause/Hormonelle Verhütung | `phase = none`, KI und Ranking ignorieren Phasensignale |
 | Datenwiderspruch | Wenn `cycle_len < period_len` oder absurde Werte: `phase = unknown` |
+| `cycle_len < 21` | Medizinisch ungewöhnlich kurz (Oligomenorrhoe): `phase = unknown`, UI-Hinweis zur Datenprüfung, Observability-Log |
 | `period_len >= ovulation_day` | Anatomisch ungültig: Ovulation während Menstruation. Setze `ovulation_day = period_len + 1` als Safe-Fallback, logge Warnung im Observability-Layer. UI-Hinweis: „Bitte Zyklusdaten prüfen" |
 
 ## Scope & Grenzen

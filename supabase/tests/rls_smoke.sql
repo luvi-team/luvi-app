@@ -123,8 +123,8 @@ BEGIN
       AND tablename = 'consents'
       AND cmd IN ('SELECT', 'INSERT')
       AND (
-        (cmd = 'SELECT' AND (qual IS NULL OR position('auth.uid' in lower(qual)) = 0))
-        OR (cmd = 'INSERT' AND (with_check IS NULL OR position('auth.uid' in lower(with_check)) = 0))
+        (cmd = 'SELECT' AND (qual IS NULL OR position('auth.uid()' in lower(qual)) = 0))
+        OR (cmd = 'INSERT' AND (with_check IS NULL OR position('auth.uid()' in lower(with_check)) = 0))
       )
   ), 'consents SELECT/INSERT policies must scope to auth.uid()';
 END $$;

@@ -238,7 +238,7 @@ Session? _getSessionSafely({
     log.w(
       'auth_redirect_session_access_failed',
       tag: 'navigation',
-      error: sanitizeError(e) ?? e.runtimeType,
+      error: sanitizeError(e) ?? e.runtimeType.toString(),
       stack: kDebugMode ? stack : null,
     );
     return null;

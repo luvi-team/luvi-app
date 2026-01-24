@@ -700,8 +700,16 @@ Future<bool> _markWelcomeSeen(
     );
   }
 
-  // Best-effort: navigation continues if at least one operation succeeded
-  return serverSucceeded || localSucceeded;
+  // Server-first: navigation requires server success (SSOT).
+  // Local cache is best-effort for offline/analytics - failure is acceptable.
+  if (!serverSucceeded) {
+    log.w(
+      'consent_navigation_blocked: server_persistence_required',
+      tag: 'consent_options',
+    );
+    return false;
+  }
+  return true;
 }
 
 /// Persists consent gate state to server (SSOT).

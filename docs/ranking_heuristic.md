@@ -1,6 +1,6 @@
-# Ranking-Heuristik v1.2 (SSOT)
+# Ranking-Heuristik v1.3 (SSOT)
 
-> Version: v1.2 · Datum: 2025-12-03
+> Version: v1.3 · Datum: 2026-01-24
 
 ## Ziel
 Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-Inhalten im LUVI-Feed und beschreibt die Komponenten, Fallbacks und Sicherheitsregeln. Die Heuristik unterstützt eine zyklusbewusste, zielorientierte und dennoch vielfältige Mischung aus Videos und Artikeln. Sie ist einfach gehalten (MVP) und lässt sich später anpassen.
@@ -64,7 +64,8 @@ score = w_phase * phase_score
 - **Zweck:** Redaktionelles Urteil/Boost oder Malus (Qualität, Kuration, Compliance).
 - **Rohwert:** Redaktionsscore `e` (-1 bis +1).
 - **Formel:** `editorial = e`.
-- **Normalisierung:** Lineare Skalierung, Bereich [-1,1]. 0 = neutral, positiv = Boost, negativ = Malus.
+- **Normalisierung:** Lineare Skalierung, Eingabebereich [-1,1]. 0 = neutral, positiv = Boost, negativ = Malus.
+- **Tatsächlicher Impact:** `editorial × w_editorial`. Mit `w_editorial = 0.10` ist der maximale Einfluss auf den Endscore **±0.10** (nicht ±1.0).
 - **Default:** 0.0 (kein Einfluss).
 - **Bereich:** [-1,1].
 - **Hinweis:** Kann für Safety-Blacklist verwendet werden (stark negativer Wert für problematische Inhalte).
@@ -129,22 +130,26 @@ score = w_phase * phase_score
 
 ## Fallbacks
 
+**Default-Policy (Regel):** Fehlende nutzerspezifische Daten erhalten neutrale Defaults (0.5).
+
 | Situation | Aktion |
 |-----------|--------|
 | Fehlender `phase_score` | `phase_score = 0.5` (neutral) |
 | Kein `goal_match` | `goal_match = 0.5` (keine Ziele angegeben) |
 | Neue Nutzer*innen | `affinity = 0.5` (cold_start) |
-| Fehlende Daten für Term | Term aus Score entfernen, restliche Gewichte proportional normieren |
+
+**Alternative Policy (Ausnahme):** Term entfernen und Gewichte renormieren — NUR wenn ein Feature für ALLE Kandidaten im Batch strukturell nicht verfügbar ist (z.B. `popularity` bei komplett neuen Inhalten ohne Views-Daten für den gesamten Batch).
 
 ## Invarianten & Sicherheitsregeln
 
 | Regel | Beschreibung |
 |-------|--------------|
-| **Blacklists** | Inhalte aus Safety-&-Scope-Dossier (extreme Diäten, medizinische Versprechen) dürfen **nie in Top 20** erscheinen, unabhängig vom Score. Verwende `editorial = -1.0` für geblacklistete Inhalte. |
-| **Editorial Boost** | Redaktionelle Aufwertungen dürfen das Ranking nur um **max +0.2** erhöhen; Editor*innen müssen Begründung dokumentieren. |
+| **Blacklist Pre-Filter** | Items mit `editorial == -1.0` werden **VOR dem Scoring** aus dem Kandidaten-Pool entfernt. Diese Items erhalten keinen Score und erscheinen nie im Feed. |
+| **Blacklists (Top-20 Garantie)** | Inhalte aus Safety-&-Scope-Dossier (extreme Diäten, medizinische Versprechen) dürfen **nie in Top 20** erscheinen (N=20 explizit). Verwende `editorial = -1.0` für geblacklistete Inhalte. |
+| **Editorial Boost** | Redaktionelle Aufwertungen dürfen das Ranking nur um **max +0.10** erhöhen (`w_editorial × max_editorial = 0.10 × 1.0`); Editor*innen müssen Begründung dokumentieren. |
 | **Content-Diversität** | In den **Top 10** sollen mindestens **3 verschiedene Pillars** vertreten sein; falls nicht, erhöhe `diversity_penalty` entsprechend. |
 | **Score-Clamp** | Endscore wird auf **[0,1]** begrenzt. |
-| **Blacklist-Monitoring** | Nach Score-Clamp und Diversity-Penalty: Runtime-Hook prüft Top-N auf `editorial == -1.0`. Bei Fund: Structured Alert `{item_id, final_score, editorial, pipeline_run_id, timestamp}` + Metric-Inkrement `blacklist_breach_total`. Alert triggert On-Call bei ≥1 Breach/Stunde. |
+| **Blacklist-Monitoring** | Runtime-Hook prüft Top-20 auf `editorial == -1.0` als **Sicherheitsnetz**. Jeder Fund ist ein **operationaler Incident** (nicht normales Rauschen): Structured Alert `{item_id, final_score, editorial, pipeline_run_id, timestamp}` + Metric `blacklist_breach_total`. Sofortige Eskalation bei jedem Breach. |
 
 ## Beispiele
 
@@ -201,7 +206,7 @@ score = 0.30*0.7 + 0.20*0.5 + 0.15*0.78 + 0.10*(-1.0) + 0.10*0.5 + 0.10*0.5 - 0.
       = 0.21    + 0.10     + 0.117      - 0.10        + 0.05      + 0.05      - 0.005
       = 0.422
 ```
-**Interpretation:** Obwohl der Score noch positiv ist (0.422), erscheint der Inhalt **nicht in Top 20** aufgrund der Blacklist-Invariante (siehe Invarianten-Tabelle: Inhalte mit `editorial == -1.0` werden durch das Blacklist-Monitoring aus den Top 20 entfernt).
+**Interpretation:** Dieser Inhalt wird durch den **Blacklist Pre-Filter** bereits VOR dem Scoring aus dem Kandidaten-Pool entfernt. Die Berechnung oben dient nur zur Illustration des Score-Impacts von `editorial = -1.0`. In der Produktion erscheint dieser Inhalt nie im Feed.
 
 ## Wie KI dieses Dokument nutzen soll
 - `luvi.feed_ranker` **muss** diese Formel als Default-Score verwenden. Anpassungen der Gewichte sind nur im Rahmen expliziter Experimente erlaubt und müssen dokumentiert werden.
@@ -211,18 +216,48 @@ score = 0.30*0.7 + 0.20*0.5 + 0.15*0.78 + 0.10*(-1.0) + 0.10*0.5 + 0.10*0.5 - 0.
 - Diese Heuristik dient als MVP-Basis; Weiterentwicklungen müssen versioniert und als neue SSOT-Version dokumentiert werden.
 
 ## Monitoring & Iteration
-- **Parameters:**
-  - `H = 14` — Recency half-life in days; re-estimate daily
-  - `K = 10` — Window size of last displayed items for diversity/redundancy penalty
-  - Popularity quantiles (5th–95th percentile); daily refit
-- **Cold-Start:** Für neue Nutzerinnen dominieren `phase_score`, `goal_match` und `recency`; `affinity` steigt mit Interaktionen.
-- **Monitoring:** Gewichte und Schlagworte überwachen (Impact/Drift, A/B), Fairness/Vielfaltsmetriken reporten.
-- **A/B Testing:** Gewichtsänderungen vor Rollout in kontrolliertem Experiment validieren.
+
+### Parameters
+- `H = 14` — Recency half-life in days (fix für MVP). Recency-Scores werden täglich neu berechnet mit H=14.
+- `K = 10` — Window size of last displayed items for diversity/redundancy penalty.
+- `min_recency = 0.05` — Floor für Recency-Normalisierung (verhindert dass sehr alte Inhalte auf 0 fallen). Typ: float, Bereich: [0,1].
+
+### Popularity Quantiles Refit
+- **Schedule:** Daily at **UTC 02:00** (low-traffic window)
+- **Procedure:** Compute new p05/p95 from last 30 days of data while serving current quantiles
+- **Swap:** Atomic replacement of quantile values after computation completes
+- **Transition:** None for MVP — instant swap is acceptable because quantile drift is gradual (day-to-day changes are typically <5%, so ranking churn is minimal)
+- **Logging:** Log `quantile_refit_completed {p05_old, p05_new, p95_old, p95_new, duration_ms}`
+- **Rollback:** On failure, retain previous quantiles and alert `quantile_refit_failed`
+
+### Cold-Start
+Für neue Nutzerinnen dominieren `phase_score`, `goal_match` und `recency`; `affinity` steigt mit Interaktionen.
+
+### Monitoring (MVP-Schwellenwerte)
+- **Drift:** Alert wenn Score-Verteilung >15% vom 7-Tage-Durchschnitt abweicht (Kolmogorov-Smirnov Test)
+- **Diversität:** Alert wenn <3 Pillars in Top-10 bei >5% der generierten Feeds
+- **Cadence:** Wöchentliche Review der Metriken
+- **Eskalation:** Bei 2+ konsekutiven Alerts → Investigation innerhalb 48h
+
+### A/B Testing (MVP-Regeln)
+- Min. 1000 Users pro Variante vor Entscheidung
+- 95% Konfidenzintervall für statistische Signifikanz
+- Max. 2 Wochen Laufzeit pro Experiment
+- Gewichtsänderungen vor Rollout in kontrolliertem Experiment validieren
 
 ## Versionsinfo
-- **Version:** v1.2
-- **Datum:** 2025-12-03
+- **Version:** v1.3
+- **Datum:** 2026-01-24
 - **Änderungsverlauf:**
+  - v1.3: CodeRabbit Review Fixes
+    - Fix: Editorial Boost max +0.10 (war fälschlich +0.2)
+    - Add: Blacklist Pre-Filter vor Scoring
+    - Add: `min_recency` Parameter dokumentiert
+    - Clarify: Fallback-Policy (Default vs Alternative)
+    - Clarify: H=14 ist fix für MVP
+    - Clarify: Editorial Impact-Skalierung (`editorial × w_editorial`)
+    - Add: Konkrete Monitoring-Schwellenwerte (Drift 15%, Diversität 5%, A/B 1000 Users)
+    - Add: Quantile-Refit operationelle Details (UTC 02:00, atomic swap, logging)
   - v1.2: `goal_match` (Archon v1.1) und `editorial` (Lokal v1.0) kombiniert; detaillierte Formeln aus v1.0 übernommen; Invarianten & Sicherheitsregeln aus Archon integriert; Gewichte neu balanciert.
   - v1.1: Vollständige Score-Formel mit Gewichten, Komponenten, Fallbacks, Invarianten und Beispielen.
   - v1.0: Erste Formel mit TODO-Platzhaltern.

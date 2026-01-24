@@ -64,7 +64,35 @@ final analyticsConsentGateProvider = Provider<bool>((ref) {
 /// Consent-based analytics opt-out provider.
 ///
 /// Returns `true` when analytics should be DISABLED (user has NOT consented).
-/// Use this to override [analyticsOptOutProvider] in ProviderScope.
+/// Returns `false` when analytics should be ENABLED (user has consented).
+///
+/// ## Usage
+///
+/// Override [analyticsOptOutProvider] in your root `ProviderScope` to enable
+/// consent-gated analytics. This wiring ensures privacy-by-default:
+///
+/// ```dart
+/// ProviderScope(
+///   overrides: [
+///     analyticsOptOutProvider.overrideWith(
+///       (ref) => ref.watch(analyticsConsentOptOutProvider),
+///     ),
+///   ],
+///   child: MyApp(),
+/// )
+/// ```
+///
+/// ## Behavior
+///
+/// - Analytics are disabled by default (privacy-by-default)
+/// - Analytics are only enabled after explicit user consent
+/// - Consent changes are reflected immediately via Riverpod reactivity
+///
+/// ## Related Providers
+///
+/// - [analyticsConsentGateProvider]: Underlying consent check logic
+/// - [analyticsOptOutProvider]: Global opt-out provider being overridden
+/// - [analyticsRecorderProvider]: Consumes opt-out state to enable/disable recording
 final analyticsConsentOptOutProvider = Provider<bool>((ref) {
   final isAnalyticsConsented = ref.watch(analyticsConsentGateProvider);
   // opt-out = true means analytics DISABLED

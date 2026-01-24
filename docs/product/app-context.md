@@ -2,7 +2,7 @@
 
 ## Women-first Health, Coach (Workout) Lifestyle & Longevity Companion
 
-**Version:** 2.0 | **Stand:** Dezember 2025
+**Version:** 2.0 | **Stand:** Januar 2026
 
 ---
 
@@ -694,4 +694,4 @@ Feedback-Loop („LUVI lernt", bessere Empfehlungen)
 
 ---
 
-*Version: 2.0 | Stand: Dezember 2025*
+*Version: 2.0 | Stand: Januar 2026*

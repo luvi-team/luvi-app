@@ -46,6 +46,8 @@ final _ringWidthsValidated = () {
 
 /// All ring data from outer (teal) to inner (beige).
 /// SSOT: context/design/auth_screens_design_audit.yaml
+// Note: Cannot be const because AuthRebrandMetrics.rainbowRingWidths[i] is
+// not a compile-time constant expression (list indexing in Dart).
 // Optimized: Cached as a final list to prevent reallocation on every paint.
 final List<_RingData> _rings = [
   _RingData(
@@ -128,6 +130,16 @@ class _RainbowPillPainter extends CustomPainter {
   final double containerWidth;
   final double? containerTop;
 
+  /// Pre-allocated Paint objects for each ring (hoisted out of paint loop).
+  /// This avoids creating new Paint instances on every frame.
+  static final List<Paint> _paints = _rings
+      .map(
+        (ring) => Paint()
+          ..color = ring.color
+          ..style = PaintingStyle.fill,
+      )
+      .toList(growable: false);
+
   @override
   void paint(Canvas canvas, Size size) {
     final centerX = size.width / 2;
@@ -136,7 +148,8 @@ class _RainbowPillPainter extends CustomPainter {
         containerTop ?? AuthRebrandMetrics.overlayRainbowContainerTop;
 
     // Paint rings from outer (teal) to inner (beige)
-    for (final ring in _rings) {
+    for (var i = 0; i < _rings.length; i++) {
+      final ring = _rings[i];
       final radius = ring.width / 2; // Pill radius = half width for round top
       final yOffset = ring.yOffset + effectiveContainerTop;
 
@@ -149,10 +162,6 @@ class _RainbowPillPainter extends CustomPainter {
       // Ring X position relative to canvas center
       final ringLeft = centerX - containerCenterX + ring.xOffset;
 
-      final paint = Paint()
-        ..color = ring.color
-        ..style = PaintingStyle.fill;
-
       // Draw RRect with rounded top corners only (pill shape)
       final rrect = RRect.fromRectAndCorners(
         Rect.fromLTWH(ringLeft, yOffset, ring.width, height),
@@ -161,7 +170,7 @@ class _RainbowPillPainter extends CustomPainter {
         // Bottom corners are square (0 radius) - stripes extend straight down
       );
 
-      canvas.drawRRect(rrect, paint);
+      canvas.drawRRect(rrect, _paints[i]);
     }
   }
 

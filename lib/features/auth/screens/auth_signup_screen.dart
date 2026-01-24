@@ -225,7 +225,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
             _passwordError = true;
           } else if (message.contains('email') && message.contains('invalid')) {
             _emailError = true;
-          } else if (message.contains('already') || message.contains('exists')) {
+          } else if ((message.contains('email') || message.contains('user')) &&
+                     (message.contains('already') || message.contains('exists'))) {
             _emailError = true;
           }
           // Ambiguous errors (network, rate-limit, unknown): no field flags

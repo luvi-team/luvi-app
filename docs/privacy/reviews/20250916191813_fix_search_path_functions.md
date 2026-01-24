@@ -1,5 +1,7 @@
 # Privacy Review — 20250916191813_fix_search_path_functions
 
+**Review date:** 2026-01-24 (retroactive; filename keeps the migration timestamp for traceability)
+
 ## Change
 Pin `search_path` for trigger helpers:
 - `public.set_user_id_from_auth()`

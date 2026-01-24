@@ -1,4 +1,4 @@
-import 'dart:math' show max;
+// dart:math import removed - using num.clamp() instead
 
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
@@ -58,8 +58,12 @@ class AuthBottomSheetShell extends StatelessWidget {
     const contentOffsetBelowStatusBar =
         AuthRebrandMetrics.sheetTopY - AuthRebrandMetrics.statusBarHeight;
     final sheetHeight = screenHeight - topPadding - contentOffsetBelowStatusBar;
-    // Clamp to minimum height for tiny devices
-    final safeSheetHeight = max(sheetHeight, AuthRebrandMetrics.minSheetHeight);
+    // Clamp to [minSheetHeight, maxAvailableHeight] to prevent overflow
+    final maxAvailableHeight = screenHeight - topPadding;
+    final safeSheetHeight = sheetHeight.clamp(
+      AuthRebrandMetrics.minSheetHeight,
+      maxAvailableHeight,
+    );
 
     return Container(
       height: safeSheetHeight,

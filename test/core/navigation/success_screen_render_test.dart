@@ -49,6 +49,12 @@ void main() {
         // Verify SuccessScreen is shown
         expect(
             find.byKey(const ValueKey('auth_success_screen')), findsOneWidget);
+
+        // Verify locale-specific text is rendered
+        final element =
+            tester.element(find.byKey(const ValueKey('auth_success_screen')));
+        final l10n = AppLocalizations.of(element)!;
+        expect(find.text(l10n.authSuccessPwdTitle), findsOneWidget);
       },
     );
   }
