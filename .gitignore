@@ -191,11 +191,11 @@ docs/dev/*
 # Security/Crypto details
 docs/security/
 
-# Legal Drafts & Privacy (privacy.md + terms.md bleiben für CI)
+# Legal Drafts & Privacy (privacy.md + terms.md + reviews bleiben für CI)
 docs/privacy/*
 !docs/privacy/privacy.md
 !docs/privacy/terms.md
-# Privacy reviews: local-only (GDPR audit artifacts)
+!docs/privacy/reviews/
 
 # Operational Docs (local-only, not for public repo)
 docs/audits/
