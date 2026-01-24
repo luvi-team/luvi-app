@@ -95,5 +95,6 @@ This is acceptable because:
 
 **Pre-revert checklist:**
 - [ ] Take DB snapshot before executing DROP statements
+- [ ] Verify snapshot integrity and accessibility
 - [ ] Verify no active user sessions during revert window
 - [ ] Communicate rollback to affected users if necessary

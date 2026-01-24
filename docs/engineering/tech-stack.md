@@ -61,7 +61,7 @@
   **Funktion:** Cross-platform UI; iOS-first Rollout.
   **Warum:** Beste Time-to-Market im bestehenden Setup.
 
-- **State & Navigation:** `Riverpod 3.0.3`, `GoRouter 16.2.0`
+- **State & Navigation:** `Riverpod ^3.0.0`, `GoRouter ^16.2.0` *(see `context/refs/tech_stack_current.yaml` for pinned versions)*
   **Einsatz:** Home/„Heute in der Phase", Stream, Coach, Profil.
 
 - **Health-Integration (Baseline-Roadmap):** HealthKit-Anbindung

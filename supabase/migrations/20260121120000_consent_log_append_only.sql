@@ -17,8 +17,10 @@
 --
 -- IMPORTANT: We intentionally do NOT block DELETE via trigger.
 -- Reason: Account deletion (ON DELETE CASCADE from auth.users) and potential
--- retention/erasure workflows must remain possible. DELETE is still disallowed
--- for authenticated clients via dropped policies + revoked privileges.
+-- retention/erasure workflows must remain possible.
+-- DELETE is still disallowed for end-user clients because:
+-- - RLS has no DELETE policy (only SELECT/INSERT owner-scoped to auth.uid()).
+-- - Table grants revoke UPDATE/DELETE for the authenticated role (defense-in-depth).
 --
 -- Rollback: See bottom of file for manual rollback instructions.
 -- ============================================================================

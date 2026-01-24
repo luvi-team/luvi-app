@@ -10,7 +10,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 String payloadDiagnosticsShapeOnly(dynamic payload) {
   if (payload == null) return 'type=null';
   if (payload is Map) {
-    final keys = payload.keys.take(20).map((k) => k.toString()).toList()..sort();
+    final keys = payload.keys.take(20).map((k) {
+      // Only allow primitive types; redact complex keys for privacy
+      if (k is String || k is num || k is bool) {
+        return k.toString();
+      }
+      return '<complex:${k.runtimeType}>';
+    }).toList()..sort();
     final keysSuffix = payload.keys.length > 20 ? '...' : '';
     return 'type=Map, keys=[${keys.join(', ')}$keysSuffix]';
   }
@@ -87,6 +93,7 @@ class ConsentService {
 
     return switch (status) {
       401 => ConsentException(401, 'Unauthorized', code: 'unauthorized'),
+      403 => ConsentException(403, 'Forbidden', code: 'forbidden'),
       429 => ConsentException(429, 'Rate limit exceeded', code: 'rate_limit'),
       404 => ConsentException(404, 'Function not found', code: 'function_unavailable'),
       >= 500 => ConsentException(status, 'Server error', code: 'server_error'),
@@ -122,13 +129,12 @@ class ConsentService {
         } else if (key is num || key is bool) {
           jsonMap[key.toString()] = entry.value;
         } else {
-          // Complex key detected - return null for graceful degradation
-          // rather than throwing, as caller handles null appropriately
+          // Complex key detected - skip entry and continue processing.
+          // Log for debugging but preserve valid entries.
           log.w(
-            '_asJsonMap: unexpected complex key type=${key.runtimeType}, returning null',
+            '_asJsonMap: skipping complex key type=${key.runtimeType}',
             tag: _logTag,
           );
-          return null;
         }
       }
       return jsonMap;

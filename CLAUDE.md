@@ -148,7 +148,7 @@ MANDATORY task cycle before coding:
 ### General Research:
 - Search knowledge base (2-5 keywords only!)
 - `rag_search_knowledge_base(query="authentication JWT", match_count=5)`
-- `rag_search_code_examples(query="React hooks", match_count=3)`
+- `rag_search_code_examples(query="Riverpod providers", match_count=3)`
 
 ## Project Workflows
 

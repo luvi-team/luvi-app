@@ -185,7 +185,10 @@ class AuthRebrandTextField extends StatelessWidget {
     if (keyboardType == TextInputType.emailAddress) {
       return l10n?.authEmailHint ?? _kEmailFallback;
     }
-    if (obscureText) {
+    // Check both obscureText and visiblePassword keyboard type to handle
+    // password fields even when visibility is toggled. For explicit control,
+    // callers should provide semanticLabel directly.
+    if (obscureText || keyboardType == TextInputType.visiblePassword) {
       return l10n?.authPasswordHint ?? _kPasswordFallback;
     }
     return hintText;

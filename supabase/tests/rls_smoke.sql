@@ -97,6 +97,36 @@ BEGIN
     'authenticated must not have MAINTAIN on public.profiles';
   ASSERT NOT has_table_privilege('authenticated', 'public.daily_plan', 'MAINTAIN'),
     'authenticated must not have MAINTAIN on public.daily_plan';
+
+  -- Append-only: authenticated must not be able to mutate/delete consent audit records.
+  ASSERT NOT has_table_privilege('authenticated', 'public.consents', 'UPDATE'),
+    'authenticated must not have UPDATE on public.consents (append-only)';
+  ASSERT NOT has_table_privilege('authenticated', 'public.consents', 'DELETE'),
+    'authenticated must not have DELETE on public.consents (append-only)';
+END $$;
+
+-- RLS: consents must remain owner-scoped and append-only.
+DO $$
+BEGIN
+  ASSERT NOT EXISTS (
+    SELECT 1
+    FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'consents'
+      AND cmd IN ('UPDATE', 'DELETE')
+  ), 'consents must not have UPDATE/DELETE policies (append-only)';
+
+  ASSERT NOT EXISTS (
+    SELECT 1
+    FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'consents'
+      AND cmd IN ('SELECT', 'INSERT')
+      AND (
+        (cmd = 'SELECT' AND (qual IS NULL OR position('auth.uid' in lower(qual)) = 0))
+        OR (cmd = 'INSERT' AND (with_check IS NULL OR position('auth.uid' in lower(with_check)) = 0))
+      )
+  ), 'consents SELECT/INSERT policies must scope to auth.uid()';
 END $$;
 
 -- 0) Ohne Kontext: keine Sicht

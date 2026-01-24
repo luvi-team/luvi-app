@@ -77,7 +77,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         resetSubmitProvider,
         (prev, next) {
           if (!mounted) return;
-          if (next.hasError && !next.isLoading) {
+          // Only show snackbar on error TRANSITION (not initial state)
+          if (prev != null && !prev.hasError && next.hasError && !next.isLoading) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content:
@@ -109,8 +110,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final errorText = _errorTextFor(state.error, l10n);
     final hasError = errorText != null;
     final canSubmit = state.isValid && !submitState.isLoading;
-
-    // NOTE: Submit error listener in didChangeDependencies for safe context access
 
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_reset_screen'),

@@ -2,6 +2,8 @@
 
 > Version: v1.0 · Quelle: Archon-Dossier `LUVI - Safety & Scope v1.0 (SSOT)` vom 2025-11-23
 
+> **Legal Status:** Juristische Prüfung ausstehend. Freigabe erforderlich vor Merge.
+
 ## Zweck & Scope
 Dieses Dokument definiert den Gesundheitsrahmen für alle Funktionen, Inhalte und KI-gestützten Antworten in der LUVI-App. Es legt fest, was LUVI leisten darf (Lifestyle-Guidance) und was nicht (keine Diagnostik/Therapie) und ist verbindlich für Product, Content und Agents.
 
@@ -44,7 +46,7 @@ In diesen Fällen muss LUVI immer auf medizinisches Fachpersonal verweisen; es d
 
 | Version | Datum | Änderung | Verantwortlich | Genehmigung |
 |---------|-------|----------|----------------|-------------|
-| v1.0 | 2025-11-23 | Initial Release aus Archon-Dossier | Product/Engineering | Juristische Prüfung ausstehend |
+| v1.0 | 2025-11-23 | Initial Release aus Archon-Dossier | Product/Engineering | [PENDING LEGAL APPROVAL] |
 
 > **Hinweis:** Änderungen am Health-Scope erfordern eine neue Zeile in dieser Tabelle
 > mit juristischer Freigabe vor Veröffentlichung.

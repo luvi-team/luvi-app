@@ -66,13 +66,12 @@ const FALLBACK_SCOPES = [
 
 /** Type guard for consent scope config items. */
 function isValidScopeItem(item: unknown): item is { id: string } {
-  return (
-    typeof item === "object" &&
-    item !== null &&
-    "id" in item &&
-    typeof (item as Record<string, unknown>).id === "string" &&
-    ((item as Record<string, unknown>).id as string).trim() !== ""
-  );
+  if (typeof item !== "object" || item === null || !("id" in item)) {
+    return false;
+  }
+  const obj = item as Record<string, unknown>;
+  const id = obj.id;
+  return typeof id === "string" && id.trim() !== "";
 }
 
 async function loadConsentScopes(): Promise<readonly string[]> {
@@ -113,14 +112,34 @@ async function loadConsentScopes(): Promise<readonly string[]> {
 
     // Validate each element and extract valid IDs (deduplicated)
     const validIdsSet = new Set<string>();
+    const duplicateIds: string[] = [];
     let invalidCount = 0;
 
     for (const item of parsed) {
       if (isValidScopeItem(item)) {
-        validIdsSet.add(item.id);
+        if (validIdsSet.has(item.id)) {
+          duplicateIds.push(item.id);
+        } else {
+          validIdsSet.add(item.id);
+        }
       } else {
         invalidCount++;
       }
+    }
+
+    // Log warning if duplicate IDs were found
+    if (duplicateIds.length > 0) {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "duplicate_ids",
+          message: `${duplicateIds.length} duplicate ID(s) found in consent_scopes.json`,
+          duplicateIds,
+          duplicateCount: duplicateIds.length,
+        })
+      );
     }
 
     const validIds = Array.from(validIdsSet);

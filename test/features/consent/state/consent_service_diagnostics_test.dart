@@ -120,18 +120,24 @@ void main() {
         reason: 'Map values must not be exposed',
       );
 
-      // PRIVACY: Should not expose literal key contents (the List contents)
-      // Note: The List.toString() may produce "[list, key]" so we check for
-      // the individual words that shouldn't appear in isolation
+      // PRIVACY: Complex keys should be redacted to '<complex:Type>' format
       expect(
         result,
-        isNot(contains('"list"')),
-        reason: 'Quoted literal key string "list" must not appear',
+        contains('<complex:'),
+        reason: 'Complex keys should be redacted with type placeholder',
+      );
+
+      // Verify no List.toString() output leaks (would be "[list, key]")
+      // Note: We don't check for bare 'key' as it conflicts with format 'keys='
+      expect(
+        result,
+        isNot(contains('[list')),
+        reason: 'List.toString() bracketed content must not appear',
       );
       expect(
         result,
-        isNot(contains('"key"')),
-        reason: 'Quoted literal key string "key" must not appear',
+        isNot(contains(', key]')),
+        reason: 'List.toString() bracketed content must not appear',
       );
     });
   });

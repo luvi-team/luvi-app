@@ -793,7 +793,8 @@ Future<bool> _persistConsentToLocalCache(
       .toSet();
 
   // Parallel writes for efficiency.
-  // Issue 5: Use Future.wait to capture all errors via ParallelWaitError (if available) or standard processing.
+  // Using .wait (Dart 3.0+) for ParallelWaitError - collects ALL errors, not just first.
+  // Note: Future.wait() would only throw the first error, breaking our error collection.
   try {
     await [
       userState.markWelcomeSeen(),

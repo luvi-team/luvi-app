@@ -171,8 +171,36 @@ void main() {
       expect(state.globalError, AuthStrings.errOtpExpired);
     });
 
-    // Test: null code + message pattern fallback detects invalid credentials
-    test('null error.code with "Invalid credentials" message shows field errors', () async {
+    // Test: null code uses statusCode only (no message heuristics)
+    test('null error.code with statusCode 401 shows field errors', () async {
+      final mockRepo = _MockAuthRepository();
+      when(() => mockRepo.signInWithPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(AuthException(
+        'Some message without patterns',
+        statusCode: '401',
+      ));
+
+      final container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepo),
+      ]);
+      addTearDown(container.dispose);
+
+      final loginNotifier = container.read(loginProvider.notifier);
+      loginNotifier.setEmail('user@example.com');
+
+      await container
+          .read(loginSubmitProvider.notifier)
+          .submit(email: 'user@example.com', password: 'validPassword123');
+
+      final state = container.read(loginProvider).value!;
+      expect(state.emailError, AuthStrings.invalidCredentials);
+      expect(state.passwordError, AuthStrings.invalidCredentials);
+      expect(state.globalError, isNull);
+    });
+
+    test('null error.code with "Invalid credentials" message shows generic error', () async {
       final mockRepo = _MockAuthRepository();
       when(() => mockRepo.signInWithPassword(
             email: any(named: 'email'),
@@ -192,10 +220,9 @@ void main() {
           .submit(email: 'user@example.com', password: 'validPassword123');
 
       final state = container.read(loginProvider).value!;
-      // Message-pattern fallback: "invalid" + "credentials" → field errors
-      expect(state.emailError, AuthStrings.invalidCredentials);
-      expect(state.passwordError, AuthStrings.invalidCredentials);
-      expect(state.globalError, isNull);
+      expect(state.emailError, isNull);
+      expect(state.passwordError, isNull);
+      expect(state.globalError, AuthStrings.errLoginUnavailable);
     });
 
     // Issue 1: Test statusCode 400 fallback (no code, no message pattern match)
@@ -230,7 +257,8 @@ void main() {
 
     // Parameterized tests for null error.code handling.
     // Each message gets its own independent test for proper isolation.
-    // Note: "Invalid credentials" is now detected via message-pattern fallback (tested above).
+    // Note: when error.code is missing, we avoid message heuristics; only statusCode-based
+    // mapping (e.g., 401) is used.
     group('null error.code shows generic error', () {
       final nullCodeMessages = [
         'Please confirm your email',

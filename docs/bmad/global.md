@@ -1,6 +1,6 @@
 # LUVI — BMAD Global Master Brain
 
-**Version:** 2.1 | **Stand:** Dezember 2025
+**Version:** 2.1 | **Stand:** Januar 2026
 
 > Dieses Dokument ist die zentrale Klammer über alle bestehenden Dokus.
 > Es fasst Business, Modellierung, Architektur und Definition of Done

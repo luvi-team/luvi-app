@@ -125,7 +125,7 @@
 
 - Referenzen:
 - Roadmap-Sprint: `docs/product/roadmap.md` (Abschnitt „S1 — Rebranding & The Mathematical Heart")
-- Relevante Use-Cases: [Beispiel-Use-Case](docs/product/use-cases.md) (Note: Specific Today/Cycle use cases pending in `docs/product/use-cases.md`)
+- Relevante Use-Cases: `docs/product/use-cases.md` (Today/Cycle use cases pending)
 - Relevante Screen-Contracts (`docs/product/screens/*.md`): `docs/product/screens/heute.md`
 - Relevante Dossiers (Phase/Consent/Ranking): `docs/phase_definitions.md`, `docs/consent_texts.md`, `docs/ranking_heuristic.md`
 - Relevante ADRs: `context/ADR/0002-least-privilege-rls.md`
