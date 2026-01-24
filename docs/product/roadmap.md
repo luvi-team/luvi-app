@@ -85,7 +85,7 @@
   - SSOT erstellen: `docs/contracts/compute_cycle_info.md`.
   - Implementierung `compute_cycle_info.dart`:
     - Input: `lmp_date`, `cycle_length`.
-    - **Logik:** Wenn User keine Periodenlänge angibt → Default 7 Tage (App Kontext).
+    - **Logik:** Wenn User keine Periodenlänge angibt → Default 5 Tage (phase_definitions.md SSOT).
     - Output: `Phase` (Menstruation, Follikel, Ovulation, Luteal).
   - **Safety:** Keine Eisprung-Vorhersage.
   - **Tests:** Tabellen-Tests für Randfälle (Jahreswechsel, Schaltjahr).
@@ -271,11 +271,11 @@
 | ConsentScreen | `/consent` | S1 |
 | OnboardingFlow (9 Steps) | `/onboarding/*` | S1 |
 | SuccessScreen | `/success` | S1 |
-| HomeScreen | `/home` | S2 |
-| ZyklusScreen | `/cycle` | S2 |
+| HomeScreen | `/heute` | S2 |
+| ZyklusScreen | `/zyklus` | S2 |
 | CoachScreen | `/coach` | S4 |
 | BrainScreen | `/brain` | S5 |
-| ProfileScreen | `/profile` | S2/S6 |
+| ProfileScreen | `/profil` | S2/S6 |
 | WorkoutPlayerScreen | `/workout/:id` | S3 |
 | PaywallScreen | `/paywall` | S6 |
 

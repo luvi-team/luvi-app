@@ -22,7 +22,7 @@ packages:
 
 dev_packages:
   flutter_lints: "^6.0.0"
-  build_runner: "2.4.13"
+  build_runner: "^2.4.13"
   mocktail: "^1.0.4"
 
 ci:

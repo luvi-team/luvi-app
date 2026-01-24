@@ -123,9 +123,12 @@ class ConsentService {
         } else if (key is num || key is bool) {
           keyString = key.toString();
         } else {
-          // Skip complex keys or log warning if needed, 
-          // but here we just ignore them to ensure safe JSON shape.
-          continue; 
+          // Skip complex keys - log at debug level for visibility during development.
+          log.d(
+            '_asJsonMap: skipping key with type=${key.runtimeType}',
+            tag: _logTag,
+          );
+          continue;
         }
         jsonMap[keyString] = entry.value;
       }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:luvi_app/core/privacy/consent_types.dart';
 
 class ConsentConfig {
@@ -24,6 +25,13 @@ class ConsentConfig {
     }
     _cachedCurrentVersionInt = int.parse(match.group(1)!);
     return _cachedCurrentVersionInt!;
+  }
+
+  /// Resets cached version for test isolation.
+  /// Call in test tearDown to ensure clean state between tests.
+  @visibleForTesting
+  static void resetCacheForTesting() {
+    _cachedCurrentVersionInt = null;
   }
 
   /// Validates version format at startup.

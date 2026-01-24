@@ -24,6 +24,17 @@ class _RingData {
   final double yOffset;
 }
 
+// Design invariant: rainbowRingWidths expects 4 elements [teal, pink, orange, beige].
+// Assert runs once at module load in debug builds.
+// ignore: unused_element
+final _ringWidthsValidated = () {
+  assert(
+    AuthRebrandMetrics.rainbowRingWidths.length >= 4,
+    'rainbowRingWidths must have ≥4 elements: [teal, pink, orange, beige]',
+  );
+  return true;
+}();
+
 /// All ring data from outer (teal) to inner (beige).
 /// SSOT: context/design/auth_screens_design_audit.yaml
 // Optimized: Cached as a final list to prevent reallocation on every paint.

@@ -68,23 +68,71 @@ async function loadConsentScopes(): Promise<readonly string[]> {
   try {
     const configUrl = new URL("../../../config/consent_scopes.json", import.meta.url);
     const jsonText = await Deno.readTextFile(configUrl);
-    const scopes = JSON.parse(jsonText) as Array<{ id: string }>;
-    const ids = scopes.map((scope) => scope.id);
+    const parsed: unknown = JSON.parse(jsonText);
 
-    if (ids.length === 0) {
+    // Runtime validation: ensure parsed result is an array
+    if (!Array.isArray(parsed)) {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "invalid_structure",
+          message: "consent_scopes.json is not an array, using fallback",
+          receivedType: typeof parsed,
+        })
+      );
+      return FALLBACK_SCOPES;
+    }
+
+    // Validate each element and extract valid IDs
+    const validIds: string[] = [];
+    let invalidCount = 0;
+
+    for (const item of parsed) {
+      if (
+        typeof item === "object" &&
+        item !== null &&
+        "id" in item &&
+        typeof (item as Record<string, unknown>).id === "string" &&
+        ((item as Record<string, unknown>).id as string).trim() !== ""
+      ) {
+        validIds.push((item as { id: string }).id);
+      } else {
+        invalidCount++;
+      }
+    }
+
+    // Log warning if any invalid items were found
+    if (invalidCount > 0) {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "partial_validation",
+          message: `${invalidCount} invalid item(s) filtered out from consent_scopes.json`,
+          invalidCount,
+          validCount: validIds.length,
+        })
+      );
+    }
+
+    // Return fallback if no valid scopes found
+    if (validIds.length === 0) {
       console.warn(
         JSON.stringify({
           severity: "warning",
           ts: new Date().toISOString(),
           event: "consent_scopes_load",
           status: "empty_config",
-          message: "consent_scopes.json returned empty array, using fallback",
+          message: "No valid scopes found in consent_scopes.json, using fallback",
         })
       );
       return FALLBACK_SCOPES;
     }
 
-    return ids;
+    return validIds;
   } catch (error) {
     console.warn(
       JSON.stringify({

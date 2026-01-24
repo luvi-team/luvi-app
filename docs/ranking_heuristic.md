@@ -143,6 +143,7 @@ score = w_phase * phase_score
 | **Editorial Boost** | Redaktionelle Aufwertungen dürfen das Ranking nur um **max +0.2** erhöhen; Editor*innen müssen Begründung dokumentieren. |
 | **Content-Diversität** | In den **Top 10** sollen mindestens **3 verschiedene Pillars** vertreten sein; falls nicht, erhöhe `diversity_penalty` entsprechend. |
 | **Score-Clamp** | Endscore wird auf **[0,1]** begrenzt. |
+| **Blacklist-Monitoring** | Nach Score-Clamp und Diversity-Penalty: Runtime-Hook prüft Top-N auf `editorial == -1.0`. Bei Fund: Structured Alert `{item_id, final_score, editorial, pipeline_run_id, timestamp}` + Metric-Inkrement `blacklist_breach_total`. Alert triggert On-Call bei ≥1 Breach/Stunde. |
 
 ## Beispiele
 

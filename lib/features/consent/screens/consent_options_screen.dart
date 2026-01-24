@@ -820,7 +820,7 @@ Future<bool> _persistConsentToLocalCache(
     return false;
   } catch (error, stackTrace) {
     log.e(
-      'consent_mark_welcome_failed',
+      'consent_persistence_failed',
       tag: 'consent_options',
       error: sanitizeError(error) ?? error.runtimeType,
       stack: stackTrace,

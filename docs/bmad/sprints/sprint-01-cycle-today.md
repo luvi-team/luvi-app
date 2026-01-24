@@ -31,7 +31,7 @@
 
 - 2.1 Betroffene Domänen (z. B. CycleData, DailyPlan, Content/Video, Consent, UserEvent …):
   - User – Besitzerin der CycleData, Referenz über `user_id` in allen Tabellen.
-  - CycleData – enthält `last_period`, `cycle_length`, `period_duration`, `age` als Basis für Berechnung.
+  - CycleData – enthält `last_period_start`, `cycle_length`, `period_length`, `age` als Basis für Berechnung.
   - Phase – fachliches Modell (Menstruation/Follikel/Ovulation/Luteal), wird berechnet, nicht gespeichert.
   - Cycle/Phase Computation („TodayState“) – `compute_cycle_info` berechnet Phase/Tag aus CycleData für Badge/Week-Strip.
   - DailyPlan (optional Kontext) – Tagesprotokoll, kann zur Phase-Einordnung herangezogen werden, bleibt inhaltlich unverändert.
@@ -43,8 +43,8 @@
   - Analytics-Events (Logik-only, PostHog) – kein DB-Table; Events werden clientseitig gesendet.
 
 - 2.3 Neue/angepasste Felder/Invarianten (z. B. neue Events, Phase-Scores, Flags):
-  - CycleData-Felder im Fokus: `last_period` (Datum), `cycle_length` (Tage), `period_duration` (Tage), `age` (Jahre).
-  - Mindestbasis für Berechnung: `last_period`, `cycle_length`, `period_duration` müssen gesetzt sein; sonst kein Badge/Week-Strip, stattdessen Prompt zur Datenerfassung.
+  - CycleData-Felder im Fokus: `last_period_start` (Datum), `cycle_length` (Tage), `period_length` (Tage), `age` (Jahre).
+  - Mindestbasis für Berechnung: `last_period_start`, `cycle_length`, `period_length` müssen gesetzt sein; sonst kein Badge/Week-Strip, stattdessen Prompt zur Datenerfassung.
   - Berechnung ist deterministisch und läuft clientseitig auf Basis der gespeicherten CycleData (kein `service_role`).
   - Werte außerhalb plausibler Grenzen werden gemäß Vertrag von `compute_cycle_info` geklammert/abgefangen; unplausible Eingaben verhindern die Phase-Anzeige und zeigen einen sicheren Fallback-Text (Hinweis auf Datenprüfung).
   - Heute-Badge/Week-Strip zeigen nur dann Phase/Tag, wenn Daten valide sind; unsichere/fehlende Daten → Fallback-Text statt Phase.
@@ -124,7 +124,7 @@
 ## 6. Referenzen
 
 - Referenzen:
-- Roadmap-Sprint: `docs/product/roadmap.md` (Abschnitt „S1 — Zyklus-Logik & Home-Bindung (deterministisch)`)
+- Roadmap-Sprint: `docs/product/roadmap.md` (Abschnitt „S1 — Rebranding & The Mathematical Heart")
 - Relevante Use-Cases: [Beispiel-Use-Case](docs/product/use-cases.md) (Note: Specific Today/Cycle use cases pending in `docs/product/use-cases.md`)
 - Relevante Screen-Contracts (`docs/product/screens/*.md`): `docs/product/screens/heute.md`
 - Relevante Dossiers (Phase/Consent/Ranking): `docs/phase_definitions.md`, `docs/consent_texts.md`, `docs/ranking_heuristic.md`

@@ -540,7 +540,7 @@ Nach Push-Klick öffnet sich der Artikel mit Bridge zum Training:
 
 ## Technische Grundlage & Betrieb
 
-- **Frontend:** Flutter 3.35 / Dart 3.9, Riverpod 3, GoRouter
+- **Frontend:** Flutter 3.38 / Dart 3.10, Riverpod 3, GoRouter
 
 - **EU-Only Gateway:**
   - Vercel Edge (Region `fra1`) als verschlüsselter Proxy für alle Requests

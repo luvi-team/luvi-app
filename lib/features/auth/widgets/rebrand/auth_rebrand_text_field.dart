@@ -4,6 +4,12 @@ import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'auth_rebrand_metrics.dart';
 
+/// Intentional non-localized fallbacks for edge cases where L10n context
+/// is unavailable (e.g., during app initialization). These match the
+/// universal field semantics and are acceptable per CodeRabbit option (b).
+const String _kEmailFallback = 'Email';
+const String _kPasswordFallback = 'Password';
+
 /// Text field for Auth Rebrand v3 screens.
 ///
 /// Gray background (#F7F7F8) with gray border (#DCDCDC).
@@ -177,10 +183,10 @@ class AuthRebrandTextField extends StatelessWidget {
       return errorText!;
     }
     if (keyboardType == TextInputType.emailAddress) {
-      return l10n?.authEmailHint ?? 'Email';
+      return l10n?.authEmailHint ?? _kEmailFallback;
     }
     if (obscureText) {
-      return l10n?.authPasswordHint ?? 'Password';
+      return l10n?.authPasswordHint ?? _kPasswordFallback;
     }
     return hintText;
   }
