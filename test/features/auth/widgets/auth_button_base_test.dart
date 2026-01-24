@@ -31,7 +31,8 @@ void main() {
         final semantics = tester.getSemantics(find.byType(AuthButtonBase));
         expect(semantics.label, 'Test Button');
         expect(semantics.flagsCollection.isButton, isTrue);
-        expect(semantics.flagsCollection.isEnabled, isTrue);
+        // Using explicit comparison for Tristate (type-safe)
+        expect(semantics.flagsCollection.isEnabled == true, isTrue);
       } finally {
         handle.dispose();
       }
@@ -59,7 +60,8 @@ void main() {
         expect(semantics.label, 'Test Button');
         expect(semantics.flagsCollection.isButton, isTrue);
         // When loading, button is disabled
-        expect(semantics.flagsCollection.isEnabled, isFalse);
+        // Using explicit comparison for Tristate (type-safe)
+        expect(semantics.flagsCollection.isEnabled == false, isTrue);
       } finally {
         handle.dispose();
       }
@@ -110,7 +112,8 @@ void main() {
 
         final semantics = tester.getSemantics(find.byType(AuthButtonBase));
         expect(semantics.label, 'Test Button');
-        expect(semantics.flagsCollection.isEnabled, isFalse);
+        // Using explicit comparison for Tristate (type-safe)
+        expect(semantics.flagsCollection.isEnabled == false, isTrue);
       } finally {
         handle.dispose();
       }

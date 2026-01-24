@@ -109,8 +109,9 @@ void main() {
         );
 
         // Test via accessibility semantics tree (not widget tree)
+        // Using explicit comparison for Tristate (type-safe)
         final semantics = tester.getSemantics(find.byType(AuthSecondaryButton));
-        expect(semantics.flagsCollection.isEnabled, isFalse);
+        expect(semantics.flagsCollection.isEnabled == false, isTrue);
       } finally {
         handle.dispose();
       }

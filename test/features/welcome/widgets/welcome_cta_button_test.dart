@@ -164,7 +164,8 @@ void main() {
       final semantics = tester.getSemantics(find.byType(WelcomeCtaButton));
       expect(semantics.label, equals('Semantic Button'));
       expect(semantics.flagsCollection.isButton, isTrue);
-      expect(semantics.flagsCollection.isEnabled, isTrue);
+      // Using explicit comparison for Tristate (type-safe)
+      expect(semantics.flagsCollection.isEnabled == true, isTrue);
     });
 
     testWidgets('Semantics shows enabled=false when isLoading=true',
@@ -186,7 +187,8 @@ void main() {
 
       final semantics = tester.getSemantics(find.byType(WelcomeCtaButton));
       expect(semantics.label, equals('Loading Semantics'));
-      expect(semantics.flagsCollection.isEnabled, isFalse);
+      // Using explicit comparison for Tristate (type-safe)
+      expect(semantics.flagsCollection.isEnabled == false, isTrue);
     });
   });
 }
