@@ -67,16 +67,31 @@ REVOKE UPDATE, DELETE ON public.consents FROM authenticated;
 --
 -- PROCEDURE:
 --   -- 1. Document the correction reason in your audit system
---   -- 2. Disable trigger temporarily
+--   -- 2. Set a short session timeout and open a transaction guardrail
+--   SET statement_timeout = '30s';
+--   BEGIN;
+--   SAVEPOINT consent_no_update_guard;
+--
+--   -- 3. Disable trigger temporarily
 --   ALTER TABLE public.consents DISABLE TRIGGER consent_no_update;
 --
---   -- 3. Perform the specific correction
+--   -- 4. Perform the specific correction
 --   UPDATE public.consents SET version = 'v1.1' WHERE id = '<consent_id>';
 --
---   -- 4. Re-enable trigger IMMEDIATELY (do not leave disabled!)
+--   -- 5. Re-enable trigger IMMEDIATELY (do not leave disabled!)
 --   ALTER TABLE public.consents ENABLE TRIGGER consent_no_update;
 --
---   -- 5. Verify trigger is re-enabled
+--   -- 6. Reset timeout and commit the session
+--   RESET statement_timeout;
+--   COMMIT;
+--
+--   -- On error after SAVEPOINT:
+--   --   ROLLBACK TO SAVEPOINT consent_no_update_guard;
+--   --   ALTER TABLE public.consents ENABLE TRIGGER consent_no_update;
+--   --   RESET statement_timeout;
+--   --   COMMIT;
+--
+--   -- 7. Verify trigger is re-enabled
 --   SELECT tgname, tgenabled FROM pg_trigger
 --     WHERE tgrelid = 'public.consents'::regclass
 --       AND tgname = 'consent_no_update';

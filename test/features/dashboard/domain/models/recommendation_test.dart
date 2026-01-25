@@ -96,5 +96,17 @@ void main() {
         expect(categoryFromTag('randomTag123'), isNull);
       });
     });
+
+    group('whitespace handling', () {
+      test('trims leading and trailing spaces', () {
+        expect(categoryFromTag('  kraft  '), Category.training);
+        expect(categoryFromTag(' cardio '), Category.training);
+      });
+
+      test('trims tabs and newlines', () {
+        expect(categoryFromTag('\tkraft\n'), Category.training);
+        expect(categoryFromTag('\n\tmeditation\t\n'), Category.mindfulness);
+      });
+    });
   });
 }

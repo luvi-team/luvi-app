@@ -53,8 +53,13 @@ void main() {
         // Verify locale-specific text is rendered
         final element =
             tester.element(find.byKey(const ValueKey('auth_success_screen')));
-        final l10n = AppLocalizations.of(element)!;
-        expect(find.text(l10n.authSuccessPwdTitle), findsOneWidget);
+        final l10n = AppLocalizations.of(element);
+        expect(
+          l10n,
+          isNotNull,
+          reason: 'AppLocalizations should be available for locale $locale',
+        );
+        expect(find.text(l10n!.authSuccessPwdTitle), findsOneWidget);
       },
     );
   }

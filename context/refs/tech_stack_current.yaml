@@ -82,9 +82,9 @@ dev_tooling:
   ide: cursor  # Repo navigation, minimal editing
   knowledge_ssot: archon_mcp  # Dossiers, policies, RAG via MCP
   ai_agents:
-    gemini: architecture, orchestration, epics
-    codex_cli: backend, db, privacy, pr-review
-    claude_code: ui, dataviz, frontend
+    gemini: architect-orchestrator  # System-wide analysis, planning, governance
+    codex_cli: api-backend, db-admin, qa-dsgvo  # Backend, DB, Privacy, PR review
+    claude_code: ui-frontend, dataviz  # UI screens, widgets, charts
   review: greptile  # GitHub Required Check
   local_preflight: coderabbit  # Optional, no GitHub check
 

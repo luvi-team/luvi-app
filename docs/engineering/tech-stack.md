@@ -63,7 +63,7 @@
   **Note:** CI is pinned to 3.35.4 for reproducible builds. Newer versions (e.g., 3.38.x)
   available but require validation. See `.github/workflows/*.yml`.
 
-- **State & Navigation:** `Riverpod ^3.0.0`, `GoRouter ^16.2.0` *(see `context/refs/tech_stack_current.yaml` for pinned versions)*
+- **State & Navigation:** `Riverpod`, `GoRouter` *(see `context/refs/tech_stack_current.yaml` for pinned versions)*
   **Einsatz:** Home/„Heute in der Phase", Stream, Coach, Profil.
 
 - **Health-Integration (Baseline-Roadmap):** HealthKit-Anbindung

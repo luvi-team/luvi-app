@@ -37,6 +37,7 @@ class _{ScreenName}ScreenState extends ConsumerState<{ScreenName}Screen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final l10n = context.l10n;
     // Example: final state = ref.watch(yourProvider);
     //
@@ -45,7 +46,6 @@ class _{ScreenName}ScreenState extends ConsumerState<{ScreenName}Screen> {
     // - With placeholder: l10n.welcomeMessage(userName)
     // - Plurals: l10n.itemCount(count)
     // See lib/l10n/app_en.arb for available keys
-
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)
       body: SafeArea(

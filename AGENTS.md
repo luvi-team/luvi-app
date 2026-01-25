@@ -49,7 +49,37 @@ MANDATORY task cycle before coding:
 ### General Research:
 - Search knowledge base (2-5 keywords only!)
 - `rag_search_knowledge_base(query="authentication JWT", match_count=5)`
-- `rag_search_code_examples(query="React hooks", match_count=3)`
+- `rag_search_code_examples(query="Riverpod providers", match_count=3)`
+
+### Error Handling:
+
+**1. Missing source ID (validation + fallback):**
+```
+sources = rag_get_available_sources()
+if source_id not in [s.id for s in sources]:
+  # Fallback: search without source_id filter
+  rag_search_knowledge_base(query="...", match_count=5)
+  # Log: "Source ID 'src_xxx' not found, falling back to general search"
+```
+
+**2. No results (empty result handling):**
+```
+results = rag_search_knowledge_base(query="...", match_count=5)
+if not results:
+  # Suggest: "No matches for 'query'. Try broader terms or increase match_count to 10"
+  # Alternative: Try rag_search_code_examples() for implementation patterns
+```
+
+**3. Knowledge base unavailability (retry + fallback):**
+```
+# Retry with backoff: 1s, 2s, 4s (max 3 attempts)
+# On persistent failure:
+#   - Log raw error for debugging: "RAG unavailable: {error_message}"
+#   - Fallback to direct SSOT docs in repo (App-Context, Roadmap, Tech-Stack, Dossiers)
+#   - Document in plan which sources were used manually
+```
+
+See also: "RAG Usage & Fallback" section below for Codex-specific patterns.
 
 ## Project Workflows
 

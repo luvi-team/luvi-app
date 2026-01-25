@@ -44,13 +44,15 @@ Deno.test("SSOT: VALID_SCOPES matches config/consent_scopes.json IDs", async () 
     throw new Error(`Failed to read file ${rootConfigUrl}: ${e instanceof Error ? e.message : e}`);
   }
 
-  let rootConfig: VersionedScopeConfig;
+  let rootConfigRaw: unknown;
   try {
-    rootConfig = JSON.parse(rootJsonText) as VersionedScopeConfig;
+    rootConfigRaw = JSON.parse(rootJsonText);
   } catch (e) {
     throw new Error(`Failed to parse JSON from ${rootConfigUrl}: ${e instanceof Error ? e.message : e}`);
   }
-  assertVersionedConfig(rootConfig, `Parsed config from ${rootConfigUrl}`);
+  assertVersionedConfig(rootConfigRaw, `Parsed config from ${rootConfigUrl}`);
+  // TypeScript now knows rootConfigRaw is VersionedScopeConfig after type guard assertion
+  const rootConfig = rootConfigRaw;
   const rootIds = rootConfig.scopes.map((scope) => scope.id).sort();
 
   // Bundled config - separate file I/O and JSON parse error handling
@@ -62,13 +64,15 @@ Deno.test("SSOT: VALID_SCOPES matches config/consent_scopes.json IDs", async () 
     throw new Error(`Failed to read file ${bundledConfigUrl}: ${e instanceof Error ? e.message : e}`);
   }
 
-  let bundledConfig: VersionedScopeConfig;
+  let bundledConfigRaw: unknown;
   try {
-    bundledConfig = JSON.parse(bundledJsonText) as VersionedScopeConfig;
+    bundledConfigRaw = JSON.parse(bundledJsonText);
   } catch (e) {
     throw new Error(`Failed to parse JSON from ${bundledConfigUrl}: ${e instanceof Error ? e.message : e}`);
   }
-  assertVersionedConfig(bundledConfig, `Parsed config from ${bundledConfigUrl}`);
+  assertVersionedConfig(bundledConfigRaw, `Parsed config from ${bundledConfigUrl}`);
+  // TypeScript now knows bundledConfigRaw is VersionedScopeConfig after type guard assertion
+  const bundledConfig = bundledConfigRaw;
   const bundledIds = bundledConfig.scopes.map((scope) => scope.id).sort();
 
   // Ensure the deployed bundle stays in sync with SSOT.

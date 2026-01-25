@@ -137,5 +137,13 @@ revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boo
 revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from anon;
 revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from authenticated;
 revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from service_role;
+revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from postgres;
+
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'supabase_admin') then
+    execute 'grant execute on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) to supabase_admin';
+  end if;
+end $$;
 
 commit;

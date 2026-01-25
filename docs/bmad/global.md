@@ -396,6 +396,8 @@ docs/audits/SUPABASE_SCHEMA_public.ts)*
 
 ### 2.2 Domäne → Tabellen/Views → Status
 
+> **Last verified:** 2026-01-25 (update this timestamp when making schema changes)
+
 | Domäne | Supabase-Tabellen/Views | Status | Migration/Ticket | Quellen |
 |--------|-------------------------|--------|------------------|---------|
 | User | `auth.users`, `user_id`-Felder in anderen Tabellen | Ist | Supabase managed | Schema-Audit, Roadmap |
@@ -430,6 +432,7 @@ docs/audits/SUPABASE_SCHEMA_public.ts)*
 
 > **Convention:** Migration/Ticket column uses migration timestamp for existing tables (e.g., `20250903235538`),
 > "TBD (Roadmap SX)" for planned tables referencing the sprint, or "N/A" for computed views/logic-only.
+> Update "Last verified" timestamp above when making schema changes.
 
 ### 2.3 Wichtige Beziehungen & Invarianten
 

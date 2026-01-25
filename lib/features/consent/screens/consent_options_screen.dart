@@ -727,7 +727,7 @@ Future<bool> _markWelcomeSeen(
     );
     return false;
   }
-  return true;
+  return localSucceeded;
 }
 
 /// Persists consent gate state to server (SSOT).

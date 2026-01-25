@@ -17,25 +17,31 @@ void main() {
 
   group('Analytics Consent Gating', () {
     group('analyticsConsentGateProvider', () {
-      test('returns false when UserStateService is loading', () {
-        final completer = Completer<UserStateService>(); // Use Completer
-        final container = ProviderContainer(
-          overrides: [
-            // Simulate loading state by not providing a value
-            userStateServiceProvider.overrideWith(
-              (ref) => completer.future, // Return the incomplete future
-            ),
-          ],
-        );
-        addTearDown(container.dispose);
+      test(
+        'returns false when UserStateService is loading',
+        () {
+          final completer = Completer<UserStateService>(); // Use Completer
+          final container = ProviderContainer(
+            overrides: [
+              // Simulate loading state by not providing a value
+              userStateServiceProvider.overrideWith(
+                (ref) => completer.future, // Return the incomplete future
+              ),
+            ],
+          );
+          addTearDown(container.dispose);
 
-        final result = container.read(analyticsConsentGateProvider);
-        expect(
-          result,
-          isFalse,
-          reason: 'Loading state should fail-safe to no analytics',
-        );
-      });
+          // Synchronous read - provider MUST handle loading state instantly
+          // If this blocks, the provider implementation is broken
+          final result = container.read(analyticsConsentGateProvider);
+          expect(
+            result,
+            isFalse,
+            reason: 'Loading state should fail-safe to no analytics',
+          );
+        },
+        timeout: Timeout(Duration(milliseconds: 500)), // Fail-fast guard
+      );
 
       test('returns false when UserStateService throws error', () {
         final container = ProviderContainer(

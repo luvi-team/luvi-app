@@ -93,10 +93,6 @@ begin
     raise exception 'p_scopes must be an array (legacy) or object (canonical)';
   end if;
 
-  if not public.consents_scopes_keys_valid(normalized_scopes) then
-    raise exception 'p_scopes contains unknown scope IDs';
-  end if;
-
   if normalized_scopes = '{}'::jsonb then
     raise exception 'p_scopes must be non-empty';
   end if;

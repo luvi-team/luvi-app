@@ -175,7 +175,7 @@ The branch introduces foundational DSGVO-compliant data structures with proper R
 - **Note:** For current region verification, see active sprint review documents.
 
 **Checklist Entry:**
-- [ ] Region confirmed as EU via dashboard (ACTION REQUIRED)
+- [ ] Region confirmed as EU via dashboard (not completed before archival)
 - [x] No external service integrations transferring data outside EU
 
 ## Recommendations
@@ -206,8 +206,9 @@ The branch introduces foundational DSGVO-compliant data structures with proper R
 - No data processing without proper consent infrastructure
 - MIWF approach: structure first, guards added as needed
 
-## Next Steps
+## Next Steps (At Time of Review)
 
+The following steps were identified at the time of this review:
 1. Complete ConsentScreen UI implementation
 2. Implement log_consent Edge Function database connection
 3. Add user authentication to all endpoints
