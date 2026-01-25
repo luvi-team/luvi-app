@@ -1,6 +1,6 @@
-# Phase-Definitionen v1.2 (SSOT)
+# Phase-Definitionen v1.3 (SSOT)
 
-> Version: v1.2 · Datum: 2025-12-03
+> Version: v1.3 · Datum: 2026-01-25
 
 ## Zweck & Scope
 Dieses Dokument definiert die Berechnungslogik für die vier Zyklusphasen (Menstruation, Follikel, Ovulation, Luteal) und legt Fallback-Regeln fest. Ziel ist es, eine konsistente, nachvollziehbare und nicht-medizinische Phasenbestimmung für die UI, das Feed-Ranking und KI-Agents bereitzustellen. Die Phasen dienen ausschließlich der Lifestyle-Steuerung (Workouts, Schlaf, Mind, Ernährung) und dürfen nicht für Diagnosen oder medizinische Empfehlungen verwendet werden.
@@ -27,6 +27,24 @@ Die Phasenberechnung basiert auf dem Objekt `cycle_data` mit folgenden Feldern:
 | `on_hormonal_contraception` | Boolean | optional | `true`, wenn hormonelle Verhütung aktiv ist |
 | `irregular_cycle` | Boolean | optional | `true`, wenn der Zyklus unregelmäßig ist |
 
+### Validierungsregeln
+
+| Feld | Erlaubter Bereich | Default | Fehlerbehandlung |
+|------|-------------------|---------|------------------|
+| `cycle_length` | 21–60 Tage | 28 | `< 21`: `phase = unknown` + Oligomenorrhoe-Warnung; `> 60`: ArgumentError |
+| `period_length` | 1–10 Tage | 5 | `< 1` oder `> 10`: ArgumentError |
+| `last_period_start` | Vergangenheit oder heute | required | Zukunft: Abgelehnt; `> 90 Tage alt`: Stale-Data-Warnung |
+
+> **ACOG-Referenz vs. App-Bereich:**
+> - ACOG definiert Normalbereich: 21–45 Tage
+> - App erlaubt erweiterten Bereich: 21–60 Tage (für Perimenopause, lange Zyklen)
+> - Zyklen 46–60 Tage: Berechnet mit `low_confidence` + UI-Warnung
+>
+> **Warum 1–10 Tage für Periodendauer?**
+> - Medizinischer Durchschnitt: 2–7 Tage
+> - App erlaubt 1–10 zur Abdeckung von Extremfällen
+> - Werte außerhalb 2–7: Keine automatische Warnung (individuell variabel)
+
 ## Algorithmus zur Phasenberechnung
 
 ### 1. Vorabprüfung
@@ -37,66 +55,105 @@ Die Phasenberechnung basiert auf dem Objekt `cycle_data` mit folgenden Feldern:
 ```
 cycle_len = cycle_length oder 28 (default)
 period_len = period_length oder 5 (default)
-ovulation_day = round(cycle_len * 0.5) (MVP-Schätzwert)
-ovulation_day_alt = cycle_len - 14 (Alternative bei variabler Zykluslänge)
+luteal_length = 13 (evidenzbasiert, typischer Bereich 12–14 Tage)
+ovulation_day = cycle_len - luteal_length
+ovulation_window = 2 (±2 Tage um ovulation_day)
 ```
 
-> **MVP Rationale:** Die 50%-Heuristik wurde für das MVP gewählt aus folgenden Gründen:
-> 1. **Implementierungs-Einfachheit:** Einzelne Berechnung ohne zusätzliche Parameter
-> 2. **28-Tage-Genauigkeit:** Funktioniert gut für die häufigste Zykluslänge
-> 3. **Konservativer Ansatz:** Vermeidet Überschätzung der Präzision ohne Sensor-/Biomarker-Daten
-> 4. **Klarer Upgrade-Pfad:** Roadmap enthält `cycle_len - 14` und sensorbasierte Verbesserungen
-> 5. **Test-Vorhersagbarkeit:** Einfachere UX-Erwartungen und deterministische Testfälle
+> **Evidenzbasierter Ansatz:** Die Lutealphase (Zeitraum von Ovulation bis
+> Menstruation) ist biologisch relativ konstant bei 12–14 Tagen. Die Berechnung
+> `ovulation_day = cycle_len - 13` nutzt diese Konstanz für eine genauere
+> Ovulationsschätzung als die frühere 50%-Heuristik, insbesondere bei kurzen
+> oder langen Zyklen.
+>
+> **Beispiele:**
+> - 28-Tage-Zyklus: `ovulation_day` = 28 - 13 = Tag 15
+> - 21-Tage-Zyklus: `ovulation_day` = 21 - 13 = Tag 8
+> - 35-Tage-Zyklus: `ovulation_day` = 35 - 13 = Tag 22
+>
+> **Klinische Validierung:** Für medizinisch genaue Ovulationserkennung sind
+> LH-Surge-Tests oder Basaltemperaturmessung (BBT) notwendig. Diese App-Schätzung
+> dient ausschließlich der Lifestyle-Personalisierung, nicht der Fruchtbarkeits-
+> oder Verhütungsplanung.
 
 > **Minimum Cycle Length Guard:** Zykluslängen unter 21 Tagen gelten medizinisch
 > als Oligomenorrhoe (ACOG-Richtlinien: Normalbereich 21–45 Tage; Quelle: ACOG
-> Committee Opinion No. 651, 2015, verfügbar unter https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign). Falls
-> `cycle_len < 21`, wird `phase = unknown` gesetzt und im UI ein Hinweis
-> angezeigt: „Zykluslänge ungewöhnlich kurz — bitte Zyklusdaten prüfen oder
-> ärztlichen Rat einholen." Die Warnung wird im Observability-Layer geloggt.
+> Committee Opinion No. 651, 2015). Falls `cycle_len < 21`, wird `phase = unknown`
+> gesetzt und im UI ein Hinweis angezeigt: „Zykluslänge ungewöhnlich kurz — bitte
+> Zyklusdaten prüfen oder ärztlichen Rat einholen." Die Warnung wird im
+> Observability-Layer geloggt (Event: `cycle_length_below_minimum`).
 
-> **MVP-Vereinfachung:** Die 50%-Heuristik ist ein einfacher Startwert und
-> passt am ehesten zu ~28‑Tage-Zyklen. Biologische Ovulation variiert typischerweise
-> ±2–3 Tage und hängt von individuellen Faktoren ab. Klinisch wird der Eisprung
-> per LH-Surge-Test oder Basaltemperatur (BBT) bestätigt.
-> **Alternative (biologisch näher):** `cycle_len - 14` modelliert eine relativ
-> konstante Lutealphase und ist oft robuster für kurze oder lange Zyklen,
-> bleibt aber eine grobe Schätzung.
-> **Accuracy‑Trade-offs:** 50% kann bei kurzen Zyklen zu spät und bei langen
-> Zyklen zu früh liegen; `cycle_len - 14` kann bei stark variabler Lutealphase
-> ebenfalls abweichen. Für bessere Genauigkeit sollten `cycle_len - 14` oder
-> hybride/Confidence‑Score‑Ansätze bevorzugt werden.
-> **Roadmap:** Integration von Wearable-Daten, LH/BBT-Eingaben und
-> User-Feedback zur Verbesserung der Phasengenauigkeit.
-> - [ ] Follow-up: Phase‑Confidence‑Score bei Phasengrenzen (Archon Task: eef75718-27f8-4493-80d9-82c9dcff4f49)
+> **Roadmap:** Integration von Wearable-Daten, LH/BBT-Eingaben und User-Feedback
+> zur Verbesserung der Phasengenauigkeit.
+> - [ ] Follow-up: Phase-Confidence-Score bei Phasengrenzen (Archon Task: eef75718-27f8-4493-80d9-82c9dcff4f49)
 
-> **Edge Case Guard:** Falls `period_len >= ovulation_day` (möglich bei kurzen
-> Zyklen oder ungenauen Eingaben), wird `ovulation_day` auf `period_len + 2`
-> korrigiert, damit mindestens ein Follikel-Tag existiert (die Bedingung
-> `period_len < cycle_day < ovulation_day` benötigt mindestens 2 Tage Differenz).
-> Diese Korrektur wird geloggt und im UI als Datenwarnung angezeigt.
+> **Edge Case Guard:** Falls `period_len >= ovulation_day` (anatomisch ungültig:
+> Ovulation während Menstruation), wird `phase = unknown` gesetzt. **Keine
+> Autokorrektur** – die Nutzerin soll die Daten korrigieren. Die ungültigen
+> Eingaben werden im Observability-Layer geloggt (Event: `invalid_cycle_parameters`)
+> und im UI erscheint ein Hinweis: „Zyklusdaten scheinen ungültig. Bitte
+> Periodendauer und Zykluslänge prüfen."
 
 ### 3. cycle_day berechnen
 ```
 cycle_day = ((heutiges_datum - last_period_start) mod cycle_len) + 1
 ```
-Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 
-### 4. Phase zuweisen (MVP-Heuristik)
+> **Datum-Normalisierung:** `heutiges_datum` und `last_period_start` werden als
+> date-only UTC-Werte normalisiert (Jahr, Monat, Tag). Dies gewährleistet
+> konsistente Berechnungen unabhängig von der Zeitzone des Clients.
 
-> **Formel:** Diese Tabelle verwendet `ovulation_day = round(cycle_len * 0.5)`.
-> Die Alternative `ovulation_day_alt = cycle_len - 14` ist oben dokumentiert, wird aber in der aktuellen Phasen-Logik nicht verwendet.
+> **Eingabe-Validierung:**
+> - **Future Date Check:** Falls `last_period_start > heute`, setze `phase = unknown`
+>   mit UI-Hinweis: „Periodenbeginn kann nicht in der Zukunft liegen."
+> - **Stale Data Detection:** Falls `last_period_start + 90 Tage < heute`, zeige
+>   UI-Hinweis: „Zyklusdaten möglicherweise veraltet. Bitte letzten Periodenbeginn
+>   aktualisieren." Phase wird mit `low_confidence` markiert.
+
+### 4. Phase zuweisen (Evidenzbasiert)
+
+> **Formel:** Verwendet `ovulation_day = cycle_len - luteal_length` mit `luteal_length = 13`.
+> Ovulationsfenster umfasst `ovulation_day ± ovulation_window` (±2 Tage, 5 Tage total).
 
 | Phase | Bedingung |
 |-------|-----------|
 | **Menstruation** | `cycle_day <= period_len` |
-| **Follikel** | `period_len < cycle_day < ovulation_day` |
-| **Ovulation** | `cycle_day == ovulation_day` oder `cycle_day == ovulation_day + 1` (Fenster von 2 Tagen) |
-| **Luteal** | `cycle_day > ovulation_day + 1` |
+| **Ovulationsfenster** | `|cycle_day - ovulation_day| <= ovulation_window` (±2 Tage) |
+| **Follikel** | `period_len < cycle_day < ovulation_day - ovulation_window` |
+| **Luteal** | `cycle_day > ovulation_day + ovulation_window` |
 
-### 5. Confidence & Hinweise
-- Wenn `cycle_length` oder `period_length` geschätzt werden, markiere die Phase intern als `low_confidence`.
-- Bei `cycle_day` nahe den Übergängen (±1 Tag) können Hinweise im UI erscheinen („Phase möglicherweise wechselnd").
+### 5. Confidence Score Model
+
+Die Phasenberechnung enthält einen `confidence_score` (0.0–1.0), der die Zuverlässigkeit der Phasenvorhersage angibt:
+
+| Score-Bereich | Label | UI-Verhalten |
+|---------------|-------|--------------|
+| 0.8–1.0 | `high` | Phase wird ohne Hinweis angezeigt |
+| 0.5–0.79 | `medium` | Phase + dezenter Hinweis: „Schätzung basiert auf Durchschnittswerten" |
+| 0.0–0.49 | `low` | Phase als „unsicher" markiert: „Bitte Zyklusdaten vervollständigen" |
+
+**Penalties (subtrahiert vom Base-Score 1.0):**
+
+| Bedingung | Penalty | Rationale |
+|-----------|---------|-----------|
+| `cycle_length` = default (28) | -0.20 | Geschätzt, nicht eingegeben |
+| `period_length` = default (5) | -0.15 | Geschätzt, nicht eingegeben |
+| `cycle_len > 45` | -0.15 | Außerhalb ACOG-Normalbereich |
+| `cycle_len < 21` | Score = 0.0 | Oligomenorrhoe, `phase = unknown` |
+| `irregular_cycle = true` | -0.30 | Hohe Variabilität erwartet |
+| `last_period_start > 60 Tage alt` | -0.10 | Möglicherweise veraltet |
+| `cycle_day` nahe Übergang (±1 Tag) | -0.05 | Grenzfall zwischen Phasen |
+
+**Formel:**
+```
+confidence_score = max(0.0, min(1.0, 1.0 - sum(applicable_penalties)))
+```
+
+**Runtime-Verhalten:**
+- Bei `low` Confidence: KI-Agents nutzen nur allgemeine, nicht-phasenspezifische Inhalte
+- Bei `medium` Confidence: Volle Phasen-Personalisierung mit Disclaimer
+- Bei `high` Confidence: Volle Phasen-Personalisierung ohne Disclaimer
+- Confidence-Score wird in Diagnostics/Observability geloggt
 
 ## Edge Cases & Fallbacks
 
@@ -106,8 +163,11 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 | Unregelmäßiger Zyklus | Wenn `irregular_cycle = true`: `phase = unknown`, neutrale Inhalte |
 | Menopause/Hormonelle Verhütung | `phase = none`, KI und Ranking ignorieren Phasensignale |
 | Datenwiderspruch | Wenn `cycle_len < period_len` oder absurde Werte: `phase = unknown` |
-| `cycle_len < 21` | Medizinisch ungewöhnlich kurz (Oligomenorrhoe): `phase = unknown`, UI-Hinweis zur Datenprüfung, Observability-Log |
-| `period_len >= ovulation_day` | Anatomisch ungültig: Ovulation während Menstruation. Setze `ovulation_day = period_len + 2` als Safe-Fallback (mindestens 1 Follikel-Tag), logge Warnung im Observability-Layer. UI-Hinweis: „Bitte Zyklusdaten prüfen" |
+| `cycle_len < 21` | Medizinisch ungewöhnlich kurz (Oligomenorrhoe): `phase = unknown`, UI-Hinweis zur Datenprüfung, Observability-Log: `cycle_length_below_minimum` |
+| `cycle_len > 45` | Über ACOG-Normalbereich: Phase wird mit `low_confidence` berechnet, UI-Warnung: „Zykluslänge über 45 Tagen ist ungewöhnlich lang — bitte Zyklusdaten prüfen oder ärztlichen Rat einholen." Observability-Log: `cycle_length_above_acog_range` |
+| `period_len >= ovulation_day` | Anatomisch ungültig: `phase = unknown`, **keine Autokorrektur**. UI-Hinweis: „Zyklusdaten scheinen ungültig. Bitte Periodendauer und Zykluslänge prüfen." Observability-Log: `invalid_cycle_parameters` |
+| `last_period_start` in Zukunft | Ungültig: `phase = unknown`, UI-Hinweis: „Periodenbeginn kann nicht in der Zukunft liegen." |
+| `last_period_start > 90 Tage alt` | Möglicherweise veraltet: Phase mit `low_confidence`, UI-Hinweis: „Zyklusdaten möglicherweise veraltet." |
 
 ## Scope & Grenzen
 - Die Phasenlogik dient **nur** der Priorisierung und Personalisierung von Lifestyle-Inhalten.
@@ -125,8 +185,9 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 
 **Berechnung:**
 - `cycle_day` = 15
-- `ovulation_day` = 14
-- **Phase = Ovulation** (da `cycle_day == ovulation_day + 1`)
+- `ovulation_day` = 28 - 13 = 15
+- `|cycle_day - ovulation_day|` = |15 - 15| = 0 ≤ 2
+- **Phase = Ovulationsfenster** (innerhalb ±2 Tage um `ovulation_day`)
 
 ### Beispiel B: Fehlende Zykluslänge
 **Input:**
@@ -139,6 +200,7 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 - Default: `cycle_len` = 28, `period_len` = 6
 - `cycle_day` = 4
 - **Phase = Menstruation** (`cycle_day <= period_len`)
+- **Confidence:** `medium` (Penalty: -0.20 für default cycle_length)
 - **UI-Hinweis:** „Zykluslänge unbekannt, bitte angeben"
 
 ### Beispiel C: Unregelmäßiger Zyklus
@@ -157,9 +219,10 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 - Bei Widersprüchen zwischen diesem Dokument und anderen Quellen hat dieses SSOT Vorrang; im Zweifel `phase = unknown` setzen und auf Safety-&-Scope-Dossier verweisen.
 
 ## Versionsinfo
-- **Version:** v1.2
-- **Datum:** 2025-12-03
+- **Version:** v1.3
+- **Datum:** 2026-01-25
 - **Änderungsverlauf:**
+  - v1.3: Algorithmus auf evidenzbasierte Formel (`cycle_len - 13`) aktualisiert (Sync mit Implementation); Validierungsregeln dokumentiert; Confidence-Score-Modell hinzugefügt; Edge Cases erweitert (>45 Tage, Future Date, Stale Data); Auto-Korrektur entfernt; UTC-Timezone-Dokumentation.
   - v1.2: Medizinische/regulatorische Compliance-Anforderungen aus v1.0 integriert; Sync mit Archon v1.1.
   - v1.1: Algorithmus definiert, Fallbacks und Beispiele hinzugefügt; „Wie KI dieses Dokument nutzen soll" ergänzt.
   - v1.0: Erste Skizze mit TODOs.

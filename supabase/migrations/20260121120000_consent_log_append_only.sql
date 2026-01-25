@@ -196,25 +196,47 @@ BEGIN
   END IF;
 END $$;
 
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'cron_executor') THEN
+    EXECUTE 'CREATE ROLE cron_executor';
+  END IF;
+END $$;
+
 -- Optional: schedule periodic self-heal with pg_cron when available.
 -- If pg_cron is not installed, run this function via external scheduler/monitoring.
 DO $$
 BEGIN
   IF to_regprocedure('cron.schedule(text,text,text)') IS NOT NULL
      AND to_regclass('cron.job') IS NOT NULL THEN
-    EXECUTE format(
-      'grant execute on function public.check_and_restore_consent_trigger_state() to %I',
-      current_user
-    );
+    EXECUTE 'GRANT EXECUTE ON FUNCTION public.check_and_restore_consent_trigger_state() TO cron_executor';
     IF NOT EXISTS (
       SELECT 1 FROM cron.job WHERE jobname = 'consent_trigger_guard'
     ) THEN
-      EXECUTE format(
-        'select cron.schedule(%L, %L, %L)',
-        'consent_trigger_guard',
-        '*/5 * * * *',
-        'select public.check_and_restore_consent_trigger_state();'
-      );
+      IF to_regprocedure('cron.schedule(text,text,text,text)') IS NOT NULL THEN
+        EXECUTE format(
+          'select cron.schedule(%L, %L, %L, %L)',
+          'consent_trigger_guard',
+          '*/5 * * * *',
+          'select public.check_and_restore_consent_trigger_state();',
+          'cron_executor'
+        );
+      ELSE
+        EXECUTE format(
+          'select cron.schedule(%L, %L, %L)',
+          'consent_trigger_guard',
+          '*/5 * * * *',
+          'select public.check_and_restore_consent_trigger_state();'
+        );
+        UPDATE cron.job
+           SET username = 'cron_executor'
+         WHERE jobname = 'consent_trigger_guard';
+      END IF;
+    ELSE
+      UPDATE cron.job
+         SET username = 'cron_executor'
+       WHERE jobname = 'consent_trigger_guard'
+         AND username IS DISTINCT FROM 'cron_executor';
     END IF;
   END IF;
 END $$;

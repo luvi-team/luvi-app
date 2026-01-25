@@ -72,7 +72,7 @@ begin
   if exists (select 1 from pg_roles where rolname = 'supabase_admin') then
     execute 'grant execute on function public.check_and_restore_consent_trigger_state() to supabase_admin';
   else
-    raise exception 'Role supabase_admin not found; check_and_restore_consent_trigger_state() not granted';
+    raise warning 'Role supabase_admin not found; check_and_restore_consent_trigger_state() grant skipped';
   end if;
 end $$;
 
