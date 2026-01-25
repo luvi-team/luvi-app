@@ -178,6 +178,8 @@ google_oauth_*
 .gemini/
 gha-creds-*.json
 .claude/settings.local.json.backup
+.claude/skills/
+.claude/plans/
 
 # ============================================
 # INTERNAL DOCS - Not for public GitHub
