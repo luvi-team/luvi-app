@@ -116,7 +116,7 @@ Both Dart and TypeScript use identical regex: `^v(\d+)(?:\.(\d+))?$`
 
 **Evidence:** Tested with curl for two users - write and read operations verified; created_at timestamp auto-populated
 
-**Versioning:** version='v1.0' for initial release; scopes stored as JSON array
+**Versioning:** version='v1.0' for initial release; scopes stored as JSON object with boolean flags
 
 **Data Minimization:** Only version, scopes, and user_id collected; user_id is personal data under GDPR and stored only in database records (not application logs); any diagnostic logging must hash/redact user identifiers per ADR-0005
 
@@ -205,13 +205,14 @@ WITH user_consents AS (
   WHERE user_id = auth.uid()
 ),
 latest_per_scope AS (
-  SELECT DISTINCT ON (s.value)
-    s.value AS scope_name,
+  SELECT DISTINCT ON (s.key)
+    s.key AS scope_name,
     uc.created_at,
     uc.revoked_at
   FROM user_consents uc
-  CROSS JOIN LATERAL jsonb_array_elements_text(uc.scopes) AS s(value)
-  ORDER BY s.value, uc.created_at DESC
+  CROSS JOIN LATERAL jsonb_each_text(uc.scopes) AS s(key, value)
+  WHERE s.value = 'true'
+  ORDER BY s.key, uc.created_at DESC
 )
 SELECT *
 FROM latest_per_scope

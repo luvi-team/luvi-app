@@ -1,12 +1,12 @@
 meta:
   version: "2.3"
-  last_updated: "2026-01-21"
+  last_updated: "2026-01-25"
   acceptance_version: "1.1"
 
 flutter:
   channel: stable
-  version_ci: "3.35.4"
-  dart_min_ci: "3.9.2"  # Flutter 3.35.4 bundles Dart 3.9.2
+  version_ci: "3.35.5"
+  dart_min_ci: "3.9.2"  # Flutter 3.35.5 bundles Dart 3.9.2
   dart_min_pubspec: "3.9.0"  # pubspec.yaml allows >=3.9.0
 
 packages:

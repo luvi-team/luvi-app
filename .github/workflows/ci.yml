@@ -45,10 +45,8 @@ jobs:
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
-      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
-      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
-        name: Validate log_consent bundle config
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - name: Validate log_consent bundle config
         run: |
           if [ ! -f "supabase/functions/log_consent/consent_scopes.json" ]; then
             echo "ERROR: consent_scopes.json missing from log_consent bundle"

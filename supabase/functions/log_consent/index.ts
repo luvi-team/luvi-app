@@ -460,6 +460,19 @@ function clampInvalidScopes(scopes: unknown[]): string[] {
   });
 }
 
+function summarizeInvalidScopes(scopes: unknown[]): Record<string, number> {
+  const summary: Record<string, number> = {};
+  for (const scope of scopes) {
+    const key = scope === null
+      ? "null"
+      : Array.isArray(scope)
+      ? "array"
+      : typeof scope;
+    summary[key] = (summary[key] ?? 0) + 1;
+  }
+  return summary;
+}
+
 if (import.meta.main) {
   serve(async (req) => {
   const started = Date.now();
@@ -585,17 +598,18 @@ if (import.meta.main) {
     !Array.isArray(rawScopes)
   ) {
     const scopeMap = rawScopes as Record<string, unknown>;
+    const scopeKeyCount = Object.keys(scopeMap).length;
     // Use Object.entries() to correctly detect non-boolean values including undefined
     // (Object.values().find() returns undefined for undefined values, causing false negatives)
     const invalidEntry = Object.entries(scopeMap).find(
       ([, v]) => typeof v !== "boolean"
     );
     if (invalidEntry) {
-      const [invalidKey, invalidValue] = invalidEntry;
+      const [, invalidValue] = invalidEntry;
       logMetric(requestId, "invalid", {
         reason: "invalid_scopes_value_type",
-        invalidKey,
         providedType: typeof invalidValue,
+        scopeKeyCount,
         ip_hash: ipHash,
         ua_hash: uaHash,
         hash_version: CONSENT_HASH_VERSION,
@@ -653,12 +667,13 @@ if (import.meta.main) {
   );
 
   if (invalidScopes.length > 0) {
-    // Defense: Clamp invalidScopes to prevent log bloat/noise from large payloads
+    // Clamp invalidScopes for client response without leaking raw input to logs.
     const clampedInvalidScopes = clampInvalidScopes(invalidScopes);
+    const invalidScopeTypes = summarizeInvalidScopes(invalidScopes);
     logMetric(requestId, "invalid", {
       reason: "invalid_scopes",
-      invalidScopes: clampedInvalidScopes,
       invalidScopesCount: invalidScopes.length,
+      invalidScopeTypes,
       ip_hash: ipHash,
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,

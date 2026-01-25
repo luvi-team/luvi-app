@@ -108,7 +108,7 @@ begin
   effective_max := p_max_requests + p_burst_max_requests;
 
   d := digest(p_user_id::text, 'sha256');
-  lock_key := ('x' || encode(substring(d, 1, 8), 'hex'))::bit(64)::bigint;
+  lock_key := ('x' || encode(substring(d, 1, 8), 'hex'))::bit(64)::bigint; -- 8 bytes = 64-bit bigint for deterministic advisory lock per p_user_id
   perform pg_advisory_xact_lock(lock_key);
 
   select count(*) into recent_count
@@ -147,10 +147,10 @@ end $;
 
 do $
 begin
-  if exists (select 1 from pg_roles where rolname = 'supabase_admin') then
+  if exists (select 1 from pg_roles where rolname = 'supabase_admin')
+    and to_regprocedure('public.admin_breakglass_set_consent_no_update_enabled(boolean, text)') is not null then
     execute 'grant execute on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) to supabase_admin';
   end if;
 end $;
 
 commit;
-

@@ -728,7 +728,7 @@ Future<bool> _markWelcomeSeen(
   // _markWelcomeSeen is best-effort; failures only warn and do not block navigation.
   if (!serverSucceeded) {
     log.w(
-      'consent_navigation_blocked: server_persistence_required',
+      'consent_navigation_warn: server_persistence_required',
       tag: 'consent_options',
     );
     return false;
@@ -789,13 +789,24 @@ Future<bool> _persistConsentToLocalCache(
   WidgetRef ref,
   Set<String> acceptedScopes,
 ) async {
-  // Issue 3: Wrap provider resolution in try-catch for graceful failure.
-  // Explicit type annotation required (Dart cannot infer from try-block assignment).
-  // Note: DI failure indicates app state issue but is treated as cache failure
-  // because server consent (SSOT) already succeeded at this point.
-  final UserStateService userState;
+  final userState = await _resolveConsentUserState(ref);
+  if (userState == null) return false;
+
+  final uid = SupabaseService.currentUser?.id;
+  if (uid == null) {
+    log.d('consent_cache_skip_no_uid: returning false', tag: 'consent_options');
+    return false;
+  }
+
+  final bound = await _bindUserForConsentCache(userState, uid);
+  if (!bound) return false;
+
+  return _writeConsentCacheWithRetry(userState, acceptedScopes);
+}
+
+Future<UserStateService?> _resolveConsentUserState(WidgetRef ref) async {
   try {
-    userState = await ref.read(userStateServiceProvider.future);
+    return await ref.read(userStateServiceProvider.future);
   } catch (error, stackTrace) {
     log.e(
       'consent_user_state_provider_failed',
@@ -803,20 +814,17 @@ Future<bool> _persistConsentToLocalCache(
       error: sanitizeError(error) ?? error.runtimeType,
       stack: stackTrace,
     );
-    return false;
+    return null;
   }
+}
 
-  final uid = SupabaseService.currentUser?.id;
-
-  if (uid == null) {
-    // Skipped - returning false for consistency with server-side skips
-    log.d('consent_cache_skip_no_uid: returning false', tag: 'consent_options');
-    return false;
-  }
-
-  // Separate try/catch for bindUser to distinguish binding failures
+Future<bool> _bindUserForConsentCache(
+  UserStateService userState,
+  String uid,
+) async {
   try {
     await userState.bindUser(uid);
+    return true;
   } catch (error, stackTrace) {
     log.e(
       'consent_bind_user_failed',
@@ -826,71 +834,58 @@ Future<bool> _persistConsentToLocalCache(
     );
     return false;
   }
+}
 
-  // Parallel writes for efficiency.
-  // Using .wait (Dart 3.0+) for ParallelWaitError - collects ALL errors, not just first.
-  // Note: Future.wait() would only throw the first error, breaking our error collection.
-  // All three operations are idempotent - safe to retry on partial failure.
-  // Design decision: On failure, retry ALL operations (not selective retry).
-  // Rationale: Operations are cheap, idempotent, and state consistency is simpler
-  // with all-or-nothing approach. Partial success tracking adds complexity without
-  // benefit given best-effort cache semantics.
-  try {
-    await [
-      userState.markWelcomeSeen(),
-      userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
-      userState.setAcceptedConsentScopes(acceptedScopes),
-    ].wait.timeout(
+Future<void> _performConsentCacheWrites(
+  UserStateService userState,
+  Set<String> acceptedScopes,
+) {
+  return [
+    userState.markWelcomeSeen(),
+    userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
+    userState.setAcceptedConsentScopes(acceptedScopes),
+  ].wait.timeout(
+    _kConsentPersistenceTimeout,
+    onTimeout: () => throw TimeoutException(
+      'Local consent cache persistence timed out',
       _kConsentPersistenceTimeout,
-      onTimeout: () => throw TimeoutException(
-        'Local consent cache persistence timed out',
-        _kConsentPersistenceTimeout,
-      ),
+    ),
+  );
+}
+
+void _logParallelWaitErrors(ParallelWaitError error, StackTrace fallbackStack) {
+  for (final entry in error.errors) {
+    if (entry == null) continue;
+    final actualError = entry is AsyncError ? entry.error : entry;
+    final actualStack = entry is AsyncError ? entry.stackTrace : fallbackStack;
+    log.e(
+      'consent_persistence_parallel_error',
+      tag: 'consent_options',
+      error: sanitizeError(actualError) ?? actualError.runtimeType,
+      stack: actualStack,
     );
+  }
+}
+
+Future<bool> _writeConsentCacheWithRetry(
+  UserStateService userState,
+  Set<String> acceptedScopes,
+) async {
+  try {
+    await _performConsentCacheWrites(userState, acceptedScopes);
     return true;
-  } on ParallelWaitError catch (e, stackTrace) {
-    // Log all errors occurred during parallel execution
-    for (final error in e.errors) {
-      if (error != null) {
-        // Issue 7: Unwrap AsyncError to extract underlying error and stack trace
-        final actualError = error is AsyncError ? error.error : error;
-        final actualStack = error is AsyncError ? error.stackTrace : stackTrace;
-
-        log.e(
-          'consent_persistence_parallel_error',
-          tag: 'consent_options',
-          error: sanitizeError(actualError) ?? actualError.runtimeType,
-          stack: actualStack,
-        );
-      }
-    }
-
-    // CodeRabbit fix: Single retry after delay for transient failures.
-    // Server is SSOT; local cache is best-effort. Gap until next session is
-    // acceptable if retry also fails.
+  } on ParallelWaitError catch (error, stackTrace) {
+    _logParallelWaitErrors(error, stackTrace);
     await Future<void>.delayed(_kConsentRetryDelay);
     try {
-      await [
-        userState.markWelcomeSeen(),
-        userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
-        userState.setAcceptedConsentScopes(acceptedScopes),
-      ].wait.timeout(
-        _kConsentPersistenceTimeout,
-        onTimeout: () => throw TimeoutException(
-          'Local consent cache persistence timed out',
-          _kConsentPersistenceTimeout,
-        ),
-      );
+      await _performConsentCacheWrites(userState, acceptedScopes);
       log.d('consent_local_cache_retry_succeeded', tag: 'consent_options');
       return true;
-    } on ParallelWaitError catch (e) {
-      // High-severity: stale cache → analyticsConsentGateProvider returns false
-      // until next session refresh, despite user giving consent.
-      // User sees snackbar warning via _handleContinue (line ~220).
+    } on ParallelWaitError catch (retryError) {
       log.e(
         'consent_local_cache_retry_failed: analytics_gate_may_be_stale_until_restart',
         tag: 'consent_options',
-        error: 'ParallelWaitError: ${e.errors.whereType<Object>().length} op(s) failed after retry. '
+        error: 'ParallelWaitError: ${retryError.errors.whereType<Object>().length} op(s) failed after retry. '
             'User will see snackbar warning. Analytics gating may remain inactive until next session.',
       );
       return false;

@@ -183,7 +183,7 @@ class UserStateService {
       final decoded = jsonDecode(json);
       if (decoded is! List) {
         log.d(
-          'acceptedConsentScopesOrNull: decoded value is not List, key=$key, raw=$json',
+          'acceptedConsentScopesOrNull: decoded value is not List (type=${decoded.runtimeType})',
           tag: 'UserStateService',
         );
         return null;
@@ -208,8 +208,7 @@ class UserStateService {
         // Analytics may be incorrectly gated until cache is repaired.
         log.e(
           'acceptedConsentScopesOrNull: CORRUPTED - $nonStringCount non-String elements, '
-          'invalidating all consent for data integrity. Analytics may be incorrectly gated. '
-          'key=$key, raw=$json',
+          'invalidating all consent for data integrity. Analytics may be incorrectly gated.',
           tag: 'UserStateService',
         );
         return null;
@@ -218,7 +217,7 @@ class UserStateService {
     } catch (e) {
       // Corrupted/malformed JSON - fail-safe return null
       log.d(
-        'acceptedConsentScopesOrNull: malformed JSON, key=$key, raw=$json, error=$e',
+        'acceptedConsentScopesOrNull: malformed JSON (${e.runtimeType})',
         tag: 'UserStateService',
       );
       return null;

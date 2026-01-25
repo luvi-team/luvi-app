@@ -56,9 +56,11 @@ Use `/adjudicate` command in PR comments:
 - Failed permission checks logged separately for security monitoring
 
 **Rate Limiting**:
-- Max 10 adjudications per user per PR
-- Cooldown: 1 second between commands
+- Max 10 adjudications per user per PR *(prevents spam while allowing legitimate corrections)*
+- Cooldown: 1 second between commands *(balances responsiveness with abuse prevention)*
 - Exceeding limits → Bot responds with rate limit message
+
+*Note: These defaults balance usability with spam prevention. Values are configurable via bot environment variables when deployed. Adjust for different deployment contexts as needed.*
 
 **Implementation Status**: Bot command planned for MVP. Manual workflow operational for interim use.
 
@@ -67,13 +69,11 @@ Use `/adjudicate` command in PR comments:
 [{TP|FP}-Adjudication] Finding: {Finding_ID}, Decision: {True|False} Positive, By: @user
 ```
 
-### Validation Rules
-- Finding_ID format: `REQ-{PR#}-{SEQ}` (e.g., `REQ-123-01`)
-- Invalid format → command rejected with error message
-- Label applied automatically on valid command
-
 ### Manual Fallback
-If bot unavailable, manually add comment + label per spec above.
+If bot unavailable:
+1. Add comment using the template from "Comment Template (Auto-Generated)" section above:
+   `[{TP|FP}-Adjudication] Finding: {Finding_ID}, Decision: {True|False} Positive, By: @user`
+2. Apply the appropriate label: `adjudicated-fp` (false positive) or `adjudicated-tp` (true positive)
 
 ## Operative Mode
 Codex CLI-first (BMAD → PRP).

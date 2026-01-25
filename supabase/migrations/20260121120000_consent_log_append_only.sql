@@ -195,17 +195,22 @@ END $$;
 -- If pg_cron is not installed, run this function via external scheduler/monitoring.
 DO $$
 BEGIN
-  IF to_regprocedure('cron.schedule(text,text,text)') IS NOT NULL THEN
+  IF to_regprocedure('cron.schedule(text,text,text)') IS NOT NULL
+     AND to_regclass('cron.job') IS NOT NULL THEN
     EXECUTE format(
       'grant execute on function public.check_and_restore_consent_trigger_state() to %I',
       current_user
     );
-    EXECUTE format(
-      'select cron.schedule(%L, %L, %L)',
-      'consent_trigger_guard',
-      '*/5 * * * *',
-      'select public.check_and_restore_consent_trigger_state();'
-    );
+    IF NOT EXISTS (
+      SELECT 1 FROM cron.job WHERE jobname = 'consent_trigger_guard'
+    ) THEN
+      EXECUTE format(
+        'select cron.schedule(%L, %L, %L)',
+        'consent_trigger_guard',
+        '*/5 * * * *',
+        'select public.check_and_restore_consent_trigger_state();'
+      );
+    END IF;
   END IF;
 END $$;
 
