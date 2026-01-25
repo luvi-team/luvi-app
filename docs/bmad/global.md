@@ -396,37 +396,40 @@ docs/audits/SUPABASE_SCHEMA_public.ts)*
 
 ### 2.2 Domäne → Tabellen/Views → Status
 
-| Domäne | Supabase-Tabellen/Views | Status | Quellen |
-|--------|-------------------------|--------|---------|
-| User | `auth.users`, `user_id`-Felder in anderen Tabellen | Ist | Schema-Audit, Roadmap |
-| Consent | `public.consents` | Ist | Schema-Audit, Roadmap, docs/consent_texts.md |
-| ConsentLog | `public.consent_logs` | Geplant | Roadmap (S2), docs/consent_texts.md |
-| CycleData | `public.cycle_data` | Ist | Schema-Audit, Roadmap (S0/S1) |
-| Phase | -- (berechnet, keine eigene Tabelle) | Logik-only | docs/phase_definitions.md |
-| Cycle/Phase Computation | -- (Funktionen/Services) | Logik-only | Roadmap (S1) |
-| DailyPlan | `public.daily_plan` | Ist | Schema-Audit |
-| **Workout** | `public.workout` | **Geplant** | Roadmap (MVP) |
-| **WorkoutSession** | `public.workout_session` | **Geplant** | Roadmap (MVP) |
-| **ExerciseLog** | `public.exercise_log` | **Geplant** | Roadmap (MVP) |
-| **TrainingFeedback** | `public.training_feedback` | **Geplant** | Roadmap (MVP) |
-| **WeeklyPlan** | `public.weekly_plan` | **Geplant** | Roadmap (MVP) |
-| **ProgressionData** | -- (berechnete View) | **Logik-only** | Roadmap (MVP) |
-| **JournalEntry** | `public.journal_entry` | **Geplant** | Roadmap (MVP) |
-| **DailyMindset** | `public.daily_mindset` | **Geplant** | Roadmap (MVP) |
-| **EnergySelection** | `public.energy_selection` | **Geplant** | Roadmap (MVP) |
-| Content/Video | `public.video` | Geplant | Roadmap (S2 DB/Schema) |
-| Channel | `public.channel` | Geplant | Roadmap (S2 DB/Schema) |
-| VideoPhase | `public.video_phase` | Geplant | Roadmap (S2 DB/Schema) |
-| VideoTag | `public.video_tags` | Geplant | Roadmap (S2 DB/Schema) |
-| ContentVideoHealth | `public.content_video_health` | Geplant | Roadmap (S2.5 Tech) |
-| SavedContent | `public.saved_content` | **Geplant** | Roadmap (MVP) |
-| UserEvent | `public.user_event` | Geplant | Roadmap (S2 DB/Schema) |
-| AnalyticsEvent | Event-Stream (PostHog-Schema) | Logik-only | analytics/taxonomy |
-| RankingScore | -- (berechnete View/Funktion) | Logik-only | ranking_heuristic |
-| Program/CoachProgram | -- (Domäne definiert) | Geplant | Roadmap (S5) |
-| **PurchasedWorkout** | `public.purchased_workout` | **Geplant** | Roadmap (MVP) |
-| Consent Copy (CMP) | -- (Copy/Config) | Copy/Config | consent_texts |
-| **WearableData** | `public.wearable_data` | **Post-MVP** | Roadmap |
+| Domäne | Supabase-Tabellen/Views | Status | Migration/Ticket | Quellen |
+|--------|-------------------------|--------|------------------|---------|
+| User | `auth.users`, `user_id`-Felder in anderen Tabellen | Ist | Supabase managed | Schema-Audit, Roadmap |
+| Consent | `public.consents` | Ist | `20250903235538` | Schema-Audit, Roadmap, docs/consent_texts.md |
+| ConsentLog | `public.consent_logs` | Geplant | TBD (Roadmap S2) | Roadmap (S2), docs/consent_texts.md |
+| CycleData | `public.cycle_data` | Ist | `20250903235539` | Schema-Audit, Roadmap (S0/S1) |
+| Phase | -- (berechnet, keine eigene Tabelle) | Logik-only | N/A | docs/phase_definitions.md |
+| Cycle/Phase Computation | -- (Funktionen/Services) | Logik-only | N/A | Roadmap (S1) |
+| DailyPlan | `public.daily_plan` | Ist | Pre-existing | Schema-Audit |
+| **Workout** | `public.workout` | **Geplant** | TBD (Roadmap S3) | Roadmap (MVP) |
+| **WorkoutSession** | `public.workout_session` | **Geplant** | TBD (Roadmap S3) | Roadmap (MVP) |
+| **ExerciseLog** | `public.exercise_log` | **Geplant** | TBD (Roadmap S3) | Roadmap (MVP) |
+| **TrainingFeedback** | `public.training_feedback` | **Geplant** | TBD (Roadmap S3) | Roadmap (MVP) |
+| **WeeklyPlan** | `public.weekly_plan` | **Geplant** | TBD (Roadmap S4) | Roadmap (MVP) |
+| **ProgressionData** | -- (berechnete View) | **Logik-only** | N/A | Roadmap (MVP) |
+| **JournalEntry** | `public.journal_entry` | **Geplant** | TBD (Roadmap S6) | Roadmap (MVP) |
+| **DailyMindset** | `public.daily_mindset` | **Geplant** | TBD (Roadmap S6) | Roadmap (MVP) |
+| **EnergySelection** | `public.energy_selection` | **Geplant** | TBD (Roadmap S2) | Roadmap (MVP) |
+| Content/Video | `public.video` | Geplant | TBD (Roadmap S2) | Roadmap (S2 DB/Schema) |
+| Channel | `public.channel` | Geplant | TBD (Roadmap S2) | Roadmap (S2 DB/Schema) |
+| VideoPhase | `public.video_phase` | Geplant | TBD (Roadmap S2) | Roadmap (S2 DB/Schema) |
+| VideoTag | `public.video_tags` | Geplant | TBD (Roadmap S2) | Roadmap (S2 DB/Schema) |
+| ContentVideoHealth | `public.content_video_health` | Geplant | TBD (Roadmap S2.5) | Roadmap (S2.5 Tech) |
+| SavedContent | `public.saved_content` | **Geplant** | TBD (Roadmap S5) | Roadmap (MVP) |
+| UserEvent | `public.user_event` | Geplant | TBD (Roadmap S2) | Roadmap (S2 DB/Schema) |
+| AnalyticsEvent | Event-Stream (PostHog-Schema) | Logik-only | N/A | analytics/taxonomy |
+| RankingScore | -- (berechnete View/Funktion) | Logik-only | N/A | ranking_heuristic |
+| Program/CoachProgram | -- (Domäne definiert) | Geplant | TBD (Roadmap S5) | Roadmap (S5) |
+| **PurchasedWorkout** | `public.purchased_workout` | **Geplant** | TBD (Roadmap S6) | Roadmap (MVP) |
+| Consent Copy (CMP) | -- (Copy/Config) | Copy/Config | N/A | consent_texts |
+| **WearableData** | `public.wearable_data` | **Post-MVP** | TBD (Post-MVP) | Roadmap |
+
+> **Convention:** Migration/Ticket column uses migration timestamp for existing tables (e.g., `20250903235538`),
+> "TBD (Roadmap SX)" for planned tables referencing the sprint, or "N/A" for computed views/logic-only.
 
 ### 2.3 Wichtige Beziehungen & Invarianten
 

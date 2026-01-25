@@ -99,7 +99,8 @@ SECURITY INVOKER
 SET search_path = "public"
 AS $$
 BEGIN
-  RAISE EXCEPTION 'Consent log is append-only (GDPR audit requirement). UPDATE is not allowed.';
+  RAISE EXCEPTION 'Consent log is append-only (GDPR audit requirement). UPDATE is not allowed.'
+    USING ERRCODE = 'P0001';
 END;
 $$;
 

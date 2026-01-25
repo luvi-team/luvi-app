@@ -213,9 +213,11 @@ context/agents/*
 !context/agents/README.md
 !context/agents/reqing-ball.md
 !context/agents/ui-polisher.md
-!context/refs/
-context/refs/archive/
-context/refs/*.json
+# Context refs - versioned YAML files, but not JSON exports or archived items
+!context/refs/                    # Include the refs directory
+context/refs/archive/            # Exclude archived/deprecated reference files
+context/refs/*.json              # Exclude JSON exports (Figma nodes, etc.) - not SSOT
+# Note: tech_stack_current.yaml and other YAML files ARE tracked (SSOT)
 # CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
 
 # UI measurement exports (noisy / not SSOT)

@@ -73,6 +73,9 @@ This feature moves gate state and selected onboarding answers from device-only s
 > and `profiles.accepted_consent_version` (numeric, e.g., 1). PRs with mismatched
 > formats will be rejected. Test cases: v1.0↔1 (pass), v2.0↔2 (pass), v1.0↔2 (fail).
 
+> **Last validated:** Commit `52339cf5` (2026-01-25) — Version parsing logic verified against
+> `lib/core/privacy/consent_config.dart` inline RegExp getter implementation.
+
 ## Access Control (RLS / Least Privilege)
 
 ### profiles (new)
@@ -159,9 +162,12 @@ This feature moves gate state and selected onboarding answers from device-only s
 - **Backfill to server:** Fire-and-forget; errors logged but not queued
 
 **Failure Handling:**
-- On persistent failure: Manual retry via UI (max 3 manual retries)
-- No background sync queue (not implemented)
-- App remains functional with cached local state
+- On persistent failure (all retries exhausted): App displays manual retry option in UI
+- Manual retry limit: 3 attempts per session to prevent infinite loops
+- **Escape hatch:** After 3 failed manual retries, user can proceed with cached local state
+- Users can continue using the app in offline mode without server sync
+- No background sync queue (not implemented in MVP)
+- App remains functional with cached local state even if server sync fails
 
 - **Abuse/noise via anon RPC:** EXECUTE revokes reduce attack surface and prevent DB error spam.
 

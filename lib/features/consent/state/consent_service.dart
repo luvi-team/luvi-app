@@ -92,6 +92,7 @@ class ConsentService {
     );
 
     return switch (status) {
+      400 => ConsentException(400, 'Bad request', code: 'bad_request'),
       401 => ConsentException(401, 'Unauthorized', code: 'unauthorized'),
       403 => ConsentException(403, 'Forbidden', code: 'forbidden'),
       429 => ConsentException(429, 'Rate limit exceeded', code: 'rate_limit'),

@@ -26,7 +26,7 @@ const _tagCategoryMap = <String, Category>{
 
 /// Maps a recommendation tag to its corresponding category.
 /// Returns null if tag is unmapped (recommendation shows in all categories).
-Category? categoryFromTag(String tag) => _tagCategoryMap[tag.toLowerCase()];
+Category? categoryFromTag(String tag) => _tagCategoryMap[tag.trim().toLowerCase()];
 
 @immutable
 class Recommendation {

@@ -235,7 +235,8 @@ Session? _getSessionSafely({
   try {
     return SupabaseService.client.auth.currentSession;
   } catch (e, stack) {
-    // Defense-in-depth: wrap sanitizeError to ensure fallback always works
+    // Defense-in-depth: sanitizeError calls error.toString() internally, which
+    // may throw for malformed custom error objects. Guard to ensure fallback works.
     String errorInfo;
     try {
       errorInfo = sanitizeError(e) ?? e.runtimeType.toString();

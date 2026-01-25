@@ -173,9 +173,9 @@ class AuthRebrandTextField extends StatelessWidget {
   ///
   /// Logic order:
   /// 1. [semanticLabel] if provided.
-  /// 2. Field-type + error message if in error state.
-  /// 3. Field-type label based on keyboard type.
-  /// 4. [hintText] as last resort.
+  /// 2. Field-type label + error message when in error state.
+  /// 3. Field-type label via [_getFieldTypeLabel], which derives a label
+  ///    based on [keyboardType], [obscureText], or falls back to [hintText].
   String _deriveFallbackLabel(AppLocalizations? l10n, bool showError) {
     // 1. Explicit semanticLabel always wins
     if (semanticLabel != null) {

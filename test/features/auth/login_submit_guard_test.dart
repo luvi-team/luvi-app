@@ -200,6 +200,10 @@ void main() {
       expect(state.globalError, isNull);
     });
 
+    // When AuthException has null code, loginSubmitProvider.submit intentionally
+    // avoids message-based field detection and sets globalError to
+    // AuthStrings.errLoginUnavailable instead. This prevents untrusted message
+    // content from influencing error display.
     test('null error.code with "Invalid credentials" message shows generic error', () async {
       final mockRepo = _MockAuthRepository();
       when(() => mockRepo.signInWithPassword(

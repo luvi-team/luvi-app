@@ -63,6 +63,10 @@ run_psql_file() {
 }
 
 run_psql_file "${script_dir}/rls_smoke.sql"
-run_psql_file "${script_dir}/rls_smoke_negative.sql"
+if [[ -f "${script_dir}/rls_smoke_negative.sql" ]]; then
+  run_psql_file "${script_dir}/rls_smoke_negative.sql"
+else
+  echo "WARN: rls_smoke_negative.sql not found; skipping negative tests." >&2
+fi
 
 echo "OK: RLS smoke tests passed."

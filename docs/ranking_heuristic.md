@@ -83,7 +83,7 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 - **Rohwert:** Gewichteter Mix:
   - `w_save = 1.0`
   - `w_like = 0.8`
-  - `w_watch = 0..1` (normiert nach Duration)
+  - `w_watch` ∈ [0.0, 1.0] (normalized by video duration: `min(1.0, watch_time / video_duration)`)
   - `w_creator_pref = 0.3`
 - **Formel:**
   ```

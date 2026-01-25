@@ -178,6 +178,26 @@ void main() {
       expect(find.text('Test Button'), findsNothing);
     });
 
+    testWidgets('shows label text when isLoading is false', (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          home: Scaffold(
+            body: Center(
+              child: AuthButtonBase(
+                label: 'Test Button',
+                onPressed: () {},
+                backgroundColor: DsColors.authRebrandCtaPrimary,
+                isLoading: false,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Test Button'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+
     testWidgets('respects custom height parameter', (tester) async {
       const customHeight = 60.0;
 

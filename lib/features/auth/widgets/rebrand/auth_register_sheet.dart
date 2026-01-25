@@ -30,7 +30,7 @@ class AuthRegisterSheet extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) {
       // Throw to surface in crash reporting - this is a configuration bug.
-      throw StateError(
+      throw FlutterError(
         'AppLocalizations not found in context for AuthRegisterSheet. '
         'Ensure MaterialApp has localizationsDelegates configured.',
       );

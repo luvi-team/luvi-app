@@ -5,6 +5,13 @@
 **Endpoint:** `POST /functions/v1/log_consent`
 **Payload:** `{version: string, scopes: string[]}`
 
+### Database Schema
+
+**API Payload:** `{version: string, scopes: string[]}`
+**Database Schema:** `{user_id, version, scopes, created_at, revoked_at}`
+
+> Note: `user_id`, `created_at`, and `revoked_at` are server-managed fields and are **not** part of the client payload.
+
 ### Payload Validation
 
 | Field | Constraint | Error Response |
@@ -29,14 +36,15 @@
 **Security:** RLS owner-based policies enforced; user_id set via DB trigger; ANON key only (no service_role)
 
 **Rate Limiting & Abuse Controls:**
-- **Per-user limit:** 20 requests/minute (configurable via `CONSENT_RATE_LIMIT_MAX_REQUESTS`) *
+- **Per-user limit:** 5 requests/minute (configurable via `CONSENT_RATE_LIMIT_MAX_REQUESTS`) *
+- **Burst allowance:** +3 requests/window (configurable via `CONSENT_RATE_LIMIT_BURST`) *
 - **Per-IP limit:** 30 requests/minute (ANON key context) *
 - **Abuse detection:** IP throttling with exponential backoff (1s → 2s → 4s → block 5min)
 - **Monitoring:** Consent logging metrics exposed via Supabase observability (request count, error rate, latency)
 - **Enforcement:** RLS owner-based policies + Edge Function request validation
 
 > Note: Rate limits enforced at Edge Function level before DB trigger executes.
-> *Values are initial estimates; adjust based on production monitoring data.
+> *Values are initial estimates; adjust based on production monitoring data and tune burst behavior in production.
 
 **Evidence:** Tested with curl for two users - write and read operations verified; created_at timestamp auto-populated
 
@@ -69,6 +77,12 @@ Consent records follow an **append-only model** with one documented exception fo
 
 **Cryptographic Irreversibility:** HMAC-SHA256 with a secret key (stored separately per GDPR Art. 4(5)) is a one-way keyed hash function. Without access to the separately-protected secret key, re-identification is infeasible. This ensures pseudonymized records cannot be re-linked to the original user, satisfying GDPR Art. 4(5) pseudonymization and maintaining audit trail integrity per Art. 7(1).
 
+#### Secret Key Management
+- **Storage:** Store the HMAC secret in a secure secrets manager (e.g., Supabase Vault, KMS-backed encrypted env var).
+- **Access:** Only the Edge Function runtime and limited ops roles; enforce RBAC and audit access.
+- **Rotation:** Rotate on schedule (e.g., quarterly) and on incident; plan for re-pseudonymization or dual-hash support during transition.
+- **Backup/Recovery:** Ensure secure backup of key material; losing the key makes existing pseudonymized `user_id` values irreversible.
+
 ## Data Subject Rights (DSAR)
 
 ### Access Request (Art. 15 GDPR)
@@ -89,10 +103,10 @@ Consent records follow an **append-only model** with one documented exception fo
 
 **Mechanism:**
 - Withdrawal is recorded as a **new append-only row** in `consents` table
-- Schema: `{user_id, version, scopes, created_at, revoked_at}`
+- Schema: see **Database Schema** section above (server-managed fields included)
 - Active consent determined by: latest entry per scope, then check `revoked_at` on that newest row
 
-**Processing Logic:**
+**Processing Logic (Planned Implementation):**
 ```sql
 -- Active consent check (per scope, assumes scopes stored as JSON string array)
 WITH latest_per_scope AS (

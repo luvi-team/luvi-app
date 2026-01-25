@@ -25,6 +25,9 @@ create table if not exists public.admin_audit_log (
 comment on table public.admin_audit_log is
   'Internal admin audit log for break-glass DB operations (no user PII).';
 
+create index if not exists admin_audit_log_performed_at_idx
+  on public.admin_audit_log (performed_at desc);
+
 alter table public.admin_audit_log enable row level security;
 
 -- No policies: only privileged roles (e.g. postgres) can read/write.

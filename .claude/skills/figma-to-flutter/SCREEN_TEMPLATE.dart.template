@@ -18,7 +18,8 @@ class {ScreenName}Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
+    // ignore: unused_local_variable
+    final l10n = context.l10n; // Pre-declared for developer ergonomics
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

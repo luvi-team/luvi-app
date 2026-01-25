@@ -2,14 +2,26 @@ import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 
 import { VALID_SCOPES } from "./index.ts";
 
-function assertScopeArray(
+interface VersionedScopeConfig {
+  version: number;
+  scopes: Array<{ id: string }>;
+}
+
+function assertVersionedConfig(
   value: unknown,
   source: string,
-): asserts value is Array<{ id: string }> {
-  if (!Array.isArray(value)) {
-    throw new Error(`${source} must be a JSON array`);
+): asserts value is VersionedScopeConfig {
+  if (typeof value !== 'object' || value === null) {
+    throw new Error(`${source} must be an object`);
   }
-  const invalidIndex = value.findIndex((item) =>
+  if (!('version' in value) || typeof (value as { version: unknown }).version !== 'number') {
+    throw new Error(`${source} must have numeric 'version' field`);
+  }
+  if (!('scopes' in value) || !Array.isArray((value as { scopes: unknown }).scopes)) {
+    throw new Error(`${source} must have 'scopes' array`);
+  }
+  const scopes = (value as VersionedScopeConfig).scopes;
+  const invalidIndex = scopes.findIndex((item) =>
     typeof item !== "object" ||
     item === null ||
     !("id" in item) ||
@@ -17,7 +29,7 @@ function assertScopeArray(
   );
   if (invalidIndex !== -1) {
     throw new Error(
-      `${source} contains invalid item at index ${invalidIndex} (expected { id: string })`,
+      `${source}.scopes[${invalidIndex}] must have string 'id'`,
     );
   }
 }
@@ -32,14 +44,14 @@ Deno.test("SSOT: VALID_SCOPES matches config/consent_scopes.json IDs", async () 
     throw new Error(`Failed to read file ${rootConfigUrl}: ${e instanceof Error ? e.message : e}`);
   }
 
-  let rootScopes: Array<{ id: string }>;
+  let rootConfig: VersionedScopeConfig;
   try {
-    rootScopes = JSON.parse(rootJsonText) as Array<{ id: string }>;
+    rootConfig = JSON.parse(rootJsonText) as VersionedScopeConfig;
   } catch (e) {
     throw new Error(`Failed to parse JSON from ${rootConfigUrl}: ${e instanceof Error ? e.message : e}`);
   }
-  assertScopeArray(rootScopes, `Parsed scopes from ${rootConfigUrl}`);
-  const rootIds = rootScopes.map((scope) => scope.id).sort();
+  assertVersionedConfig(rootConfig, `Parsed config from ${rootConfigUrl}`);
+  const rootIds = rootConfig.scopes.map((scope) => scope.id).sort();
 
   // Bundled config - separate file I/O and JSON parse error handling
   const bundledConfigUrl = new URL("./consent_scopes.json", import.meta.url);
@@ -50,17 +62,20 @@ Deno.test("SSOT: VALID_SCOPES matches config/consent_scopes.json IDs", async () 
     throw new Error(`Failed to read file ${bundledConfigUrl}: ${e instanceof Error ? e.message : e}`);
   }
 
-  let bundledScopes: Array<{ id: string }>;
+  let bundledConfig: VersionedScopeConfig;
   try {
-    bundledScopes = JSON.parse(bundledJsonText) as Array<{ id: string }>;
+    bundledConfig = JSON.parse(bundledJsonText) as VersionedScopeConfig;
   } catch (e) {
     throw new Error(`Failed to parse JSON from ${bundledConfigUrl}: ${e instanceof Error ? e.message : e}`);
   }
-  assertScopeArray(bundledScopes, `Parsed scopes from ${bundledConfigUrl}`);
-  const bundledIds = bundledScopes.map((scope) => scope.id).sort();
+  assertVersionedConfig(bundledConfig, `Parsed config from ${bundledConfigUrl}`);
+  const bundledIds = bundledConfig.scopes.map((scope) => scope.id).sort();
 
   // Ensure the deployed bundle stays in sync with SSOT.
   assertEquals(bundledIds, rootIds);
+
+  // Ensure version numbers match
+  assertEquals(bundledConfig.version, rootConfig.version);
 
   const backendIds = [...VALID_SCOPES].sort();
   assertEquals(backendIds, rootIds);

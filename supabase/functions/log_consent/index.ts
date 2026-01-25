@@ -28,10 +28,16 @@ if (isNaN(RATE_LIMIT_WINDOW_SEC) || RATE_LIMIT_WINDOW_SEC <= 0 || RATE_LIMIT_WIN
   throw new Error("CONSENT_RATE_LIMIT_WINDOW_SEC must be between 1 and 3600");
 }
 const RATE_LIMIT_MAX_REQUESTS = parseInt(
-  Deno.env.get("CONSENT_RATE_LIMIT_MAX_REQUESTS") ?? "20",
+  Deno.env.get("CONSENT_RATE_LIMIT_MAX_REQUESTS") ?? "5",
 );
 if (isNaN(RATE_LIMIT_MAX_REQUESTS) || RATE_LIMIT_MAX_REQUESTS <= 0 || RATE_LIMIT_MAX_REQUESTS > 1000) {
   throw new Error("CONSENT_RATE_LIMIT_MAX_REQUESTS must be between 1 and 1000");
+}
+const RATE_LIMIT_BURST = parseInt(
+  Deno.env.get("CONSENT_RATE_LIMIT_BURST") ?? "3",
+);
+if (isNaN(RATE_LIMIT_BURST) || RATE_LIMIT_BURST < 0 || RATE_LIMIT_BURST > 1000) {
+  throw new Error("CONSENT_RATE_LIMIT_BURST must be between 0 and 1000");
 }
 // Optional webhook to raise alerts on notable events (errors/spikes). This should
 // point to your alerting system (e.g. Slack incoming webhook, Log Ingest, etc.).
@@ -67,13 +73,20 @@ const FALLBACK_SCOPES = [
   "model_training",
 ] as const;
 
+/** Regex pattern for valid scope IDs: lowercase alphanumeric + underscore, 1-50 chars */
+const SCOPE_ID_PATTERN = /^[a-z][a-z0-9_]{0,49}$/;
+
 /** Type guard for consent scope config items. */
 function isValidScopeItem(item: unknown): item is { id: string } {
   if (typeof item !== "object" || item === null || !("id" in item)) {
     return false;
   }
   const id = (item as { id: unknown }).id;
-  return typeof id === "string" && id.trim() !== "";
+  if (typeof id !== "string") {
+    return false;
+  }
+  // Validate format: lowercase alphanumeric + underscore, starts with letter
+  return SCOPE_ID_PATTERN.test(id);
 }
 
 async function loadConsentScopes(): Promise<readonly string[]> {
@@ -100,29 +113,52 @@ async function loadConsentScopes(): Promise<readonly string[]> {
     }
 
     const jsonText = await Deno.readTextFile(configUrl);
-    const parsed: unknown = JSON.parse(jsonText);
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch (parseError) {
+      const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+      console.error(
+        JSON.stringify({
+          severity: "error",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "json_parse_error",
+          message: "consent_scopes.json contains invalid JSON, using fallback",
+          error: errorMessage,
+        })
+      );
+      return FALLBACK_SCOPES;
+    }
 
-    // Runtime validation: ensure parsed result is an array
-    if (!Array.isArray(parsed)) {
+    // Runtime validation: expect versioned object format { version, scopes }
+    if (
+      typeof parsed !== 'object' ||
+      parsed === null ||
+      !('scopes' in parsed) ||
+      !Array.isArray((parsed as { scopes: unknown }).scopes)
+    ) {
       console.warn(
         JSON.stringify({
           severity: "warning",
           ts: new Date().toISOString(),
           event: "consent_scopes_load",
           status: "invalid_structure",
-          message: "consent_scopes.json is not an array, using fallback",
+          message: "consent_scopes.json must be { version, scopes: [...] }, using fallback",
           receivedType: typeof parsed,
         })
       );
       return FALLBACK_SCOPES;
     }
 
+    const scopeArray = (parsed as { scopes: unknown[] }).scopes;
+
     // Validate each element and extract valid IDs (deduplicated)
     const validIdsSet = new Set<string>();
     const duplicateIds: string[] = [];
     let invalidCount = 0;
 
-    for (const item of parsed) {
+    for (const item of scopeArray) {
       if (isValidScopeItem(item)) {
         if (validIdsSet.has(item.id)) {
           duplicateIds.push(item.id);
@@ -650,6 +686,7 @@ if (import.meta.main) {
       p_scopes: payload.scopes,
       p_window_sec: RATE_LIMIT_WINDOW_SEC,
       p_max_requests: RATE_LIMIT_MAX_REQUESTS,
+      p_burst_max_requests: RATE_LIMIT_BURST,
     },
   );
   const rpcDuration = Date.now() - t0Rpc;
@@ -681,6 +718,7 @@ if (import.meta.main) {
       consent_id_hash: consentIdHash,
       window_sec: RATE_LIMIT_WINDOW_SEC,
       max: RATE_LIMIT_MAX_REQUESTS,
+      burst_max: RATE_LIMIT_BURST,
       ip_hash: ipHash,
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
@@ -695,13 +733,14 @@ if (import.meta.main) {
     return new Response(JSON.stringify({ error: "Rate limit exceeded", request_id: requestId }), {
       status: 429,
       headers: {
-        "Content-Type": "application/json",
-        "Retry-After": `${RATE_LIMIT_WINDOW_SEC}`,
-        "X-RateLimit-Limit": `${RATE_LIMIT_MAX_REQUESTS}`,
-        "X-RateLimit-Remaining": "0",
-        "X-Request-Id": requestId,
-      },
-    });
+      "Content-Type": "application/json",
+      "Retry-After": `${RATE_LIMIT_WINDOW_SEC}`,
+      "X-RateLimit-Limit": `${RATE_LIMIT_MAX_REQUESTS}`,
+      "X-RateLimit-Burst": `${RATE_LIMIT_BURST}`,
+      "X-RateLimit-Remaining": "0",
+      "X-Request-Id": requestId,
+    },
+  });
   }
 
   const elapsed = Date.now() - started;

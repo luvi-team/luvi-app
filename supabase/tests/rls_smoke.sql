@@ -243,7 +243,8 @@ BEGIN
     'rls-smoke',
     '{"terms": true}'::jsonb,
     1,
-    1000
+    1000,
+    0
   ) INTO rpc_allowed;
   ASSERT rpc_allowed, 'log_consent_if_allowed must accept canonical JSONB object scopes';
 
@@ -253,7 +254,8 @@ BEGIN
     'rls-smoke',
     '["terms"]'::jsonb,
     1,
-    1000
+    1000,
+    0
   ) INTO rpc_allowed_legacy;
   ASSERT rpc_allowed_legacy, 'log_consent_if_allowed must accept legacy JSONB array scopes';
 END $$;

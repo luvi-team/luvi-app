@@ -132,6 +132,9 @@ class _RainbowPillPainter extends CustomPainter {
 
   /// Pre-allocated Paint objects for each ring (hoisted out of paint loop).
   /// This avoids creating new Paint instances on every frame.
+  ///
+  /// INVARIANT: _paints is derived from _rings at module load.
+  /// Do not mutate _rings after this point.
   static final List<Paint> _paints = _rings
       .map(
         (ring) => Paint()

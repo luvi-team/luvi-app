@@ -19,7 +19,7 @@
 - Owner-based RLS on `email_preferences` (`user_id = auth.uid()`) remains in place.
 - Policies now use the subquery pattern `(SELECT auth.uid())` per Supabase RLS best practices.
 
-## DPIA/DSGVO
+## DPIA/GDPR
 - No change to processing scope or data categories.
 - No new processors/transfers.
 

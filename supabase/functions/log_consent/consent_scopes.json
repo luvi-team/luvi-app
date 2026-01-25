@@ -1,32 +1,35 @@
-[
-  {
-    "id": "terms",
-    "required": true,
-    "description": "AGB / Nutzungsbedingungen akzeptieren"
-  },
-  {
-    "id": "health_processing",
-    "required": true,
-    "description": "Gesundheitsdaten verarbeiten (DSGVO Art. 9)"
-  },
-  {
-    "id": "analytics",
-    "required": false,
-    "description": "Nutzungsanalyse (anonymisierte App-Nutzung)"
-  },
-  {
-    "id": "marketing",
-    "required": false,
-    "description": "Marketing-Kommunikation (Newsletter, Angebote)"
-  },
-  {
-    "id": "ai_journal",
-    "required": false,
-    "description": "AI-Journal-Funktionen (Inhalte auswerten)"
-  },
-  {
-    "id": "model_training",
-    "required": false,
-    "description": "KI-Modelle mit Nutzungsdaten verbessern"
-  }
-]
+{
+  "version": 1,
+  "scopes": [
+    {
+      "id": "terms",
+      "required": true,
+      "description": "AGB / Nutzungsbedingungen akzeptieren"
+    },
+    {
+      "id": "health_processing",
+      "required": true,
+      "description": "Gesundheitsdaten verarbeiten (DSGVO Art. 9)"
+    },
+    {
+      "id": "analytics",
+      "required": false,
+      "description": "Nutzungsanalyse (anonymisierte App-Nutzung)"
+    },
+    {
+      "id": "marketing",
+      "required": false,
+      "description": "Marketing-Kommunikation (Newsletter, Angebote)"
+    },
+    {
+      "id": "ai_journal",
+      "required": false,
+      "description": "AI-Journal-Funktionen (Inhalte auswerten)"
+    },
+    {
+      "id": "model_training",
+      "required": false,
+      "description": "KI-Modelle mit Nutzungsdaten verbessern"
+    }
+  ]
+}
