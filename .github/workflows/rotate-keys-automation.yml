@@ -11,6 +11,10 @@ on:
         required: true
         default: "true"
         type: string
+      old_key_id:
+        description: "Identifier for the current key (e.g., sha256 fingerprint) before rotation"
+        required: true
+        type: string
 jobs:
   rotate-consent-key:
     runs-on: ubuntu-latest
@@ -38,11 +42,71 @@ jobs:
             echo "Missing CONSENT_HASH_PEPPER_NEXT secret."
             exit 1
           fi
+          if [ -z "${{ inputs.old_key_id }}" ]; then
+            echo "Missing old_key_id input."
+            exit 1
+          fi
       - name: Link Supabase project
-        run: supabase link --project-ref "${SUPABASE_PROJECT_REF}" --password "${SUPABASE_DB_PASSWORD}"
+        env:
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase link --project-ref "${SUPABASE_PROJECT_REF}"
       - name: Rotate consent hash key (apply)
         if: ${{ inputs.dry_run == 'false' }}
         run: supabase secrets set CONSENT_HASH_PEPPER="${CONSENT_HASH_PEPPER_NEXT}"
+      - name: Verify rotated consent hash key
+        if: ${{ inputs.dry_run == 'false' }}
+        id: verify-rotation
+        run: |
+          if ! supabase secrets list | grep -q '^CONSENT_HASH_PEPPER$'; then
+            echo "CONSENT_HASH_PEPPER not found after rotation."
+            exit 1
+          fi
+          new_key_id="$(printf '%s' "${CONSENT_HASH_PEPPER_NEXT}" | openssl dgst -sha256 | awk '{print $NF}')"
+          if [ "${#new_key_id}" -ne 64 ]; then
+            echo "Invalid CONSENT_HASH_PEPPER_NEXT fingerprint length."
+            exit 1
+          fi
+          echo "new_key_id=${new_key_id}" >> "$GITHUB_OUTPUT"
+      - name: Write rotation audit log
+        if: ${{ inputs.dry_run == 'false' }}
+        run: |
+          timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          actor="${{ github.actor }}"
+          reason="${{ inputs.rotation_reason }}"
+          old_key_id="${{ inputs.old_key_id }}"
+          new_key_id="${{ steps.verify-rotation.outputs.new_key_id }}"
+          cat > rotation-audit.json <<EOF
+          {
+            "timestamp": "${timestamp}",
+            "actor": "${actor}",
+            "reason": "${reason}",
+            "old_key_id": "${old_key_id}",
+            "new_key_id": "${new_key_id}",
+            "workflow": "${{ github.workflow }}",
+            "run_id": "${{ github.run_id }}"
+          }
+          EOF
+      - name: Upload rotation audit log
+        if: ${{ inputs.dry_run == 'false' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rotation-audit-log
+          path: rotation-audit.json
       - name: Dry run (no changes applied)
         if: ${{ inputs.dry_run != 'false' }}
         run: echo "Dry run only. Set dry_run=false to apply rotation."
+      - name: Notify rotation result (Slack)
+        if: ${{ always() }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "${SLACK_WEBHOOK_URL}" ]; then
+            echo "Missing SLACK_WEBHOOK_URL secret."
+            exit 1
+          fi
+          status="${{ job.status }}"
+          dry_run="${{ inputs.dry_run }}"
+          new_key_id="${{ steps.verify-rotation.outputs.new_key_id }}"
+          message="rotate-keys-automation: status=${status} (dry_run=${dry_run}). Steps referenced: 'Rotate consent hash key (apply)' and 'Dry run (no changes applied)'. Variables: CONSENT_HASH_PEPPER / CONSENT_HASH_PEPPER_NEXT. old_key_id=${{ inputs.old_key_id }} new_key_id=${new_key_id}. Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          payload=$(printf '{"text":"%s"}' "${message}")
+          curl -sS -X POST -H 'Content-type: application/json' --data "${payload}" "${SLACK_WEBHOOK_URL}"

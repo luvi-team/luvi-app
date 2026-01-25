@@ -196,13 +196,12 @@ END $$;
 DO $$
 BEGIN
   IF to_regprocedure('cron.schedule(text,text,text)') IS NOT NULL THEN
-    EXECUTE $cmd$
-      SELECT cron.schedule(
-        'consent_trigger_guard',
-        '*/5 * * * *',
-        $$SELECT public.check_and_restore_consent_trigger_state();$$
-      );
-    $cmd$;
+    EXECUTE format(
+      'select cron.schedule(%L, %L, %L)',
+      'consent_trigger_guard',
+      '*/5 * * * *',
+      'select public.check_and_restore_consent_trigger_state();'
+    );
   END IF;
 END $$;
 
