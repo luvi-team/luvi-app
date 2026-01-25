@@ -206,6 +206,8 @@ async function loadConsentScopes(): Promise<readonly string[]> {
       })
     );
     if (REQUIRE_CONSENT_SCOPES_BUNDLE) {
+      // Guardrail: CI + deploy scripts should also validate this file exists
+      // (e.g. GitHub workflow + db_push_and_smoke.sh) to fail fast before shipping.
       throw new Error(
         "consent_scopes.json missing from deployment bundle (CONSENT_SCOPES_REQUIRE_BUNDLE=true)",
       );

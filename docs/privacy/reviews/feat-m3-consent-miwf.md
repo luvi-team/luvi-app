@@ -155,7 +155,9 @@ Consent records follow an **append-only model** with one documented exception fo
 - **Storage:** Store the HMAC secret in a secure secrets manager (e.g., Supabase Vault, KMS-backed encrypted env var).
 - **Access:** Only the Edge Function runtime and limited ops roles; enforce RBAC and audit access.
 - **Rotation:** Follow `docs/runbooks/key-rotation-runbook.md`. Steps: enable dual-hash support (accept old + new), stage rollout (deploy code, then rotate secret), run verification tests (sample re-hash + consent access), and write an audit log entry. **Rollback:** re-enable old key, keep dual-hash during rollback window, re-run verification tests, and log the rollback reason in the audit trail.
-- **Backup/Recovery:** Store encrypted backups in the secrets manager with access logging; verify restore quarterly. **Recovery:** restore the last known-good key, re-run verification tests, and document the incident. Losing the key makes existing pseudonymized `user_id` values irreversible, so recovery must be treated as a P1 runbook.
+- **Backup/Recovery (critical):** Multi-region encrypted backups with automated daily replication; **quarterly restore drills** are mandatory. Losing the key permanently makes existing pseudonymized `user_id` values irreversible.
+- **Detective controls:** Automated alerts when backup age >24h; daily backup + replication health checks (and alerting on failures).
+- **Disaster recovery:** If no backup can be recovered, treat as **P1 incident** with a runbook (communication, mitigation, acceptance criteria) and **legal sign-off** due to GDPR/operational impact. Rotation/rollback must keep dual-hash guidance available for emergency rollback windows.
 
 ### Legal Compliance Checklist
 
@@ -195,30 +197,20 @@ Consent records follow an **append-only model** with one documented exception fo
 
 **Processing Logic (Planned Implementation):**
 ```sql
--- Active consent check (per scope, optimized with user pre-filter)
--- Index: idx_consents_user_id_created_at exists (created in migration 20251103113000)
--- Index definition: CREATE INDEX idx_consents_user_id_created_at ON consents(user_id, created_at DESC)
-WITH user_consents AS (
-  -- Pre-filter: Only this user's consent records
-  SELECT id, scopes, created_at, revoked_at
-  FROM consents
-  WHERE user_id = auth.uid()
-),
-latest_per_scope AS (
-  SELECT DISTINCT ON (s.key)
-    s.key AS scope_name,
-    uc.created_at,
-    uc.revoked_at
-  FROM user_consents uc
-  CROSS JOIN LATERAL jsonb_each_text(uc.scopes) AS s(key, value)
-  WHERE s.value = 'true'
-  ORDER BY s.key, uc.created_at DESC
-)
-SELECT *
-FROM latest_per_scope
-WHERE scope_name = $1
-  AND revoked_at IS NULL;
+-- Active consent check (per scope, optimized)
+-- Index: idx_consents_user_id_created_at exists (20251103113000)
+-- Add: idx_consents_scopes_gin (GIN on consents.scopes) to speed up `scopes ? $1` lookups.
+SELECT created_at, revoked_at
+FROM consents
+WHERE user_id = auth.uid()
+  AND scopes ? $1
+  AND (scopes ->> $1) = 'true'
+ORDER BY created_at DESC
+LIMIT 1;
 ```
+
+**Scaling note (future):**
+- If consent rows per user grow large, add retention (keep last N rows per user) **or** maintain a `latest_consents` helper table/materialized view keyed by `(user_id, scope)` to avoid repeated scans.
 
 **Impact on Services:**
 - Processing for withdrawn scopes must stop immediately
@@ -240,6 +232,7 @@ The following indexes support consent query performance:
 | `idx_consents_user_id` | `user_id` | User-scoped lookups | `20250903235538` | ✅ Deployed |
 | `idx_consents_created_at` | `created_at` | Temporal ordering | `20250903235538` | ✅ Deployed |
 | `idx_consents_revoked_at` | `revoked_at` (WHERE NOT NULL) | Revocation queries | `20250903235538` | ✅ Deployed |
+| `idx_consents_scopes_gin` | `scopes` (GIN) | Scope existence checks (`scopes ? 'id'`) | (add migration) | ⏳ Planned |
 
 **Query Coverage**: The composite index covers the consent withdrawal query pattern shown above (WHERE user_id = auth.uid() ORDER BY created_at DESC).
 

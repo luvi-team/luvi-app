@@ -231,15 +231,19 @@ BEGIN
           '*/5 * * * *',
           'select public.check_and_restore_consent_trigger_state();'
         );
-        UPDATE cron.job
-           SET username = 'cron_executor'
-         WHERE jobname = 'consent_trigger_guard';
+        EXECUTE format(
+          'update cron.job set username = %L where jobname = %L',
+          'cron_executor',
+          'consent_trigger_guard'
+        );
       END IF;
     ELSE
-      UPDATE cron.job
-         SET username = 'cron_executor'
-       WHERE jobname = 'consent_trigger_guard'
-         AND username IS DISTINCT FROM 'cron_executor';
+      EXECUTE format(
+        'update cron.job set username = %L where jobname = %L and username is distinct from %L',
+        'cron_executor',
+        'consent_trigger_guard',
+        'cron_executor'
+      );
     END IF;
   END IF;
 END $$;

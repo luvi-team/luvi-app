@@ -74,18 +74,22 @@ Safer alternatives (prefer these):
 -- If an emergency backout is required, document ticket ID + approver + reason
 -- in an access-restricted ops runbook before executing any ALTER TABLE.
 
--- 2) Revert birthdate gate constraint
+-- 2) Legitimate backout operations (executable with approval)
+-- Safe backout (scope-limited): revert only the birthdate gate constraint.
 ALTER TABLE public.profiles
   DROP CONSTRAINT IF EXISTS profiles_birth_date_required_when_completed;
 
--- 3) Re-open broad grants (not recommended; debug-only)
+-- 3) DANGEROUS operations (intentionally disabled — DO NOT EXECUTE)
+-- These examples are kept for awareness only. They re-open broad access and/or
+-- reintroduce drift-prone defaults. Do not execute without explicit approval
+-- and a documented incident/ticket.
 -- DANGEROUS (DISABLED): Re-open broad grants. Do not execute unless you fully understand the implications.
 -- GRANT ALL ON TABLE public.consents TO anon, authenticated;
 -- GRANT ALL ON TABLE public.cycle_data TO anon, authenticated;
 -- GRANT ALL ON TABLE public.email_preferences TO anon, authenticated;
 -- GRANT ALL ON TABLE public.profiles TO authenticated;
 
--- 4) Re-open broad DEFAULT PRIVILEGES (not recommended; debug-only)
+-- 4) DANGEROUS (DISABLED): Re-open broad DEFAULT PRIVILEGES (global lever)
 -- Note: This is a global lever. Inspect the current state first via:
 --   SELECT defaclrole::regrole, defaclnamespace::regnamespace, defaclobjtype, defaclacl FROM pg_default_acl;
 -- DANGEROUS (DISABLED): Re-open broad default privileges. This affects *future* objects created by these roles.
