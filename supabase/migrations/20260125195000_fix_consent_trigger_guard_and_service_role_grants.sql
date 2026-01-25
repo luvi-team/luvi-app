@@ -1,5 +1,13 @@
--- Ensure consent_no_update trigger is re-enabled if a session leaves it disabled.
--- Adds a periodic self-heal helper + alerting hook.
+-- ============================================================================
+-- Migration: Fix consent trigger guard + service_role grants
+-- Date: 2026-01-25
+-- Purpose:
+-- - Ensure check_and_restore_consent_trigger_state() only self-heals when the
+--   consent_no_update trigger is actually disabled (tgenabled = 'D'), not when
+--   it is in ALWAYS mode (tgenabled = 'A').
+-- - Enforce least-privilege by revoking UPDATE/DELETE on public.consents from
+--   service_role (append-only consent audit log).
+-- ============================================================================
 
 begin;
 
@@ -76,22 +84,11 @@ begin
   end if;
 end $$;
 
--- Optional: schedule periodic self-heal with pg_cron when available.
--- If pg_cron is not installed, run this function via external scheduler/monitoring.
+-- Align service_role grants with append-only semantics (defense-in-depth).
 do $$
 begin
-  if to_regprocedure('cron.schedule(text,text,text)') is not null
-     and to_regclass('cron.job') is not null then
-    if not exists (
-      select 1 from cron.job where jobname = 'consent_trigger_guard'
-    ) then
-      execute format(
-        'select cron.schedule(%L, %L, %L)',
-        'consent_trigger_guard',
-        '*/5 * * * *',
-        'select public.check_and_restore_consent_trigger_state();'
-      );
-    end if;
+  if to_regclass('public.consents') is not null and exists (select 1 from pg_roles where rolname = 'service_role') then
+    execute 'revoke update, delete on public.consents from service_role';
   end if;
 end $$;
 

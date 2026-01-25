@@ -176,5 +176,6 @@ Changes to **any** of the following components require coordinated deployment:
 
 - [ ] Migration applied: `supabase db push`
 - [ ] Edge Function deployed: `supabase functions deploy log_consent`
+- [ ] Optional helper: `scripts/db_push_and_smoke.sh .env.staging.local --deploy-log-consent`
 - [ ] Contract test passes: `deno test supabase/tests/log_consent.test.ts`
 - [ ] SSOT test passes: `deno test supabase/functions/log_consent/consent_scopes_ssot.test.ts`

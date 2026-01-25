@@ -46,7 +46,7 @@ Für **jede** Umgebung (dev, staging, prod) rotieren:
 2. Apply + Smoke:
    - `scripts/db_push_and_smoke.sh .env.staging.local`
 
-**Pass/Fail:** Migrations “up to date” oder applied ohne Errors; `rls_smoke.sql` + `rls_smoke_negative.sql` grün.
+**Pass/Fail:** Migrations “up to date” oder applied ohne Errors; `rls_smoke.sql` + `rls_smoke_negative.sql` (inkl. unauthorized read/write checks) grün.
 
 ### 3) App Manual Tests (staging) — A/B Accounts + Cross-Device (25–45 min)
 > Ziel: Account-Scope Cache, SSOT Reads/Writes, und Fail-Safety verifizieren.
@@ -205,4 +205,3 @@ drop function if exists public.set_profiles_accepted_consent_at();
 | DB Dry-run + Push + Smokes (prod) | Backend/DB | 10–20 min | Hoch |
 | Mobile Deployment | Release | Variiert | Hoch |
 | Post-release sanity + Monitoring | QA/Release | 15–30 min | Mittel |
-

@@ -70,7 +70,7 @@
 
 - **Agent:** Claude Code
 - **Kontext:** Überarbeitung der bestehenden Screens auf Basis von `lib/core/design_tokens/`.
-- **Screens (Liste):** Splash, Welcome, Auth (Login/Register/PW-Reset), Consent, Onboarding (9 Steps), Success.
+- **Screens (Liste):** Splash, Welcome, Auth (Login/Register/PW-Reset), Consent, Onboarding (8 Steps), Success.
 - **Task:**
   - Design Tokens finalisieren (Farben, Typo, Spacing).
   - Refactoring: Alle oben genannten Screens auf neue Tokens umstellen.
@@ -272,7 +272,7 @@
 | WelcomeScreen | `/welcome` | S1 |
 | AuthScreen (Login/Register/PW-Reset) | `/auth/*` | S1 |
 | ConsentOptionsScreen | `/consent/options` | S1 |
-| OnboardingFlow (8 Steps: O1–O8) | `/onboarding/*` ¹ | S1 |
+| OnboardingFlow (8 Steps) | `/onboarding/*` ¹ | S1 |
 | OnboardingSuccess | `/onboarding/success` | S1 |
 | OnboardingDone | `/onboarding/done` | S1 |
 | HomeScreen | `/heute` | S2 |

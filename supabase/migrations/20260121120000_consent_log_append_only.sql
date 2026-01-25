@@ -17,7 +17,8 @@
 --
 -- IMPORTANT: We intentionally do NOT block DELETE via trigger.
 -- Reason: Account deletion (ON DELETE CASCADE from auth.users) and potential
--- retention/erasure workflows must remain possible.
+-- retention/erasure workflows must remain possible (prefer deleting auth.users
+-- via the admin API so FK ON DELETE CASCADE removes dependent rows).
 -- DELETE is still disallowed for end-user clients because:
 -- - RLS has no DELETE policy (only SELECT/INSERT owner-scoped to auth.uid()).
 -- - Table grants revoke UPDATE/DELETE for the authenticated role (defense-in-depth).
@@ -35,9 +36,10 @@ DROP POLICY IF EXISTS "Users can delete their own consents" ON public.consents;
 DROP POLICY IF EXISTS consents_delete_own ON public.consents;
 
 -- Step 2: Revoke UPDATE/DELETE privileges from authenticated role
--- Note: service_role retains GRANTed UPDATE/DELETE privileges, however the
--- FOR EACH ROW UPDATE trigger defined below fires for ALL roles (including
--- service_role) and will block the operation.
+-- Note: service_role MUST NOT mutate the consent audit log either.
+-- We revoke UPDATE/DELETE from service_role for least privilege; the UPDATE
+-- trigger remains defense-in-depth (in case privileges drift or during approved
+-- break-glass workflows run under elevated roles).
 --
 -- Operational note:
 -- - Admin/support MUST NOT UPDATE existing consent rows (GDPR audit integrity).
@@ -53,6 +55,7 @@ DROP POLICY IF EXISTS consents_delete_own ON public.consents;
 --   -- perform correction (prefer INSERT a new consent row; never UPDATE historical rows)
 --   select public.admin_breakglass_set_consent_no_update_enabled(true, '<reason>');
 REVOKE UPDATE, DELETE ON public.consents FROM authenticated;
+REVOKE UPDATE, DELETE ON public.consents FROM service_role;
 
 -- ============================================================================
 -- Admin Correction Workflow (SECURITY NOTE)
@@ -159,7 +162,9 @@ BEGIN
     RETURN;
   END IF;
 
-  IF v_tgenabled <> 'O' THEN
+  -- Only self-heal when the trigger is actually disabled.
+  -- Do not override 'A' (always) or other non-disabled modes.
+  IF v_tgenabled = 'D' THEN
     EXECUTE 'ALTER TABLE public.consents ENABLE TRIGGER consent_no_update';
     v_reason := format('consent_no_update trigger was %s; re-enabled automatically', v_tgenabled);
     PERFORM pg_notify('consent_trigger_alert', v_reason);
@@ -234,10 +239,10 @@ COMMIT;
 --    UPDATE public.consents SET version = '999' WHERE user_id = auth.uid();
 --    -- Expected: ERROR: Consent log is append-only (GDPR audit requirement)
 --
--- 4. Verify trigger blocks service_role UPDATEs (append-only enforced for all roles):
+-- 4. Verify service_role cannot UPDATE existing consent rows (append-only enforced):
 --    SET ROLE service_role;
 --    UPDATE public.consents SET version = '999' WHERE user_id = '<test_user_id>';
---    -- Expected: ERROR: Consent log is append-only (GDPR audit requirement)
+--    -- Expected: ERROR: permission denied for table consents
 --    RESET ROLE;
 --
 -- 5. Verify client DELETE is disallowed (should fail for authenticated):
@@ -253,6 +258,7 @@ COMMIT;
 --
 -- -- Restore privileges (NOT RECOMMENDED)
 -- GRANT UPDATE, DELETE ON public.consents TO authenticated;
+-- GRANT UPDATE, DELETE ON public.consents TO service_role;
 --
 -- -- Restore policies (NOT RECOMMENDED)
 -- CREATE POLICY "Users can update their own consents" ON public.consents

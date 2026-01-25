@@ -39,7 +39,9 @@ class _{ScreenName}ScreenState extends ConsumerState<{ScreenName}Screen> {
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
     final l10n = context.l10n;
-    // Example: final state = ref.watch(yourProvider);
+    // TODO: Add provider watches here
+    // Example: final state = ref.watch(screenNameProvider);
+    // Example: final isLoading = ref.watch(screenNameProvider).isLoading;
     //
     // L10n Usage Examples:
     // - Simple string: Text(l10n.screenTitle)

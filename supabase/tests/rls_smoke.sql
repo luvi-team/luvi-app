@@ -50,6 +50,8 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
     ASSERT NOT has_table_privilege('service_role', 'public.consents', 'DELETE'),
       'service_role must not have DELETE on public.consents (append-only)';
+    ASSERT NOT has_table_privilege('service_role', 'public.consents', 'UPDATE'),
+      'service_role must not have UPDATE on public.consents (append-only)';
   ELSE
     RAISE WARNING 'service_role role missing; skipping DELETE privilege assertion';
   END IF;

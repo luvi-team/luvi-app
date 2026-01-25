@@ -107,6 +107,15 @@ begin
     raise exception 'p_burst_max_requests must be >= 0';
   end if;
 
+  if p_burst_max_requests is null or p_burst_max_requests < 0 then
+    raise exception 'p_burst_max_requests must be >= 0';
+  end if;
+
+  -- Guard against integer overflow in effective_max
+  if p_max_requests > 1000000 or p_burst_max_requests > 1000000 then
+    raise exception 'p_max_requests and p_burst_max_requests must be <= 1000000';
+  end if;
+
   effective_max := p_max_requests + p_burst_max_requests;
 
   d := digest(p_user_id::text, 'sha256');

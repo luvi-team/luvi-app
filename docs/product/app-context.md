@@ -197,6 +197,8 @@ Splash → Auth → Home
 | 9 | **Ernährungspräferenz** | Omnivor / Vegetarisch / Vegan / Keine Angabe |
 | 10 | Success-Screen | Erklärung, was als Nächstes passiert |
 
+> **Hinweis (SSOT):** Diese Tabelle ist die Single Source of Truth für die vollständige UX-Journey (10 konzeptuelle Schritte inkl. Auth/Consent). Die technische Routenimplementierung in `roadmap.md` dokumentiert 8 Onboarding-Routes (`/onboarding/*`).
+
 **Zyklus-Erfassung (Friction-Minimierung):**
 - User gibt nur Beginn-Datum der letzten Periode an
 - App nimmt **5 Tage als Standard-Periodendauer** (siehe phase_definitions.md SSOT)

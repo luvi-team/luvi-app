@@ -14,6 +14,209 @@ LIMIT 1
 \quit 1
 \endif
 
+-- Persist IDs as session settings so DO blocks can access them (psql vars do not expand inside $$...$$ bodies).
+SELECT set_config('rls_smoke.test_user_id', :'test_user_id', false);
+
+-- Optional: pick a second auth.users row for cross-user (unauthorized) RLS checks.
+SELECT id AS other_user_id
+FROM auth.users
+WHERE id <> :'test_user_id'
+ORDER BY created_at NULLS LAST, id
+LIMIT 1
+\gset
+\if :{?other_user_id}
+SELECT set_config('rls_smoke.other_user_id', :'other_user_id', false);
+\endif
+
+-- ----------------------------------------------------------------------------
+-- Negative RLS / Privilege Checks (unauthorized reads/writes must be blocked)
+-- ----------------------------------------------------------------------------
+
+-- anon must not be able to read or write sensitive tables.
+RESET ROLE;
+SET ROLE anon;
+DO $$
+BEGIN
+  -- SELECT must fail (no table privileges).
+  BEGIN
+    PERFORM 1 FROM public.consents LIMIT 1;
+    RAISE EXCEPTION 'Expected anon SELECT on public.consents to be blocked';
+  EXCEPTION
+    WHEN insufficient_privilege THEN NULL;
+    WHEN others THEN RAISE EXCEPTION 'Expected insufficient_privilege (42501), got % (%).', SQLERRM, SQLSTATE;
+  END;
+
+  BEGIN
+    PERFORM 1 FROM public.cycle_data LIMIT 1;
+    RAISE EXCEPTION 'Expected anon SELECT on public.cycle_data to be blocked';
+  EXCEPTION
+    WHEN insufficient_privilege THEN NULL;
+    WHEN others THEN RAISE EXCEPTION 'Expected insufficient_privilege (42501), got % (%).', SQLERRM, SQLSTATE;
+  END;
+
+  BEGIN
+    PERFORM 1 FROM public.profiles LIMIT 1;
+    RAISE EXCEPTION 'Expected anon SELECT on public.profiles to be blocked';
+  EXCEPTION
+    WHEN insufficient_privilege THEN NULL;
+    WHEN others THEN RAISE EXCEPTION 'Expected insufficient_privilege (42501), got % (%).', SQLERRM, SQLSTATE;
+  END;
+
+  BEGIN
+    PERFORM 1 FROM public.email_preferences LIMIT 1;
+    RAISE EXCEPTION 'Expected anon SELECT on public.email_preferences to be blocked';
+  EXCEPTION
+    WHEN insufficient_privilege THEN NULL;
+    WHEN others THEN RAISE EXCEPTION 'Expected insufficient_privilege (42501), got % (%).', SQLERRM, SQLSTATE;
+  END;
+
+  IF to_regclass('public.daily_plan') IS NOT NULL THEN
+    BEGIN
+      PERFORM 1 FROM public.daily_plan LIMIT 1;
+      RAISE EXCEPTION 'Expected anon SELECT on public.daily_plan to be blocked';
+    EXCEPTION
+      WHEN insufficient_privilege THEN NULL;
+      WHEN others THEN RAISE EXCEPTION 'Expected insufficient_privilege (42501), got % (%).', SQLERRM, SQLSTATE;
+    END;
+  END IF;
+
+  -- INSERT/UPDATE/DELETE must fail.
+  BEGIN
+    INSERT INTO public.consents (user_id, scopes, version)
+    VALUES (current_setting('rls_smoke.test_user_id')::uuid, '{}'::jsonb, 'rls-smoke-negative');
+    RAISE EXCEPTION 'Expected anon INSERT on public.consents to be blocked';
+  EXCEPTION
+    WHEN insufficient_privilege THEN NULL;
+    WHEN others THEN RAISE EXCEPTION 'Expected insufficient_privilege (42501), got % (%).', SQLERRM, SQLSTATE;
+  END;
+END $$;
+RESET ROLE;
+
+-- authenticated must not be able to UPDATE/DELETE consents (append-only).
+SET ROLE authenticated;
+SELECT set_config(
+  'request.jwt.claims',
+  json_build_object('sub', :'test_user_id', 'role', 'authenticated')::text,
+  false
+);
+
+INSERT INTO public.consents (id, user_id, scopes, version)
+VALUES (
+  '00000000-0000-0000-0000-00000000d001',
+  (SELECT auth.uid()),
+  DEFAULT,
+  'rls-smoke-negative'
+)
+ON CONFLICT (id) DO NOTHING;
+
+BEGIN;
+DO $$
+BEGIN
+  BEGIN
+    UPDATE public.consents
+    SET version = 'should-fail'
+    WHERE id = '00000000-0000-0000-0000-00000000d001';
+    RAISE EXCEPTION 'Expected UPDATE on public.consents to be blocked (append-only)'
+      USING ERRCODE = 'P9999';
+  EXCEPTION
+    WHEN insufficient_privilege THEN NULL;
+    WHEN raise_exception THEN NULL;
+    WHEN others THEN RAISE EXCEPTION 'Expected blocked UPDATE (42501 or P0001), got % (%).', SQLERRM, SQLSTATE;
+  END;
+
+  BEGIN
+    DELETE FROM public.consents
+    WHERE id = '00000000-0000-0000-0000-00000000d001';
+    RAISE EXCEPTION 'Expected DELETE on public.consents to be blocked (append-only)'
+      USING ERRCODE = 'P9999';
+  EXCEPTION
+    WHEN insufficient_privilege THEN NULL;
+    WHEN others THEN RAISE EXCEPTION 'Expected insufficient_privilege (42501), got % (%).', SQLERRM, SQLSTATE;
+  END;
+END $$;
+ROLLBACK;
+
+-- Cross-user RLS: another authenticated user must not be able to read/update/delete test_user rows.
+\if :{?other_user_id}
+SELECT set_config(
+  'request.jwt.claims',
+  json_build_object('sub', :'other_user_id', 'role', 'authenticated')::text,
+  false
+);
+
+BEGIN;
+DO $$
+DECLARE
+  can_see boolean;
+  affected integer;
+BEGIN
+  SELECT COUNT(*) = 0 INTO can_see
+  FROM public.consents
+  WHERE id = '00000000-0000-0000-0000-00000000d001';
+  ASSERT can_see, 'consents must not leak rows across authenticated users';
+
+  UPDATE public.profiles
+  SET display_name = display_name
+  WHERE user_id = current_setting('rls_smoke.test_user_id')::uuid;
+  GET DIAGNOSTICS affected = ROW_COUNT;
+  ASSERT affected = 0, 'profiles UPDATE must not affect other users'' rows';
+
+  UPDATE public.cycle_data
+  SET cycle_length = cycle_length
+  WHERE user_id = current_setting('rls_smoke.test_user_id')::uuid;
+  GET DIAGNOSTICS affected = ROW_COUNT;
+  ASSERT affected = 0, 'cycle_data UPDATE must not affect other users'' rows';
+
+  DELETE FROM public.email_preferences
+  WHERE user_id = current_setting('rls_smoke.test_user_id')::uuid;
+  GET DIAGNOSTICS affected = ROW_COUNT;
+  ASSERT affected = 0, 'email_preferences DELETE must not affect other users'' rows';
+
+  IF to_regclass('public.daily_plan') IS NOT NULL THEN
+    DELETE FROM public.daily_plan
+    WHERE user_id = current_setting('rls_smoke.test_user_id')::uuid;
+    GET DIAGNOSTICS affected = ROW_COUNT;
+    ASSERT affected = 0, 'daily_plan DELETE must not affect other users'' rows';
+  END IF;
+END $$;
+ROLLBACK;
+\else
+\echo 'rls_smoke_negative.sql: skipping cross-user RLS checks (only one auth.users row found).'
+\endif
+
+-- service_role must not be able to UPDATE/DELETE consents (append-only).
+RESET ROLE;
+BEGIN;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
+    EXECUTE 'SET ROLE service_role';
+    BEGIN
+      UPDATE public.consents
+      SET version = version
+      WHERE id = '00000000-0000-0000-0000-00000000d001';
+      RAISE EXCEPTION 'Expected service_role UPDATE on public.consents to be blocked'
+        USING ERRCODE = 'P9999';
+    EXCEPTION
+      WHEN insufficient_privilege THEN NULL;
+      WHEN raise_exception THEN NULL;
+      WHEN others THEN RAISE EXCEPTION 'Expected blocked UPDATE (42501 or P0001), got % (%).', SQLERRM, SQLSTATE;
+    END;
+
+    BEGIN
+      DELETE FROM public.consents
+      WHERE id = '00000000-0000-0000-0000-00000000d001';
+      RAISE EXCEPTION 'Expected service_role DELETE on public.consents to be blocked'
+        USING ERRCODE = 'P9999';
+    EXCEPTION
+      WHEN insufficient_privilege THEN NULL;
+      WHEN others THEN RAISE EXCEPTION 'Expected insufficient_privilege (42501), got % (%).', SQLERRM, SQLSTATE;
+    END;
+    EXECUTE 'RESET ROLE';
+  END IF;
+END $$;
+ROLLBACK;
+
 SET ROLE authenticated;
 SELECT set_config(
   'request.jwt.claims',
