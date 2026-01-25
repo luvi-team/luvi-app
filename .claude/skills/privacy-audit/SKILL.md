@@ -194,11 +194,8 @@ NotificationPayload(
 # Search for potential email/phone/name logging
 grep -rn "log\.\|print(" lib/ | grep -iE "email|phone|name|password|token|session"
 
-# Find raw print statements (MUST-07 violation)
-grep -rn "print(" lib/ --include="*.dart" | grep -v "debugPrint"
-
-# Find debugPrint usage (should use log facade)
-grep -rn "debugPrint(" lib/ --include="*.dart"
+# Find raw print/debugPrint statements (MUST-07 violation - BOTH are forbidden)
+grep -rn -E "print\(|debugPrint\(" lib/ --include="*.dart"
 
 # Find developer.log usage (should use log facade)
 grep -rn "developer\.log(" lib/ --include="*.dart"

@@ -203,7 +203,7 @@ class UserStateService {
       // Partial recovery could silently lose consent the user gave.
       // OBSERVABILITY: Structured log event scrapeable by log aggregation tools.
       // Key: "consent_cache_corruption_detected" with key=value pairs.
-      // Post-MVP: Add Sentry/PostHog counter metric for alerting.
+      // TODO(observability-m4): Add Sentry/PostHog counter for consent_cache_corruption alerting.
       // See: docs/privacy/reviews/feat-m3-consent-miwf.md
       if (nonStringCount > 0) {
         log.e(

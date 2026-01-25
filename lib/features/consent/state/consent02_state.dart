@@ -49,7 +49,10 @@ class Consent02Notifier extends _$Consent02Notifier {
 
   /// Atomically accepts all required + visible optional scopes.
   /// Use this instead of multiple toggle() calls to avoid race conditions.
-  void acceptAll() {
+  ///
+  /// Returns the updated state to allow callers to capture the exact state
+  /// that was set, avoiding potential race conditions from re-reading.
+  Consent02State acceptAll() {
     final m = {...state.choices};
     // Required scopes
     for (final s in kRequiredConsentScopes) {
@@ -60,6 +63,7 @@ class Consent02Notifier extends _$Consent02Notifier {
       m[s] = true;
     }
     state = state.copyWith(choices: m);
+    return state;
   }
 
   void clearAllOptional() {

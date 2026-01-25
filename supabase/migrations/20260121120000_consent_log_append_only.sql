@@ -199,7 +199,10 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'cron_executor') THEN
-    EXECUTE 'CREATE ROLE cron_executor';
+    -- pg_cron connects as the configured role; LOGIN must be enabled.
+    EXECUTE 'CREATE ROLE cron_executor LOGIN';
+  ELSE
+    EXECUTE 'ALTER ROLE cron_executor LOGIN';
   END IF;
 END $$;
 

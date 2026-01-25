@@ -193,20 +193,27 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
     AppLocalizations l10n,
   ) async {
     // Set all visible consent scopes (required + optional).
-    // Errors bubble to _handleContinue's central error handling (lines 239-258).
-    ref.read(consent02Provider.notifier).acceptAll();
-    await _handleContinue(context, ref, l10n);
+    // Capture returned state immediately to avoid race condition (CodeRabbit fix).
+    // Errors bubble to _handleContinue's central error handling.
+    final updatedState = ref.read(consent02Provider.notifier).acceptAll();
+    await _handleContinue(context, ref, l10n, overrideState: updatedState);
   }
 
   /// Handles "Weiter" button tap.
   /// Button is already disabled when required consents are not accepted.
+  ///
+  /// [overrideState] - If provided, uses this state instead of reading from
+  /// provider. Used by _handleAcceptAll to pass the exact state that was set,
+  /// avoiding potential race conditions from re-reading.
   Future<void> _handleContinue(
     BuildContext context,
     WidgetRef ref,
-    AppLocalizations l10n,
-  ) async {
-    // Read fresh state from provider to avoid stale closure captures.
-    final currentState = ref.read(consent02Provider);
+    AppLocalizations l10n, {
+    Consent02State? overrideState,
+  }) async {
+    // Use override state if provided, otherwise read fresh from provider.
+    final Consent02State currentState =
+        overrideState ?? ref.read(consent02Provider);
 
     if (!_acquireBusy(ref)) {
       return;

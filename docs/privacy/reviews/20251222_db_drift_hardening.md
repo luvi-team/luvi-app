@@ -67,14 +67,12 @@ Safer alternatives (prefer these):
 - Prefer controlled `psql` sessions with `SET ROLE service_role` / `SET ROLE supabase_admin` (never client-facing roles) and explicit audit logging (ticket id + who/why/when).
 - For debugging workflows, prefer `CREATE TEMP TABLE ...` / `CREATE TEMP VIEW ...` and avoid persistent grants.
 ```sql
--- 1) Re-add drift constraints (only if absolutely necessary; not recommended)
--- WARNING: These are the DRIFTED bounds (cycle_length 21-60, period_duration 1-10),
--- NOT the SSOT bounds (cycle_length > 0 && <= 60, period_duration > 0 && <= 15).
--- Only apply as emergency backout if absolutely necessary.
-ALTER TABLE public.cycle_data
-  ADD CONSTRAINT chk_cycle_length CHECK (cycle_length >= 21 AND cycle_length <= 60);
-ALTER TABLE public.cycle_data
-  ADD CONSTRAINT chk_period_duration CHECK (period_duration >= 1 AND period_duration <= 10);
+-- 1) Re-add drift constraints (REMOVED)
+-- STOP: Do NOT re-add chk_cycle_length / chk_period_duration from here.
+-- These statements were intentionally removed because they reintroduce drift
+-- (bounds differ from SSOT) and should not live in this public review doc.
+-- If an emergency backout is required, document ticket ID + approver + reason
+-- in an access-restricted ops runbook before executing any ALTER TABLE.
 
 -- 2) Revert birthdate gate constraint
 ALTER TABLE public.profiles

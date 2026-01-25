@@ -9,7 +9,10 @@ declare
 begin
   if to_regprocedure('public.check_and_restore_consent_trigger_state()') is not null then
     if not exists (select 1 from pg_roles where rolname = 'cron_executor') then
-      execute 'create role cron_executor';
+      -- pg_cron connects as the configured role; LOGIN must be enabled.
+      execute 'create role cron_executor login';
+    else
+      execute 'alter role cron_executor login';
     end if;
     execute 'grant execute on function public.check_and_restore_consent_trigger_state() to cron_executor';
   end if;
