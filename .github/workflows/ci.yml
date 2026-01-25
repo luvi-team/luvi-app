@@ -266,8 +266,11 @@ jobs:
 
   schema-drift-check:
     name: Schema Documentation Drift
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Check schema-to-documentation alignment
-        shell: bash
         run: |
           echo "=== Checking schema documentation alignment ==="
 
@@ -295,10 +298,6 @@ jobs:
             echo ""
             echo "ACTION: Add these tables to section '2.2 Domäne → Tabellen/Views → Status' in docs/bmad/global.md"
             exit 1
-          fi
-
-          echo ""
-          echo "OK: All migration tables are documented"
           fi
 
           echo ""
