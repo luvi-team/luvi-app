@@ -380,7 +380,7 @@ void main() {
 
       await pumpSignupScreen(tester, mockRepo);
 
-      // Fill email and common weak password (blocked by _commonWeakPatterns in create_new_password_rules.dart)
+      // Fill email and common weak password (blocked by password validation rules per NIST SP 800-63B)
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
         'user@example.com',

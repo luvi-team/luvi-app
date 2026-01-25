@@ -69,7 +69,7 @@ class AuthBottomSheetShell extends StatelessWidget {
     // Clamp to [minSheetHeight, maxAvailableHeight] to prevent overflow
     final maxAvailableHeight = screenHeight - topPadding;
     final safeSheetHeight = sheetHeight.clamp(
-      AuthRebrandMetrics.minSheetHeight,
+      AuthRebrandMetrics.minSheetHeight.clamp(0.0, maxAvailableHeight),
       maxAvailableHeight,
     );
 

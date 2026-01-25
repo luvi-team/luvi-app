@@ -34,8 +34,8 @@ import 'core/privacy/consent_config.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Drift-Check: Verify ConsentConfig version constants are in sync (debug only)
-  ConsentConfig.assertVersionsMatch();
+  // Drift-Check: Verify ConsentConfig version format is valid (all builds)
+  ConsentConfig.assertVersionFormatValid();
   // Portrait-only as default app orientation during development and MVP.
   // TODO(video-orientation): Register fullscreen routes in [RouteOrientationController.routeOverrides] when landscape is required.
   final orientationController = RouteOrientationController(

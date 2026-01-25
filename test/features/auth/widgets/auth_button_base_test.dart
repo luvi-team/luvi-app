@@ -120,6 +120,34 @@ void main() {
       }
     });
 
+    testWidgets('does not invoke callback when tapped while disabled',
+        (tester) async {
+      // This test verifies that a disabled button (onPressed: null) does not
+      // respond to taps. Complement to 'does not call onPressed when tapped
+      // while loading' which tests isLoading: true with a real callback.
+      await tester.pumpWidget(
+        buildTestApp(
+          home: Scaffold(
+            body: Center(
+              child: AuthButtonBase(
+                label: 'Test Button',
+                onPressed: null, // Disabled - no callback to invoke
+                backgroundColor: DsColors.authRebrandCtaPrimary,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Tap should be absorbed without effect
+      await tester.tap(find.byType(AuthButtonBase));
+      await tester.pump();
+
+      // No assertion on callback - button has no callback.
+      // Test passes if no exception is thrown during tap.
+      // Semantics test above already verifies isEnabled == false.
+    });
+
     testWidgets('has correct semantics when loading AND onPressed is null',
         (tester) async {
       final handle = tester.ensureSemantics();

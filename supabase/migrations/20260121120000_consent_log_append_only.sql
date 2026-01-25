@@ -124,6 +124,88 @@ CREATE TRIGGER consent_no_update
   BEFORE UPDATE ON public.consents
   FOR EACH ROW EXECUTE FUNCTION public.prevent_consent_update();
 
+-- Step 3b: Safeguard to detect and re-enable the trigger if a session crashes
+-- or leaves consent_no_update disabled. Emits a pg_notify alert and writes to
+-- admin_audit_log when available (no dependency if table/function not yet created).
+CREATE OR REPLACE FUNCTION public.check_and_restore_consent_trigger_state()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = "public"
+AS $$
+DECLARE
+  v_tgenabled "char";
+  v_reason text;
+BEGIN
+  SELECT tgenabled
+    INTO v_tgenabled
+    FROM pg_trigger
+   WHERE tgrelid = 'public.consents'::regclass
+     AND tgname = 'consent_no_update'
+     AND NOT tgisinternal;
+
+  IF v_tgenabled IS NULL THEN
+    v_reason := 'consent_no_update trigger missing on public.consents; manual intervention required';
+    PERFORM pg_notify('consent_trigger_alert', v_reason);
+    IF to_regprocedure('public.admin_audit_log_insert(text,text,text,text)') IS NOT NULL THEN
+      EXECUTE format(
+        'select public.admin_audit_log_insert(%L,%L,%L,%L)',
+        'TRIGGER_MISSING',
+        'consents',
+        'consent_no_update',
+        v_reason
+      );
+    END IF;
+    RETURN;
+  END IF;
+
+  IF v_tgenabled <> 'O' THEN
+    EXECUTE 'ALTER TABLE public.consents ENABLE TRIGGER consent_no_update';
+    v_reason := format('consent_no_update trigger was %s; re-enabled automatically', v_tgenabled);
+    PERFORM pg_notify('consent_trigger_alert', v_reason);
+    IF to_regprocedure('public.admin_audit_log_insert(text,text,text,text)') IS NOT NULL THEN
+      EXECUTE format(
+        'select public.admin_audit_log_insert(%L,%L,%L,%L)',
+        'TRIGGER_REENABLED',
+        'consents',
+        'consent_no_update',
+        v_reason
+      );
+    END IF;
+  END IF;
+END;
+$$;
+
+COMMENT ON FUNCTION public.check_and_restore_consent_trigger_state() IS
+  'Checks consent_no_update trigger state; re-enables if disabled; emits pg_notify + audit log entry.';
+
+REVOKE ALL ON FUNCTION public.check_and_restore_consent_trigger_state() FROM public;
+REVOKE ALL ON FUNCTION public.check_and_restore_consent_trigger_state() FROM anon;
+REVOKE ALL ON FUNCTION public.check_and_restore_consent_trigger_state() FROM authenticated;
+REVOKE ALL ON FUNCTION public.check_and_restore_consent_trigger_state() FROM service_role;
+
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'supabase_admin') THEN
+    EXECUTE 'GRANT EXECUTE ON FUNCTION public.check_and_restore_consent_trigger_state() TO supabase_admin';
+  END IF;
+END $$;
+
+-- Optional: schedule periodic self-heal with pg_cron when available.
+-- If pg_cron is not installed, run this function via external scheduler/monitoring.
+DO $$
+BEGIN
+  IF to_regprocedure('cron.schedule(text,text,text)') IS NOT NULL THEN
+    EXECUTE $cmd$
+      SELECT cron.schedule(
+        'consent_trigger_guard',
+        '*/5 * * * *',
+        $$SELECT public.check_and_restore_consent_trigger_state();$$
+      );
+    $cmd$;
+  END IF;
+END $$;
+
 -- Step 4: Add comment documenting the immutability requirement
 COMMENT ON TABLE public.consents IS
   'Append-only consent audit log (GDPR Art. 7). Client UPDATE/DELETE disallowed; UPDATE blocked by trigger; DELETE reserved for erasure/retention.';

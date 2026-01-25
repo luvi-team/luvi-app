@@ -175,8 +175,8 @@ The branch introduces foundational DSGVO-compliant data structures with proper R
 - **Note:** For current region verification, see active sprint review documents.
 
 **Checklist Entry:**
-- [ ] Region confirmed as EU via dashboard (not completed before archival)
-- [x] No external service integrations transferring data outside EU
+- ❌ Region not confirmed before archival (verification incomplete at time of archive)
+- ✅ No external service integrations transferring data outside EU
 
 ## Recommendations
 

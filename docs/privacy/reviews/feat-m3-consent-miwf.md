@@ -80,8 +80,8 @@ Consent records follow an **append-only model** with one documented exception fo
 #### Secret Key Management
 - **Storage:** Store the HMAC secret in a secure secrets manager (e.g., Supabase Vault, KMS-backed encrypted env var).
 - **Access:** Only the Edge Function runtime and limited ops roles; enforce RBAC and audit access.
-- **Rotation:** Rotate on schedule (e.g., quarterly) and on incident; plan for re-pseudonymization or dual-hash support during transition.
-- **Backup/Recovery:** Ensure secure backup of key material; losing the key makes existing pseudonymized `user_id` values irreversible.
+- **Rotation:** Follow `docs/runbooks/key-rotation-runbook.md` and automation workflow `rotate-keys-automation` (`.github/workflows/rotate-keys-automation.yml`). Steps: enable dual-hash support (accept old + new), stage rollout (deploy code, then rotate secret), run verification tests (sample re-hash + consent access), and write an audit log entry. **Rollback:** re-enable old key, keep dual-hash during rollback window, re-run verification tests, and log the rollback reason in the audit trail.
+- **Backup/Recovery:** Store encrypted backups in the secrets manager with access logging; verify restore quarterly. **Recovery:** restore the last known-good key, re-run verification tests, and document the incident. Losing the key makes existing pseudonymized `user_id` values irreversible, so recovery must be treated as a P1 runbook.
 
 ## Data Subject Rights (DSAR)
 

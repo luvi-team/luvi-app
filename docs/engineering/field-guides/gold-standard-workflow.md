@@ -42,6 +42,8 @@ If you follow it, you minimize: regressions, privacy mistakes, review ping-pong.
 - Optionaler Pre-Flight, um "schnelle" Blocker vor PR zu reduzieren.
 - **Wichtig:** Merge-Gate bleibt Greptile (Required Check) + CI + Privacy Gate.
 
+> **Clarification:** CodeRabbit local is an *optional* developer tool for quick pre-flight checks before opening a PR. Greptile Review (Required Check), CI, and Privacy Gate are *mandatory* merge gates that must pass for merging.
+
 > **Vollständige Rollen-Dossiers:** `context/agents/README.md`
 
 ---

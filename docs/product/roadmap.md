@@ -272,8 +272,9 @@
 | WelcomeScreen | `/welcome` | S1 |
 | AuthScreen (Login/Register/PW-Reset) | `/auth/*` | S1 |
 | ConsentOptionsScreen | `/consent/options` | S1 |
-| OnboardingFlow (9 Steps) | `/onboarding/*` | S1 |
-| SuccessScreen | `/success` | S1 |
+| OnboardingFlow (8 Steps: O1–O8) | `/onboarding/*` ¹ | S1 |
+| OnboardingSuccess | `/onboarding/success` | S1 |
+| OnboardingDone | `/onboarding/done` | S1 |
 | HomeScreen | `/heute` | S2 |
 | ZyklusScreen | `/zyklus` | S2 |
 | CoachScreen | `/coach` | S4 |
@@ -281,6 +282,8 @@
 | ProfileScreen | `/profil` | S2/S6 |
 | WorkoutPlayerScreen | `/workout/:id` | S3 |
 | PaywallScreen | `/paywall` | S6 |
+
+¹ Wildcard `/onboarding/*` covers: `/onboarding/01`–`/onboarding/05`, `/onboarding/cycle-intro`, `/onboarding/period-start`, `/onboarding/period-duration`. See `route_paths.dart`.
 
 ---
 

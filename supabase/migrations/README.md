@@ -48,6 +48,20 @@ DELETE FROM consents WHERE user_id = auth.uid();
 SELECT * FROM consents WHERE user_id != auth.uid();
 ```
 
+### Determining Current Consent
+
+The `consents` table is append-only (immutable audit log). To find the **current** consent for a user:
+
+```sql
+-- Get most recent consent entry for current user
+SELECT * FROM consents
+WHERE user_id = auth.uid()
+ORDER BY created_at DESC
+LIMIT 1;
+```
+
+The most recent row (by `created_at`) represents the user's current consent state. The `version` field tracks which consent version the user agreed to.
+
 ### Performance
 
 - Composite index for sliding-window queries: `idx_consents_user_id_created_at` on `(user_id, created_at DESC)`.

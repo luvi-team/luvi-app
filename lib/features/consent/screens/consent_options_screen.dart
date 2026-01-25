@@ -823,6 +823,10 @@ Future<bool> _persistConsentToLocalCache(
   // Using .wait (Dart 3.0+) for ParallelWaitError - collects ALL errors, not just first.
   // Note: Future.wait() would only throw the first error, breaking our error collection.
   // All three operations are idempotent - safe to retry on partial failure.
+  // Design decision: On failure, retry ALL operations (not selective retry).
+  // Rationale: Operations are cheap, idempotent, and state consistency is simpler
+  // with all-or-nothing approach. Partial success tracking adds complexity without
+  // benefit given best-effort cache semantics.
   try {
     await [
       userState.markWelcomeSeen(),

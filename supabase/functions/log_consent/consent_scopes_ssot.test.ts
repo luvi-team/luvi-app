@@ -52,8 +52,7 @@ Deno.test("SSOT: VALID_SCOPES matches config/consent_scopes.json IDs", async () 
   }
   assertVersionedConfig(rootConfigRaw, `Parsed config from ${rootConfigUrl}`);
   // TypeScript now knows rootConfigRaw is VersionedScopeConfig after type guard assertion
-  const rootConfig = rootConfigRaw;
-  const rootIds = rootConfig.scopes.map((scope) => scope.id).sort();
+  const rootIds = rootConfigRaw.scopes.map((scope) => scope.id).sort();
 
   // Bundled config - separate file I/O and JSON parse error handling
   const bundledConfigUrl = new URL("./consent_scopes.json", import.meta.url);
@@ -72,14 +71,13 @@ Deno.test("SSOT: VALID_SCOPES matches config/consent_scopes.json IDs", async () 
   }
   assertVersionedConfig(bundledConfigRaw, `Parsed config from ${bundledConfigUrl}`);
   // TypeScript now knows bundledConfigRaw is VersionedScopeConfig after type guard assertion
-  const bundledConfig = bundledConfigRaw;
-  const bundledIds = bundledConfig.scopes.map((scope) => scope.id).sort();
+  const bundledIds = bundledConfigRaw.scopes.map((scope) => scope.id).sort();
 
   // Ensure the deployed bundle stays in sync with SSOT.
   assertEquals(bundledIds, rootIds);
 
   // Ensure version numbers match
-  assertEquals(bundledConfig.version, rootConfig.version);
+  assertEquals(bundledConfigRaw.version, rootConfigRaw.version);
 
   const backendIds = [...VALID_SCOPES].sort();
   assertEquals(backendIds, rootIds);

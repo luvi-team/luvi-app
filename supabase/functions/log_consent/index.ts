@@ -63,6 +63,11 @@ const MAX_INVALID_SCOPE_STRING_LENGTH = 200;
 // Dart enum is at lib/core/privacy/consent_types.dart.
 // ---------------------------------------------------------------------------
 
+// If true, missing bundled config should fail fast to prevent scope drift.
+// Set CONSENT_SCOPES_REQUIRE_BUNDLE=false to allow fallback in local/dev.
+const REQUIRE_CONSENT_SCOPES_BUNDLE =
+  (Deno.env.get("CONSENT_SCOPES_REQUIRE_BUNDLE") ?? "true") === "true";
+
 // Fallback scopes used if config file cannot be read (deployment resilience)
 const FALLBACK_SCOPES = [
   "terms",
@@ -233,6 +238,11 @@ async function loadConsentScopes(): Promise<readonly string[]> {
         error: errorMessage,
       })
     );
+    if (isMissingBundle && REQUIRE_CONSENT_SCOPES_BUNDLE) {
+      throw new Error(
+        "consent_scopes.json missing from deployment bundle (CONSENT_SCOPES_REQUIRE_BUNDLE=true)",
+      );
+    }
     return FALLBACK_SCOPES;
   }
 }

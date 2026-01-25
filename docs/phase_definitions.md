@@ -75,6 +75,10 @@ cycle_day = ((heutiges_datum - last_period_start) mod cycle_len) + 1
 Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 
 ### 4. Phase zuweisen (MVP-Heuristik)
+
+> **Formel:** Diese Tabelle verwendet `ovulation_day = round(cycle_len * 0.5)`.
+> Die Alternative `ovulation_day_alt = cycle_len - 14` ist oben dokumentiert, wird aber in der aktuellen Phasen-Logik nicht verwendet.
+
 | Phase | Bedingung |
 |-------|-----------|
 | **Menstruation** | `cycle_day <= period_len` |

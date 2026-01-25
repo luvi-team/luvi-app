@@ -42,8 +42,8 @@ class ConsentConfig {
   /// Validates version format at startup.
   /// Called by app initialization to catch format errors early.
   /// Throws [StateError] in all builds (debug + release) if format is invalid.
-  static void assertVersionsMatch() {
-    final _ = currentVersionInt;
+  static void assertVersionFormatValid() {
+    currentVersionInt; // Triggers validation via getter
   }
 
   // For APIs/analytics that expect string names.
