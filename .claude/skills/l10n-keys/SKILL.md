@@ -333,16 +333,18 @@ Only non-user-facing text may be hardcoded:
 
 ### 1. Always Add Descriptions
 
+**Good - has translator context:**
 ```json
-// ✅ GOOD - has translator context
 {
   "authLoginButton": "Log in",
   "@authLoginButton": {
     "description": "Button label for login action on auth screen."
   }
 }
+```
 
-// ❌ BAD - missing description
+**Bad - missing description:**
+```json
 {
   "authLoginButton": "Log in"
 }
@@ -350,8 +352,8 @@ Only non-user-facing text may be hardcoded:
 
 ### 2. Specify Placeholder Types
 
+**Good - typed placeholder:**
 ```json
-// ✅ GOOD - typed placeholder
 {
   "greetingWithName": "Hello, {name}!",
   "@greetingWithName": {
@@ -362,8 +364,10 @@ Only non-user-facing text may be hardcoded:
     }
   }
 }
+```
 
-// ❌ BAD - missing type definition
+**Bad - missing type definition:**
+```json
 {
   "greetingWithName": "Hello, {name}!"
 }

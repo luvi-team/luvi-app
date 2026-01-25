@@ -1,11 +1,11 @@
-# Ranking-Heuristik v1.4 (SSOT)
+# Ranking-Heuristik v1.5 (SSOT)
 
-> Version: v1.4 · Datum: 2026-01-25
+> Version: v1.5 · Datum: 2026-01-25
 
 ## Ziel
 Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-Inhalten im LUVI-Feed und beschreibt die Komponenten, Fallbacks und Sicherheitsregeln. Die Heuristik unterstützt eine zyklusbewusste, zielorientierte und dennoch vielfältige Mischung aus Videos und Artikeln. Sie ist einfach gehalten (MVP) und lässt sich später anpassen.
 
-## Score-Formel (v1.4)
+## Score-Formel (v1.5)
 
 
 | Gewicht | Wert | Begründung |
@@ -89,11 +89,18 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 - **Rohwert:** `views`, optional CTR/Like-Rate.
 - **Formel:**
   ```
+  EPSILON = 1e-9  // Floating-point Toleranz
   pop_raw = ln(views + 1)
-  p_norm = (pop_raw - p_p05) / (p_p95 - p_p05)
+
+  if abs(p_p95 - p_p05) < EPSILON:
+      p_norm = 0.5  // Neutral bei fehlender Varianz
+  else:
+      p_norm = (pop_raw - p_p05) / (p_p95 - p_p05)
+
   popularity = clamp01(p_norm)
   ```
 - **Normalisierung:** Quantil-basiert (5.–95. Perzentil); täglich Refit der Quantile.
+- **Edge-Case:** Falls `abs(p_p95 - p_p05) < EPSILON` (alle Items haben nahezu identische Views), wird `p_norm = 0.5` (neutral) gesetzt, um Division durch Null zu vermeiden. EPSILON = 1e-9 für Floating-Point-Sicherheit.
 - **Default:** 0.2 (konservativ) bei fehlenden Metriken.
 - **Bereich:** [0,1].
 
@@ -194,12 +201,32 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 
 ### diversity_penalty
 - **Zweck:** Redundanz dämpfen (gleiche Kategorie/Creator in kurzer Zeit; fördert Vielfalt).
-- **Rohwert:** Redundanzmaß `r` aus letzten N Interaktionen.
-- **Formel:** `diversity_penalty = clamp01(r)` (Anteil gleicher Kategorie in letzten K Items).
+- **Rohwert:** Redundanzmaß `r` basierend auf Pillar-Überlappung der letzten K angezeigten Items.
+- **Formel:**
+  ```
+  last_K_items = get_last_displayed_items(user, K)  // K = 10
+  same_pillar_count = count(i in last_K_items where i.pillar == current_item.pillar)
+  r = same_pillar_count / K
+  diversity_penalty = clamp01(r)
+  ```
+- **Definitionen:**
+  - `current_item.pillar`: Content-Pillar des zu bewertenden Items (z.B. "Sleep", "Nutrition", "Movement")
+  - `get_last_displayed_items(user, K)`: Die letzten K dem User angezeigten Items
+  - `same_pillar_count`: Anzahl Items mit gleichem Pillar wie das aktuelle Item
 - **Parameter:** `K = 10` (Anzahl der letzten angezeigten Items für Redundanzberechnung; MVP-Default).
-- **Normalisierung:** Anteil/Score bereits [0,1].
+- **Normalisierung:** Anteil bereits [0,1] durch Division durch K.
 - **Default:** 0.0 (keine Strafe ohne Historie).
 - **Bereich:** [0,1].
+
+**Rechenbeispiel:**
+- Letzte 10 Items: 4× "Sleep", 3× "Nutrition", 2× "Movement", 1× "Mindfulness"
+- Aktuelles Item: Pillar = "Sleep"
+- `same_pillar_count = 4`
+- `r = 4 / 10 = 0.4`
+- `diversity_penalty = clamp01(0.4) = 0.4`
+
+> **MVP-Hinweis:** Für Multi-Dimensionen (Pillar + Creator) kann später eine gewichtete Kombination verwendet werden:
+> `r = w_pillar × (same_pillar_count/K) + w_creator × (same_creator_count/K)` mit `w_pillar + w_creator = 1`.
 
 ## Fallbacks
 
@@ -354,9 +381,15 @@ Für neue Nutzerinnen dominieren `phase_score`, `goal_match` und `recency`; `aff
 - Gewichtsänderungen vor Rollout in kontrolliertem Experiment validieren
 
 ## Versionsinfo
-- **Version:** v1.4
+- **Version:** v1.5
 - **Datum:** 2026-01-25
 - **Änderungsverlauf:**
+  - v1.5: CodeRabbit Review Fixes (Batch 3)
+    - Clarify: `diversity_penalty` Formel mit expliziter Pillar-basierter Berechnung
+    - Add: `diversity_penalty` Rechenbeispiel und Definitionen
+    - Add: MVP-Hinweis für Multi-Dimensionen (Pillar + Creator)
+    - Fix: `popularity` Division-by-Zero Guard mit EPSILON = 1e-9
+    - Add: `popularity` Edge-Case Dokumentation für identische Views
   - v1.4: CodeRabbit Review Fixes (Batch 2)
     - Add: Hinweis zu Editorial-Werten in Beispielen (S5 Feature Flag)
     - Fix: `f_watch` Formel mit explizitem Edge-Case für `video_duration ≤ 0`

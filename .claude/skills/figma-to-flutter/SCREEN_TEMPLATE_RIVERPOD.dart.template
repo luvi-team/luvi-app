@@ -37,7 +37,7 @@ class _{ScreenName}ScreenState extends ConsumerState<{ScreenName}Screen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
+    // ignore:unused_local_variable
     final l10n = context.l10n;
     // TODO: Add provider watches here
     // Example: final state = ref.watch(screenNameProvider);

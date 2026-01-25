@@ -203,7 +203,13 @@ class UserStateService {
       // Partial recovery could silently lose consent the user gave.
       // OBSERVABILITY: Structured log event scrapeable by log aggregation tools.
       // Key: "consent_cache_corruption_detected" with key=value pairs.
-      // TODO(observability-m4): Add Sentry/PostHog counter for consent_cache_corruption alerting.
+      // TODO(observability-m4): Wire Sentry/PostHog counter for consent_cache_corruption.
+      // Implementation: Use Telemetry.maybeCaptureException() from app layer.
+      // Since services/ cannot import app code, options:
+      //   1. Callback injection pattern (setConsentCorruptionCallback)
+      //   2. Event bus / stream that app layer listens to
+      //   3. Move this detection logic to app layer
+      // Payload: {event: 'consent_cache_corruption', non_string_count, action, impact}
       // See: docs/privacy/reviews/feat-m3-consent-miwf.md
       if (nonStringCount > 0) {
         log.e(
