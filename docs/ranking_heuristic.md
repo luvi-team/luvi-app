@@ -99,16 +99,51 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 
 ### affinity
 - **Zweck:** Persönliche Affinität aus Nutzerinteraktionen (Save/Like/Watchtime/Creator-Präferenz).
-- **Rohwert:** Gewichteter Mix:
-  - `w_save = 1.0`
-  - `w_like = 0.8`
-  - `w_watch` ∈ [0.0, 1.0] (normalized by video duration: `min(1.0, watch_time / max(1, video_duration))` oder 0.0 falls `video_duration ≤ 0`)
-  - `w_creator_pref = 0.3`
+- **Rohwert:** Gewichteter Mix aus vier Signal-Typen mit folgenden Gewichten:
+  - `w_save = 1.0` (Save-Signal)
+  - `w_like = 0.8` (Like-Signal)
+  - `w_watch = 1.0` (Watch-Signal; Normalisierung erfolgt in `f_watch`, siehe unten)
+  - `w_creator_pref = 0.3` (Creator-Preference-Signal)
 - **Formel:**
   ```
   affinity = clamp01(1 - ∏(1 - f_i))
   ```
   Wobei `f_i` die Einzelbeiträge (normiert [0,1]) sind.
+
+  **Signal-to-Component Transformation:**
+
+  Vor Anwendung der Noisy-OR Aggregation werden rohe Nutzerinteraktions-Signale in normierte Komponenten `f_i ∈ [0,1]` transformiert:
+
+  1. **Save-Signal (binär):**
+     - Formel: `f_save = w_save × (1 if user saved else 0)`
+     - Ausgabebereich: `{0.0, 1.0}` (diskret: entweder 0.0 oder 1.0)
+     - Beispiel: User saved → `f_save = 1.0 × 1 = 1.0` | Nicht saved → `f_save = 1.0 × 0 = 0.0`
+
+  2. **Like-Signal (binär):**
+     - Formel: `f_like = w_like × (1 if user liked else 0)`
+     - Ausgabebereich: `{0.0, 0.8}` (diskret: entweder 0.0 oder 0.8)
+     - Beispiel: User liked → `f_like = 0.8 × 1 = 0.8` | Nicht liked → `f_like = 0.8 × 0 = 0.0`
+
+  3. **Watch-Signal (kontinuierlich):**
+     - Formel: `f_watch = min(1.0, watch_time / max(1, video_duration))`
+     - Ausgabebereich: `[0.0, 1.0]` (kontinuierlich, geclampt)
+     - Edge-Case: Falls `video_duration ≤ 0`, dann `f_watch = 0.0`
+     - Beispiel: 45s von 60s Video geschaut → `f_watch = min(1.0, 45/60) = 0.75`
+
+  4. **Creator-Preference-Signal (kontinuierlich):**
+     - Formel: `f_creator_pref = w_creator_pref × user_creator_affinity_score`
+     - Wobei `user_creator_affinity_score ∈ [0,1]` (abgeleitet aus historischen Interaktionen mit Creator)
+     - Ausgabebereich: `[0.0, 0.3]` (kontinuierlich, skaliert durch Weight)
+     - Beispiel: Hohe Creator-Affinität (0.9) → `f_creator_pref = 0.3 × 0.9 = 0.27`
+
+  Alle `f_i`-Werte sind explizit auf `[0,1]` beschränkt, bevor sie in der Noisy-OR-Formel verwendet werden.
+
+  **Privacy & Consent Requirements:**
+
+  - **Consent:** Affinity-Tracking (Save/Like/Watch) erfordert Nutzereinwilligung unter dem `analytics`-Scope (siehe `docs/privacy/consent_scopes.md`). Implementierungen MÜSSEN vor Tracking-Start die Consent-Prüfung durchführen.
+  - **RLS-Anforderung (Implementation Note):** Falls Affinity-Daten persistiert werden (z. B. `user_saves`, `user_likes`, `user_watch_history`), MÜSSEN Tabellen RLS-geschützt sein mit Owner-based Policy: `user_id = auth.uid()` (ADR-0002).
+  - **Datenminimierung:** Affinity-Scores sind aggregiert; rohe Interaktions-Logs folgen 90-Tage-Retention gemäß ADR-0006 Patterns.
+  - **Push Privacy:** Affinity-Daten werden NIEMALS in Push-Payloads inkludiert (ADR-0005).
 
   **Erklärung:** Die Produkt-Notation (∏) bedeutet, dass alle `(1 - f_i)` Terme
   miteinander multipliziert werden ("Noisy-OR" Aggregation):
@@ -117,17 +152,29 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
   - `∏(1 - f_i)` = Wahrscheinlichkeit, dass *keines* der Signale zutrifft
   - `1 - ∏(...)` = Wahrscheinlichkeit, dass *mindestens ein* Signal zutrifft
 
-  **Rechenbeispiel:**
-  Gegeben: f_save = 0.5, f_like = 0.3, f_watch = 0.2
+  **Rechenbeispiel 1 (Hohe Affinität):**
+  Gegeben: f_save = 1.0 (saved), f_like = 0.8 (liked), f_watch = 0.6 (60% geschaut), f_creator_pref = 0.15 (affinity 0.5)
 
   Schritt 1 – (1 - f_i) berechnen:
-    (1 - 0.5) = 0.5 | (1 - 0.3) = 0.7 | (1 - 0.2) = 0.8
+    (1 - 1.0) = 0.0 | (1 - 0.8) = 0.2 | (1 - 0.6) = 0.4 | (1 - 0.15) = 0.85
 
   Schritt 2 – Produkt (∏):
-    0.5 × 0.7 × 0.8 = 0.28
+    0.0 × 0.2 × 0.4 × 0.85 = 0.0
 
   Schritt 3 – Komplement:
-    affinity = 1 - 0.28 = **0.72** (moderat hohe Affinität)
+    affinity = 1 - 0.0 = **1.0** (maximale Affinität: saved + liked + hohe Watch-Time)
+
+  **Rechenbeispiel 2 (Moderate Affinität):**
+  Gegeben: f_save = 0.0 (nicht saved), f_like = 0.0 (nicht liked), f_watch = 0.5, f_creator_pref = 0.21 (affinity 0.7)
+
+  Schritt 1 – (1 - f_i) berechnen:
+    (1 - 0.0) = 1.0 | (1 - 0.0) = 1.0 | (1 - 0.5) = 0.5 | (1 - 0.21) = 0.79
+
+  Schritt 2 – Produkt (∏):
+    1.0 × 1.0 × 0.5 × 0.79 = 0.395
+
+  Schritt 3 – Komplement:
+    affinity = 1 - 0.395 = **0.605** (moderate Affinität trotz fehlender Save/Like, durch Watch + Creator-Preference)
 
   **Mathematischer Hintergrund (Noisy-OR):**
   Diese Formel basiert auf der "Noisy-OR" Aggregation aus der Wahrscheinlichkeitstheorie.

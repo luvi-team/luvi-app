@@ -15,7 +15,8 @@ fi
 if ! git diff --cached --name-only | grep -q "^$BMAD_FILE$"; then
   echo "ERROR: Migration files changed but $BMAD_FILE not updated."
   echo ""
-  echo "ACTION: Update 'Last verified' timestamp in $BMAD_FILE (line ~399)"
+  echo "ACTION: Update 'Last verified' timestamp in $BMAD_FILE"
+  echo "        (search for 'Last verified' in the Appendix section)"
   echo "        and stage the file with: git add $BMAD_FILE"
   exit 1
 fi

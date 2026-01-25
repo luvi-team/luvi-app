@@ -272,10 +272,10 @@ jobs:
 
           # Extract CREATE TABLE statements from migrations
           MIGRATION_TABLES=$(grep -rh "CREATE TABLE" supabase/migrations/*.sql 2>/dev/null | \
-            grep -oE 'public\.[a-z_]+' | sort -u || echo "")
+            grep -oE 'public\.[a-z0-9_]+' | sort -u || echo "")
 
           # Extract documented tables from BMAD (format: `public.table_name`)
-          DOC_TABLES=$(grep -oE '\`public\.[a-z_]+\`' docs/bmad/global.md | \
+          DOC_TABLES=$(grep -oE '\`public\.[a-z0-9_]+\`' docs/bmad/global.md | \
             sed 's/`//g' | sort -u || echo "")
 
           echo "Migration tables:"
