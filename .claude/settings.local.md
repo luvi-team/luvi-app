@@ -105,7 +105,6 @@
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
-| `python3 -c "import yaml; ...":*` | 🟡 | YAML-Verarbeitung (PyYAML) — `-c` erlaubt arbitrary Code-Ausführung | "Parse das YAML" |
 | `grep:*` | 🟢 | Text suchen | "Such nach X im Code" |
 | `find:*` | 🟢 | Dateien finden | "Find alle .dart Dateien" |
 | `ls:*` | 🟢 | Verzeichnis listen | "Was ist im Ordner?" |
@@ -175,7 +174,9 @@
 | `git reset --hard` | Änderungen unwiderruflich verlieren |
 | `git rebase` | History umschreiben ist gefährlich |
 | `pkill` | Prozesse beenden ist destruktiv |
-| `ruby -ryaml -e:*` | Willkürliche Ruby-Ausführung - nutze stattdessen Python PyYAML (`python3 -c "import yaml; ..."`) |
+| `python3 -c` | Willkürliche Python-Code-Ausführung (Sicherheitsrisiko) |
+| `python3:*` | Zu breit - erlaubt beliebige Python-Befehle (nur spezifische Scripts erlauben) |
+| `ruby -ryaml -e:*` | Willkürliche Ruby-Ausführung (Sicherheitsrisiko) |
 
 > **Unterschied `rm` vs `git rm`:**
 > - `rm` (Shell): Löscht Dateien permanent und unwiderruflich

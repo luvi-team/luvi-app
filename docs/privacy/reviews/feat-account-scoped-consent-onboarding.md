@@ -96,7 +96,7 @@ This feature moves gate state and selected onboarding answers from device-only s
 ## Logging / Telemetry (PII-Safety)
 
 - No PII/health data in app logs or edge logs.
-- `log_consent` uses pseudonymized metrics (`ip_hash`, `ua_hash`, `consent_id_hash`) and stores only `user_id/version/scopes` in the DB.
+- `log_consent` uses pseudonymized metrics (`ip_hash`, `ua_hash`, `consent_id_hash`) in observability logs. The DB (`public.consents`) stores: `user_id`, `version`, `scopes`, `created_at`, `revoked_at`. Note: Timestamps are system-managed, not PII.
 
 ## Evidence (RLS + Gates)
 
@@ -161,13 +161,22 @@ This feature moves gate state and selected onboarding answers from device-only s
 - **Profile/consent fetching:** 1 retry with timeout reduction (3s → 2s)
 - **Backfill to server:** Fire-and-forget; errors logged but not queued
 
-**Failure Handling:**
-- On persistent failure (all retries exhausted): App displays manual retry option in UI
-- Manual retry limit: 3 attempts per session to prevent infinite loops
-- **Escape hatch:** After 3 failed manual retries, user can proceed with cached local state
-- Users can continue using the app in offline mode without server sync
-- No background sync queue (not implemented in MVP)
-- App remains functional with cached local state even if server sync fails
+**Failure Handling (Enhanced for MVP+1):**
+- **Per-Item Sync Status (TODO):**
+  - Display indicators: "Syncing...", "Sync failed - Retry?"
+  - Tied to specific backfill actions for transparency
+- **Lightweight Retry Queue (TODO):**
+  - Persist failed backfill attempts in local storage (SharedPreferences)
+  - Background retry with exponential backoff
+- **Escape Hatch UX:**
+  - After 3 failed manual retries, show explicit message:
+    > "Sync unsuccessful. You can continue with local data. Some settings may not sync across devices."
+  - Link to FAQ entry explaining behavior
+- **Telemetry Events:**
+  - `backfill_attempt_failed {attempt_count, error_type}`
+  - `backfill_retry_exhausted {total_attempts}`
+  - `escape_hatch_used {session_id}`
+- **Current MVP Behavior:** Fire-and-forget backfill; manual retry limit (3); escape hatch proceeds with cached state
 
 - **Abuse/noise via anon RPC:** EXECUTE revokes reduce attack surface and prevent DB error spam.
 
@@ -188,7 +197,12 @@ This is acceptable because:
 **Pre-revert checklist:**
 - [ ] Take DB snapshot before executing DROP statements
 - [ ] Verify snapshot integrity and accessibility
-- [ ] Verify no active user sessions during revert window
+- [ ] Verify minimal active sessions (<5% DAU) during revert window
+  - [ ] Define maintenance window (recommended: 02:00-04:00 UTC)
+  - [ ] Monitor active session count via analytics dashboard
+  - [ ] Threshold: Proceed if sessions < 5% of average DAU
+  - [ ] Graceful degradation: If threshold exceeded, delay 30 min and re-check (max 3 attempts)
+  - [ ] Fallback: If still exceeded after 3 attempts, proceed with elevated monitoring
 - [ ] **Notify affected users of the rollback (MANDATORY)**
   - [ ] Send notification via in-app message and email within 24 hours
   - [ ] Include: rollback reason, data impact summary, re-onboarding steps

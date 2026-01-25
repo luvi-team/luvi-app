@@ -13,7 +13,7 @@ inputs:
   - docs/product/roadmap.md
   - docs/engineering/assistant-answer-format.md
 outputs:
-  - Chart widgets
+  - Chart Widgets
   - Tests
   - Documentation (docs/)
   - Clear axes/legends

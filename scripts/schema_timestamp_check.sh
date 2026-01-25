@@ -5,8 +5,14 @@ set -euo pipefail
 
 BMAD_FILE="docs/bmad/global.md"
 
-# Check if bmad/global.md is also staged when migrations are staged
-if ! git diff --cached --name-only | grep -q "$BMAD_FILE"; then
+# Check if any migration files are staged
+if ! git diff --cached --name-only | grep -q "^supabase/migrations/"; then
+  echo "OK: No migration files staged, skipping BMAD check"
+  exit 0
+fi
+
+# Migrations are staged - require BMAD file to also be staged
+if ! git diff --cached --name-only | grep -q "^$BMAD_FILE$"; then
   echo "ERROR: Migration files changed but $BMAD_FILE not updated."
   echo ""
   echo "ACTION: Update 'Last verified' timestamp in $BMAD_FILE (line ~399)"

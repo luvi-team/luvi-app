@@ -26,6 +26,16 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 - **Zweck:** Misst, wie gut das Video zur aktuellen Zyklusphase passt.
 - **Rohwert:** Skalare Ähnlichkeit zwischen `video_phase` und `user.current_phase`.
 - **Formel:** `phase_score = video_phase[current_phase]` (bereits in [0,1]).
+- **Datenstruktur:** `video_phase` ist ein Dictionary/Map mit Phasen-Keys:
+  ```json
+  {
+    "menstruation": 0.8,
+    "follikel": 0.6,
+    "ovulation": 0.4,
+    "luteal": 0.9
+  }
+  ```
+  Zugriff: `video_phase["luteal"]` → `0.9` (phase_score für Lutealphase).
 - **Normalisierung:** Identität; Clamp auf [0,1].
 - **Default:** 0.5 (neutral), wenn `phase = unknown` oder `none`.
 - **Bereich:** [0,1].
@@ -65,6 +75,15 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
   - **Validierung:** API/DB-Constraint erzwingt Bereich [-1, 1]
   - **Status:** Noch nicht implementiert — wird in S5 (Brain Content) umgesetzt
 
+> **⚠️ IMPLEMENTATION STATUS: NOT YET IMPLEMENTED**
+>
+> - **Target Sprint:** S5 (Brain Content)
+> - **Fallback Behavior:** Systems MUST treat `editorial = 0.0` until implementation
+> - **DB Schema:** `content_item.editorial_score` (DECIMAL, CHECK >= -1 AND <= 1)
+> - **Permissions:** Role `editor` and `admin` only
+> - **Migration:** Will be created in S5; no current migration exists
+> - **Feature Flag:** `FEATURE_EDITORIAL_SCORES` (to be added)
+
 ### popularity
 - **Zweck:** Popularität (Views/Engagement) berücksichtigen ohne Dominanz.
 - **Rohwert:** `views`, optional CTR/Like-Rate.
@@ -83,7 +102,7 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 - **Rohwert:** Gewichteter Mix:
   - `w_save = 1.0`
   - `w_like = 0.8`
-  - `w_watch` ∈ [0.0, 1.0] (normalized by video duration: `min(1.0, watch_time / video_duration)`)
+  - `w_watch` ∈ [0.0, 1.0] (normalized by video duration: `min(1.0, watch_time / max(1, video_duration))` oder 0.0 falls `video_duration ≤ 0`)
   - `w_creator_pref = 0.3`
 - **Formel:**
   ```
@@ -109,6 +128,13 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 
   Schritt 3 – Komplement:
     affinity = 1 - 0.28 = **0.72** (moderat hohe Affinität)
+
+  **Mathematischer Hintergrund (Noisy-OR):**
+  Diese Formel basiert auf der "Noisy-OR" Aggregation aus der Wahrscheinlichkeitstheorie.
+  Sie nimmt probabilistische Unabhängigkeit der Signale an: Jedes Signal (`save`, `like`, `watch`)
+  trägt unabhängig zur Gesamtaffinität bei.
+
+  > **Referenz:** Pearl, J. (1988). *Probabilistic Reasoning in Intelligent Systems*, Kap. 4.3 (Noisy-OR gates in Bayesian networks).
 
 - **Normalisierung:** Einzelkomponenten auf [0,1]; Endwert clamp [0,1].
 - **Default:** 0.5 für neue Nutzer*innen (cold_start).
@@ -229,6 +255,16 @@ score = 0.30*0.7 + 0.20*0.5 + 0.15*0.78 + 0.10*(-1.0) + 0.10*0.5 + 0.10*0.5 - 0.
 - `K = 10` — Window size of last displayed items for diversity/redundancy penalty.
 - `min_recency = 0.05` — Floor für Recency-Normalisierung (verhindert dass sehr alte Inhalte auf 0 fallen). Typ: float, Bereich: [0,1].
 
+### Feed-Impact Validation (Pre-Swap)
+
+**Procedure:**
+1. Sample ~100 zufällige User-Feeds
+2. Berechne Top-50 Items mit alten und neuen Quantilen
+3. Spearman Rank-Korrelation berechnen
+4. **Logging:** `quantile_swap_spearman {sample_size, median_correlation, p10, p90}`
+5. **Alert:** `quantile_correlation_alert` wenn `median_correlation < 0.90`
+6. **Gate:** Swap nur bei `median_correlation >= 0.90`; sonst Alert + manuelle Review
+
 ### Popularity Quantiles Refit
 - **Schedule:** Daily at **UTC 02:00** (low-traffic window)
 - **Procedure:** Compute new p05/p95 from last 30 days of data while serving current quantiles
@@ -236,6 +272,17 @@ score = 0.30*0.7 + 0.20*0.5 + 0.15*0.78 + 0.10*(-1.0) + 0.10*0.5 + 0.10*0.5 - 0.
 - **Transition:** None for MVP — instant swap is acceptable because quantile drift is gradual (day-to-day changes are typically <5%, so ranking churn is minimal)
 - **Logging:** Log `quantile_refit_completed {p05_old, p05_new, p95_old, p95_new, duration_ms}`
 - **Rollback:** On failure, retain previous quantiles and alert `quantile_refit_failed`
+
+### Post-Swap Monitoring (Churn Detection)
+
+Nach dem atomaren Swap:
+1. **Churn-Sampling:** Erste Stunde nach Swap
+2. **Metriken:**
+   - Kendall Tau Korrelation (Pre vs Post Top-50)
+   - `pct_gt_5_positions`: % Items mit >5 Rang-Verschiebung
+3. **Logging:** `churn_summary {kendall_tau, pct_gt_5_positions, sample_window_ms}`
+4. **Alert:** `quantile_churn_alert` wenn `pct_gt_5_positions > 20%`
+5. **Auto-Rollback:** Bei Threshold-Breach → `quantile_refit_failed` + Revert zu vorherigen Quantilen
 
 ### Cold-Start
 Für neue Nutzerinnen dominieren `phase_score`, `goal_match` und `recency`; `affinity` steigt mit Interaktionen.

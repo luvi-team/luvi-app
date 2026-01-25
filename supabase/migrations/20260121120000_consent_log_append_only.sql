@@ -197,6 +197,10 @@ DO $$
 BEGIN
   IF to_regprocedure('cron.schedule(text,text,text)') IS NOT NULL THEN
     EXECUTE format(
+      'grant execute on function public.check_and_restore_consent_trigger_state() to %I',
+      current_user
+    );
+    EXECUTE format(
       'select cron.schedule(%L, %L, %L)',
       'consent_trigger_guard',
       '*/5 * * * *',

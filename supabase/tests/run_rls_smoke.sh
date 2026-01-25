@@ -67,7 +67,7 @@ run_psql_file() {
     psql "${db_url}" \
       -v ON_ERROR_STOP=1 \
       -P pager=off \
-      -f "${sql_file}" || exit_code=$?
+      -f "${sql_file}" && exit_code=0 || exit_code=$?
   if [[ ${exit_code} -eq 124 ]]; then
     echo "ERROR: psql timed out after ${timeout_sec}s for ${sql_file}" >&2
   fi
