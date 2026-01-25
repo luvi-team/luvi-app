@@ -151,8 +151,7 @@ try {
       'version': 'v1.2', // Consent policy version
     },
   );
-
-  if (response.status != 200) {
+  if (response.status != 201) {
     log.e('consent_log_failed', error: sanitizeError(response.data));
   }
 } catch (e) {
