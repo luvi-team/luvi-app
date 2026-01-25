@@ -96,13 +96,13 @@ Vor Merge müssen grün sein:
 
 ## 5) Role-spezifische DoD-Checks
 
-| Rolle | Mindest-Checks |
-|-------|----------------|
-| ui-frontend | UI-Checklist SSOT + `flutter analyze` + passende Widget-Tests |
-| dataviz | UI-Checklist SSOT + Chart-/Widget-Tests + States/A11y |
-| api-backend | Contract/Unit-Tests + privacy-gate relevant + kein service_role |
-| db-admin | RLS ON + Policies + least-privilege + Migration geprüft |
-| qa-dsgvo | Privacy-Impact + Logging/PII geprüft + Consent korrekt |
+| Rolle | Mindest-Checks | Coverage Expectation |
+|-------|----------------|---------------------|
+| ui-frontend | UI-Checklist SSOT + `flutter analyze` + passende Widget-Tests | >=1 widget test per new screen/widget |
+| dataviz | UI-Checklist SSOT + Chart-/Widget-Tests + States/A11y | >=1 widget test per chart component |
+| api-backend | Contract/Unit-Tests + privacy-gate relevant + kein service_role | >=1 unit test per endpoint, 80%+ on critical paths |
+| db-admin | RLS ON + Policies + least-privilege + Migration geprüft | RLS policy smoke tests required |
+| qa-dsgvo | Privacy-Impact + Logging/PII geprüft + Consent korrekt | Consent flow integration tests required |
 
 > **Hinweis:** Für UI gilt zusätzlich ein Guard: Neue hardcodierte Farben/deutsche Strings können den Audit-Test triggern (`test/dev/audit/ui_guard_audit_test.dart`).
 

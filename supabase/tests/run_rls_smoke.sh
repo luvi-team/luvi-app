@@ -55,11 +55,23 @@ run_psql_file() {
     exit 1
   fi
 
+  local timeout_sec="${PSQL_TIMEOUT:-60}"
+  if ! command -v timeout >/dev/null 2>&1; then
+    echo "timeout command not found; unable to enforce PSQL_TIMEOUT=${timeout_sec}s" >&2
+    exit 1
+  fi
+
+  local exit_code=0
   PGPASSWORD="${SUPABASE_DB_PASSWORD}" \
+    timeout --preserve-status "${timeout_sec}" \
     psql "${db_url}" \
       -v ON_ERROR_STOP=1 \
       -P pager=off \
-      -f "${sql_file}"
+      -f "${sql_file}" || exit_code=$?
+  if [[ ${exit_code} -eq 124 ]]; then
+    echo "ERROR: psql timed out after ${timeout_sec}s for ${sql_file}" >&2
+  fi
+  return ${exit_code}
 }
 
 run_psql_file "${script_dir}/rls_smoke.sql"

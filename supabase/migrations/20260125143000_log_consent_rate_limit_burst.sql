@@ -131,7 +131,8 @@ $$;
 
 revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) from public;
 revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) from anon;
+-- Intentionally revoked: service_role bypass blocked; function enforces auth.uid() match.
+-- Verify in app/edge code that log_consent_if_allowed is called only with anon/authenticated context.
 revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) from service_role;
 grant execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) to authenticated;
-
 commit;

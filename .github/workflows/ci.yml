@@ -259,3 +259,42 @@ jobs:
         with:
           name: agents-drift-report-${{ github.run_id }}
           path: context/agents/_drift_report.md
+
+  schema-drift-check:
+    name: Schema Documentation Drift
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - name: Check schema-to-documentation alignment
+        run: |
+          echo "=== Checking schema documentation alignment ==="
+
+          # Extract CREATE TABLE statements from migrations
+          MIGRATION_TABLES=$(grep -rh "CREATE TABLE" supabase/migrations/*.sql 2>/dev/null | \
+            grep -oE 'public\.[a-z_]+' | sort -u || echo "")
+
+          # Extract documented tables from BMAD (format: `public.table_name`)
+          DOC_TABLES=$(grep -oE '\`public\.[a-z_]+\`' docs/bmad/global.md | \
+            sed 's/`//g' | sort -u || echo "")
+
+          echo "Migration tables:"
+          echo "$MIGRATION_TABLES"
+          echo ""
+          echo "Documented tables:"
+          echo "$DOC_TABLES"
+
+          # Find undocumented tables (in migrations but not in docs)
+          UNDOCUMENTED=$(comm -23 <(echo "$MIGRATION_TABLES") <(echo "$DOC_TABLES") || true)
+
+          if [ -n "$UNDOCUMENTED" ]; then
+            echo ""
+            echo "::error::Undocumented tables found in migrations but missing from docs/bmad/global.md:"
+            echo "$UNDOCUMENTED"
+            echo ""
+            echo "ACTION: Add these tables to section '2.2 Domäne → Tabellen/Views → Status' in docs/bmad/global.md"
+            exit 1
+          fi
+
+          echo ""
+          echo "OK: All migration tables are documented"

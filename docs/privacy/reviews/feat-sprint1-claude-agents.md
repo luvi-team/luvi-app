@@ -172,7 +172,7 @@ The branch introduces foundational DSGVO-compliant data structures with proper R
 - **Verification Date:** *Archived before verification*
 - **Verified By:** *N/A (archived document)*
 - **No SCCs Required:** Data remains within EU; no third-country transfers (pending verification)
-- **Note:** For current region verification, see active sprint review documents.
+- **Note:** For current region verification, see `docs/privacy/reviews/20251222-27_consent_profiles_hardening.md` or the latest active sprint review documents.
 
 **Checklist Entry:**
 - ❌ Region not confirmed before archival (verification incomplete at time of archive)

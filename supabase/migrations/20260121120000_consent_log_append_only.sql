@@ -225,7 +225,13 @@ COMMIT;
 --    UPDATE public.consents SET version = '999' WHERE user_id = auth.uid();
 --    -- Expected: ERROR: Consent log is append-only (GDPR audit requirement)
 --
--- 4. Verify client DELETE is disallowed (should fail for authenticated):
+-- 4. Verify trigger blocks service_role UPDATEs (append-only enforced for all roles):
+--    SET ROLE service_role;
+--    UPDATE public.consents SET version = '999' WHERE user_id = '<test_user_id>';
+--    -- Expected: ERROR: Consent log is append-only (GDPR audit requirement)
+--    RESET ROLE;
+--
+-- 5. Verify client DELETE is disallowed (should fail for authenticated):
 --    DELETE FROM public.consents WHERE user_id = auth.uid();
 --
 -- ============================================================================

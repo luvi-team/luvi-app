@@ -354,6 +354,93 @@ void main() {
         );
       });
 
+      test('scopes can be updated (add analytics)', () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+        await service.bindUser('test-user-update');
+
+        // Initial: only required scopes
+        await service.setAcceptedConsentScopes({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+        });
+
+        expect(service.acceptedConsentScopesOrNull, isNotNull);
+        expect(
+          service.acceptedConsentScopesOrNull,
+          isNot(contains(ConsentScope.analytics.name)),
+        );
+
+        // Update: add analytics consent
+        await service.setAcceptedConsentScopes({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+          ConsentScope.analytics.name,
+        });
+
+        final scopes = service.acceptedConsentScopesOrNull;
+        expect(scopes, contains(ConsentScope.analytics.name));
+      });
+
+      test('scopes can be reduced (remove analytics)', () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+        await service.bindUser('test-user-remove');
+
+        // Initial: full scopes including analytics
+        await service.setAcceptedConsentScopes({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+          ConsentScope.analytics.name,
+        });
+
+        expect(
+          service.acceptedConsentScopesOrNull,
+          contains(ConsentScope.analytics.name),
+        );
+
+        // User revokes analytics consent
+        await service.setAcceptedConsentScopes({
+          ConsentScope.health_processing.name,
+          ConsentScope.terms.name,
+        });
+
+        final scopes = service.acceptedConsentScopesOrNull;
+        expect(scopes, isNotNull);
+        expect(
+          scopes,
+          containsAll([
+            ConsentScope.health_processing.name,
+            ConsentScope.terms.name,
+          ]),
+        );
+        expect(scopes, isNot(contains(ConsentScope.analytics.name)));
+      });
+
+      test('scopes can be cleared to empty set', () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final service = UserStateService(prefs: prefs);
+        await service.bindUser('test-user-clear');
+
+        // Set initial scopes
+        await service.setAcceptedConsentScopes({
+          ConsentScope.health_processing.name,
+          ConsentScope.analytics.name,
+        });
+
+        expect(service.acceptedConsentScopesOrNull, isNotEmpty);
+
+        // Clear all scopes
+        await service.setAcceptedConsentScopes({});
+
+        final scopes = service.acceptedConsentScopesOrNull;
+        expect(scopes, isNotNull);
+        expect(scopes, isEmpty);
+      });
+
       test('scopes handle corrupted JSON gracefully', () async {
         SharedPreferences.setMockInitialValues({});
         final prefs = await SharedPreferences.getInstance();

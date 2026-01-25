@@ -1,3 +1,5 @@
+import 'dart:async' show TimeoutException;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +26,10 @@ import 'package:luvi_app/core/init/session_dependencies.dart';
 /// Retry delay for local cache persistence after ParallelWaitError.
 /// 300ms allows transient I/O contention to resolve (CodeRabbit recommendation: 250-500ms).
 const _kConsentRetryDelay = Duration(milliseconds: 300);
+
+/// Timeout for local cache persistence operations.
+/// 5 seconds is generous for SharedPreferences writes; prevents UI freeze.
+const _kConsentPersistenceTimeout = Duration(seconds: 5);
 
 class _ConsentBtnBusyNotifier extends Notifier<bool> {
   @override
@@ -785,6 +791,8 @@ Future<bool> _persistConsentToLocalCache(
 ) async {
   // Issue 3: Wrap provider resolution in try-catch for graceful failure.
   // Explicit type annotation required (Dart cannot infer from try-block assignment).
+  // Note: DI failure indicates app state issue but is treated as cache failure
+  // because server consent (SSOT) already succeeded at this point.
   final UserStateService userState;
   try {
     userState = await ref.read(userStateServiceProvider.future);
@@ -832,7 +840,13 @@ Future<bool> _persistConsentToLocalCache(
       userState.markWelcomeSeen(),
       userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
       userState.setAcceptedConsentScopes(acceptedScopes),
-    ].wait;
+    ].wait.timeout(
+      _kConsentPersistenceTimeout,
+      onTimeout: () => throw TimeoutException(
+        'Local consent cache persistence timed out',
+        _kConsentPersistenceTimeout,
+      ),
+    );
     return true;
   } on ParallelWaitError catch (e, stackTrace) {
     // Log all errors occurred during parallel execution
@@ -860,7 +874,13 @@ Future<bool> _persistConsentToLocalCache(
         userState.markWelcomeSeen(),
         userState.setAcceptedConsentVersion(ConsentConfig.currentVersionInt),
         userState.setAcceptedConsentScopes(acceptedScopes),
-      ].wait;
+      ].wait.timeout(
+        _kConsentPersistenceTimeout,
+        onTimeout: () => throw TimeoutException(
+          'Local consent cache persistence timed out',
+          _kConsentPersistenceTimeout,
+        ),
+      );
       log.d('consent_local_cache_retry_succeeded', tag: 'consent_options');
       return true;
     } on ParallelWaitError catch (e) {

@@ -294,3 +294,4 @@
 - Sentry/PostHog Smoke in Beta; Crashfree ≥ 99 % vor Store.
 - Golden Tests für UI-Stabilität (Badges, Karten, Overlays).
 - Für AI-Features Link auf Langfuse-Trace im PR.
+

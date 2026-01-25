@@ -105,6 +105,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
       // Note: AuthException.statusCode is String?, not int.
       // Keep this minimal to avoid fragile message pattern matching.
       // TODO(backend): Request consistent error codes to eliminate heuristic detection.
+      // Known limitation: May false-positive on non-credential 401s (e.g., session expiry).
       final statusCode = error.statusCode;
       final isInvalidCredentials = statusCode == '401';
 

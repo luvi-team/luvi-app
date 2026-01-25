@@ -12,4 +12,10 @@ repos:
         entry: scripts/secrets_scan.sh
         language: system
         pass_filenames: false
+      - id: schema-timestamp-check
+        name: Schema documentation timestamp check
+        entry: scripts/schema_timestamp_check.sh
+        language: system
+        files: 'supabase/migrations/.*\.sql$'
+        pass_filenames: false
 

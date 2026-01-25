@@ -41,6 +41,13 @@ ovulation_day = round(cycle_len * 0.5) (MVP-Schätzwert)
 ovulation_day_alt = cycle_len - 14 (Alternative bei variabler Zykluslänge)
 ```
 
+> **MVP Rationale:** Die 50%-Heuristik wurde für das MVP gewählt aus folgenden Gründen:
+> 1. **Implementierungs-Einfachheit:** Einzelne Berechnung ohne zusätzliche Parameter
+> 2. **28-Tage-Genauigkeit:** Funktioniert gut für die häufigste Zykluslänge
+> 3. **Konservativer Ansatz:** Vermeidet Überschätzung der Präzision ohne Sensor-/Biomarker-Daten
+> 4. **Klarer Upgrade-Pfad:** Roadmap enthält `cycle_len - 14` und sensorbasierte Verbesserungen
+> 5. **Test-Vorhersagbarkeit:** Einfachere UX-Erwartungen und deterministische Testfälle
+
 > **Minimum Cycle Length Guard:** Zykluslängen unter 21 Tagen gelten medizinisch
 > als Oligomenorrhoe (ACOG-Richtlinien: Normalbereich 21–45 Tage; Quelle: ACOG
 > Committee Opinion No. 651, 2015, verfügbar unter https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign). Falls
@@ -64,9 +71,10 @@ ovulation_day_alt = cycle_len - 14 (Alternative bei variabler Zykluslänge)
 > - [ ] Follow-up: Phase‑Confidence‑Score bei Phasengrenzen (Archon Task: eef75718-27f8-4493-80d9-82c9dcff4f49)
 
 > **Edge Case Guard:** Falls `period_len >= ovulation_day` (möglich bei kurzen
-> Zyklen oder ungenauen Eingaben), wird `ovulation_day` auf `period_len + 1`
-> korrigiert, damit die Follikelphase (`period_len < cycle_day < ovulation_day`)
-> definiert bleibt. Diese Korrektur wird geloggt und im UI als Datenwarnung angezeigt.
+> Zyklen oder ungenauen Eingaben), wird `ovulation_day` auf `period_len + 2`
+> korrigiert, damit mindestens ein Follikel-Tag existiert (die Bedingung
+> `period_len < cycle_day < ovulation_day` benötigt mindestens 2 Tage Differenz).
+> Diese Korrektur wird geloggt und im UI als Datenwarnung angezeigt.
 
 ### 3. cycle_day berechnen
 ```
@@ -99,7 +107,7 @@ Wobei `heutiges_datum` der aktuelle Tag (Europe/Vienna) ist.
 | Menopause/Hormonelle Verhütung | `phase = none`, KI und Ranking ignorieren Phasensignale |
 | Datenwiderspruch | Wenn `cycle_len < period_len` oder absurde Werte: `phase = unknown` |
 | `cycle_len < 21` | Medizinisch ungewöhnlich kurz (Oligomenorrhoe): `phase = unknown`, UI-Hinweis zur Datenprüfung, Observability-Log |
-| `period_len >= ovulation_day` | Anatomisch ungültig: Ovulation während Menstruation. Setze `ovulation_day = period_len + 1` als Safe-Fallback, logge Warnung im Observability-Layer. UI-Hinweis: „Bitte Zyklusdaten prüfen" |
+| `period_len >= ovulation_day` | Anatomisch ungültig: Ovulation während Menstruation. Setze `ovulation_day = period_len + 2` als Safe-Fallback (mindestens 1 Follikel-Tag), logge Warnung im Observability-Layer. UI-Hinweis: „Bitte Zyklusdaten prüfen" |
 
 ## Scope & Grenzen
 - Die Phasenlogik dient **nur** der Priorisierung und Personalisierung von Lifestyle-Inhalten.

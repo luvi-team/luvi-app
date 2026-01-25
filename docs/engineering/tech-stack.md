@@ -2,6 +2,31 @@
 
 **Ziel:** Solo-Dev-freundlicher, skalierbarer, EU-konformer Stack für iOS-first (Flutter).
 
+## English Summary
+
+This document defines the technology stack for LUVI, a GDPR-first FemTech application built for the EU market. Key architectural decisions include:
+- **Frontend:** Flutter (iOS-first) with Riverpod state management and GoRouter navigation
+- **Backend:** Supabase (EU/Frankfurt) with PostgreSQL, Row Level Security, and pgvector for semantic search
+- **AI Layer:** Multi-provider routing (OpenAI EU, Claude/Bedrock EU, Gemini/Vertex EU) with Redis caching and Langfuse observability
+- **Compliance:** EU-only regions, consent logging, PII redaction at edge, no health data in push notifications
+
+## Glossary
+
+| Term | Definition |
+|------|------------|
+| **Archon** | MCP server providing knowledge base (SSOT) for AI agents |
+| **Codex CLI** | AI coding assistant specialized for backend/DB/privacy work |
+| **DSGVO** | German GDPR (Datenschutz-Grundverordnung) |
+| **Greptile Review** | GitHub Required Check for AI-powered code review |
+| **Langfuse** | LLM observability platform for tracing, costs, latency |
+| **MCP** | Model Context Protocol - AI tool integration standard |
+| **pgvector** | PostgreSQL extension for vector similarity search |
+| **PII** | Personally Identifiable Information |
+| **RLS** | Row Level Security - database access control per user |
+| **SSOT** | Single Source of Truth |
+| **Supabase MCP** | Dev-only read-only MCP bridge for schema introspection |
+| **Vercel Preview Health** | Required check that `/api/health` returns 200 before merge |
+
 ---
 
 ## 0) Leitgedanke
@@ -57,11 +82,10 @@
 
 ## 2) Frontend (Mobile)
 
-- **Flutter 3.35.4 / Dart 3.9.2** *(CI-pinned for stability)*
+- **Flutter / Dart** *(see `context/refs/tech_stack_current.yaml` for CI-pinned versions)*
   **Funktion:** Cross-platform UI; iOS-first Rollout.
   **Warum:** Beste Time-to-Market im bestehenden Setup.
-  **Note:** CI is pinned to 3.35.4 for reproducible builds. Newer versions (e.g., 3.38.x)
-  available but require validation. See `.github/workflows/*.yml`.
+  **Note:** Canonical versions defined in `context/refs/tech_stack_current.yaml`. CI pins ensure reproducible builds. See `.github/workflows/*.yml` for CI configuration.
 
 - **State & Navigation:** `Riverpod`, `GoRouter` *(see `context/refs/tech_stack_current.yaml` for pinned versions)*
   **Einsatz:** Home/„Heute in der Phase", Stream, Coach, Profil.
