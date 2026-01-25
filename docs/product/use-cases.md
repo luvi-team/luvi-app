@@ -51,7 +51,7 @@ Index: AGENTS.md im Repo-Root verweist auf Dossiers & SSOT.
 
 ## Mikro-Verbesserungen (optional)
 - DoD explizit (3 Punkte): analyze ✅ · Widget-Test ✅ · UI-Polisher „0 blocking issues“.
-- A11y Kurzliste: min. Tap-Target 44×44 dp (Projekt-Standard; übertrifft WCAG 2.2 AA Minimum von 24×24 dp); Semantics für Überschrift & CTA; Focus-Order logisch.
+- A11y Kurzliste: min. Tap-Target 44×44 dp (Projekt-Standard; übertrifft WCAG 2.2 AA Minimum von 24×24 CSS pixels); Semantics für Überschrift & CTA; Focus-Order logisch.
 - Visual-Smoke: 1 Screenshot-/Golden-Test (optional).
 - Token-Mapping: kurzer Satz „Figma→Flutter Mapping“ im PR.
 

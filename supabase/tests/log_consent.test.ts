@@ -84,7 +84,7 @@ Deno.test("log_consent: accepts valid POST requests", async () => {
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: ["analytics", "marketing"],
       source: "contract-test",
       appVersion: "1.0.0-test",
@@ -104,7 +104,7 @@ Deno.test("log_consent: accepts canonical scopes object format with version alia
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      version: "v1.0.0", // App sends "version", not "policy_version" - test alias
+      version: "v1.0", // App sends "version", not "policy_version" - test alias
       scopes: { terms: true, analytics: true }, // CANONICAL Object-Format
       source: "contract-test-canonical",
       appVersion: "1.0.0-test",
@@ -158,7 +158,7 @@ Deno.test("log_consent: rejects requests without authentication (401)", async ()
     method: "POST",
     headers: buildHeaders(), // No accessToken → no Authorization header
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: ["analytics"],
     }),
   });
@@ -174,7 +174,7 @@ Deno.test("log_consent: rejects invalid access token (401)", async () => {
     method: "POST",
     headers: buildHeaders("invalid-token-that-is-not-jwt"),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: ["analytics"],
     }),
   });
@@ -191,7 +191,7 @@ Deno.test("log_consent: rejects empty scopes array (400)", async () => {
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: [], // Empty array
     }),
   });
@@ -208,7 +208,7 @@ Deno.test("log_consent: rejects empty scopes object (400)", async () => {
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: {}, // Empty object
     }),
   });
@@ -225,7 +225,7 @@ Deno.test("log_consent: rejects invalid scopes (400)", async () => {
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: ["invalid_scope_name", "another_invalid"],
     }),
   });
@@ -247,7 +247,7 @@ Deno.test("log_consent: truncates extremely long invalid scopes in response", as
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: [longScope],
     }),
   });
@@ -278,7 +278,7 @@ Deno.test("log_consent: caps invalidScopes array at MAX_LOGGED_INVALID_SCOPES", 
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: manyScopes,
     }),
   });
@@ -298,7 +298,7 @@ Deno.test("log_consent: non-string scopes are converted to type tokens", async (
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: [{ nested: "object" }, [1, 2, 3], 42, null, true],
     }),
   });
@@ -338,7 +338,7 @@ Deno.test("log_consent: rejects non-boolean values in scopes object (400)", asyn
     method: "POST",
     headers: buildHeaders(accessToken),
     body: JSON.stringify({
-      policy_version: "v1.0.0",
+      policy_version: "v1.0",
       scopes: { analytics: "yes", terms: 123 }, // Non-boolean values
     }),
   });

@@ -1,11 +1,11 @@
-# Ranking-Heuristik v1.3 (SSOT)
+# Ranking-Heuristik v1.4 (SSOT)
 
-> Version: v1.3 · Datum: 2026-01-24
+> Version: v1.4 · Datum: 2026-01-25
 
 ## Ziel
 Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-Inhalten im LUVI-Feed und beschreibt die Komponenten, Fallbacks und Sicherheitsregeln. Die Heuristik unterstützt eine zyklusbewusste, zielorientierte und dennoch vielfältige Mischung aus Videos und Artikeln. Sie ist einfach gehalten (MVP) und lässt sich später anpassen.
 
-## Score-Formel (v1.3)
+## Score-Formel (v1.4)
 
 
 | Gewicht | Wert | Begründung |
@@ -102,7 +102,7 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 - **Rohwert:** Gewichteter Mix aus vier Signal-Typen mit folgenden Gewichten:
   - `w_save = 1.0` (Save-Signal)
   - `w_like = 0.8` (Like-Signal)
-  - `w_watch = 1.0` (Watch-Signal; Normalisierung erfolgt in `f_watch`, siehe unten)
+  - `w_watch = 1.0` (Watch-Signal; implizit angewandt da Identität — `f_watch` ist bereits auf [0,1] normiert; Weight bleibt für zukünftiges Tuning konfigurierbar)
   - `w_creator_pref = 0.3` (Creator-Preference-Signal)
 - **Formel:**
   ```
@@ -125,9 +125,14 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
      - Beispiel: User liked → `f_like = 0.8 × 1 = 0.8` | Nicht liked → `f_like = 0.8 × 0 = 0.0`
 
   3. **Watch-Signal (kontinuierlich):**
-     - Formel: `f_watch = min(1.0, watch_time / max(1, video_duration))`
+     - Formel:
+       ```
+       if video_duration <= 0:
+           f_watch = 0.0
+       else:
+           f_watch = min(1.0, watch_time / video_duration)
+       ```
      - Ausgabebereich: `[0.0, 1.0]` (kontinuierlich, geclampt)
-     - Edge-Case: Falls `video_duration ≤ 0`, dann `f_watch = 0.0`
      - Beispiel: 45s von 60s Video geschaut → `f_watch = min(1.0, 45/60) = 0.75`
 
   4. **Creator-Preference-Signal (kontinuierlich):**
@@ -230,6 +235,8 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 5. Wiederhole bis Constraint erfüllt oder keine eligiblen Swaps
 
 > **Hinweis:** Dies ist ein MVP-Vorschlag. Die finale Implementierung sollte im Team abgestimmt werden.
+
+> **Hinweis zu Editorial-Werten:** Beispiele B und C verwenden nicht-null `editorial`-Werte zur Illustration zukünftigen Verhaltens. Bis `FEATURE_EDITORIAL_SCORES` in S5 implementiert ist, behandelt das System `editorial = 0.0` (siehe Abschnitt "Implementation Status" oben).
 
 ## Beispiele
 
@@ -347,9 +354,13 @@ Für neue Nutzerinnen dominieren `phase_score`, `goal_match` und `recency`; `aff
 - Gewichtsänderungen vor Rollout in kontrolliertem Experiment validieren
 
 ## Versionsinfo
-- **Version:** v1.3
-- **Datum:** 2026-01-24
+- **Version:** v1.4
+- **Datum:** 2026-01-25
 - **Änderungsverlauf:**
+  - v1.4: CodeRabbit Review Fixes (Batch 2)
+    - Add: Hinweis zu Editorial-Werten in Beispielen (S5 Feature Flag)
+    - Fix: `f_watch` Formel mit explizitem Edge-Case für `video_duration ≤ 0`
+    - Clarify: `w_watch` Weight-Anwendung (implizit da Identität)
   - v1.3: CodeRabbit Review Fixes
     - Fix: Editorial Boost max +0.10 (war fälschlich +0.2)
     - Add: Blacklist Pre-Filter vor Scoring

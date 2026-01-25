@@ -14,6 +14,7 @@
 
 BEGIN;
 
+-- Intentionally idempotent: DELETE already revoked in 20260121120000_consent_log_append_only.sql.
 REVOKE DELETE ON public.consents FROM service_role;
 
 COMMIT;

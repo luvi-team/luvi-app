@@ -124,7 +124,7 @@ onPressed: () => notifier.toggle(ConsentScope.analytics);
 ```bash
 dart run build_runner build
 # or watch mode:
-flutter pub run build_runner watch
+dart run build_runner watch
 ```
 
 ### Pattern 2: AsyncNotifierProvider (Async Operations)

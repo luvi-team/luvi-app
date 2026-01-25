@@ -105,6 +105,8 @@ begin
     raise exception 'p_burst_max_requests must be >= 0';
   end if;
 
+  p_max_requests := least(p_max_requests, 1000000);
+  p_burst_max_requests := least(p_burst_max_requests, 1000000);
   effective_max := p_max_requests + p_burst_max_requests;
 
   d := digest(p_user_id::text, 'sha256');
