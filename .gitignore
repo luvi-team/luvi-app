@@ -196,6 +196,7 @@ docs/privacy/*
 !docs/privacy/privacy.md
 !docs/privacy/terms.md
 !docs/privacy/reviews/
+!docs/privacy/reviews/**
 
 # Operational Docs (local-only, not for public repo)
 docs/audits/
@@ -215,6 +216,7 @@ context/agents/*
 !context/agents/ui-polisher.md
 # Context refs - versioned YAML files, but not JSON exports or archived items
 !context/refs/                    # Include the refs directory
+!context/refs/**                  # Include all contents by default
 context/refs/archive/            # Exclude archived/deprecated reference files
 context/refs/*.json              # Exclude JSON exports (Figma nodes, etc.) - not SSOT
 # Note: tech_stack_current.yaml and other YAML files ARE tracked (SSOT)

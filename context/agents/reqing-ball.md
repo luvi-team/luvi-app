@@ -31,6 +31,37 @@ Use `/adjudicate` command in PR comments:
 | `/adjudicate FP {Finding_ID}` | Applies `adjudicated-fp` label + comment template |
 | `/adjudicate TP {Finding_ID}` | Applies `adjudicated-tp` label + comment template |
 
+### Authorization & Permissions
+
+**Who can run `/adjudicate`:**
+- PR author (creator of the pull request)
+- Repository maintainers with write access (GitHub "Maintain" or "Admin" role)
+- Designated reviewers explicitly assigned to the PR
+
+**Enforcement**:
+- GitHub bot validates requester via GitHub API before applying labels
+- Permission check: `GET /repos/{owner}/{repo}/collaborators/{username}/permission`
+- Required level: `write`, `maintain`, or `admin`
+- If unauthorized: Bot responds with error, no labels applied, audit logged
+
+**Validation Rules**:
+- Finding_ID format: `REQ-{PR#}-{SEQ}` (e.g., `REQ-123-01`)
+- Finding_ID must exist in current PR's reqing-ball review comment
+- Invalid format → Bot rejects with error message
+- Duplicate adjudication → Bot warns but updates label (allows correction)
+
+**Audit Trail**:
+- All commands logged with timestamp, user, Finding_ID, decision
+- Log format: GitHub comment + optional external audit log
+- Failed permission checks logged separately for security monitoring
+
+**Rate Limiting**:
+- Max 10 adjudications per user per PR
+- Cooldown: 1 second between commands
+- Exceeding limits → Bot responds with rate limit message
+
+**Implementation Status**: Bot command planned for MVP. Manual workflow operational for interim use.
+
 ### Comment Template (Auto-Generated)
 ```
 [{TP|FP}-Adjudication] Finding: {Finding_ID}, Decision: {True|False} Positive, By: @user

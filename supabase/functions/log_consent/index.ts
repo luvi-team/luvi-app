@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
+import { parseVersion } from "../_shared/version_parser.ts";
 
 function requireEnv(name: string): string {
   const value = Deno.env.get(name);
@@ -533,6 +534,30 @@ if (import.meta.main) {
       {
       status: 400,
       headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+      },
+    );
+  }
+
+  // Validate version format using shared parser
+  const versionValidation = parseVersion(policyVersion);
+  if (!versionValidation.valid) {
+    logMetric(requestId, "invalid", {
+      reason: "invalid_version_format",
+      version: policyVersion,
+      error: versionValidation.error,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(
+      JSON.stringify({
+        error: "invalid_version_format",
+        message: versionValidation.error,
+        request_id: requestId,
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
       },
     );
   }

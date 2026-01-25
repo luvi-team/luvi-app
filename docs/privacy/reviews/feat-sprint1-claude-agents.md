@@ -165,18 +165,30 @@ The branch introduces foundational DSGVO-compliant data structures with proper R
 - No automatic deletion policies defined
 - Recommendation: Define retention periods for each data type
 
-### International Transfers: ⚠️ ARCHIVED — VERIFICATION INCOMPLETE
-- **Supabase Project Region:** *Not verified at time of archive*
-- **Verification Method:** Supabase Dashboard → Project Settings → General → Region
-- **Project Reference:** Confirmed via `SUPABASE_PROJECT_REF` environment variable
-- **Verification Date:** *Archived before verification*
-- **Verified By:** *N/A (archived document)*
-- **No SCCs Required:** Data remains within EU; no third-country transfers (pending verification)
-- **Note:** For current region verification, see `docs/privacy/reviews/20251222-27_consent_profiles_hardening.md` or the latest active sprint review documents.
+### International Transfers: ARCHIVED — VERIFICATION INCOMPLETE
 
-**Checklist Entry:**
-- ❌ Region not confirmed before archival (verification incomplete at time of archive)
-- ✅ No external service integrations transferring data outside EU
+**Verification Status**: NOT VERIFIED AT TIME OF ARCHIVE
+
+This archived document predates the project's region verification process. All claims below are unverified and should not be relied upon for compliance decisions.
+
+- **Supabase Project Region:** *Unknown - not verified during this review period*
+- **Verification Method:** Supabase Dashboard → Project Settings → General → Region
+- **Project Reference:** Confirmed via `SUPABASE_PROJECT_REF` environment variable exists
+- **Verification Date:** *N/A (archived before verification process implemented)*
+- **Verified By:** *N/A (archived document)*
+- **Transfer Status:** *Unknown - verification incomplete at time of archive*
+- **SCCs Requirement:** *Unknown - cannot make determination without region verification*
+- **Note:** For current verified region status, see `docs/privacy/reviews/20251222-27_consent_profiles_hardening.md` or latest sprint review documents.
+
+**Checklist Entry (At Time of Archive):**
+- ❌ Region not confirmed before archival (verification incomplete)
+- ❌ Transfer compliance status unknown (document archived before verification)
+- ⚠️ External service integrations not audited for third-country transfers
+- ✅ No known data exports outside Supabase at time of archival
+
+**IMPORTANT**: This archived document cannot make definitive claims about data transfers, SCCs, or regional compliance. Any statements about "EU-only" or "No SCCs Required" in this document are unverified assumptions and must not be relied upon for compliance purposes.
+
+**For Current Compliance Status**: Refer to latest privacy review documents dated 2025-12-22 or later.
 
 ## Recommendations
 

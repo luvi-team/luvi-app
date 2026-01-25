@@ -18,4 +18,10 @@ repos:
         language: system
         files: 'supabase/migrations/.*\.sql$'
         pass_filenames: false
+      - id: consent-scope-drift-check
+        name: Consent scope drift check (Dart enum vs JSON)
+        entry: bash -c 'flutter test test/features/consent/consent_scopes_ssot_test.dart --no-pub'
+        language: system
+        files: '^(config/consent_scopes\.json|lib/core/privacy/consent_types\.dart)$'
+        pass_filenames: false
 

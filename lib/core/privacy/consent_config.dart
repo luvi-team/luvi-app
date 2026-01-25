@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:luvi_app/core/privacy/consent_types.dart';
+import 'package:luvi_app/core/privacy/version_parser.dart';
 
 class ConsentConfig {
   const ConsentConfig._();
@@ -21,15 +22,14 @@ class ConsentConfig {
     if (_cachedCurrentVersionInt != null) {
       return _cachedCurrentVersionInt!;
     }
-    final match = RegExp(r'^v(\d+)(?:\.\d+)?$').firstMatch(currentVersion);
-    if (match == null) {
+    try {
+      _cachedCurrentVersionInt = VersionParser.parseMajorVersion(currentVersion);
+      return _cachedCurrentVersionInt!;
+    } catch (e) {
       throw StateError(
-        'ConsentConfig.currentVersion "$currentVersion" does not match '
-        'expected format v{major} or v{major}.{minor}',
+        'ConsentConfig.currentVersion "$currentVersion" is invalid: ${e.toString()}',
       );
     }
-    _cachedCurrentVersionInt = int.parse(match.group(1)!);
-    return _cachedCurrentVersionInt!;
   }
 
   /// Resets cached version for test isolation.

@@ -12,7 +12,7 @@ if ! git diff --cached --name-only | grep -q "^supabase/migrations/"; then
 fi
 
 # Migrations are staged - require BMAD file to also be staged
-if ! git diff --cached --name-only | grep -q "^$BMAD_FILE$"; then
+if ! git diff --cached --name-only | grep -Fxq "$BMAD_FILE"; then
   echo "ERROR: Migration files changed but $BMAD_FILE not updated."
   echo ""
   echo "ACTION: Update 'Last verified' timestamp in $BMAD_FILE"

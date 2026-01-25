@@ -134,18 +134,23 @@ revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, inte
 grant execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) to authenticated;
 
 -- Re-apply intended lock-down for the break-glass helper function.
-revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from public;
-revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from anon;
-revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from authenticated;
-revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from service_role;
-revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from postgres;
+do $
+begin
+  if to_regprocedure('public.admin_breakglass_set_consent_no_update_enabled(boolean, text)') is not null then
+    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from public';
+    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from anon';
+    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from authenticated';
+    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from service_role';
+    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from postgres';
+  end if;
+end $;
 
-do $$
+do $
 begin
   if exists (select 1 from pg_roles where rolname = 'supabase_admin') then
     execute 'grant execute on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) to supabase_admin';
   end if;
-end $$;
+end $;
 
 commit;
 

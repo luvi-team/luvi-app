@@ -33,6 +33,74 @@
 }
 ```
 
+### Version Validation Flow & Mismatch Handling
+
+**Validation Architecture**: Multi-layer validation ensures version consistency:
+
+```
+┌─────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Dart Client │────▶│ Edge Function│────▶│   Database   │
+│             │     │  (validate)  │     │   (store)    │
+└─────────────┘     └──────────────┘     └──────────────┘
+     │                     │                     │
+     │ ConsentConfig      │ version_parser.ts   │ version column
+     │ .currentVersion    │ parseVersion()      │ (text)
+     │ "v1.0"             │ ✓ format check      │
+     └────────────────────┴─────────────────────┘
+```
+
+**Layer 1 - Client-Side (Dart)**:
+- Location: `lib/core/privacy/consent_config.dart`
+- Validation: `ConsentConfig.assertVersionFormatValid()` called at app startup
+- Utility: `lib/core/privacy/version_parser.dart`
+- Failure: App throws `StateError` during initialization
+
+**Layer 2 - Edge Function (TypeScript)**:
+- Location: `supabase/functions/log_consent/index.ts` (after line 539)
+- Validation: Format checked using `_shared/version_parser.ts`
+- Failure: Returns 400 `invalid_version_format` with error message
+- No database insertion on validation failure
+
+**Layer 3 - Database**:
+- No format validation at DB level (version stored as text)
+- Relies on Edge Function validation for data quality
+
+**Audit Logging**:
+
+| Outcome | Log Level | Fields | Location |
+|---------|-----------|--------|----------|
+| Success | `info` | `consent_id_hash`, `version`, `scope_count`, `duration_ms` | Line 775-779 |
+| Invalid version | `warning` | `reason: "invalid_version_format"`, `version`, `error` | Validation block |
+| Rate limited | `warning` | `consent_id_hash`, `window_sec`, `max`, `burst_max` | Line 729-738 |
+
+**Pseudonymization**: All logs use `consent_id_hash` (HMAC-SHA256 of user_id) instead of raw user_id (ADR-0005).
+
+**Error Contract - Invalid Version**:
+```json
+{
+  "error": "invalid_version_format",
+  "message": "Invalid version format: \"1.0\". Expected format: v{major} or v{major}.{minor}",
+  "request_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**Client Handling Guidelines**:
+1. **Prevention**: Always use `ConsentConfig.currentVersion` (validated at startup)
+2. **Detection**: Check response status:
+   - 201 → Success
+   - 400 + `invalid_version_format` → Client bug
+   - 401 → Auth issue
+   - 429 → Rate limited
+3. **Recovery**: Log error, surface generic message, DO NOT retry with modified version
+4. **Monitoring**: Track 400 responses to detect client bugs
+
+**Shared Validation Contract**:
+
+Both Dart and TypeScript use identical regex: `^v(\d+)(?:\.(\d+))?$`
+- Dart: `lib/core/privacy/version_parser.dart`
+- TypeScript: `supabase/functions/_shared/version_parser.ts`
+- CI: Both test suites run in CI workflow
+
 **Security:** RLS owner-based policies enforced; user_id set via DB trigger; ANON key only (no service_role)
 
 **Rate Limiting & Abuse Controls:**
@@ -54,10 +122,16 @@
 
 ## Retention Policy
 
-- **Retention Period:** 7 years after consent withdrawal or last account activity
-- **Legal Basis:** GDPR Art. 5(1)(e) storage limitation, Art. 7(1) proof of consent, German BGB §195 standard limitation period (3 years) + Art. 17(3)(b) exemption for legal claims
+- **Retention Period:** Pending legal counsel review (estimated range: 3-7 years based on GDPR Art. 5(1)(e) and German BGB §195)
+- **Legal Basis:** GDPR Art. 5(1)(e) storage limitation, Art. 7(1) proof of consent, Art. 17(3)(b) exemption for legal claims
 - **EDPB Guidance:** Consent records may be retained as long as necessary to demonstrate compliance (EDPB Guidelines 05/2020)
-- **Rationale:** 7 years covers statute of limitations for contractual claims plus buffer for regulatory inquiries
+- **Legal Review Status:** PENDING - Exact retention period requires GDPR-qualified legal counsel approval
+- **Factors for Legal Review:**
+  - German BGB §195 standard limitation period (3 years)
+  - GDPR Art. 17(3)(b) exemption for legal claims
+  - Regulatory inquiry retention requirements
+  - Cross-border litigation considerations for EU member states
+  - Industry best practices for health data consent records
 - **Post-Retention:** Records are deleted or pseudonymized (UUID → HMAC-SHA256 hash) once retention period expires
 - **Extended Retention:** Period extends if active legal claims or regulatory investigations exist
 - **Archiving:** Consent logs are not actively deleted during retention period; on account deletion an anonymized audit trail is retained
@@ -82,6 +156,19 @@ Consent records follow an **append-only model** with one documented exception fo
 - **Access:** Only the Edge Function runtime and limited ops roles; enforce RBAC and audit access.
 - **Rotation:** Follow `docs/runbooks/key-rotation-runbook.md`. Steps: enable dual-hash support (accept old + new), stage rollout (deploy code, then rotate secret), run verification tests (sample re-hash + consent access), and write an audit log entry. **Rollback:** re-enable old key, keep dual-hash during rollback window, re-run verification tests, and log the rollback reason in the audit trail.
 - **Backup/Recovery:** Store encrypted backups in the secrets manager with access logging; verify restore quarterly. **Recovery:** restore the last known-good key, re-run verification tests, and document the incident. Losing the key makes existing pseudonymized `user_id` values irreversible, so recovery must be treated as a P1 runbook.
+
+### Legal Compliance Checklist
+
+**Retention Policy Review (Required before production):**
+- [ ] Retention period reviewed by GDPR-qualified legal counsel
+- [ ] Retention policy approved for German jurisdiction (BGB §195 compliance)
+- [ ] Cross-border retention obligations verified for all EU member states
+- [ ] Health data special category handling confirmed (GDPR Art. 9)
+- [ ] Review completed date: _________
+- [ ] Legal reviewer name/firm: _________
+- [ ] Approval documentation filed at: _________
+
+**Status**: PENDING LEGAL REVIEW
 
 ## Data Subject Rights (DSAR)
 
@@ -109,8 +196,8 @@ Consent records follow an **append-only model** with one documented exception fo
 **Processing Logic (Planned Implementation):**
 ```sql
 -- Active consent check (per scope, optimized with user pre-filter)
--- Recommended index: CREATE INDEX idx_consents_user_created
---   ON consents(user_id, created_at DESC);
+-- Index: idx_consents_user_id_created_at exists (created in migration 20251103113000)
+-- Index definition: CREATE INDEX idx_consents_user_id_created_at ON consents(user_id, created_at DESC)
 WITH user_consents AS (
   -- Pre-filter: Only this user's consent records
   SELECT id, scopes, created_at, revoked_at
@@ -141,6 +228,19 @@ WHERE scope_name = $1
 1. User withdraws `analytics` scope
 2. System inserts: `{version: 'v1.0', scopes: ['analytics'], revoked_at: NOW()}`
 3. Services check latest entry → find withdrawal → stop analytics processing
+
+### Database Indexes
+
+The following indexes support consent query performance:
+
+| Index Name | Columns | Purpose | Migration | Status |
+|------------|---------|---------|-----------|--------|
+| `idx_consents_user_id_created_at` | `user_id, created_at DESC` | Sliding-window queries (user + temporal) | `20251103113000` | ✅ Deployed |
+| `idx_consents_user_id` | `user_id` | User-scoped lookups | `20250903235538` | ✅ Deployed |
+| `idx_consents_created_at` | `created_at` | Temporal ordering | `20250903235538` | ✅ Deployed |
+| `idx_consents_revoked_at` | `revoked_at` (WHERE NOT NULL) | Revocation queries | `20250903235538` | ✅ Deployed |
+
+**Query Coverage**: The composite index covers the consent withdrawal query pattern shown above (WHERE user_id = auth.uid() ORDER BY created_at DESC).
 
 ## Versioning & Audit
 
