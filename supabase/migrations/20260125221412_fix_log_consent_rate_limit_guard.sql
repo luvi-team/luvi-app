@@ -1,10 +1,8 @@
--- Sync DB state with current repo definitions for consent logging + break-glass helper.
--- Context: We edited already-applied migration files; Supabase will not re-run them.
--- This migration re-applies the intended function bodies and ACLs idempotently.
+-- Re-apply log_consent_if_allowed to enforce overflow guard consistently.
+-- Needed because prior sync migration was already applied in remote DB.
 
 begin;
 
--- Re-apply current log_consent_if_allowed body (no redundant normalized_scopes re-validation).
 create or replace function public.log_consent_if_allowed(
   p_user_id uuid,
   p_version text,
@@ -130,30 +128,9 @@ begin
 end;
 $$;
 
--- Preserve least-privilege EXECUTE grants (re-apply idempotently).
 revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) from public;
 revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) from anon;
 revoke execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) from service_role;
 grant execute on function public.log_consent_if_allowed(uuid, text, jsonb, integer, integer, integer) to authenticated;
-
--- Re-apply intended lock-down for the break-glass helper function.
-do $
-begin
-  if to_regprocedure('public.admin_breakglass_set_consent_no_update_enabled(boolean, text)') is not null then
-    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from public';
-    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from anon';
-    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from authenticated';
-    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from service_role';
-    execute 'revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from postgres';
-  end if;
-end $;
-
-do $
-begin
-  if exists (select 1 from pg_roles where rolname = 'supabase_admin')
-    and to_regprocedure('public.admin_breakglass_set_consent_no_update_enabled(boolean, text)') is not null then
-    execute 'grant execute on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) to supabase_admin';
-  end if;
-end $;
 
 commit;

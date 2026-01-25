@@ -430,7 +430,7 @@ grep -rn "Text(['\"]" lib/ --include="*.dart" | grep -v "l10n\."
 - **Pubspec:** [pubspec.yaml](../../pubspec.yaml) (flutter_localizations dependency)
 
 ### Rules & Enforcement
-- **MUST-03:** [CLAUDE.md](../../CLAUDE.md) Line 233 (L10n first)
+- **MUST-03:** [CLAUDE.md](../../CLAUDE.md) (L10n first rule)
 - **Audit Tests:** Automated checks for hardcoded strings
 
 ### Examples
@@ -468,7 +468,7 @@ grep "String get" lib/l10n/app_localizations.dart | wc -l
 **Related:**
 - UI Frontend Agent: [.claude/agents/ui-frontend.md](../../.claude/agents/ui-frontend.md)
 - Onboarding Screens: [lib/features/onboarding/screens/](../../lib/features/onboarding/screens/)
-- Widget Test Skill: [.claude/skills/widget-test/SKILL.md](../.claude/skills/widget-test/SKILL.md)
+- Widget Test Skill: [.claude/skills/widget-test/SKILL.md](../widget-test/SKILL.md)
 
 ## External References
 - [Flutter Internationalization](https://docs.flutter.dev/accessibility-and-localization/internationalization)

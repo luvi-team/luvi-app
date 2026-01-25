@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 import { parseVersion } from "../_shared/version_parser.ts";
+import consentScopesConfig from "./consent_scopes.json" assert { type: "json" };
 
 function requireEnv(name: string): string {
   const value = Deno.env.get(name);
@@ -97,45 +98,11 @@ function isValidScopeItem(item: unknown): item is { id: string } {
 
 async function loadConsentScopes(): Promise<readonly string[]> {
   try {
-    // Keep the file bundled with the Edge Function to avoid silent fallbacks
-    // when deploying only the function directory.
+    // Import JSON directly so the bundle always includes consent_scopes.json.
     // CI guardrail: `.github/workflows/ci.yml` runs
     // `deno test supabase/functions/log_consent/consent_scopes_ssot.test.ts`
     // which fails if this file is missing or out of sync with SSOT.
-    const configUrl = new URL("./consent_scopes.json", import.meta.url);
-
-    // Guard against unexpected https: protocol (Supabase Edge Functions use file: protocol)
-    if (configUrl.protocol !== "file:") {
-      console.warn(
-        JSON.stringify({
-          severity: "warning",
-          ts: new Date().toISOString(),
-          event: "consent_scopes_load",
-          status: "unsupported_protocol",
-          message: `Config URL protocol '${configUrl.protocol}' not supported, using fallback`,
-        })
-      );
-      return FALLBACK_SCOPES;
-    }
-
-    const jsonText = await Deno.readTextFile(configUrl);
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(jsonText);
-    } catch (parseError) {
-      const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
-      console.error(
-        JSON.stringify({
-          severity: "error",
-          ts: new Date().toISOString(),
-          event: "consent_scopes_load",
-          status: "json_parse_error",
-          message: "consent_scopes.json contains invalid JSON, using fallback",
-          error: errorMessage,
-        })
-      );
-      return FALLBACK_SCOPES;
-    }
+    const parsed: unknown = consentScopesConfig;
 
     // Runtime validation: expect versioned object format { version, scopes }
     if (
@@ -226,22 +193,19 @@ async function loadConsentScopes(): Promise<readonly string[]> {
 
     return validIds;
   } catch (error) {
-    // ERROR level: Missing config file indicates deployment issue that needs operator attention
+    // ERROR level: unexpected runtime failure; treat as deployment issue.
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const isMissingBundle = error instanceof Deno.errors.NotFound;
     console.error(
       JSON.stringify({
         severity: "error",
         ts: new Date().toISOString(),
         event: "consent_scopes_load",
-        status: isMissingBundle ? "missing_bundle" : "fallback",
-        message: isMissingBundle
-          ? "consent_scopes.json missing from deployment bundle; using fallback - check deployment bundle"
-          : "Failed to load consent_scopes.json, using fallback - check deployment bundle",
+        status: "fallback",
+        message: "Failed to load consent_scopes.json, using fallback - check deployment bundle",
         error: errorMessage,
       })
     );
-    if (isMissingBundle && REQUIRE_CONSENT_SCOPES_BUNDLE) {
+    if (REQUIRE_CONSENT_SCOPES_BUNDLE) {
       throw new Error(
         "consent_scopes.json missing from deployment bundle (CONSENT_SCOPES_REQUIRE_BUNDLE=true)",
       );

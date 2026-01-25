@@ -804,6 +804,17 @@ Future<bool> _persistConsentToLocalCache(
   return _writeConsentCacheWithRetry(userState, acceptedScopes);
 }
 
+/// Resolves the user state service for consent cache operations.
+///
+/// Returns `null` on failure, enabling graceful degradation.
+///
+/// **Design Decision (ADR-0009):**
+/// Provider failure does NOT block navigation because:
+/// 1. Server consent (SSOT) has already succeeded via [_acceptConsent]
+/// 2. Local cache is best-effort for offline analytics gating only
+/// 3. Cache refreshes from server SSOT on next app start
+///
+/// See: context/ADR/0009-consent-redesign-2026-01.md
 Future<UserStateService?> _resolveConsentUserState(WidgetRef ref) async {
   try {
     return await ref.read(userStateServiceProvider.future);

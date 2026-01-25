@@ -920,9 +920,9 @@
   "@consentSnackbarError": {
     "description": "Snackbar text shown when consent logging fails. No error details are exposed."
   },
-  "consentErrorSavingConsent": "We couldn't save all your preferences. You can continue and try again later.",
+  "consentErrorSavingConsent": "Some settings couldn't be saved locally. Please restart the app to sync them.",
   "@consentErrorSavingConsent": {
-    "description": "Snackbar text shown when marking welcome as seen fails after consent acceptance; navigation continues."
+    "description": "Snackbar text shown when local cache persistence fails after consent acceptance. Server SSOT has succeeded; cache syncs on app restart."
   },
   "consentSnackbarRateLimited": "Too many requests right now. Please wait a moment and try again.",
   "@consentSnackbarRateLimited": {

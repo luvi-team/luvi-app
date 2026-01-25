@@ -1403,10 +1403,10 @@ abstract class AppLocalizations {
   /// **'We couldn\'t save your consent. Please try again.'**
   String get consentSnackbarError;
 
-  /// Snackbar text shown when marking welcome as seen fails after consent acceptance; navigation continues.
+  /// Snackbar text shown when local cache persistence fails after consent acceptance. Server SSOT has succeeded; cache syncs on app restart.
   ///
   /// In en, this message translates to:
-  /// **'We couldn\'t save all your preferences. You can continue and try again later.'**
+  /// **'Some settings couldn\'t be saved locally. Please restart the app to sync them.'**
   String get consentErrorSavingConsent;
 
   /// Snackbar text shown when consent logging is rate limited.
