@@ -58,6 +58,12 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 - **Default:** 0.0 (kein Einfluss).
 - **Bereich:** [-1,1].
 - **Hinweis:** Kann für Safety-Blacklist verwendet werden (stark negativer Wert für problematische Inhalte).
+- **Operational Note (Spezifikation für Implementierung):** Der `editorial`-Score SOLL wie folgt gesetzt werden:
+  - **Input:** Admin-UI "Editorial Score" Feld oder CMS-Metadaten
+  - **Speicherung:** DB-Spalte `content_item.editorial_score` (DECIMAL, Constraint: CHECK(editorial_score >= -1 AND editorial_score <= 1))
+  - **Berechtigungen:** Nur Redakteure (role: `editor`) und Admins dürfen den Wert setzen
+  - **Validierung:** API/DB-Constraint erzwingt Bereich [-1, 1]
+  - **Status:** Noch nicht implementiert — wird in S5 (Brain Content) umgesetzt
 
 ### popularity
 - **Zweck:** Popularität (Views/Engagement) berücksichtigen ohne Dominanz.
@@ -133,8 +139,8 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 
 | Regel | Beschreibung |
 |-------|--------------|
-| **Blacklist Pre-Filter** | Items mit `editorial == -1.0` werden **VOR dem Scoring** aus dem Kandidaten-Pool entfernt. Diese Items erhalten keinen Score und erscheinen nie im Feed. |
-| **Blacklists (Top-20 Garantie)** | Inhalte aus Safety-&-Scope-Dossier (extreme Diäten, medizinische Versprechen) dürfen **nie in Top 20** erscheinen (N=20 explizit). Verwende `editorial = -1.0` für geblacklistete Inhalte. |
+| **Blacklist Pre-Filter** | **Primary defense:** Items mit `editorial == -1.0` werden **VOR dem Scoring** aus dem Kandidaten-Pool entfernt. Diese Items erhalten keinen Score und erscheinen nie im Feed. |
+| **Blacklists (Top-20 Garantie)** | **Secondary defense (defense-in-depth):** Runtime-Sicherheitsnetz das prüft, ob trotz Pre-Filter ein geblacklistetes Item in Top-20 erscheint. Fängt Edge-Cases ab (Race Conditions, Cache-Stale, Pipeline-Bugs). Verwende `editorial = -1.0` für geblacklistete Inhalte. Bei Auslösung → siehe Blacklist-Monitoring. |
 | **Editorial Boost** | Redaktionelle Aufwertungen dürfen das Ranking nur um **max +0.10** erhöhen (`w_editorial × max_editorial = 0.10 × 1.0`); Editor*innen müssen Begründung dokumentieren. |
 | **Content-Diversität** | In den **Top 10** sollen mindestens **3 verschiedene Pillars** vertreten sein; falls nicht, erhöhe `diversity_penalty` entsprechend. |
 | **Score-Clamp** | Endscore wird auf **[0,1]** begrenzt. |

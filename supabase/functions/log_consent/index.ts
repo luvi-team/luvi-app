@@ -183,14 +183,18 @@ async function loadConsentScopes(): Promise<readonly string[]> {
     return validIds;
   } catch (error) {
     // ERROR level: Missing config file indicates deployment issue that needs operator attention
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isMissingBundle = error instanceof Deno.errors.NotFound;
     console.error(
       JSON.stringify({
         severity: "error",
         ts: new Date().toISOString(),
         event: "consent_scopes_load",
-        status: "fallback",
-        message: "Failed to load consent_scopes.json, using fallback - check deployment bundle",
-        error: error instanceof Error ? error.message : String(error),
+        status: isMissingBundle ? "missing_bundle" : "fallback",
+        message: isMissingBundle
+          ? "consent_scopes.json missing from deployment bundle; using fallback - check deployment bundle"
+          : "Failed to load consent_scopes.json, using fallback - check deployment bundle",
+        error: errorMessage,
       })
     );
     return FALLBACK_SCOPES;

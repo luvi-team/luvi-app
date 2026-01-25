@@ -202,9 +202,12 @@ class UserStateService {
       // CodeRabbit fix: Corrupted JSON should invalidate ALL consent for audit integrity.
       // Partial recovery could silently lose consent the user gave.
       if (nonStringCount > 0) {
-        log.w(
+        // Elevated to error level for observability alerting.
+        // Analytics may be incorrectly gated until cache is repaired.
+        log.e(
           'acceptedConsentScopesOrNull: CORRUPTED - $nonStringCount non-String elements, '
-          'invalidating all consent for data integrity. key=$key, raw=$json',
+          'invalidating all consent for data integrity. Analytics may be incorrectly gated. '
+          'key=$key, raw=$json',
           tag: 'UserStateService',
         );
         return null;

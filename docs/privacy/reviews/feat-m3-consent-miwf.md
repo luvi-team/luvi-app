@@ -94,7 +94,7 @@ Consent records follow an **append-only model** with one documented exception fo
 
 **Processing Logic:**
 ```sql
--- Active consent check (per scope)
+-- Active consent check (per scope, assumes scopes stored as JSON string array)
 WITH latest_per_scope AS (
   SELECT DISTINCT ON (scope_name)
     scope_name,
@@ -103,13 +103,13 @@ WITH latest_per_scope AS (
     created_at,
     revoked_at
   FROM consents
-  CROSS JOIN LATERAL jsonb_object_keys(scopes) AS scope_name
+  CROSS JOIN LATERAL jsonb_array_elements_text(scopes) AS scope_name(scope_name)
   WHERE user_id = auth.uid()
   ORDER BY scope_name, created_at DESC
 )
 SELECT *
 FROM latest_per_scope
-WHERE scope_name = 'scope_name'
+WHERE scope_name = $1
   AND revoked_at IS NULL;
 ```
 

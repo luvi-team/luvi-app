@@ -32,7 +32,7 @@
 
 ## Verification / Manual Tests
 - `scripts/db_dry_run.sh` executed in CI (Supabase DB Dry-Run) – ensures migrations apply cleanly.
-- `log_consent` edge contract tests keep asserting 401/403/201 flows.
+- `log_consent_if_allowed` contract tests keep asserting 401/403/201 flows.
 - App integration tests (`test/features/consent/...` and `test/services/user_state_service_test.dart`) confirm no behavioral regressions.
 
 ## Reviewer Notes

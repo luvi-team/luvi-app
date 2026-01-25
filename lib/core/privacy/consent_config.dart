@@ -8,6 +8,11 @@ class ConsentConfig {
   /// Single source of truth - [currentVersionInt] is derived from this.
   static const String currentVersion = 'v1.0';
 
+  /// Lazily-computed cache for [currentVersionInt].
+  ///
+  /// Invariant: [currentVersion] is compile-time const; this cache is only
+  /// invalidated via code updates (not hot reload). Use [resetCacheForTesting]
+  /// in tests for isolation.
   static int? _cachedCurrentVersionInt;
 
   /// Numeric major version derived from [currentVersion].

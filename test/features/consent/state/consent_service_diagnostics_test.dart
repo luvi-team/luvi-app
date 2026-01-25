@@ -123,8 +123,8 @@ void main() {
       // PRIVACY: Complex keys should be redacted to '<complex:Type>' format
       expect(
         result,
-        contains('<complex:'),
-        reason: 'Complex keys should be redacted with type placeholder',
+        contains('<complex:List'),
+        reason: 'Complex keys should be redacted with concrete type name (List)',
       );
 
       // Verify no List.toString() output leaks (would be "[list, key]")

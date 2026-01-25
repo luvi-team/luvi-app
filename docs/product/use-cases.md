@@ -33,7 +33,8 @@ Index: AGENTS.md im Repo-Root verweist auf Dossiers & SSOT.
 - Req’ing-Ball: max. 5 Gaps (Was/Warum/Wie, File:Line; „none“, wenn vollständig).
 - UI-Polisher: 5 konkrete Verbesserungen (Kontrast/Lesbarkeit, Spacing, Typo-Hierarchy, Token-Konformität, States).
 - QA-DSGVO: „Low – keine DB/PII, kein Tracking, kein Consent-Impact“.
-- Greptile Review: „0 blocking issues“ (Required Check); CodeRabbit (Lite) optional lokal als Preflight (kein GitHub-Check; Details: `docs/engineering/ai-reviewer.md`).
+- Greptile Review: „0 blocking issues" (Required Check); CodeRabbit (Lite) optional lokal als Preflight (kein GitHub-Check; Details: `docs/engineering/ai-reviewer.md`).
+  > **Guidance:** Use CodeRabbit locally for quick preflight checks (`coderabbit review --plain`); rely on Greptile Review for the authoritative CI gating (GitHub Required Check).
 
 ## F) CI & Merge (Einzeiler)
 - CI grün → Greptile Review grün → PR-Change-Report → Squash & Merge → Branch cleanup.

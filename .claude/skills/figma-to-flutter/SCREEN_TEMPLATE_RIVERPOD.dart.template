@@ -44,7 +44,7 @@ class _{ScreenName}ScreenState extends ConsumerState<{ScreenName}Screen> {
     // - Simple string: Text(l10n.screenTitle)
     // - With placeholder: l10n.welcomeMessage(userName)
     // - Plurals: l10n.itemCount(count)
-    // See lib/l10n/app_de.arb for available keys
+    // See lib/l10n/app_en.arb for available keys
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

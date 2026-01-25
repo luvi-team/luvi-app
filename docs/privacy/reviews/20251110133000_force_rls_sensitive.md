@@ -36,9 +36,9 @@ Statements stay idempotent via `ALTER TABLE IF EXISTS ... FORCE ROW LEVEL SECURI
 
 Rollback `FORCE ROW LEVEL SECURITY` if required so operators can revert quickly:
 ```sql
-ALTER TABLE public.consents NO FORCE ROW LEVEL SECURITY;
-ALTER TABLE public.cycle_data NO FORCE ROW LEVEL SECURITY;
-ALTER TABLE public.email_preferences NO FORCE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.consents NO FORCE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.cycle_data NO FORCE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.email_preferences NO FORCE ROW LEVEL SECURITY;
 ```
 
 ## Result

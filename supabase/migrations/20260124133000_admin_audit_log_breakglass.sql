@@ -33,6 +33,11 @@ revoke all on table public.admin_audit_log from anon;
 revoke all on table public.admin_audit_log from authenticated;
 revoke all on table public.admin_audit_log from service_role;
 
+revoke all on sequence public.admin_audit_log_id_seq from public;
+revoke all on sequence public.admin_audit_log_id_seq from anon;
+revoke all on sequence public.admin_audit_log_id_seq from authenticated;
+revoke all on sequence public.admin_audit_log_id_seq from service_role;
+
 create or replace function public.admin_audit_log_insert(
   p_action text,
   p_table_name text,
@@ -56,7 +61,12 @@ begin
   end if;
 
   insert into public.admin_audit_log (action, table_name, trigger_name, reason)
-  values (p_action, p_table_name, nullif(btrim(p_trigger_name), ''), p_reason);
+  values (
+    btrim(p_action),
+    btrim(p_table_name),
+    nullif(btrim(p_trigger_name), ''),
+    btrim(p_reason)
+  );
 end;
 $$;
 
@@ -126,4 +136,3 @@ revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boo
 revoke all on function public.admin_breakglass_set_consent_no_update_enabled(boolean, text) from service_role;
 
 commit;
-

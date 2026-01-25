@@ -235,10 +235,17 @@ Session? _getSessionSafely({
   try {
     return SupabaseService.client.auth.currentSession;
   } catch (e, stack) {
+    // Defense-in-depth: wrap sanitizeError to ensure fallback always works
+    String errorInfo;
+    try {
+      errorInfo = sanitizeError(e) ?? e.runtimeType.toString();
+    } catch (_) {
+      errorInfo = e.runtimeType.toString();
+    }
     log.w(
       'auth_redirect_session_access_failed',
       tag: 'navigation',
-      error: sanitizeError(e) ?? e.runtimeType.toString(),
+      error: errorInfo,
       stack: kDebugMode ? stack : null,
     );
     return null;

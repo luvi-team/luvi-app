@@ -109,7 +109,7 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
       final isInvalidCredentials = statusCode == '401';
 
       if (isInvalidCredentials) {
-        log.d('login_fallback_heuristic_triggered', tag: 'login_submit');
+        log.d('login_fallback_heuristic_triggered (statusCode=$statusCode)', tag: 'login_submit');
         loginNotifier.updateState(
           email: email,
           emailError: AuthStrings.invalidCredentials,

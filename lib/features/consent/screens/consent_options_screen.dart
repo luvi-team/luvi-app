@@ -775,7 +775,10 @@ Future<bool> _persistConsentGateToServer() async {
 /// conditions if user toggles consents during async operations.
 ///
 /// Returns false if provider resolution fails (graceful degradation).
-/// If this fails, analytics gating may remain stale until next app start.
+/// Provider failure does NOT block navigation because:
+/// 1. Server consent (SSOT) already succeeded via [_acceptConsent]
+/// 2. Local cache is best-effort for offline analytics gating only
+/// 3. Cache will refresh on next app start
 Future<bool> _persistConsentToLocalCache(
   WidgetRef ref,
   Set<String> acceptedScopes,
@@ -859,10 +862,12 @@ Future<bool> _persistConsentToLocalCache(
     } on ParallelWaitError catch (e) {
       // High-severity: stale cache → analyticsConsentGateProvider returns false
       // until next session refresh, despite user giving consent.
+      // User sees snackbar warning via _handleContinue (line ~220).
       log.e(
-        'consent_local_cache_retry_failed',
+        'consent_local_cache_retry_failed: analytics_gate_may_be_stale_until_restart',
         tag: 'consent_options',
-        error: 'ParallelWaitError: ${e.errors.whereType<Object>().length} op(s) failed after retry',
+        error: 'ParallelWaitError: ${e.errors.whereType<Object>().length} op(s) failed after retry. '
+            'User will see snackbar warning. Analytics gating may remain inactive until next session.',
       );
       return false;
     }

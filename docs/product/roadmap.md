@@ -88,6 +88,9 @@
     - **Logik:** Wenn User keine Periodenlänge angibt → Default 5 Tage (phase_definitions.md SSOT).
     - Output: `Phase` (Menstruation, Follikel, Ovulation, Luteal).
   - **Safety:** Keine Eisprung-Vorhersage.
+    - **Rationale:** Ovulationsprognosen bergen medizinisches/regulatorisches Risiko (potentielle SaMD-Klassifizierung gemäß EU MDR, Haftungsfragen bei Verhütung/Kinderwunsch).
+    - **Referenz:** Siehe `docs/phase_definitions.md` (SSOT) Abschnitt "Medizinische und regulatorische Freigabe" für Details zu SaMD-Einordnung und Compliance-Anforderungen.
+    - **Implementation:** `compute_cycle_info.dart` gibt nur die aktuelle Phase zurück, keine Zukunftsprognosen für Eisprung.
   - **Tests:** Tabellen-Tests für Randfälle (Jahreswechsel, Schaltjahr).
 
 ### 1.3 Onboarding Data Flow
