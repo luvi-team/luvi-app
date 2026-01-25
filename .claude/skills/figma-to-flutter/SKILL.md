@@ -11,7 +11,7 @@ Converts Figma designs into Flutter code using LUVI's design token system (DsCol
 ## When to Use
 - You have a Figma screenshot or design to implement
 - You're building a new screen or component from a visual reference
-- Keywords in request: "Figma", "Screenshot", "bau nach", "implementiere Screen", "UI-Design", "Mockup"
+- Keywords in request: "Figma", "Screenshot", "recreate from", "implement screen", "UI-Design", "Mockup"
 
 ## When NOT to Use
 - Pure logic/backend changes without UI

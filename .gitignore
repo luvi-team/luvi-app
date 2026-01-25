@@ -136,7 +136,6 @@ lib/dev_main_*.dart
 # local audits (do not commit)
 context/debug/audits/
 context/agents/_drift_report.md
-docs/audits/*.txt
 test/goldens/failures/
 
 # test artifacts (not versioned)
@@ -179,6 +178,8 @@ google_oauth_*
 .gemini/
 gha-creds-*.json
 .claude/settings.local.json.backup
+# .claude/skills/ - MUST be tracked for team sharing (see Claude Code Best Practices)
+.claude/plans/  # Session-specific, not for team
 
 # ============================================
 # INTERNAL DOCS - Not for public GitHub
@@ -192,28 +193,18 @@ docs/dev/*
 # Security/Crypto details
 docs/security/
 
-# Business Strategy
-docs/product/
-docs/bmad/
-
-# Legal Drafts & Privacy (privacy.md + terms.md bleiben für CI)
+# Legal Drafts & Privacy (privacy.md + terms.md + reviews kept for CI)
 docs/privacy/*
 !docs/privacy/privacy.md
 !docs/privacy/terms.md
+!docs/privacy/reviews/
+!docs/privacy/reviews/**
 
-# Operational Runbooks
-docs/runbooks/
-
-# API Contracts
-docs/contracts/
-
-# Audits (contains schema exports)
+# Operational Docs (local-only, not for public repo)
 docs/audits/
-
-# Algorithms
-docs/phase_definitions.md
-docs/ranking_heuristic.md
-docs/LUVI_Dossiers_v1.0.md
+docs/runbooks/
+docs/contracts/
+docs/adr/
 
 # Agent Governance
 context/*
@@ -225,15 +216,20 @@ context/agents/*
 !context/agents/README.md
 !context/agents/reqing-ball.md
 !context/agents/ui-polisher.md
+# Context refs - versioned YAML files, but not JSON exports or archived items
+!context/refs/                    # Include the refs directory
+!context/refs/**                  # Include all contents by default
+context/refs/archive/            # Exclude archived/deprecated reference files
+context/refs/*.json              # Exclude JSON exports (Figma nodes, etc.) - not SSOT
+# Note: tech_stack_current.yaml and other YAML files ARE tracked (SSOT)
 # CLAUDE.md bleibt im Repo (CI-Governance-Check benötigt)
 
-# Engineering Docs (local only)
-docs/engineering/field-guides/gold-standard-workflow.md
-docs/engineering/tech-stack.md
-docs/engineering/traycer/
+# UI measurement exports (noisy / not SSOT)
+docs/product/measures/dashboard/
+docs/ui/specs/DASHBOARD_*
 
-# ADRs (local only)
-docs/adr/
+# Local performance benchmarks
+docs/perf/**/*.json
 
 # Traycer docs (local only)
 docs/traycer/

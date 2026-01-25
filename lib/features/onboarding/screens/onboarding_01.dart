@@ -142,7 +142,10 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     final l10n = AppLocalizations.of(context)!;
     // Debug assertion + safe fallback for DsTokens
     final themeTokens = Theme.of(context).extension<DsTokens>();
-    assert(themeTokens != null, 'DsTokens extension must be provided in Theme');
+    assert(
+      themeTokens != null,
+      'DsTokens extension missing from Theme',
+    );
     final tokens = themeTokens ?? DsTokens.light;
 
     final resolvedFontSize = Sizes.onboardingInputFontSize;

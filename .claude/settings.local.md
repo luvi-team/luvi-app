@@ -1,3 +1,4 @@
+<!-- NOTE: This file is maintained in German for local/team use. -->
 # Claude Code Permissions - LUVI
 
 > Diese Datei dokumentiert alle vorab genehmigten Befehle in `settings.local.json`.
@@ -46,7 +47,7 @@
 | `git add:*` | 🟢 | Dateien stagen | "Stage die Änderungen" |
 | `git commit:*` | 🟡 | Commits erstellen | "Mach einen Commit" |
 | `git branch:*` | 🟢 | Branches verwalten | "Welche Branches gibt es?" |
-| `git checkout:*` | 🟡 | Branch wechseln | "Wechsel zu main" |
+| `git checkout:*` | 🟡 | Branch wechseln (force blockiert — überschreibt u.U. uncommitted files) | "Wechsel zu main" |
 | `git fetch:*` | 🟢 | Remote holen | "Hol die neuesten Änderungen" |
 | `git merge:*` | 🟡 | Branches mergen | "Merge main rein" |
 | `git stash:*` | 🟢 | Änderungen zwischenspeichern | "Stash das mal" |
@@ -86,17 +87,21 @@
 | `mcp__archon__rag_search_code_examples` | 🟢 | Code-Beispiele suchen | "Zeig Beispiele für X" |
 | `mcp__archon__rag_get_available_sources` | 🟢 | Quellen auflisten | Internes Tooling |
 
+> 📋 **Setup & Verification:** Health-check via `mcp__archon__health_check` → `{status: "healthy"}`. On error: Task tracking disabled. Setup: [Archon Docs](https://github.com/coleam00/archon)
+
 ### 5. MCP Figma (3 Permissions)
 
 > ⚠️ **Figma MCP Server muss laufen!**
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
-| `mcp__figma__get_design_context` | 🟢 | Design-Kontext holen | "Hol den Figma-Kontext" |
+| `mcp__figma__get_variable_defs` | 🟢 | Design-Variablen abrufen | "Welche Figma-Variablen?" |
 | `mcp__figma__get_screenshot` | 🟢 | Screenshot holen | "Hol den Screenshot" |
-| `mcp__figma__get_variable_defs` | 🟢 | Variablen holen | "Welche Figma-Variablen?" |
+| `mcp__figma__get_design_context` | 🟢 | Design-Kontext holen | "Hol den Figma-Kontext" |
 
-### 6. Shell Utilities (16 Permissions)
+> 📋 **Setup & Verifikation:** Health-Check via `mcp__figma__get_variable_defs`. Bei Fehlern: Design-Import nicht verfügbar. Setup: [Figma MCP Server (Official)](https://github.com/modelcontextprotocol/servers/tree/main/src/figma)
+
+### 6. Shell Utilities (17 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
@@ -118,8 +123,16 @@
 | `sips:*` | 🟢 | Bild-Verarbeitung | Screenshot-Konvertierung |
 
 > ⚠️ **Sicherheitshinweis zu `curl:*`:** Diese Permission erlaubt beliebige HTTP-Requests.
+>
+> **Risiken:**
+> - Exfiltration von Secrets via POST an Angreifer-Endpoints
+> - SSRF (Server-Side Request Forgery) zu internen Services
+> - Unbeabsichtigte Änderungen an Produktions-Ressourcen
+>
+> **Mitigations:**
 > - Nur für lokale APIs und bekannte Endpoints nutzen
-> - Produktive APIs: Wrapper-Script mit Whitelist erwägen
+> - Produktive APIs: Wrapper-Script mit Allowlist erwägen
+> - Rate-Limiting und Audit-Logs aktivieren
 > - Alternative: Permission entfernen und bei Bedarf einzeln genehmigen
 
 ### 7. Scripts (3 Permissions)
@@ -130,13 +143,12 @@
 | `scripts/flutter_codex.sh:*` | 🟢 | Sandboxed Flutter | /analyze, /test Commands |
 | `./scripts/run_dev.sh:*` | 🟡 | Dev-Server starten | "Starte den Dev-Server" |
 
-### 8. Tools (4 Permissions)
+### 8. Tools (3 Permissions)
 
 | Permission | Risiko | Warum erlaubt? | Typische Nutzung |
 |------------|--------|----------------|------------------|
 | `xcrun simctl:*` | 🟢 | iOS Simulator | "Starte den Simulator" |
 | `actionlint:*` | 🟢 | GitHub Actions Lint | "Check die Actions" |
-| `ruby -ryaml -e:*` | 🟢 | YAML-Verarbeitung | Internes Tooling |
 | `ffprobe:*` | 🟢 | Media-Analyse | Video/Audio-Metadaten |
 
 ---
@@ -162,6 +174,9 @@
 | `git reset --hard` | Änderungen unwiderruflich verlieren |
 | `git rebase` | History umschreiben ist gefährlich |
 | `pkill` | Prozesse beenden ist destruktiv |
+| `python3 -c` | Willkürliche Python-Code-Ausführung (Sicherheitsrisiko) |
+| `python3:*` | Zu breit - erlaubt beliebige Python-Befehle (nur spezifische Scripts erlauben) |
+| `ruby -ryaml -e:*` | Willkürliche Ruby-Ausführung (Sicherheitsrisiko) |
 
 > **Unterschied `rm` vs `git rm`:**
 > - `rm` (Shell): Löscht Dateien permanent und unwiderruflich
@@ -177,6 +192,7 @@
 | `git commit --amend` | Verhindert versehentliches History-Rewriting |
 | `git push --force` / `-f` | Verhindert Remote-History-Zerstörung |
 | `git reset --hard` | Verhindert unwiderruflichen Datenverlust |
+| `git checkout --force` / `-f` | Verhindert Force-Checkout mit Datenverlust |
 
 > **Hinweis:** Diese Befehle sind auf Policy-Ebene in `settings.local.json` blockiert.
 > Claude kann sie auch auf explizite Anfrage nicht ausführen.
@@ -188,15 +204,23 @@
 
 > **Wichtig:** Wildcards wie `git commit:*` erlauben alle Subkommandos und Argumente.
 >
-> ### Bekannte Risiken und Mitigationen
+> ### Aktive Wildcards und deren Mitigationen
 >
 > | Wildcard | Risiko-Flag | Mitigation |
 > |----------|-------------|------------|
 > | `git commit:*` | `--amend` | **Blockiert via deny-Liste** |
-> | `git checkout:*` | `-f`, `--force` | Nur für Branch-Wechsel nutzen |
+> | `git checkout:*` | `--force`, `-f` | **Blockiert via deny-Liste** |
 > | `git merge:*` | `--no-ff` | Akzeptabel für Feature-Branches |
-> | `git push:*` (Hypothetisch) | `--force`, `-f` | **Blockiert via deny-Liste** (Nicht in settings.local.json aktiviert) |
-> | `git reset:*` (Hypothetisch) | `--hard` | **Blockiert via deny-Liste** (Nicht in settings.local.json aktiviert) |
+>
+> ### Nicht aktivierte Wildcards (Referenz)
+>
+> | Wildcard | Warum nicht aktiviert? |
+> |----------|------------------------|
+> | `git push:*` | Zu gefährlich - `--force` würde Remote-History zerstören |
+> | `git reset:*` | Zu gefährlich - `--hard` würde lokale Änderungen verlieren |
+>
+> **Hinweis:** Diese Wildcards sind bewusst NICHT in `settings.local.json` aktiviert.
+> Die Deny-Einträge (`git push --force`, `git reset --hard`) dienen als Fallback-Schutz.
 >
 > ### Bestehender Runtime-Schutz
 > - Claude Code's eingebaute Safety-Rules verhindern:
@@ -236,18 +260,19 @@
 
 ### MCP Server Healthchecks
 
-| Server | Prüfaufruf |
-|--------|------------|
-| Archon | `mcp__archon__health_check` |
-| Figma | `mcp__figma__get_design_context` |
+| Server | Health Check | Erwartete Antwort | Bei Fehlern |
+|--------|--------------|-------------------|-------------|
+| Archon | `mcp__archon__health_check` | `{status: "healthy"}` | Task-Tracking deaktiviert |
+| Figma | `mcp__figma__get_variable_defs` | Liste von Variablen | Design-Import nicht verfügbar |
 
-### Troubleshooting
-1. **Server-Logs prüfen:** Check MCP server output in Terminal
-2. **Neustart:** Restart MCP services bei Verbindungsproblemen
-3. **Permission-Audit:** Vergleiche Zugriffslogs mit dieser Doku
+### Fehlerbehebung (Troubleshooting)
+1. **Server-Logs prüfen:** Untersuche MCP-Server-Output im Terminal
+2. **Neustart:** Starte MCP-Dienste bei Verbindungsproblemen neu
+3. **Permission-Audit:** Vergleiche Zugriffsprotokolle mit dieser Dokumentation
+4. **Fallback-Verhalten:** Bei MCP-Ausfall arbeitet Claude ohne entsprechende Features weiter
 
 ### Permission-Nutzung auditieren
-- Claude Code loggt alle Tool-Aufrufe
+- Claude Code protokolliert alle Tool-Aufrufe
 - Regelmäßig prüfen ob Permissions noch benötigt werden
 - Ungenutzte Permissions entfernen
 
@@ -262,14 +287,14 @@
 | GitHub CLI | 9 |
 | MCP Archon | 8 |
 | MCP Figma | 3 |
-| Shell Utilities | 16 |
+| Shell Utilities | 17 |
 | Scripts | 3 |
-| Tools | 4 |
+| Tools | 3 |
 | **Basis-Gesamt** | **68** |
 
 > **Hinweis:** Claude Code fügt automatisch neue Permissions hinzu, wenn du sie während einer Session genehmigst (z.B. WebFetch, WebSearch). Diese werden hier nicht dokumentiert, da sie session-spezifisch sind.
 
 ---
 
-*Letzte Aktualisierung: 2026-01-19*
+*Letzte Aktualisierung: 2026-01-23*
 *Bereinigt von: Claude Code*

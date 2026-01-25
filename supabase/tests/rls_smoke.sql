@@ -14,6 +14,14 @@ LIMIT 1
 \quit 1
 \endif
 
+-- Optional: pick a second auth.users row for cross-user (unauthorized) RLS checks.
+SELECT id AS other_user_id
+FROM auth.users
+WHERE id <> :'test_user_id'
+ORDER BY created_at NULLS LAST, id
+LIMIT 1
+\gset
+
 -- Grants (Defense-in-depth): anon/public must not have access to sensitive tables.
 DO $$
 BEGIN
@@ -34,6 +42,19 @@ BEGIN
     'anon must not have SELECT on public.profiles';
   ASSERT NOT has_table_privilege('anon', 'public.daily_plan', 'SELECT'),
     'anon must not have SELECT on public.daily_plan';
+END $$;
+
+-- Grants: service_role must not be able to directly DELETE from consents (append-only audit log).
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
+    ASSERT NOT has_table_privilege('service_role', 'public.consents', 'DELETE'),
+      'service_role must not have DELETE on public.consents (append-only)';
+    ASSERT NOT has_table_privilege('service_role', 'public.consents', 'UPDATE'),
+      'service_role must not have UPDATE on public.consents (append-only)';
+  ELSE
+    RAISE WARNING 'service_role role missing; skipping DELETE privilege assertion';
+  END IF;
 END $$;
 
 -- Grants: ensure no explicit privileges exist for the PUBLIC pseudo-role (grantee=0).
@@ -97,6 +118,42 @@ BEGIN
     'authenticated must not have MAINTAIN on public.profiles';
   ASSERT NOT has_table_privilege('authenticated', 'public.daily_plan', 'MAINTAIN'),
     'authenticated must not have MAINTAIN on public.daily_plan';
+
+  -- Append-only: authenticated must not be able to mutate/delete consent audit records.
+  ASSERT NOT has_table_privilege('authenticated', 'public.consents', 'UPDATE'),
+    'authenticated must not have UPDATE on public.consents (append-only)';
+  ASSERT NOT has_table_privilege('authenticated', 'public.consents', 'DELETE'),
+    'authenticated must not have DELETE on public.consents (append-only)';
+END $$;
+
+-- NOTE: The following RLS policy scope check uses string-matching heuristics
+-- (position('auth.uid()' in ...) to detect owner-scoped policies. This is a
+-- best-effort smoke test with known limitations: spacing, parentheses, aliases,
+-- or functionally equivalent expressions may bypass detection. Deeper security
+-- audits should not rely solely on this check; see the functional cross-user
+-- RLS check further below (runs when >= 2 auth.users rows exist).
+-- RLS: consents must remain owner-scoped and append-only.
+DO $$
+BEGIN
+  ASSERT NOT EXISTS (
+    SELECT 1
+    FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'consents'
+      AND cmd IN ('UPDATE', 'DELETE')
+  ), 'consents must not have UPDATE/DELETE policies (append-only)';
+
+  ASSERT NOT EXISTS (
+    SELECT 1
+    FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'consents'
+      AND cmd IN ('SELECT', 'INSERT')
+      AND (
+        (cmd = 'SELECT' AND (qual IS NULL OR position('auth.uid()' in lower(qual)) = 0))
+        OR (cmd = 'INSERT' AND (with_check IS NULL OR position('auth.uid()' in lower(with_check)) = 0))
+      )
+  ), 'consents SELECT/INSERT policies must scope to auth.uid()';
 END $$;
 
 -- 0) Ohne Kontext: keine Sicht
@@ -123,10 +180,33 @@ VALUES (
   DEFAULT,
   'rls-smoke'
 )
-ON CONFLICT (id) DO UPDATE
-SET user_id = EXCLUDED.user_id,
-    scopes = DEFAULT,
-    version = EXCLUDED.version;
+ON CONFLICT (id) DO NOTHING;
+
+-- 1b) Cross-user check: another authenticated user must not see the owner's rows.
+\if :{?other_user_id}
+SELECT set_config(
+  'request.jwt.claims',
+  json_build_object('sub', :'other_user_id', 'role', 'authenticated')::text,
+  false
+);
+DO $$
+DECLARE
+  rls_blocks boolean;
+BEGIN
+  SELECT COUNT(*) = 0 INTO rls_blocks FROM public.consents WHERE id = '00000000-0000-0000-0000-00000000c001';
+  ASSERT rls_blocks, 'consents must not leak rows across authenticated users (cross-user RLS check)';
+END $$;
+
+-- Reset back to owner context for the remaining checks.
+SELECT set_config(
+  'request.jwt.claims',
+  json_build_object('sub', :'test_user_id', 'role', 'authenticated')::text,
+  false
+);
+\else
+\echo 'rls_smoke.sql: skipping cross-user RLS check (only one auth.users row found).'
+\endif
+
 DO $$
 DECLARE
   default_def text;
@@ -165,7 +245,8 @@ BEGIN
     'rls-smoke',
     '{"terms": true}'::jsonb,
     1,
-    1000
+    1000,
+    0
   ) INTO rpc_allowed;
   ASSERT rpc_allowed, 'log_consent_if_allowed must accept canonical JSONB object scopes';
 
@@ -175,7 +256,8 @@ BEGIN
     'rls-smoke',
     '["terms"]'::jsonb,
     1,
-    1000
+    1000,
+    0
   ) INTO rpc_allowed_legacy;
   ASSERT rpc_allowed_legacy, 'log_consent_if_allowed must accept legacy JSONB array scopes';
 END $$;

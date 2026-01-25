@@ -751,6 +751,10 @@
   "@authErrPasswordEmpty": {
     "description": "Validation error shown when the password field is empty."
   },
+  "authErrOtpExpired": "The verification link has expired. Please request a new one.",
+  "@authErrOtpExpired": {
+    "description": "Error displayed when the OTP/verification link has expired."
+  },
   "authErrConfirmEmail": "Please verify your email (resend the link?).",
   "@authErrConfirmEmail": {
     "description": "Error displayed when the user's email has not been confirmed."
@@ -916,9 +920,9 @@
   "@consentSnackbarError": {
     "description": "Snackbar text shown when consent logging fails. No error details are exposed."
   },
-  "consentErrorSavingConsent": "We couldn't save all your preferences. You can continue and try again later.",
+  "consentErrorSavingConsent": "Some settings couldn't be saved locally. Please restart the app to sync them.",
   "@consentErrorSavingConsent": {
-    "description": "Snackbar text shown when marking welcome as seen fails after consent acceptance; navigation continues."
+    "description": "Snackbar text shown when local cache persistence fails after consent acceptance. Server SSOT has succeeded; cache syncs on app restart."
   },
   "consentSnackbarRateLimited": "Too many requests right now. Please wait a moment and try again.",
   "@consentSnackbarRateLimited": {
@@ -967,10 +971,6 @@
   "authResetTitle": "Forgot password?",
   "@authResetTitle": {
     "description": "Title on the Reset Password screen (no emoji)."
-  },
-  "authResetSubtitle": "Enter your email and we'll send you a link to reset it.",
-  "@authResetSubtitle": {
-    "description": "Subtitle on the Reset Password screen."
   },
   "authResetCta": "Reset password",
   "@authResetCta": {
@@ -1062,32 +1062,11 @@
     "description": "Fitness level label for fit users (maps to DB: fit)"
   },
 
-  "consentIntroTitle": "Let's personalize LUVI for you",
-  "@consentIntroTitle": {
-    "description": "Title for consent intro screen (C1)"
-  },
-  "consentIntroBody": "To personalize LUVI for you, we first need your okay.",
-  "@consentIntroBody": {
-    "description": "Body text for consent intro screen (C1)"
-  },
-  "consentIntroCtaLabel": "Continue",
-  "@consentIntroCtaLabel": {
-    "description": "CTA button label for consent intro screen"
-  },
-  "consentIntroIllustrationSemantic": "Illustration: Hand holding a pen to sign",
-  "@consentIntroIllustrationSemantic": {
-    "description": "Semantics label for consent intro illustration"
-  },
-  "consentIntroCtaSemantic": "Continue to privacy consent",
-  "@consentIntroCtaSemantic": {
-    "description": "Semantics label for consent intro continue button"
-  },
-
-  "consentOptionsTitle": "Your Privacy Choices",
+  "consentOptionsTitle": "You and LUVI",
   "@consentOptionsTitle": {
     "description": "Title for consent options screen (C2)"
   },
-  "consentOptionsSubtitle": "Securely stored, strictly protected. GDPR, EU hosting",
+  "consentOptionsSubtitle": "Securely stored, strictly protected.\nGDPR, EU hosting",
   "@consentOptionsSubtitle": {
     "description": "Subtitle for consent options screen (C2)"
   },
@@ -1158,27 +1137,6 @@
   "consentOptionsShieldSemantic": "Shield icon for data protection",
   "@consentOptionsShieldSemantic": {
     "description": "Semantics label for shield icon on C2"
-  },
-
-  "consentBlockingTitle": "Your consent makes LUVI possible",
-  "@consentBlockingTitle": {
-    "description": "Title for consent blocking screen (C3)"
-  },
-  "consentBlockingBody": "LUVI needs your cycle and health data to show you cycle-based content and recommendations. Without this processing, we cannot provide the service.",
-  "@consentBlockingBody": {
-    "description": "Body text for consent blocking screen (C3)"
-  },
-  "consentBlockingCtaBack": "Back & Agree",
-  "@consentBlockingCtaBack": {
-    "description": "Back button label on consent blocking screen (C3)"
-  },
-  "consentBlockingCtaSemantic": "Back to consent",
-  "@consentBlockingCtaSemantic": {
-    "description": "Semantics label for back button on consent blocking screen"
-  },
-  "consentBlockingShieldSemantic": "Shield icon for data protection",
-  "@consentBlockingShieldSemantic": {
-    "description": "Accessibility label for shield icon on consent blocking screen."
   },
 
   "onboarding03FitnessTitle": "{name}, how fit do you feel?",
@@ -1400,6 +1358,15 @@
       }
     }
   },
+  "semanticButtonLoading": "{label}, loading",
+  "@semanticButtonLoading": {
+    "description": "Semantic label for button in loading state when no custom loading label provided",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
 
   "splashGateUnknownTitle": "Brief interruption",
   "@splashGateUnknownTitle": {
@@ -1486,7 +1453,7 @@
   "@authRegisterEmailTitle": {
     "description": "Title for email registration screen"
   },
-  "authResetPasswordSubtitle": "Enter your email address and receive a link to reset.",
+  "authResetPasswordSubtitle": "Enter your email to receive a password reset link.",
   "@authResetPasswordSubtitle": {
     "description": "Subtitle for reset password screen"
   },

@@ -5,6 +5,8 @@
 - `20250903235538_create_consents_table.sql` - User consent management with GDPR compliance
 - `20251215123000_harden_consents_scopes_array.sql` - Anti-drift (legacy): enforce `consents.scopes` as JSONB array
 - `20251222173000_consents_scopes_object_bool.sql` - Canonicalize: enforce `consents.scopes` as JSONB object<boolean> (SSOT)
+- `20260121120000_consent_log_append_only.sql` - Make `public.consents` append-only (GDPR audit trail)
+- `20260124120000_consents_revoke_service_role_delete.sql` - Prevent direct DELETEs on `public.consents` via `service_role`
 - `20250903235539_create_cycle_data_table.sql` - Menstrual cycle tracking data
 - `20250903235540_create_email_preferences_table.sql` - User email notification preferences
 
@@ -30,19 +32,35 @@ VALUES (auth.uid(), '{"terms": true, "health_processing": true, "analytics": tru
 -- View own consents (should succeed)
 SELECT * FROM consents WHERE user_id = auth.uid();
 
--- Update own consent (should succeed)
+-- Update own consent (should FAIL; consent log is append-only)
 UPDATE consents 
 SET scopes = '{"terms": true, "health_processing": true, "marketing": true}'::jsonb
 WHERE user_id = auth.uid() AND version = 'v1.0';
 
--- Revoke consent (should succeed)
-UPDATE consents 
-SET revoked_at = NOW() 
-WHERE user_id = auth.uid() AND version = 'v1.0';
+-- Record changed consent (should SUCCEED via INSERT; do not UPDATE existing rows)
+INSERT INTO consents (user_id, scopes, version) 
+VALUES (auth.uid(), '{"terms": true, "health_processing": true, "analytics": false}'::jsonb, 'v1.0');
+
+-- Delete own consent (should FAIL for authenticated; DELETE reserved for erasure/retention workflows)
+DELETE FROM consents WHERE user_id = auth.uid();
 
 -- Try to view other user's consents (should return empty)
 SELECT * FROM consents WHERE user_id != auth.uid();
 ```
+
+### Determining Current Consent
+
+The `consents` table is append-only (immutable audit log). To find the **current** consent for a user:
+
+```sql
+-- Get most recent consent entry for current user
+SELECT * FROM consents
+WHERE user_id = auth.uid()
+ORDER BY created_at DESC
+LIMIT 1;
+```
+
+The most recent row (by `created_at`) represents the user's current consent state. The `version` field tracks which consent version the user agreed to.
 
 ### Performance
 
@@ -158,5 +176,6 @@ Changes to **any** of the following components require coordinated deployment:
 
 - [ ] Migration applied: `supabase db push`
 - [ ] Edge Function deployed: `supabase functions deploy log_consent`
+- [ ] Optional helper: `scripts/db_push_and_smoke.sh .env.staging.local --deploy-log-consent`
 - [ ] Contract test passes: `deno test supabase/tests/log_consent.test.ts`
 - [ ] SSOT test passes: `deno test supabase/functions/log_consent/consent_scopes_ssot.test.ts`

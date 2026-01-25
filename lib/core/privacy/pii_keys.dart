@@ -77,6 +77,7 @@ class PiiKeys {
     'user',
     'user_id',
     'userid',
+    'username', // GDPR: Can identify individuals when combined with other data
     'zip',
     'zipcode',
   };
@@ -138,5 +139,6 @@ class PiiKeys {
     'ip-address',
     'mac_address',
     'mac-address',
+    'username', // GDPR: Can identify individuals in compound keys
   ];
 }

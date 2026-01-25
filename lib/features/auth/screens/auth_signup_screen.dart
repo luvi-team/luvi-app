@@ -23,6 +23,74 @@ import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_text_field.d
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+/// Pure validation result for signup form.
+/// Separates validation logic from UI state management (Clean Architecture).
+class _SignupValidationResult {
+  final String? errorMessage;
+  final bool emailError;
+  final bool passwordError;
+  final bool confirmError;
+
+  const _SignupValidationResult({
+    this.errorMessage,
+    this.emailError = false,
+    this.passwordError = false,
+    this.confirmError = false,
+  });
+}
+
+/// Pure validation logic for signup form - no side effects.
+/// Uses NIST SP 800-63B compliant rules via [validateNewPassword].
+_SignupValidationResult _validateSignupForm({
+  required String email,
+  required String password,
+  required String confirmPassword,
+  required AppLocalizations l10n,
+}) {
+  final isEmailEmpty = email.isEmpty;
+  final passwordValidation = validateNewPassword(password, confirmPassword);
+
+  bool passwordError = false;
+  bool confirmError = false;
+  String? errorMessage;
+
+  if (!passwordValidation.isValid) {
+    switch (passwordValidation.error!) {
+      case AuthPasswordValidationError.emptyFields:
+        passwordError = password.isEmpty;
+        confirmError = confirmPassword.isEmpty;
+        errorMessage = l10n.authSignupMissingFields;
+      case AuthPasswordValidationError.mismatch:
+        confirmError = true;
+        errorMessage = l10n.authPasswordMismatchError;
+      case AuthPasswordValidationError.tooShort:
+        passwordError = true;
+        errorMessage = l10n.authErrPasswordTooShort;
+      case AuthPasswordValidationError.commonWeak:
+        passwordError = true;
+        errorMessage = l10n.authErrPasswordCommonWeak;
+    }
+  }
+
+  // Email should be flagged when:
+  // 1. Email is empty AND no password error exists (email-only problem), OR
+  // 2. Email is empty AND validation error is emptyFields (all fields empty)
+  final isEmptyFieldsError = !passwordValidation.isValid &&
+      passwordValidation.error == AuthPasswordValidationError.emptyFields;
+  final shouldFlagEmail = isEmailEmpty && (errorMessage == null || isEmptyFieldsError);
+
+  if (shouldFlagEmail) {
+    errorMessage ??= l10n.authSignupMissingFields;
+  }
+
+  return _SignupValidationResult(
+    errorMessage: errorMessage,
+    emailError: shouldFlagEmail,
+    passwordError: passwordError,
+    confirmError: confirmError,
+  );
+}
+
 /// Signup screen with Auth Rebrand v3 design.
 ///
 /// Features:
@@ -65,7 +133,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     super.dispose();
   }
 
-  /// Validates signup form inputs using NIST SP 800-63B compliant rules.
+  /// Validates signup form inputs and updates UI state.
+  /// Delegates to [_validateSignupForm] for pure validation logic.
   /// Returns error message if validation fails, null if valid.
   String? _validateInputs({
     required String email,
@@ -73,51 +142,20 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     required String confirmPassword,
     required AppLocalizations l10n,
   }) {
-    // Email validation (not covered by validateNewPassword)
-    final isEmailEmpty = email.isEmpty;
+    final result = _validateSignupForm(
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      l10n: l10n,
+    );
 
-    // NIST-compliant Validation via shared rules
-    final passwordValidation = validateNewPassword(password, confirmPassword);
-
-    // Collect all error flags first
-    bool passwordError = false;
-    bool confirmError = false;
-    String? errorMessage;
-
-    if (!passwordValidation.isValid) {
-      switch (passwordValidation.error!) {
-        case AuthPasswordValidationError.emptyFields:
-          // Set specific flags based on actually empty fields
-          passwordError = password.isEmpty;
-          confirmError = confirmPassword.isEmpty;
-          errorMessage = l10n.authSignupMissingFields;
-        case AuthPasswordValidationError.mismatch:
-          confirmError = true;
-          errorMessage = l10n.authPasswordMismatchError;
-        case AuthPasswordValidationError.tooShort:
-          passwordError = true;
-          errorMessage = l10n.authErrPasswordTooShort;
-        case AuthPasswordValidationError.commonWeak:
-          passwordError = true;
-          errorMessage = l10n.authErrPasswordCommonWeak;
-      }
-    }
-
-    // Check Email error additionally (not instead!)
-    // If Email empty AND Password-Error: show specific Password-Error
-    // If ONLY Email empty: show Missing Fields
-    if (isEmailEmpty && errorMessage == null) {
-      errorMessage = l10n.authSignupMissingFields;
-    }
-
-    // Set all flags once
     setState(() {
-      _emailError = isEmailEmpty;
-      _passwordError = passwordError;
-      _confirmPasswordError = confirmError;
+      _emailError = result.emailError;
+      _passwordError = result.passwordError;
+      _confirmPasswordError = result.confirmError;
     });
 
-    return errorMessage;
+    return result.errorMessage;
   }
 
   /// Performs the actual signup API call and handles success/error states.
@@ -158,27 +196,37 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         _emailError = false;
         _passwordError = false;
 
+        // Known error codes (whitelist approach - conservative field attribution)
+        const emailCodes = {
+          'email_address_invalid',
+          'validation_failed',
+          'email_exists',
+          'user_already_exists',
+          'email_not_confirmed',
+        };
+        const passwordCodes = {'weak_password'};
+        // Ambiguous codes: over_request_rate_limit, signup_disabled, etc.
+        // These show banner only, no field flags
+
         // Use error.code for field attribution (more robust than message parsing)
         final code = error.code?.toLowerCase();
         if (code != null) {
-          if (code == 'weak_password') {
+          if (passwordCodes.contains(code)) {
             _passwordError = true;
-          } else if (code == 'over_request_rate_limit' ||
-                     code == 'signup_disabled') {
-            // Ambiguous codes: no field-specific flags
-            // _errorMessage already shows the error in the banner
-          } else {
-            // email_address_invalid, email_exists, user_already_exists, etc.
+          } else if (emailCodes.contains(code)) {
             _emailError = true;
           }
+          // Unknown codes: no field flags, rely on banner only
         } else {
           // Fallback: message pattern matching when code is null
+          // Conservative: only set flags for clear keyword matches
           final message = error.message.toLowerCase();
-          if (message.contains('password')) {
+          if (message.contains('password') && message.contains('short')) {
             _passwordError = true;
-          } else if (message.contains('email') ||
-                     message.contains('address') ||
-                     message.contains('user')) {
+          } else if (message.contains('email') && message.contains('invalid')) {
+            _emailError = true;
+          } else if ((message.contains('email') || message.contains('user')) &&
+                     (message.contains('already') || message.contains('exists'))) {
             _emailError = true;
           }
           // Ambiguous errors (network, rate-limit, unknown): no field flags
@@ -427,6 +475,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
       label: l10n.authEntryCta,
       onPressed: _isSubmitting ? null : _handleSignup,
       isLoading: _isSubmitting,
+      loadingSemanticLabel: l10n.authSignupCtaLoadingSemantic,
     );
   }
 }

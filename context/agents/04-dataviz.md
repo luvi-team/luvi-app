@@ -13,10 +13,10 @@ inputs:
   - docs/product/roadmap.md
   - docs/engineering/assistant-answer-format.md
 outputs:
-  - Chart-Widgets
+  - Chart Widgets
   - Tests
-  - Doku (docs/)
-  - Klare Achsen/Legenden
+  - Documentation (docs/)
+  - Clear axes/legends
 acceptance_refs:
   - context/agents/_acceptance_v1.1.md#core
   - context/agents/_acceptance_v1.1.md#role-extensions
@@ -32,7 +32,7 @@ Ensures performant, understandable visualizations and meaningful explanatory tex
 PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
-Chart widgets, tests, docs (docs/), clear axes/legends.
+Chart widgets, Tests, Documentation (docs/), Clear axes/legends.
 
 ## Handoffs
 PRs to ui-frontend/Product + Codex review: PR description + `docs/` + charts. Codex checks architecture, state management and privacy before merge.

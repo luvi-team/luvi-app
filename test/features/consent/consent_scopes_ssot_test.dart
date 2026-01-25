@@ -15,7 +15,10 @@ void main() {
         reason: 'config/consent_scopes.json muss vorhanden sein');
 
     final jsonText = file.readAsStringSync();
-    final List<dynamic> jsonList = jsonDecode(jsonText) as List<dynamic>;
+    final Map<String, dynamic> jsonData =
+        jsonDecode(jsonText) as Map<String, dynamic>;
+    expect(jsonData['version'], isA<int>(), reason: 'version must be int');
+    final List<dynamic> jsonList = jsonData['scopes'] as List<dynamic>;
     final List<Map<String, dynamic>> scopes =
         jsonList.cast<Map<String, dynamic>>();
 
@@ -35,5 +38,14 @@ void main() {
     final dartRequiredIds =
         kRequiredConsentScopes.map((scope) => scope.name).toSet();
     expect(dartRequiredIds, equals(jsonRequiredIds));
+  });
+
+  test('SSOT: required and visible-optional scopes do not overlap', () {
+    expect(
+      kVisibleOptionalScopes.intersection(kRequiredConsentScopes),
+      isEmpty,
+      reason:
+          'kVisibleOptionalScopes and kRequiredConsentScopes must be disjoint sets',
+    );
   });
 }

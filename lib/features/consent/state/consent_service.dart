@@ -10,7 +10,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 String payloadDiagnosticsShapeOnly(dynamic payload) {
   if (payload == null) return 'type=null';
   if (payload is Map) {
-    final keys = payload.keys.take(20).map((k) => k.toString()).toList()..sort();
+    final keys = payload.keys.take(20).map((k) {
+      // Only allow primitive types; redact complex keys for privacy
+      if (k is String || k is num || k is bool) {
+        return k.toString();
+      }
+      return '<complex:${k.runtimeType}>';
+    }).toList()..sort();
     final keysSuffix = payload.keys.length > 20 ? '...' : '';
     return 'type=Map, keys=[${keys.join(', ')}$keysSuffix]';
   }
@@ -52,59 +58,57 @@ class ConsentService {
         body: {'version': version, 'scopes': scopesMap},
       );
     } on FunctionException catch (e) {
-      // FunctionException is thrown for ALL non-2xx status codes.
-      // Status-based mapping to provide precise error codes.
-      final status = e.status;
-      final errorBody = _asJsonMap(e.details);
-      final requestId = errorBody?['request_id']?.toString();
-      log.w(
-        'log_consent failed (status=$status, request_id=${requestId ?? 'n/a'})',
-        tag: _logTag,
-      );
-
-      if (status == 401) {
-        throw ConsentException(401, 'Unauthorized', code: 'unauthorized');
-      } else if (status == 429) {
-        throw ConsentException(429, 'Rate limit exceeded', code: 'rate_limit');
-      } else if (status >= 500) {
-        throw ConsentException(status, 'Server error', code: 'server_error');
-      } else if (status == 404) {
-        // Edge Function not deployed or not found
-        throw ConsentException(
-          404,
-          'Function not found',
-          code: 'function_unavailable',
-        );
-      } else {
-        // Other client errors (4xx)
-        throw ConsentException(
-          status,
-          'Client error',
-          code: 'client_error',
-        );
-      }
+      throw _mapFunctionException(e);
     } on Exception catch (error, stackTrace) {
       // Network/transport errors (offline/DNS/timeout) are not FunctionException.
-      // Classify as function_unavailable for consistent UX messaging.
       log.w(
         'log_consent invoke failed (transport)',
         tag: _logTag,
         error: error.runtimeType,
         stack: stackTrace,
       );
-      throw ConsentException(
-        503,
-        'Service unavailable',
-        code: 'function_unavailable',
-      );
+      throw ConsentException(503, 'Service unavailable', code: 'function_unavailable');
     }
 
     // 2xx success - validate response payload
+    _requireOkPayload(response);
+
     final responseBody = _asJsonMap(response.data);
-    if (responseBody == null || responseBody['ok'] != true) {
+    final requestId = responseBody?['request_id']?.toString();
+    if (requestId != null) {
+      log.i('log_consent succeeded (request_id=$requestId)', tag: _logTag);
+    }
+  }
+
+  /// Maps FunctionException to ConsentException based on HTTP status code.
+  ConsentException _mapFunctionException(FunctionException e) {
+    final status = e.status;
+    final errorBody = _asJsonMap(e.details);
+    final requestId = errorBody?['request_id']?.toString();
+
+    log.w(
+      'log_consent failed (status=$status, request_id=${requestId ?? 'n/a'})',
+      tag: _logTag,
+    );
+
+    return switch (status) {
+      400 => ConsentException(400, 'Bad request', code: 'bad_request'),
+      401 => ConsentException(401, 'Unauthorized', code: 'unauthorized'),
+      403 => ConsentException(403, 'Forbidden', code: 'forbidden'),
+      429 => ConsentException(429, 'Rate limit exceeded', code: 'rate_limit'),
+      404 => ConsentException(404, 'Function not found', code: 'function_unavailable'),
+      >= 500 => ConsentException(status, 'Server error', code: 'server_error'),
+      _ => ConsentException(status, 'Client error', code: 'client_error'),
+    };
+  }
+
+  /// Validates response payload has ok=true. Throws ConsentException if invalid.
+  void _requireOkPayload(FunctionResponse response) {
+    final body = _asJsonMap(response.data);
+    if (body == null || body['ok'] != true) {
       final diagnostics = payloadDiagnosticsShapeOnly(response.data);
       log.w(
-        'log_consent returned unexpected payload (status=${response.status}, ok=${responseBody?['ok']}, payload=$diagnostics)',
+        'log_consent returned unexpected payload (status=${response.status}, ok=${body?['ok']}, payload=$diagnostics)',
         tag: _logTag,
       );
       throw ConsentException(
@@ -113,23 +117,43 @@ class ConsentService {
         code: 'unexpected_response',
       );
     }
-
-    final requestId = responseBody['request_id']?.toString();
-    if (requestId != null) {
-      log.i('log_consent succeeded (request_id=$requestId)', tag: _logTag);
-    }
   }
 
   Map<String, dynamic>? _asJsonMap(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      return data;
-    }
+    if (data is Map<String, dynamic>) return data;
     if (data is Map) {
-      return data.map((key, value) => MapEntry(key.toString(), value));
+      final jsonMap = <String, dynamic>{};
+      var skippedCount = 0;
+      final skippedTypes = <String>[];
+      const maxSamples = 3;
+
+      for (final entry in data.entries) {
+        final key = entry.key;
+        if (key is String) {
+          jsonMap[key] = entry.value;
+        } else if (key is num || key is bool) {
+          jsonMap[key.toString()] = entry.value;
+        } else {
+          // Complex key detected - skip entry and track for batched logging.
+          skippedCount++;
+          if (skippedTypes.length < maxSamples) {
+            skippedTypes.add(key.runtimeType.toString());
+          }
+        }
+      }
+
+      // Batch log: emit single warning with summary instead of per-key noise.
+      if (skippedCount > 0) {
+        log.w(
+          '_asJsonMap: skipped $skippedCount complex key(s), '
+          'sample types: $skippedTypes',
+          tag: _logTag,
+        );
+      }
+      return jsonMap;
     }
     return null;
   }
-
 }
 
 /// Riverpod provider for [ConsentService] to support DI and testability.

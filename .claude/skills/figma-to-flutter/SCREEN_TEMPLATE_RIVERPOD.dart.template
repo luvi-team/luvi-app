@@ -1,0 +1,67 @@
+// Template for screens requiring Riverpod state management
+// Replace: {ScreenName}, {route_name}
+//
+// Use this template when the screen needs:
+// - State management via providers (ref.watch/ref.read)
+// - API calls or async operations
+// - Form handling with validation
+// - Shared state across navigation
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/spacing.dart';
+import 'package:luvi_app/l10n/l10n_capabilities.dart';
+
+class {ScreenName}Screen extends ConsumerStatefulWidget {
+  const {ScreenName}Screen({super.key});
+
+  static const routeName = '{route_name}';
+
+  @override
+  ConsumerState<{ScreenName}Screen> createState() => _{ScreenName}ScreenState();
+}
+
+class _{ScreenName}ScreenState extends ConsumerState<{ScreenName}Screen> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers, listeners here
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers here
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // ignore:unused_local_variable
+    final l10n = context.l10n;
+    // TODO: Add provider watches here
+    // Example: final state = ref.watch(screenNameProvider);
+    // Example: final isLoading = ref.watch(screenNameProvider).isLoading;
+    //
+    // L10n Usage Examples:
+    // - Simple string: Text(l10n.screenTitle)
+    // - With placeholder: l10n.welcomeMessage(userName)
+    // - Plurals: l10n.itemCount(count)
+    // See lib/l10n/app_en.arb for available keys
+    return Scaffold(
+      backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: Spacing.xl),
+              // Content here
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

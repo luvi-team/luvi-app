@@ -24,18 +24,17 @@ class AuthBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final label = semanticsLabel ??
+        AppLocalizations.of(context)?.authBackSemantic ??
+        'Back'; // A11y fallback: English default when l10n unavailable
+
     return Semantics(
-      excludeSemantics: true,
+      label: label,
       button: true,
-      label: semanticsLabel ??
-          AppLocalizations.of(context)?.authBackSemantic ??
-          'Back', // A11y fallback: English default when l10n unavailable
-      onTap: onPressed,
-      child: SizedBox(
-        width: Sizes.touchTargetMin,
-        height: Sizes.touchTargetMin,
+      child: ExcludeSemantics(
         child: IconButton(
           onPressed: onPressed,
+          tooltip: label, // Keep tooltip for sighted users (hover/long-press)
           icon: SvgPicture.asset(
             Assets.icons.authBackChevron,
             // SVG is 44x44 with centered chevron - render at full touch target size

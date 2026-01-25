@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/analytics/telemetry.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
@@ -42,6 +43,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _emailController = TextEditingController();
   ProviderSubscription<ResetPasswordState>? _stateSubscription;
   ProviderSubscription<AsyncValue<void>>? _submitSubscription;
+  bool _didSetupSubmitListener = false;
 
   @override
   void initState() {
@@ -60,23 +62,35 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         );
       }
     });
+  }
 
-    // Listen for submit errors and show snackbar (moved from build to initState)
-    _submitSubscription = ref.listenManual<AsyncValue<void>>(
-      resetSubmitProvider,
-      (prev, next) {
-        if (!mounted) return;
-        if (next.hasError && !next.isLoading) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.authResetErrorGeneric),
-              backgroundColor: DsColors.authRebrandError,
-              duration: Timing.snackBarBrief,
-            ),
-          );
-        }
-      },
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Setup submit error listener here (not initState) because it accesses
+    // context-dependent APIs (ScaffoldMessenger, AppLocalizations).
+    // Guard: didChangeDependencies can fire multiple times; setup listener once.
+    // Pattern consistent with splash_screen.dart, heute_screen.dart, etc.
+    if (!_didSetupSubmitListener) {
+      _didSetupSubmitListener = true;
+      _submitSubscription = ref.listenManual<AsyncValue<void>>(
+        resetSubmitProvider,
+        (prev, next) {
+          if (!mounted) return;
+          // Only show snackbar on error TRANSITION (not initial state)
+          if (prev != null && !prev.hasError && next.hasError && !next.isLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text(AppLocalizations.of(context)!.authResetErrorGeneric),
+                backgroundColor: DsColors.authRebrandError,
+                duration: Timing.snackBarBrief,
+              ),
+            );
+          }
+        },
+      );
+    }
   }
 
   @override
@@ -96,8 +110,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final errorText = _errorTextFor(state.error, l10n);
     final hasError = errorText != null;
     final canSubmit = state.isValid && !submitState.isLoading;
-
-    // NOTE: Submit error listener moved to initState for proper lifecycle management
 
     return AuthRebrandScaffold(
       scaffoldKey: const ValueKey('auth_reset_screen'),
@@ -184,7 +196,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             },
           );
     } catch (e, st) {
-      // Errors surfaced via submitState listener in initState.
+      // Errors surfaced via submitState listener in didChangeDependencies.
       // Catch prevents unhandled exception in async callback.
       if (e is AuthException) {
         // Log AuthException at debug level for observability (aids debugging new Supabase codes)
@@ -193,8 +205,14 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           tag: 'reset_password',
         );
       } else {
-        // Unexpected errors: log at warning level
+        // Unexpected errors: log + telemetry for monitoring
         log.w('reset_password_unexpected', error: e, stack: st);
+        Telemetry.maybeCaptureException(
+          'reset_password_unexpected',
+          error: e,
+          stack: st,
+          data: {'context': 'reset_submit'},
+        );
       }
     }
   }

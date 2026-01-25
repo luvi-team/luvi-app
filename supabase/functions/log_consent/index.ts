@@ -1,8 +1,16 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
+import { parseVersion } from "../_shared/version_parser.ts";
+import consentScopesConfig from "./consent_scopes.json" assert { type: "json" };
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+function requireEnv(name: string): string {
+  const value = Deno.env.get(name);
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name} must be set`);
+  }
+  return value;
+}
+
 // Salt used to pseudonymize consent/user identifiers in metrics logs.
 // If not provided, we fall back to an unsalted SHA-256 hash to avoid logging PII
 // while keeping metrics functional in lower environments.
@@ -22,10 +30,16 @@ if (isNaN(RATE_LIMIT_WINDOW_SEC) || RATE_LIMIT_WINDOW_SEC <= 0 || RATE_LIMIT_WIN
   throw new Error("CONSENT_RATE_LIMIT_WINDOW_SEC must be between 1 and 3600");
 }
 const RATE_LIMIT_MAX_REQUESTS = parseInt(
-  Deno.env.get("CONSENT_RATE_LIMIT_MAX_REQUESTS") ?? "20",
+  Deno.env.get("CONSENT_RATE_LIMIT_MAX_REQUESTS") ?? "5",
 );
 if (isNaN(RATE_LIMIT_MAX_REQUESTS) || RATE_LIMIT_MAX_REQUESTS <= 0 || RATE_LIMIT_MAX_REQUESTS > 1000) {
   throw new Error("CONSENT_RATE_LIMIT_MAX_REQUESTS must be between 1 and 1000");
+}
+const RATE_LIMIT_BURST = parseInt(
+  Deno.env.get("CONSENT_RATE_LIMIT_BURST") ?? "3",
+);
+if (isNaN(RATE_LIMIT_BURST) || RATE_LIMIT_BURST < 0 || RATE_LIMIT_BURST > 1000) {
+  throw new Error("CONSENT_RATE_LIMIT_BURST must be between 0 and 1000");
 }
 // Optional webhook to raise alerts on notable events (errors/spikes). This should
 // point to your alerting system (e.g. Slack incoming webhook, Log Ingest, etc.).
@@ -39,17 +53,25 @@ if (!Number.isFinite(parsedAlertSampleRate)) {
 const ALERT_SAMPLE_RATE = Math.max(0, Math.min(1, parsedAlertSampleRate));
 const MAX_LOGGED_INVALID_SCOPES = 10;
 const MAX_INVALID_SCOPE_STRING_LENGTH = 200;
+// ---------------------------------------------------------------------------
+// Consent Scopes Configuration
+// ---------------------------------------------------------------------------
+// SSOT: `config/consent_scopes.json` is the canonical scope list (shared with the app).
+// For Edge deployments, we include a copy in this function directory:
+// `supabase/functions/log_consent/consent_scopes.json`.
+// The SSOT test (consent_scopes_ssot.test.ts) validates:
+// - function copy matches `config/consent_scopes.json`
+// - VALID_SCOPES export matches that list
+// Dart enum is at lib/core/privacy/consent_types.dart.
+// ---------------------------------------------------------------------------
 
-if (!SUPABASE_URL) {
-  throw new Error("Missing required environment variable: SUPABASE_URL must be set");
-}
-if (!SUPABASE_ANON_KEY) {
-  throw new Error("Missing required environment variable: SUPABASE_ANON_KEY must be set");
-}
-// Canonical scopes list: keep in sync with client/shared config (see lib/features/consent/model/consent_types.dart).
-// TODO: Move to env (CONSENT_VALID_SCOPES), shared config module, or DB table to avoid drift.
-// Diese Liste muss zu `config/consent_scopes.json` passen; Deno-Tests prüfen die IDs.
-export const VALID_SCOPES = [
+// If true, missing bundled config should fail fast to prevent scope drift.
+// Set CONSENT_SCOPES_REQUIRE_BUNDLE=false to allow fallback in local/dev.
+const REQUIRE_CONSENT_SCOPES_BUNDLE =
+  (Deno.env.get("CONSENT_SCOPES_REQUIRE_BUNDLE") ?? "true") === "true";
+
+// Fallback scopes used if config file cannot be read (deployment resilience)
+const FALLBACK_SCOPES = [
   "terms",
   "health_processing",
   "ai_journal",
@@ -57,6 +79,145 @@ export const VALID_SCOPES = [
   "marketing",
   "model_training",
 ] as const;
+
+/** Regex pattern for valid scope IDs: lowercase alphanumeric + underscore, 1-50 chars */
+const SCOPE_ID_PATTERN = /^[a-z][a-z0-9_]{0,49}$/;
+
+/** Type guard for consent scope config items. */
+function isValidScopeItem(item: unknown): item is { id: string } {
+  if (typeof item !== "object" || item === null || !("id" in item)) {
+    return false;
+  }
+  const id = (item as { id: unknown }).id;
+  if (typeof id !== "string") {
+    return false;
+  }
+  // Validate format: lowercase alphanumeric + underscore, starts with letter
+  return SCOPE_ID_PATTERN.test(id);
+}
+
+async function loadConsentScopes(): Promise<readonly string[]> {
+  try {
+    // Import JSON directly so the bundle always includes consent_scopes.json.
+    // CI guardrail: `.github/workflows/ci.yml` runs
+    // `deno test supabase/functions/log_consent/consent_scopes_ssot.test.ts`
+    // which fails if this file is missing or out of sync with SSOT.
+    const parsed: unknown = consentScopesConfig;
+
+    // Runtime validation: expect versioned object format { version, scopes }
+    if (
+      typeof parsed !== 'object' ||
+      parsed === null ||
+      !('scopes' in parsed) ||
+      !Array.isArray((parsed as { scopes: unknown }).scopes) ||
+      !('version' in parsed) ||
+      typeof (parsed as { version: unknown }).version !== 'string'
+    ) {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "invalid_structure",
+          message: "consent_scopes.json must be { version, scopes: [...] }, using fallback",
+          receivedType: typeof parsed,
+        })
+      );
+      return FALLBACK_SCOPES;
+    }
+
+    const scopeArray = (parsed as { scopes: unknown[] }).scopes;
+
+    // Validate each element and extract valid IDs (deduplicated)
+    const validIdsSet = new Set<string>();
+    const duplicateIds: string[] = [];
+    let invalidCount = 0;
+
+    for (const item of scopeArray) {
+      if (isValidScopeItem(item)) {
+        if (validIdsSet.has(item.id)) {
+          duplicateIds.push(item.id);
+        } else {
+          validIdsSet.add(item.id);
+        }
+      } else {
+        invalidCount++;
+      }
+    }
+
+    // Log warning if duplicate IDs were found
+    if (duplicateIds.length > 0) {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "duplicate_ids",
+          message: `${duplicateIds.length} duplicate ID(s) found in consent_scopes.json`,
+          duplicateIds,
+          duplicateCount: duplicateIds.length,
+        })
+      );
+    }
+
+    const validIds = Array.from(validIdsSet);
+
+    // Log warning if any invalid items were found
+    if (invalidCount > 0) {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "partial_validation",
+          message: `${invalidCount} invalid item(s) filtered out from consent_scopes.json`,
+          invalidCount,
+          validCount: validIds.length,
+        })
+      );
+    }
+
+    // Return fallback if no valid scopes found
+    if (validIds.length === 0) {
+      console.warn(
+        JSON.stringify({
+          severity: "warning",
+          ts: new Date().toISOString(),
+          event: "consent_scopes_load",
+          status: "empty_config",
+          message: "No valid scopes found in consent_scopes.json, using fallback",
+        })
+      );
+      return FALLBACK_SCOPES;
+    }
+
+    return validIds;
+  } catch (error) {
+    // ERROR level: unexpected runtime failure; treat as deployment issue.
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        ts: new Date().toISOString(),
+        event: "consent_scopes_load",
+        status: "fallback",
+        message: "Failed to load consent_scopes.json, using fallback - check deployment bundle",
+        error: errorMessage,
+      })
+    );
+    if (REQUIRE_CONSENT_SCOPES_BUNDLE) {
+      // Guardrail: CI + deploy scripts should also validate this file exists
+      // (e.g. GitHub workflow + db_push_and_smoke.sh) to fail fast before shipping.
+      throw new Error(
+        "consent_scopes.json missing from deployment bundle (CONSENT_SCOPES_REQUIRE_BUNDLE=true)",
+      );
+    }
+    return FALLBACK_SCOPES;
+  }
+}
+
+// Top-level await (supported in Deno Edge Functions)
+export const VALID_SCOPES: readonly string[] = await loadConsentScopes();
 
 interface ConsentRequestPayload {
   policy_version?: unknown;
@@ -265,6 +426,19 @@ function clampInvalidScopes(scopes: unknown[]): string[] {
   });
 }
 
+function summarizeInvalidScopes(scopes: unknown[]): Record<string, number> {
+  const summary: Record<string, number> = {};
+  for (const scope of scopes) {
+    const key = scope === null
+      ? "null"
+      : Array.isArray(scope)
+      ? "array"
+      : typeof scope;
+    summary[key] = (summary[key] ?? 0) + 1;
+  }
+  return summary;
+}
+
 if (import.meta.main) {
   serve(async (req) => {
   const started = Date.now();
@@ -343,6 +517,30 @@ if (import.meta.main) {
     );
   }
 
+  // Validate version format using shared parser
+  const versionValidation = parseVersion(policyVersion);
+  if (!versionValidation.valid) {
+    logMetric(requestId, "invalid", {
+      reason: "invalid_version_format",
+      version: policyVersion,
+      error: versionValidation.error,
+      ip_hash: ipHash,
+      ua_hash: uaHash,
+      hash_version: CONSENT_HASH_VERSION,
+    });
+    return new Response(
+      JSON.stringify({
+        error: "invalid_version_format",
+        message: versionValidation.error,
+        request_id: requestId,
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+      },
+    );
+  }
+
   const rawScopes = body.scopes;
   if (rawScopes == null) {
     logMetric(requestId, "invalid", {
@@ -366,17 +564,18 @@ if (import.meta.main) {
     !Array.isArray(rawScopes)
   ) {
     const scopeMap = rawScopes as Record<string, unknown>;
+    const scopeKeyCount = Object.keys(scopeMap).length;
     // Use Object.entries() to correctly detect non-boolean values including undefined
     // (Object.values().find() returns undefined for undefined values, causing false negatives)
     const invalidEntry = Object.entries(scopeMap).find(
       ([, v]) => typeof v !== "boolean"
     );
     if (invalidEntry) {
-      const [invalidKey, invalidValue] = invalidEntry;
+      const [, invalidValue] = invalidEntry;
       logMetric(requestId, "invalid", {
         reason: "invalid_scopes_value_type",
-        invalidKey,
         providedType: typeof invalidValue,
+        scopeKeyCount,
         ip_hash: ipHash,
         ua_hash: uaHash,
         hash_version: CONSENT_HASH_VERSION,
@@ -434,12 +633,13 @@ if (import.meta.main) {
   );
 
   if (invalidScopes.length > 0) {
-    // Defense: Clamp invalidScopes to prevent log bloat/noise from large payloads
+    // Clamp invalidScopes for client response without leaking raw input to logs.
     const clampedInvalidScopes = clampInvalidScopes(invalidScopes);
+    const invalidScopeTypes = summarizeInvalidScopes(invalidScopes);
     logMetric(requestId, "invalid", {
       reason: "invalid_scopes",
-      invalidScopes: clampedInvalidScopes,
       invalidScopesCount: invalidScopes.length,
+      invalidScopeTypes,
       ip_hash: ipHash,
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
@@ -458,7 +658,7 @@ if (import.meta.main) {
     );
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  const supabase = createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_ANON_KEY"), {
     global: {
       headers: {
         Authorization: authorization,
@@ -504,6 +704,7 @@ if (import.meta.main) {
       p_scopes: payload.scopes,
       p_window_sec: RATE_LIMIT_WINDOW_SEC,
       p_max_requests: RATE_LIMIT_MAX_REQUESTS,
+      p_burst_max_requests: RATE_LIMIT_BURST,
     },
   );
   const rpcDuration = Date.now() - t0Rpc;
@@ -535,6 +736,7 @@ if (import.meta.main) {
       consent_id_hash: consentIdHash,
       window_sec: RATE_LIMIT_WINDOW_SEC,
       max: RATE_LIMIT_MAX_REQUESTS,
+      burst_max: RATE_LIMIT_BURST,
       ip_hash: ipHash,
       ua_hash: uaHash,
       hash_version: CONSENT_HASH_VERSION,
@@ -549,13 +751,14 @@ if (import.meta.main) {
     return new Response(JSON.stringify({ error: "Rate limit exceeded", request_id: requestId }), {
       status: 429,
       headers: {
-        "Content-Type": "application/json",
-        "Retry-After": `${RATE_LIMIT_WINDOW_SEC}`,
-        "X-RateLimit-Limit": `${RATE_LIMIT_MAX_REQUESTS}`,
-        "X-RateLimit-Remaining": "0",
-        "X-Request-Id": requestId,
-      },
-    });
+      "Content-Type": "application/json",
+      "Retry-After": `${RATE_LIMIT_WINDOW_SEC}`,
+      "X-RateLimit-Limit": `${RATE_LIMIT_MAX_REQUESTS}`,
+      "X-RateLimit-Burst": `${RATE_LIMIT_BURST}`,
+      "X-RateLimit-Remaining": "0",
+      "X-Request-Id": requestId,
+    },
+  });
   }
 
   const elapsed = Date.now() - started;

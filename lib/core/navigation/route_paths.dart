@@ -27,13 +27,13 @@ abstract final class RoutePaths {
   static const welcome = '/welcome';
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Consent Flow (C1-C3)
+  // Consent Flow (Single-Screen; legacy paths redirect)
   // ─────────────────────────────────────────────────────────────────────────
-  static const consentIntro = '/consent/intro'; // C1 - new canonical path
-  static const consentOptions = '/consent/options'; // C2
-  static const consentBlocking = '/consent/blocking'; // C3
+  static const consentOptions = '/consent/options'; // C2 - canonical
+  static const consentIntro = '/consent/intro'; // C1 - legacy redirect → consentOptions
+  static const consentBlocking = '/consent/blocking'; // C3 - legacy redirect → consentOptions
 
-  /// Legacy alias - redirects to [consentIntro] for backwards compatibility.
+  /// Legacy alias - redirects to [consentOptions] for backwards compatibility.
   static const consentIntroLegacy = '/consent/02';
 
   // ─────────────────────────────────────────────────────────────────────────

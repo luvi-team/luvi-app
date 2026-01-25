@@ -3,6 +3,7 @@ import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
 import 'package:luvi_app/features/cycle/domain/date_utils.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
+import 'package:luvi_app/features/dashboard/domain/models/category.dart';
 import 'package:luvi_app/features/dashboard/domain/models/recommendation.dart';
 import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';
 import 'package:luvi_app/features/dashboard/domain/weekly_training_props.dart';

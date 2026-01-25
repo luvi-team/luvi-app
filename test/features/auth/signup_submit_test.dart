@@ -18,17 +18,29 @@ import '../../support/test_config.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
+/// Creates a GoRouter configured for AuthSignupScreen tests.
+/// Note: When used via pumpSignupScreen, disposal is handled automatically.
+GoRouter _createSignupTestRouter() => GoRouter(
+      routes: testAppRoutes,
+      initialLocation: AuthSignupScreen.routeName,
+    );
+
 void main() {
   TestConfig.ensureInitialized();
   setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
   });
 
+  // Each test creates its own router instance for isolation.
+  // Router disposal is handled via addTearDown inside pumpSignupScreen (per-test).
+
   Future<void> pumpSignupScreen(
     WidgetTester tester,
     AuthRepository repository,
-    GoRouter router,
   ) async {
+    final router = _createSignupTestRouter();
+    addTearDown(router.dispose);
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [authRepositoryProvider.overrideWithValue(repository)],
@@ -53,23 +65,11 @@ void main() {
   }
 
   group('AuthSignupScreen submit behaviour', () {
-    late GoRouter router;
-
-    setUp(() {
-      router = GoRouter(
-        routes: testAppRoutes,
-        initialLocation: AuthSignupScreen.routeName,
-      );
-    });
-
-    tearDown(() {
-      router.dispose();
-    });
 
     testWidgets('empty submit shows missing fields and field errors', (tester) async {
       final mockRepo = _MockAuthRepository();
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
       await tester.pumpAndSettle();
@@ -101,7 +101,7 @@ void main() {
         ),
       ).thenAnswer((_) async => AuthResponse(session: null, user: null));
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -148,7 +148,7 @@ void main() {
         ),
       ).thenThrow(AuthException('Email already registered'));
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -198,7 +198,7 @@ void main() {
         ),
       ).thenAnswer((_) => completer.future);
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -250,7 +250,7 @@ void main() {
         ),
       ).thenAnswer((_) async => AuthResponse(session: null, user: null));
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       // Fill form
       await tester.enterText(
@@ -298,7 +298,7 @@ void main() {
       final mockRepo = _MockAuthRepository();
       // No mock setup needed - validation fails before API call
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       // Fill email and mismatched passwords
       await tester.enterText(
@@ -338,7 +338,7 @@ void main() {
       final mockRepo = _MockAuthRepository();
       // No mock setup needed - validation fails before API call
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       // Fill email and short password
       await tester.enterText(
@@ -378,9 +378,9 @@ void main() {
       final mockRepo = _MockAuthRepository();
       // No mock setup needed - validation fails before API call
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
-      // Fill email and common weak password (blocklisted in create_new_password_rules.dart:45)
+      // Fill email and common weak password (blocked by password validation rules per NIST SP 800-63B)
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
         'user@example.com',
@@ -416,19 +416,6 @@ void main() {
   });
 
   group('AuthException error.code handling', () {
-    late GoRouter router;
-
-    setUp(() {
-      router = GoRouter(
-        routes: testAppRoutes,
-        initialLocation: AuthSignupScreen.routeName,
-      );
-    });
-
-    tearDown(() {
-      router.dispose();
-    });
-
     testWidgets('uses error.code for weak_password', (tester) async {
       final mockRepo = _MockAuthRepository();
       when(
@@ -439,7 +426,7 @@ void main() {
         ),
       ).thenThrow(AuthException('Some message', code: 'weak_password'));
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -477,7 +464,7 @@ void main() {
         ),
       ).thenThrow(AuthException('Some message', code: 'email_exists'));
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -515,7 +502,7 @@ void main() {
         ),
       ).thenThrow(AuthException('Email already registered')); // No code
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -550,7 +537,7 @@ void main() {
         ),
       ).thenThrow(AuthException('Some message', code: 'user_already_exists'));
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -585,7 +572,7 @@ void main() {
         ),
       ).thenThrow(AuthException('Connection timeout')); // No code, no keywords
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -629,7 +616,7 @@ void main() {
         AuthException('Too many requests', code: 'over_request_rate_limit'),
       );
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),
@@ -671,7 +658,7 @@ void main() {
         ),
       ).thenThrow(AuthException('Signup is disabled', code: 'signup_disabled'));
 
-      await pumpSignupScreen(tester, mockRepo, router);
+      await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
         find.byKey(const ValueKey('signup_email_field')),

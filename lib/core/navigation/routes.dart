@@ -12,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show Session;
 
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_services/supabase_service.dart';
@@ -81,6 +82,18 @@ bool isConsentRoute(String location) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Route Matching Utilities
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Safe prefix check that prevents false positives like /heute matching /heute-old.
+///
+/// Returns true if [path] equals [prefix] exactly, or starts with [prefix]/
+bool _matchesPrefix(String path, String prefix) {
+  if (path == prefix) return true;
+  return path.startsWith('$prefix/');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Home Guard Redirects
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -117,7 +130,7 @@ String? homeGuardRedirect({
 ///
 /// Gate priority (matches Splash logic):
 /// 1. State unknown → Splash (fail-safe)
-/// 2. Consent outdated/missing → ConsentIntroScreen
+/// 2. Consent outdated/missing → ConsentOptionsScreen
 /// 3. Onboarding incomplete → Onboarding01
 /// 4. All gates passed → null (allow)
 String? homeGuardRedirectWithConsent({
@@ -135,7 +148,7 @@ String? homeGuardRedirectWithConsent({
   final needsConsent = acceptedConsentVersion == null ||
       acceptedConsentVersion < currentConsentVersion;
   if (needsConsent) {
-    return RoutePaths.consentIntro;
+    return RoutePaths.consentOptions;
   }
 
   // Then check onboarding
@@ -193,27 +206,21 @@ _RouteFlags _classifyRoute(String location) {
   final uri = Uri.parse(location);
   final path = uri.path;
 
-  // Helper for safe prefix check (prevent /heute matching /heute-old)
-  bool matchesPrefix(String prefix) {
-    if (path == prefix) return true;
-    return path.startsWith('$prefix/');
-  }
-
-  final isLogin = matchesPrefix(RoutePaths.login);
-  final isSignIn = matchesPrefix(RoutePaths.authSignIn);
+  final isLogin = _matchesPrefix(path, RoutePaths.login);
+  final isSignIn = _matchesPrefix(path, RoutePaths.authSignIn);
 
   return _RouteFlags(
     isAuthRoute: isLogin ||
         isSignIn ||
-        matchesPrefix(RoutePaths.signup) ||
-        matchesPrefix(RoutePaths.resetPassword),
+        _matchesPrefix(path, RoutePaths.signup) ||
+        _matchesPrefix(path, RoutePaths.resetPassword),
     isLoginOrSignIn: isLogin || isSignIn,
     isSplash: path == RoutePaths.splash,
     isWelcome: isWelcomeRoute(path),
     isOnboarding: isOnboardingRoute(path),
-    isDashboard: matchesPrefix(RoutePaths.heute),
-    isPasswordRecovery: matchesPrefix(RoutePaths.createNewPassword) ||
-        matchesPrefix(RoutePaths.passwordSaved),
+    isDashboard: _matchesPrefix(path, RoutePaths.heute),
+    isPasswordRecovery: _matchesPrefix(path, RoutePaths.createNewPassword) ||
+        _matchesPrefix(path, RoutePaths.passwordSaved),
   );
 }
 
@@ -228,10 +235,18 @@ Session? _getSessionSafely({
   try {
     return SupabaseService.client.auth.currentSession;
   } catch (e, stack) {
+    // Defense-in-depth: sanitizeError calls error.toString() internally, which
+    // may throw for malformed custom error objects. Guard to ensure fallback works.
+    String errorInfo;
+    try {
+      errorInfo = sanitizeError(e) ?? e.runtimeType.toString();
+    } catch (_) {
+      errorInfo = e.runtimeType.toString();
+    }
     log.w(
       'auth_redirect_session_access_failed',
       tag: 'navigation',
-      error: e.runtimeType.toString(),
+      error: errorInfo,
       stack: kDebugMode ? stack : null,
     );
     return null;

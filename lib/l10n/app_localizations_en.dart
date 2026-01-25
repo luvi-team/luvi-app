@@ -562,6 +562,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authErrPasswordEmpty => 'Please enter your password.';
 
   @override
+  String get authErrOtpExpired => 'The verification link has expired. Please request a new one.';
+
+  @override
   String get authErrConfirmEmail => 'Please verify your email (resend the link?).';
 
   @override
@@ -690,7 +693,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentSnackbarError => 'We couldn\'t save your consent. Please try again.';
 
   @override
-  String get consentErrorSavingConsent => 'We couldn\'t save all your preferences. You can continue and try again later.';
+  String get consentErrorSavingConsent => 'Some settings couldn\'t be saved locally. Please restart the app to sync them.';
 
   @override
   String get consentSnackbarRateLimited => 'Too many requests right now. Please wait a moment and try again.';
@@ -727,9 +730,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authResetTitle => 'Forgot password?';
-
-  @override
-  String get authResetSubtitle => 'Enter your email and we\'ll send you a link to reset it.';
 
   @override
   String get authResetCta => 'Reset password';
@@ -793,25 +793,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fitnessLevelFit => 'Very active';
 
   @override
-  String get consentIntroTitle => 'Let\'s personalize LUVI for you';
+  String get consentOptionsTitle => 'You and LUVI';
 
   @override
-  String get consentIntroBody => 'To personalize LUVI for you, we first need your okay.';
-
-  @override
-  String get consentIntroCtaLabel => 'Continue';
-
-  @override
-  String get consentIntroIllustrationSemantic => 'Illustration: Hand holding a pen to sign';
-
-  @override
-  String get consentIntroCtaSemantic => 'Continue to privacy consent';
-
-  @override
-  String get consentOptionsTitle => 'Your Privacy Choices';
-
-  @override
-  String get consentOptionsSubtitle => 'Securely stored, strictly protected. GDPR, EU hosting';
+  String get consentOptionsSubtitle => 'Securely stored, strictly protected.\nGDPR, EU hosting';
 
   @override
   String get consentOptionsSectionRequired => 'REQUIRED';
@@ -861,21 +846,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consentOptionsShieldSemantic => 'Shield icon for data protection';
-
-  @override
-  String get consentBlockingTitle => 'Your consent makes LUVI possible';
-
-  @override
-  String get consentBlockingBody => 'LUVI needs your cycle and health data to show you cycle-based content and recommendations. Without this processing, we cannot provide the service.';
-
-  @override
-  String get consentBlockingCtaBack => 'Back & Agree';
-
-  @override
-  String get consentBlockingCtaSemantic => 'Back to consent';
-
-  @override
-  String get consentBlockingShieldSemantic => 'Shield icon for data protection';
 
   @override
   String onboarding03FitnessTitle(String name) {
@@ -1025,6 +995,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String semanticButtonLoading(String label) {
+    return '$label, loading';
+  }
+
+  @override
   String get splashGateUnknownTitle => 'Brief interruption';
 
   @override
@@ -1088,7 +1063,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authRegisterEmailTitle => 'Register with Email';
 
   @override
-  String get authResetPasswordSubtitle => 'Enter your email address and receive a link to reset.';
+  String get authResetPasswordSubtitle => 'Enter your email to receive a password reset link.';
 
   @override
   String get authResetCtaShort => 'Reset';

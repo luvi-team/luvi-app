@@ -148,6 +148,7 @@ class AuthStrings {
         : l.authErrPasswordInvalid;
   }
 
+  static String get errOtpExpired => _l10n().authErrOtpExpired;
   static String get errConfirmEmail => _l10n().authErrConfirmEmail;
   static String get invalidCredentials => _l10n().authInvalidCredentials;
   static String get errLoginUnavailable => _l10n().authErrLoginUnavailable;

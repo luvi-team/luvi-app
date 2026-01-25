@@ -10,7 +10,7 @@ import 'package:luvi_app/core/navigation/route_paths.dart';
 ///
 /// Logic:
 /// - Not authenticated → AuthSignInScreen
-/// - Authenticated + needs consent (null or outdated version) → ConsentIntroScreen
+/// - Authenticated + needs consent (null or outdated version) → ConsentOptionsScreen
 /// - Authenticated + consent OK + hasCompletedOnboarding != true → Onboarding01
 /// - Authenticated + consent OK + hasCompletedOnboarding == true → defaultTarget
 @visibleForTesting
@@ -28,7 +28,7 @@ String determineTargetRoute({
   final needsConsent = acceptedConsentVersion == null ||
       acceptedConsentVersion < currentConsentVersion;
   if (needsConsent) {
-    return RoutePaths.consentIntro;
+    return RoutePaths.consentOptions;
   }
   // Onboarding Gate: User has completed consent but not onboarding
   if (!hasCompletedOnboarding) {
@@ -41,7 +41,7 @@ String determineTargetRoute({
 ///
 /// Fail-safe approach: Never route directly to Home when state is unknown.
 /// - Not authenticated → AuthSignInScreen (login required anyway)
-/// - Authenticated → ConsentIntroScreen (safe entry point for gate flow)
+/// - Authenticated → ConsentOptionsScreen (safe entry point for gate flow)
 ///
 /// This ensures consent/onboarding gates are never bypassed due to errors.
 String determineFallbackRoute({required bool isAuth}) {
@@ -50,7 +50,7 @@ String determineFallbackRoute({required bool isAuth}) {
   }
   // Safe fallback: Consent flow will re-check all gates properly.
   // Never go directly to Home when state is unknown.
-  return RoutePaths.consentIntro;
+  return RoutePaths.consentOptions;
 }
 
 /// Result type for [determineOnboardingGateRoute].

@@ -10,12 +10,35 @@ class ConsentSpacing {
   static const double topBarButtonToTitle = 7.0;
 
   // Consent Screen Specific (Figma Refactor 2024-12)
+  /// Gap between major consent sections. Used after dividers.
+  /// Currently 16px per Figma; may differ from [checkboxItemGap] in future.
   static const double sectionGap = 16.0;
   static const double buttonGapC2 = 16.0; // Between buttons on C2 (Options) - 16px per Figma
   static const double buttonGapC3 = 16.0; // Between buttons on C3 (Blocking)
   static const double checkboxSize = 24.0;
   static const double checkboxInnerSize = 14.0;
   static const double checkboxBorderWidth = 2.0;
+
+  // Consent Options Screen Specific (Figma Alignment 2026-01)
+  /// Shield icon width from Figma (209px)
+  static const double shieldIconWidth = 209.0;
+
+  /// Shield icon height from Figma (117px)
+  static const double shieldIconHeight = 117.0;
+
+  /// Teal divider height from Figma (2px)
+  static const double dividerHeight = 2.0;
+
+  /// Gap between checkbox items (Health↔Terms): 16px.
+  /// Semantically distinct from [sectionGap] - controls intra-section spacing.
+  /// May diverge from [sectionGap] if Figma design evolves.
+  static const double checkboxItemGap = 16.0;
+
+  /// Gap between last checkbox item and divider: 11px
+  static const double itemToDividerGap = 11.0;
+
+  /// CTA button max width: 300px (responsive on smaller screens)
+  static const double ctaButtonMaxWidth = 300.0;
 
   // Card list paddings and gaps.
   static const double listPaddingTop = 24.0;

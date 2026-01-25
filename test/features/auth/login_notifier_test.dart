@@ -7,12 +7,14 @@ import '../../support/test_config.dart';
 class _FakeServerErrorLoginNotifier extends LoginNotifier {
   // Simulates server error after successful client-side validation
   @override
-  Future<void> validateAndSubmit({required String password}) async {
+  Future<bool> validateAndSubmit({required String password}) async {
+    bool isValid;
     try {
-      await super.validateAndSubmit(password: password);
+      isValid = await super.validateAndSubmit(password: password);
+      if (!isValid) return false;
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
-      return;
+      return false;
     }
     final current = state.value;
     if (current == null) {
@@ -20,13 +22,14 @@ class _FakeServerErrorLoginNotifier extends LoginNotifier {
         StateError('No current state after validation'),
         StackTrace.current,
       );
-      return;
+      return false;
     }
     state = AsyncData(
       current.copyWith(
         globalError: AuthStrings.errLoginUnavailable,
       ),
     );
+    return false;
   }
 }
 
@@ -150,12 +153,14 @@ void main() {
     await container.read(loginProvider.future);
 
     notifier.setEmail('user@example.com');
-    await notifier.validateAndSubmit(password: '12345678');
+    final result = await notifier.validateAndSubmit(password: '12345678');
 
     final state = notifier.debugState();
     expect(state.emailError, isNull);
     expect(state.passwordError, isNull);
     expect(state.globalError, AuthStrings.errLoginUnavailable);
+    // Inputs are valid (user can retry), but submission failed (result is false)
     expect(state.isValid, isTrue);
+    expect(result, isFalse);
   });
 }

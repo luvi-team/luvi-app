@@ -562,6 +562,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authErrPasswordEmpty => 'Bitte gib dein Passwort ein.';
 
   @override
+  String get authErrOtpExpired => 'Der Link ist abgelaufen. Bitte fordere einen neuen an.';
+
+  @override
   String get authErrConfirmEmail => 'Bitte bestätige deine E-Mail (Link erneut senden?).';
 
   @override
@@ -690,7 +693,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentSnackbarError => 'Wir konnten deine Einwilligung nicht speichern. Bitte versuche es erneut.';
 
   @override
-  String get consentErrorSavingConsent => 'Wir konnten nicht alle deine Einstellungen speichern. Du kannst trotzdem fortfahren und es später erneut versuchen.';
+  String get consentErrorSavingConsent => 'Einige Einstellungen konnten nicht lokal gespeichert werden. Bitte starte die App neu, um sie zu synchronisieren.';
 
   @override
   String get consentSnackbarRateLimited => 'Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.';
@@ -727,9 +730,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authResetTitle => 'Passwort vergessen?';
-
-  @override
-  String get authResetSubtitle => 'Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu.';
 
   @override
   String get authResetCta => 'Passwort zurücksetzen';
@@ -793,22 +793,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get fitnessLevelFit => 'Sehr aktiv';
 
   @override
-  String get consentIntroTitle => 'Lass uns LUVI für dich personalisieren';
-
-  @override
-  String get consentIntroBody => 'Um LUVI für dich zu personalisieren, brauchen wir zuerst dein Okay.';
-
-  @override
-  String get consentIntroCtaLabel => 'Weiter';
-
-  @override
-  String get consentIntroIllustrationSemantic => 'Illustration: Hand hält Stift zum Unterschreiben';
-
-  @override
-  String get consentIntroCtaSemantic => 'Weiter zur Datenschutz-Einwilligung';
-
-  @override
-  String get consentOptionsTitle => 'Deine Datenschutz-Einstellungen';
+  String get consentOptionsTitle => 'Du und LUVI';
 
   @override
   String get consentOptionsSubtitle => 'Sicher gespeichert, streng geschützt. DSGVO, EU-Hosting';
@@ -847,7 +832,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get consentOptionsCtaContinue => 'Weiter';
 
   @override
-  String get consentOptionsCtaAcceptAll => 'Alles akzeptieren';
+  String get consentOptionsCtaAcceptAll => 'Alle akzeptieren';
 
   @override
   String consentOptionsCheckboxSelectedSemantic(String section, String text) {
@@ -861,21 +846,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get consentOptionsShieldSemantic => 'Schild-Symbol für Datenschutz';
-
-  @override
-  String get consentBlockingTitle => 'Deine Zustimmung macht LUVI möglich';
-
-  @override
-  String get consentBlockingBody => 'LUVI braucht deine Zyklus- und Gesundheitsangaben, um dir zyklusbasierte Inhalte und Empfehlungen anzuzeigen. Ohne diese Verarbeitung können wir den Dienst nicht bereitstellen.';
-
-  @override
-  String get consentBlockingCtaBack => 'Zurück & Zustimmen';
-
-  @override
-  String get consentBlockingCtaSemantic => 'Zurück zur Einwilligung';
-
-  @override
-  String get consentBlockingShieldSemantic => 'Schild-Symbol für Datenschutz';
 
   @override
   String onboarding03FitnessTitle(String name) {
@@ -1025,6 +995,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String semanticButtonLoading(String label) {
+    return '$label, wird geladen';
+  }
+
+  @override
   String get splashGateUnknownTitle => 'Kurze Unterbrechung';
 
   @override
@@ -1088,7 +1063,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authRegisterEmailTitle => 'Registrieren mit E-Mail';
 
   @override
-  String get authResetPasswordSubtitle => 'E-Mail-Adresse eingeben und erhalte einen Link zum Zurücksetzen.';
+  String get authResetPasswordSubtitle => 'Gib deine E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten.';
 
   @override
   String get authResetCtaShort => 'Zurücksetzen';

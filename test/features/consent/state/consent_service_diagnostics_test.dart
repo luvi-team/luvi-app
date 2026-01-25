@@ -93,5 +93,52 @@ void main() {
         expect(result, isNot(contains('raw_user')));
       }
     });
+
+    test('handles Map with complex keys (reports type only)', () {
+      // Complex keys like List as key - payloadDiagnosticsShapeOnly should
+      // report type info without values (keys are complex, not iterable as strings)
+      final complexKeyMap = <Object, dynamic>{
+        const ['list', 'key']: 'value', // List as key
+      };
+
+      final result = payloadDiagnosticsShapeOnly(complexKeyMap);
+
+      // Verify basic type reporting
+      expect(result, startsWith('type=Map'));
+
+      // Verify keys structure indicator is present
+      expect(
+        result,
+        contains('keys='),
+        reason: 'Output should include keys= to show structure',
+      );
+
+      // PRIVACY: Should not expose actual map values
+      expect(
+        result,
+        isNot(contains('value')),
+        reason: 'Map values must not be exposed',
+      );
+
+      // PRIVACY: Complex keys should be redacted to '<complex:Type>' format
+      expect(
+        result,
+        contains('<complex:List'),
+        reason: 'Complex keys should be redacted with concrete type name (List)',
+      );
+
+      // Verify no List.toString() output leaks (would be "[list, key]")
+      // Note: We don't check for bare 'key' as it conflicts with format 'keys='
+      expect(
+        result,
+        isNot(contains('[list')),
+        reason: 'List.toString() bracketed content must not appear',
+      );
+      expect(
+        result,
+        isNot(contains(', key]')),
+        reason: 'List.toString() bracketed content must not appear',
+      );
+    });
   });
 }

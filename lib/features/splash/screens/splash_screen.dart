@@ -142,12 +142,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final l10n = AppLocalizations.of(context)!;
     final splashState = ref.watch(splashControllerProvider);
 
-    // Show unknown UI when in SplashUnknown state
-    final showUnknownUI = splashState is SplashUnknown;
-
     return Scaffold(
       backgroundColor: DsColors.splashBg,
-      body: showUnknownUI
+      // Use pattern matching directly for type promotion (Dart 3)
+      body: splashState is SplashUnknown
           ? _buildUnknownUI(context, l10n, splashState)
           : _skipAnimation
               // skipAnimation: Show solid background (no 1-frame flash)
@@ -160,16 +158,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     );
   }
 
-  Widget _buildUnknownUI(BuildContext context, AppLocalizations l10n, SplashState splashState) {
-    final unknown = splashState as SplashUnknown;
-    final canRetry = unknown.canRetry;
-    final isRetrying = unknown.isRetrying;
-
+  Widget _buildUnknownUI(
+    BuildContext context,
+    AppLocalizations l10n,
+    SplashUnknown unknown,
+  ) {
     return UnknownStateUi(
-      onRetry: canRetry ? _handleRetry : null,
+      onRetry: unknown.canRetry ? _handleRetry : null,
       onSignOut: _handleSignOut,
-      canRetry: canRetry,
-      isRetrying: isRetrying,
+      canRetry: unknown.canRetry,
+      isRetrying: unknown.isRetrying,
     );
   }
 }

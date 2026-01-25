@@ -32,6 +32,8 @@ jobs:
       - run: flutter analyze
       - run: flutter pub run dart_code_metrics:metrics analyze lib --disable-sunset-warning || true
       - run: flutter test --no-pub
+      - name: Validate consent scope consistency (Dart ↔ JSON)
+        run: flutter test test/features/consent/consent_scopes_ssot_test.dart --no-pub
 
   log-consent-contract:
     name: Edge Contract / log_consent
@@ -43,8 +45,13 @@ jobs:
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
-      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - name: Validate log_consent bundle config
+        run: |
+          if [ ! -f "supabase/functions/log_consent/consent_scopes.json" ]; then
+            echo "ERROR: consent_scopes.json missing from log_consent bundle"
+            exit 1
+          fi
 
       - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
         name: Setup Deno
@@ -75,7 +82,11 @@ jobs:
 
       - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
         name: Run log_consent SSOT scope test
-        run: deno test --allow-read supabase/functions/log_consent/consent_scopes_ssot.test.ts
+        run: deno test --allow-env --allow-read supabase/functions/log_consent/consent_scopes_ssot.test.ts
+
+      - if: ${{ env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != '' }}
+        name: Run version parser SSOT tests
+        run: deno test --allow-read supabase/functions/_shared/version_parser.test.ts
 
   privacy-gate:
     if: ${{ github.event_name == 'pull_request' }}
@@ -252,3 +263,42 @@ jobs:
         with:
           name: agents-drift-report-${{ github.run_id }}
           path: context/agents/_drift_report.md
+
+  schema-drift-check:
+    name: Schema Documentation Drift
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - name: Check schema-to-documentation alignment
+        run: |
+          echo "=== Checking schema documentation alignment ==="
+
+          # Extract CREATE TABLE statements from migrations
+          MIGRATION_TABLES=$(grep -rh "CREATE TABLE" supabase/migrations/*.sql 2>/dev/null | \
+            grep -oE 'public\.[a-z0-9_]+' | sort -u || echo "")
+
+          # Extract documented tables from BMAD (format: `public.table_name`)
+          DOC_TABLES=$(grep -oE '\`public\.[a-z0-9_]+\`' docs/bmad/global.md | \
+            sed 's/`//g' | sort -u || echo "")
+
+          echo "Migration tables:"
+          echo "$MIGRATION_TABLES"
+          echo ""
+          echo "Documented tables:"
+          echo "$DOC_TABLES"
+
+          # Find undocumented tables (in migrations but not in docs)
+          UNDOCUMENTED=$(comm -23 <(echo "$MIGRATION_TABLES") <(echo "$DOC_TABLES") || true)
+
+          if [ -n "$UNDOCUMENTED" ]; then
+            echo ""
+            echo "::error::Undocumented tables found in migrations but missing from docs/bmad/global.md:"
+            echo "$UNDOCUMENTED"
+            echo ""
+            echo "ACTION: Add these tables to section '2.2 Domäne → Tabellen/Views → Status' in docs/bmad/global.md"
+            exit 1
+          fi
+
+          echo ""
+          echo "OK: All migration tables are documented"

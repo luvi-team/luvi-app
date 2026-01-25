@@ -1,23 +1,25 @@
-// Template for new screens
+// Template for new screens (StatelessWidget - simplified)
 // Replace: {ScreenName}, {route_name}
-
-// ignore_for_file: unused_local_variable
+//
+// NOTE: This is a simplified stateless template. For screens requiring
+// Riverpod providers (state management, API calls, form handling),
+// use SCREEN_TEMPLATE_RIVERPOD.dart.template instead, which provides
+// a ConsumerStatefulWidget starting point.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
-class {ScreenName}Screen extends ConsumerWidget {
+class {ScreenName}Screen extends StatelessWidget {
   const {ScreenName}Screen({super.key});
 
   static const routeName = '{route_name}';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Placeholder for localized strings; use when adding l10n references
-    final l10n = AppLocalizations.of(context)!;
+  Widget build(BuildContext context) {
+    // ignore:unused_local_variable
+    final l10n = context.l10n; // Pre-declared for developer ergonomics
 
     return Scaffold(
       backgroundColor: DsColors.splashBg, // TODO: Adjust per screen type (see colors.dart)

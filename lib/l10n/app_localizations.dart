@@ -1157,6 +1157,12 @@ abstract class AppLocalizations {
   /// **'Please enter your password.'**
   String get authErrPasswordEmpty;
 
+  /// Error displayed when the OTP/verification link has expired.
+  ///
+  /// In en, this message translates to:
+  /// **'The verification link has expired. Please request a new one.'**
+  String get authErrOtpExpired;
+
   /// Error displayed when the user's email has not been confirmed.
   ///
   /// In en, this message translates to:
@@ -1397,10 +1403,10 @@ abstract class AppLocalizations {
   /// **'We couldn\'t save your consent. Please try again.'**
   String get consentSnackbarError;
 
-  /// Snackbar text shown when marking welcome as seen fails after consent acceptance; navigation continues.
+  /// Snackbar text shown when local cache persistence fails after consent acceptance. Server SSOT has succeeded; cache syncs on app restart.
   ///
   /// In en, this message translates to:
-  /// **'We couldn\'t save all your preferences. You can continue and try again later.'**
+  /// **'Some settings couldn\'t be saved locally. Please restart the app to sync them.'**
   String get consentErrorSavingConsent;
 
   /// Snackbar text shown when consent logging is rate limited.
@@ -1474,12 +1480,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Forgot password?'**
   String get authResetTitle;
-
-  /// Subtitle on the Reset Password screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter your email and we\'ll send you a link to reset it.'**
-  String get authResetSubtitle;
 
   /// CTA button text on the Reset Password screen.
   ///
@@ -1595,46 +1595,16 @@ abstract class AppLocalizations {
   /// **'Very active'**
   String get fitnessLevelFit;
 
-  /// Title for consent intro screen (C1)
-  ///
-  /// In en, this message translates to:
-  /// **'Let\'s personalize LUVI for you'**
-  String get consentIntroTitle;
-
-  /// Body text for consent intro screen (C1)
-  ///
-  /// In en, this message translates to:
-  /// **'To personalize LUVI for you, we first need your okay.'**
-  String get consentIntroBody;
-
-  /// CTA button label for consent intro screen
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get consentIntroCtaLabel;
-
-  /// Semantics label for consent intro illustration
-  ///
-  /// In en, this message translates to:
-  /// **'Illustration: Hand holding a pen to sign'**
-  String get consentIntroIllustrationSemantic;
-
-  /// Semantics label for consent intro continue button
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to privacy consent'**
-  String get consentIntroCtaSemantic;
-
   /// Title for consent options screen (C2)
   ///
   /// In en, this message translates to:
-  /// **'Your Privacy Choices'**
+  /// **'You and LUVI'**
   String get consentOptionsTitle;
 
   /// Subtitle for consent options screen (C2)
   ///
   /// In en, this message translates to:
-  /// **'Securely stored, strictly protected. GDPR, EU hosting'**
+  /// **'Securely stored, strictly protected.\nGDPR, EU hosting'**
   String get consentOptionsSubtitle;
 
   /// Section header for required consents on C2
@@ -1726,36 +1696,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shield icon for data protection'**
   String get consentOptionsShieldSemantic;
-
-  /// Title for consent blocking screen (C3)
-  ///
-  /// In en, this message translates to:
-  /// **'Your consent makes LUVI possible'**
-  String get consentBlockingTitle;
-
-  /// Body text for consent blocking screen (C3)
-  ///
-  /// In en, this message translates to:
-  /// **'LUVI needs your cycle and health data to show you cycle-based content and recommendations. Without this processing, we cannot provide the service.'**
-  String get consentBlockingBody;
-
-  /// Back button label on consent blocking screen (C3)
-  ///
-  /// In en, this message translates to:
-  /// **'Back & Agree'**
-  String get consentBlockingCtaBack;
-
-  /// Semantics label for back button on consent blocking screen
-  ///
-  /// In en, this message translates to:
-  /// **'Back to consent'**
-  String get consentBlockingCtaSemantic;
-
-  /// Accessibility label for shield icon on consent blocking screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Shield icon for data protection'**
-  String get consentBlockingShieldSemantic;
 
   /// Personalized title for fitness level screen (O3)
   ///
@@ -2039,6 +1979,12 @@ abstract class AppLocalizations {
   /// **'{percent} percent'**
   String semanticProgressPercent(int percent);
 
+  /// Semantic label for button in loading state when no custom loading label provided
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, loading'**
+  String semanticButtonLoading(String label);
+
   /// Empathetic title shown when splash screen cannot determine onboarding state
   ///
   /// In en, this message translates to:
@@ -2168,7 +2114,7 @@ abstract class AppLocalizations {
   /// Subtitle for reset password screen
   ///
   /// In en, this message translates to:
-  /// **'Enter your email address and receive a link to reset.'**
+  /// **'Enter your email to receive a password reset link.'**
   String get authResetPasswordSubtitle;
 
   /// Short CTA text for reset password button

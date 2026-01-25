@@ -193,7 +193,7 @@ void main() {
       expect(state.retryCount, equals(0));
     });
 
-    test('consent outdated → SplashResolved(consentIntro)', () async {
+    test('consent outdated → SplashResolved(consentOptions)', () async {
       final container = createTestContainer(
         prefs: prefs,
         userAcceptedConsentVersion: null, // No consent accepted
@@ -211,7 +211,7 @@ void main() {
       expect(state, isA<SplashResolved>());
       expect(
         (state as SplashResolved).targetRoute,
-        equals(RoutePaths.consentIntro),
+        equals(RoutePaths.consentOptions),
       );
     });
 

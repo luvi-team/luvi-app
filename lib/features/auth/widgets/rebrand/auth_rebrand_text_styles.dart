@@ -17,7 +17,7 @@ class AuthRebrandTextStyles {
   static const TextStyle headline = TextStyle(
     fontFamily: FontFamilies.playfairDisplay,
     fontSize: AuthRebrandMetrics.headlineFontSize,
-    fontVariations: [FontVariation('wght', 600)],
+    fontVariations: [FontVariations.semiBold],
     height: AuthRebrandMetrics.headlineLineHeightRatio,
     color: DsColors.authRebrandTextPrimary,
   );
@@ -27,7 +27,7 @@ class AuthRebrandTextStyles {
   static const TextStyle _bodyBase = TextStyle(
     fontFamily: FontFamilies.figtree,
     fontSize: AuthRebrandMetrics.bodyFontSize,
-    fontVariations: [FontVariation('wght', 400)],
+    fontVariations: [FontVariations.regular],
     height: AuthRebrandMetrics.bodyLineHeightRatio,
     color: DsColors.authRebrandTextPrimary,
   );
@@ -42,4 +42,17 @@ class AuthRebrandTextStyles {
   /// Note: Intentionally separate from [subtitle] to allow independent
   /// style evolution for different UI contexts (dividers vs subtitles).
   static const TextStyle divider = _bodyBase;
+
+  /// Button text style for auth CTA buttons.
+  /// Figtree Bold 17px, line-height 24/17
+  /// Used in: AuthButtonBase, AuthPrimaryButton, AuthSecondaryButton
+  ///
+  /// Note: No color defined - color comes from ElevatedButton.styleFrom()
+  /// foregroundColor/disabledForegroundColor for flexibility.
+  static const TextStyle button = TextStyle(
+    fontFamily: FontFamilies.figtree,
+    fontSize: AuthRebrandMetrics.buttonFontSize,
+    fontVariations: [FontVariations.bold],
+    height: AuthRebrandMetrics.bodyLineHeightRatio,
+  );
 }

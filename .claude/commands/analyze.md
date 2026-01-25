@@ -19,7 +19,8 @@ scripts/flutter_codex.sh analyze
 ## Common Fixes:
 - `unused_import` → Remove import
 - `prefer_const_constructors` → Add `const`
-- `missing_required_param` → Add parameter
+- `missing_required_param` → Add argument (legacy)
+- `missing_required_argument` → Add argument
 - `avoid_print` → Use `log` facade
 - `prefer_final_fields` → Add `final`
 - `use_key_in_widget_constructors` → Add `super.key`

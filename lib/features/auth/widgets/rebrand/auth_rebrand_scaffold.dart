@@ -55,13 +55,19 @@ class AuthRebrandScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final topPadding = MediaQuery.of(context).padding.top;
+    final topPadding = MediaQuery.paddingOf(context).top;
 
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: DsColors.authRebrandBackground,
       resizeToAvoidBottomInset: false,
       body: Stack(
+        // ─── DUAL SAFEAREA PATTERN (intentional) ───
+        // Two separate SafeAreas are used here because:
+        // 1. Rainbow background must extend OUTSIDE SafeArea (Positioned.fill)
+        // 2. Back button needs INDEPENDENT positioning from content
+        // 3. Content needs its own SafeArea for keyboard-aware centering
+        // Consolidating would break visual alignment with Figma and clip the rainbow.
         children: [
           // Rainbow background (containerTop aligned with back button chevron)
           Positioned.fill(

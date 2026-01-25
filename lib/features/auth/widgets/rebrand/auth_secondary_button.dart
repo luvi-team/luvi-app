@@ -8,9 +8,8 @@ import 'auth_button_base.dart';
 /// Used for "Weiter mit E-Mail" button in bottom sheets.
 /// Figma: 329×50, radius 12, Figtree Bold 17px.
 ///
-/// Note: Text color is explicitly set in TextStyle (not via foregroundColor)
-/// to ensure consistent rendering with variable font. Disabled state uses
-/// background opacity (0.5) rather than text opacity for visual feedback.
+/// Note: Disabled state uses both background opacity (0.5) and text opacity
+/// (0.7) for visual feedback. Text color inherits from ElevatedButton.styleFrom.
 class AuthSecondaryButton extends StatelessWidget {
   const AuthSecondaryButton({
     super.key,
@@ -18,7 +17,9 @@ class AuthSecondaryButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.width,
+    this.height,
     this.loadingKey,
+    this.loadingSemanticLabel,
   });
 
   /// Button label text
@@ -33,8 +34,14 @@ class AuthSecondaryButton extends StatelessWidget {
   /// Optional fixed width (defaults to button width from metrics)
   final double? width;
 
+  /// Optional fixed height (defaults to button height from metrics)
+  final double? height;
+
   /// Optional key for the loading indicator (for testing)
   final Key? loadingKey;
+
+  /// Optional semantic label announced when loading (a11y)
+  final String? loadingSemanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +51,9 @@ class AuthSecondaryButton extends StatelessWidget {
       backgroundColor: DsColors.authRebrandCtaSecondary,
       isLoading: isLoading,
       width: width,
+      height: height,
       loadingKey: loadingKey,
+      loadingSemanticLabel: loadingSemanticLabel,
     );
   }
 }

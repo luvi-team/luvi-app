@@ -1,3 +1,22 @@
+import 'dart:ui';
+
+/// Centralized FontVariation constants for variable fonts.
+///
+/// Consolidates inline FontVariation('wght', xxx) usage across the codebase.
+abstract final class FontVariations {
+  /// Bold weight (700)
+  static const FontVariation bold = FontVariation('wght', 700);
+
+  /// SemiBold weight (600)
+  static const FontVariation semiBold = FontVariation('wght', 600);
+
+  /// Medium weight (500)
+  static const FontVariation medium = FontVariation('wght', 500);
+
+  /// Regular weight (400)
+  static const FontVariation regular = FontVariation('wght', 400);
+}
+
 /// Typography tokens used across onboarding.
 class TypographyTokens {
   const TypographyTokens._();
@@ -43,6 +62,15 @@ class TypographyTokens {
 
   /// Consent intro body: 29.25px line-height on 18px font (ratio: 1.625)
   static const double lineHeightRatio29_25on18 = 29.25 / 18;
+
+  /// Consent Options header: 34px line-height on 28px font (ratio: 1.214)
+  static const double lineHeightRatio34on28 = 34 / 28;
+
+  /// Consent Options body: 22px line-height on 14px font (ratio: 1.571)
+  static const double lineHeightRatio22on14 = 22 / 14;
+
+  /// Section header: 20px line-height on 14px font (ratio: 1.429)
+  static const double lineHeightRatio20on14 = 20 / 14;
 }
 
 /// Shared font family identifiers to centralize typography references.
@@ -113,6 +141,48 @@ class ConsentTypography {
 
   /// Consent intro body lineHeight ratio (Figma: 29.25/18 = 1.625)
   static const double introBodyLineHeight = TypographyTokens.lineHeightRatio29_25on18;
+
+  // ─── Consent Options Header (Playfair Display Bold 28px) ───
+  /// Consent options header fontSize (Figma: 28px)
+  static const double headerFontSize = TypographyTokens.size28;
+
+  /// Consent options header lineHeight ratio (Figma: 34/28 = 1.214)
+  static const double headerLineHeight = TypographyTokens.lineHeightRatio34on28;
+
+  // ─── Consent Options Subheader (Playfair Display SemiBold 17px) ───
+  /// Consent options subheader fontSize (Figma: 17px)
+  static const double subheaderFontSize = TypographyTokens.size17;
+
+  /// Consent options subheader lineHeight ratio (Figma: 24/17 = 1.412)
+  static const double subheaderLineHeight = TypographyTokens.lineHeightRatio24on17;
+
+  // ─── Consent Options Body Text (Figtree Regular 14px) ───
+  /// Consent options body fontSize (Figma: 14px)
+  static const double bodyFontSize = TypographyTokens.size14;
+
+  /// Consent options body lineHeight ratio (Figma: 22/14 = 1.571)
+  static const double bodyLineHeight = TypographyTokens.lineHeightRatio22on14;
+
+  // ─── Consent Options CTA Button (Figtree Bold 17px) ───
+  /// Consent options button fontSize (Figma: 17px)
+  static const double buttonFontSize = TypographyTokens.size17;
+
+  /// Consent options button lineHeight ratio (Figma: 24/17 = 1.412)
+  static const double buttonLineHeight = TypographyTokens.lineHeightRatio24on17;
+
+  // ─── Consent Options Section Header (Figtree Bold 14px) ───
+  /// Section header font size (14px)
+  static const double sectionHeaderFontSize = TypographyTokens.size14;
+
+  /// Section header line height ratio (20px / 14px = 1.429)
+  static const double sectionHeaderLineHeight = TypographyTokens.lineHeightRatio20on14;
+
+  // ─── Consent Options Footnote (Figtree Regular 12px) ───
+  /// Footnote font size (12px) - used for revoke instructions
+  static const double footnoteFontSize = TypographyTokens.size12;
+
+  /// Footnote line height ratio (16px / 12px = 1.333, standard for 12px text)
+  static const double footnoteLineHeight = TypographyTokens.lineHeightRatio16on12;
 }
 
 /// Welcome screen typography constants (Figma Welcome Rebrand).

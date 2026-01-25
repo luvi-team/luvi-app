@@ -78,8 +78,12 @@ final class AuthRebrandMetrics {
   /// Index mapping: [0]=teal, [1]=pink, [2]=orange, [3]=beige
   static const List<double> rainbowRingWidths = <double>[329.0, 249.0, 167.0, 87.0];
 
-  /// Calculated stripe widths.
-  /// Index mapping: [0]=teal(40), [1]=pink(41), [2]=orange(40), [3]=beige(87)
+  /// Calculated stripe widths (visual band, not full arc).
+  /// Each stripe width = half the difference between adjacent ring widths:
+  ///   - stripe[0] (teal)   = (329-249)/2 = 40
+  ///   - stripe[1] (pink)   = (249-167)/2 = 41
+  ///   - stripe[2] (orange) = (167-87)/2  = 40
+  ///   - stripe[3] (beige)  = 87 (innermost, full width - no inner ring)
   static const List<double> rainbowStripeWidths = <double>[40.0, 41.0, 40.0, 87.0];
 
   // ─── Rainbow Ring Offsets (SSOT: auth_email_form.ring_offsets) ───
@@ -100,7 +104,7 @@ final class AuthRebrandMetrics {
 
   // ─── Back Button ───
   static const double backButtonLeft = 10.0;
-  static const double backButtonTop = 20.0; // Näher an Status Bar (Figma-Alignment)
+  static const double backButtonTop = 20.0; // Closer to status bar (Figma alignment)
   // Note: backButtonTouchTarget removed - use Sizes.touchTargetMin (SSOT)
 
   // ─── Rainbow Container Alignment ───
@@ -132,10 +136,18 @@ final class AuthRebrandMetrics {
   static const double backButtonIconSize = 24.0;
 
   // ─── Content Spacing ───
-  static const double contentTopGap = 100.0; // Gap nach Back-Button zu Content
-  static const double contentBottomGap = 60.0; // Gap vor CTA-Button
-  static const double sheetBottomGap = 40.0; // Gap für Bottom Stripes in Sheets
-  static const double entryLogoGap = 80.0; // Gap zwischen Logo und CTA auf Entry
+  static const double contentTopGap = 100.0; // Gap after back button to content
+  static const double contentBottomGap = 60.0; // Gap before CTA button
+  static const double sheetBottomGap = 40.0; // Gap for bottom stripes in sheets
+  static const double entryLogoGap = 80.0; // Gap between logo and CTA on entry
+
+  // ─── Minimum Sheet Height ───
+  /// Minimum safe height for auth bottom sheet on tiny devices.
+  ///
+  /// Calculated: dragIndicatorTop(17) + dragIndicatorHeight(5) + gap(16)
+  ///           + cardPadding(16) + headline(24) + gap(16) + 3×button(50+8)
+  ///           + bottomSafeArea(~34) ≈ 302, rounded up with margin → 400
+  static const double minSheetHeight = 400.0;
 
   // ─── Keyboard Handling ───
   /// Factor applied to keyboard height for padding calculation.

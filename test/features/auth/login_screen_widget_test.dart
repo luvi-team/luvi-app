@@ -73,9 +73,11 @@ void main() {
     await tester.pumpAndSettle();
 
     // Expect error message from invalid credentials handling
-    // LoginScreen shows l10n.authInvalidCredentials when emailError is set
     final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
-    // SSOT P0.7: Both fields show error on invalid credentials -> findsNWidgets(2)
+    // SSOT P0.7: On invalid credentials, both email AND password fields
+    // display the same l10n.authInvalidCredentials error message, hence
+    // findsNWidgets(2). This matches Auth Rebrand v3 design which highlights
+    // both fields red without indicating which credential was wrong.
     expect(find.text(l10n.authInvalidCredentials), findsNWidgets(2));
 
     // Auth Rebrand v3: Button stays enabled after errors (allows retry)

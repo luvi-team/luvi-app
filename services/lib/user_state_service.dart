@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +12,7 @@ const _keyHasSeenWelcome = 'has_seen_welcome';
 const _keyHasCompletedOnboarding = 'has_completed_onboarding';
 const _keyFitnessLevel = 'onboarding_fitness_level';
 const _keyAcceptedConsentVersion = 'accepted_consent_version';
+const _keyAcceptedConsentScopesJson = 'accepted_consent_scopes_json';
 
 enum FitnessLevel {
   beginner,
@@ -71,6 +75,7 @@ class UserStateService {
     _keyHasCompletedOnboarding,
     _keyFitnessLevel,
     _keyAcceptedConsentVersion,
+    _keyAcceptedConsentScopesJson,
   ];
 
   String? _scopedKey(String baseKey) {
@@ -164,6 +169,79 @@ class UserStateService {
     return key == null ? null : prefs.getInt(key);
   }
 
+  /// Returns the accepted consent scopes, or null if not yet persisted.
+  ///
+  /// Scopes are stored as a JSON array of scope name strings
+  /// (e.g., ["health_processing", "terms", "analytics"]).
+  /// Used by [analyticsConsentGateProvider] to determine analytics opt-in status.
+  Set<String>? get acceptedConsentScopesOrNull {
+    final key = _scopedKey(_keyAcceptedConsentScopesJson);
+    if (key == null) return null;
+    final json = prefs.getString(key);
+    if (json == null) return null;
+    try {
+      final decoded = jsonDecode(json);
+      if (decoded is! List) {
+        log.d(
+          'acceptedConsentScopesOrNull: decoded value is not List (type=${decoded.runtimeType})',
+          tag: 'UserStateService',
+        );
+        return null;
+      }
+      // Single-pass: collect strings and count non-strings
+      final result = <String>{};
+      var nonStringCount = 0;
+      for (final element in decoded) {
+        if (element is String) {
+          result.add(element);
+        } else {
+          nonStringCount++;
+        }
+      }
+
+      // CodeRabbit fix: Corrupted JSON should invalidate ALL consent for audit integrity.
+      // Partial recovery could silently lose consent the user gave.
+      // OBSERVABILITY: Structured log event scrapeable by log aggregation tools.
+      // Key: "consent_cache_corruption_detected" with key=value pairs.
+      // TODO(observability-m4): Wire Sentry/PostHog counter for consent_cache_corruption.
+      // Implementation: Use Telemetry.maybeCaptureException() from app layer.
+      // Since services/ cannot import app code, options:
+      //   1. Callback injection pattern (setConsentCorruptionCallback)
+      //   2. Event bus / stream that app layer listens to
+      //   3. Move this detection logic to app layer
+      // Payload: {event: 'consent_cache_corruption', non_string_count, action, impact}
+      // See: docs/privacy/reviews/feat-m3-consent-miwf.md
+      if (nonStringCount > 0) {
+        log.e(
+          'consent_cache_corruption_detected: '
+          'event=consent_corruption, '
+          'non_string_count=$nonStringCount, '
+          'action=invalidate_all_scopes, '
+          'impact=analytics_gate_stale_until_restart',
+          tag: 'UserStateService',
+        );
+        return null;
+      }
+      return result;
+    } catch (e) {
+      // Corrupted/malformed JSON - fail-safe return null
+      log.d(
+        'acceptedConsentScopesOrNull: malformed JSON (${e.runtimeType})',
+        tag: 'UserStateService',
+      );
+      return null;
+    }
+  }
+
+  /// Test-only accessor for the consent scopes storage key.
+  ///
+  /// Returns the actual SharedPreferences key used for accepted consent scopes,
+  /// allowing tests to corrupt/manipulate stored JSON without coupling to
+  /// internal key naming conventions.
+  @visibleForTesting
+  String? get acceptedConsentScopesKeyForTesting =>
+      _scopedKey(_keyAcceptedConsentScopesJson);
+
   Future<void> setHasCompletedOnboarding(bool value) async {
     final key = _scopedKey(_keyHasCompletedOnboarding);
     if (key == null) {
@@ -201,6 +279,24 @@ class UserStateService {
     final success = await prefs.setInt(key, version);
     if (!success) {
       throw StateError('Failed to persist accepted consent version');
+    }
+  }
+
+  /// Persists the accepted consent scopes as a JSON array.
+  ///
+  /// Scopes are stored by their enum name (e.g., "health_processing", "terms", "analytics").
+  /// Used to derive analytics opt-in status via [analyticsConsentGateProvider].
+  /// The list is sorted alphabetically for deterministic JSON output.
+  Future<void> setAcceptedConsentScopes(Set<String> scopes) async {
+    final key = _scopedKey(_keyAcceptedConsentScopesJson);
+    if (key == null) {
+      throw StateError('UserStateService is not bound to a user');
+    }
+    final sortedList = scopes.toList()..sort();
+    final json = jsonEncode(sortedList);
+    final success = await prefs.setString(key, json);
+    if (!success) {
+      throw StateError('Failed to persist accepted consent scopes');
     }
   }
 
@@ -295,6 +391,7 @@ class UserStateService {
     await removeKey(_keyHasCompletedOnboarding);
     await removeKey(_keyFitnessLevel);
     await removeKey(_keyAcceptedConsentVersion);
+    await removeKey(_keyAcceptedConsentScopesJson);
 
     // Also clear scoped keys for the currently bound user (if any).
     final uid = _boundUserId;
@@ -303,6 +400,7 @@ class UserStateService {
       await removeKey(_scopedKeyFor(uid, _keyHasCompletedOnboarding));
       await removeKey(_scopedKeyFor(uid, _keyFitnessLevel));
       await removeKey(_scopedKeyFor(uid, _keyAcceptedConsentVersion));
+      await removeKey(_scopedKeyFor(uid, _keyAcceptedConsentScopesJson));
     }
 
     if (failures.isNotEmpty) {

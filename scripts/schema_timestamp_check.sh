@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Validates that docs/bmad/global.md is updated when migration files change.
+# Run via pre-commit hook.
+set -euo pipefail
+
+BMAD_FILE="docs/bmad/global.md"
+
+# Check if any migration files are staged
+if ! git diff --cached --name-only | grep -q "^supabase/migrations/"; then
+  echo "OK: No migration files staged, skipping BMAD check"
+  exit 0
+fi
+
+# Migrations are staged - require BMAD file to also be staged
+if ! git diff --cached --name-only | grep -Fxq "$BMAD_FILE"; then
+  echo "ERROR: Migration files changed but $BMAD_FILE not updated."
+  echo ""
+  echo "ACTION: Update 'Last verified' timestamp in $BMAD_FILE"
+  echo "        (search for 'Last verified' in the Appendix section)"
+  echo "        and stage the file with: git add $BMAD_FILE"
+  exit 1
+fi
+
+echo "OK: $BMAD_FILE is staged alongside migrations"

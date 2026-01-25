@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
@@ -28,16 +29,33 @@ void main() {
 
     Future<void> pumpCreatePasswordScreen(WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp.router(
-          routerConfig: router,
-          theme: AppTheme.buildAppTheme(),
-          locale: const Locale('de'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+        ProviderScope(
+          // Validation: Provide explicit overrides container for isolation.
+          // Currently empty as screen uses direct Supabase instance (legacy),
+          // but ensures test is ready for Riverpod migration/mocking.
+          overrides: const [],
+          child: MaterialApp.router(
+            routerConfig: router,
+            theme: AppTheme.buildAppTheme(),
+            locale: const Locale('de'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
         ),
       );
       await tester.pumpAndSettle();
+      // Guard removed - see dedicated 'renders AuthContentCard' test below
     }
+
+    testWidgets('renders AuthContentCard', (tester) async {
+      await pumpCreatePasswordScreen(tester);
+
+      expect(
+        find.byType(AuthContentCard),
+        findsOneWidget,
+        reason: 'AuthContentCard must be rendered on CreateNewPasswordScreen',
+      );
+    });
 
     testWidgets('uses Center widget for card positioning (Figma-alignment)',
         (tester) async {

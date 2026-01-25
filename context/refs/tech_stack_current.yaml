@@ -1,0 +1,108 @@
+meta:
+  version: "2.3"
+  last_updated: "2026-01-25"
+  acceptance_version: "1.1"
+
+flutter:
+  channel: stable
+  version_ci: "3.35.5"
+  dart_min_ci: "3.9.2"  # Flutter 3.35.5 bundles Dart 3.9.2
+  dart_min_pubspec: "3.9.0"  # pubspec.yaml allows >=3.9.0
+
+packages:
+  flutter_riverpod: "^3.0.3"      # Actual pubspec version
+  riverpod_annotation: "^3.0.3"   # Actual pubspec version
+  riverpod_generator: "^3.0.3"    # Actual pubspec version (dev)
+  go_router: "^16.2.1"            # Actual pubspec version
+  supabase_flutter: "^2.12.0"     # Updated 2026-01-25 (was ^2.8.0)
+  flutter_svg: "^2.2.3"           # Updated 2026-01-25 (was ^2.2.1)
+  intl: "^0.20.2"
+  url_launcher: "^6.3.2"          # Updated 2026-01-25 (was ^6.3.0)
+  cupertino_icons: "^1.0.8"
+
+# Deferred major upgrades (require dedicated migration sprint):
+# - riverpod_annotation: 4.0.1 (MAJOR - breaking API changes)
+# - riverpod_generator: 4.0.2 (MAJOR - new codegen patterns)
+# - go_router: 17.0.1 (MAJOR - navigation API changes)
+# See: pubspec.yaml lines 79-82 for build_runner compatibility constraints
+
+dev_packages:
+  flutter_lints: "^6.0.0"
+  build_runner: "^2.4.13"
+  mocktail: "^1.0.4"
+
+ci:
+  workflows:
+    - analyze-test
+    - privacy-gate
+    - pr-change-report
+  flutter_action:
+    uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e  # v2.21.0
+
+backend:
+  supabase:
+    region: eu
+    rls: owner_based
+  edge_functions: planned
+
+ai_layer:
+  status: planned
+  router: "Node (Vercel AI SDK)"
+  providers: [openai_eu_project, bedrock_eu, vertex_ai_eu]
+  caching: upstash_redis
+  observability: langfuse  # LLM tracing, costs, latency, evals
+  edge_region: fra1  # Vercel Edge region (EU)
+
+analytics_push_crash:
+  analytics:
+    provider: posthog_eu
+    status: planned
+  push:
+    provider: onesignal_eu
+    status: planned
+  crash:
+    provider: sentry
+    status: planned
+  cdn_security:
+    provider: cloudflare
+    status: planned
+
+payments:
+  provider: revenuecat  # IAP, subscriptions, entitlements
+  status: planned
+
+communications:
+  newsletter: brevo  # Double-Opt-In, transactional emails
+  status: planned
+
+health_wearables:
+  plugin: "flutter_health"  # planned
+
+dev_tooling:
+  ide: cursor  # Repo navigation, minimal editing
+  knowledge_ssot: archon_mcp  # Dossiers, policies, RAG via MCP
+  ai_agents:
+    gemini: architect-orchestrator  # System-wide analysis, planning, governance
+    codex_cli: api-backend, db-admin, qa-dsgvo  # Backend, DB, Privacy, PR review
+    claude_code: ui-frontend, dataviz  # UI screens, widgets, charts
+  review: greptile  # GitHub Required Check
+  local_preflight: coderabbit  # Optional, no GitHub check
+
+offline_security:
+  local_db: sqlcipher  # Encrypted local DB for crash protection
+  key_storage: flutter_secure_storage
+  crash_resume: is_session_active  # Resume flag after app crash
+
+cost_guidelines:
+  llm_call_avg: "0.6ct"  # Without cache
+  llm_call_cached: "0.2ct"  # With Redis cache
+
+compliance:
+  privacy_gate: true
+  consent_logging: true
+  eu_regions_only: true
+
+docs:
+  # tech_stack is this file: context/refs/tech_stack_current.yaml
+  app_context_doc: docs/product/app-context.md
+  roadmap: docs/product/roadmap.md

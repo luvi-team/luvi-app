@@ -30,6 +30,8 @@ class PasswordRecoveryNavigationDriver {
   StreamSubscription<supa.AuthChangeEvent>? _subscription;
   Timer? _resetTimer;
 
+  /// Debounce duration to suppress duplicate rapid events.
+  /// Supabase may emit multiple passwordRecovery events for a single link click.
   static const _debounceResetDuration = Duration(milliseconds: 500);
 
   bool _hasNavigated = false;
@@ -40,8 +42,8 @@ class PasswordRecoveryNavigationDriver {
       _hasNavigated = true;
       _onNavigateToCreatePassword();
 
-      // Reset flag after debounce to allow subsequent recovery events
-      // (e.g., user requests a new reset link within the same session).
+      // Reset flag after debounce to allow NEW recovery attempts in the same session.
+      // This is for subsequent password reset links, NOT for re-processing the same link.
       // Using Timer instead of Future.delayed to support cancellation on dispose.
       _resetTimer?.cancel();
       _resetTimer = Timer(_debounceResetDuration, () {

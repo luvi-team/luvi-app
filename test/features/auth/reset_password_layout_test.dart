@@ -16,6 +16,9 @@ void main() {
     late GoRouter router;
 
     setUp(() {
+      // Requires /auth/reset route in testAppRoutes.
+      // If this test fails with "no routes for location", verify that
+      // testAppRoutes includes ResetPasswordScreen.routeName ('/auth/reset').
       router = GoRouter(
         routes: testAppRoutes,
         initialLocation: '/auth/reset',

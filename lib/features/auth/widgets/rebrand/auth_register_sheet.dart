@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'auth_oauth_sheet_content.dart';
 
@@ -29,10 +28,12 @@ class AuthRegisterSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    assert(l10n != null, 'AppLocalizations not found in context');
     if (l10n == null) {
-      log.e('Unexpected: AppLocalizations missing in AuthRegisterSheet', tag: 'auth');
-      return const SizedBox.shrink();
+      // Throw to surface in crash reporting - this is a configuration bug.
+      throw FlutterError(
+        'AppLocalizations not found in context for AuthRegisterSheet. '
+        'Ensure MaterialApp has localizationsDelegates configured.',
+      );
     }
 
     return AuthOAuthSheetContent(

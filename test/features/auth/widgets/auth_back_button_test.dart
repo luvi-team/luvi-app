@@ -46,9 +46,16 @@ void main() {
       // Verify exact L10n value for semantics label
       final context = tester.element(find.byType(AuthBackButton));
       final l10n = AppLocalizations.of(context)!;
+      final label = l10n.authBackSemantic;
 
-      final semantics = tester.getSemantics(find.byType(AuthBackButton));
-      expect(semantics.label, equals(l10n.authBackSemantic));
+      // IconButton uses Tooltip which provides the semantic label
+      expect(find.byTooltip(label), findsOneWidget);
+
+      // Verify Semantics widget has the localized label for screen readers
+      final semanticsFinder = find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.label == label,
+      );
+      expect(semanticsFinder, findsOneWidget);
     });
 
     testWidgets('uses custom semanticsLabel when provided', (tester) async {
@@ -67,8 +74,13 @@ void main() {
         ),
       );
 
-      final semantics = tester.getSemantics(find.byType(AuthBackButton));
-      expect(semantics.label, customLabel);
+      expect(find.byTooltip(customLabel), findsOneWidget);
+
+      // Verify Semantics widget has the custom label for screen readers
+      final semanticsFinder = find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.label == customLabel,
+      );
+      expect(semanticsFinder, findsOneWidget);
     });
 
     testWidgets('has correct touch target size (44dp)', (tester) async {

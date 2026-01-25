@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:luvi_app/core/analytics/analytics_recorder.dart';
 import 'package:luvi_app/core/analytics/telemetry.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
@@ -33,8 +34,8 @@ import 'core/privacy/consent_config.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Drift-Check: Verify ConsentConfig version constants are in sync (debug only)
-  ConsentConfig.assertVersionsMatch();
+  // Validate ConsentConfig version format (e.g., "1.0" not malformed)
+  ConsentConfig.assertVersionFormatValid();
   // Portrait-only as default app orientation during development and MVP.
   // TODO(video-orientation): Register fullscreen routes in [RouteOrientationController.routeOverrides] when landscape is required.
   final orientationController = RouteOrientationController(
@@ -88,6 +89,12 @@ void main() async {
               ? '.env.production'
               : '.env.development';
         }),
+        // Analytics Consent Gating: Override opt-out provider to respect user consent.
+        // Events are only sent when the user has explicitly opted into analytics.
+        // Fail-safe: no consent = no analytics (Privacy-by-Default).
+        analyticsOptOutProvider.overrideWith(
+          (ref) => ref.watch(analyticsConsentOptOutProvider),
+        ),
       ],
       child: MyAppWrapper(orientationController: orientationController),
     ),

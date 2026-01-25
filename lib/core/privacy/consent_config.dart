@@ -1,31 +1,50 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:luvi_app/core/privacy/consent_types.dart';
+import 'package:luvi_app/core/privacy/version_parser.dart';
 
 class ConsentConfig {
   const ConsentConfig._();
 
   /// Consent policy version string for APIs/display.
-  /// ⚠️ SYNC: Must match currentVersionInt (format: "v{major}.{minor}").
+  /// Single source of truth - [currentVersionInt] is derived from this.
   static const String currentVersion = 'v1.0';
 
-  /// Numeric version for gate-check comparisons.
-  /// ⚠️ SYNC: Must match major version in currentVersion.
-  static const int currentVersionInt = 1;
+  /// Lazily-computed cache for [currentVersionInt].
+  ///
+  /// Invariant: [currentVersion] is compile-time const; this cache is only
+  /// invalidated via code updates (not hot reload). Use [resetCacheForTesting]
+  /// in tests for isolation.
+  static int? _cachedCurrentVersionInt;
 
-  /// Validates version constants are synchronized.
-  /// Called at app startup to catch drift early.
-  /// Throws [StateError] in all builds (debug + release) if versions don't match.
-  static void assertVersionsMatch() {
-    // Strict validation: v{major} or v{major}.{minor}
-    // Anchored regex prevents false positives (e.g., v10.0 matching v1)
-    final versionPattern =
-        RegExp(r'^v' + currentVersionInt.toString() + r'(\.\d+)?$');
-    if (!versionPattern.hasMatch(currentVersion)) {
+  /// Numeric major version derived from [currentVersion].
+  /// Throws [StateError] if currentVersion format is invalid.
+  static int get currentVersionInt {
+    if (_cachedCurrentVersionInt != null) {
+      return _cachedCurrentVersionInt!;
+    }
+    try {
+      _cachedCurrentVersionInt = VersionParser.parseMajorVersion(currentVersion);
+      return _cachedCurrentVersionInt!;
+    } catch (e) {
       throw StateError(
-        'ConsentConfig version drift: currentVersion="$currentVersion" '
-        'does not match currentVersionInt=$currentVersionInt. '
-        'Expected format: v$currentVersionInt or v$currentVersionInt.x',
+        'ConsentConfig.currentVersion "$currentVersion" is invalid: ${e.toString()}',
       );
     }
+  }
+
+  /// Resets cached version for test isolation.
+  /// Call in test tearDown to ensure clean state between tests.
+  @visibleForTesting
+  static void resetCacheForTesting() {
+    _cachedCurrentVersionInt = null;
+  }
+
+  /// Validates version format at startup.
+  /// Called by app initialization to catch format errors early.
+  /// Throws [StateError] in all builds (debug + release) if format is invalid.
+  static void assertVersionFormatValid() {
+    // ignore: unnecessary_statements
+    currentVersionInt; // Access triggers validation; result intentionally discarded
   }
 
   // For APIs/analytics that expect string names.

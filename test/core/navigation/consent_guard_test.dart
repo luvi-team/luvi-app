@@ -14,7 +14,7 @@ import '../../support/test_config.dart';
 /// Unit tests for consent-related redirect guards.
 ///
 /// Tests cover:
-/// - homeGuardRedirectWithConsent: Redirects to ConsentIntro when consent missing/outdated
+/// - homeGuardRedirectWithConsent: Redirects to ConsentOptions when consent missing/outdated
 /// - homeGuardRedirectWithConsent: Returns null (allow) when consent is current
 /// - homeGuardRedirectWithConsent: Returns Splash fail-safe when state unknown
 void main() {
@@ -22,7 +22,7 @@ void main() {
 
   group('homeGuardRedirectWithConsent', () {
     group('consent version check', () {
-      test('redirects to ConsentIntro when acceptedConsentVersion is null', () {
+      test('redirects to ConsentOptions when acceptedConsentVersion is null', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: true,
@@ -32,12 +32,12 @@ void main() {
 
         expect(
           result,
-          equals(RoutePaths.consentIntro),
-          reason: 'Should redirect to ConsentIntro when no consent accepted',
+          equals(RoutePaths.consentOptions),
+          reason: 'Should redirect to ConsentOptions when no consent accepted',
         );
       });
 
-      test('redirects to ConsentIntro when consent version is outdated', () {
+      test('redirects to ConsentOptions when consent version is outdated', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: true,
@@ -47,8 +47,8 @@ void main() {
 
         expect(
           result,
-          equals(RoutePaths.consentIntro),
-          reason: 'Should redirect to ConsentIntro when consent is outdated',
+          equals(RoutePaths.consentOptions),
+          reason: 'Should redirect to ConsentOptions when consent is outdated',
         );
       });
 
@@ -110,7 +110,7 @@ void main() {
         expect(
           result,
           equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'),
-          reason: 'State unknown should redirect to Splash, not ConsentIntro',
+          reason: 'State unknown should redirect to Splash, not ConsentOptions',
         );
       });
     });
@@ -141,7 +141,7 @@ void main() {
 
         expect(
           result,
-          equals(RoutePaths.consentIntro),
+          equals(RoutePaths.consentOptions),
           reason: 'Consent check should happen before onboarding check',
         );
       });
@@ -168,7 +168,7 @@ void main() {
             acceptedConsentVersion: null,
             currentConsentVersion: 1,
           ),
-          equals(RoutePaths.consentIntro),
+          equals(RoutePaths.consentOptions),
         );
 
         // 3. Onboarding incomplete (consent valid)

@@ -19,7 +19,7 @@ void main() {
 
   group('Post-Auth Guard Bypass Prevention', () {
     group('consent gate', () {
-      test('deep link without consent redirects to consent intro', () {
+      test('deep link without consent redirects to consent options', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: true,
@@ -29,12 +29,12 @@ void main() {
 
         expect(
           result,
-          equals(RoutePaths.consentIntro),
-          reason: 'Missing consent should redirect to consent intro',
+          equals(RoutePaths.consentOptions),
+          reason: 'Missing consent should redirect to consent options',
         );
       });
 
-      test('deep link with outdated consent redirects to consent intro', () {
+      test('deep link with outdated consent redirects to consent options', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: true,
@@ -44,8 +44,8 @@ void main() {
 
         expect(
           result,
-          equals(RoutePaths.consentIntro),
-          reason: 'Outdated consent should redirect to consent intro',
+          equals(RoutePaths.consentOptions),
+          reason: 'Outdated consent should redirect to consent options',
         );
       });
     });
@@ -113,7 +113,7 @@ void main() {
 
         expect(
           result,
-          equals(RoutePaths.consentIntro),
+          equals(RoutePaths.consentOptions),
           reason: 'Consent should be checked before onboarding',
         );
       });

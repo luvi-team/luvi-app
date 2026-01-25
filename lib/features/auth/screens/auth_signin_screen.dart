@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:luvi_app/core/config/app_links.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
+import 'package:luvi_app/core/design_tokens/opacity.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
@@ -48,7 +49,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     final size = MediaQuery.sizeOf(context);
 
     // Calculate scale factor for responsive positioning
-    // Design baseline: 402×874 (AuthRebrandMetrics SSOT from PNG exports)
+    // Design baseline: AuthRebrandMetrics.designWidth × AuthRebrandMetrics.designHeight (402×874)
     final scaleY = size.height / AuthRebrandMetrics.designHeight;
 
     return Scaffold(
@@ -149,7 +150,9 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
   Widget _buildLoadingOverlay() {
     return Positioned.fill(
       child: Container(
-        color: DsColors.authRebrandBackground.withValues(alpha: 0.7),
+        color: DsColors.authRebrandBackground.withValues(
+          alpha: OpacityTokens.loadingOverlay,
+        ),
         child: const Center(
           child: CircularProgressIndicator(
             color: DsColors.authRebrandCtaPrimary,
@@ -190,7 +193,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
             style: const TextStyle(
               fontFamily: FontFamilies.figtree,
               fontSize: AuthRebrandMetrics.linkFontSize,
-              fontVariations: [FontVariation('wght', 600)], // SemiBold for variable font
+              fontVariations: [FontVariations.semiBold], // SemiBold for variable font
               height: AuthRebrandMetrics.bodyLineHeightRatio, // 24/17
               decoration: TextDecoration.underline,
             ),

@@ -18,7 +18,10 @@ class AuthRebrandOutlineButton extends StatelessWidget {
     this.icon,
     this.svgIconPath,
     this.width,
-  });
+  }) : assert(
+          icon == null || svgIconPath == null,
+          'Cannot provide both icon and svgIconPath. Use one or the other.',
+        );
 
   /// Factory constructor for Apple Sign In button
   factory AuthRebrandOutlineButton.apple({

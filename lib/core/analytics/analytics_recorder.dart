@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:luvi_app/core/privacy/consent_types.dart';
 import 'package:luvi_app/core/privacy/pii_keys.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
+import 'package:luvi_services/user_state_service.dart';
 
 /// Lightweight analytics recorder contract so UI flows can emit structured
 /// events while allowing tests to override the implementation.
@@ -33,6 +35,71 @@ final analyticsBackendSinkProvider = Provider<AnalyticsEventSink?>((_) => null);
 /// - Default: `false` (analytics enabled).
 final analyticsOptOutProvider = Provider<bool>((_) => false);
 
+/// Derives analytics consent from persisted consent scopes.
+///
+/// Returns `true` if the user has explicitly opted into analytics consent.
+/// Fail-safe: returns `false` (analytics disabled) if:
+/// - UserStateService is not yet loaded (AsyncValue.loading)
+/// - UserStateService failed to load (AsyncValue.error)
+/// - No consent scopes are persisted (null)
+/// - Analytics scope is not present in persisted scopes
+///
+/// This provider is used by [analyticsConsentOptOutProvider] to derive the
+/// opt-out state for [analyticsRecorderProvider].
+final analyticsConsentGateProvider = Provider<bool>((ref) {
+  final userStateAsync = ref.watch(userStateServiceProvider);
+  return userStateAsync.maybeWhen(
+    data: (userState) {
+      final scopes = userState.acceptedConsentScopesOrNull;
+      // Fail-safe: no scopes = no consent = no analytics
+      if (scopes == null) return false;
+      // Check for analytics scope using canonical enum name
+      return scopes.contains(ConsentScope.analytics.name);
+    },
+    // Fail-safe: loading/error states = no analytics
+    orElse: () => false,
+  );
+});
+
+/// Consent-based analytics opt-out provider.
+///
+/// Returns `true` when analytics should be DISABLED (user has NOT consented).
+/// Returns `false` when analytics should be ENABLED (user has consented).
+///
+/// ## Usage
+///
+/// Override [analyticsOptOutProvider] in your root `ProviderScope` to enable
+/// consent-gated analytics. This wiring ensures privacy-by-default:
+///
+/// ```dart
+/// ProviderScope(
+///   overrides: [
+///     analyticsOptOutProvider.overrideWith(
+///       (ref) => ref.watch(analyticsConsentOptOutProvider),
+///     ),
+///   ],
+///   child: MyApp(),
+/// )
+/// ```
+///
+/// ## Behavior
+///
+/// - Analytics are disabled by default (privacy-by-default)
+/// - Analytics are only enabled after explicit user consent
+/// - Consent changes are reflected immediately via Riverpod reactivity
+///
+/// ## Related Providers
+///
+/// - [analyticsConsentGateProvider]: Underlying consent check logic
+/// - [analyticsOptOutProvider]: Global opt-out provider being overridden
+/// - [analyticsRecorderProvider]: Consumes opt-out state to enable/disable recording
+final analyticsConsentOptOutProvider = Provider<bool>((ref) {
+  final isAnalyticsConsented = ref.watch(analyticsConsentGateProvider);
+  // opt-out = true means analytics DISABLED
+  // opt-out = false means analytics ENABLED
+  return !isAnalyticsConsented;
+});
+
 /// Returns true when [properties] contains keys that look like PII indicators
 /// (e.g., email, phone, name, address).
 ///
@@ -41,14 +108,14 @@ final analyticsOptOutProvider = Provider<bool>((_) => false);
 /// - Checks against an explicit suspicious-keys set (exact matches) and a
 ///   conservative whole-word regex (word boundaries by start/end/underscore/hyphen/space).
 /// - Applies an allowlist of safe keys to avoid false positives (e.g.,
-///   `username`, `theme`, `customer_email_count`).
+///   `theme`, `customer_email_count`).
 bool _containsSuspiciousPII(Map<String, Object?> properties) {
   if (properties.isEmpty) return false;
 
   // Safe keys that may otherwise falsely match (e.g., contain "email").
+  // NOTE: 'username' was removed - it's now classified as PII (2026-01).
   const safeAllowlist = <String>{
     'theme',
-    'username',
     'customer_email_count',
   };
 

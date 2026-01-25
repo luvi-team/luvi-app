@@ -6,6 +6,7 @@ set -euo pipefail
 # Usage:
 #   scripts/db_push_and_smoke.sh .env.staging.local
 #   scripts/db_push_and_smoke.sh .env.production.local
+#   scripts/db_push_and_smoke.sh .env.staging.local --deploy-log-consent
 #
 # Required env vars (from env file):
 #   SUPABASE_PROJECT_REF
@@ -17,6 +18,10 @@ set -euo pipefail
 # - Uses direct Postgres connection for smoke tests (psql) afterwards.
 
 ENV_FILE="${1:-.env.local}"
+DEPLOY_LOG_CONSENT=false
+if [[ "${2:-}" == "--deploy-log-consent" ]]; then
+  DEPLOY_LOG_CONSENT=true
+fi
 
 if [[ ! -f "${ENV_FILE}" ]]; then
   echo "[db-push-smoke] ERROR: env file not found: ${ENV_FILE}" >&2
@@ -64,6 +69,17 @@ LINKED=true
 echo "[db-push-smoke] applying migrations (linked)"
 supabase db push --linked
 
+if [[ "$DEPLOY_LOG_CONSENT" == "true" ]]; then
+  # Consent is an atomic change-set (DB + Edge). Deploying the Edge function here
+  # helps prevent DB↔Edge drift (e.g. RPC signature mismatches).
+  if [[ ! -f "supabase/functions/log_consent/consent_scopes.json" ]]; then
+    echo "[db-push-smoke] ERROR: Missing supabase/functions/log_consent/consent_scopes.json" >&2
+    exit 1
+  fi
+  echo "[db-push-smoke] deploying Edge Function log_consent"
+  supabase functions deploy log_consent --project-ref "${SUPABASE_PROJECT_REF}" --use-api --yes
+fi
+
 export PGCONNECT_TIMEOUT=10
 DB_HOST="db.${SUPABASE_PROJECT_REF}.supabase.co"
 
@@ -94,4 +110,3 @@ psql "${DB_URL}" -v ON_ERROR_STOP=1 -P pager=off -f "${RLS_SMOKE}"
 psql "${DB_URL}" -v ON_ERROR_STOP=1 -P pager=off -f "${RLS_SMOKE_NEG}"
 
 echo "[db-push-smoke] OK"
-

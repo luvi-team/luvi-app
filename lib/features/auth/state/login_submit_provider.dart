@@ -100,14 +100,41 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
         'auth_error_missing_code: message=${sanitizeError(error) ?? "[redacted]"}',
         tag: 'login_submit',
       );
+
+      // Fallback: no structured error.code available.
+      // Note: AuthException.statusCode is String?, not int.
+      // Keep this minimal to avoid fragile message pattern matching.
+      // TODO(backend): Request consistent error codes to eliminate heuristic detection.
+      // Known limitation: May false-positive on non-credential 401s (e.g., session expiry).
+      final statusCode = error.statusCode;
+      final isInvalidCredentials = statusCode == '401';
+
+      if (isInvalidCredentials) {
+        log.d('login_fallback_heuristic_triggered (statusCode=$statusCode)', tag: 'login_submit');
+        loginNotifier.updateState(
+          email: email,
+          emailError: AuthStrings.invalidCredentials,
+          passwordError: AuthStrings.invalidCredentials,
+          globalError: null,
+        );
+        return;
+      }
+
+      loginNotifier.updateState(
+        email: email,
+        emailError: null,
+        passwordError: null,
+        globalError: AuthStrings.errLoginUnavailable,
+      );
+      return;
     }
 
     // Structured error code checks only (no fragile message patterns)
     final isInvalidCredentials = code == 'invalid_credentials' ||
         code == 'invalid_grant';
 
-    final isEmailNotConfirmed = code == 'email_not_confirmed' ||
-        code == 'otp_expired';
+    final isEmailNotConfirmed = code == 'email_not_confirmed';
+    final isOtpExpired = code == 'otp_expired';
 
     if (isInvalidCredentials) {
       // SSOT P0.7: Both fields show error on invalid credentials
@@ -131,9 +158,21 @@ class LoginSubmitNotifier extends AsyncNotifier<void> {
       return;
     }
 
+    if (isOtpExpired) {
+      // OTP expired: prompt user to request new verification email
+      // Sets globalError to AuthStrings.errOtpExpired so UI can show specific message/action
+      loginNotifier.updateState(
+        email: email,
+        emailError: null,
+        passwordError: null,
+        globalError: AuthStrings.errOtpExpired,
+      );
+      return;
+    }
+
     // Log unrecognized auth errors for inspection
     log.i(
-      'auth_error_unrecognized: code=${code ?? "null"}, message=${sanitizeError(error) ?? "[redacted]"}',
+      'auth_error_unrecognized: code=$code, message=${sanitizeError(error) ?? "[redacted]"}',
       tag: 'login_submit',
     );
 

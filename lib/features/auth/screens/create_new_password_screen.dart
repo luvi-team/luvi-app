@@ -79,18 +79,30 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     }
   }
 
+  /// Validates new password field during typing.
+  ///
+  /// Intentionally returns null for empty fields - required-field errors
+  /// are only shown on submit, not during inline typing (UX decision).
+  ///
+  /// Note: Blocklist check (commonWeak) is deliberately omitted for inline
+  /// validation. The check runs 21+ RegExp patterns and helper functions
+  /// which is too expensive for per-keystroke validation. Full validation
+  /// including blocklist runs on submit via [validateNewPassword].
   String? _validateNewPasswordField(String value, AppLocalizations l10n) {
-    if (value.isEmpty) return null;
+    if (value.isEmpty) return null; // Defer required check to submit
     if (value.length < 8) return l10n.authErrPasswordTooShort;
     return null;
   }
 
+  /// Validates confirm password field during typing.
+  /// Intentionally returns null for empty fields - required-field errors
+  /// are only shown on submit, not during inline typing (UX decision).
   String? _validateConfirmPasswordField(
     String newPassword,
     String confirmPassword,
     AppLocalizations l10n,
   ) {
-    if (confirmPassword.isEmpty) return null;
+    if (confirmPassword.isEmpty) return null; // Defer required check to submit
     if (newPassword != confirmPassword) return l10n.authPasswordMismatchError;
     return null;
   }

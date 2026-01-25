@@ -118,9 +118,7 @@ class _Images {
   /// Fallback poster for Welcome Screen 3 video (A11y + error state)
   final String welcomeFallback03 = _kWelcomeFallback03;
 
-  // Consent Screen Assets
-  final String consentIntroHero = 'assets/images/consent/consent_intro_hero.png';
-  // Note: Use Assets.consentImages.shield2 for shield assets (canonical path)
+  // Consent Screen Assets - use Assets.consentImages for shield assets
 
   /// Fallback poster for Splash Screen video (A11y + error state + reduce-motion)
   final String splashFallback = _kSplashFallback;
@@ -179,8 +177,7 @@ class _OnboardingIcons {
 class _ConsentImages {
   const _ConsentImages();
 
-  final String shield1 = 'assets/images/consent/shield1.png';  // C2
-  final String shield2 = 'assets/images/consent/shield2.png';  // C3
+  final String consentShield = 'assets/images/consent/consent_shield.png';
 }
 
 class _AuthImages {

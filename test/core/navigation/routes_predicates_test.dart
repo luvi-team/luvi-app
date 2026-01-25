@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/core/privacy/consent_config.dart';
-import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
+import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 
@@ -39,7 +39,7 @@ void main() {
   group('isConsentRoute', () {
     test('covers consent root and nested screens', () {
       expect(isConsentRoute('/consent'), isTrue);
-      expect(isConsentRoute('/consent/intro'), isTrue);  // ConsentIntroScreen
+      expect(isConsentRoute('/consent/intro'), isTrue);  // Legacy redirect to ConsentOptionsScreen
       expect(isConsentRoute('/consent/02'), isTrue);     // Consent02Screen (legacy/test)
       expect(isConsentRoute('/consent/02/confirm'), isTrue);
     });
@@ -185,7 +185,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentIntroScreen.routeName),
+          equals(ConsentOptionsScreen.routeName),
           reason: 'Null consent should redirect to consent flow',
         );
       });
@@ -199,7 +199,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentIntroScreen.routeName),
+          equals(ConsentOptionsScreen.routeName),
           reason: 'Outdated consent should redirect to consent flow',
         );
       });
@@ -275,7 +275,7 @@ void main() {
         );
         expect(
           result,
-          equals(ConsentIntroScreen.routeName),
+          equals(ConsentOptionsScreen.routeName),
           reason: 'Consent gate should be checked before onboarding gate',
         );
       });

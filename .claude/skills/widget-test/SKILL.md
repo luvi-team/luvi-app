@@ -102,4 +102,4 @@ scripts/flutter_codex.sh test test/features/{feature}/{test_file}.dart
 |---------|-----|
 | Missing `pumpAndSettle()` | Call `pumpAndSettle()` after `pumpWidget()` for animations |
 | Forgot `ensureSemantics()` | Always call `ensureSemantics()` before accessibility assertions |
-| Wrong import path | Use relative `../../../support/test_app.dart` |
+| Wrong import path | Relative path `../../../support/test_app.dart` assumes test is 3 dirs deep (e.g., `test/features/auth/login_test.dart`). Adjust depth for your location. |

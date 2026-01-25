@@ -30,8 +30,6 @@ import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_blocking_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_intro_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
 import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
@@ -78,7 +76,7 @@ GoRouter createRouter(
 /// Consent guard for onboarding routes - prevents deep-link bypass.
 ///
 /// Returns:
-/// - `/consent/intro` if user needs consent (null or outdated version)
+/// - `/consent/options` if user needs consent (null or outdated version)
 /// - `/splash?skipAnimation=true` if state is loading/error (fail-safe)
 /// - `null` if consent is valid (allow access)
 String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
@@ -91,7 +89,7 @@ String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
       final needsConsent = acceptedVersion == null ||
           acceptedVersion < ConsentConfig.currentVersionInt;
 
-      return needsConsent ? RoutePaths.consentIntro : null;
+      return needsConsent ? RoutePaths.consentOptions : null;
     },
     loading: () => '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}',
     error: (error, st) {
@@ -112,7 +110,7 @@ String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
 /// Checks both consent AND onboarding gates (Defense-in-Depth).
 /// Returns:
 /// - `/splash?skipAnimation=true` if state is loading/error (fail-safe)
-/// - `/consent/intro` if consent missing/outdated
+/// - `/consent/options` if consent missing/outdated
 /// - `/onboarding/01` if onboarding incomplete
 /// - `null` if all gates passed (allow access)
 String? _postAuthGuard(BuildContext context, GoRouterState state) {
@@ -178,27 +176,25 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
     GoRoute(path: '/onboarding/w5', redirect: (_, _) => RoutePaths.welcome),
 
     // ─────────────────────────────────────────────────────────────────────
-    // Consent Flow (C1-C3)
+    // Consent Flow (Single Screen: Options)
     // ─────────────────────────────────────────────────────────────────────
     GoRoute(
-      path: RoutePaths.consentIntro,
-      name: RouteNames.consentIntro,
-      builder: (context, state) => const ConsentIntroScreen(),
-    ),
-    // Legacy redirect: /consent/02 → /consent/intro (backward compatibility)
-    GoRoute(
-      path: RoutePaths.consentIntroLegacy,
-      redirect: (context, state) => RoutePaths.consentIntro,
-    ),
-    GoRoute(
       path: RoutePaths.consentOptions,
-      name: 'consent_options',
+      name: RouteNames.consentOptions,
       builder: (context, state) => const ConsentOptionsScreen(),
+    ),
+    // Legacy redirects for backward compatibility
+    GoRoute(
+      path: RoutePaths.consentIntro,
+      redirect: (context, state) => RoutePaths.consentOptions,
     ),
     GoRoute(
       path: RoutePaths.consentBlocking,
-      name: 'consent_blocking',
-      builder: (context, state) => const ConsentBlockingScreen(),
+      redirect: (context, state) => RoutePaths.consentOptions,
+    ),
+    GoRoute(
+      path: RoutePaths.consentIntroLegacy, // /consent/02
+      redirect: (context, state) => RoutePaths.consentOptions,
     ),
 
     // ─────────────────────────────────────────────────────────────────────

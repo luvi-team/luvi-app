@@ -711,6 +711,14 @@
   "@authErrPasswordEmpty": {
     "description": "Validierungsfehler, wenn das Passwort-Feld leer ist."
   },
+  "authErrOtpExpired": "Der Link ist abgelaufen. Bitte fordere einen neuen an.",
+  "@authErrOtpExpired": {
+    "description": "Fehlertext, wenn der Verifizierungslink abgelaufen ist."
+  },
+  "authErrConfirmEmail": "Bitte bestätige deine E-Mail (Link erneut senden?).",
+  "@authErrConfirmEmail": {
+    "description": "Fehlertext, wenn die E-Mail-Adresse noch bestätigt werden muss (Mirror of English locale)."
+  },
   "authLoginHeadline": "Willkommen zurück 💜",
   "@authLoginHeadline": {
     "description": "Überschrift auf dem Login-Screen."
@@ -763,14 +771,7 @@
   "@authErrPasswordInvalid": {
     "description": "Validierungsfehler, wenn das Passwort ungültig ist."
   },
-  "authErrConfirmEmail": "Bitte bestätige deine E-Mail (Link erneut senden?).",
-  "@authErrConfirmEmail": {
-    "description": "Hinweis, die E-Mail-Adresse zu bestätigen."
-  },
   "authErrLoginUnavailable": "Anmeldung ist derzeit nicht verfügbar.",
-  "@authErrLoginUnavailable": {
-    "description": "Fehlermeldung bei nicht verfügbarer Anmeldung."
-  },
   "authPasswordMismatchError": "Passwörter stimmen nicht überein.",
   "@authPasswordMismatchError": {
     "description": "Fehler, wenn Passwörter nicht identisch sind."
@@ -916,9 +917,9 @@
   "@consentSnackbarError": {
     "description": "Snackbar-Fehlertext bei gescheiterter Einwilligungsprotokollierung. Keine technischen Details anzeigen."
   },
-  "consentErrorSavingConsent": "Wir konnten nicht alle deine Einstellungen speichern. Du kannst trotzdem fortfahren und es später erneut versuchen.",
+  "consentErrorSavingConsent": "Einige Einstellungen konnten nicht lokal gespeichert werden. Bitte starte die App neu, um sie zu synchronisieren.",
   "@consentErrorSavingConsent": {
-    "description": "Snackbar-Hinweis, wenn das Markieren von Willkommen als gesehen nach erfolgreicher Einwilligung fehlschlägt. Navigation läuft weiter."
+    "description": "Snackbar-Hinweis bei fehlgeschlagener lokaler Cache-Persistenz nach Einwilligung. Server-SSOT war erfolgreich; Cache synchronisiert beim App-Neustart."
   },
   "consentSnackbarRateLimited": "Zu viele Anfragen gerade. Bitte warte kurz und versuche es erneut.",
   "@consentSnackbarRateLimited": {
@@ -967,10 +968,6 @@
   "authResetTitle": "Passwort vergessen?",
   "@authResetTitle": {
     "description": "Titel auf dem Reset-Password-Screen (ohne Emoji)."
-  },
-  "authResetSubtitle": "Gib deine E-Mail ein und wir schicken dir einen Link zum Zurücksetzen zu.",
-  "@authResetSubtitle": {
-    "description": "Untertitel auf dem Reset-Password-Screen."
   },
   "authResetCta": "Passwort zurücksetzen",
   "@authResetCta": {
@@ -1062,28 +1059,7 @@
     "description": "Fitness level label for fit users (maps to DB: fit)"
   },
 
-  "consentIntroTitle": "Lass uns LUVI für dich personalisieren",
-  "@consentIntroTitle": {
-    "description": "Title for consent intro screen (C1)"
-  },
-  "consentIntroBody": "Um LUVI für dich zu personalisieren, brauchen wir zuerst dein Okay.",
-  "@consentIntroBody": {
-    "description": "Body text for consent intro screen (C1)"
-  },
-  "consentIntroCtaLabel": "Weiter",
-  "@consentIntroCtaLabel": {
-    "description": "CTA button label for consent intro screen"
-  },
-  "consentIntroIllustrationSemantic": "Illustration: Hand hält Stift zum Unterschreiben",
-  "@consentIntroIllustrationSemantic": {
-    "description": "Semantics label for consent intro illustration"
-  },
-  "consentIntroCtaSemantic": "Weiter zur Datenschutz-Einwilligung",
-  "@consentIntroCtaSemantic": {
-    "description": "Semantics label for consent intro continue button"
-  },
-
-  "consentOptionsTitle": "Deine Datenschutz-Einstellungen",
+  "consentOptionsTitle": "Du und LUVI",
   "@consentOptionsTitle": {
     "description": "Title for consent options screen (C2)"
   },
@@ -1135,7 +1111,7 @@
   "@consentOptionsCtaContinue": {
     "description": "Continue button label on C2"
   },
-  "consentOptionsCtaAcceptAll": "Alles akzeptieren",
+  "consentOptionsCtaAcceptAll": "Alle akzeptieren",
   "@consentOptionsCtaAcceptAll": {
     "description": "Accept all button label on C2"
   },
@@ -1158,27 +1134,6 @@
   "consentOptionsShieldSemantic": "Schild-Symbol für Datenschutz",
   "@consentOptionsShieldSemantic": {
     "description": "Semantics label for shield icon on C2"
-  },
-
-  "consentBlockingTitle": "Deine Zustimmung macht LUVI möglich",
-  "@consentBlockingTitle": {
-    "description": "Title for consent blocking screen (C3)"
-  },
-  "consentBlockingBody": "LUVI braucht deine Zyklus- und Gesundheitsangaben, um dir zyklusbasierte Inhalte und Empfehlungen anzuzeigen. Ohne diese Verarbeitung können wir den Dienst nicht bereitstellen.",
-  "@consentBlockingBody": {
-    "description": "Body text for consent blocking screen (C3)"
-  },
-  "consentBlockingCtaBack": "Zurück & Zustimmen",
-  "@consentBlockingCtaBack": {
-    "description": "Back button label on consent blocking screen (C3)"
-  },
-  "consentBlockingCtaSemantic": "Zurück zur Einwilligung",
-  "@consentBlockingCtaSemantic": {
-    "description": "Semantics label for back button on consent blocking screen"
-  },
-  "consentBlockingShieldSemantic": "Schild-Symbol für Datenschutz",
-  "@consentBlockingShieldSemantic": {
-    "description": "Accessibility label for shield icon on consent blocking screen."
   },
 
   "onboarding03FitnessTitle": "{name}, wie fit fühlst du dich?",
@@ -1400,6 +1355,15 @@
       }
     }
   },
+  "semanticButtonLoading": "{label}, wird geladen",
+  "@semanticButtonLoading": {
+    "description": "Semantik-Label für Button im Ladezustand wenn kein custom Loading-Label angegeben",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
 
   "splashGateUnknownTitle": "Kurze Unterbrechung",
   "@splashGateUnknownTitle": {
@@ -1486,7 +1450,7 @@
   "@authRegisterEmailTitle": {
     "description": "Title for email registration screen"
   },
-  "authResetPasswordSubtitle": "E-Mail-Adresse eingeben und erhalte einen Link zum Zurücksetzen.",
+  "authResetPasswordSubtitle": "Gib deine E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten.",
   "@authResetPasswordSubtitle": {
     "description": "Subtitle for reset password screen"
   },
