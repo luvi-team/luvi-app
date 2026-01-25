@@ -201,6 +201,8 @@ class UserStateService {
 
       // CodeRabbit fix: Corrupted JSON should invalidate ALL consent for audit integrity.
       // Partial recovery could silently lose consent the user gave.
+      // TODO(observability): Add metrics counter for corruption events (Sentry/PostHog)
+      //   and background sync to repair cache from server SSOT. See: feat-m3-consent-miwf.md
       if (nonStringCount > 0) {
         // Elevated to error level for observability alerting.
         // Analytics may be incorrectly gated until cache is repaired.

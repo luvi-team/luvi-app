@@ -146,6 +146,18 @@ Dieses Dokument definiert eine klare Score-Formel zur Priorisierung von Stream-I
 | **Score-Clamp** | Endscore wird auf **[0,1]** begrenzt. |
 | **Blacklist-Monitoring** | Runtime-Hook prüft Top-20 auf `editorial == -1.0` als **Sicherheitsnetz**. Jeder Fund ist ein **operationaler Incident** (nicht normales Rauschen): Structured Alert `{item_id, final_score, editorial, pipeline_run_id, timestamp}` + Metric `blacklist_breach_total`. Sofortige Eskalation bei jedem Breach. |
 
+### Content-Diversität Enforcement (MVP-Vorschlag)
+
+**Mechanismus:** Post-Score Swap-Strategie
+
+1. Score alle Kandidaten mit der Formel oben
+2. Wähle Top 10 nach Score
+3. Prüfe Pillar-Diversität: Zähle unique Pillars
+4. Falls <3 Pillars: Tausche das niedrigst-bewertete Item eines überrepräsentierten Pillars mit dem höchst-bewerteten Item eines fehlenden Pillars aus Rang 11+
+5. Wiederhole bis Constraint erfüllt oder keine eligiblen Swaps
+
+> **Hinweis:** Dies ist ein MVP-Vorschlag. Die finale Implementierung sollte im Team abgestimmt werden.
+
 ## Beispiele
 
 ### Beispiel A: Optimaler Match (Luteal-Phase)

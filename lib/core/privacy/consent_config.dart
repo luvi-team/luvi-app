@@ -43,7 +43,8 @@ class ConsentConfig {
   /// Called by app initialization to catch format errors early.
   /// Throws [StateError] in all builds (debug + release) if format is invalid.
   static void assertVersionFormatValid() {
-    currentVersionInt; // Triggers validation via getter
+    // ignore: unnecessary_statements
+    currentVersionInt; // Access triggers validation; result intentionally discarded
   }
 
   // For APIs/analytics that expect string names.

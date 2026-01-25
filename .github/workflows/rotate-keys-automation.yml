@@ -95,18 +95,3 @@ jobs:
       - name: Dry run (no changes applied)
         if: ${{ inputs.dry_run != 'false' }}
         run: echo "Dry run only. Set dry_run=false to apply rotation."
-      - name: Notify rotation result (Slack)
-        if: ${{ always() }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          if [ -z "${SLACK_WEBHOOK_URL}" ]; then
-            echo "Missing SLACK_WEBHOOK_URL secret."
-            exit 1
-          fi
-          status="${{ job.status }}"
-          dry_run="${{ inputs.dry_run }}"
-          new_key_id="${{ steps.verify-rotation.outputs.new_key_id }}"
-          message="rotate-keys-automation: status=${status} (dry_run=${dry_run}). Steps referenced: 'Rotate consent hash key (apply)' and 'Dry run (no changes applied)'. Variables: CONSENT_HASH_PEPPER / CONSENT_HASH_PEPPER_NEXT. old_key_id=${{ inputs.old_key_id }} new_key_id=${new_key_id}. Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          payload=$(printf '{"text":"%s"}' "${message}")
-          curl -sS -X POST -H 'Content-type: application/json' --data "${payload}" "${SLACK_WEBHOOK_URL}"

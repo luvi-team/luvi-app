@@ -32,7 +32,7 @@ Ensures performant, understandable visualizations and meaningful explanatory tex
 PRD, ERD, ADRs 0001–0004, Branch/PR-Link.
 
 ## Outputs
-Chart Widgets, Tests, Documentation (docs/), Clear Axes/Legends.
+Chart widgets, Tests, Documentation (docs/), Clear axes/legends.
 
 ## Handoffs
 PRs to ui-frontend/Product + Codex review: PR description + `docs/` + charts. Codex checks architecture, state management and privacy before merge.

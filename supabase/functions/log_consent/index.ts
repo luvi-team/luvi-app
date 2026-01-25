@@ -141,7 +141,9 @@ async function loadConsentScopes(): Promise<readonly string[]> {
       typeof parsed !== 'object' ||
       parsed === null ||
       !('scopes' in parsed) ||
-      !Array.isArray((parsed as { scopes: unknown }).scopes)
+      !Array.isArray((parsed as { scopes: unknown }).scopes) ||
+      !('version' in parsed) ||
+      typeof (parsed as { version: unknown }).version !== 'string'
     ) {
       console.warn(
         JSON.stringify({

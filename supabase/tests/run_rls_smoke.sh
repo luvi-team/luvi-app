@@ -68,7 +68,7 @@ if [[ -f "${negative_sql}" ]]; then
   run_psql_file "${negative_sql}"
 else
   # TODO: track missing negative RLS tests when rls_smoke_negative.sql is absent.
-  echo "WARN: run_psql_file skipped; rls_smoke_negative.sql not found at ${negative_sql}." >&2
+  echo "WARN: Skipping negative RLS tests; rls_smoke_negative.sql not found at ${negative_sql}." >&2
 fi
 
 echo "OK: RLS smoke tests passed."

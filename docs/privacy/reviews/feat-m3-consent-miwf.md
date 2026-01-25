@@ -108,18 +108,23 @@ Consent records follow an **append-only model** with one documented exception fo
 
 **Processing Logic (Planned Implementation):**
 ```sql
--- Active consent check (per scope, assumes scopes stored as JSON string array)
-WITH latest_per_scope AS (
-  SELECT DISTINCT ON (scope_name)
-    scope_name,
-    user_id,
-    scopes,
-    created_at,
-    revoked_at
+-- Active consent check (per scope, optimized with user pre-filter)
+-- Recommended index: CREATE INDEX idx_consents_user_created
+--   ON consents(user_id, created_at DESC);
+WITH user_consents AS (
+  -- Pre-filter: Only this user's consent records
+  SELECT id, scopes, created_at, revoked_at
   FROM consents
-  CROSS JOIN LATERAL jsonb_array_elements_text(scopes) AS scope_name(scope_name)
   WHERE user_id = auth.uid()
-  ORDER BY scope_name, created_at DESC
+),
+latest_per_scope AS (
+  SELECT DISTINCT ON (s.value)
+    s.value AS scope_name,
+    uc.created_at,
+    uc.revoked_at
+  FROM user_consents uc
+  CROSS JOIN LATERAL jsonb_array_elements_text(uc.scopes) AS s(value)
+  ORDER BY s.value, uc.created_at DESC
 )
 SELECT *
 FROM latest_per_scope
@@ -151,7 +156,8 @@ WHERE scope_name = $1
 3. Stakeholders notified via release notes
 
 **Migration Checklist:**
-- [ ] Update `config/consent_scopes.json` with new version
+- [ ] Update `supabase/functions/log_consent/consent_scopes.json` (Edge Function SSOT)
+- [ ] Sync `config/consent_scopes.json` (Flutter asset) to match Edge Function version
 - [ ] Update `ConsentConfig.currentVersion` in Dart code
 - [ ] Create DB migration if schema changes needed
 - [ ] Test backward compatibility with existing consent records
