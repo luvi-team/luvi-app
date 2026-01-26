@@ -1,5 +1,5 @@
 meta:
-  version: "2.4"
+  version: "2.5"
   last_updated: "2026-01-26"
   acceptance_version: "1.1"
 
@@ -28,7 +28,7 @@ packages:
 
 dev_packages:
   flutter_lints: "^6.0.0"
-  build_runner: "^2.4.13"
+  build_runner: "^2.7.1"
   mocktail: "^1.0.4"
 
 ci:
