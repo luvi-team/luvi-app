@@ -19,8 +19,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.9.0 <4.0.0"
-  flutter: ">=3.35.0 <4.0.0"
+  sdk: ">=3.10.0 <4.0.0"
+  flutter: ">=3.38.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -41,8 +41,9 @@ dependencies:
 
   # Supabase Flutter client
   supabase_flutter: ^2.12.0
-  # Note: app_links ^7.0.0 requires Dart SDK ^3.10.0 (current: 3.9.2)
-  # Upgrade when Flutter/Dart SDK is updated
+  # Note: app_links ^7.0.0 conflicts with supabase_flutter ^2.12.0 (requires app_links ^6.x)
+  # See: https://github.com/supabase/supabase-flutter/issues/863
+  # Upgrade to ^7.0.0 when supabase_flutter releases compatible version
   app_links: ^6.4.1
 
   # Environment variables support

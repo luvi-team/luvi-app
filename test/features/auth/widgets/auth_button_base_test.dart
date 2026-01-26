@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
@@ -31,8 +33,8 @@ void main() {
         final semantics = tester.getSemantics(find.byType(AuthButtonBase));
         expect(semantics.label, 'Test Button');
         expect(semantics.flagsCollection.isButton, isTrue);
-        // Using explicit comparison for Tristate (type-safe)
-        expect(semantics.flagsCollection.isEnabled == true, isTrue);
+        // Flutter 3.38+: isEnabled returns Tristate, not bool
+        expect(semantics.flagsCollection.isEnabled, Tristate.isTrue);
       } finally {
         handle.dispose();
       }
@@ -61,8 +63,8 @@ void main() {
         expect(semantics.label, contains('Test Button'));
         expect(semantics.flagsCollection.isButton, isTrue);
         // When loading, button is disabled
-        // Using explicit comparison for Tristate (type-safe)
-        expect(semantics.flagsCollection.isEnabled == false, isTrue);
+        // Flutter 3.38+: isEnabled returns Tristate, not bool
+        expect(semantics.flagsCollection.isEnabled, Tristate.isFalse);
       } finally {
         handle.dispose();
       }
@@ -113,8 +115,8 @@ void main() {
 
         final semantics = tester.getSemantics(find.byType(AuthButtonBase));
         expect(semantics.label, 'Test Button');
-        // Using explicit comparison for Tristate (type-safe)
-        expect(semantics.flagsCollection.isEnabled == false, isTrue);
+        // Flutter 3.38+: isEnabled returns Tristate, not bool
+        expect(semantics.flagsCollection.isEnabled, Tristate.isFalse);
       } finally {
         handle.dispose();
       }
@@ -172,9 +174,10 @@ void main() {
         expect(semantics.label, contains('Test Button'));
         expect(semantics.flagsCollection.isButton, isTrue);
         // Both conditions should result in disabled state
+        // Flutter 3.38+: isEnabled returns Tristate, not bool
         expect(
-          semantics.flagsCollection.isEnabled == false,
-          isTrue,
+          semantics.flagsCollection.isEnabled,
+          Tristate.isFalse,
           reason:
               'Button should be disabled when both isLoading and onPressed is null',
         );
