@@ -66,7 +66,7 @@ LUVI helps women (primarily in their 20s–50s, open to all adults) better under
 
 ### Prerequisites
 
-- Flutter 3.35+ (see `.flutter-version`)
+- Flutter 3.38+
 - Supabase account (EU region required)
 
 ### Quick Start

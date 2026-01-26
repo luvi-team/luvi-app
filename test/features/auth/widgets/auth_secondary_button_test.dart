@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rebrand_metrics.dart';
@@ -112,16 +114,12 @@ void main() {
         );
 
         // Full semantics assertions for disabled button state
+        // Flutter 3.38+: isEnabled returns Tristate, not bool
         final semantics = tester.getSemantics(find.byType(AuthSecondaryButton));
         expect(
-          semantics.flagsCollection.hasEnabledState,
-          isTrue,
-          reason: 'Button should expose enabled state to accessibility',
-        );
-        expect(
           semantics.flagsCollection.isEnabled,
-          isFalse,
-          reason: 'Disabled button should report isEnabled=false',
+          Tristate.isFalse,
+          reason: 'Disabled button should report isEnabled=Tristate.isFalse',
         );
         expect(
           semantics.flagsCollection.isButton,

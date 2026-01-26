@@ -544,7 +544,7 @@ Nach Push-Klick öffnet sich der Artikel mit Bridge zum Training:
 ## Technische Grundlage & Betrieb
 
 - **Frontend:** Flutter (see `pubspec.yaml` for current version), Riverpod 3, GoRouter
-  - **Current constraints:** `flutter: ">=3.35.0 <4.0.0"`, `sdk: ">=3.9.0 <4.0.0"`
+  - **Current constraints:** `flutter: ">=3.38.0 <4.0.0"`, `sdk: ">=3.10.0 <4.0.0"`
   - **Note:** Keep `pubspec.yaml` as SSOT; update this doc only for major version changes
 
 - **EU-Only Gateway:**

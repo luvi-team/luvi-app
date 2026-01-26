@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-This is a Flutter application named `luvi_app` built with Flutter 3.35.4 and Dart 3.9.0. The project is configured for cross-platform development (iOS, Android, Web, macOS, Linux, Windows).
+This is a Flutter application named `luvi_app` built with Flutter 3.38.x and Dart 3.10.x. The project is configured for cross-platform development (iOS, Android, Web, macOS, Linux, Windows).
 
 ## Common Development Commands
 

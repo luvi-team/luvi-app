@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -164,7 +166,8 @@ void main() {
       final semantics = tester.getSemantics(find.byType(WelcomeCtaButton));
       expect(semantics.label, equals('Semantic Button'));
       expect(semantics.flagsCollection.isButton, isTrue);
-      expect(semantics.flagsCollection.isEnabled, isTrue);
+      // Flutter 3.38+: isEnabled returns Tristate, not bool
+      expect(semantics.flagsCollection.isEnabled, Tristate.isTrue);
     });
 
     testWidgets('Semantics shows enabled=false when isLoading=true',
@@ -186,7 +189,8 @@ void main() {
 
       final semantics = tester.getSemantics(find.byType(WelcomeCtaButton));
       expect(semantics.label, equals('Loading Semantics'));
-      expect(semantics.flagsCollection.isEnabled, isFalse);
+      // Flutter 3.38+: isEnabled returns Tristate, not bool
+      expect(semantics.flagsCollection.isEnabled, Tristate.isFalse);
     });
   });
 }
