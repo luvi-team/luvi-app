@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_content_card.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_rainbow_background.dart';
@@ -32,7 +33,7 @@ void main() {
       await tester.pumpWidget(buildTestApp(router: router));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const ValueKey('auth_success_screen')), findsOneWidget);
+      expect(find.byKey(const ValueKey(TestKeys.authSuccessScreen)), findsOneWidget);
     });
 
     testWidgets('displays AuthContentCard with title and subtitle (export-parity)', (
@@ -46,7 +47,7 @@ void main() {
 
       // Get L10n from a descendant context (not MaterialApp root)
       final l10n = AppLocalizations.of(
-        tester.element(find.byKey(const ValueKey('auth_success_screen'))),
+        tester.element(find.byKey(const ValueKey(TestKeys.authSuccessScreen))),
       )!;
 
       // Title and subtitle must be visible

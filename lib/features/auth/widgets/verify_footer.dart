@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
@@ -33,7 +34,7 @@ class VerifyFooter extends StatelessWidget {
         SizedBox(
           height: Sizes.buttonHeight,
           child: ElevatedButton(
-            key: const ValueKey('verify_confirm_button'),
+            key: const ValueKey(TestKeys.verifyConfirmButton),
             onPressed: ctaEnabled
                 ? () {
                     HapticFeedback.lightImpact();

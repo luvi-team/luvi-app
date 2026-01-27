@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -16,7 +17,7 @@ class LoginForgotButton extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
-        key: const ValueKey('login_forgot_button'),
+        key: const ValueKey(TestKeys.loginForgotButton),
         onPressed: () {
           HapticFeedback.lightImpact();
           onPressed();

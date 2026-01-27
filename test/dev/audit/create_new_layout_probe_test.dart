@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
@@ -80,9 +81,9 @@ void main() {
       // Find key widgets and their positions
       final backButtonFinder = find.byType(AuthBackButton);
 
-      final titleFinder = find.byKey(const ValueKey('create_new_title'));
+      final titleFinder = find.byKey(const ValueKey(TestKeys.createNewTitle));
       // Note: CreateNewPasswordScreen has no subtitle - title is the only header element
-      final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
+      final ctaFinder = find.byKey(const ValueKey(TestKeys.createNewCtaButton));
 
       // Get Y positions
       final backButtonRect = tester.getRect(backButtonFinder);
@@ -91,8 +92,8 @@ void main() {
 
 
       // Find password fields by their keys
-      final field1Finder = find.byKey(const ValueKey('AuthPasswordField'));
-      final field2Finder = find.byKey(const ValueKey('AuthConfirmPasswordField'));
+      final field1Finder = find.byKey(const ValueKey(TestKeys.authPasswordField));
+      final field2Finder = find.byKey(const ValueKey(TestKeys.authConfirmPasswordField));
 
       final field1Rect = tester.getRect(field1Finder);
       final field2Rect = tester.getRect(field2Finder);

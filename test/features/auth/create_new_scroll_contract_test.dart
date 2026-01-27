@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -43,7 +44,7 @@ void main() {
     final fieldRect = tester.getRect(confirmField);
     // Find the CTA button by key instead of hardcoded text
     final buttonRect = tester.getRect(
-      find.byKey(const ValueKey('create_new_cta_button')),
+      find.byKey(const ValueKey(TestKeys.createNewCtaButton)),
     );
 
     final visibleBottom =

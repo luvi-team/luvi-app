@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
@@ -88,7 +89,7 @@ class AuthShell extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: BackButtonCircle(
-                        key: const ValueKey('backButtonCircle'),
+                        key: const ValueKey(TestKeys.backButtonCircle),
                         onPressed: onBackPressed!,
                         // Figma: Back button without circle background, 32×30.5px icon
                         backgroundColor: DsColors.transparent,

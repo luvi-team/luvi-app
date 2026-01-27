@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -54,7 +55,7 @@ void main() {
 
       // LoginEmailField is a wrapper widget (Column > Container > TextField)
       // → find.descendant is needed to find the inner TextField
-      final emailFieldWrapper = find.byKey(const ValueKey('login_email_field'));
+      final emailFieldWrapper = find.byKey(const ValueKey(TestKeys.loginEmailField));
       expect(emailFieldWrapper, findsOneWidget);
 
       final textField = tester.widget<TextField>(
@@ -86,7 +87,7 @@ void main() {
       );
 
       // SignupScreen email field
-      final emailFieldWrapper = find.byKey(const ValueKey('signup_email_field'));
+      final emailFieldWrapper = find.byKey(const ValueKey(TestKeys.signupEmailField));
       expect(emailFieldWrapper, findsOneWidget);
 
       final textField = tester.widget<TextField>(

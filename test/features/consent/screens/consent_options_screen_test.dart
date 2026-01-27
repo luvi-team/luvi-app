@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -183,7 +184,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the Continue button
-      final continueButtonFinder = find.byKey(const Key('consent_options_btn_continue'));
+      final continueButtonFinder = find.byKey(const Key(TestKeys.consentBtnContinue));
       expect(continueButtonFinder, findsOneWidget);
 
       // Button should be DISABLED when required consents are not accepted
@@ -208,7 +209,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the Accept All button by key
-      final acceptAllFinder = find.byKey(const Key('consent_options_btn_accept_all'));
+      final acceptAllFinder = find.byKey(const Key(TestKeys.consentBtnAcceptAll));
       expect(acceptAllFinder, findsOneWidget);
 
       // Button should be ENABLED immediately (no scroll-gate)
@@ -233,7 +234,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the button gap SizedBox by key
-      final buttonGapFinder = find.byKey(const Key('consent_options_button_gap'));
+      final buttonGapFinder = find.byKey(const Key(TestKeys.consentOptionsButtonGap));
       expect(buttonGapFinder, findsOneWidget,
           reason: 'Should find exactly one SizedBox between the two buttons');
 
@@ -259,19 +260,19 @@ void main() {
       await tester.pumpAndSettle();
 
       // Initially disabled
-      var continueButtonFinder = find.byKey(const Key('consent_options_btn_continue'));
+      var continueButtonFinder = find.byKey(const Key(TestKeys.consentBtnContinue));
       var button = tester.widget<ElevatedButton>(continueButtonFinder);
       expect(button.onPressed, isNull);
 
       // Scroll to make checkboxes visible and tap health consent
-      final healthCheckbox = find.byKey(const Key('consent_options_health'));
+      final healthCheckbox = find.byKey(const Key(TestKeys.consentOptionsHealth));
       await tester.ensureVisible(healthCheckbox);
       await tester.pumpAndSettle();
       await tester.tap(healthCheckbox);
       await tester.pumpAndSettle();
 
       // Scroll to make terms checkbox visible and tap it
-      final termsCheckbox = find.byKey(const Key('consent_options_terms'));
+      final termsCheckbox = find.byKey(const Key(TestKeys.consentOptionsTerms));
       await tester.ensureVisible(termsCheckbox);
       await tester.pumpAndSettle();
       await tester.tap(termsCheckbox);
@@ -343,7 +344,7 @@ void main() {
       expect(find.byType(ConsentOptionsScreen), findsOneWidget);
 
       // Find and verify the Accept All button is enabled (no scroll needed)
-      final acceptAllButton = find.byKey(const Key('consent_options_btn_accept_all'));
+      final acceptAllButton = find.byKey(const Key(TestKeys.consentBtnAcceptAll));
       expect(acceptAllButton, findsOneWidget);
       final button = tester.widget<ElevatedButton>(acceptAllButton);
       expect(button.onPressed, isNotNull,
@@ -425,7 +426,7 @@ void main() {
 
         // Tap "Alle akzeptieren" (no scroll needed - scroll-gate removed)
         final acceptAllButton =
-            find.byKey(const Key('consent_options_btn_accept_all'));
+            find.byKey(const Key(TestKeys.consentBtnAcceptAll));
         expect(acceptAllButton, findsOneWidget);
 
         await tester.tap(acceptAllButton);
@@ -504,7 +505,7 @@ void main() {
 
         // Tap "Alle akzeptieren"
         final acceptAllButton =
-            find.byKey(const Key('consent_options_btn_accept_all'));
+            find.byKey(const Key(TestKeys.consentBtnAcceptAll));
         expect(acceptAllButton, findsOneWidget);
 
         await tester.tap(acceptAllButton);
@@ -589,7 +590,7 @@ void main() {
 
         // Tap "Alle akzeptieren"
         final acceptAllButton =
-            find.byKey(const Key('consent_options_btn_accept_all'));
+            find.byKey(const Key(TestKeys.consentBtnAcceptAll));
         await tester.tap(acceptAllButton);
         await tester.pumpAndSettle();
 

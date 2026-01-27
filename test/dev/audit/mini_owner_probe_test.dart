@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
 import 'package:luvi_app/features/auth/widgets/rebrand/auth_back_button.dart';
@@ -75,12 +76,12 @@ void main() {
       final backButtonFinder = find.byType(AuthBackButton);
 
       // Note: This finds the title (not subtitle) - CreateNewPasswordScreen has no subtitle
-      final titleFinder = find.byKey(const ValueKey('create_new_title'));
-      final passwordFieldFinder = find.byKey(const ValueKey('AuthPasswordField'));
+      final titleFinder = find.byKey(const ValueKey(TestKeys.createNewTitle));
+      final passwordFieldFinder = find.byKey(const ValueKey(TestKeys.authPasswordField));
       final confirmFieldFinder = find.byKey(
-        const ValueKey('AuthConfirmPasswordField'),
+        const ValueKey(TestKeys.authConfirmPasswordField),
       );
-      final ctaFinder = find.byKey(const ValueKey('create_new_cta_button'));
+      final ctaFinder = find.byKey(const ValueKey(TestKeys.createNewCtaButton));
 
       // Get positions
       final backButtonRect = tester.getRect(backButtonFinder);

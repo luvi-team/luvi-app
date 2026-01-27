@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/onboarding_spacing.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -198,7 +199,7 @@ class _Onboarding03FitnessScreenState
     final ctaLabel = l10n.commonContinue;
 
     return OnboardingButton(
-      key: const Key('onb_cta'),
+      key: const Key(TestKeys.onbCta),
       label: ctaLabel,
       onPressed: _handleContinue,
       isEnabled: _selectedLevel != null,

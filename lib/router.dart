@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 
 // Core imports (always allowed)
 import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
@@ -318,7 +319,7 @@ List<RouteBase> _buildRoutes([WidgetRef? ref]) {
       path: RoutePaths.createNewPassword,
       name: 'password_new',
       builder: (context, state) => const CreateNewPasswordScreen(
-        key: ValueKey('auth_create_new_screen'),
+        key: ValueKey(TestKeys.authCreateNewScreen),
       ),
     ),
     GoRoute(

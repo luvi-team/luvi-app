@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/router.dart';
@@ -36,11 +37,11 @@ void main() {
     expect(find.byType(LoginScreen), findsOneWidget);
 
     // Key matches login_screen.dart: ValueKey('login_forgot_link')
-    await tester.tap(find.byKey(const ValueKey('login_forgot_link')));
+    await tester.tap(find.byKey(const ValueKey(TestKeys.loginForgotLink)));
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const ValueKey('auth_reset_screen')),
+      find.byKey(const ValueKey(TestKeys.authResetScreen)),
       findsOneWidget,
       reason: 'Reset password screen should be displayed after tapping forgot link',
     );

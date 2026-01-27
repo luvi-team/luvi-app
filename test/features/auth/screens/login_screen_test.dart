@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import '../../../support/test_config.dart';
 import '../../../support/test_view.dart';
 
@@ -48,7 +49,7 @@ void main() {
 
     // Per Auth v2 refactoring: LoginScreen shows title (not headline)
     // Title uses l10n.authLoginTitle
-    expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+    expect(find.byKey(const ValueKey(TestKeys.authLoginScreen)), findsOneWidget);
     final l10n = AppLocalizations.of(tester.element(find.byType(LoginScreen)))!;
     expect(find.text(l10n.authLoginTitle), findsOneWidget);
     // AuthPrimaryButton displays l10n.authEntryCta as button label
@@ -75,7 +76,7 @@ void main() {
     );
 
     // AuthPrimaryButton wraps ElevatedButton
-    final buttonFinder = find.byKey(const ValueKey('login_cta_button'));
+    final buttonFinder = find.byKey(const ValueKey(TestKeys.loginCtaButton));
     final innerButton = find.descendant(
       of: buttonFinder,
       matching: find.byType(ElevatedButton),

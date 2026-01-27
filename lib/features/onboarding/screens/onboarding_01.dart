@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -214,7 +215,7 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
     final ctaLabel = l10n.commonContinue;
     return Center(
       child: OnboardingButton(
-        key: const Key('onb_cta'),
+        key: const Key(TestKeys.onbCta),
         label: ctaLabel,
         onPressed: _handleContinue,
         isEnabled: _hasText,

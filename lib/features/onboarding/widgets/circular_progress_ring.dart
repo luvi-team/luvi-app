@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
@@ -136,7 +137,7 @@ class CircularProgressRingState extends State<CircularProgressRing>
       );
     }
     return SizedBox(
-      key: const Key('circular_progress_ring_container'),
+      key: const Key(TestKeys.circularProgressRingContainer),
       width: widget.size,
       height: widget.size,
       child: AnimatedBuilder(

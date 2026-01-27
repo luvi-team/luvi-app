@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
@@ -38,14 +39,14 @@ class CreateNewHeader extends StatelessWidget {
           // Using canonical authNewPasswordTitle (without emoji) per Auth UI v2
           AppLocalizations.of(context)?.authNewPasswordTitle ??
               auth_strings.AuthStrings.createNewTitle,
-          key: const ValueKey('create_new_title'),
+          key: const ValueKey(TestKeys.createNewTitle),
           style: titleStyle,
         ),
         const SizedBox(height: Spacing.xs),
         Text(
           (AppLocalizations.of(context)?.authCreateNewSubtitle ??
               auth_strings.AuthStrings.createNewSubtitle),
-          key: const ValueKey('create_new_subtitle'),
+          key: const ValueKey(TestKeys.createNewSubtitle),
           style: subtitleStyle,
         ),
       ],

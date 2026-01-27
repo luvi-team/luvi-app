@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
@@ -55,7 +56,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Hero image should be present
-    expect(find.byKey(const ValueKey('auth_entry_hero')), findsOneWidget);
+    expect(find.byKey(const ValueKey(TestKeys.authEntryHero)), findsOneWidget);
 
     // LUVI logo SVG should be present
     expect(find.byType(SvgPicture), findsAtLeastNWidgets(1));
@@ -69,7 +70,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify teal dot exists (stable selector)
-    final tealDotFinder = find.byKey(const ValueKey('tealDot'));
+    final tealDotFinder = find.byKey(const ValueKey(TestKeys.authTealDot));
     expect(tealDotFinder, findsOneWidget);
 
     // Verify logo SVG exists
@@ -89,7 +90,7 @@ void main() {
 
     // CTA button should be present
     expect(find.byType(AuthPrimaryButton), findsOneWidget);
-    expect(find.byKey(const ValueKey('auth_entry_cta')), findsOneWidget);
+    expect(find.byKey(const ValueKey(TestKeys.authEntryCta)), findsOneWidget);
 
     final l10n = AppLocalizations.of(tester.element(find.byType(AuthSignInScreen)))!;
     expect(find.text(l10n.authEntryCta), findsOneWidget);
@@ -102,7 +103,7 @@ void main() {
     await tester.pumpWidget(_buildRouterHarness(router));
     await tester.pumpAndSettle();
 
-    final ctaButton = find.byKey(const ValueKey('auth_entry_cta'));
+    final ctaButton = find.byKey(const ValueKey(TestKeys.authEntryCta));
     expect(ctaButton, findsOneWidget);
 
     await tester.tap(ctaButton);

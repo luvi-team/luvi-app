@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/router.dart';
@@ -41,7 +42,7 @@ void main() {
 
       // Get L10n from a descendant context (not MaterialApp root)
       final l10n = AppLocalizations.of(
-        tester.element(find.byKey(const ValueKey('auth_reset_screen'))),
+        tester.element(find.byKey(const ValueKey(TestKeys.authResetScreen))),
       )!;
 
       // Export-parity: Subtitle must be visible
@@ -66,8 +67,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final emailField = find.byKey(const ValueKey('reset_email_field'));
-      final ctaButtonFinder = find.byKey(const ValueKey('reset_cta'));
+      final emailField = find.byKey(const ValueKey(TestKeys.resetEmailField));
+      final ctaButtonFinder = find.byKey(const ValueKey(TestKeys.resetCta));
 
       // WelcomeButton wraps ElevatedButton - find the inner ElevatedButton
       ElevatedButton buttonWidget() {
@@ -107,13 +108,13 @@ void main() {
 
       // Enter valid email
       await tester.enterText(
-        find.byKey(const ValueKey('reset_email_field')),
+        find.byKey(const ValueKey(TestKeys.resetEmailField)),
         'user@example.com',
       );
       await tester.pump();
 
       // Tap submit button
-      final ctaFinder = find.byKey(const ValueKey('reset_cta'));
+      final ctaFinder = find.byKey(const ValueKey(TestKeys.resetCta));
       final elevatedButtonFinder = find.descendant(
         of: ctaFinder,
         matching: find.byType(ElevatedButton),
@@ -132,7 +133,7 @@ void main() {
 
       // Verify navigation to signin
       expect(
-        find.byKey(const ValueKey('auth_signin_screen')),
+        find.byKey(const ValueKey(TestKeys.authSigninScreen)),
         findsOneWidget,
         reason: 'Should navigate to AuthSignInScreen after successful reset',
       );

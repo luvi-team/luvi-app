@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/login_screen.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
@@ -66,7 +67,7 @@ void main() {
     await tester.pump();
 
     // Tap the CTA button (AuthPrimaryButton wraps ElevatedButton)
-    final buttonFinder = find.byKey(const ValueKey('login_cta_button'));
+    final buttonFinder = find.byKey(const ValueKey(TestKeys.loginCtaButton));
     expect(buttonFinder, findsOneWidget);
 
     await tester.tap(buttonFinder);
@@ -128,11 +129,11 @@ void main() {
     await tester.enterText(emailField, 'user@example.com');
     await tester.enterText(passwordField, 'correctpw');
 
-    final buttonFinder = find.byKey(const ValueKey('login_cta_button'));
+    final buttonFinder = find.byKey(const ValueKey(TestKeys.loginCtaButton));
     await tester.tap(buttonFinder);
     await tester.pump(); // start async call -> loading state
 
-    expect(find.byKey(const ValueKey('login_cta_loading')), findsOneWidget);
+    expect(find.byKey(const ValueKey(TestKeys.loginCtaLoading)), findsOneWidget);
     final innerButton = find.descendant(
       of: buttonFinder,
       matching: find.byType(ElevatedButton),
@@ -183,7 +184,7 @@ void main() {
     );
 
     // Submit with empty fields to trigger validation errors
-    final buttonFinder = find.byKey(const ValueKey('login_cta_button'));
+    final buttonFinder = find.byKey(const ValueKey(TestKeys.loginCtaButton));
     await tester.tap(buttonFinder);
     await tester.pump();
 

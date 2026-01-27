@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -38,7 +39,7 @@ class CreateNewBackButtonOverlay extends StatelessWidget {
             left: AuthLayout.horizontalPadding,
           ),
           child: BackButtonCircle(
-            key: const ValueKey('backButtonCircle'),
+            key: const ValueKey(TestKeys.backButtonCircle),
             onPressed: onPressed,
             size: size,
             innerSize: size,

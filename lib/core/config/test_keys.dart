@@ -8,6 +8,11 @@
 abstract final class TestKeys {
   TestKeys._();
 
+  // ─── Router ───
+
+  /// Create new password screen (router key)
+  static const authCreateNewScreen = 'auth_create_new_screen';
+
   // ─── Auth ───
 
   /// SignIn entry screen (glassmorphism card)
@@ -63,6 +68,9 @@ abstract final class TestKeys {
 
   /// Login "sign up" link
   static const loginSignupLink = 'login_signup_link';
+
+  /// Login link (signup screen → login navigation)
+  static const loginLink = 'login_link';
 
   /// Signup email input field
   static const signupEmailField = 'signup_email_field';
@@ -127,6 +135,9 @@ abstract final class TestKeys {
 
   /// Generic onboarding CTA button
   static const onbCta = 'onb_cta';
+
+  /// Onboarding 06 Period CTA button
+  static const o6Cta = 'o6_cta';
 
   /// Circular progress ring container
   static const circularProgressRingContainer = 'circular_progress_ring_container';
