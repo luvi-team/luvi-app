@@ -56,5 +56,6 @@ Claude Code implements screens/widgets/navigation incl. tests and BMAD-slim, Cod
   - Replace hardcoded `Text` with `AppLocalizations`
   - Icon swap or use of DS widget (e.g., `BackButtonCircle`, `LinkText`)
   - Add missing `Semantics` label/key
+  - Add/migrate widget keys to `TestKeys` (`lib/core/config/test_keys.dart`)
 - Minimum checks: Run `scripts/flutter_codex.sh analyze` and affected widget tests (existing `test/features/...`); short PR description incl. note on tested files, reference to `_acceptance_v1.1.md` for gate list.
 - Anything beyond (state changes, navigation, new widgets) requires regular BMAD → PRP flow with full acceptance checks.
