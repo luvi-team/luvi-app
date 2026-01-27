@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:luvi_app/router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
@@ -103,17 +104,20 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify we start on LoginScreen
-      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey(TestKeys.authLoginScreen)),
+        findsOneWidget,
+      );
 
       // Tap "Passwort vergessen?" link
-      final forgotLink = find.byKey(const ValueKey('login_forgot_link'));
+      final forgotLink = find.byKey(const ValueKey(TestKeys.loginForgotLink));
       expect(forgotLink, findsOneWidget);
       await tester.tap(forgotLink);
       await tester.pumpAndSettle();
 
       // Auth-Flow Bugfix: Verify navigation to ResetPasswordScreen (not redirect to sign-in)
       expect(
-        find.byKey(const ValueKey('auth_reset_screen')),
+        find.byKey(const ValueKey(TestKeys.authResetScreen)),
         findsOneWidget,
         reason: 'Should navigate to ResetPasswordScreen, not redirect to AuthSignInScreen',
       );
@@ -136,7 +140,7 @@ void main() {
 
       // Verify AuthSignInScreen is shown (not redirected)
       expect(
-        find.byKey(const ValueKey('auth_signin_screen')),
+        find.byKey(const ValueKey(TestKeys.authSigninScreen)),
         findsOneWidget,
         reason: 'AuthSignInScreen should be accessible without session',
       );
@@ -159,7 +163,7 @@ void main() {
 
       // Auth-Flow Bugfix: Verify SignupScreen is accessible (not redirected to sign-in)
       expect(
-        find.byKey(const ValueKey('auth_signup_screen')),
+        find.byKey(const ValueKey(TestKeys.authSignupScreen)),
         findsOneWidget,
         reason: 'AuthSignupScreen should be accessible without session (whitelist)',
       );
@@ -182,7 +186,7 @@ void main() {
 
       // Auth-Flow Bugfix: Verify ResetPasswordScreen is accessible (not redirected to sign-in)
       expect(
-        find.byKey(const ValueKey('auth_reset_screen')),
+        find.byKey(const ValueKey(TestKeys.authResetScreen)),
         findsOneWidget,
         reason: 'ResetPasswordScreen should be accessible without session (whitelist)',
       );
@@ -206,7 +210,10 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey(TestKeys.authLoginScreen)),
+        findsOneWidget,
+      );
 
       // Verify English L10n is active
       final context = tester.element(find.byType(LoginScreen));

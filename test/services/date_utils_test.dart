@@ -1,6 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_core/luvi_core.dart';
+import 'package:luvi_services/date_utils.dart';
 
+/// SSOT tests for date_utils.dart (services/lib/date_utils.dart).
+///
+/// Merged from:
+/// - core/test/date_utils_test.dart (comprehensive daysInMonth + calculateAge)
+/// - Previous lib/core/utils tests (edge cases)
+///
+/// Tests cover:
+/// - daysInMonth: all months including leap year February
+/// - calculateAge: standard cases, boundary conditions, Feb 29 edge cases
 void main() {
   group('daysInMonth', () {
     test('returns 31 for January', () {

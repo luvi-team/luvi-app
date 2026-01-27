@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
 import 'package:luvi_app/router.dart';
@@ -41,19 +42,19 @@ void main() {
     await _pumpSignupWidget(tester, router);
 
     // Screen renders
-    expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
+    expect(find.byKey(const ValueKey(TestKeys.authSignupScreen)), findsOneWidget);
 
     // Per Auth Rebrand v3: Signup has 3 fields (Email + Password + Confirm)
     // The old test expected 5 fields (FirstName, LastName, Phone, Email, Password)
-    expect(find.byKey(const ValueKey('signup_email_field')), findsOneWidget);
-    expect(find.byKey(const ValueKey('signup_password_field')), findsOneWidget);
+    expect(find.byKey(const ValueKey(TestKeys.signupEmailField)), findsOneWidget);
+    expect(find.byKey(const ValueKey(TestKeys.signupPasswordField)), findsOneWidget);
     expect(
-      find.byKey(const ValueKey('signup_password_confirm_field')),
+      find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
       findsOneWidget,
     );
 
     // CTA button is present and enabled
-    final ctaFinder = find.byKey(const ValueKey('signup_cta_button'));
+    final ctaFinder = find.byKey(const ValueKey(TestKeys.signupCtaButton));
     expect(ctaFinder, findsOneWidget);
 
     // Verify button is enabled (onPressed is not null)
@@ -68,7 +69,7 @@ void main() {
     // Verify login link was removed per SSOT P0.6
     // Key-based check is sufficient - no need for text-based assertions
     // which could cause false failures if "Login" appears elsewhere
-    expect(find.byKey(const ValueKey('login_link')), findsNothing);
+    expect(find.byKey(const ValueKey(TestKeys.loginLink)), findsNothing);
   });
 
   testWidgets('AuthSignupScreen renders correctly in English', (tester) async {
@@ -80,7 +81,7 @@ void main() {
 
     await _pumpSignupWidget(tester, router, locale: const Locale('en'));
 
-    expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
+    expect(find.byKey(const ValueKey(TestKeys.authSignupScreen)), findsOneWidget);
 
     // Verify English L10n is active
     final context = tester.element(find.byType(AuthSignupScreen));

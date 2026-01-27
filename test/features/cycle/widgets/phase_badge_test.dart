@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/features/cycle/widgets/phase_badge.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
 import '../../../support/test_config.dart';
@@ -21,7 +22,7 @@ void main() {
         ),
       ),
     );
-    expect(find.byKey(const Key('phase-text')), findsNothing);
+    expect(find.byKey(const Key(TestKeys.phaseText)), findsNothing);
     await t.pumpWidget(
       MaterialApp(
         home: PhaseBadge(
@@ -52,6 +53,6 @@ void main() {
         ),
       ),
     );
-    expect(find.byKey(const Key('phase-text')), findsNothing);
+    expect(find.byKey(const Key(TestKeys.phaseText)), findsNothing);
   });
 }

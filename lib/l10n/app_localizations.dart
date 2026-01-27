@@ -2146,6 +2146,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drag handle'**
   String get authDragHandleSemantic;
+
+  /// Accessibility label for page indicators showing current position
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current} of {total}'**
+  String pageIndicatorLabel(int current, int total);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

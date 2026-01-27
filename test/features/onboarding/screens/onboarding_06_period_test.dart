@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/features/onboarding/domain/fitness_level.dart' as app;
 import 'package:luvi_app/features/onboarding/domain/goal.dart';
@@ -129,7 +130,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap CTA button to trigger navigation (toggle only shows button, doesn't navigate)
-      await tester.tap(find.byKey(const Key('o6_cta')));
+      await tester.tap(find.byKey(const Key(TestKeys.o6Cta)));
       await tester.pumpAndSettle();
 
       // ASSERTION: Success screen is shown after unknown toggle

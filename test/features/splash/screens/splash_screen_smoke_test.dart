@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/navigation/route_query_params.dart';
@@ -16,8 +17,8 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/device_state_service.dart';
 import 'package:luvi_services/init_mode.dart';
 
-import '../../support/test_config.dart';
-import '../../support/video_player_mock.dart';
+import '../../../support/test_config.dart';
+import '../../../support/video_player_mock.dart';
 
 /// Builds a test harness with ProviderScope and MaterialApp.router.
 ///
@@ -109,7 +110,7 @@ void main() {
 
         // Verify: Navigation to AuthSignInScreen (unauth user default)
         expect(
-          find.byKey(const ValueKey('auth_signin_screen')),
+          find.byKey(const ValueKey(TestKeys.authSigninScreen)),
           findsOneWidget,
           reason: 'skipAnimation=true should navigate to AuthSignInScreen for unauthenticated users',
         );

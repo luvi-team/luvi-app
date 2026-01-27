@@ -19,18 +19,19 @@ import 'core/config/app_links.dart';
 import 'core/navigation/password_recovery_navigation_driver.dart';
 import 'core/navigation/route_orientation_controller.dart';
 import 'core/theme/app_theme.dart';
+import 'core/design_tokens/spacing.dart';
+import 'core/design_tokens/sizes.dart';
 import 'core/navigation/routes.dart' as routes;
 import 'core/navigation/route_paths.dart';
 import 'router.dart' as app_router;
 import 'core/init/supabase_init_controller.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'core/init/init_mode.dart' show initModeProvider;
-import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart' as auth_strings;
 import 'core/init/init_diagnostics.dart';
 import 'core/init/supabase_deep_link_handler.dart';
 import 'core/privacy/consent_config.dart';
 
-// TODO(arwin): Greptile status check smoke test
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -247,7 +248,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: SafeArea(
-                  minimum: const EdgeInsets.all(12),
+                  minimum: Spacing.initBannerSafeAreaMinimum,
                   child: _InitBanner(initState: initState),
                 ),
               ),
@@ -291,7 +292,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
           }
         } catch (e, st) {
           // Log critical initialization failure (don't rethrow - would crash app)
-          log.e('Init orchestration failed', tag: 'Main', error: e, stack: st);
+          log.e('Init orchestration failed', tag: 'main', error: e, stack: st);
         } finally {
           _orchestrationInProgress = false;
         }
@@ -454,18 +455,18 @@ class _InitBanner extends ConsumerWidget {
         child: Container(
           decoration: BoxDecoration(
             color: bg,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(Sizes.radiusM),
             border: Border.all(color: border),
             boxShadow: const [
               BoxShadow(blurRadius: 8, spreadRadius: 0, color: Colors.black26),
             ],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: Spacing.initBannerPadding,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(isConfig ? Icons.error_outline : Icons.wifi_off, color: text),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.xs),
               Flexible(
                 child: Text(
                   message,
@@ -473,7 +474,7 @@ class _InitBanner extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Spacing.s),
               if (initState.canRetry)
                 TextButton(
                   onPressed: () {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
@@ -91,6 +92,61 @@ _SignupValidationResult _validateSignupForm({
   );
 }
 
+/// Field error attribution result from AuthException.
+/// Pure data class for separating error mapping from UI state.
+class _SignupFieldErrorAttribution {
+  final bool emailError;
+  final bool passwordError;
+
+  const _SignupFieldErrorAttribution({
+    this.emailError = false,
+    this.passwordError = false,
+  });
+}
+
+/// Pure function: determines which fields to flag based on AuthException.
+///
+/// Uses conservative whitelist approach:
+/// - Known email codes → emailError
+/// - Known password codes → passwordError
+/// - Ambiguous/unknown codes → no field flags (banner only)
+_SignupFieldErrorAttribution _attributeSignupFieldErrors(AuthException error) {
+  const emailCodes = {
+    'email_address_invalid',
+    'validation_failed',
+    'email_exists',
+    'user_already_exists',
+    'email_not_confirmed',
+  };
+  const passwordCodes = {'weak_password'};
+
+  final code = error.code?.toLowerCase();
+  if (code != null) {
+    if (passwordCodes.contains(code)) {
+      return const _SignupFieldErrorAttribution(passwordError: true);
+    }
+    if (emailCodes.contains(code)) {
+      return const _SignupFieldErrorAttribution(emailError: true);
+    }
+    return const _SignupFieldErrorAttribution();
+  }
+
+  // Fallback: message pattern matching when code is null
+  final message = error.message.toLowerCase();
+  if (message.contains('password') && message.contains('short')) {
+    return const _SignupFieldErrorAttribution(passwordError: true);
+  }
+  if (message.contains('email') && message.contains('invalid')) {
+    return const _SignupFieldErrorAttribution(emailError: true);
+  }
+  if ((message.contains('email') || message.contains('user')) &&
+      (message.contains('already') || message.contains('exists'))) {
+    return const _SignupFieldErrorAttribution(emailError: true);
+  }
+
+  return const _SignupFieldErrorAttribution();
+}
+
 /// Signup screen with Auth Rebrand v3 design.
 ///
 /// Features:
@@ -168,80 +224,65 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
     try {
       await authRepository.signUp(email: email, password: password);
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.authSignupSuccess),
-          duration: Timing.snackBarBrief,
-        ),
-      );
-
-      _signupNavTimer?.cancel();
-      _signupNavTimer = Timer(Timing.snackBarBrief, () {
-        if (!mounted) return;
-        context.go(LoginScreen.routeName);
-      });
+      _handleSignupSuccess(l10n);
     } on AuthException catch (error, stackTrace) {
-      log.e(
-        'signup_failed_auth',
-        error: sanitizeError(error) ?? error.runtimeType,
-        stack: stackTrace,
-      );
-      if (!mounted) return;
-      setState(() {
-        _errorMessage = _mapAuthError(error, l10n);
-
-        // Clear both flags first
-        _emailError = false;
-        _passwordError = false;
-
-        // Known error codes (whitelist approach - conservative field attribution)
-        const emailCodes = {
-          'email_address_invalid',
-          'validation_failed',
-          'email_exists',
-          'user_already_exists',
-          'email_not_confirmed',
-        };
-        const passwordCodes = {'weak_password'};
-        // Ambiguous codes: over_request_rate_limit, signup_disabled, etc.
-        // These show banner only, no field flags
-
-        // Use error.code for field attribution (more robust than message parsing)
-        final code = error.code?.toLowerCase();
-        if (code != null) {
-          if (passwordCodes.contains(code)) {
-            _passwordError = true;
-          } else if (emailCodes.contains(code)) {
-            _emailError = true;
-          }
-          // Unknown codes: no field flags, rely on banner only
-        } else {
-          // Fallback: message pattern matching when code is null
-          // Conservative: only set flags for clear keyword matches
-          final message = error.message.toLowerCase();
-          if (message.contains('password') && message.contains('short')) {
-            _passwordError = true;
-          } else if (message.contains('email') && message.contains('invalid')) {
-            _emailError = true;
-          } else if ((message.contains('email') || message.contains('user')) &&
-                     (message.contains('already') || message.contains('exists'))) {
-            _emailError = true;
-          }
-          // Ambiguous errors (network, rate-limit, unknown): no field flags
-          // _errorMessage already shows the error in the banner
-        }
-      });
+      _handleAuthException(error, stackTrace, l10n);
     } catch (error, stackTrace) {
-      log.e(
-        'signup_failed',
-        error: sanitizeError(error) ?? error.runtimeType,
-        stack: stackTrace,
-      );
-      if (!mounted) return;
-      setState(() => _errorMessage = l10n.authSignupGenericError);
+      _handleGenericError(error, stackTrace, l10n);
     }
+  }
+
+  /// Shows success snackbar and navigates to login after delay.
+  void _handleSignupSuccess(AppLocalizations l10n) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.authSignupSuccess),
+        duration: Timing.snackBarBrief,
+      ),
+    );
+
+    _signupNavTimer?.cancel();
+    _signupNavTimer = Timer(Timing.snackBarBrief, () {
+      if (!mounted) return;
+      context.go(LoginScreen.routeName);
+    });
+  }
+
+  /// Handles AuthException: logs, sets error message, and attributes field errors.
+  void _handleAuthException(
+    AuthException error,
+    StackTrace stackTrace,
+    AppLocalizations l10n,
+  ) {
+    log.e(
+      'signup_failed_auth',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    if (!mounted) return;
+
+    final attribution = _attributeSignupFieldErrors(error);
+    setState(() {
+      _errorMessage = _mapAuthError(error, l10n);
+      _emailError = attribution.emailError;
+      _passwordError = attribution.passwordError;
+    });
+  }
+
+  /// Handles generic errors (non-AuthException).
+  void _handleGenericError(
+    Object error,
+    StackTrace stackTrace,
+    AppLocalizations l10n,
+  ) {
+    log.e(
+      'signup_failed',
+      error: sanitizeError(error) ?? error.runtimeType,
+      stack: stackTrace,
+    );
+    if (!mounted) return;
+    setState(() => _errorMessage = l10n.authSignupGenericError);
   }
 
   Future<void> _handleSignup() async {
@@ -362,7 +403,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return AuthRebrandScaffold(
-      scaffoldKey: const ValueKey('auth_signup_screen'),
+      scaffoldKey: const ValueKey(TestKeys.authSignupScreen),
       onBack: () => handleAuthBackNavigation(context),
       child: _buildContent(l10n),
     );
@@ -408,7 +449,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   Widget _buildEmailField(AppLocalizations l10n) {
     return AuthRebrandTextField(
-      key: const ValueKey('signup_email_field'),
+      key: const ValueKey(TestKeys.signupEmailField),
       controller: _emailController,
       hintText: l10n.authEmailPlaceholderLong,
       errorText: _emailError ? l10n.authErrorEmailCheck : null,
@@ -421,7 +462,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   Widget _buildPasswordField(AppLocalizations l10n) {
     return AuthRebrandTextField(
-      key: const ValueKey('signup_password_field'),
+      key: const ValueKey(TestKeys.signupPasswordField),
       controller: _passwordController,
       hintText: l10n.authPasswordPlaceholder,
       errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
@@ -446,7 +487,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         : null;
 
     return AuthRebrandTextField(
-      key: const ValueKey('signup_password_confirm_field'),
+      key: const ValueKey(TestKeys.signupPasswordConfirmField),
       controller: _confirmPasswordController,
       hintText: l10n.authNewPasswordConfirmHint,
       errorText: confirmErrorText,
@@ -470,8 +511,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   Widget _buildCtaButton(AppLocalizations l10n) {
     return AuthPrimaryButton(
-      key: const ValueKey('signup_cta_button'),
-      loadingKey: const ValueKey('signup_cta_loading'),
+      key: const ValueKey(TestKeys.signupCtaButton),
+      loadingKey: const ValueKey(TestKeys.signupCtaLoading),
       label: l10n.authEntryCta,
       onPressed: _isSubmitting ? null : _handleSignup,
       isLoading: _isSubmitting,

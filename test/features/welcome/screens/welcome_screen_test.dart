@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
@@ -50,7 +51,7 @@ void main() {
           path: RoutePaths.authSignIn,
           name: RouteNames.authSignIn,
           builder: (context, state) => const Scaffold(
-            key: ValueKey('auth_signin_screen'),
+            key: ValueKey(TestKeys.authSigninScreen),
             body: Text('Auth SignIn Screen'),
           ),
         ),
@@ -226,7 +227,7 @@ void main() {
 
         // Should navigate to AuthSignInScreen
         expect(
-          find.byKey(const ValueKey('auth_signin_screen')),
+          find.byKey(const ValueKey(TestKeys.authSigninScreen)),
           findsOneWidget,
           reason: 'Should navigate to AuthSignInScreen after completing welcome',
         );
@@ -280,7 +281,7 @@ void main() {
         await tester.pumpWidget(buildTestApp(screenSize: testSize));
         await tester.pumpAndSettle();
 
-        final heroFinder = find.byKey(const Key('welcome_hero_frame'));
+        final heroFinder = find.byKey(const Key(TestKeys.welcomeHeroFrame));
         expect(heroFinder, findsOneWidget);
 
         final heroSize = tester.getSize(heroFinder);
@@ -299,8 +300,8 @@ void main() {
         await tester.pumpWidget(buildTestApp(screenSize: testSize));
         await tester.pumpAndSettle();
 
-        final dotsFinder = find.byKey(const Key('welcome_page_indicators'));
-        final heroFinder = find.byKey(const Key('welcome_hero_frame'));
+        final dotsFinder = find.byKey(const Key(TestKeys.welcomePageIndicators));
+        final heroFinder = find.byKey(const Key(TestKeys.welcomeHeroFrame));
 
         expect(dotsFinder, findsOneWidget, reason: 'Page indicators should be present');
         expect(heroFinder, findsOneWidget, reason: 'Hero frame should be present');
@@ -333,7 +334,7 @@ void main() {
         )!;
 
         // Get CTA bottom position on W1
-        final ctaFinder = find.byKey(const Key('welcome_cta_button'));
+        final ctaFinder = find.byKey(const Key(TestKeys.welcomeCtaButton));
         expect(ctaFinder, findsOneWidget);
         final ctaBottomW1 = tester.getBottomLeft(ctaFinder).dy;
 
@@ -379,17 +380,17 @@ void main() {
 
         // Verify UI elements are present
         expect(
-          find.byKey(const Key('welcome_hero_frame')),
+          find.byKey(const Key(TestKeys.welcomeHeroFrame)),
           findsOneWidget,
           reason: 'Hero frame should be present with TextScale 1.2',
         );
         expect(
-          find.byKey(const Key('welcome_headline_block')),
+          find.byKey(const Key(TestKeys.welcomeHeadlineBlock)),
           findsOneWidget,
           reason: 'Headline block should be present with TextScale 1.2',
         );
         expect(
-          find.byKey(const Key('welcome_cta_button')),
+          find.byKey(const Key(TestKeys.welcomeCtaButton)),
           findsOneWidget,
           reason: 'CTA button should be present with TextScale 1.2',
         );
@@ -414,11 +415,11 @@ void main() {
 
         // Verify UI elements are present
         expect(
-          find.byKey(const Key('welcome_hero_frame')),
+          find.byKey(const Key(TestKeys.welcomeHeroFrame)),
           findsOneWidget,
         );
         expect(
-          find.byKey(const Key('welcome_cta_button')),
+          find.byKey(const Key(TestKeys.welcomeCtaButton)),
           findsOneWidget,
         );
       },
@@ -441,17 +442,17 @@ void main() {
 
         // Verify UI elements are present
         expect(
-          find.byKey(const Key('welcome_hero_frame')),
+          find.byKey(const Key(TestKeys.welcomeHeroFrame)),
           findsOneWidget,
           reason: 'Hero frame should be present in fallback mode',
         );
         expect(
-          find.byKey(const Key('welcome_headline_block')),
+          find.byKey(const Key(TestKeys.welcomeHeadlineBlock)),
           findsOneWidget,
           reason: 'Headline block should be present in fallback mode',
         );
         expect(
-          find.byKey(const Key('welcome_cta_button')),
+          find.byKey(const Key(TestKeys.welcomeCtaButton)),
           findsOneWidget,
           reason: 'CTA button should be present in fallback mode',
         );

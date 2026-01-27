@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/gradients.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -219,7 +220,7 @@ class _Onboarding06PeriodScreenState extends ConsumerState<Onboarding06PeriodScr
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: OnboardingButton(
-        key: const Key('o6_cta'),
+        key: const Key(TestKeys.o6Cta),
         label: l10n.commonContinue,
         onPressed: _unknownSelected ? _navigateToSuccessScreen : _navigateToNextScreen,
         isEnabled: true,

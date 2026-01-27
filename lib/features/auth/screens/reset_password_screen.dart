@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/analytics/telemetry.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
@@ -112,7 +113,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final canSubmit = state.isValid && !submitState.isLoading;
 
     return AuthRebrandScaffold(
-      scaffoldKey: const ValueKey('auth_reset_screen'),
+      scaffoldKey: const ValueKey(TestKeys.authResetScreen),
       compactKeyboard: true, // Fewer fields = compact padding
       onBack: () => handleAuthBackNavigation(context),
       child: _buildFormCard(
@@ -155,7 +156,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               ),
               const SizedBox(height: Spacing.m),
               AuthRebrandTextField(
-                key: const ValueKey('reset_email_field'),
+                key: const ValueKey(TestKeys.resetEmailField),
                 controller: _emailController,
                 hintText: l10n.authEmailPlaceholderLong,
                 errorText: errorText,
@@ -168,7 +169,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               ),
               const SizedBox(height: Spacing.l),
               AuthPrimaryButton(
-                key: const ValueKey('reset_cta'),
+                key: const ValueKey(TestKeys.resetCta),
                 label: l10n.authResetCtaShort,
                 onPressed: canSubmit ? () => _submitReset(state.email, l10n) : null,
                 isLoading: isLoading,

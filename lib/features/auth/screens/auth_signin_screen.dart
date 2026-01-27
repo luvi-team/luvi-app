@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 import 'package:luvi_app/core/config/app_links.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/opacity.dart';
@@ -53,7 +54,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
     final scaleY = size.height / AuthRebrandMetrics.designHeight;
 
     return Scaffold(
-      key: const ValueKey('auth_signin_screen'),
+      key: const ValueKey(TestKeys.authSigninScreen),
       backgroundColor: DsColors.authRebrandBackground,
       body: Stack(
         children: [
@@ -71,7 +72,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
   Widget _buildHeroImage(Size size) {
     // Hero image at bottom (decorative, excluded from semantics)
     return Positioned(
-      key: const ValueKey('auth_entry_hero'),
+      key: const ValueKey(TestKeys.authEntryHero),
       left: 0,
       right: 0,
       bottom: 0,
@@ -113,7 +114,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
               top: AuthRebrandMetrics.entryTealDotTopOffset,
               child: ExcludeSemantics(
                 child: Container(
-                  key: const ValueKey('tealDot'),
+                  key: const ValueKey(TestKeys.authTealDot),
                   width: AuthRebrandMetrics.entryTealDotSize,
                   height: AuthRebrandMetrics.entryTealDotSize,
                   decoration: const BoxDecoration(
@@ -168,7 +169,7 @@ class _AuthSignInScreenState extends ConsumerState<AuthSignInScreen> {
       children: [
         // Primary CTA - "Los geht's"
         AuthPrimaryButton(
-          key: const ValueKey('auth_entry_cta'),
+          key: const ValueKey(TestKeys.authEntryCta),
           label: l10n.authEntryCta,
           width: AuthRebrandMetrics.entryCtaWidth,
           height: AuthRebrandMetrics.entryPrimaryButtonHeight,

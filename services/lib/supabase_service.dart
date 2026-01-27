@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:luvi_core/luvi_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'date_utils.dart';
 
 import 'init_exception.dart';
 import 'init_mode.dart';
@@ -346,7 +347,7 @@ class SupabaseService {
     if (displayName.trim().isEmpty) {
       throw ArgumentError.value(displayName, 'displayName', 'cannot be empty');
     }
-    // Validate age bounds using shared utility from luvi_core
+    // Validate age bounds using shared utility from luvi_services
     final age = calculateAge(birthDate);
     final ageConfig = _validationConfig;
     if (age < ageConfig.minAge || age > ageConfig.maxAge) {

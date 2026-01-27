@@ -4,16 +4,20 @@ class AuthRepository {
   final SupabaseClient _sb;
   AuthRepository(this._sb);
 
-  Future<AuthResponse> signInWithPassword({
+  Future<void> signInWithPassword({
     required String email,
     required String password,
-  }) => _sb.auth.signInWithPassword(email: email, password: password);
+  }) async {
+    await _sb.auth.signInWithPassword(email: email, password: password);
+  }
 
-  Future<AuthResponse> signUp({
+  Future<void> signUp({
     required String email,
     required String password,
     Map<String, dynamic>? data,
-  }) => _sb.auth.signUp(email: email, password: password, data: data);
+  }) async {
+    await _sb.auth.signUp(email: email, password: password, data: data);
+  }
 
   Future<void> signOut() => _sb.auth.signOut();
 

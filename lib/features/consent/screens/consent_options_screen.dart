@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luvi_app/core/config/legal_actions.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/consent_spacing.dart';
@@ -89,7 +90,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     _SectionHeader(title: l10n.consentOptionsSectionRequired),
                     const SizedBox(height: Spacing.s),
                     _ConsentCheckboxRow(
-                      key: const Key('consent_options_health'),
+                      key: const Key(TestKeys.consentOptionsHealth),
                       text: l10n.consentOptionsHealthText,
                       selected:
                           state.choices[ConsentScope.health_processing] == true,
@@ -100,7 +101,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     ),
                     const SizedBox(height: ConsentSpacing.checkboxItemGap),
                     _ConsentCheckboxRow(
-                      key: const Key('consent_options_terms'),
+                      key: const Key(TestKeys.consentOptionsTerms),
                       text: '',
                       semanticsText:
                           '${l10n.consentOptionsTermsPrefix}'
@@ -123,7 +124,7 @@ class _ConsentOptionsScreenState extends ConsumerState<ConsentOptionsScreen> {
                     _SectionHeader(title: l10n.consentOptionsSectionOptional),
                     const SizedBox(height: Spacing.s),
                     _ConsentCheckboxRow(
-                      key: const Key('consent_options_analytics'),
+                      key: const Key(TestKeys.consentOptionsAnalytics),
                       text: l10n.consentOptionsAnalyticsText,
                       footnote: l10n.consentOptionsAnalyticsRevoke,
                       selected: state.choices[ConsentScope.analytics] == true,
@@ -542,7 +543,7 @@ class _ConsentFooter extends StatelessWidget {
                 label: l10n.consentOptionsCtaContinue,
               ),
               const SizedBox(
-                key: Key('consent_options_button_gap'),
+                key: Key(TestKeys.consentOptionsButtonGap),
                 height: ConsentSpacing.buttonGapC2,
               ),
               _AcceptAllButton(
@@ -626,7 +627,7 @@ class _ContinueButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _ConsentPrimaryButton(
-      buttonKey: const Key('consent_options_btn_continue'),
+      buttonKey: const Key(TestKeys.consentBtnContinue),
       enabled: enabled,
       onPressed: onPressed,
       label: label,
@@ -653,7 +654,7 @@ class _AcceptAllButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _ConsentPrimaryButton(
-      buttonKey: const Key('consent_options_btn_accept_all'),
+      buttonKey: const Key(TestKeys.consentBtnAcceptAll),
       enabled: enabled,
       onPressed: onPressed,
       label: label,

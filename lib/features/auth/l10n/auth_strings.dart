@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
@@ -45,7 +46,10 @@ class AuthStrings {
   /// Recommended: pass a closure that resolves to `Localizations.localeOf(context)`
   /// from your app root, so that cache invalidation is driven by the real
   /// widget tree locale rather than the platform locale.
-  static void setLocaleResolver(ui.Locale Function() resolver) {
+  ///
+  /// Pass `null` to clear a previously installed resolver (reverts to platform locale).
+  /// The resolver itself may return `null` to signal "use platform locale".
+  static void setLocaleResolver(ui.Locale? Function()? resolver) {
     _resolver = resolver;
   }
 
@@ -79,9 +83,9 @@ class AuthStrings {
     assert(() {
       // In debug builds, surface when cache is considered stale.
       if (_cachedTag != null && _cachedTag != currentTag) {
-        debugPrint(
-          '[AuthStrings] Locale tag changed from "$_cachedTag" to "$currentTag". '
-          'Re-resolving AppLocalizations.',
+        log.d(
+          'auth_strings_locale_tag_changed: $_cachedTag -> $currentTag',
+          tag: 'auth_strings',
         );
       }
       return true;

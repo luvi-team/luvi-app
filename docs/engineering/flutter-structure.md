@@ -20,7 +20,7 @@ Dieses Dokument ist der Single Source of Truth für Flutter-spezifische Struktur
 
 ## 3. Assets & Strings
 - Alle Asset-Pfade laufen über `lib/core/design_tokens/assets.dart`. Keine parallel definierten `Assets`-Klassen.
-- Feature-spezifische Strings gehören in das Feature (z. B. `lib/features/auth/strings/auth_strings.dart`). Core darf nur truly globale Copy enthalten.
+- Feature-spezifische Strings gehören in das Feature (z. B. `lib/features/auth/l10n/auth_strings.dart`). Core darf nur truly globale Copy enthalten.
 
 ## 4. Navigation & Routen
 

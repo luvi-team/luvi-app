@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:video_player/video_player.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/logging/logger.dart';
@@ -278,7 +279,7 @@ class _SplashVideoPlayerState extends State<SplashVideoPlayer>
     // Fallback image is only shown on error or reduce-motion.
     if (!_isInitialized) {
       return SizedBox.expand(
-        key: const Key('splash_video_loading'),
+        key: const Key(TestKeys.splashVideoLoading),
         child: ColoredBox(color: DsColors.splashBg),
       );
     }

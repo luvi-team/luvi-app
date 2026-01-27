@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 
@@ -30,7 +31,7 @@ class LoginCtaSection extends StatelessWidget {
         SizedBox(
           height: Sizes.buttonHeight,
           child: ElevatedButton(
-            key: const ValueKey('login_cta_button'),
+            key: const ValueKey(TestKeys.loginCtaButton),
             onPressed: (isLoading || hasValidationError)
                 ? null
                 : () {
@@ -50,7 +51,7 @@ class LoginCtaSection extends StatelessWidget {
         ),
         Center(
           child: TextButton(
-            key: const ValueKey('login_signup_link'),
+            key: const ValueKey(TestKeys.loginSignupLink),
             onPressed: onSignup,
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
@@ -99,7 +100,7 @@ class _LoginButtonChild extends StatelessWidget {
     if (!isLoading) {
       return KeyedSubtree(
         // keep key stable for AnimatedSwitcher
-        key: const ValueKey('login_cta_label'),
+        key: const ValueKey(TestKeys.loginCtaLabel),
         // non-const child due to localized string
         child: Text(AuthStrings.loginCta),
       );
@@ -107,11 +108,11 @@ class _LoginButtonChild extends StatelessWidget {
 
     final theme = Theme.of(context);
     return Semantics(
-      key: const ValueKey('login_cta_loading_semantics'),
+      key: const ValueKey(TestKeys.loginCtaLoadingSemantics),
       label: AuthStrings.loginCtaLoadingSemantic,
       liveRegion: true,
       child: SizedBox(
-        key: const ValueKey('login_cta_loading'),
+        key: const ValueKey(TestKeys.loginCtaLoading),
         height: Sizes.buttonHeight / 2,
         width: Sizes.buttonHeight / 2,
         child: CircularProgressIndicator(

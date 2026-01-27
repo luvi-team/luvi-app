@@ -110,11 +110,11 @@ class CategoryProps {
 
 @immutable
 class BottomNavProps {
-  const BottomNavProps({
+  BottomNavProps({
     required this.selectedIndex,
-    required this.items,
+    required List<String> items,
     this.hasNotifications = false,
-  });
+  }) : items = List.unmodifiable(items);
 
   final int selectedIndex;
   final List<String> items;
@@ -146,21 +146,27 @@ class WearableProps {
 
 @immutable
 class HeuteFixtureState {
-  const HeuteFixtureState({
+  HeuteFixtureState({
     required this.header,
     required this.heroCard,
     required this.topRecommendation,
-    required this.weeklyTrainings,
-    required this.categories,
-    required this.recommendations,
-    required this.nutritionRecommendations,
-    required this.regenerationRecommendations,
-    required this.trainingStats,
+    required List<WeeklyTrainingProps> weeklyTrainings,
+    required List<CategoryProps> categories,
+    required List<Recommendation> recommendations,
+    required List<Recommendation> nutritionRecommendations,
+    required List<Recommendation> regenerationRecommendations,
+    required List<TrainingStatProps> trainingStats,
     required this.wearable,
     required this.bottomNav,
     required this.referenceDate,
     required this.cycleInfo,
-  });
+  })  : weeklyTrainings = List.unmodifiable(weeklyTrainings),
+        categories = List.unmodifiable(categories),
+        recommendations = List.unmodifiable(recommendations),
+        nutritionRecommendations = List.unmodifiable(nutritionRecommendations),
+        regenerationRecommendations =
+            List.unmodifiable(regenerationRecommendations),
+        trainingStats = List.unmodifiable(trainingStats);
 
   final HeaderProps header;
   final HeroCardProps heroCard;
@@ -259,160 +265,188 @@ class HeuteFixtures {
         dateText: dateText,
         phaseLabel: phase.label,
       ),
-      heroCard: HeroCardProps(
-        programTitle: 'Kraft - Ganzkörper',
-        openCountText: '12 Übungen offen',
-        progressRatio: 0.25,
-        dateText: dateText,
-        subtitle:
-            'Wir starten heute ruhig und strukturiert - eine lockere Cardio Einheit hilft dir fokussiert zu bleiben...',
-        ctaState: HeroCtaState.resumeActiveWorkout,
-      ),
-      topRecommendation: TopRecommendationProps(
-        id: 'reco-shoulder-stretching',
-        tag: '', // Empty tag -> conditional rendering hides "KRAFT"
-        title: 'Shoulder Stretching',
-        imagePath: Assets.images.recoGanzkoerper,
-        badgeAssetPath: Assets.icons.syncBadge,
-        duration: '15 Min',
-      ),
-      weeklyTrainings: [
-        WeeklyTrainingProps(
-          id: 'wkly-ganzkoerper',
-          title: 'Ganzkörper\nKrafttraining',
-          subtitle: 'Baue deine Basis auf',
-          dayLabel: 'Tag 1',
-          duration: '60 min',
-          imagePath: Assets.images.recoGanzkoerper,
-          isCompleted: true,
-        ),
-        WeeklyTrainingProps(
-          id: 'wkly-hiit-cardio',
-          title: 'HIIT\nCardio',
-          subtitle: 'Steigere deine Ausdauer',
-          duration: '45 min',
-          imagePath: Assets.images.recoBeinePo,
-        ),
-        WeeklyTrainingProps(
-          id: 'wkly-mobility',
-          title: 'Mobility\nTraining',
-          subtitle: 'Beweglichkeit verbessern',
-          duration: '30 min',
-          imagePath: Assets.images.recoRueckenSchulter,
-        ),
-      ],
-      categories: [
-        CategoryProps(
-          iconPath: Assets.icons.catTraining,
-          category: Category.training,
-          isSelected: true,
-        ),
-        CategoryProps(
-          iconPath: Assets.icons.catNutrition,
-          category: Category.nutrition,
-        ),
-        CategoryProps(
-          iconPath: Assets.icons.catRegeneration,
-          category: Category.regeneration,
-        ),
-        CategoryProps(
-          iconPath: Assets.icons.catMindfulness,
-          category: Category.mindfulness,
-        ),
-      ],
-      recommendations: [
-        Recommendation(
-          tag: 'Kraft',
-          title: 'Beine & Po',
-          imagePath: Assets.images.recoBeinePo,
-        ),
-        Recommendation(
-          tag: 'Kraft',
-          title: 'Rücken & Schulter',
-          imagePath: Assets.images.recoRueckenSchulter,
-        ),
-        Recommendation(
-          tag: 'Cardio',
-          title: 'Ganzkörper',
-          imagePath: Assets.images.recoGanzkoerper,
-        ),
-      ],
-      nutritionRecommendations: [
-        Recommendation(
-          tag: 'Supplements',
-          title: 'Vitamin C',
-          subtitle: 'Stärke dein Immunsystem',
-          imagePath: Assets.images.strawberry,
-        ),
-        Recommendation(
-          tag: 'Makros',
-          title: 'Protein-Power',
-          subtitle: 'Optimale Nährstoffverteilung',
-          imagePath: Assets.images.roteruebe,
-        ),
-        Recommendation(
-          tag: 'Tagebuch',
-          title: 'Ernährungstagebuch',
-          subtitle: 'Tracke deine Mahlzeiten',
-          imagePath: Assets.images.recoErnaehrungstagebuch,
-        ),
-      ],
-      regenerationRecommendations: [
-        Recommendation(
-          tag: 'Achtsamkeit',
-          title: 'Meditation',
-          subtitle: 'Finde innere Ruhe',
-          imagePath: Assets.images.meditation,
-        ),
-        Recommendation(
-          tag: 'Beweglichkeit',
-          title: 'Stretching',
-          subtitle: 'Entspanne deine Muskeln',
-          imagePath: Assets.images.stretching,
-        ),
-        Recommendation(
-          tag: 'Beauty',
-          title: 'Hautpflege',
-          subtitle: 'Zyklusgerechte Pflege',
-          imagePath: Assets.images.recoHautpflege,
-        ),
-      ],
-      trainingStats: [
-        TrainingStatProps(
-          label: 'Puls',
-          value: 94,
-          unit: 'bpm',
-          iconAssetPath: Assets.icons.dashboard.heart,
-          trend: [0.62, 0.58, 0.67, 0.71, 0.68],
-          heartRateGlyphAsset: Assets.icons.dashboard.heartRateGlyph,
-        ),
-        TrainingStatProps(
-          label: 'Verbrannte Energie',
-          value: 500,
-          unit: 'kcal',
-          iconAssetPath: Assets.icons.dashboard.kcal,
-          trend: [0.32, 0.45, 0.38, 0.52, 0.6],
-        ),
-        TrainingStatProps(
-          label: 'Schritte',
-          value: 2500,
-          iconAssetPath: Assets.icons.dashboard.run,
-          trend: [0.18, 0.24, 0.36, 0.4, 0.48],
-        ),
-      ],
+      heroCard: _buildDefaultHeroCard(dateText),
+      topRecommendation: _buildDefaultTopRecommendation(),
+      weeklyTrainings: _buildDefaultWeeklyTrainings(),
+      categories: _buildDefaultCategories(),
+      recommendations: _buildDefaultRecommendations(),
+      nutritionRecommendations: _buildDefaultNutritionRecommendations(),
+      regenerationRecommendations: _buildDefaultRegenerationRecommendations(),
+      trainingStats: _buildDefaultTrainingStats(),
       wearable: const WearableProps(connected: true),
-      bottomNav: const BottomNavProps(
+      bottomNav: BottomNavProps(
         selectedIndex: 0,
-        items: [
-          'Home',
-          'Flower',
-          'Social',
-          'Account',
-        ], // 'Home' = first tab (index 0)
+        items: const ['Home', 'Flower', 'Social', 'Account'],
       ),
       referenceDate: today,
       cycleInfo: cycleInfo,
     );
+  }
+
+  static HeroCardProps _buildDefaultHeroCard(String dateText) {
+    return HeroCardProps(
+      programTitle: 'Kraft - Ganzkörper',
+      openCountText: '12 Übungen offen',
+      progressRatio: 0.25,
+      dateText: dateText,
+      subtitle:
+          'Wir starten heute ruhig und strukturiert - eine lockere Cardio '
+          'Einheit hilft dir fokussiert zu bleiben...',
+      ctaState: HeroCtaState.resumeActiveWorkout,
+    );
+  }
+
+  static TopRecommendationProps _buildDefaultTopRecommendation() {
+    return TopRecommendationProps(
+      id: 'reco-shoulder-stretching',
+      tag: '', // Empty tag -> conditional rendering hides "KRAFT"
+      title: 'Shoulder Stretching',
+      imagePath: Assets.images.recoGanzkoerper,
+      badgeAssetPath: Assets.icons.syncBadge,
+      duration: '15 Min',
+    );
+  }
+
+  static List<WeeklyTrainingProps> _buildDefaultWeeklyTrainings() {
+    return [
+      WeeklyTrainingProps(
+        id: 'wkly-ganzkoerper',
+        title: 'Ganzkörper\nKrafttraining',
+        subtitle: 'Baue deine Basis auf',
+        dayLabel: 'Tag 1',
+        duration: '60 min',
+        imagePath: Assets.images.recoGanzkoerper,
+        isCompleted: true,
+      ),
+      WeeklyTrainingProps(
+        id: 'wkly-hiit-cardio',
+        title: 'HIIT\nCardio',
+        subtitle: 'Steigere deine Ausdauer',
+        duration: '45 min',
+        imagePath: Assets.images.recoBeinePo,
+      ),
+      WeeklyTrainingProps(
+        id: 'wkly-mobility',
+        title: 'Mobility\nTraining',
+        subtitle: 'Beweglichkeit verbessern',
+        duration: '30 min',
+        imagePath: Assets.images.recoRueckenSchulter,
+      ),
+    ];
+  }
+
+  static List<CategoryProps> _buildDefaultCategories() {
+    return [
+      CategoryProps(
+        iconPath: Assets.icons.catTraining,
+        category: Category.training,
+        isSelected: true,
+      ),
+      CategoryProps(
+        iconPath: Assets.icons.catNutrition,
+        category: Category.nutrition,
+      ),
+      CategoryProps(
+        iconPath: Assets.icons.catRegeneration,
+        category: Category.regeneration,
+      ),
+      CategoryProps(
+        iconPath: Assets.icons.catMindfulness,
+        category: Category.mindfulness,
+      ),
+    ];
+  }
+
+  static List<Recommendation> _buildDefaultRecommendations() {
+    return [
+      Recommendation(
+        tag: 'Kraft',
+        title: 'Beine & Po',
+        imagePath: Assets.images.recoBeinePo,
+      ),
+      Recommendation(
+        tag: 'Kraft',
+        title: 'Rücken & Schulter',
+        imagePath: Assets.images.recoRueckenSchulter,
+      ),
+      Recommendation(
+        tag: 'Cardio',
+        title: 'Ganzkörper',
+        imagePath: Assets.images.recoGanzkoerper,
+      ),
+    ];
+  }
+
+  static List<Recommendation> _buildDefaultNutritionRecommendations() {
+    return [
+      Recommendation(
+        tag: 'Supplements',
+        title: 'Vitamin C',
+        subtitle: 'Stärke dein Immunsystem',
+        imagePath: Assets.images.strawberry,
+      ),
+      Recommendation(
+        tag: 'Makros',
+        title: 'Protein-Power',
+        subtitle: 'Optimale Nährstoffverteilung',
+        imagePath: Assets.images.roteruebe,
+      ),
+      Recommendation(
+        tag: 'Tagebuch',
+        title: 'Ernährungstagebuch',
+        subtitle: 'Tracke deine Mahlzeiten',
+        imagePath: Assets.images.recoErnaehrungstagebuch,
+      ),
+    ];
+  }
+
+  static List<Recommendation> _buildDefaultRegenerationRecommendations() {
+    return [
+      Recommendation(
+        tag: 'Achtsamkeit',
+        title: 'Meditation',
+        subtitle: 'Finde innere Ruhe',
+        imagePath: Assets.images.meditation,
+      ),
+      Recommendation(
+        tag: 'Beweglichkeit',
+        title: 'Stretching',
+        subtitle: 'Entspanne deine Muskeln',
+        imagePath: Assets.images.stretching,
+      ),
+      Recommendation(
+        tag: 'Beauty',
+        title: 'Hautpflege',
+        subtitle: 'Zyklusgerechte Pflege',
+        imagePath: Assets.images.recoHautpflege,
+      ),
+    ];
+  }
+
+  static List<TrainingStatProps> _buildDefaultTrainingStats() {
+    return [
+      TrainingStatProps(
+        label: 'Puls',
+        value: 94,
+        unit: 'bpm',
+        iconAssetPath: Assets.icons.dashboard.heart,
+        trend: [0.62, 0.58, 0.67, 0.71, 0.68],
+        heartRateGlyphAsset: Assets.icons.dashboard.heartRateGlyph,
+      ),
+      TrainingStatProps(
+        label: 'Verbrannte Energie',
+        value: 500,
+        unit: 'kcal',
+        iconAssetPath: Assets.icons.dashboard.kcal,
+        trend: [0.32, 0.45, 0.38, 0.52, 0.6],
+      ),
+      TrainingStatProps(
+        label: 'Schritte',
+        value: 2500,
+        iconAssetPath: Assets.icons.dashboard.run,
+        trend: [0.18, 0.24, 0.36, 0.4, 0.48],
+      ),
+    ];
   }
 
   /// Variant B – Notification badge: identical data, but activates bell indicator.

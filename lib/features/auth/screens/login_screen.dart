@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
@@ -77,7 +78,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = submitState.isLoading;
 
     return AuthRebrandScaffold(
-      scaffoldKey: const ValueKey('auth_login_screen'),
+      scaffoldKey: const ValueKey(TestKeys.authLoginScreen),
       onBack: () => handleAuthBackNavigation(context),
       child: _buildContent(l10n: l10n, loginState: loginState, isLoading: isLoading),
     );
@@ -119,7 +120,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           const SizedBox(height: Spacing.m),
           AuthRebrandTextField(
-            key: const ValueKey('login_email_field'),
+            key: const ValueKey(TestKeys.loginEmailField),
             controller: _emailController,
             hintText: l10n.authEmailPlaceholderLong,
             errorText: loginState.emailError,
@@ -130,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           const SizedBox(height: AuthRebrandMetrics.cardInputGap),
           AuthRebrandTextField(
-            key: const ValueKey('login_password_field'),
+            key: const ValueKey(TestKeys.loginPasswordField),
             controller: _passwordController,
             hintText: l10n.authPasswordPlaceholder,
             errorText: loginState.passwordError,
@@ -148,8 +149,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           const SizedBox(height: Spacing.m),
           AuthPrimaryButton(
-            key: const ValueKey('login_cta_button'),
-            loadingKey: const ValueKey('login_cta_loading'),
+            key: const ValueKey(TestKeys.loginCtaButton),
+            loadingKey: const ValueKey(TestKeys.loginCtaLoading),
             label: l10n.authEntryCta,
             onPressed: isLoading ? null : _submit,
             isLoading: isLoading,
@@ -165,7 +166,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildForgotLink(AppLocalizations l10n) {
     // A11y: TextButton for proper focus/ripple and 44dp touch target
     return TextButton(
-      key: const ValueKey('login_forgot_link'),
+      key: const ValueKey(TestKeys.loginForgotLink),
       onPressed: () => context.push(ResetPasswordScreen.routeName),
       style: TextButton.styleFrom(
         minimumSize: const Size(0, Sizes.touchTargetMin), // ✅ 44dp

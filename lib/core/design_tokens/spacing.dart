@@ -95,6 +95,18 @@ class Spacing {
 
   // ─── EdgeInsets Getters (MUST-02 Compliance) ───
 
+  // ─── Init Banner (main.dart _InitBanner) ───
+
+  /// Init banner SafeArea minimum padding (Figma: 12px all sides)
+  static const EdgeInsets initBannerSafeAreaMinimum = EdgeInsets.all(s);
+
+  /// Init banner container padding (Figma: 12px horizontal, 10px vertical)
+  /// Serves exact UI: 12 horizontal, 10 vertical (s - micro = 12 - 2 = 10)
+  static const EdgeInsets initBannerPadding = EdgeInsets.symmetric(
+    horizontal: s,
+    vertical: s - micro, // 12 - 2 = 10
+  );
+
   /// Success Card 1 (left/top) padding with scale factor.
   /// Figma: 4px top, 7px horizontal, 13px bottom
   static EdgeInsets successCard1Padding(double scale) {

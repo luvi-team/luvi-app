@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/welcome/widgets/welcome_video_player.dart';
 import '../../../support/test_config.dart';
@@ -46,7 +47,7 @@ void main() {
 
       // Before video initializes, should show SizedBox.expand with specific key
       // (video_player requires platform channels that aren't available in tests)
-      expect(find.byKey(const Key('welcome_video_loading')), findsOneWidget);
+      expect(find.byKey(const Key(TestKeys.welcomeVideoLoading)), findsOneWidget);
     });
 
     testWidgets('handles invalid asset gracefully without crashing', (

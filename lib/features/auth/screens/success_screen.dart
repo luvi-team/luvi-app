@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
@@ -91,7 +92,7 @@ class _SuccessScreenState extends ConsumerState<SuccessScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      key: const ValueKey('auth_success_screen'),
+      key: const ValueKey(TestKeys.authSuccessScreen),
       backgroundColor: DsColors.authRebrandBackground,
       body: Stack(
         children: [

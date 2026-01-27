@@ -1079,4 +1079,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authDragHandleSemantic => 'Drag handle';
+
+  @override
+  String pageIndicatorLabel(int current, int total) {
+    return 'Page $current of $total';
+  }
 }

@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/time/clock.dart';
 import 'package:luvi_app/l10n/l10n_capabilities.dart';
@@ -24,6 +25,13 @@ typedef DayCellConfig = ({
   bool allowPeriodEndAdjustment,
   VoidCallback onTap,
   // Theme
+  ColorScheme colorScheme,
+  TextTheme textTheme,
+  CyclePhaseTokens? phaseTokens,
+});
+
+/// Theme configuration for month grid rendering.
+typedef MonthGridTheme = ({
   ColorScheme colorScheme,
   TextTheme textTheme,
   CyclePhaseTokens? phaseTokens,
@@ -216,15 +224,17 @@ class _PeriodCalendarState extends State<PeriodCalendar>
           key: isCurrentMonth ? _currentMonthKey : null,
           month: month,
           today: _today,
-          selectedDate: widget.selectedDate,
           periodDaysSet: _periodDaysSet,
+          theme: (
+            colorScheme: colorScheme,
+            textTheme: textTheme,
+            phaseTokens: phaseTokens,
+          ),
+          selectedDate: widget.selectedDate,
           periodEndDate: widget.periodEndDate,
           allowPeriodEndAdjustment: widget.allowPeriodEndAdjustment,
           onDateSelected: widget.onDateSelected,
           onPeriodEndChanged: widget.onPeriodEndChanged,
-          colorScheme: colorScheme,
-          textTheme: textTheme,
-          phaseTokens: phaseTokens,
         );
       },
     );
@@ -236,28 +246,24 @@ class _MonthGrid extends StatelessWidget {
     super.key,
     required this.month,
     required this.today,
-    required this.selectedDate,
     required this.periodDaysSet,
-    required this.periodEndDate,
-    required this.allowPeriodEndAdjustment,
-    required this.onDateSelected,
-    required this.onPeriodEndChanged,
-    required this.colorScheme,
-    required this.textTheme,
-    required this.phaseTokens,
+    required this.theme,
+    this.selectedDate,
+    this.periodEndDate,
+    this.allowPeriodEndAdjustment = false,
+    this.onDateSelected,
+    this.onPeriodEndChanged,
   });
 
   final DateTime month;
   final DateTime today;
-  final DateTime? selectedDate;
   final Set<DateTime> periodDaysSet;
+  final MonthGridTheme theme;
+  final DateTime? selectedDate;
   final DateTime? periodEndDate;
   final bool allowPeriodEndAdjustment;
   final ValueChanged<DateTime>? onDateSelected;
   final ValueChanged<DateTime>? onPeriodEndChanged;
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
-  final CyclePhaseTokens? phaseTokens;
 
   @override
   Widget build(BuildContext context) {
@@ -279,8 +285,8 @@ class _MonthGrid extends StatelessWidget {
           child: Text(
             monthName,
             textAlign: TextAlign.center,
-            style: textTheme.titleMedium?.copyWith(
-              color: colorScheme.onSurface,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.w600,
               fontSize: TypographyTokens.size16,
             ),
@@ -319,14 +325,14 @@ class _MonthGrid extends StatelessWidget {
     } on FormatException catch (e) {
       // DateFormat parsing failed - log in debug and use fallback
       assert(() {
-        debugPrint('DateFormat FormatException: $e');
+        log.d('dateformat_format_exception: $e', tag: 'period_calendar');
         return true;
       }());
       return _fallbackMonths[date.month - 1];
     } on ArgumentError catch (e) {
       // Invalid locale or pattern - log in debug and use fallback
       assert(() {
-        debugPrint('DateFormat ArgumentError: $e');
+        log.d('dateformat_argument_error: $e', tag: 'period_calendar');
         return true;
       }());
       return _fallbackMonths[date.month - 1];
@@ -353,7 +359,7 @@ class _MonthGrid extends StatelessWidget {
           child: Text(
             day,
             textAlign: TextAlign.center,
-            style: textTheme.bodySmall?.copyWith(
+            style: theme.textTheme.bodySmall?.copyWith(
               color: DsColors.calendarWeekdayGray,
               fontWeight: FontWeight.w600,
               fontSize: TypographyTokens.size14,
@@ -400,9 +406,9 @@ class _MonthGrid extends StatelessWidget {
                       : !date.isAfter(today),
                   allowPeriodEndAdjustment: allowPeriodEndAdjustment,
                   onTap: () => _handleDayTap(date),
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                  phaseTokens: phaseTokens,
+                  colorScheme: theme.colorScheme,
+                  textTheme: theme.textTheme,
+                  phaseTokens: theme.phaseTokens,
                 ),
               );
             }),

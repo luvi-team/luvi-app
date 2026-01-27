@@ -1,4 +1,5 @@
 class Sizes {
+  static const double radiusXXS = 4.0; // micro radius (focus indicators, subtle borders)
   static const double radiusXS = 6.0; // extra small radius (edge case elements)
   static const double radiusS = 8.0; // small radius (inner elements)
   static const double radiusM = 12.0; // default medium radius

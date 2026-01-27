@@ -24,4 +24,6 @@ Implement a screen based on Figma design.
 3. **Create missing tokens** with `/// Figma: xxx` comment
 4. **Implement** the screen
 5. **Create Widget Test**
+   - Use `TestKeys` from `lib/core/config/test_keys.dart` for widget keys
+   - Pattern: `find.byKey(const Key(TestKeys.keyName))`
 6. **Run**: `scripts/flutter_codex.sh analyze`

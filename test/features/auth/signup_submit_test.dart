@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
@@ -71,7 +72,7 @@ void main() {
 
       await pumpSignupScreen(tester, mockRepo);
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       final l10n = AppLocalizations.of(
@@ -99,24 +100,24 @@ void main() {
           password: any(named: 'password'),
           data: any(named: 'data'),
         ),
-      ).thenAnswer((_) async => AuthResponse(session: null, user: null));
+      ).thenAnswer((_) async {});
 
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'strongpass',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'strongpass',
       );
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pump(); // Process tap
       await tester.pump(); // Process signup
 
@@ -133,7 +134,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // After successful signup, user is navigated to login screen
-      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+      expect(find.byKey(const ValueKey(TestKeys.authLoginScreen)), findsOneWidget);
     });
 
     testWidgets('shows API error message and re-enables CTA after failure', (
@@ -151,19 +152,19 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'strongpass',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'strongpass',
       );
 
-      final buttonFinder = find.byKey(const ValueKey('signup_cta_button'));
+      final buttonFinder = find.byKey(const ValueKey(TestKeys.signupCtaButton));
       await tester.tap(buttonFinder);
       await tester.pumpAndSettle();
 
@@ -189,7 +190,7 @@ void main() {
 
     testWidgets('displays loading spinner while submitting', (tester) async {
       final mockRepo = _MockAuthRepository();
-      final completer = Completer<AuthResponse>();
+      final completer = Completer<void>();
       when(
         () => mockRepo.signUp(
           email: any(named: 'email'),
@@ -201,23 +202,23 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'strongpass',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'strongpass',
       );
 
-      final buttonFinder = find.byKey(const ValueKey('signup_cta_button'));
+      final buttonFinder = find.byKey(const ValueKey(TestKeys.signupCtaButton));
       await tester.tap(buttonFinder);
       await tester.pump();
 
-      expect(find.byKey(const ValueKey('signup_cta_loading')), findsOneWidget);
+      expect(find.byKey(const ValueKey(TestKeys.signupCtaLoading)), findsOneWidget);
 
       // WelcomeButton wraps ElevatedButton - find the inner ElevatedButton
       final innerButtonFinder = innerElevatedButton(buttonFinder);
@@ -232,10 +233,10 @@ void main() {
       );
       expect(loadingButton.onPressed, isNull);
 
-      completer.complete(AuthResponse(session: null, user: null));
+      completer.complete();
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const ValueKey('signup_cta_loading')), findsNothing);
+      expect(find.byKey(const ValueKey(TestKeys.signupCtaLoading)), findsNothing);
     });
 
     testWidgets('shows snackbar and delays 800ms before navigation to login', (
@@ -248,26 +249,26 @@ void main() {
           password: any(named: 'password'),
           data: any(named: 'data'),
         ),
-      ).thenAnswer((_) async => AuthResponse(session: null, user: null));
+      ).thenAnswer((_) async {});
 
       await pumpSignupScreen(tester, mockRepo);
 
       // Fill form
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'strongpass',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'strongpass',
       );
 
       // Submit
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
 
       // After API call completes, pump to show SnackBar
       await tester.pump(); // First pump: trigger setState after async completes
@@ -283,15 +284,15 @@ void main() {
       );
 
       // Still on signup screen (delay hasn't passed)
-      expect(find.byKey(const ValueKey('auth_signup_screen')), findsOneWidget);
-      expect(find.byKey(const ValueKey('auth_login_screen')), findsNothing);
+      expect(find.byKey(const ValueKey(TestKeys.authSignupScreen)), findsOneWidget);
+      expect(find.byKey(const ValueKey(TestKeys.authLoginScreen)), findsNothing);
 
       // Advance past signup success navigation delay
       await tester.pump(Timing.snackBarBrief);
       await tester.pumpAndSettle();
 
       // Now on login screen
-      expect(find.byKey(const ValueKey('auth_login_screen')), findsOneWidget);
+      expect(find.byKey(const ValueKey(TestKeys.authLoginScreen)), findsOneWidget);
     });
 
     testWidgets('shows error when passwords do not match', (tester) async {
@@ -302,20 +303,20 @@ void main() {
 
       // Fill email and mismatched passwords
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'Password123!',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'Different456!',
       );
 
       // Submit
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       // Verify error message is shown (appears in both global banner and field error)
@@ -342,20 +343,20 @@ void main() {
 
       // Fill email and short password
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'short', // < 8 characters
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'short',
       );
 
       // Submit
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       // Verify error message is shown
@@ -382,20 +383,20 @@ void main() {
 
       // Fill email and common weak password (blocked by password validation rules per NIST SP 800-63B)
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'password123', // Common weak password (blocklisted)
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'password123',
       );
 
       // Submit
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       // Verify error message is shown
@@ -429,19 +430,19 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'strongpass',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'strongpass',
       );
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       // Verify password error message is shown (not email)
@@ -467,19 +468,19 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'strongpass',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'strongpass',
       );
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       // Verify email error message is shown
@@ -505,19 +506,19 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'strongpass',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'strongpass',
       );
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       // Should still work via message fallback (contains 'already')
@@ -540,19 +541,19 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'strongpass',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'strongpass',
       );
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       final l10n = AppLocalizations.of(
@@ -575,19 +576,19 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'ValidPass123!',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'ValidPass123!',
       );
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       final l10n = AppLocalizations.of(
@@ -619,19 +620,19 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'ValidPass123!',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'ValidPass123!',
       );
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       final l10n = AppLocalizations.of(
@@ -661,19 +662,19 @@ void main() {
       await pumpSignupScreen(tester, mockRepo);
 
       await tester.enterText(
-        find.byKey(const ValueKey('signup_email_field')),
+        find.byKey(const ValueKey(TestKeys.signupEmailField)),
         'user@example.com',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordField)),
         'ValidPass123!',
       );
       await tester.enterText(
-        find.byKey(const ValueKey('signup_password_confirm_field')),
+        find.byKey(const ValueKey(TestKeys.signupPasswordConfirmField)),
         'ValidPass123!',
       );
 
-      await tester.tap(find.byKey(const ValueKey('signup_cta_button')));
+      await tester.tap(find.byKey(const ValueKey(TestKeys.signupCtaButton)));
       await tester.pumpAndSettle();
 
       final l10n = AppLocalizations.of(

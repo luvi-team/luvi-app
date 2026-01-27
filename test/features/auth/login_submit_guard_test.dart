@@ -7,7 +7,7 @@ import '../../support/test_config.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import 'package:luvi_app/features/auth/state/login_submit_provider.dart';
 import 'package:luvi_app/features/auth/data/auth_repository.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart';
 import 'package:luvi_app/features/auth/state/auth_controller.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}

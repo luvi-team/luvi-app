@@ -12,42 +12,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // Core imports (always allowed)
-import 'package:luvi_app/core/config/app_links.dart';
-import 'package:luvi_app/core/logging/logger.dart';
-import 'package:luvi_app/core/navigation/route_names.dart';
-import 'package:luvi_app/core/utils/run_catching.dart' show sanitizeError;
 import 'package:luvi_app/core/navigation/route_paths.dart';
-import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart' as routes;
-import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_services/user_state_service.dart';
-import 'package:luvi_app/core/privacy/consent_config.dart';
 
-// Feature Screen imports (allowed here, NOT in core)
-import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
-import 'package:luvi_app/features/auth/screens/auth_signup_screen.dart';
-import 'package:luvi_app/features/auth/screens/create_new_password_screen.dart';
-import 'package:luvi_app/features/auth/screens/login_screen.dart';
-import 'package:luvi_app/features/auth/screens/reset_password_screen.dart';
-import 'package:luvi_app/features/auth/screens/success_screen.dart';
-import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
-import 'package:luvi_app/features/cycle/screens/cycle_overview_stub.dart';
-import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
-import 'package:luvi_app/features/dashboard/screens/trainings_overview_stub.dart';
-import 'package:luvi_app/features/dashboard/screens/workout_detail_stub.dart';
-import 'package:luvi_app/features/legal/screens/legal_viewer.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_03_fitness.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_04_goals.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_05_interests.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
-import 'package:luvi_app/features/profile/screens/profile_stub_screen.dart';
+// Feature imports (splash only - others delegated to route_builders)
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
-import 'package:luvi_app/features/welcome/screens/welcome_screen.dart';
+
+// Route builders (allowed to import features)
+import 'package:luvi_app/router/route_builders/auth_routes.dart';
+import 'package:luvi_app/router/route_builders/consent_routes.dart';
+import 'package:luvi_app/router/route_builders/dashboard_routes.dart';
+import 'package:luvi_app/router/route_builders/legal_routes.dart';
+import 'package:luvi_app/router/route_builders/onboarding_routes.dart';
+import 'package:luvi_app/router/route_builders/welcome_routes.dart';
 
 /// Creates a GoRouter instance with all app routes.
 ///
@@ -73,346 +50,27 @@ GoRouter createRouter(
   );
 }
 
-/// Consent guard for onboarding routes - prevents deep-link bypass.
-///
-/// Returns:
-/// - `/consent/options` if user needs consent (null or outdated version)
-/// - `/splash?skipAnimation=true` if state is loading/error (fail-safe)
-/// - `null` if consent is valid (allow access)
-String? _onboardingConsentGuard(BuildContext context, GoRouterState state) {
-  final container = ProviderScope.containerOf(context, listen: false);
-  final userStateAsync = container.read(userStateServiceProvider);
-
-  return userStateAsync.when(
-    data: (userState) {
-      final acceptedVersion = userState.acceptedConsentVersionOrNull;
-      final needsConsent = acceptedVersion == null ||
-          acceptedVersion < ConsentConfig.currentVersionInt;
-
-      return needsConsent ? RoutePaths.consentOptions : null;
-    },
-    loading: () => '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}',
-    error: (error, st) {
-      // Log sanitized error for debugging (fail-safe still returns splash)
-      log.w(
-        'consent_guard_state_error',
-        tag: 'router',
-        error: sanitizeError(error) ?? error.runtimeType,
-        stack: st,
-      );
-      return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
-    },
-  );
-}
-
-/// Post-Auth guard for main app routes - prevents deep-link bypass.
-///
-/// Checks both consent AND onboarding gates (Defense-in-Depth).
-/// Returns:
-/// - `/splash?skipAnimation=true` if state is loading/error (fail-safe)
-/// - `/consent/options` if consent missing/outdated
-/// - `/onboarding/01` if onboarding incomplete
-/// - `null` if all gates passed (allow access)
-String? _postAuthGuard(BuildContext context, GoRouterState state) {
-  final container = ProviderScope.containerOf(context, listen: false);
-  final asyncValue = container.read(userStateServiceProvider);
-
-  return asyncValue.when(
-    data: (service) {
-      final hasCompletedOnboarding = service.hasCompletedOnboardingOrNull;
-      final acceptedConsentVersion = service.acceptedConsentVersionOrNull;
-      final isStateKnown = hasCompletedOnboarding != null;
-
-      return routes.homeGuardRedirectWithConsent(
-        isStateKnown: isStateKnown,
-        hasCompletedOnboarding: hasCompletedOnboarding,
-        acceptedConsentVersion: acceptedConsentVersion,
-        currentConsentVersion: ConsentConfig.currentVersionInt,
-      );
-    },
-    loading: () => '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}',
-    error: (error, st) {
-      // Log sanitized error to prevent PII leakage
-      log.w(
-        'post_auth_guard_state_error',
-        tag: 'router',
-        error: sanitizeError(error) ?? error.runtimeType,
-        stack: st,
-      );
-      return '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}';
-    },
-  );
-}
-
-/// Builds all application routes.
+/// Builds all application routes by composing route builders.
 ///
 /// Kept as a separate function for testability and clarity.
 /// Note: The [ref] parameter is kept for API consistency but routes access
 /// providers via ProviderScope.containerOf(context) in builders.
 List<RouteBase> _buildRoutes([WidgetRef? ref]) {
   return [
-    // ─────────────────────────────────────────────────────────────────────
-    // Splash
-    // ─────────────────────────────────────────────────────────────────────
+    // Splash (single route, kept inline)
     GoRoute(
       path: RoutePaths.splash,
       name: 'splash',
       builder: (context, state) => const SplashScreen(),
     ),
 
-    // ─────────────────────────────────────────────────────────────────────
-    // Welcome (New: single route with PageView)
-    // ─────────────────────────────────────────────────────────────────────
-    GoRoute(
-      path: RoutePaths.welcome,
-      name: RouteNames.welcome,
-      builder: (context, state) => const WelcomeScreen(),
-    ),
-    // Legacy welcome screen redirects (w1-w5 → unified /welcome)
-    GoRoute(path: '/onboarding/w1', redirect: (_, _) => RoutePaths.welcome),
-    GoRoute(path: '/onboarding/w2', redirect: (_, _) => RoutePaths.welcome),
-    GoRoute(path: '/onboarding/w3', redirect: (_, _) => RoutePaths.welcome),
-    GoRoute(path: '/onboarding/w4', redirect: (_, _) => RoutePaths.welcome),
-    GoRoute(path: '/onboarding/w5', redirect: (_, _) => RoutePaths.welcome),
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Consent Flow (Single Screen: Options)
-    // ─────────────────────────────────────────────────────────────────────
-    GoRoute(
-      path: RoutePaths.consentOptions,
-      name: RouteNames.consentOptions,
-      builder: (context, state) => const ConsentOptionsScreen(),
-    ),
-    // Legacy redirects for backward compatibility
-    GoRoute(
-      path: RoutePaths.consentIntro,
-      redirect: (context, state) => RoutePaths.consentOptions,
-    ),
-    GoRoute(
-      path: RoutePaths.consentBlocking,
-      redirect: (context, state) => RoutePaths.consentOptions,
-    ),
-    GoRoute(
-      path: RoutePaths.consentIntroLegacy, // /consent/02
-      redirect: (context, state) => RoutePaths.consentOptions,
-    ),
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Onboarding (O1-O8) - All routes guarded by consent check
-    // ─────────────────────────────────────────────────────────────────────
-    GoRoute(
-      path: RoutePaths.onboarding01,
-      name: 'onboarding_01',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) => const Onboarding01Screen(),
-    ),
-    GoRoute(
-      path: RoutePaths.onboarding02,
-      name: 'onboarding_02',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) => const Onboarding02Screen(),
-    ),
-    GoRoute(
-      path: RoutePaths.onboarding03Fitness,
-      name: 'onboarding_03_fitness',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) => const Onboarding03FitnessScreen(),
-    ),
-    GoRoute(
-      path: RoutePaths.onboarding04Goals,
-      name: 'onboarding_04_goals',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) => const Onboarding04GoalsScreen(),
-    ),
-    GoRoute(
-      path: RoutePaths.onboarding05Interests,
-      name: 'onboarding_05_interests',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) => const Onboarding05InterestsScreen(),
-    ),
-    GoRoute(
-      path: RoutePaths.onboarding06CycleIntro,
-      name: 'onboarding_06_cycle_intro',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) => const Onboarding06CycleIntroScreen(),
-    ),
-    GoRoute(
-      path: RoutePaths.onboarding06Period,
-      name: Onboarding06PeriodScreen.navName,
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) => const Onboarding06PeriodScreen(),
-    ),
-    GoRoute(
-      path: RoutePaths.onboarding07Duration,
-      name: 'onboarding_07_duration',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) {
-        final periodStart = st.extra is DateTime ? st.extra as DateTime : null;
-        return Onboarding07DurationScreen(periodStartDate: periodStart);
-      },
-    ),
-    GoRoute(
-      path: RoutePaths.onboardingSuccess,
-      name: 'onboarding_success',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) => const OnboardingSuccessScreen(),
-    ),
-    GoRoute(
-      path: RoutePaths.onboardingDone,
-      name: 'onboarding_done',
-      redirect: _onboardingConsentGuard,
-      builder: (ctx, st) =>
-          Center(child: Text(AppLocalizations.of(ctx)!.onboardingComplete)),
-    ),
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Auth
-    // ─────────────────────────────────────────────────────────────────────
-    GoRoute(
-      path: RoutePaths.authSignIn,
-      name: RouteNames.authSignIn,
-      pageBuilder: (context, state) => CustomTransitionPage(
-        key: state.pageKey,
-        child: const AuthSignInScreen(),
-        transitionDuration: const Duration(milliseconds: 300),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeInOut,
-            ),
-            child: child,
-          );
-        },
-      ),
-    ),
-    GoRoute(
-      path: RoutePaths.login,
-      name: RouteNames.login,
-      pageBuilder: (context, state) => CustomTransitionPage(
-        key: state.pageKey,
-        child: const LoginScreen(),
-        transitionDuration: const Duration(milliseconds: 300),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeInOut,
-            ),
-            child: child,
-          );
-        },
-      ),
-    ),
-    GoRoute(
-      path: RoutePaths.resetPassword,
-      name: 'reset',
-      builder: (context, state) => const ResetPasswordScreen(),
-    ),
-    // Legacy redirect: /auth/forgot → /auth/reset (backward compatibility)
-    GoRoute(
-      path: RoutePaths.authForgot,
-      redirect: (context, state) => RoutePaths.resetPassword,
-    ),
-    GoRoute(
-      path: RoutePaths.createNewPassword,
-      name: 'password_new',
-      builder: (context, state) => const CreateNewPasswordScreen(
-        key: ValueKey('auth_create_new_screen'),
-      ),
-    ),
-    GoRoute(
-      path: RoutePaths.passwordSaved,
-      name: SuccessScreen.passwordSavedRouteName,
-      builder: (context, state) => const SuccessScreen(),
-    ),
-    GoRoute(
-      path: RoutePaths.signup,
-      name: 'signup',
-      builder: (context, state) => const AuthSignupScreen(),
-    ),
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Dashboard (post-auth protected routes)
-    // IMPORTANT: New routes → redirect: _postAuthGuard + kPostAuthPaths in routes.dart
-    // ─────────────────────────────────────────────────────────────────────
-    GoRoute(
-      path: RoutePaths.heute,
-      name: 'heute',
-      redirect: _postAuthGuard,
-      builder: (context, state) => const HeuteScreen(),
-    ),
-    GoRoute(
-      path: RoutePaths.workoutDetail,
-      name: 'workout_detail_stub',
-      redirect: _postAuthGuard,
-      builder: (context, state) {
-        final id = state.pathParameters['id'] ?? 'unknown';
-        if (id == 'unknown') {
-          return Scaffold(
-            body: Center(
-              child: Text(AppLocalizations.of(context)!.errorInvalidWorkoutId),
-            ),
-          );
-        }
-        return WorkoutDetailStubScreen(workoutId: id);
-      },
-    ),
-    GoRoute(
-      path: RoutePaths.trainingsOverview,
-      name: 'trainings_overview_stub',
-      redirect: _postAuthGuard,
-      builder: (context, state) => const TrainingsOverviewStubScreen(),
-    ),
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Cycle (Guarded by _postAuthGuard)
-    // ─────────────────────────────────────────────────────────────────────
-    GoRoute(
-      path: RoutePaths.cycleOverview,
-      name: 'cycle_overview_stub',
-      redirect: _postAuthGuard,
-      builder: (context, state) => const CycleOverviewStubScreen(),
-    ),
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Profile (Guarded by _postAuthGuard)
-    // ─────────────────────────────────────────────────────────────────────
-    GoRoute(
-      path: RoutePaths.profile,
-      name: RouteNames.profile,
-      redirect: _postAuthGuard,
-      builder: (context, state) => const ProfileStubScreen(),
-    ),
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Legal (Intentionally NO Consent/Onboarding guard)
-    // Users must be able to read legal docs BEFORE accepting consent.
-    // ─────────────────────────────────────────────────────────────────────
-    GoRoute(
-      path: RoutePaths.legalPrivacy,
-      name: 'legal_privacy',
-      builder: (context, state) {
-        final l10n = AppLocalizations.of(context);
-        return LegalViewer.asset(
-          'assets/legal/privacy.md',
-          title: l10n?.privacyPolicyTitle ?? 'Privacy Policy',
-          appLinks: const ProdAppLinks(),
-        );
-      },
-    ),
-    GoRoute(
-      path: RoutePaths.legalTerms,
-      name: 'legal_terms',
-      builder: (context, state) {
-        final l10n = AppLocalizations.of(context);
-        return LegalViewer.asset(
-          'assets/legal/terms.md',
-          title: l10n?.termsOfServiceTitle ?? 'Terms of Service',
-          appLinks: const ProdAppLinks(),
-        );
-      },
-    ),
+    // Composed route builders
+    ...buildWelcomeRoutes(),
+    ...buildConsentRoutes(),
+    ...buildOnboardingRoutes(),
+    ...buildAuthRoutes(),
+    ...buildDashboardRoutes(),
+    ...buildLegalRoutes(),
   ];
 }
 

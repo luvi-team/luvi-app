@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/l10n/app_localizations_de.dart';
 import 'package:luvi_services/init_mode.dart';

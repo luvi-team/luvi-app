@@ -4,31 +4,40 @@ import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 import 'package:luvi_app/core/widgets/back_button.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
+/// Configuration for back button appearance.
+class BackButtonConfig {
+  const BackButtonConfig({
+    required this.size,
+    required this.innerSize,
+    required this.backgroundColor,
+    required this.iconColor,
+  });
+
+  final double size;
+  final double innerSize;
+  final Color backgroundColor;
+  final Color iconColor;
+}
+
 class VerifyHeader extends StatelessWidget {
   const VerifyHeader({
     super.key,
     required this.topSpacing,
     required this.title,
     required this.subtitle,
-    required this.titleStyle,
-    required this.subtitleStyle,
     required this.onBackPressed,
-    required this.backButtonSize,
-    required this.backButtonInnerSize,
-    required this.backButtonBackgroundColor,
-    required this.backButtonIconColor,
+    required this.backButtonConfig,
+    this.titleStyle,
+    this.subtitleStyle,
   });
 
   final double topSpacing;
   final String title;
   final String subtitle;
+  final VoidCallback onBackPressed;
+  final BackButtonConfig backButtonConfig;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
-  final VoidCallback onBackPressed;
-  final double backButtonSize;
-  final double backButtonInnerSize;
-  final Color backButtonBackgroundColor;
-  final Color backButtonIconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +48,10 @@ class VerifyHeader extends StatelessWidget {
         SizedBox(height: topSpacing),
         BackButtonCircle(
           onPressed: onBackPressed,
-          size: backButtonSize,
-          innerSize: backButtonInnerSize,
-          backgroundColor: backButtonBackgroundColor,
-          iconColor: backButtonIconColor,
+          size: backButtonConfig.size,
+          innerSize: backButtonConfig.innerSize,
+          backgroundColor: backButtonConfig.backgroundColor,
+          iconColor: backButtonConfig.iconColor,
           semanticLabel:
               (AppLocalizations.of(context)?.authBackSemantic) ?? 'Back',
         ),

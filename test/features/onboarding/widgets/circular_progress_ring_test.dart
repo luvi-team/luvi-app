@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/features/onboarding/widgets/circular_progress_ring.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import '../../../support/test_config.dart';
@@ -50,7 +51,7 @@ void main() {
     await _pumpRing(tester, size: 150);
 
     // Issue 9: Use stable Key instead of fragile find.byType().first
-    final sizedBox = find.byKey(const Key('circular_progress_ring_container'));
+    final sizedBox = find.byKey(const Key(TestKeys.circularProgressRingContainer));
     final widget = tester.widget<SizedBox>(sizedBox);
 
     expect(widget.width, 150);
