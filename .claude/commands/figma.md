@@ -25,5 +25,5 @@ Implement a screen based on Figma design.
 4. **Implement** the screen
 5. **Create Widget Test**
    - Use `TestKeys` from `lib/core/config/test_keys.dart` for widget keys
-   - Pattern: `find.byKey(const ValueKey(TestKeys.keyName))`
+   - Pattern: `find.byKey(const Key(TestKeys.keyName))`
 6. **Run**: `scripts/flutter_codex.sh analyze`

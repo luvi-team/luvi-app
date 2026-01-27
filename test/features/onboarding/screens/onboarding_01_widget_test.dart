@@ -65,7 +65,7 @@ void main() {
       final nameField = find.byType(TextField);
       expect(nameField, findsOneWidget);
 
-      final cta = find.byKey(const Key(TestKeys.onbCta));
+      final cta = find.byKey(const ValueKey(TestKeys.onbCta));
       expect(cta, findsOneWidget);
       expect(tester.widget<OnboardingButton>(cta).isEnabled, isFalse);
 
