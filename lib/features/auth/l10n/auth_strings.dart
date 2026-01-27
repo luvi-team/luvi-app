@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/l10n/l10n_capabilities.dart';
 
@@ -79,9 +80,9 @@ class AuthStrings {
     assert(() {
       // In debug builds, surface when cache is considered stale.
       if (_cachedTag != null && _cachedTag != currentTag) {
-        debugPrint(
-          '[AuthStrings] Locale tag changed from "$_cachedTag" to "$currentTag". '
-          'Re-resolving AppLocalizations.',
+        log.d(
+          'auth_strings_locale_tag_changed: $_cachedTag -> $currentTag',
+          tag: 'auth_strings',
         );
       }
       return true;
