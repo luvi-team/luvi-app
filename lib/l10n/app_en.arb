@@ -1476,5 +1476,17 @@
   "authDragHandleSemantic": "Drag handle",
   "@authDragHandleSemantic": {
     "description": "Accessibility label for bottom sheet drag indicator"
+  },
+  "pageIndicatorLabel": "Page {current} of {total}",
+  "@pageIndicatorLabel": {
+    "description": "Accessibility label for page indicators showing current position",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

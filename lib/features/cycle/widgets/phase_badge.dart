@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
 
 class PhaseBadge extends StatelessWidget {
@@ -16,6 +17,6 @@ class PhaseBadge extends StatelessWidget {
   @override
   Widget build(BuildContext c) {
     if (!consentGiven) return const SizedBox.shrink();
-    return Text(info.phaseOn(date), key: const Key('phase-text'));
+    return Text(info.phaseOn(date), key: const Key(TestKeys.phaseText));
   }
 }

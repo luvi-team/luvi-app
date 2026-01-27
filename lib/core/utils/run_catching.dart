@@ -47,8 +47,22 @@ T? tryOrNull<T>(
       if (onError != null) {
         try {
           onError(error, stackTrace);
-        } catch (_) {
-          // Keep null-contract; ignore failures from the onError callback.
+        } catch (callbackError, callbackStack) {
+          // Intentionally defensive: failures in the onError callback must not mask
+          // the original error nor break the helper contract. But in debug we want visibility.
+          if (kDebugMode) {
+            try {
+              final info = sanitizeError(callbackError) ?? callbackError.runtimeType.toString();
+              log.w(
+                'run_catching_on_error_callback_failed',
+                tag: tag,
+                error: info,
+                stack: callbackStack,
+              );
+            } catch (_) {
+              // Best-effort only; never throw from here.
+            }
+          }
         }
       }
       rethrow;
@@ -78,7 +92,23 @@ Future<T?> tryOrNullAsync<T>(
       if (onError != null) {
         try {
           onError(error, stackTrace);
-        } catch (_) {}
+        } catch (callbackError, callbackStack) {
+          // Intentionally defensive: failures in the onError callback must not mask
+          // the original error nor break the helper contract. But in debug we want visibility.
+          if (kDebugMode) {
+            try {
+              final info = sanitizeError(callbackError) ?? callbackError.runtimeType.toString();
+              log.w(
+                'run_catching_on_error_callback_failed',
+                tag: tag,
+                error: info,
+                stack: callbackStack,
+              );
+            } catch (_) {
+              // Best-effort only; never throw from here.
+            }
+          }
+        }
       }
       rethrow;
     }
@@ -101,8 +131,22 @@ void _reportHandledError({
   if (onError != null) {
     try {
       onError(error, stackTrace);
-    } catch (_) {
-      // Swallow secondary failures from the error handler to keep null-contract.
+    } catch (callbackError, callbackStack) {
+      // Intentionally defensive: failures in the onError callback must not mask
+      // the original error nor break the helper contract. But in debug we want visibility.
+      if (kDebugMode) {
+        try {
+          final info = sanitizeError(callbackError) ?? callbackError.runtimeType.toString();
+          log.w(
+            'run_catching_on_error_callback_failed',
+            tag: tag,
+            error: info,
+            stack: callbackStack,
+          );
+        } catch (_) {
+          // Best-effort only; never throw from here.
+        }
+      }
     }
   }
 

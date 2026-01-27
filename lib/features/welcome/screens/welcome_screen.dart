@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
@@ -145,7 +146,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
               left: 0,
               right: 0,
               child: _PageIndicators(
-                key: const Key('welcome_page_indicators'),
+                key: const Key(TestKeys.welcomePageIndicators),
                 currentPage: _currentPage,
                 totalPages: 3,
               ),
@@ -234,7 +235,7 @@ class _WelcomePage extends StatelessWidget {
         // Figma spec: left offset 24px; User: "Frame+Hero soll zentral sein"
         Center(
           child: _HeroFrame(
-            key: const Key('welcome_hero_frame'),
+            key: const Key(TestKeys.welcomeHeroFrame),
             hero: hero,
             width: scaledHeroWidth,
             height: scaledHeroHeight,
@@ -247,7 +248,7 @@ class _WelcomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                key: const Key('welcome_headline_block'),
+                key: const Key(TestKeys.welcomeHeadlineBlock),
                 padding:
                     const EdgeInsets.symmetric(horizontal: Spacing.screenPadding),
                 child: _HeadlineBlock(
@@ -262,7 +263,7 @@ class _WelcomePage extends StatelessWidget {
 
         // CTA Button
         WelcomeCtaButton(
-          key: const Key('welcome_cta_button'),
+          key: const Key(TestKeys.welcomeCtaButton),
           label: ctaLabel,
           onPressed: onCta,
           isLoading: isLoading,
@@ -475,28 +476,35 @@ class _PageIndicators extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(totalPages, (index) {
-        final isActive = index == currentPage;
-        return Padding(
-          padding: EdgeInsets.only(
-            left: index == 0 ? 0 : Sizes.pageIndicatorGap / 2,
-            right: index == totalPages - 1 ? 0 : Sizes.pageIndicatorGap / 2,
-          ),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: isActive
-                ? Sizes.pageIndicatorActiveWidth
-                : Sizes.pageIndicatorInactiveWidth,
-            height: Sizes.pageIndicatorHeight,
-            decoration: BoxDecoration(
-              color: isActive ? DsColors.grayscaleBlack : DsColors.gray300,
-              borderRadius: BorderRadius.circular(Sizes.pageIndicatorRadius),
-            ),
-          ),
-        );
-      }),
+    final l10n = AppLocalizations.of(context)!;
+
+    return Semantics(
+      label: l10n.pageIndicatorLabel(currentPage + 1, totalPages),
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(totalPages, (index) {
+            final isActive = index == currentPage;
+            return Padding(
+              padding: EdgeInsets.only(
+                left: index == 0 ? 0 : Sizes.pageIndicatorGap / 2,
+                right: index == totalPages - 1 ? 0 : Sizes.pageIndicatorGap / 2,
+              ),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: isActive
+                    ? Sizes.pageIndicatorActiveWidth
+                    : Sizes.pageIndicatorInactiveWidth,
+                height: Sizes.pageIndicatorHeight,
+                decoration: BoxDecoration(
+                  color: isActive ? DsColors.grayscaleBlack : DsColors.gray300,
+                  borderRadius: BorderRadius.circular(Sizes.pageIndicatorRadius),
+                ),
+              ),
+            );
+          }),
+        ),
+      ),
     );
   }
 }

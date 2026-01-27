@@ -1079,4 +1079,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authDragHandleSemantic => 'Ziehgriff';
+
+  @override
+  String pageIndicatorLabel(int current, int total) {
+    return 'Seite $current von $total';
+  }
 }

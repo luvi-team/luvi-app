@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:luvi_app/core/design_tokens/sizes.dart';
 
 const double _kMinTapSize = 44.0;
 const double _kDefaultHorizontalTouchPadding = 8.0; // conservative for inline links
@@ -247,7 +248,7 @@ class _LinkTapRegionState extends State<_LinkTapRegion> {
               color: _hovered && !_focused ? hoverColor : null,
               border:
                   _focused ? Border.all(color: focusColor, width: 2.0) : null,
-              borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+              borderRadius: BorderRadius.all(Radius.circular(Sizes.radiusXXS)),
             ),
             child: const SizedBox.expand(),
           ),
