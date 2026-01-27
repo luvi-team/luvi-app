@@ -4,7 +4,7 @@ import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart';
 
 class SocialAuthRow extends StatelessWidget {
   const SocialAuthRow({

@@ -9,47 +9,83 @@ import 'privacy/sanitize.dart';
 ///   or free‑form user input that may contain personal data.
 /// - Prefer structured context (enums/IDs) and sanitized error details.
 /// - If you must include identifiers, redact them before logging.
-const String piiWarning = 'DO NOT LOG PII (emails, phones, tokens, sessions, addresses) — redact identifiers.';
+
+const String piiWarning =
+    'DO NOT LOG PII (emails, phones, tokens, sessions, addresses) — redact identifiers.';
 
 class Logger {
   const Logger();
-  void d(String message, {String? tag}) => _print(_format('D', sanitizeForLog(message), tag: tag));
-  void i(String message, {String? tag}) => _print(_format('I', sanitizeForLog(message), tag: tag));
-  void w(String? message, {String? tag, Object? error, StackTrace? stack}) {
-    final sanitized = message != null ? sanitizeForLog(message) : '';
-    _printWithError('W', sanitized, tag: tag, error: error, stack: stack);
-  }
 
-  void e(String? message, {String? tag, Object? error, StackTrace? stack}) {
-    final sanitized = message != null ? sanitizeForLog(message) : '';
-    _printWithError('E', sanitized, tag: tag, error: error, stack: stack);
-  }
+  void d(String? message, {String? tag}) =>
+      _print(_format('D', sanitizeForLog(message ?? ''), tag: tag));
+  void i(String? message, {String? tag}) =>
+      _print(_format('I', sanitizeForLog(message ?? ''), tag: tag));
 
-  void _printWithError(String level, String message, {String? tag, Object? error, StackTrace? stack}) {
-    final b = StringBuffer(_format(level, message, tag: tag));
-    if (error != null) {
-      final errStr = sanitizeForLog('$error');
-      b.write('\n');
-      b.write(errStr);
-    }
-    if (stack != null) {
-      final stStr = sanitizeForLog(stack.toString());
-      b.write('\n');
-      b.write(stStr);
-    }
-    _print(b.toString());
-  }
+  void w(String? message, {String? tag, Object? error, StackTrace? stack}) =>
+      _printStructured('W', message, tag: tag, error: error, stack: stack);
 
-  // Private print seam for testing and future redirection.
+  void e(String? message, {String? tag, Object? error, StackTrace? stack}) =>
+      _printStructured('E', message, tag: tag, error: error, stack: stack);
+
+  // Print indirection: kept intentionally as a seam for testing and potential
+  // output redirection (e.g., capture logs in tests or swap sink in the future).
+  // If not needed, this could be inlined to debugPrint, but we keep it to make
+  // redirection straightforward without touching all call sites.
   void _print(String line) {
     debugPrint(line);
   }
 
   String _format(String level, String message, {String? tag}) {
-    final tagPart = tag?.isNotEmpty == true ? ' [$tag]' : '';
+    final tagPart = (tag == null || tag.isEmpty) ? '' : ' [$tag]';
     return '[$level]$tagPart $message';
   }
 
+  void _printStructured(
+    String level,
+    String? message, {
+    String? tag,
+    Object? error,
+    StackTrace? stack,
+  }) {
+    final buffer =
+        StringBuffer(_format(level, sanitizeForLog(message ?? ''), tag: tag));
+    final sanitizedError = _sanitizeError(error);
+    if (sanitizedError != null && sanitizedError.isNotEmpty) {
+      buffer
+        ..write('\n')
+        ..write(sanitizedError);
+    }
+    final sanitizedStack = _sanitizeStack(stack);
+    if (sanitizedStack != null && sanitizedStack.isNotEmpty) {
+      buffer
+        ..write('\n')
+        ..write(sanitizedStack);
+    }
+    _print(buffer.toString());
+  }
+
+  String? _sanitizeError(Object? error) {
+    if (error == null) return null;
+    return sanitizeForLog(error is String ? error : '$error');
+  }
+
+  String? _sanitizeStack(StackTrace? stack) {
+    if (stack == null) return null;
+    final raw = stack.toString();
+    if (raw.isEmpty) return '';
+    final sanitized = sanitizeForLog(raw);
+    if (!kReleaseMode) {
+      return sanitized;
+    }
+    const maxReleaseLines = 12;
+    final lines = sanitized.split('\n');
+    if (lines.length <= maxReleaseLines) {
+      return sanitized;
+    }
+    final truncated = lines.take(maxReleaseLines).join('\n');
+    return '$truncated\n[stack trimmed]';
+  }
 }
 
+/// Global logger instance for convenience.
 const log = Logger();

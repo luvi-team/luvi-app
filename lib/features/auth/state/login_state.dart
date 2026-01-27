@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart';
 import 'package:luvi_app/features/auth/validation/email_validator.dart';
 
 /// Login form state.

@@ -11,7 +11,7 @@ import 'package:luvi_app/features/dashboard/widgets/top_recommendation_tile.dart
 import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart'
     show iconSizeCompensated;
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
+import 'package:luvi_app/features/dashboard/data/props/heute_fixtures.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
 
 import '../../../support/test_config.dart';

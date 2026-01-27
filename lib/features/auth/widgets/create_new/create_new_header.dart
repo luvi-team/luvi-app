@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart' as auth_strings;
 
 class CreateNewHeader extends StatelessWidget {
   const CreateNewHeader({

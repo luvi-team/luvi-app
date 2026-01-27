@@ -6,6 +6,7 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
+import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/core/time/clock.dart';
 import 'package:luvi_app/l10n/l10n_capabilities.dart';
@@ -324,14 +325,14 @@ class _MonthGrid extends StatelessWidget {
     } on FormatException catch (e) {
       // DateFormat parsing failed - log in debug and use fallback
       assert(() {
-        debugPrint('DateFormat FormatException: $e');
+        log.d('dateformat_format_exception: $e', tag: 'period_calendar');
         return true;
       }());
       return _fallbackMonths[date.month - 1];
     } on ArgumentError catch (e) {
       // Invalid locale or pattern - log in debug and use fallback
       assert(() {
-        debugPrint('DateFormat ArgumentError: $e');
+        log.d('dateformat_argument_error: $e', tag: 'period_calendar');
         return true;
       }());
       return _fallbackMonths[date.month - 1];

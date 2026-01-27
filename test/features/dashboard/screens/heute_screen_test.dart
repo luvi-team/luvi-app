@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
+import 'package:luvi_app/features/dashboard/data/props/heute_fixtures.dart';
 import 'package:luvi_app/features/dashboard/widgets/weekly_training_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/cycle_tip_card.dart';
 import 'package:luvi_app/features/dashboard/widgets/recommendation_card.dart';

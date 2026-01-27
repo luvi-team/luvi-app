@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/layout/auth_layout.dart';
 

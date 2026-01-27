@@ -27,7 +27,7 @@ import 'router.dart' as app_router;
 import 'core/init/supabase_init_controller.dart';
 import 'package:luvi_services/init_mode.dart';
 import 'core/init/init_mode.dart' show initModeProvider;
-import 'package:luvi_app/features/auth/strings/auth_strings.dart' as auth_strings;
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart' as auth_strings;
 import 'core/init/init_diagnostics.dart';
 import 'core/init/supabase_deep_link_handler.dart';
 import 'core/privacy/consent_config.dart';

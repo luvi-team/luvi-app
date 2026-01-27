@@ -100,7 +100,7 @@ void main() {
           password: any(named: 'password'),
           data: any(named: 'data'),
         ),
-      ).thenAnswer((_) async => AuthResponse(session: null, user: null));
+      ).thenAnswer((_) async {});
 
       await pumpSignupScreen(tester, mockRepo);
 
@@ -190,7 +190,7 @@ void main() {
 
     testWidgets('displays loading spinner while submitting', (tester) async {
       final mockRepo = _MockAuthRepository();
-      final completer = Completer<AuthResponse>();
+      final completer = Completer<void>();
       when(
         () => mockRepo.signUp(
           email: any(named: 'email'),
@@ -233,7 +233,7 @@ void main() {
       );
       expect(loadingButton.onPressed, isNull);
 
-      completer.complete(AuthResponse(session: null, user: null));
+      completer.complete();
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey(TestKeys.signupCtaLoading)), findsNothing);
@@ -249,7 +249,7 @@ void main() {
           password: any(named: 'password'),
           data: any(named: 'data'),
         ),
-      ).thenAnswer((_) async => AuthResponse(session: null, user: null));
+      ).thenAnswer((_) async {});
 
       await pumpSignupScreen(tester, mockRepo);
 

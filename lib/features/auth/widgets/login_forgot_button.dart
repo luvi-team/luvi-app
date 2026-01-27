@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 
 class LoginForgotButton extends StatelessWidget {

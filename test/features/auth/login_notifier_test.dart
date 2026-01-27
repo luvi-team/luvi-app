@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luvi_app/features/auth/strings/auth_strings.dart';
+import 'package:luvi_app/features/auth/l10n/auth_strings.dart';
 import 'package:luvi_app/features/auth/state/login_state.dart';
 import '../../support/test_config.dart';
 

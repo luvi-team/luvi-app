@@ -7,7 +7,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/cycle/domain/phase.dart';
-import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
+import 'package:luvi_app/features/dashboard/data/props/heute_fixtures.dart';
 import 'package:luvi_app/features/dashboard/domain/models/category.dart';
 import 'package:luvi_app/features/dashboard/domain/models/recommendation.dart';
 import 'package:luvi_app/features/dashboard/domain/top_recommendation_props.dart';

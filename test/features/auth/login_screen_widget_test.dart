@@ -103,7 +103,7 @@ void main() {
     });
 
     final mockRepo = _MockAuthRepository();
-    final completer = Completer<AuthResponse>();
+    final completer = Completer<void>();
     when(
       () => mockRepo.signInWithPassword(
         email: any(named: 'email'),
@@ -143,7 +143,7 @@ void main() {
     expect(loadingBtn.onPressed, isNull);
 
     // Resolve the future with a dummy response so the notifier clears loading state.
-    completer.complete(AuthResponse(session: null, user: null));
+    completer.complete();
     await tester.pumpAndSettle();
 
     // After loading completes, button text should be visible again

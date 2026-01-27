@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
-import 'package:luvi_app/core/design_tokens/dashboard_layout_constants.dart';
+import 'package:luvi_app/features/dashboard/utils/dashboard_layout_constants.dart';
 import 'package:luvi_app/core/design_tokens/divider_tokens.dart';
 import 'package:luvi_app/core/design_tokens/sizes.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';

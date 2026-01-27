@@ -7,7 +7,7 @@ import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/config/feature_flags.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
-import 'package:luvi_app/features/dashboard/data/fixtures/heute_fixtures.dart';
+import 'package:luvi_app/features/dashboard/data/props/heute_fixtures.dart';
 import 'package:luvi_app/features/dashboard/widgets/bottom_nav_dock.dart';
 import 'package:luvi_app/features/dashboard/widgets/floating_sync_button.dart';
 import 'package:luvi_app/core/design_tokens/bottom_nav_tokens.dart';
