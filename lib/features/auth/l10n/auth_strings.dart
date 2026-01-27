@@ -46,7 +46,10 @@ class AuthStrings {
   /// Recommended: pass a closure that resolves to `Localizations.localeOf(context)`
   /// from your app root, so that cache invalidation is driven by the real
   /// widget tree locale rather than the platform locale.
-  static void setLocaleResolver(ui.Locale Function() resolver) {
+  ///
+  /// Pass `null` to clear a previously installed resolver (reverts to platform locale).
+  /// The resolver itself may return `null` to signal "use platform locale".
+  static void setLocaleResolver(ui.Locale? Function()? resolver) {
     _resolver = resolver;
   }
 

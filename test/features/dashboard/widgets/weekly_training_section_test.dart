@@ -67,7 +67,7 @@ void main() {
       await tester.tap(find.text('Kraft'));
       await tester.pump();
 
-      expect(tappedIds, contains('t1'));
+      expect(tappedIds, equals(['t1']));
     });
   });
 }

@@ -1,7 +1,6 @@
 /// Onboarding flow routes (O1-O8) with consent guard.
 library;
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:luvi_app/core/navigation/route_paths.dart';
@@ -14,7 +13,7 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_06_cycle_intro.d
 import 'package:luvi_app/features/onboarding/screens/onboarding_06_period.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_07_duration.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.dart';
-import 'package:luvi_app/l10n/app_localizations.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_done_screen.dart';
 import 'package:luvi_app/router/route_builders/route_guards.dart';
 
 /// Builds onboarding routes (O1-O8) with consent guard.
@@ -79,10 +78,9 @@ List<RouteBase> buildOnboardingRoutes() {
     ),
     GoRoute(
       path: RoutePaths.onboardingDone,
-      name: 'onboarding_done',
+      name: OnboardingDoneScreen.navName,
       redirect: onboardingConsentGuard,
-      builder: (ctx, st) =>
-          Center(child: Text(AppLocalizations.of(ctx)!.onboardingComplete)),
+      builder: (ctx, st) => const OnboardingDoneScreen(),
     ),
   ];
 }

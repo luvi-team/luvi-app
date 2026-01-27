@@ -26,6 +26,14 @@ abstract final class RoutePaths {
   // ─────────────────────────────────────────────────────────────────────────
   static const welcome = '/welcome';
 
+  // Legacy welcome screen paths (redirect to /welcome)
+  // TODO(cleanup): Remove after migration period
+  static const legacyWelcome1 = '/onboarding/w1';
+  static const legacyWelcome2 = '/onboarding/w2';
+  static const legacyWelcome3 = '/onboarding/w3';
+  static const legacyWelcome4 = '/onboarding/w4';
+  static const legacyWelcome5 = '/onboarding/w5';
+
   // ─────────────────────────────────────────────────────────────────────────
   // Consent Flow (Single-Screen; legacy paths redirect)
   // ─────────────────────────────────────────────────────────────────────────

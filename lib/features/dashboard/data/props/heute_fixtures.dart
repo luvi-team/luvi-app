@@ -110,11 +110,11 @@ class CategoryProps {
 
 @immutable
 class BottomNavProps {
-  const BottomNavProps({
+  BottomNavProps({
     required this.selectedIndex,
-    required this.items,
+    required List<String> items,
     this.hasNotifications = false,
-  });
+  }) : items = List.unmodifiable(items);
 
   final int selectedIndex;
   final List<String> items;
@@ -146,21 +146,27 @@ class WearableProps {
 
 @immutable
 class HeuteFixtureState {
-  const HeuteFixtureState({
+  HeuteFixtureState({
     required this.header,
     required this.heroCard,
     required this.topRecommendation,
-    required this.weeklyTrainings,
-    required this.categories,
-    required this.recommendations,
-    required this.nutritionRecommendations,
-    required this.regenerationRecommendations,
-    required this.trainingStats,
+    required List<WeeklyTrainingProps> weeklyTrainings,
+    required List<CategoryProps> categories,
+    required List<Recommendation> recommendations,
+    required List<Recommendation> nutritionRecommendations,
+    required List<Recommendation> regenerationRecommendations,
+    required List<TrainingStatProps> trainingStats,
     required this.wearable,
     required this.bottomNav,
     required this.referenceDate,
     required this.cycleInfo,
-  });
+  })  : weeklyTrainings = List.unmodifiable(weeklyTrainings),
+        categories = List.unmodifiable(categories),
+        recommendations = List.unmodifiable(recommendations),
+        nutritionRecommendations = List.unmodifiable(nutritionRecommendations),
+        regenerationRecommendations =
+            List.unmodifiable(regenerationRecommendations),
+        trainingStats = List.unmodifiable(trainingStats);
 
   final HeaderProps header;
   final HeroCardProps heroCard;
@@ -268,9 +274,9 @@ class HeuteFixtures {
       regenerationRecommendations: _buildDefaultRegenerationRecommendations(),
       trainingStats: _buildDefaultTrainingStats(),
       wearable: const WearableProps(connected: true),
-      bottomNav: const BottomNavProps(
+      bottomNav: BottomNavProps(
         selectedIndex: 0,
-        items: ['Home', 'Flower', 'Social', 'Account'],
+        items: const ['Home', 'Flower', 'Social', 'Account'],
       ),
       referenceDate: today,
       cycleInfo: cycleInfo,

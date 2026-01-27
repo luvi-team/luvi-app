@@ -16,6 +16,10 @@ const String piiWarning =
 class Logger {
   const Logger();
 
+  /// Maximum stack trace lines shown in release builds.
+  /// Balances debuggability with log size constraints.
+  static const int _maxReleaseStackLines = 12;
+
   void d(String? message, {String? tag}) =>
       _print(_format('D', sanitizeForLog(message ?? ''), tag: tag));
   void i(String? message, {String? tag}) =>
@@ -77,12 +81,11 @@ class Logger {
     if (!kReleaseMode) {
       return sanitized;
     }
-    const maxReleaseLines = 12;
     final lines = sanitized.split('\n');
-    if (lines.length <= maxReleaseLines) {
+    if (lines.length <= _maxReleaseStackLines) {
       return sanitized;
     }
-    final truncated = lines.take(maxReleaseLines).join('\n');
+    final truncated = lines.take(_maxReleaseStackLines).join('\n');
     return '$truncated\n[stack trimmed]';
   }
 }

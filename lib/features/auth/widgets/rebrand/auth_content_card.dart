@@ -14,6 +14,9 @@ class AuthContentCard extends StatelessWidget {
     this.padding,
   });
 
+  /// Stable key for the internal Container (used in widget tests).
+  static const containerKey = Key('authContentCard_container');
+
   /// The content of the card
   final Widget child;
 
@@ -26,6 +29,7 @@ class AuthContentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: containerKey,
       width: width ?? AuthRebrandMetrics.cardWidth,
       padding: padding ?? const EdgeInsets.all(AuthRebrandMetrics.cardPadding),
       decoration: BoxDecoration(

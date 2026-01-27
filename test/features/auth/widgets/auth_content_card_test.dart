@@ -26,10 +26,7 @@ void main() {
       expect(find.text('Inhalt'), findsOneWidget);
 
       final container = tester.widget<Container>(
-        find.descendant(
-          of: find.byType(AuthContentCard),
-          matching: find.byType(Container),
-        ),
+        find.byKey(AuthContentCard.containerKey),
       );
       expect(container.constraints?.minWidth, AuthRebrandMetrics.cardWidth);
       expect(container.constraints?.maxWidth, AuthRebrandMetrics.cardWidth);
@@ -58,10 +55,7 @@ void main() {
       );
 
       final container = tester.widget<Container>(
-        find.descendant(
-          of: find.byType(AuthContentCard),
-          matching: find.byType(Container),
-        ),
+        find.byKey(AuthContentCard.containerKey),
       );
       expect(container.constraints?.minWidth, customWidth);
       expect(container.constraints?.maxWidth, customWidth);

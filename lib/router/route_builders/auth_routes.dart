@@ -39,7 +39,7 @@ List<RouteBase> buildAuthRoutes() {
     ),
     GoRoute(
       path: RoutePaths.resetPassword,
-      name: 'reset',
+      name: RouteNames.resetPassword,
       builder: (context, state) => const ResetPasswordScreen(),
     ),
     // Legacy redirect: /auth/forgot -> /auth/reset (backward compatibility)
@@ -49,7 +49,7 @@ List<RouteBase> buildAuthRoutes() {
     ),
     GoRoute(
       path: RoutePaths.createNewPassword,
-      name: 'password_new',
+      name: RouteNames.createNewPassword,
       builder: (context, state) => const CreateNewPasswordScreen(
         key: ValueKey(TestKeys.authCreateNewScreen),
       ),
@@ -61,7 +61,7 @@ List<RouteBase> buildAuthRoutes() {
     ),
     GoRoute(
       path: RoutePaths.signup,
-      name: 'signup',
+      name: RouteNames.signup,
       builder: (context, state) => const AuthSignupScreen(),
     ),
   ];

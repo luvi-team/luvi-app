@@ -17,23 +17,23 @@ List<RouteBase> buildWelcomeRoutes() {
     ),
     // Legacy welcome screen redirects (w1-w5 -> unified /welcome)
     GoRoute(
-      path: '/onboarding/w1',
+      path: RoutePaths.legacyWelcome1,
       redirect: (context, state) => RoutePaths.welcome,
     ),
     GoRoute(
-      path: '/onboarding/w2',
+      path: RoutePaths.legacyWelcome2,
       redirect: (context, state) => RoutePaths.welcome,
     ),
     GoRoute(
-      path: '/onboarding/w3',
+      path: RoutePaths.legacyWelcome3,
       redirect: (context, state) => RoutePaths.welcome,
     ),
     GoRoute(
-      path: '/onboarding/w4',
+      path: RoutePaths.legacyWelcome4,
       redirect: (context, state) => RoutePaths.welcome,
     ),
     GoRoute(
-      path: '/onboarding/w5',
+      path: RoutePaths.legacyWelcome5,
       redirect: (context, state) => RoutePaths.welcome,
     ),
   ];

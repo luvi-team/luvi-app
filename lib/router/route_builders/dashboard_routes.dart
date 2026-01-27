@@ -23,17 +23,17 @@ List<RouteBase> buildDashboardRoutes() {
     // Dashboard (Heute)
     GoRoute(
       path: RoutePaths.heute,
-      name: 'heute',
+      name: RouteNames.heute,
       redirect: postAuthGuard,
       builder: (context, state) => const HeuteScreen(),
     ),
     GoRoute(
       path: RoutePaths.workoutDetail,
-      name: 'workout_detail_stub',
+      name: RouteNames.workoutDetail,
       redirect: postAuthGuard,
       builder: (context, state) {
-        final id = state.pathParameters['id'] ?? 'unknown';
-        if (id == 'unknown') {
+        final id = state.pathParameters['id'];
+        if (id == null || id.isEmpty) {
           return Scaffold(
             body: Center(
               child: Text(AppLocalizations.of(context)!.errorInvalidWorkoutId),
@@ -45,7 +45,7 @@ List<RouteBase> buildDashboardRoutes() {
     ),
     GoRoute(
       path: RoutePaths.trainingsOverview,
-      name: 'trainings_overview_stub',
+      name: RouteNames.trainingsOverview,
       redirect: postAuthGuard,
       builder: (context, state) => const TrainingsOverviewStubScreen(),
     ),
@@ -53,7 +53,7 @@ List<RouteBase> buildDashboardRoutes() {
     // Cycle
     GoRoute(
       path: RoutePaths.cycleOverview,
-      name: 'cycle_overview_stub',
+      name: RouteNames.cycleOverview,
       redirect: postAuthGuard,
       builder: (context, state) => const CycleOverviewStubScreen(),
     ),
