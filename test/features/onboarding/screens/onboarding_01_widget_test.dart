@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
@@ -64,7 +65,7 @@ void main() {
       final nameField = find.byType(TextField);
       expect(nameField, findsOneWidget);
 
-      final cta = find.byKey(const Key('onb_cta'));
+      final cta = find.byKey(const Key(TestKeys.onbCta));
       expect(cta, findsOneWidget);
       expect(tester.widget<OnboardingButton>(cta).isEnabled, isFalse);
 

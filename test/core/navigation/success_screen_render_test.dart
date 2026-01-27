@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/auth/screens/success_screen.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
@@ -48,11 +49,14 @@ void main() {
 
         // Verify SuccessScreen is shown
         expect(
-            find.byKey(const ValueKey('auth_success_screen')), findsOneWidget);
+          find.byKey(const ValueKey(TestKeys.authSuccessScreen)),
+          findsOneWidget,
+        );
 
         // Verify locale-specific text is rendered
-        final element =
-            tester.element(find.byKey(const ValueKey('auth_success_screen')));
+        final element = tester.element(
+          find.byKey(const ValueKey(TestKeys.authSuccessScreen)),
+        );
         final l10n = AppLocalizations.of(element);
         expect(
           l10n,

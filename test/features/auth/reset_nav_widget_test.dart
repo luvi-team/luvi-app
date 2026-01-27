@@ -36,7 +36,7 @@ void main() {
     // Verify login screen is displayed
     expect(find.byType(LoginScreen), findsOneWidget);
 
-    // Key matches login_screen.dart: ValueKey('login_forgot_link')
+    // Key matches login_screen.dart: ValueKey(TestKeys.loginForgotLink)
     await tester.tap(find.byKey(const ValueKey(TestKeys.loginForgotLink)));
     await tester.pumpAndSettle();
 

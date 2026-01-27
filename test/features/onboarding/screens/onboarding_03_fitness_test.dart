@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_03_fitness.dart';
@@ -107,7 +108,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // CTA should now be enabled (indirect state check)
-      final ctaFinder = find.byKey(const Key('onb_cta'));
+      final ctaFinder = find.byKey(const Key(TestKeys.onbCta));
       final button = tester.widget<OnboardingButton>(ctaFinder);
       expect(button.isEnabled, isTrue,
           reason: 'CTA should be enabled after selecting fitness level');
@@ -121,7 +122,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find CTA button
-      final ctaFinder = find.byKey(const Key('onb_cta'));
+      final ctaFinder = find.byKey(const Key(TestKeys.onbCta));
       expect(ctaFinder, findsOneWidget);
 
       // Initially no level selected - CTA should be disabled
@@ -138,7 +139,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find CTA button - initially disabled
-      final ctaFinder = find.byKey(const Key('onb_cta'));
+      final ctaFinder = find.byKey(const Key(TestKeys.onbCta));
       final buttonBefore = tester.widget<OnboardingButton>(ctaFinder);
       expect(buttonBefore.isEnabled, isFalse);
 
@@ -166,7 +167,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap continue
-      final ctaFinder = find.byKey(const Key('onb_cta'));
+      final ctaFinder = find.byKey(const Key(TestKeys.onbCta));
       await tester.tap(ctaFinder);
       await tester.pumpAndSettle();
 
@@ -186,7 +187,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // CTA enabled
-      final ctaFinder = find.byKey(const Key('onb_cta'));
+      final ctaFinder = find.byKey(const Key(TestKeys.onbCta));
       expect(tester.widget<OnboardingButton>(ctaFinder).isEnabled, isTrue);
 
       // Select fit (different level)

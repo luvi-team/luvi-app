@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/init/init_mode.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/features/onboarding/domain/interest.dart';
@@ -106,7 +107,7 @@ void main() {
       );
 
       // Find CTA button
-      final ctaFinder = find.byKey(const Key('onb_cta'));
+      final ctaFinder = find.byKey(const Key(TestKeys.onbCta));
       expect(ctaFinder, findsOneWidget);
 
       // Initially no interests selected - CTA should be disabled
@@ -195,7 +196,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Scroll to and tap Continue button (may be off-screen in default viewport)
-      final ctaFinder = find.byKey(const Key('onb_cta'));
+      final ctaFinder = find.byKey(const Key(TestKeys.onbCta));
       await tester.ensureVisible(ctaFinder);
       await tester.pumpAndSettle();
       await tester.tap(ctaFinder);

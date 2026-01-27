@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_app/features/cycle/domain/cycle.dart';
@@ -56,7 +57,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final semanticsNode = tester.getSemantics(
-        find.byKey(const ValueKey('cycle_inline_calendar_semantics')),
+        find.byKey(const ValueKey(TestKeys.cycleInlineCalendarSemantics)),
       );
       expect(
         semanticsNode.label,

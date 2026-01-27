@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/assets.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/features/splash/widgets/splash_video_player.dart';
@@ -84,7 +85,10 @@ void main() {
         await tester.pump();
 
         // Should show SizedBox.expand with loading key (no fallback image)
-        expect(find.byKey(const Key('splash_video_loading')), findsOneWidget);
+        expect(
+          find.byKey(const Key(TestKeys.splashVideoLoading)),
+          findsOneWidget,
+        );
       });
     });
 
@@ -252,7 +256,7 @@ void main() {
 
         // During first pump, video is still initializing
         // Background color should be shown (not fallback image)
-        final loadingFinder = find.byKey(const Key('splash_video_loading'));
+        final loadingFinder = find.byKey(const Key(TestKeys.splashVideoLoading));
         expect(loadingFinder, findsOneWidget);
         final backgroundFinder = find.descendant(
           of: loadingFinder,
