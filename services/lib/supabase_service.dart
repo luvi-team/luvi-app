@@ -347,7 +347,7 @@ class SupabaseService {
     if (displayName.trim().isEmpty) {
       throw ArgumentError.value(displayName, 'displayName', 'cannot be empty');
     }
-    // Validate age bounds using shared utility from luvi_core
+    // Validate age bounds using shared utility from luvi_services
     final age = calculateAge(birthDate);
     final ageConfig = _validationConfig;
     if (age < ageConfig.minAge || age > ageConfig.maxAge) {
