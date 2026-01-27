@@ -1,6 +1,8 @@
 import 'dart:async' show TimeoutException;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/logging/logger.dart';
@@ -239,7 +241,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     final canSubmit = !_isLoading && _hasValidInput;
 
     return AuthRebrandScaffold(
-      scaffoldKey: const ValueKey('auth_create_password_screen'),
+      scaffoldKey: const ValueKey(TestKeys.authCreatePasswordScreen),
       compactKeyboard: true, // Fewer fields = compact padding
       onBack: () => handleAuthBackNavigation(context),
       child: _buildFormCard(l10n: l10n, canSubmit: canSubmit),
@@ -260,13 +262,13 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             children: [
               Text(
                 l10n.authNewPasswordTitle,
-                key: const ValueKey('create_new_title'),
+                key: const ValueKey(TestKeys.createNewTitle),
                 style: AuthRebrandTextStyles.headline,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: Spacing.l),
               AuthRebrandTextField(
-                key: const ValueKey('AuthPasswordField'),
+                key: const ValueKey(TestKeys.authPasswordField),
                 controller: _newPasswordController,
                 hintText: l10n.authNewPasswordHint,
                 errorText: _newPasswordError,
@@ -283,7 +285,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
               ),
               const SizedBox(height: AuthRebrandMetrics.cardInputGap),
               AuthRebrandTextField(
-                key: const ValueKey('AuthConfirmPasswordField'),
+                key: const ValueKey(TestKeys.authConfirmPasswordField),
                 controller: _confirmPasswordController,
                 hintText: l10n.authNewPasswordConfirmHint,
                 errorText: _confirmPasswordError,
@@ -303,7 +305,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
               ),
               const SizedBox(height: Spacing.l),
               AuthPrimaryButton(
-                key: const ValueKey('create_new_cta_button'),
+                key: const ValueKey(TestKeys.createNewCtaButton),
                 label: l10n.authSavePasswordCta,
                 onPressed: canSubmit ? _onCreatePasswordPressed : null,
                 isLoading: _isLoading,

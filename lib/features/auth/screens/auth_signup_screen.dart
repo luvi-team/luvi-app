@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/design_tokens/colors.dart';
 import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/timing.dart';
@@ -362,7 +363,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return AuthRebrandScaffold(
-      scaffoldKey: const ValueKey('auth_signup_screen'),
+      scaffoldKey: const ValueKey(TestKeys.authSignupScreen),
       onBack: () => handleAuthBackNavigation(context),
       child: _buildContent(l10n),
     );
@@ -408,7 +409,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   Widget _buildEmailField(AppLocalizations l10n) {
     return AuthRebrandTextField(
-      key: const ValueKey('signup_email_field'),
+      key: const ValueKey(TestKeys.signupEmailField),
       controller: _emailController,
       hintText: l10n.authEmailPlaceholderLong,
       errorText: _emailError ? l10n.authErrorEmailCheck : null,
@@ -421,7 +422,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   Widget _buildPasswordField(AppLocalizations l10n) {
     return AuthRebrandTextField(
-      key: const ValueKey('signup_password_field'),
+      key: const ValueKey(TestKeys.signupPasswordField),
       controller: _passwordController,
       hintText: l10n.authPasswordPlaceholder,
       errorText: _passwordError ? l10n.authErrorPasswordCheck : null,
@@ -446,7 +447,7 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
         : null;
 
     return AuthRebrandTextField(
-      key: const ValueKey('signup_password_confirm_field'),
+      key: const ValueKey(TestKeys.signupPasswordConfirmField),
       controller: _confirmPasswordController,
       hintText: l10n.authNewPasswordConfirmHint,
       errorText: confirmErrorText,
@@ -470,8 +471,8 @@ class _AuthSignupScreenState extends ConsumerState<AuthSignupScreen> {
 
   Widget _buildCtaButton(AppLocalizations l10n) {
     return AuthPrimaryButton(
-      key: const ValueKey('signup_cta_button'),
-      loadingKey: const ValueKey('signup_cta_loading'),
+      key: const ValueKey(TestKeys.signupCtaButton),
+      loadingKey: const ValueKey(TestKeys.signupCtaLoading),
       label: l10n.authEntryCta,
       onPressed: _isSubmitting ? null : _handleSignup,
       isLoading: _isSubmitting,

@@ -248,7 +248,8 @@ class _LinkTapRegionState extends State<_LinkTapRegion> {
               color: _hovered && !_focused ? hoverColor : null,
               border:
                   _focused ? Border.all(color: focusColor, width: 2.0) : null,
-              borderRadius: BorderRadius.all(Radius.circular(Sizes.radiusXXS)),
+              borderRadius:
+                  const BorderRadius.all(Radius.circular(Sizes.radiusXXS)),
             ),
             child: const SizedBox.expand(),
           ),

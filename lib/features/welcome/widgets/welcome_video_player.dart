@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:luvi_app/core/config/test_keys.dart';
 import 'package:luvi_app/core/logging/logger.dart';
+import 'package:video_player/video_player.dart';
 
 /// A decorative video player for Welcome screens.
 ///
@@ -172,7 +173,7 @@ class _WelcomeVideoPlayerState extends State<WelcomeVideoPlayer>
       if (widget.fallbackAsset != null) {
         return _buildFallbackImage();
       }
-      return const SizedBox.expand(key: Key('welcome_video_loading'));
+      return const SizedBox.expand(key: Key(TestKeys.welcomeVideoLoading));
     }
 
     // Video is ready – use FittedBox to fill the available space

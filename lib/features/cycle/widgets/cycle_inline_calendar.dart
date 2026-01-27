@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/config/test_keys.dart';
 import '../../../core/design_tokens/colors.dart';
 import '../../../core/design_tokens/typography.dart';
 import '../../../core/navigation/route_paths.dart';
@@ -157,7 +158,7 @@ class _CalendarContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      key: const ValueKey('cycle_inline_calendar_semantics'),
+      key: const ValueKey(TestKeys.cycleInlineCalendarSemantics),
       container: true,
       button: true,
       label: _buildSemanticsLabel(todayDay),

@@ -466,7 +466,7 @@ class _InitBanner extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(isConfig ? Icons.error_outline : Icons.wifi_off, color: text),
-              SizedBox(width: Spacing.xs),
+              const SizedBox(width: Spacing.xs),
               Flexible(
                 child: Text(
                   message,
@@ -474,7 +474,7 @@ class _InitBanner extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              SizedBox(width: Spacing.s),
+              const SizedBox(width: Spacing.s),
               if (initState.canRetry)
                 TextButton(
                   onPressed: () {
