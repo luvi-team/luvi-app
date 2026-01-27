@@ -292,7 +292,7 @@ class _MyAppWrapperState extends ConsumerState<MyAppWrapper> {
           }
         } catch (e, st) {
           // Log critical initialization failure (don't rethrow - would crash app)
-          log.e('Init orchestration failed', tag: 'Main', error: e, stack: st);
+          log.e('Init orchestration failed', tag: 'main', error: e, stack: st);
         } finally {
           _orchestrationInProgress = false;
         }

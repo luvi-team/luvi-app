@@ -29,6 +29,13 @@ typedef DayCellConfig = ({
   CyclePhaseTokens? phaseTokens,
 });
 
+/// Theme configuration for month grid rendering.
+typedef MonthGridTheme = ({
+  ColorScheme colorScheme,
+  TextTheme textTheme,
+  CyclePhaseTokens? phaseTokens,
+});
+
 /// A scrollable month-grid calendar for period tracking in onboarding.
 /// Figma: Shows multiple months with selectable days.
 class PeriodCalendar extends StatefulWidget {
@@ -216,15 +223,17 @@ class _PeriodCalendarState extends State<PeriodCalendar>
           key: isCurrentMonth ? _currentMonthKey : null,
           month: month,
           today: _today,
-          selectedDate: widget.selectedDate,
           periodDaysSet: _periodDaysSet,
+          theme: (
+            colorScheme: colorScheme,
+            textTheme: textTheme,
+            phaseTokens: phaseTokens,
+          ),
+          selectedDate: widget.selectedDate,
           periodEndDate: widget.periodEndDate,
           allowPeriodEndAdjustment: widget.allowPeriodEndAdjustment,
           onDateSelected: widget.onDateSelected,
           onPeriodEndChanged: widget.onPeriodEndChanged,
-          colorScheme: colorScheme,
-          textTheme: textTheme,
-          phaseTokens: phaseTokens,
         );
       },
     );
@@ -236,28 +245,24 @@ class _MonthGrid extends StatelessWidget {
     super.key,
     required this.month,
     required this.today,
-    required this.selectedDate,
     required this.periodDaysSet,
-    required this.periodEndDate,
-    required this.allowPeriodEndAdjustment,
-    required this.onDateSelected,
-    required this.onPeriodEndChanged,
-    required this.colorScheme,
-    required this.textTheme,
-    required this.phaseTokens,
+    required this.theme,
+    this.selectedDate,
+    this.periodEndDate,
+    this.allowPeriodEndAdjustment = false,
+    this.onDateSelected,
+    this.onPeriodEndChanged,
   });
 
   final DateTime month;
   final DateTime today;
-  final DateTime? selectedDate;
   final Set<DateTime> periodDaysSet;
+  final MonthGridTheme theme;
+  final DateTime? selectedDate;
   final DateTime? periodEndDate;
   final bool allowPeriodEndAdjustment;
   final ValueChanged<DateTime>? onDateSelected;
   final ValueChanged<DateTime>? onPeriodEndChanged;
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
-  final CyclePhaseTokens? phaseTokens;
 
   @override
   Widget build(BuildContext context) {
@@ -279,8 +284,8 @@ class _MonthGrid extends StatelessWidget {
           child: Text(
             monthName,
             textAlign: TextAlign.center,
-            style: textTheme.titleMedium?.copyWith(
-              color: colorScheme.onSurface,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.w600,
               fontSize: TypographyTokens.size16,
             ),
@@ -353,7 +358,7 @@ class _MonthGrid extends StatelessWidget {
           child: Text(
             day,
             textAlign: TextAlign.center,
-            style: textTheme.bodySmall?.copyWith(
+            style: theme.textTheme.bodySmall?.copyWith(
               color: DsColors.calendarWeekdayGray,
               fontWeight: FontWeight.w600,
               fontSize: TypographyTokens.size14,
@@ -400,9 +405,9 @@ class _MonthGrid extends StatelessWidget {
                       : !date.isAfter(today),
                   allowPeriodEndAdjustment: allowPeriodEndAdjustment,
                   onTap: () => _handleDayTap(date),
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                  phaseTokens: phaseTokens,
+                  colorScheme: theme.colorScheme,
+                  textTheme: theme.textTheme,
+                  phaseTokens: theme.phaseTokens,
                 ),
               );
             }),

@@ -5,15 +5,9 @@ import 'package:luvi_app/features/auth/widgets/login_forgot_button.dart';
 import 'package:luvi_app/features/auth/widgets/login_header.dart';
 import 'package:luvi_app/features/auth/widgets/login_password_field.dart';
 
-class LoginHeaderSection extends StatelessWidget {
-  const LoginHeaderSection({
-    super.key,
-    required this.emailController,
-    required this.passwordController,
-    required this.emailError,
-    required this.passwordError,
-    required this.obscurePassword,
-    required this.fieldScrollPadding,
+/// Bundles callbacks for login form actions.
+class LoginFormCallbacks {
+  const LoginFormCallbacks({
     required this.onEmailChanged,
     required this.onPasswordChanged,
     required this.onToggleObscure,
@@ -21,17 +15,32 @@ class LoginHeaderSection extends StatelessWidget {
     required this.onSubmit,
   });
 
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final String? emailError;
-  final String? passwordError;
-  final bool obscurePassword;
-  final EdgeInsets fieldScrollPadding;
   final ValueChanged<String> onEmailChanged;
   final ValueChanged<String> onPasswordChanged;
   final VoidCallback onToggleObscure;
   final VoidCallback onForgotPassword;
   final VoidCallback onSubmit;
+}
+
+class LoginHeaderSection extends StatelessWidget {
+  const LoginHeaderSection({
+    super.key,
+    required this.emailController,
+    required this.passwordController,
+    required this.callbacks,
+    this.emailError,
+    this.passwordError,
+    this.obscurePassword = true,
+    this.fieldScrollPadding = EdgeInsets.zero,
+  });
+
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final LoginFormCallbacks callbacks;
+  final String? emailError;
+  final String? passwordError;
+  final bool obscurePassword;
+  final EdgeInsets fieldScrollPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +56,7 @@ class LoginHeaderSection extends StatelessWidget {
           errorText: emailError,
           autofocus: false,
           scrollPadding: fieldScrollPadding,
-          onChanged: onEmailChanged,
+          onChanged: callbacks.onEmailChanged,
         ),
         const SizedBox(height: Spacing.s + Spacing.xs),
         LoginPasswordField(
@@ -55,12 +64,12 @@ class LoginHeaderSection extends StatelessWidget {
           errorText: passwordError,
           obscure: obscurePassword,
           scrollPadding: fieldScrollPadding,
-          onToggleObscure: onToggleObscure,
-          onChanged: onPasswordChanged,
-          onSubmitted: (_) => onSubmit(),
+          onToggleObscure: callbacks.onToggleObscure,
+          onChanged: callbacks.onPasswordChanged,
+          onSubmitted: (_) => callbacks.onSubmit(),
         ),
         const SizedBox(height: Spacing.xs),
-        LoginForgotButton(onPressed: onForgotPassword),
+        LoginForgotButton(onPressed: callbacks.onForgotPassword),
       ],
     );
   }

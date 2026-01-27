@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:luvi_app/core/theme/app_theme.dart';
@@ -202,12 +200,6 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
     _applyPaste(0, sanitized);
     _notifyChange();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      _skipNextOnChanged = false;
-    });
-    Future.microtask(() {
       if (!mounted) {
         return;
       }
