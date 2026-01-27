@@ -2,6 +2,9 @@
 //
 // Provides date calculation functions used across features and services.
 // This file is the single source of truth for age calculation logic.
+//
+// SSOT: This file is the canonical implementation.
+// Re-exported via luvi_services.dart and lib/core/utils/date_utils.dart.
 
 /// Returns the number of days in a given month and year.
 ///

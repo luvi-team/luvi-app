@@ -61,8 +61,6 @@ dependencies:
   lottie: ^3.3.2
   shared_preferences: ^2.5.3
   http: ^1.5.0
-  luvi_core:
-    path: core
   luvi_services:
     path: services
   flutter_secure_storage: ^9.2.2

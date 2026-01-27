@@ -16,8 +16,8 @@ import 'package:luvi_app/l10n/app_localizations.dart';
 import 'package:luvi_services/device_state_service.dart';
 import 'package:luvi_services/init_mode.dart';
 
-import '../../support/test_config.dart';
-import '../../support/video_player_mock.dart';
+import '../../../support/test_config.dart';
+import '../../../support/video_player_mock.dart';
 
 /// Builds a test harness with ProviderScope and MaterialApp.router.
 ///
