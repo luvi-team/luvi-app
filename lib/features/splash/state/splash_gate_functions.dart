@@ -32,7 +32,7 @@ String determineTargetRoute({
   }
   // Onboarding Gate: User has completed consent but not onboarding
   if (!hasCompletedOnboarding) {
-    return RoutePaths.onboarding01;
+    return RoutePaths.onboardingIntro;
   }
   return defaultTarget;
 }
@@ -109,12 +109,12 @@ OnboardingGateResult determineOnboardingGateRoute({
   if (remoteGate == false && localGate == true) return const RaceRetryNeeded();
 
   // Remote false + local not true → Onboarding (first-time user)
-  if (remoteGate == false) return RouteResolved(RoutePaths.onboarding01);
+  if (remoteGate == false) return RouteResolved(RoutePaths.onboardingIntro);
 
   // Remote null (network unavailable) - use local as fallback
   // Fail-safe: never route to Home when server SSOT is unavailable.
   // Local cache may be stale or cross-account; only allow the safe direction.
-  if (localGate == false) return RouteResolved(RoutePaths.onboarding01);
+  if (localGate == false) return RouteResolved(RoutePaths.onboardingIntro);
 
   // Both null → truly unknown
   return const StateUnknown();

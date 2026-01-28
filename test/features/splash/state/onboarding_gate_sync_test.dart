@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luvi_app/features/splash/state/splash_gate_functions.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_intro_screen.dart';
 import 'package:luvi_app/features/dashboard/screens/heute_screen.dart';
 import 'package:luvi_app/features/auth/screens/auth_signin_screen.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
 
 // Point 11: Module-level test constants for route assertions
 const _testHomeRoute = HeuteScreen.routeName;
-const _testOnboardingRoute = Onboarding01Screen.routeName;
+const _testOnboardingRoute = OnboardingIntroScreen.routeName;
 
 /// Default navigation target after all gates pass (currently maps to Home).
 /// Kept as separate constant for semantic clarity in tests.
@@ -58,7 +58,7 @@ void main() {
         expect((result as RouteResolved).route, equals(_testHomeRoute));
       });
 
-      test('remote false + local null → navigates to Onboarding01 (first-time user)', () {
+      test('remote false + local null → navigates to OnboardingIntro (first-time user)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: null,
@@ -78,7 +78,7 @@ void main() {
         expect(result, isA<RaceRetryNeeded>());
       });
 
-      test('remote false + local false → navigates to Onboarding01 (consistent)', () {
+      test('remote false + local false → navigates to OnboardingIntro (consistent)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: false,
           localGate: false,
@@ -90,7 +90,7 @@ void main() {
     });
 
     group('Remote unavailable (remote == null) - local fallback', () {
-      test('remote null + local false → navigates to Onboarding01', () {
+      test('remote null + local false → navigates to OnboardingIntro', () {
         final result = determineOnboardingGateRoute(
           remoteGate: null,
           localGate: false,
@@ -138,14 +138,14 @@ void main() {
       // Note: "remote false + local false" is tested in "Remote SSOT available" group (line 81)
       // Note: "remote null + local false" is tested in "Remote unavailable" group (line 93)
 
-      test('returns Onboarding01 when remote null and local false (offline fallback)', () {
+      test('returns OnboardingIntro when remote null and local false (offline fallback)', () {
         final result = determineOnboardingGateRoute(
           remoteGate: null,
           localGate: false,
           homeRoute: _testHomeRoute,
         );
         expect(result, isA<RouteResolved>());
-        expect((result as RouteResolved).route, equals(Onboarding01Screen.routeName));
+        expect((result as RouteResolved).route, equals(OnboardingIntroScreen.routeName));
       });
     });
 
@@ -241,7 +241,7 @@ void main() {
         hasCompletedOnboarding: false,
         defaultTarget: _testDefaultTarget,
       );
-      expect(result, equals(Onboarding01Screen.routeName));
+      expect(result, equals(OnboardingIntroScreen.routeName));
     });
 
     test('auth user with all gates passed goes to defaultTarget', () {

@@ -61,7 +61,7 @@ void main() {
 
         expect(
           result,
-          equals(RoutePaths.onboarding01),
+          equals(RoutePaths.onboardingIntro),
           reason: 'Incomplete onboarding should redirect to onboarding',
         );
       });

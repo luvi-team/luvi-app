@@ -447,7 +447,7 @@ void main() {
       expect(fetchCount, equals(2));
     });
 
-    test('race-retry failure: remote stays false → SplashResolved(onboarding01)',
+    test('race-retry failure: remote stays false → SplashResolved(onboardingIntro)',
         () async {
       final container = createTestContainer(
         prefs: prefs,
@@ -477,7 +477,7 @@ void main() {
       expect(state, isA<SplashResolved>());
       expect(
         (state as SplashResolved).targetRoute,
-        equals(RoutePaths.onboarding01),
+        equals(RoutePaths.onboardingIntro),
         reason: 'After race-retry still false → fallback to onboarding',
       );
     });

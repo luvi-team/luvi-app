@@ -14,6 +14,7 @@ import 'package:luvi_app/core/design_tokens/spacing.dart';
 import 'package:luvi_app/core/design_tokens/typography.dart';
 import 'package:luvi_app/core/logging/logger.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/utils/run_catching.dart';
 import 'package:luvi_app/core/widgets/link_text.dart';
 import 'package:luvi_app/core/privacy/consent_config.dart';
@@ -920,11 +921,16 @@ Future<bool> _writeConsentCacheWithRetry(
   }
 }
 
-/// Navigate to Onboarding after consent is accepted.
-/// Uses isAuthenticatedFnProvider for testability (not static SupabaseService).
+/// Navigate to Splash after consent is accepted.
+/// Uses skipAnimation=true to let gate logic determine proper onboarding entry.
+/// This prevents Consent→Onboarding→Consent loops by re-evaluating all gates.
 void _navigateAfterConsent(BuildContext context, WidgetRef ref) {
   final isAuth = ref.read(isAuthenticatedFnProvider)();
-  context.go(isAuth ? RoutePaths.onboarding01 : RoutePaths.authSignIn);
+  context.go(
+    isAuth
+        ? '${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'
+        : RoutePaths.authSignIn,
+  );
 }
 
 void _reportUnexpectedConsentError(

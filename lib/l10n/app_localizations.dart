@@ -2152,6 +2152,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page {current} of {total}'**
   String pageIndicatorLabel(int current, int total);
+
+  /// First line of Luvienne's intro speech bubble
+  ///
+  /// In en, this message translates to:
+  /// **'Bonjour, I\'m Luvienne.'**
+  String get onboardingIntroLine1;
+
+  /// Second line of Luvienne's intro speech bubble
+  ///
+  /// In en, this message translates to:
+  /// **'But feel free to call me Luvi.'**
+  String get onboardingIntroLine2;
+
+  /// Third line of Luvienne's intro speech bubble
+  ///
+  /// In en, this message translates to:
+  /// **'Let me get to know you,'**
+  String get onboardingIntroLine3;
+
+  /// Fourth line of Luvienne's intro speech bubble
+  ///
+  /// In en, this message translates to:
+  /// **'so I can support you in the best way possible.'**
+  String get onboardingIntroLine4;
+
+  /// Semantics label for the onboarding intro screen for accessibility
+  ///
+  /// In en, this message translates to:
+  /// **'Luvienne introduces herself. The intro continues automatically.'**
+  String get onboardingIntroSemanticLabel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

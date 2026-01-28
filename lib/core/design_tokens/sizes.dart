@@ -214,5 +214,13 @@ class Sizes {
   /// Below this height, hero scales down to prevent overflow.
   static const double welcomeReferenceHeight = 800.0;
 
+  // ─── Onboarding Intro Screen (Figma Onboarding v2 2026-01) ───
+
+  /// Avatar/Portrait size on Intro Screen (Figma: 200px)
+  static const double avatarIntro = 200.0;
+
+  /// Speech Bubble width on Intro Screen (Figma: 263px)
+  static const double speechBubbleWidth = 263.0;
+
   Sizes._();
 }

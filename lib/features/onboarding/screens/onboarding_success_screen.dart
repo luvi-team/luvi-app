@@ -234,6 +234,10 @@ class _OnboardingSuccessScreenState
       fitnessLevel: localFitnessLevel,
     );
 
+    // Privacy: Clear onboarding PII/health state ONLY after successful persist.
+    // This ensures user data is not lost if save fails and retry is needed.
+    ref.read(onboardingProvider.notifier).reset();
+
     if (mounted) {
       setState(() {
         _state = O9AnimationState.success;

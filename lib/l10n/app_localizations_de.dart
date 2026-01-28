@@ -1084,4 +1084,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String pageIndicatorLabel(int current, int total) {
     return 'Seite $current von $total';
   }
+
+  @override
+  String get onboardingIntroLine1 => 'Bonjour, ich bin Luvienne.';
+
+  @override
+  String get onboardingIntroLine2 => 'Nenne mich aber gerne Luvi.';
+
+  @override
+  String get onboardingIntroLine3 => 'Lass mich dich kennenlernen,';
+
+  @override
+  String get onboardingIntroLine4 => 'damit ich dich bestmöglich begleiten kann.';
+
+  @override
+  String get onboardingIntroSemanticLabel => 'Luvienne stellt sich vor. Intro wird automatisch fortgesetzt.';
 }

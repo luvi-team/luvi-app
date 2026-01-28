@@ -117,7 +117,7 @@ String? homeGuardRedirect({
   }
   // State is known - apply gate logic
   if (hasCompletedOnboarding == false) {
-    return RoutePaths.onboarding01;
+    return RoutePaths.onboardingIntro;
   }
   return null;
 }
@@ -153,7 +153,7 @@ String? homeGuardRedirectWithConsent({
 
   // Then check onboarding
   if (hasCompletedOnboarding == false) {
-    return RoutePaths.onboarding01;
+    return RoutePaths.onboardingIntro;
   }
 
   return null;

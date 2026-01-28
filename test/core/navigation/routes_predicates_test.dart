@@ -3,7 +3,7 @@ import 'package:luvi_app/core/navigation/route_query_params.dart';
 import 'package:luvi_app/core/navigation/routes.dart';
 import 'package:luvi_app/core/privacy/consent_config.dart';
 import 'package:luvi_app/features/consent/screens/consent_options_screen.dart';
-import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_intro_screen.dart';
 import 'package:luvi_app/features/splash/screens/splash_screen.dart';
 
 void main() {
@@ -52,15 +52,15 @@ void main() {
 
   group('homeGuardRedirect (defense-in-depth for /heute)', () {
     group('when state is known (isStateKnown=true)', () {
-      test('redirects to Onboarding01 when hasCompletedOnboarding is false', () {
+      test('redirects to OnboardingIntro when hasCompletedOnboarding is false', () {
         final result = homeGuardRedirect(
           isStateKnown: true,
           hasCompletedOnboarding: false,
         );
         expect(
           result,
-          equals(Onboarding01Screen.routeName),
-          reason: 'Incomplete onboarding should redirect to Onboarding01',
+          equals(OnboardingIntroScreen.routeName),
+          reason: 'Incomplete onboarding should redirect to OnboardingIntro',
         );
       });
 
@@ -213,14 +213,14 @@ void main() {
         );
         expect(
           result,
-          equals(Onboarding01Screen.routeName),
-          reason: 'Current consent + incomplete onboarding → Onboarding01',
+          equals(OnboardingIntroScreen.routeName),
+          reason: 'Current consent + incomplete onboarding → OnboardingIntro',
         );
       });
     });
 
     group('onboarding gate (checked AFTER consent)', () {
-      test('redirects to Onboarding01 when hasCompletedOnboarding is false', () {
+      test('redirects to OnboardingIntro when hasCompletedOnboarding is false', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: false,
@@ -229,8 +229,8 @@ void main() {
         );
         expect(
           result,
-          equals(Onboarding01Screen.routeName),
-          reason: 'Incomplete onboarding should redirect to Onboarding01',
+          equals(OnboardingIntroScreen.routeName),
+          reason: 'Incomplete onboarding should redirect to OnboardingIntro',
         );
       });
 

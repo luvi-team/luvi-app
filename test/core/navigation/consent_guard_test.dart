@@ -116,7 +116,7 @@ void main() {
     });
 
     group('onboarding check (after consent)', () {
-      test('redirects to Onboarding01 when onboarding incomplete', () {
+      test('redirects to OnboardingIntro when onboarding incomplete', () {
         final result = homeGuardRedirectWithConsent(
           isStateKnown: true,
           hasCompletedOnboarding: false,
@@ -126,8 +126,8 @@ void main() {
 
         expect(
           result,
-          equals(RoutePaths.onboarding01),
-          reason: 'Should redirect to Onboarding01 when onboarding incomplete',
+          equals(RoutePaths.onboardingIntro),
+          reason: 'Should redirect to OnboardingIntro when onboarding incomplete',
         );
       });
 
@@ -179,7 +179,7 @@ void main() {
             acceptedConsentVersion: 1,
             currentConsentVersion: 1,
           ),
-          equals(RoutePaths.onboarding01),
+          equals(RoutePaths.onboardingIntro),
         );
 
         // 4. All gates passed
@@ -206,13 +206,13 @@ void main() {
       expect(result, equals('${RoutePaths.splash}?${RouteQueryParams.skipAnimationTrueQuery}'));
     });
 
-    test('redirects to Onboarding01 when onboarding incomplete', () {
+    test('redirects to OnboardingIntro when onboarding incomplete', () {
       final result = homeGuardRedirect(
         isStateKnown: true,
         hasCompletedOnboarding: false,
       );
 
-      expect(result, equals(RoutePaths.onboarding01));
+      expect(result, equals(RoutePaths.onboardingIntro));
     });
 
     test('allows access when onboarding complete', () {

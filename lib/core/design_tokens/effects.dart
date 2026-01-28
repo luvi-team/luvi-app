@@ -264,4 +264,14 @@ class DsEffects {
   /// Ultra Glass Calendar - 70% white opacity + 90% white border, 2px width
   /// Used for: O7/O8 period calendar containers (Figma v3 polish)
   static BoxDecoration get glassCalendarUltra => _glassCalendarUltraInstance;
+
+  // ─── Onboarding Intro Screen (Figma Onboarding v2 2026-01) ───
+
+  /// Avatar shadow for Luvienne portrait on Intro Screen
+  /// Figma: offset (0, 10), blur 10, rgba(0,0,0,0.25)
+  static BoxShadow get avatarShadow => BoxShadow(
+        offset: const Offset(0, 10),
+        blurRadius: 10,
+        color: DsColors.shadowHeroCard,
+      );
 }

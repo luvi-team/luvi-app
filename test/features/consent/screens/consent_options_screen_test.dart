@@ -527,7 +527,7 @@ void main() {
     );
 
     testWidgets(
-      'Authenticated user navigates to onboarding after consent',
+      'Authenticated user navigates to splash (skipAnimation) after consent',
       (tester) async {
         // Setup mocks
         final mockConsentService = _MockConsentService();
@@ -548,7 +548,10 @@ void main() {
         when(() => mockUserStateService.setAcceptedConsentScopes(any()))
             .thenAnswer((_) async {});
 
-        // Setup GoRouter
+        // Track navigation destination
+        String? navigatedPath;
+
+        // Setup GoRouter with navigation observer
         final router = GoRouter(
           initialLocation: RoutePaths.consentOptions,
           routes: [
@@ -557,8 +560,11 @@ void main() {
               builder: (context, state) => const ConsentOptionsScreen(),
             ),
             GoRoute(
-              path: RoutePaths.onboarding01,
-              builder: (context, state) => const Onboarding01Screen(),
+              path: RoutePaths.splash,
+              builder: (context, state) {
+                navigatedPath = '${RoutePaths.splash}?${state.uri.query}';
+                return const Scaffold(body: Text('Splash'));
+              },
             ),
             GoRoute(
               path: RoutePaths.authSignIn,
@@ -594,11 +600,17 @@ void main() {
         await tester.tap(acceptAllButton);
         await tester.pumpAndSettle();
 
-        // AUTH USER → should navigate to Onboarding, NOT AuthSignIn
+        // AUTH USER → should navigate to Splash with skipAnimation=true
+        // P0 Fix: Consent→Splash redirect prevents Consent↔Onboarding loop
         expect(
-          find.byType(Onboarding01Screen),
+          find.text('Splash'),
           findsOneWidget,
-          reason: 'Authenticated user should go to Onboarding after consent',
+          reason: 'Authenticated user should go to Splash after consent',
+        );
+        expect(
+          navigatedPath,
+          contains('skipAnimation=true'),
+          reason: 'Splash should receive skipAnimation=true query param',
         );
         expect(find.byType(AuthSignInScreen), findsNothing);
       },

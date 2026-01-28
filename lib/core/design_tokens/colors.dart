@@ -337,6 +337,20 @@ class DsColors {
   /// Auth Rebrand Bottom Sheet Barrier Color
   /// rgba(249,241,230,0.5)
   static const Color authRebrandBarrier = Color(0x80F9F1E6);
+
+  /// Auth Rebrand Rainbow Amber
+  /// Hex: #F8A645
+  static const Color authRebrandRainbowAmber = Color(0xFFF8A645);
+
+  // ─── Onboarding Intro Screen (Figma Onboarding v2 2026-01) ───
+
+  /// Intro Screen Text Primary (Figma: #101828)
+  /// Used for: Speech bubble text
+  static const Color introTextPrimary = Color(0xFF101828);
+
+  /// Avatar Placeholder Background (Figma: #E5E7EB)
+  /// Used for: Luvienne portrait fallback/loading state
+  static const Color avatarPlaceholderBg = Color(0xFFE5E7EB);
 }
 
 /// Widget-facing color tokens that map named usages to DS palette values.

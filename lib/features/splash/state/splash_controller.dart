@@ -623,9 +623,9 @@ class SplashController extends _$SplashController {
         homeRoute: RoutePaths.heute,
       );
 
-      // If still RaceRetryNeeded after retry → go to Onboarding
+      // If still RaceRetryNeeded after retry → go to OnboardingIntro
       if (gateResult is RaceRetryNeeded) {
-        return RouteResolved(RoutePaths.onboarding01);
+        return RouteResolved(RoutePaths.onboardingIntro);
       }
     }
 

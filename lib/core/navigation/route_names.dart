@@ -10,6 +10,9 @@ class RouteNames {
   static const String welcome = 'welcome';
   static const String consentOptions = 'consent_options';
 
+  // Onboarding routes
+  static const String onboardingIntro = 'onboarding_intro';
+
   // Dashboard routes
   static const String heute = 'heute';
   static const String workoutDetail = 'workout_detail';

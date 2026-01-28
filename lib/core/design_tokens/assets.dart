@@ -140,6 +140,16 @@ class _Videos {
 class _Animations {
   const _Animations();
 
+  /// Onboarding Intro animation (Lottie JSON, 600f @100fps, ~6s).
+  /// Shows Luvienne portrait with motion/shapes intro.
+  final String onboardingIntro =
+      'assets/animations/Onboarding/onboarding_01_intro.json';
+
+  /// Onboarding Rainbow animation (Lottie JSON, 100f @100fps, ~1s).
+  /// Shows rainbow effect after intro before navigation.
+  final String onboardingRainbow =
+      'assets/animations/Onboarding/onboarding_01_rainbow.json';
+
   /// Trophy + celebration combined animation (Lottie JSON, 100f @50fps, 2s).
   final String onboardingSuccessCelebration =
       'assets/animations/onboarding_success_celebration.json';

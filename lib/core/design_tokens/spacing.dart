@@ -62,6 +62,11 @@ class Spacing {
   /// Calendar mini widget padding (Figma: 20px)
   static const double calendarMiniPadding = 20.0;
 
+  // ─── Onboarding Intro Screen (Figma Onboarding v2 2026-01) ───
+
+  /// Vertical distance from avatar to speech bubble (Figma: 122px)
+  static const double avatarToBubble = 122.0;
+
   // ─── O9 Success Screen Card Spacing (Figma O9 2024-12) ───
 
   /// Success Card 1 (left) top padding (Figma: 4px)

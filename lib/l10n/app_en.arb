@@ -1488,5 +1488,26 @@
         "type": "int"
       }
     }
+  },
+
+  "onboardingIntroLine1": "Bonjour, I'm Luvienne.",
+  "@onboardingIntroLine1": {
+    "description": "First line of Luvienne's intro speech bubble"
+  },
+  "onboardingIntroLine2": "But feel free to call me Luvi.",
+  "@onboardingIntroLine2": {
+    "description": "Second line of Luvienne's intro speech bubble"
+  },
+  "onboardingIntroLine3": "Let me get to know you,",
+  "@onboardingIntroLine3": {
+    "description": "Third line of Luvienne's intro speech bubble"
+  },
+  "onboardingIntroLine4": "so I can support you in the best way possible.",
+  "@onboardingIntroLine4": {
+    "description": "Fourth line of Luvienne's intro speech bubble"
+  },
+  "onboardingIntroSemanticLabel": "Luvienne introduces herself. The intro continues automatically.",
+  "@onboardingIntroSemanticLabel": {
+    "description": "Semantics label for the onboarding intro screen for accessibility"
   }
 }

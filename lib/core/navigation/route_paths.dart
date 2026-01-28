@@ -45,8 +45,9 @@ abstract final class RoutePaths {
   static const consentIntroLegacy = '/consent/02';
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Onboarding (O1-O8)
+  // Onboarding (Intro + O1-O8)
   // ─────────────────────────────────────────────────────────────────────────
+  static const onboardingIntro = '/onboarding/intro';
   static const onboarding01 = '/onboarding/01';
   static const onboarding02 = '/onboarding/02';
   static const onboarding03Fitness = '/onboarding/03';

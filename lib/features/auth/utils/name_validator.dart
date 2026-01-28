@@ -71,3 +71,35 @@ String _coalesceGraphemeClusters(String input) {
   // This avoids counting surrogate pairs or combining sequences as multiple code units.
   return input.characters.toList().join();
 }
+
+/// Control characters pattern (ASCII C0 control codes + DEL).
+/// Rejects characters that could cause display/security issues.
+final RegExp _controlCharsPattern = RegExp(r'[\u0000-\u001F\u007F]');
+
+/// Permissive display name validator for onboarding.
+///
+/// This validator is intentionally lenient to support:
+/// - International names (Cyrillic, CJK, Arabic, Hebrew, etc.)
+/// - Emoji in names (increasingly common)
+/// - Cultural naming conventions
+///
+/// Rules:
+/// - Non-null and non-empty after trimming
+/// - Maximum [maxLength] grapheme clusters (default: 50)
+/// - No ASCII control characters (security/display hygiene)
+///
+/// Returns true when the name satisfies all constraints.
+bool permissiveDisplayNameValidator(String? value, {int maxLength = 50}) {
+  if (value == null) return false;
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return false;
+
+  // Count user-perceived characters (grapheme clusters)
+  final graphemeLength = trimmed.characters.length;
+  if (graphemeLength > maxLength) return false;
+
+  // Reject control characters (security/display hygiene)
+  if (_controlCharsPattern.hasMatch(trimmed)) return false;
+
+  return true;
+}

@@ -3,7 +3,9 @@ library;
 
 import 'package:go_router/go_router.dart';
 
+import 'package:luvi_app/core/navigation/route_names.dart';
 import 'package:luvi_app/core/navigation/route_paths.dart';
+import 'package:luvi_app/features/onboarding/screens/onboarding_intro_screen.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_01.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_03_fitness.dart';
@@ -16,9 +18,16 @@ import 'package:luvi_app/features/onboarding/screens/onboarding_success_screen.d
 import 'package:luvi_app/features/onboarding/screens/onboarding_done_screen.dart';
 import 'package:luvi_app/router/route_builders/route_guards.dart';
 
-/// Builds onboarding routes (O1-O8) with consent guard.
+/// Builds onboarding routes (Intro + O1-O8) with consent guard.
 List<RouteBase> buildOnboardingRoutes() {
   return [
+    // Intro screen - mandatory, no skip button, auto-advances
+    GoRoute(
+      path: RoutePaths.onboardingIntro,
+      name: RouteNames.onboardingIntro,
+      redirect: onboardingConsentGuard,
+      builder: (ctx, st) => const OnboardingIntroScreen(),
+    ),
     GoRoute(
       path: RoutePaths.onboarding01,
       name: 'onboarding_01',

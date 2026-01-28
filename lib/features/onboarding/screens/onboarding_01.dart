@@ -18,6 +18,7 @@ import 'package:luvi_app/features/onboarding/widgets/onboarding_header.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_button.dart';
 import 'package:luvi_app/features/onboarding/screens/onboarding_02.dart';
 import 'package:luvi_app/features/onboarding/utils/onboarding_constants.dart';
+import 'package:luvi_app/features/auth/utils/name_validator.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
 /// First onboarding screen: name input.
@@ -64,9 +65,10 @@ class _Onboarding01ScreenState extends ConsumerState<Onboarding01Screen> {
   }
 
   void _onTextChanged() {
-    final hasText = _nameController.text.trim().isNotEmpty;
-    if (_hasText != hasText) {
-      setState(() => _hasText = hasText);
+    // Use permissive validator: allows Unicode, emoji, rejects control chars
+    final isValid = permissiveDisplayNameValidator(_nameController.text);
+    if (_hasText != isValid) {
+      setState(() => _hasText = isValid);
     }
   }
 
