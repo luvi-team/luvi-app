@@ -14,7 +14,8 @@ enum IntroPhase {
 /// 1. Intro animation (Luvienne introduction, ~6s)
 /// 2. Rainbow animation (transition effect, ~1s)
 ///
-/// Supports reduce motion preference by skipping to completion immediately.
+/// Supports reduce motion preference by rendering nothing (caller decides how to
+/// handle navigation when animations are disabled).
 class OnboardingIntroPlayer extends StatefulWidget {
   const OnboardingIntroPlayer({
     super.key,
@@ -26,8 +27,7 @@ class OnboardingIntroPlayer extends StatefulWidget {
   });
 
   /// Current animation phase (intro or rainbow).
-  /// Accepts any enum with 'intro' in its name for intro phase.
-  final Object phase;
+  final IntroPhase phase;
 
   /// Whether reduce motion is enabled (a11y preference).
   final bool reduceMotion;
@@ -45,9 +45,12 @@ class OnboardingIntroPlayer extends StatefulWidget {
   State<OnboardingIntroPlayer> createState() => _OnboardingIntroPlayerState();
 }
 
-class _OnboardingIntroPlayerState extends State<OnboardingIntroPlayer> {
+class _OnboardingIntroPlayerState extends State<OnboardingIntroPlayer>
+    with SingleTickerProviderStateMixin {
   bool _introCompleted = false;
   bool _rainbowCompleted = false;
+
+  late final AnimationController _rainbowController;
 
   @override
   void initState() {
@@ -56,19 +59,15 @@ class _OnboardingIntroPlayerState extends State<OnboardingIntroPlayer> {
     // Listen for intro animation completion
     widget.introController.addStatusListener(_onIntroStatusChange);
 
-    // If reduce motion is enabled, skip animations
-    if (widget.reduceMotion) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          widget.onRainbowComplete();
-        }
-      });
-    }
+    _rainbowController = AnimationController(vsync: this);
+    _rainbowController.addStatusListener(_onRainbowStatusChange);
   }
 
   @override
   void dispose() {
     widget.introController.removeStatusListener(_onIntroStatusChange);
+    _rainbowController.removeStatusListener(_onRainbowStatusChange);
+    _rainbowController.dispose();
     super.dispose();
   }
 
@@ -78,10 +77,23 @@ class _OnboardingIntroPlayerState extends State<OnboardingIntroPlayer> {
     }
   }
 
+  void _onRainbowStatusChange(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _handleRainbowComplete();
+    }
+  }
+
   void _handleIntroLoaded(LottieComposition composition) {
     // Start the intro controller when Lottie is loaded
     widget.introController.duration = composition.duration;
     widget.introController.forward();
+  }
+
+  void _handleRainbowLoaded(LottieComposition composition) {
+    _rainbowController
+      ..duration = composition.duration
+      ..reset()
+      ..forward();
   }
 
   void _handleIntroComplete() {
@@ -96,6 +108,14 @@ class _OnboardingIntroPlayerState extends State<OnboardingIntroPlayer> {
     widget.onRainbowComplete();
   }
 
+  Widget _buildFallbackPortrait() {
+    return Image.asset(
+      Assets.images.luviennePortrait,
+      fit: BoxFit.contain,
+      errorBuilder: Assets.defaultImageErrorBuilder,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Skip rendering if reduce motion is enabled
@@ -104,7 +124,7 @@ class _OnboardingIntroPlayerState extends State<OnboardingIntroPlayer> {
     }
 
     // Determine which animation to show based on phase
-    final isIntroPhase = widget.phase.toString().contains('intro');
+    final isIntroPhase = widget.phase == IntroPhase.intro;
 
     if (isIntroPhase) {
       return Lottie.asset(
@@ -116,9 +136,17 @@ class _OnboardingIntroPlayerState extends State<OnboardingIntroPlayer> {
           // Silently handle warnings in release builds
           debugPrint('Lottie warning: $warning');
         },
+        errorBuilder: (context, error, stackTrace) {
+          // Failsafe: still run intro controller so screen can progress
+          if (!widget.introController.isAnimating &&
+              !widget.introController.isCompleted) {
+            widget.introController.forward();
+          }
+          return _buildFallbackPortrait();
+        },
         frameBuilder: (context, child, composition) {
           if (composition == null) {
-            return const SizedBox.expand();
+            return _buildFallbackPortrait();
           }
           return child;
         },
@@ -130,71 +158,25 @@ class _OnboardingIntroPlayerState extends State<OnboardingIntroPlayer> {
         Assets.animations.onboardingRainbow,
         fit: BoxFit.contain,
         repeat: false,
-        onLoaded: (composition) {
-          // Rainbow animation plays independently
-        },
+        onLoaded: _handleRainbowLoaded,
         onWarning: (warning) {
           debugPrint('Lottie warning: $warning');
+        },
+        errorBuilder: (context, error, stackTrace) {
+          // If rainbow fails, proceed to next screen (mandatory flow).
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _handleRainbowComplete();
+          });
+          return const SizedBox.expand();
         },
         frameBuilder: (context, child, composition) {
           if (composition == null) {
             return const SizedBox.expand();
           }
-          return _RainbowAnimationWrapper(
-            onComplete: _handleRainbowComplete,
-            child: child,
-          );
+          return child;
         },
+        controller: _rainbowController,
       );
     }
-  }
-}
-
-/// Wrapper widget that detects when the rainbow animation completes.
-class _RainbowAnimationWrapper extends StatefulWidget {
-  const _RainbowAnimationWrapper({
-    required this.child,
-    required this.onComplete,
-  });
-
-  final Widget child;
-  final VoidCallback onComplete;
-
-  @override
-  State<_RainbowAnimationWrapper> createState() =>
-      _RainbowAnimationWrapperState();
-}
-
-class _RainbowAnimationWrapperState extends State<_RainbowAnimationWrapper>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    // Rainbow animation: 100f @ 100fps = 1s
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        widget.onComplete();
-      }
-    });
-
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.child;
   }
 }

@@ -107,6 +107,8 @@ flutter:
     - assets/icons/onboarding/
     - assets/icons/auth/
     - assets/animations/
+    - assets/animations/Onboarding/
+    - assets/animations/Onboarding/images/
     - assets/legal/
     - assets/videos/welcome/
     - assets/videos/splash/

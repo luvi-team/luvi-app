@@ -9,12 +9,6 @@ import 'package:luvi_app/features/onboarding/widgets/intro_speech_bubble.dart';
 import 'package:luvi_app/features/onboarding/widgets/onboarding_intro_player.dart';
 import 'package:luvi_app/l10n/app_localizations.dart';
 
-/// Animation phase state machine for intro screen.
-enum _IntroPhase {
-  intro, // Playing intro animation with speech bubble
-  rainbow, // Playing rainbow transition before navigation
-}
-
 /// Onboarding Intro Screen - Luvienne's introduction.
 ///
 /// Shows a Lottie animation sequence (Intro -> Rainbow) with a typewriter
@@ -34,7 +28,7 @@ class OnboardingIntroScreen extends ConsumerStatefulWidget {
 
 class _OnboardingIntroScreenState extends ConsumerState<OnboardingIntroScreen>
     with SingleTickerProviderStateMixin {
-  _IntroPhase _phase = _IntroPhase.intro;
+  IntroPhase _phase = IntroPhase.intro;
   bool _navigated = false;
 
   /// Animation controller for driving the speech bubble typewriter effect.
@@ -74,7 +68,7 @@ class _OnboardingIntroScreenState extends ConsumerState<OnboardingIntroScreen>
   void _onIntroComplete() {
     if (!mounted || _navigated) return;
     setState(() {
-      _phase = _IntroPhase.rainbow;
+      _phase = IntroPhase.rainbow;
     });
   }
 
@@ -115,7 +109,7 @@ class _OnboardingIntroScreenState extends ConsumerState<OnboardingIntroScreen>
                 ),
               ),
               // Speech bubble overlay (only during intro phase)
-              if (_phase == _IntroPhase.intro && !_reduceMotion)
+              if (_phase == IntroPhase.intro && !_reduceMotion)
                 Positioned(
                   left: Spacing.screenPadding,
                   right: Spacing.screenPadding,

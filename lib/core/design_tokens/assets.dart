@@ -107,6 +107,9 @@ class _Images {
   final String onboardingContentCard3 =
       'assets/images/onboarding/content_card_3.png';
 
+  /// Onboarding Intro Screen portrait fallback (PNG with resolution variants).
+  final String luviennePortrait = 'assets/images/onboarding/luvienne_portrait.png';
+
   // Welcome hero assets (images only; videos in _Videos)
   // Note: W1 + W3 use video; W2 uses static image
   final String welcomeHero02 = _kWelcomeHero02;
